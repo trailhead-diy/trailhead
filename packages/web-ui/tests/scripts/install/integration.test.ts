@@ -62,7 +62,7 @@ import {
 // Mock FileSystem for different project scenarios
 const createMockFileSystem = (scenario: ProjectScenario): FileSystem => {
   const { existingFiles, fileContents } = getScenarioData(scenario)
-  
+
   // Normalize all paths in the existingFiles set for cross-platform compatibility
   const normalizedExistingFiles = new Set(Array.from(existingFiles).map(normalizeMockPath))
 
@@ -93,13 +93,18 @@ const createMockFileSystem = (scenario: ProjectScenario): FileSystem => {
     readFile: vi.fn().mockImplementation(async (path: string) => {
       const normalized = normalizeMockPath(path)
       // Try both normalized and original paths for backward compatibility
-      return Ok((fileContents as any)[normalized] || (fileContents as any)[path] || 'mock file content')
+      return Ok(
+        (fileContents as any)[normalized] || (fileContents as any)[path] || 'mock file content'
+      )
     }),
     writeFile: vi.fn().mockImplementation(async () => Ok(undefined)),
     readJson: vi.fn().mockImplementation(async (path: string) => {
       const normalized = normalizeMockPath(path)
       if (path.endsWith('package.json')) {
-        return Ok((fileContents as any)[normalized] || (fileContents as any)[path] || { name: 'test-project', version: '1.0.0' })
+        return Ok(
+          (fileContents as any)[normalized] ||
+            (fileContents as any)[path] || { name: 'test-project', version: '1.0.0' }
+        )
       }
       return Err({ recoverable: true, message: 'File not found', code: 'ENOENT', path })
     }),
@@ -136,7 +141,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         projectPath('next.config.js'),
         projectPath('app', 'layout.tsx'),
         // Source files (would be from trailhead-ui package)
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -178,7 +183,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         projectPath('app', 'globals.css'),
         projectPath('tailwind.config.js'),
         // Source files
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -237,7 +242,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         projectPath('src', 'main.tsx'),
         projectPath('src', 'index.css'),
         // Source files
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -274,7 +279,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         projectPath('wrangler.jsonc'),
         projectPath('src', 'styles.css'),
         // Source files
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -311,7 +316,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         projectPath('src', 'components', 'theme-provider.tsx'),
         projectPath('src', 'components', 'button.tsx'),
         // Source files - add both src and dist paths to handle both dev and prod
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -358,7 +363,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         '/project/package.json',
         '/project/next.config.js',
         // Source files
-        trailheadPath('src'),  // This makes existsSync return true for development
+        trailheadPath('src'), // This makes existsSync return true for development
         trailheadPath('src', 'components', 'theme', 'config.ts'),
         trailheadPath('src', 'components', 'theme', 'builder.ts'),
         trailheadPath('src', 'components', 'theme', 'registry.ts'),
@@ -553,7 +558,9 @@ describe('Installation Integration Tests', () => {
       expect(installResult.success).toBe(false)
       if (!installResult.success) {
         // Should fail due to either file conflicts or missing source files - both are valid scenarios
-        expect(installResult.error.message).toMatch(/Installation would overwrite existing files|Source file not found/)
+        expect(installResult.error.message).toMatch(
+          /Installation would overwrite existing files|Source file not found/
+        )
       }
     })
 

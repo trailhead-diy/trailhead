@@ -1,11 +1,11 @@
-export { 
-  mockFileSystem, 
-  mockLogger, 
+export {
+  mockFileSystem,
+  mockLogger,
   mockPrompts,
   createEnhancedMockFileSystem,
   createTestMockFileSystem,
   createCLIMockFileSystem,
-  createCrossPlatformMockFileSystem
+  createCrossPlatformMockFileSystem,
 } from './mocks.js';
 export { createTestContext, createTestContextWithFiles } from './context.js';
 export { runCommand, CommandTestRunner } from './runner.js';
@@ -24,5 +24,5 @@ export {
   createPathRegex,
   pathAssertions,
   testPaths,
-  isWindows
+  isWindows,
 } from './path-utils.js';

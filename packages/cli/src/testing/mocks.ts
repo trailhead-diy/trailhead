@@ -15,7 +15,7 @@ export function mockFileSystem(
   for (const [path, content] of Object.entries(initialFiles)) {
     normalizedFiles.set(normalizePath(path), content);
   }
-  
+
   const files = normalizedFiles;
   const directories = new Set<string>();
 
@@ -160,13 +160,13 @@ export function mockFileSystem(
       const content = JSON.stringify(data, null, 2);
       const normalized = normalizePath(path);
       files.set(normalized, content);
-      
+
       // Add parent directories
       const parts = normalized.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
-      
+
       return ok(undefined);
     },
 
@@ -186,18 +186,18 @@ export interface MockFileSystemOptions {
    * Keys should use forward slashes for consistency
    */
   initialFiles?: Record<string, string>;
-  
+
   /**
    * Initial directories to create
    * Will be created with forward slashes and normalized
    */
   initialDirectories?: string[];
-  
+
   /**
    * Whether to simulate filesystem errors
    */
   simulateErrors?: boolean;
-  
+
   /**
    * Case sensitivity (Windows is case-insensitive)
    */
@@ -214,7 +214,7 @@ export interface EnhancedMockFileSystem extends FileSystem {
 
 /**
  * Create an enhanced mock filesystem with additional testing features
- * 
+ *
  * @example
  * ```ts
  * const fs = createEnhancedMockFileSystem({
@@ -224,10 +224,10 @@ export interface EnhancedMockFileSystem extends FileSystem {
  *   },
  *   simulateErrors: true
  * });
- * 
+ *
  * // Add files dynamically
  * fs.addFile('project/new-file.ts', 'export const newFile = true;');
- * 
+ *
  * // Simulate errors
  * fs.simulateError('readFile', 'project/error.txt', { code: 'PERMISSION_DENIED' });
  * ```
@@ -235,20 +235,20 @@ export interface EnhancedMockFileSystem extends FileSystem {
 export function createEnhancedMockFileSystem(
   options: MockFileSystemOptions = {},
 ): EnhancedMockFileSystem {
-  const { 
-    initialFiles = {}, 
-    initialDirectories = [], 
+  const {
+    initialFiles = {},
+    initialDirectories = [],
     simulateErrors = false,
-    caseSensitive = process.platform !== 'win32'
+    caseSensitive = process.platform !== 'win32',
   } = options;
 
   // Start with the basic mock filesystem
   const basicFs = mockFileSystem(initialFiles);
-  
+
   // Get the internal maps (assuming they're accessible)
   const files = basicFs.getFiles!();
   const directories = basicFs.getDirectories!();
-  
+
   // Add initial directories
   for (const dir of initialDirectories) {
     directories.add(normalizePath(dir));
@@ -256,22 +256,29 @@ export function createEnhancedMockFileSystem(
 
   // Error simulation
   const errorSimulations = new Map<string, any>();
-  
+
   const simulateError = (operation: string, path: string, error: any) => {
-    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
+    const normalizedPath = caseSensitive
+      ? normalizePath(path)
+      : normalizePath(path).toLowerCase();
     errorSimulations.set(`${operation}:${normalizedPath}`, error);
   };
-  
-  const checkForSimulatedError = (operation: string, path: string): any | null => {
+
+  const checkForSimulatedError = (
+    operation: string,
+    path: string,
+  ): any | null => {
     if (!simulateErrors) return null;
-    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
+    const normalizedPath = caseSensitive
+      ? normalizePath(path)
+      : normalizePath(path).toLowerCase();
     return errorSimulations.get(`${operation}:${normalizedPath}`) || null;
   };
 
   // Override filesystem methods to include error simulation
   const enhancedFs: EnhancedMockFileSystem = {
     ...basicFs,
-    
+
     exists: async (path: string): Promise<Result<boolean>> => {
       const error = checkForSimulatedError('exists', path);
       if (error) return err(error);
@@ -294,7 +301,7 @@ export function createEnhancedMockFileSystem(
     addFile: (path: string, content: string) => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
-      
+
       // Add parent directories
       const parts = normalized.split('/');
       for (let i = 1; i < parts.length; i++) {
@@ -305,7 +312,7 @@ export function createEnhancedMockFileSystem(
     addDirectory: (path: string) => {
       const normalized = normalizePath(path);
       directories.add(normalized);
-      
+
       // Add parent directories
       const parts = normalized.split('/');
       for (let i = 1; i < parts.length; i++) {
@@ -342,16 +349,18 @@ export function createEnhancedMockFileSystem(
 export function createTestMockFileSystem(): EnhancedMockFileSystem {
   return createEnhancedMockFileSystem({
     initialFiles: {
-      'project/package.json': JSON.stringify({ 
-        name: 'test-project', 
+      'project/package.json': JSON.stringify({
+        name: 'test-project',
         version: '1.0.0',
-        dependencies: { react: '^18.0.0' }
+        dependencies: { react: '^18.0.0' },
       }),
       'project/src/index.ts': 'console.log("Hello World");',
-      'project/src/components/button.tsx': 'export const Button = () => <button />;',
-      'project/README.md': '# Test Project\n\nA test project for mock filesystem.',
+      'project/src/components/button.tsx':
+        'export const Button = () => <button />;',
+      'project/README.md':
+        '# Test Project\n\nA test project for mock filesystem.',
     },
-    initialDirectories: ['project/dist', 'project/node_modules']
+    initialDirectories: ['project/dist', 'project/node_modules'],
   });
 }
 
@@ -365,12 +374,16 @@ export function createCLIMockFileSystem(): EnhancedMockFileSystem {
         name: 'test-cli',
         version: '1.0.0',
         bin: { 'test-cli': './dist/index.js' },
-        dependencies: { '@trailhead/cli': 'workspace:*' }
+        dependencies: { '@trailhead/cli': 'workspace:*' },
       }),
-      'cli-project/src/index.ts': 'import { createCommand } from "@trailhead/cli";',
-      'cli-project/src/commands/build.ts': 'export const buildCommand = createCommand();',
-      'cli-project/tsconfig.json': JSON.stringify({ compilerOptions: { target: 'es2020' } }),
-    }
+      'cli-project/src/index.ts':
+        'import { createCommand } from "@trailhead/cli";',
+      'cli-project/src/commands/build.ts':
+        'export const buildCommand = createCommand();',
+      'cli-project/tsconfig.json': JSON.stringify({
+        compilerOptions: { target: 'es2020' },
+      }),
+    },
   });
 }
 
@@ -387,7 +400,7 @@ export function createCrossPlatformMockFileSystem(): EnhancedMockFileSystem {
       // Mixed separators
       'mixed/project\\src/index.ts': 'console.log("Mixed");',
     },
-    caseSensitive: false // Test Windows behavior
+    caseSensitive: false, // Test Windows behavior
   });
 }
 

@@ -1,6 +1,6 @@
 /**
  * Cross-Platform Testing Example
- * 
+ *
  * This test file demonstrates best practices for writing
  * tests that work correctly on Windows, macOS, and Linux.
  */
@@ -34,7 +34,7 @@ describe('Cross-Platform Testing Examples', () => {
       // Both styles work with memory filesystem
       const result1 = await fs.exists('project/src/index.ts');
       const result2 = await fs.exists(join('project', 'src', 'index.ts'));
-      
+
       expect(result1.value).toBe(true);
       expect(result2.value).toBe(true);
     });
@@ -42,10 +42,10 @@ describe('Cross-Platform Testing Examples', () => {
     it('should handle path assertions correctly', () => {
       const windowsPath = 'C:\\Users\\test\\app.config';
       const unixPath = '/Users/test/app.config';
-      
+
       // These would be different on each platform
       expect(windowsPath).not.toBe(unixPath);
-      
+
       // But pathAssertions handles the differences
       expect(pathAssertions.contains(windowsPath, 'test')).toBe(true);
       expect(pathAssertions.contains(unixPath, 'test')).toBe(true);
@@ -55,7 +55,7 @@ describe('Cross-Platform Testing Examples', () => {
 
     it('should match paths with patterns', () => {
       const pattern = createPathRegex('src/components/*.tsx');
-      
+
       // Works with both separators
       expect(pattern.test('src/components/button.tsx')).toBe(true);
       expect(pattern.test('src\\components\\button.tsx')).toBe(true);
@@ -69,11 +69,11 @@ describe('Cross-Platform Testing Examples', () => {
       // Add files with different separator styles
       await fs.writeFile('test/file1.txt', 'content1');
       await fs.writeFile('test\\file2.txt', 'content2');
-      
+
       // Both can be read with either style
       const read1 = await fs.readFile('test/file1.txt');
       const read2 = await fs.readFile('test\\file2.txt');
-      
+
       expect(read1.value).toBe('content1');
       expect(read2.value).toBe('content2');
     });
@@ -82,7 +82,7 @@ describe('Cross-Platform Testing Examples', () => {
       // Test reading a file in a nested directory
       const content = await fs.readFile(join('project', 'src', 'index.ts'));
       expect(content.value).toBe('console.log("Hello")');
-      
+
       // Test JSON files
       const config = await fs.readFile(join('project', 'config', 'app.json'));
       expect(JSON.parse(config.value!)).toEqual({ port: 3000 });
@@ -95,14 +95,14 @@ describe('Cross-Platform Testing Examples', () => {
         filesystem: fs,
         cwd: testPaths.mockProject,
       });
-      
+
       // Use relative paths from context
       const result = await context.fs.readFile(join('src', 'index.ts'));
       expect(result.success).toBe(false); // Not found from mock project root
-      
+
       // Or absolute paths
       const absResult = await context.fs.readFile(
-        join('project', 'src', 'index.ts')
+        join('project', 'src', 'index.ts'),
       );
       expect(absResult.value).toBe('console.log("Hello")');
     });
@@ -113,10 +113,10 @@ describe('Cross-Platform Testing Examples', () => {
       // Create config in platform-appropriate location
       const homeConfig = join(testPaths.mockHome, '.myapp', 'config.json');
       const projectConfig = join('project', '.myapp.json');
-      
+
       await fs.writeFile(homeConfig, JSON.stringify({ source: 'home' }));
       await fs.writeFile(projectConfig, JSON.stringify({ source: 'project' }));
-      
+
       // Function that searches for config
       const findConfig = async (searchPaths: string[]) => {
         for (const path of searchPaths) {
@@ -128,7 +128,7 @@ describe('Cross-Platform Testing Examples', () => {
         }
         return null;
       };
-      
+
       // Search in order of precedence
       const config = await findConfig([projectConfig, homeConfig]);
       expect(config).toEqual({ source: 'project' });

@@ -1,15 +1,18 @@
 # Windows Test Fix Implementation Checklist
 
 ## Summary
+
 Total files requiring fixes: **12 high-priority files** with hardcoded paths
 
 ## ✅ Already Fixed
+
 1. **packages/cli/tests/test-utils/cross-platform-paths.ts** - Created utility file
 2. **packages/cli/tests/src/core/command/base.test.ts** - Updated to use testPaths
 
 ## 🔧 High Priority Files (Hardcoded Paths)
 
 ### Web-UI Package - Integration Tests
+
 These files have the most hardcoded paths and need immediate attention:
 
 1. **packages/web-ui/tests/scripts/install/integration.test.ts** ⚠️
@@ -27,6 +30,7 @@ These files have the most hardcoded paths and need immediate attention:
    - Needs: Update remaining hardcoded paths
 
 ### Web-UI Package - CLI Tests
+
 4. **packages/web-ui/tests/src/cli/integration/install-workflow.test.ts**
    - Mock filesystem with hardcoded paths
    - Needs: Update all path references
@@ -64,6 +68,7 @@ These files already import cross-platform utilities but may need minor updates.
 ## Implementation Steps
 
 ### Step 1: Run Automated Fix Script (Optional)
+
 ```bash
 # Create and run the fix script
 pnpm tsx scripts/fix-windows-paths.ts
@@ -72,12 +77,14 @@ pnpm tsx scripts/fix-windows-paths.ts
 ### Step 2: Manual Review and Fixes
 
 For each file:
+
 1. Add import for cross-platform utilities
 2. Replace hardcoded paths with utility functions
 3. Update path comparisons to use pathAssertions
 4. Test locally to ensure no regressions
 
 ### Step 3: Systematic Testing
+
 ```bash
 # Run tests for each package after fixes
 pnpm test --filter=@trailhead/cli
@@ -85,17 +92,27 @@ pnpm test --filter=@trailhead/web-ui
 ```
 
 ### Step 4: Cross-Platform Validation
+
 - Test on Windows machine or VM
 - Add Windows CI job to validate
 
 ## Quick Reference
 
 ### Import Statement
+
 ```typescript
-import { createTestPath, safeJoin, testPaths, isWindows, projectPath, trailheadPath } from '../../utils/cross-platform-paths.js'
+import {
+  createTestPath,
+  safeJoin,
+  testPaths,
+  isWindows,
+  projectPath,
+  trailheadPath,
+} from "../../utils/cross-platform-paths.js";
 ```
 
 ### Common Replacements
+
 ```typescript
 // Before → After
 '/test/project' → testPaths.mockProject
@@ -106,6 +123,7 @@ path === '/project/file' → pathAssertions.pathsEqual(path, projectPath('file')
 ```
 
 ## Verification Checklist
+
 - [ ] All test files import cross-platform utilities
 - [ ] No hardcoded Unix paths remain (`/test/`, `/project/`, etc.)
 - [ ] Path comparisons use pathAssertions utilities
@@ -114,6 +132,7 @@ path === '/project/file' → pathAssertions.pathsEqual(path, projectPath('file')
 - [ ] CI includes Windows test matrix
 
 ## Notes
+
 - The web-ui package already has comprehensive cross-platform utilities
 - Focus on integration.test.ts first as it has the most issues
 - Consider adding ESLint rule to prevent future hardcoded paths

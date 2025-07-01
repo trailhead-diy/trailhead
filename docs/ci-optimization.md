@@ -5,6 +5,7 @@ This document explains the GitHub Actions optimization implemented to reduce CI 
 ## Problem
 
 The previous CI setup was running:
+
 - **13 jobs per push/PR**
 - **Duplicate test runs** across `ci.yml` and `cross-platform-tests.yml`
 - **Multiple builds** of the same packages
@@ -17,10 +18,12 @@ This resulted in approximately **65 minutes of GitHub Actions usage per run**.
 The optimized CI workflow (`ci-optimized.yml`) implements:
 
 ### 1. Single Source of Truth
+
 - Consolidated all CI into one workflow
 - Eliminated `cross-platform-tests.yml` (redundant with main CI)
 
 ### 2. Smart Change Detection
+
 ```yaml
 changes:
   outputs:
@@ -30,16 +33,19 @@ changes:
 ```
 
 ### 3. Build Once, Use Everywhere
+
 - Single build job that uploads artifacts
 - All other jobs download and use these artifacts
 - Reduces build operations from 7 to 1
 
 ### 4. Optimized Caching
+
 - **pnpm store cache**: Speeds up dependency installation
 - **Turborepo cache**: Speeds up incremental builds
 - **Node modules cache**: Built into setup-node action
 
 ### 5. Parallel Execution
+
 ```bash
 # Quality checks run in parallel
 pnpm lint &
@@ -49,22 +55,26 @@ wait
 ```
 
 ### 6. Conditional Testing
+
 - Only run package-specific tests when that package changes
 - Security scan runs independently (can start immediately)
 
 ## Results
 
 ### Before
+
 - 13 jobs (5 from cross-platform + 8 from CI)
 - ~65 minutes GitHub Actions usage
 - Redundant test execution
 
 ### After
+
 - 6 jobs maximum (less if no changes detected)
 - ~25 minutes GitHub Actions usage
 - No redundancy
 
 ### Savings
+
 - **61% reduction** in GitHub Actions minutes
 - **54% reduction** in job count
 - **Faster feedback** (8min vs 15min critical path)
@@ -72,11 +82,13 @@ wait
 ## Migration Steps
 
 1. **Review the optimized workflow**
+
    ```bash
    cat .github/workflows/ci-optimized.yml
    ```
 
 2. **Test in a branch**
+
    ```bash
    git checkout -b test-optimized-ci
    git mv .github/workflows/ci.yml .github/workflows/ci-old.yml
@@ -107,14 +119,17 @@ wait
 ## Troubleshooting
 
 ### If tests fail on Windows/macOS
+
 - The optimized workflow maintains the same test matrix
 - Check test logs for platform-specific issues
 
 ### If coverage upload fails
+
 - Ensure CODECOV_TOKEN is set in repository secrets
 - Coverage files are at: `packages/*/coverage/lcov.info`
 
 ### If builds are slow
+
 - Check Turborepo cache hit rate in logs
 - Ensure pnpm store cache is working
 
@@ -123,6 +138,7 @@ wait
 Consider these additional optimizations if needed:
 
 1. **Run tests only on changed packages**
+
    ```bash
    pnpm test --filter=@trailhead/cli --filter=@trailhead/web-ui
    ```
@@ -136,6 +152,7 @@ Consider these additional optimizations if needed:
 ## Monitoring Usage
 
 Track your GitHub Actions usage at:
+
 - https://github.com/settings/billing/summary
 - Repository → Settings → Actions → Usage this month
 

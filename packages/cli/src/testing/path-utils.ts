@@ -1,6 +1,6 @@
 /**
  * Cross-Platform Path Utilities for Testing
- * 
+ *
  * Provides utilities to handle path differences between Windows and Unix systems
  * in tests, ensuring CLIs work correctly on all platforms.
  */
@@ -88,7 +88,7 @@ export const pathAssertions = {
     }
     // Unix systems should only use forward slashes
     return !path.includes('\\');
-  }
+  },
 };
 
 /**
@@ -101,16 +101,16 @@ export const pathAssertions = {
 export function createPathRegex(pathPattern: string): RegExp {
   // First replace wildcards with placeholders
   let pattern = pathPattern.replace(/\*/g, '__WILDCARD__');
-  
+
   // Escape special regex characters
   pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
-  
+
   // Handle separators - both forward and back slashes
   pattern = pattern.replace(/\//g, '[/\\\\]');
-  
+
   // Replace wildcard placeholders with proper regex
   pattern = pattern.replace(/__WILDCARD__/g, '[^/\\\\]*');
-  
+
   return new RegExp(`^${pattern}$`);
 }
 
@@ -121,11 +121,13 @@ export const testPaths = {
   // Mock paths that look native on each platform
   mockProject: isWindows ? 'C:\\test\\project' : '/test/project',
   mockHome: isWindows ? 'C:\\Users\\test' : '/home/test',
-  mockConfig: isWindows ? 'C:\\test\\project\\.config' : '/test/project/.config',
-  
+  mockConfig: isWindows
+    ? 'C:\\test\\project\\.config'
+    : '/test/project/.config',
+
   // Path separator for the current platform
   separator: sep,
-  
+
   // Helpers to create platform-specific paths
   project: (...segments: string[]) => join(testPaths.mockProject, ...segments),
   home: (...segments: string[]) => join(testPaths.mockHome, ...segments),

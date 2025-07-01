@@ -10,7 +10,11 @@ import { createHash } from 'crypto'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
 import { transformLogger } from '../../../../src/transforms/shared/transform-logger.js'
-import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
+import {
+  createTempPath,
+  createAbsoluteTestPath,
+  safeJoin,
+} from '../../../utils/cross-platform-paths.js'
 
 // Import only color-related transforms
 import { interactiveStatesTransform } from '../../../../src/transforms/components/common/colors/interactive-states.js'

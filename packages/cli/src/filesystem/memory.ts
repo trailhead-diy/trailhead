@@ -12,7 +12,7 @@ function normalizePath(path: string): string {
 
 /**
  * Create an in-memory filesystem for testing
- * 
+ *
  * Automatically handles cross-platform path differences by normalizing
  * all paths to forward slashes internally, while accepting both forward
  * and backward slashes in input paths.
@@ -25,7 +25,7 @@ export function createMemoryFileSystem(
   for (const [path, content] of Object.entries(initialFiles)) {
     files.set(normalizePath(path), content);
   }
-  
+
   const directories = new Set<string>();
 
   // Extract directories from initial files

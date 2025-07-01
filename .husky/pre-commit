@@ -1,3 +1,1 @@
-pnpm vitest run --changed HEAD --passWithNoTests
-pnpm build
-pnpm lint-staged
+npx lint-staged

@@ -44,6 +44,7 @@ info - 2025-07-01 14:34:28,001 -- Uploading coverage reports
 ```
 
 Coverage files are located at:
+
 - `packages/cli/coverage/lcov.info`
 - `packages/web-ui/coverage/lcov.info`
 
@@ -70,5 +71,6 @@ pnpm test --filter=@trailhead/web-ui
 ```
 
 Coverage reports will be available in HTML format at:
+
 - `packages/cli/coverage/index.html`
 - `packages/web-ui/coverage/index.html`

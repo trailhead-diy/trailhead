@@ -991,18 +991,22 @@ For a quick guide on common pitfalls and solutions, see the [Cross-Platform Test
 ### Quick Example
 
 ```typescript
-import { pathAssertions, createPathRegex, testPaths } from '@trailhead/cli/testing';
+import {
+  pathAssertions,
+  createPathRegex,
+  testPaths,
+} from "@trailhead/cli/testing";
 
 // Compare paths regardless of separators
-expect(pathAssertions.equal('C:\\app\\config', '/app/config')).toBe(true);
+expect(pathAssertions.equal("C:\\app\\config", "/app/config")).toBe(true);
 
 // Match patterns with wildcards
-const pattern = createPathRegex('src/components/*.tsx');
-expect(pattern.test('src\\components\\button.tsx')).toBe(true); // Windows
-expect(pattern.test('src/components/button.tsx')).toBe(true);   // Unix
+const pattern = createPathRegex("src/components/*.tsx");
+expect(pattern.test("src\\components\\button.tsx")).toBe(true); // Windows
+expect(pattern.test("src/components/button.tsx")).toBe(true); // Unix
 
 // Use platform-appropriate test paths
-const configPath = testPaths.config('app.json');
+const configPath = testPaths.config("app.json");
 ```
 
 See the [full recipe](../recipes/cross-platform-testing.md) for detailed patterns and examples.

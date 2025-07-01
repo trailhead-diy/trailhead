@@ -82,7 +82,7 @@ describe('User Interactions - Critical User Behavior', () => {
     it('should prevent double submission during loading state', async () => {
       const user = userEvent.setup()
       const onSubmit = vi.fn()
-      
+
       // Use a flag to simulate the common pattern of preventing double submissions
       let isSubmitting = false
 
@@ -92,16 +92,16 @@ describe('User Interactions - Critical User Behavior', () => {
         const handleSubmit = async () => {
           // Common pattern: check flag before processing
           if (isSubmitting) return
-          
+
           isSubmitting = true
           setIsLoading(true)
-          
+
           // Call the actual submit function
           onSubmit()
-          
+
           // Simulate async operation
-          await new Promise(resolve => setTimeout(resolve, 50))
-          
+          await new Promise((resolve) => setTimeout(resolve, 50))
+
           setIsLoading(false)
           isSubmitting = false
         }
@@ -118,19 +118,18 @@ describe('User Interactions - Critical User Behavior', () => {
       const button = screen.getByRole('button')
 
       // Simulate rapid clicking (common user behavior)
-      const clickPromises = [
-        user.click(button),
-        user.click(button),
-        user.click(button)
-      ]
-      
+      const clickPromises = [user.click(button), user.click(button), user.click(button)]
+
       // Execute all clicks
       await Promise.all(clickPromises)
-      
+
       // Wait for loading state to be set
-      await waitFor(() => {
-        expect(button).toBeDisabled()
-      }, { timeout: 1000 })
+      await waitFor(
+        () => {
+          expect(button).toBeDisabled()
+        },
+        { timeout: 1000 }
+      )
 
       // Verify only one submission occurred
       expect(onSubmit).toHaveBeenCalledTimes(1)

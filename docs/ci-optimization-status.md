@@ -22,6 +22,7 @@
 ## ⚠️ Current Status
 
 **CI is blocked due to billing issues:**
+
 ```
 The job was not started because recent account payments have failed or your spending limit needs to be increased.
 ```
@@ -29,17 +30,21 @@ The job was not started because recent account payments have failed or your spen
 ## 📋 Next Steps
 
 ### 1. Fix Billing (Required First)
+
 - Go to https://github.com/settings/billing/summary
 - Update payment method or increase spending limit
 - Wait for GitHub to re-enable Actions
 
 ### 2. Verify Optimized Workflow
+
 Once billing is fixed, the CI will automatically run on PR #6:
+
 - Monitor all checks pass correctly
 - Verify coverage uploads work
 - Check build artifacts are shared properly
 
 ### 3. Merge and Clean Up
+
 ```bash
 # Once all checks pass
 gh pr merge 6
@@ -53,6 +58,7 @@ git push
 ```
 
 ### 4. Monitor Savings
+
 - Check GitHub Actions usage after a week
 - Should see ~61% reduction in minutes used
 - Adjust spending limits accordingly

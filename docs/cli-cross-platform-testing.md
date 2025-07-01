@@ -7,6 +7,7 @@ Cross-platform testing learnings from the Windows path fixes have been integrate
 ## What Was Added
 
 ### 1. Path Utilities (`src/testing/path-utils.ts`)
+
 - `normalizePath()` - Normalizes paths for consistent comparisons
 - `toPosixPath()` / `toWindowsPath()` - Convert between path formats
 - `createTestPath()` - Creates platform-appropriate test paths
@@ -14,19 +15,24 @@ Cross-platform testing learnings from the Windows path fixes have been integrate
 - `testPaths` - Common test paths that work on all platforms
 
 ### 2. Enhanced Memory FileSystem
+
 The memory filesystem now automatically normalizes paths, so these work identically:
+
 ```typescript
-await fs.readFile('/config/app.json');      // Unix style
-await fs.readFile('C:\\config\\app.json');  // Windows style - same file!
+await fs.readFile("/config/app.json"); // Unix style
+await fs.readFile("C:\\config\\app.json"); // Windows style - same file!
 ```
 
 ### 3. Updated Documentation
+
 - Added "Cross-Platform Testing" section to the testing guide
 - Covers common pitfalls and solutions
 - Includes practical examples
 
 ### 4. Example CLI
+
 Created a cross-platform file organizer example showing:
+
 - Proper path handling in commands
 - Cross-platform tests
 - CI configuration for multi-platform testing
@@ -34,23 +40,23 @@ Created a cross-platform file organizer example showing:
 ## Usage
 
 ```typescript
-import { 
+import {
   createTestContext,
-  pathAssertions, 
-  testPaths 
-} from '@trailhead/cli/testing';
+  pathAssertions,
+  testPaths,
+} from "@trailhead/cli/testing";
 
-describe('My CLI', () => {
-  it('works on all platforms', async () => {
+describe("My CLI", () => {
+  it("works on all platforms", async () => {
     const context = createTestContext({
       files: {
-        [testPaths.project('config.json')]: '{"name": "app"}'
-      }
+        [testPaths.project("config.json")]: '{"name": "app"}',
+      },
     });
-    
+
     // Path assertions work regardless of platform
-    const configPath = testPaths.project('config.json');
-    expect(pathAssertions.contains(configPath, 'config')).toBe(true);
+    const configPath = testPaths.project("config.json");
+    expect(pathAssertions.contains(configPath, "config")).toBe(true);
   });
 });
 ```

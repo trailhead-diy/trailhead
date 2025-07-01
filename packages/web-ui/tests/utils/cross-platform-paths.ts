@@ -1,6 +1,6 @@
 /**
  * Cross-Platform Path Testing Utilities
- * 
+ *
  * Provides robust, Windows-compatible path handling for tests.
  * These utilities ensure tests work correctly across Unix and Windows environments.
  */
@@ -51,16 +51,16 @@ export const normalizeMockPath = (path: string): string => {
 export const createPathRegex = (pathPattern: string): RegExp => {
   // First replace wildcards with placeholders
   let pattern = pathPattern.replace(/\*/g, '__WILDCARD__')
-  
+
   // Escape special regex characters
   pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
-  
+
   // Handle separators - both forward and back slashes
   pattern = pattern.replace(/\//g, '[/\\\\]')
-  
+
   // Replace wildcard placeholders with proper regex
   pattern = pattern.replace(/__WILDCARD__/g, '[^/\\\\]*')
-  
+
   return new RegExp(`^${pattern}$`)
 }
 
@@ -84,9 +84,7 @@ export const toWindowsPath = (path: string): string => {
  * Normalizes all inputs before joining
  */
 export const safeJoin = (...segments: string[]): string => {
-  const normalized = segments.map(segment => 
-    segment.split(/[/\\]/).join(sep)
-  )
+  const normalized = segments.map((segment) => segment.split(/[/\\]/).join(sep))
   return normalize(join(...normalized))
 }
 
@@ -110,7 +108,7 @@ export const safeRelative = (from: string, to: string): string => {
  */
 export class MockFileSystemPaths {
   private paths = new Map<string, string>()
-  
+
   /**
    * Adds a path to the mock filesystem with cross-platform normalization
    */
@@ -119,22 +117,22 @@ export class MockFileSystemPaths {
     this.paths.set(normalized, content || '')
     return normalized
   }
-  
+
   /**
    * Checks if a path exists in the mock filesystem
    */
   hasPath(path: string): boolean {
     const normalized = this.normalizePath(path)
-    
+
     // Check if the exact path exists
     if (this.paths.has(normalized)) {
       return true
     }
-    
+
     // Check if it's a parent directory that should exist due to child files
     return this.isImplicitParentDirectory(normalized)
   }
-  
+
   /**
    * Gets content for a path from mock filesystem
    */
@@ -142,39 +140,39 @@ export class MockFileSystemPaths {
     const normalized = this.normalizePath(path)
     return this.paths.get(normalized)
   }
-  
+
   /**
    * Normalizes paths for internal storage (always use forward slashes)
    */
   private normalizePath(path: string): string {
     return normalize(path).split(sep).join('/')
   }
-  
+
   /**
    * Checks if a path should be considered an implicit parent directory
    */
   private isImplicitParentDirectory(normalizedPath: string): boolean {
     const prefix = normalizedPath.endsWith('/') ? normalizedPath : normalizedPath + '/'
-    
+
     // Check if any files exist under this path (making it an implicit directory)
     for (const path of this.paths.keys()) {
       if (path.startsWith(prefix)) {
         return true
       }
     }
-    
+
     return false
   }
-  
+
   /**
    * Lists all paths matching a parent directory
    */
   listDirectory(dirPath: string): string[] {
     const normalizedDir = this.normalizePath(dirPath)
     const prefix = normalizedDir.endsWith('/') ? normalizedDir : normalizedDir + '/'
-    
+
     const directChildren = new Set<string>()
-    
+
     // Find direct children (files and subdirectories)
     for (const path of this.paths.keys()) {
       if (path.startsWith(prefix)) {
@@ -185,17 +183,17 @@ export class MockFileSystemPaths {
         }
       }
     }
-    
+
     return Array.from(directChildren)
   }
-  
+
   /**
    * Clears all paths from mock filesystem
    */
   clear(): void {
     this.paths.clear()
   }
-  
+
   /**
    * Gets all stored paths (for debugging)
    */
@@ -216,7 +214,7 @@ export const pathAssertions = {
     const normalizedExpected = toPosixPath(expectedSegment)
     return normalizedActual.includes(normalizedExpected)
   },
-  
+
   /**
    * Asserts that two paths are equivalent, regardless of separator differences
    */
@@ -224,21 +222,21 @@ export const pathAssertions = {
     // Normalize both paths and compare
     const normalized1 = normalize(path1)
     const normalized2 = normalize(path2)
-    
+
     // Also compare POSIX versions for cross-platform compatibility
     const posix1 = toPosixPath(normalized1)
     const posix2 = toPosixPath(normalized2)
-    
+
     return normalized1 === normalized2 || posix1 === posix2
   },
-  
+
   /**
    * Asserts that a path is absolute on the current platform
    */
   isAbsolutePath(path: string): boolean {
     return isAbsolute(path)
   },
-  
+
   /**
    * Asserts that a path uses the correct separator for the current platform
    */
@@ -248,7 +246,7 @@ export const pathAssertions = {
       return true
     }
     return !path.includes('\\')
-  }
+  },
 }
 
 /**
@@ -259,12 +257,12 @@ export const testPaths = {
   temp: createTempPath('temp'),
   fixtures: createAbsoluteTestPath('tests', 'fixtures'),
   output: createTempPath('test-output'),
-  
+
   // Mock paths for consistent testing
   mockProject: isWindows ? 'C:\\test\\project' : '/test/project',
   mockComponents: isWindows ? 'C:\\test\\project\\components' : '/test/project/components',
   mockNodeModules: isWindows ? 'C:\\test\\project\\node_modules' : '/test/project/node_modules',
-  
+
   // Platform-specific separators for string operations
   separator: sep,
   posixSeparator: '/',
@@ -281,7 +279,7 @@ export const createTestConfig = (overrides: Record<string, any> = {}) => {
     tempDir: createTempPath('config-test'),
     outputDir: createTempPath('output-test'),
   }
-  
+
   return {
     ...baseConfig,
     ...overrides,
@@ -306,7 +304,7 @@ export const debugPaths = {
     platform: process.platform,
     separator: sep,
   }),
-  
+
   showEnvironment: () => ({
     platform: process.platform,
     isWindows,

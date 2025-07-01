@@ -10,7 +10,11 @@ import { baseMappingsTransform } from '../../../../src/transforms/components/com
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
 import { promises as fs } from 'fs'
 import { existsSync } from 'fs'
-import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
+import {
+  createTempPath,
+  createAbsoluteTestPath,
+  safeJoin,
+} from '../../../utils/cross-platform-paths.js'
 
 describe('code preservation and regression prevention', () => {
   describe('idempotent transformations', () => {

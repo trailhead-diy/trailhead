@@ -5,6 +5,7 @@ This document outlines the optimizations implemented in the Trailhead monorepo C
 ## 🚀 Key Optimizations Implemented
 
 ### 1. Turborepo Remote Caching
+
 - **Impact**: 60-80% build time reduction
 - **Implementation**: Using `rharkor/caching-for-turbo@v2` action
 - **Benefits**: Shares build artifacts across CI runs and developers
@@ -15,29 +16,33 @@ This document outlines the optimizations implemented in the Trailhead monorepo C
 ```
 
 ### 2. Composite Actions for Setup
+
 - **Impact**: 20-30% reduction in workflow complexity
 - **Location**: `.github/actions/setup-monorepo/`
 - **Benefits**: DRY principle, easier maintenance, consistent setup
 
 ### 3. Build Once, Test Everywhere Pattern
+
 - **Impact**: Eliminates redundant builds
 - **How**: Single `setup` job builds all packages, other jobs download artifacts
 - **Benefits**: Significant time savings in matrix builds
 
 ### 4. Smart Matrix Strategy
+
 - **Impact**: 66% reduction in CI minutes for PRs
-- **Implementation**: 
+- **Implementation**:
   - PRs: Ubuntu-only testing
   - Main branch: Full OS matrix (Ubuntu, macOS, Windows)
 
 ```yaml
 matrix:
-  os: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' 
-        && fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') 
-        || fromJSON('["ubuntu-latest"]') }}
+  os: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main'
+    && fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]')
+    || fromJSON('["ubuntu-latest"]') }}
 ```
 
 ### 5. Parallel Job Architecture
+
 - **Impact**: 40-50% faster feedback
 - **Jobs run in parallel**:
   - Lint
@@ -47,6 +52,7 @@ matrix:
   - Tests (after build)
 
 ### 6. Enhanced Change Detection
+
 - **Impact**: Prevents unnecessary work
 - **Granular filters**:
   - `cli`: Changes to CLI package
@@ -55,11 +61,13 @@ matrix:
   - `code`: Any code changes
 
 ### 7. Optimized Caching Strategy
+
 - **pnpm store caching**: Content-based keys with `hashFiles('**/pnpm-lock.yaml')`
 - **Turborepo caching**: Local and remote caching enabled
 - **Node.js caching**: Built into `actions/setup-node@v4`
 
 ### 8. Performance Monitoring
+
 - **CI Performance workflow**: Weekly analysis of CI metrics
 - **Targeted CI workflow**: Run CI for specific packages on demand
 - **PR size comments**: Track build size changes
@@ -67,11 +75,13 @@ matrix:
 ## 📊 Performance Metrics
 
 ### Before Optimizations
+
 - Average CI time: ~15-20 minutes
 - Matrix builds: 3x redundant builds
 - No caching between runs
 
 ### After Optimizations
+
 - Average CI time: ~5-8 minutes (60% reduction)
 - Single build shared across jobs
 - 80%+ cache hit rate with Turborepo
@@ -109,6 +119,7 @@ pnpm lint types test --filter=@trailhead/web-ui
 ## 🔧 Configuration Files
 
 ### Key Files Modified
+
 - `.github/workflows/ci.yml` - Main CI workflow with optimizations
 - `.github/workflows/targeted-ci.yml` - Package-specific CI runs
 - `.github/workflows/ci-performance.yml` - Performance monitoring
@@ -116,6 +127,7 @@ pnpm lint types test --filter=@trailhead/web-ui
 - `turbo.json` - Optimized caching configuration
 
 ### Environment Variables
+
 ```yaml
 env:
   NODE_VERSION: 20.11.0
@@ -139,16 +151,19 @@ env:
 ## 🚨 Troubleshooting
 
 ### Low Cache Hit Rate
+
 - Check `turbo.json` inputs configuration
 - Ensure consistent dependency versions
 - Verify remote cache is properly configured
 
 ### Slow Builds Despite Caching
+
 - Check for cache key mismatches
 - Verify Turborepo remote cache is running
 - Look for unnecessary dependencies in `turbo.json`
 
 ### Failed Builds After Optimization
+
 - Ensure all artifacts are properly uploaded/downloaded
 - Check composite action is available in the repository
 - Verify environment variables are set correctly

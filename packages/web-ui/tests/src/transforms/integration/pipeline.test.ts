@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
 import { existsSync } from 'fs'
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
-import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
+import {
+  createTempPath,
+  createAbsoluteTestPath,
+  safeJoin,
+} from '../../../utils/cross-platform-paths.js'
 
 describe('transforms pipeline integration', () => {
   let tempDir: string
