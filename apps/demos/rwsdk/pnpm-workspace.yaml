@@ -1,0 +1,4 @@
+# This file overrides the parent workspace configuration
+# It tells pnpm to treat this directory as a standalone project
+packages:
+  - "."
