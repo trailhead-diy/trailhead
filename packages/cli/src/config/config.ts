@@ -1,6 +1,6 @@
 import { cosmiconfig } from 'cosmiconfig';
 import type { z } from 'zod';
-import { ok, err } from '../core/errors/index.js';
+import { Ok, Err } from '../core/errors/index.js';
 import type { Result } from '../core/errors/index.js';
 import type { ConfigSchema, LoadOptions } from './types.js';
 
@@ -30,27 +30,27 @@ export function defineConfig<T>(schema: z.ZodSchema<T>): ConfigSchema<T> {
           // No config found, use schema defaults
           const parsed = schema.safeParse({});
           if (!parsed.success) {
-            return err({
+            return Err({
               code: 'CONFIG_VALIDATION_ERROR',
               message: 'Invalid default configuration',
               recoverable: false,
             });
           }
-          return ok(parsed.data);
+          return Ok(parsed.data);
         }
 
         const parsed = schema.safeParse(result.config);
         if (!parsed.success) {
-          return err({
+          return Err({
             code: 'CONFIG_VALIDATION_ERROR',
             message: `Invalid configuration in ${result.filepath}: ${parsed.error.message}`,
             recoverable: false,
           });
         }
 
-        return ok(parsed.data);
+        return Ok(parsed.data);
       } catch (error) {
-        return err({
+        return Err({
           code: 'CONFIG_LOAD_ERROR',
           message: `Failed to load configuration: ${(error as Error).message}`,
           recoverable: false,

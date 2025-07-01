@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createLogger, createSilentLogger } from '@trailhead/cli/core'
+import { createDefaultLogger, createSilentLogger } from '@trailhead/cli/core'
 
 // Mock chalk
 vi.mock('chalk', () => ({
@@ -27,14 +27,14 @@ describe('logger', () => {
 
   describe('Default Logger', () => {
     it('should log info messages', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.info('Test info message')
 
       expect(consoleLogSpy).toHaveBeenCalledWith('Test info message')
     })
 
     it('should log success messages', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.success('Test success message')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -42,7 +42,7 @@ describe('logger', () => {
     })
 
     it('should log warning messages', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.warning('Test warning message')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -50,7 +50,7 @@ describe('logger', () => {
     })
 
     it('should log error messages', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.error('Test error message')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -58,7 +58,7 @@ describe('logger', () => {
     })
 
     it('should log step messages', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.step('Test step message')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -66,14 +66,14 @@ describe('logger', () => {
     })
 
     it('should not log debug messages in non-verbose mode', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
       logger.debug('Test debug message')
 
       expect(consoleLogSpy).not.toHaveBeenCalled()
     })
 
     it('should log debug messages in verbose mode', () => {
-      const logger = createLogger(true)
+      const logger = createDefaultLogger(true)
       logger.debug('Test debug message')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -98,7 +98,7 @@ describe('logger', () => {
 
   describe('Logger Interface', () => {
     it('should implement all required methods', () => {
-      const logger = createLogger(false)
+      const logger = createDefaultLogger(false)
 
       expect(logger).toHaveProperty('info')
       expect(logger).toHaveProperty('success')

@@ -19,7 +19,7 @@ import {
 import { resolveConfiguration } from '../core/installation/config.js'
 import { detectFramework, VALID_FRAMEWORKS } from '../core/installation/framework-detection.js'
 import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js'
-import { createLogger } from '@trailhead/cli/core'
+import { createDefaultLogger } from '@trailhead/cli/core'
 import { convertInstallResult } from './utils/error-conversion.js'
 import { getTrailheadPackageRoot } from '../utils/context.js'
 
@@ -140,7 +140,7 @@ async function executeInstallation(
   // Create dependencies
   const nodeFS = createNodeFileSystem()
   const fs = adaptSharedToInstallFS(nodeFS)
-  const logger = createLogger(options.verbose ?? false)
+  const logger = createDefaultLogger(options.verbose ?? false)
 
   try {
     // Load new config system

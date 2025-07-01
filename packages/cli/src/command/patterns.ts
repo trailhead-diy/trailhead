@@ -1,6 +1,6 @@
-import type { CommandContext } from './base.js';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err } from '../core/errors/factory.js';
+import type { CommandContext } from './types.js';
+import type { Result } from '../core/errors/index.js';
+import { Ok, Err } from '../core/errors/index.js';
 
 export interface InteractiveCommandOptions {
   readonly interactive?: boolean;

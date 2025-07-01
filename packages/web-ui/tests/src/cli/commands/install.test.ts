@@ -81,7 +81,7 @@ vi.mock('@trailhead/cli/core', async () => {
   const actual = await vi.importActual('@trailhead/cli/core')
   return {
     ...actual,
-    createLogger: vi.fn().mockReturnValue({
+    createDefaultLogger: vi.fn().mockReturnValue({
       info: vi.fn(),
       success: vi.fn(),
       warning: vi.fn(),
