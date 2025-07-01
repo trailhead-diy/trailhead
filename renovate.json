@@ -23,7 +23,8 @@
   "ignorePaths": [
     "**/node_modules/**",
     "**/dist/**",
-    "**/build/**"
+    "**/build/**",
+    "**/catalyst-ui-kit/demo/**"
   ],
   "packageRules": [
     {
