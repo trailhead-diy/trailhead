@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { sep, join as pathJoin, dirname as pathDirname, resolve as pathResolve } from 'path'
+import { join as pathJoin, dirname as pathDirname, resolve as pathResolve } from 'path'
 import type { FileSystem } from '../../../../src/cli/core/filesystem/index.js'
 import type { Logger } from '@trailhead/cli/core'
 import { performInstallation } from '../../../../src/cli/core/installation/index.js'

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { sep, join as pathJoin, relative as pathRelative } from 'path'
+import { sep, relative as pathRelative } from 'path'
 import type {
   FileSystem,
   Logger,

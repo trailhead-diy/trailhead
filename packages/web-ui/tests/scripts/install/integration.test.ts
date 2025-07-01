@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { join as pathJoin, resolve as pathResolve } from 'path'
+import { join as pathJoin } from 'path'
 import type { FileSystem, Logger, InstallConfig } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../src/cli/core/installation/types.js'
 
