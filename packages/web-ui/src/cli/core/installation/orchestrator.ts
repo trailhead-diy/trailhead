@@ -1,0 +1,526 @@
+/**
+ * Installation orchestrator module
+ */
+
+import ora from 'ora'
+import type {
+  InstallConfig,
+  InstallationSummary,
+  InstallError,
+  FileSystem,
+  Logger,
+  Result,
+  FrameworkType,
+} from './types.js'
+import { Ok, Err } from './types.js'
+import { generateDestinationPaths } from '../filesystem/paths.js'
+import { checkExistingFiles, ensureDirectories } from '../filesystem/operations.js'
+import {
+  analyzeDependencies,
+  installDependenciesSmart,
+  type DependencyInstallResult,
+} from './dependencies.js'
+import { executeInstallationSteps } from './step-executor.js'
+import { createInstallationSteps } from './step-factory.js'
+import { detectWorkspace, detectCIEnvironment, checkOfflineMode } from './workspace-detection.js'
+import { analyzeDependencies as analyzeCore } from './dependency-resolution.js'
+import { detectPackageManager } from 'nypm'
+import { countFilesByPattern, formatFileSummary } from './shared-utils.js'
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+export interface InstallOptions {
+  readonly interactive?: boolean
+  readonly skipDependencyPrompts?: boolean
+  readonly dependencyStrategy?: 'auto' | 'smart' | 'selective' | 'manual' | 'skip' | 'force'
+}
+
+// Lazy import to avoid circular dependencies
+const getDependencyPrompts = async () => {
+  const module = await import('../../prompts/dependencies.js')
+  return {
+    runDependencyPrompts: module.runDependencyPrompts,
+    showPostInstallInstructions: module.showPostInstallInstructions,
+  }
+}
+
+// ============================================================================
+// INSTALLATION ORCHESTRATION
+// ============================================================================
+
+/**
+ * Perform complete Trailhead UI installation
+ */
+export const performInstallation = async (
+  fs: FileSystem,
+  logger: Logger,
+  config: InstallConfig,
+  trailheadRoot: string,
+  force: boolean = false,
+  framework?: FrameworkType,
+  useWrappers: boolean = true,
+  options: InstallOptions = {}
+): Promise<Result<InstallationSummary, InstallError>> => {
+  const mainSpinner = ora('Preparing Trailhead UI installation...').start()
+
+  try {
+    // Step 1: Create directory structure
+    mainSpinner.text = 'Creating directories...'
+    const directories = useWrappers
+      ? [
+          config.componentsDir,
+          `${config.componentsDir}/lib`,
+          `${config.componentsDir}/theme`,
+          `${config.componentsDir}/utils`,
+        ]
+      : [config.componentsDir, `${config.componentsDir}/theme`, `${config.componentsDir}/utils`]
+
+    const ensureDirResult = await ensureDirectories(fs, directories)
+    if (!ensureDirResult.success) {
+      mainSpinner.fail('Failed to create directories')
+      return ensureDirResult
+    }
+
+    // Step 2: Check for existing files if not forcing
+    if (!force) {
+      mainSpinner.text = 'Checking for existing files...'
+      const destPaths = generateDestinationPaths(config)
+      const pathsToCheck = [
+        destPaths.themeConfig,
+        destPaths.themeBuilder,
+        destPaths.themeRegistry,
+        destPaths.themeUtils,
+        destPaths.themePresets,
+        destPaths.themeIndex,
+        destPaths.cnUtils,
+        destPaths.semanticTokens,
+        destPaths.themeProvider,
+        destPaths.themeSwitcher,
+        destPaths.catalystDir,
+      ]
+
+      const existingFilesResult = await checkExistingFiles(fs, pathsToCheck)
+      if (!existingFilesResult.success) {
+        mainSpinner.fail('Failed to check existing files')
+        return existingFilesResult
+      }
+
+      if (existingFilesResult.value.length > 0) {
+        mainSpinner.warn('Found existing files that would be overwritten')
+        logger.warning('The following files already exist:')
+        existingFilesResult.value.forEach((file) => logger.warning(`  • ${file}`))
+        logger.warning('Use --force to overwrite existing files')
+
+        return Err({
+          type: 'FileSystemError',
+          message: 'Installation would overwrite existing files',
+          path: config.componentsDir,
+        })
+      }
+    }
+
+    // Create installation steps
+    const allSteps = createInstallationSteps(fs, logger, trailheadRoot, config, force, useWrappers)
+
+    // Execute all installation steps
+    const executionResult = await executeInstallationSteps(
+      allSteps,
+      logger,
+      mainSpinner,
+      config.componentsDir
+    )
+
+    if (!executionResult.success) {
+      return executionResult
+    }
+
+    const { installedFiles: allInstalledFiles, failedSteps } = executionResult.value
+
+    // Step 3: Analyze and update dependencies
+    mainSpinner.text = 'Analyzing project dependencies...'
+    const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework)
+    if (!depAnalysisResult.success) {
+      mainSpinner.fail('Failed to analyze dependencies')
+      return depAnalysisResult
+    }
+
+    const dependencyUpdate = depAnalysisResult.value
+    const dependenciesAdded = Object.keys(dependencyUpdate.added)
+
+    if (dependencyUpdate.needsInstall) {
+      let installResult: Result<DependencyInstallResult, InstallError>
+
+      // Handle interactive mode
+      if (options.interactive && !options.skipDependencyPrompts) {
+        // Stop spinner for interactive prompts
+        mainSpinner.stop()
+
+        // Prepare dependency analysis
+        const [workspaceResult, isOffline, detected] = await Promise.all([
+          detectWorkspace(fs, config.projectRoot),
+          checkOfflineMode(),
+          detectPackageManager(config.projectRoot),
+        ])
+
+        const _workspace = workspaceResult.success ? workspaceResult.value : null
+        const ci = detectCIEnvironment()
+        const packageManager = detected?.name || 'npm'
+
+        // Get current deps for analysis
+        const currentDepsResult = await fs.readJson<Record<string, unknown>>(
+          `${config.projectRoot}/package.json`
+        )
+
+        let strategy: { type: 'auto' | 'smart' | 'selective' | 'manual' | 'skip' | 'force' }
+
+        if (!ci) {
+          // Run interactive prompts
+          const {
+            runDependencyPrompts,
+            showPostInstallInstructions: _showPostInstallInstructions,
+          } = await getDependencyPrompts()
+
+          const analysis = analyzeCore(
+            currentDepsResult.success
+              ? {
+                  dependencies:
+                    (currentDepsResult.value.dependencies as Record<string, string>) || {},
+                  devDependencies:
+                    (currentDepsResult.value.devDependencies as Record<string, string>) || {},
+                }
+              : { dependencies: {}, devDependencies: {} },
+            dependencyUpdate.added
+          )
+
+          const promptOptions = {
+            analysis: {
+              missing: Object.keys(analysis.missing),
+              outdated: [], // Not used in current implementation
+              hasConflicts: analysis.hasConflicts,
+            },
+            currentDependencies: currentDepsResult.success
+              ? (currentDepsResult.value.dependencies as Record<string, string>) || {}
+              : {},
+            existingDependencies: analysis.existing,
+            canInstall: true, // We're in the install flow
+            isNpmOnline: !isOffline,
+            isYarnOnline: !isOffline,
+            isPnpmOnline: !isOffline,
+            hasExisting: Object.keys(analysis.existing).length > 0,
+            isOffline,
+            isCI: !!ci,
+          }
+
+          const promptResult = await runDependencyPrompts(promptOptions)
+          strategy = promptResult.strategy
+        } else {
+          // In CI, use auto mode
+          strategy = { type: 'auto' }
+        }
+
+        // Restart spinner
+        mainSpinner.start('Installing dependencies...')
+
+        // Install with selected strategy
+        installResult = await installDependenciesSmart(
+          fs,
+          logger,
+          config,
+          dependencyUpdate,
+          framework,
+          strategy
+        )
+
+        // Show post-install instructions if needed
+        if (
+          installResult.success &&
+          (!installResult.value.installed || installResult.value.fallback)
+        ) {
+          mainSpinner.stop()
+          const { showPostInstallInstructions } = await getDependencyPrompts()
+          showPostInstallInstructions(
+            packageManager,
+            strategy,
+            installResult.value.fallback?.command
+          )
+          mainSpinner.start()
+        }
+      } else {
+        // Non-interactive mode
+        mainSpinner.text = 'Installing dependencies smartly...'
+
+        const strategy = options.dependencyStrategy
+          ? { type: options.dependencyStrategy }
+          : { type: 'auto' as const }
+
+        installResult = await installDependenciesSmart(
+          fs,
+          logger,
+          config,
+          dependencyUpdate,
+          framework,
+          strategy
+        )
+      }
+
+      if (!installResult.success) {
+        mainSpinner.fail('Failed to install dependencies')
+        return installResult
+      }
+
+      const installData = installResult.value
+
+      if (installData.installed) {
+        mainSpinner.succeed('Dependencies installed successfully')
+      } else if (installData.fallback) {
+        mainSpinner.warn('Automatic installation failed')
+      } else {
+        mainSpinner.info('Package.json updated. Manual installation required.')
+      }
+
+      // Log any warnings
+      installData.warnings.forEach((warning) => logger.warning(warning))
+    } else {
+      mainSpinner.succeed('All dependencies already installed')
+    }
+
+    // Create installation summary with failure tracking
+    const summary: InstallationSummary = {
+      filesInstalled: Object.freeze([...allInstalledFiles]),
+      dependenciesAdded: Object.freeze([...dependenciesAdded]),
+      conversionsApplied: false, // Will be updated by conversion step
+      configCreated: false, // Will be updated by config creation step
+      ...(failedSteps.length > 0 && { failedSteps: Object.freeze([...failedSteps]) }),
+    }
+
+    const successMessage = buildSuccessMessage(
+      allInstalledFiles.length,
+      dependenciesAdded.length,
+      failedSteps.length
+    )
+    mainSpinner.succeed(successMessage)
+
+    // Log detailed summary
+    logInstallationSummary(logger, allInstalledFiles, dependenciesAdded, failedSteps)
+
+    return Ok(summary)
+  } catch (error) {
+    mainSpinner.fail('Installation failed')
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorDetails = error instanceof Error && error.stack ? error.stack : undefined
+
+    return Err({
+      type: 'FileSystemError',
+      message: `Installation failed: ${errorMessage}`,
+      path: config.componentsDir,
+      cause: error,
+      details: errorDetails,
+    })
+  }
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Build success message based on installation results
+ */
+function buildSuccessMessage(
+  filesCount: number,
+  dependenciesCount: number,
+  failedStepsCount: number
+): string {
+  const parts = [`Installation complete! Installed ${filesCount} files`]
+
+  if (dependenciesCount > 0) {
+    parts.push(`${dependenciesCount} dependencies`)
+  }
+
+  if (failedStepsCount > 0) {
+    parts.push(`(${failedStepsCount} non-critical steps skipped)`)
+  }
+
+  return parts.join(' and ') + ' successfully'
+}
+
+/**
+ * Log detailed installation summary
+ */
+function logInstallationSummary(
+  logger: Logger,
+  installedFiles: readonly string[],
+  dependenciesAdded: readonly string[],
+  failedSteps: readonly string[]
+): void {
+  logger.success('Installation Summary:')
+
+  const categories = [
+    { name: 'Theme system', pattern: 'theme/' },
+    { name: 'Components', pattern: '.tsx' },
+    { name: 'Utilities', pattern: 'utils' },
+  ]
+
+  formatFileSummary(installedFiles, categories).forEach((line) => logger.info(line))
+  logger.info(`  • Total: ${installedFiles.length} files`)
+
+  if (dependenciesAdded.length > 0) {
+    logger.info(`  • Dependencies: ${dependenciesAdded.length} packages added`)
+  }
+
+  if (failedSteps.length > 0) {
+    logger.warning(`  • Skipped steps: ${failedSteps.join(', ')}`)
+  }
+}
+
+/**
+ * Validate installation prerequisites
+ */
+export const validatePrerequisites = async (
+  fs: FileSystem,
+  config: InstallConfig,
+  trailheadRoot: string
+): Promise<Result<void, InstallError>> => {
+  // Check if Trailhead root exists
+  const rootExistsResult = await fs.exists(trailheadRoot)
+  if (!rootExistsResult.success) return rootExistsResult
+  if (!rootExistsResult.value) {
+    return Err({
+      type: 'ConfigurationError',
+      message: `Trailhead UI root not found: ${trailheadRoot}`,
+      details: JSON.stringify({ path: trailheadRoot }),
+    })
+  }
+
+  // Check if project root exists
+  const projectExistsResult = await fs.exists(config.projectRoot)
+  if (!projectExistsResult.success) return projectExistsResult
+  if (!projectExistsResult.value) {
+    return Err({
+      type: 'ConfigurationError',
+      message: `Project root not found: ${config.projectRoot}`,
+      details: JSON.stringify({ path: config.projectRoot }),
+    })
+  }
+
+  // Check write permissions
+  const destDirParent = config.componentsDir.split('/').slice(0, -1).join('/')
+  const writeTestPath = `${destDirParent}/.trailhead-test-${Date.now()}`
+  const writeResult = await fs.writeFile(writeTestPath, 'test')
+  if (!writeResult.success) {
+    return Err({
+      type: 'FileSystemError',
+      message: `No write permission in destination directory`,
+      path: destDirParent,
+    })
+  }
+
+  // Clean up test file
+  await fs.remove(writeTestPath)
+
+  return Ok(undefined)
+}
+
+// ============================================================================
+// DRY RUN INSTALLATION
+// ============================================================================
+
+/**
+ * Perform a dry run of the installation
+ */
+export const performDryRunInstallation = async (
+  fs: FileSystem,
+  logger: Logger,
+  config: InstallConfig,
+  trailheadRoot: string,
+  framework?: FrameworkType,
+  useWrappers: boolean = true
+): Promise<Result<string[], InstallError>> => {
+  logger.info('Performing dry run installation...')
+  logger.info(`Component structure: ${useWrappers ? 'With wrappers' : 'Without wrappers'}`)
+
+  // Check what dependencies would be installed
+  const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework)
+  if (depAnalysisResult.success) {
+    const dependencyUpdate = depAnalysisResult.value
+    const missingDeps = Object.keys(dependencyUpdate.added)
+
+    if (missingDeps.length > 0) {
+      logger.info(`\nWould add ${missingDeps.length} dependencies:`)
+      missingDeps.forEach((dep) => {
+        logger.info(`  • ${dep}@${dependencyUpdate.added[dep]}`)
+      })
+    } else {
+      logger.success('All required dependencies are already installed')
+    }
+  }
+
+  // Check what files would be installed
+  const plannedFiles: string[] = []
+
+  // Theme system files
+  plannedFiles.push(
+    'theme/config.ts',
+    'theme/builder.ts',
+    'theme/registry.ts',
+    'theme/utils.ts',
+    'theme/presets.ts',
+    'theme/index.ts',
+    'theme/semantic-tokens.ts'
+  )
+
+  // Theme components
+  plannedFiles.push('theme-provider.tsx', 'theme-switcher.tsx')
+
+  // Utility files
+  plannedFiles.push('utils/cn.ts')
+
+  // Check for Catalyst components
+  const catalystDir = `${trailheadRoot}/src/components/lib`
+  const dirCheckResult = await fs.readDir(catalystDir)
+  if (dirCheckResult.success) {
+    const catalystFiles = dirCheckResult.value
+      .filter((file) => file.endsWith('.tsx'))
+      .map((file) => `lib/${file}`)
+    plannedFiles.push(...catalystFiles)
+
+    // Component wrappers
+    const wrapperFiles = dirCheckResult.value
+      .filter((file) => file.endsWith('.tsx'))
+      .map((file) => file.replace('.tsx', ''))
+      .map((name) => `${name}.tsx`)
+    plannedFiles.push(...wrapperFiles)
+  }
+
+  // Check for conflicts
+  const existingFiles: string[] = []
+  for (const file of plannedFiles) {
+    const fullPath = `${config.componentsDir}/${file}`
+    const existsResult = await fs.exists(fullPath)
+    if (existsResult.success && existsResult.value) {
+      existingFiles.push(file)
+    }
+  }
+
+  logger.info(`\nWould install ${plannedFiles.length} files:`)
+  logger.info(`  • Theme system: ${countFilesByPattern(plannedFiles, 'theme/')} files`)
+  logger.info(
+    `  • Components: ${countFilesByPattern(plannedFiles, '.tsx')} files (${useWrappers ? 'with wrappers' : 'transformed'})`
+  )
+  logger.info(`  • Utilities: ${countFilesByPattern(plannedFiles, 'utils')} files`)
+  logger.info(
+    `  • Component structure: ${useWrappers ? 'With lib/ directory' : 'Direct (no lib/)'}`
+  )
+
+  if (existingFiles.length > 0) {
+    logger.warning(`\nWould overwrite ${existingFiles.length} existing files:`)
+    existingFiles.slice(0, 5).forEach((file) => logger.warning(`  • ${file}`))
+    if (existingFiles.length > 5) {
+      logger.warning(`  ... and ${existingFiles.length - 5} more`)
+    }
+  }
+
+  return Ok(plannedFiles)
+}
