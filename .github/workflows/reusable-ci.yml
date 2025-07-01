@@ -215,7 +215,7 @@ jobs:
         run: |
           cd packages/web-ui
           pnpm pack
-          node dist/cli.js --help
+          node dist/src/cli.js --help
 
   # Security scan
   security:
