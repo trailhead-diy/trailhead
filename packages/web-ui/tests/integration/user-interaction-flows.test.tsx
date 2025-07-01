@@ -82,21 +82,28 @@ describe('User Interactions - Critical User Behavior', () => {
     it('should prevent double submission during loading state', async () => {
       const user = userEvent.setup()
       const onSubmit = vi.fn()
+      
+      // Use a flag to simulate the common pattern of preventing double submissions
+      let isSubmitting = false
 
       const FormComponent = () => {
         const [isLoading, setIsLoading] = React.useState(false)
 
-        const handleSubmit = () => {
-          // Exit early if already loading to prevent double submission
-          if (isLoading) return
+        const handleSubmit = async () => {
+          // Common pattern: check flag before processing
+          if (isSubmitting) return
           
+          isSubmitting = true
           setIsLoading(true)
+          
+          // Call the actual submit function
           onSubmit()
           
-          // Reset after a delay to simulate real async operation
-          setTimeout(() => {
-            setIsLoading(false)
-          }, 100)
+          // Simulate async operation
+          await new Promise(resolve => setTimeout(resolve, 50))
+          
+          setIsLoading(false)
+          isSubmitting = false
         }
 
         return (
@@ -110,18 +117,22 @@ describe('User Interactions - Critical User Behavior', () => {
 
       const button = screen.getByRole('button')
 
-      // First click should trigger submit
-      await user.click(button)
+      // Simulate rapid clicking (common user behavior)
+      const clickPromises = [
+        user.click(button),
+        user.click(button),
+        user.click(button)
+      ]
       
-      // Wait for the button to be disabled before additional clicks
+      // Execute all clicks
+      await Promise.all(clickPromises)
+      
+      // Wait for loading state to be set
       await waitFor(() => {
         expect(button).toBeDisabled()
-      })
+      }, { timeout: 1000 })
 
-      // Additional clicks on disabled button should not trigger
-      await user.click(button)
-      await user.click(button)
-
+      // Verify only one submission occurred
       expect(onSubmit).toHaveBeenCalledTimes(1)
     })
 
