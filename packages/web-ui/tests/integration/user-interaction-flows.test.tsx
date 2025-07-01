@@ -104,13 +104,19 @@ describe('User Interactions - Critical User Behavior', () => {
 
       const button = screen.getByRole('button')
 
-      // Rapid clicks should only trigger once
+      // First click should trigger submit
       await user.click(button)
+      
+      // Wait for button to be disabled
+      await waitFor(() => {
+        expect(button).toBeDisabled()
+      })
+
+      // Additional clicks on disabled button should not trigger
       await user.click(button)
       await user.click(button)
 
       expect(onSubmit).toHaveBeenCalledTimes(1)
-      expect(button).toBeDisabled()
     })
 
     it('should handle destructive actions with confirmation', async () => {

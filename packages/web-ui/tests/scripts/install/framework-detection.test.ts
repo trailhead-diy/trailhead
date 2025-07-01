@@ -31,14 +31,18 @@ const testPath = (...segments: string[]) => createTestPath('test', 'project', ..
 // Mock FileSystem for testing
 const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSystem => ({
   exists: vi.fn().mockImplementation(async (path: string) => {
-    return Ok(path in mockFiles)
+    // Normalize the path to match how we store mock files
+    const normalized = normalizeMockPath(path)
+    return Ok(normalized in mockFiles)
   }),
   readDir: vi.fn(),
   readFile: vi.fn(),
   writeFile: vi.fn(),
   readJson: vi.fn().mockImplementation(async (path: string) => {
-    if (mockFiles[path]) {
-      return Ok(mockFiles[path])
+    // Normalize the path to match how we store mock files
+    const normalized = normalizeMockPath(path)
+    if (mockFiles[normalized]) {
+      return Ok(mockFiles[normalized])
     }
     return Err({ type: 'FileSystemError', message: 'File not found', path })
   }),

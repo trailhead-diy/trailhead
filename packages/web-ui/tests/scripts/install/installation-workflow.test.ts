@@ -10,10 +10,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { join } from 'path'
+import { join, normalize } from 'path'
 import type { FileSystem, Logger } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../src/cli/core/installation/types.js'
 import { resolveConfiguration } from '../../../src/cli/core/installation/config.js'
+import { pathAssertions } from '../../utils/cross-platform-paths.js'
 
 // Create realistic file system mocks
 const createMockFileSystem = (): FileSystem => {
@@ -124,8 +125,9 @@ describe('Install Workflow - Critical User Journeys', () => {
 
       const config = configResult.value
       expect(config.destinationDir).toBe('components/th')
-      expect(config.componentsDir).toBe(join(projectRoot, 'components/th'))
-      expect(config.libDir).toBe(join(projectRoot, 'components/th/lib'))
+      // Use path assertions for cross-platform compatibility
+      expect(pathAssertions.pathsEqual(config.componentsDir, join(projectRoot, 'components/th'))).toBe(true)
+      expect(pathAssertions.pathsEqual(config.libDir, join(projectRoot, 'components/th/lib'))).toBe(true)
       expect(config.catalystDir).toBe(catalystDir)
     })
 
