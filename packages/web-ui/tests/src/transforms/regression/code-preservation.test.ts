@@ -9,6 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { baseMappingsTransform } from '../../../../src/transforms/components/common/colors/base-mappings.js'
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
 import { promises as fs } from 'fs'
+import { existsSync } from 'fs'
 import path from 'path'
 
 describe('code preservation and regression prevention', () => {
@@ -176,6 +177,8 @@ export function Component() {
 
   describe('full pipeline regression tests', () => {
     let tempDir: string
+    const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+    const skipInCI = !existsSync(catalystSource)
 
     beforeEach(async () => {
       tempDir = path.join(process.cwd(), 'temp', `regression-test-${Date.now()}`)
@@ -290,7 +293,7 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
       expect(result).not.toContain('clsx')
     })
 
-    it('handles real Catalyst component without breaking', async () => {
+    it.skipIf(skipInCI)('handles real Catalyst component without breaking', async () => {
       // Copy a real complex component
       const sourceFile = path.join(process.cwd(), 'catalyst-ui-kit/typescript/navbar.tsx')
       const destFile = path.join(tempDir, 'navbar.tsx')
