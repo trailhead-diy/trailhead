@@ -10,11 +10,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { join, normalize } from 'path'
+import { join } from 'path'
 import type { FileSystem, Logger } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../src/cli/core/installation/types.js'
 import { resolveConfiguration } from '../../../src/cli/core/installation/config.js'
-import { pathAssertions } from '../../utils/cross-platform-paths.js'
 
 // Create realistic file system mocks
 const createMockFileSystem = (): FileSystem => {
