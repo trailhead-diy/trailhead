@@ -38,13 +38,23 @@ todo-cli/
 
 ## Installation
 
-```bash
-# Clone the example
-git clone <repo-url>
-cd todo-cli
+Since @trailhead/cli is a private package, install directly from GitHub:
 
-# Install dependencies
-npm install
+```bash
+# Clone/create your todo-cli project directory
+mkdir todo-cli && cd todo-cli
+
+# Initialize package.json
+npm init -y
+
+# Install @trailhead/cli from GitHub
+npm install github:esteban-url/trailhead#packages/cli
+
+# Install other dependencies
+npm install @inquirer/prompts table
+
+# Install dev dependencies
+npm install -D typescript tsx @types/node
 
 # Build the project
 npm run build
@@ -52,6 +62,8 @@ npm run build
 # Run the CLI
 npm start -- --help
 ```
+
+> **Note**: You need access to the private repository. Ensure your Git/GitHub authentication is configured correctly.
 
 ## Usage
 

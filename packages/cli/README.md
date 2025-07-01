@@ -29,7 +29,9 @@ A functional CLI framework for building robust, testable command-line applicatio
 
 ## Installation
 
-This package is currently private within the Trailhead monorepo:
+### For Monorepo Development
+
+When working within the Trailhead monorepo:
 
 ```bash
 # From within the monorepo
@@ -42,6 +44,27 @@ pnpm add @trailhead/cli --workspace
   }
 }
 ```
+
+### For External Projects
+
+Since this package is private and not published to NPM, install directly from GitHub:
+
+```bash
+# Install specific package from monorepo
+pnpm add github:esteban-url/trailhead#packages/cli
+
+# Or with npm
+npm install github:esteban-url/trailhead#packages/cli
+
+# In package.json
+{
+  "dependencies": {
+    "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"
+  }
+}
+```
+
+> **Note**: You may need authentication to access the private repository. Ensure you have proper GitHub access configured.
 
 ## Quick Start
 

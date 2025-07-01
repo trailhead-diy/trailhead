@@ -2,7 +2,7 @@
   "name": "@trailhead/cli",
   "version": "0.1.0",
   "type": "module",
-  "description": "Internal CLI framework for Trailhead projects",
+  "description": "Private CLI framework for Trailhead projects - requires GitHub installation",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

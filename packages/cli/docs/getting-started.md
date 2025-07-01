@@ -10,10 +10,12 @@ This guide will help you create your first CLI application using @trailhead/cli 
 
 ## Installation
 
-Since @trailhead/cli is part of the Trailhead monorepo, you'll need to install it as a workspace dependency:
+### For Monorepo Development
+
+Since @trailhead/cli is part of the Trailhead monorepo, install it as a workspace dependency:
 
 ```bash
-# From within your monorepo
+# From within the Trailhead monorepo
 pnpm add @trailhead/cli --workspace
 
 # Or in your package.json
@@ -24,10 +26,32 @@ pnpm add @trailhead/cli --workspace
 }
 ```
 
-For external projects (when published):
+### For External Projects
+
+Since this package is private and not published to NPM, install directly from the GitHub repository:
+
 ```bash
-npm install @trailhead/cli
+# Using pnpm
+pnpm add github:esteban-url/trailhead#packages/cli
+
+# Using npm
+npm install github:esteban-url/trailhead#packages/cli
+
+# Using yarn
+yarn add github:esteban-url/trailhead#packages/cli
 ```
+
+Or add to your `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"
+  }
+}
+```
+
+> **Important**: You need access to the private repository. Ensure your Git/GitHub authentication is configured correctly.
 
 ## Your First CLI Application
 
@@ -299,7 +323,7 @@ Add to your `package.json`:
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@trailhead/cli": "workspace:*"
+    "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
