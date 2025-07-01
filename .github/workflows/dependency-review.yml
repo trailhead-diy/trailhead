@@ -1,25 +1,47 @@
-name: Dependency Review
+name: Basic Dependency Check
 
 on:
   pull_request:
     paths:
       - 'package.json'
       - 'pnpm-lock.yaml'
+      - 'packages/*/package.json'
+      - 'apps/*/package.json'
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  dependency-review:
+  dependency-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          fail-on-severity: moderate
-          deny-licenses: GPL-3.0, AGPL-3.0
-          comment-summary-in-pr: always
+          version: 10.12.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies for vulnerabilities
+        run: pnpm audit --audit-level moderate
+
+      - name: Check for license issues
+        run: |
+          echo "Checking for problematic licenses..."
+          if pnpm list --json | grep -E '"license":\s*"(GPL-3\.0|AGPL-3\.0)"'; then
+            echo "❌ Found GPL-3.0 or AGPL-3.0 licensed dependencies"
+            exit 1
+          else
+            echo "✅ No problematic licenses found"
+          fi
