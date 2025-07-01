@@ -4,17 +4,39 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "inputs": [
+        "src/**",
+        "package.json",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "vite.config.*",
+        "vitest.config.*"
+      ],
+      "cache": true
     },
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**", "test-results/**"],
-      "inputs": ["src/**", "tests/**", "*.config.*"],
-      "cache": true
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "vitest.config.*",
+        "vitest.setup.*",
+        "tsconfig.json"
+      ],
+      "cache": true,
+      "env": ["NODE_ENV"]
     },
     "lint": {
       "outputs": [],
-      "inputs": ["src/**", "tests/**", "*.config.*"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "eslint.config.*",
+        ".eslintrc.*",
+        "package.json"
+      ],
       "cache": true
     },
     "dev": {
@@ -24,7 +46,31 @@
     "types": {
       "dependsOn": ["^build"],
       "outputs": [],
-      "inputs": ["src/**", "tests/**", "*.config.*"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "package.json"
+      ],
+      "cache": true
+    },
+    "format": {
+      "outputs": [],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,json,md}",
+        ".prettierrc.*",
+        "prettier.config.*"
+      ],
+      "cache": false
+    },
+    "format:check": {
+      "outputs": [],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,json,md}",
+        ".prettierrc.*",
+        "prettier.config.*"
+      ],
       "cache": true
     }
   }

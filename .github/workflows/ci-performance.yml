@@ -1,0 +1,161 @@
+name: CI Performance Monitor
+
+# This workflow monitors CI performance and provides insights
+# Runs on schedule to track performance over time
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  NODE_VERSION: 20.11.0
+  PNPM_VERSION: 10.12.1
+
+jobs:
+  analyze-performance:
+    name: Analyze CI Performance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Analyze recent workflow runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Get workflow runs from the past week
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+              owner,
+              repo
+            });
+            
+            const ciWorkflow = workflows.workflows.find(w => w.name === 'CI');
+            if (!ciWorkflow) {
+              console.log('CI workflow not found');
+              return;
+            }
+            
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: ciWorkflow.id,
+              created: `>=${oneWeekAgo.toISOString()}`,
+              per_page: 100
+            });
+            
+            // Calculate statistics
+            const stats = {
+              total: runs.workflow_runs.length,
+              successful: 0,
+              failed: 0,
+              cancelled: 0,
+              avgDuration: 0,
+              maxDuration: 0,
+              minDuration: Infinity,
+              byConclusion: {},
+              byEvent: {}
+            };
+            
+            let totalDuration = 0;
+            runs.workflow_runs.forEach(run => {
+              // Status stats
+              if (run.conclusion === 'success') stats.successful++;
+              else if (run.conclusion === 'failure') stats.failed++;
+              else if (run.conclusion === 'cancelled') stats.cancelled++;
+              
+              stats.byConclusion[run.conclusion] = (stats.byConclusion[run.conclusion] || 0) + 1;
+              stats.byEvent[run.event] = (stats.byEvent[run.event] || 0) + 1;
+              
+              // Duration stats
+              if (run.run_started_at && run.updated_at) {
+                const duration = new Date(run.updated_at) - new Date(run.run_started_at);
+                const durationMinutes = duration / 1000 / 60;
+                totalDuration += durationMinutes;
+                stats.maxDuration = Math.max(stats.maxDuration, durationMinutes);
+                stats.minDuration = Math.min(stats.minDuration, durationMinutes);
+              }
+            });
+            
+            stats.avgDuration = stats.total > 0 ? (totalDuration / stats.total).toFixed(2) : 0;
+            stats.successRate = stats.total > 0 ? ((stats.successful / stats.total) * 100).toFixed(2) : 0;
+            
+            // Create performance report
+            const report = `# CI Performance Report
+            
+            **Period:** ${oneWeekAgo.toDateString()} - ${new Date().toDateString()}
+            
+            ## Summary Statistics
+            
+            | Metric | Value |
+            |--------|-------|
+            | Total Runs | ${stats.total} |
+            | Success Rate | ${stats.successRate}% |
+            | Average Duration | ${stats.avgDuration} minutes |
+            | Min Duration | ${stats.minDuration === Infinity ? 'N/A' : stats.minDuration.toFixed(2) + ' minutes'} |
+            | Max Duration | ${stats.maxDuration.toFixed(2)} minutes |
+            
+            ## Run Outcomes
+            
+            | Outcome | Count | Percentage |
+            |---------|-------|------------|
+            ${Object.entries(stats.byConclusion).map(([outcome, count]) => 
+              `| ${outcome} | ${count} | ${((count/stats.total)*100).toFixed(2)}% |`
+            ).join('\\n')}
+            
+            ## Trigger Events
+            
+            | Event | Count |
+            |-------|-------|
+            ${Object.entries(stats.byEvent).map(([event, count]) => 
+              `| ${event} | ${count} |`
+            ).join('\\n')}
+            
+            ## Recommendations
+            
+            ${stats.avgDuration > 10 ? '- ⚠️ Average CI duration exceeds 10 minutes. Consider optimization.' : '- ✅ CI duration is within acceptable range.'}
+            ${stats.successRate < 95 ? '- ⚠️ Success rate is below 95%. Review failing tests.' : '- ✅ Success rate is healthy.'}
+            ${stats.cancelled > stats.total * 0.1 ? '- ⚠️ High cancellation rate detected. Review concurrency settings.' : '- ✅ Cancellation rate is normal.'}
+            
+            ---
+            *Generated on ${new Date().toUTCString()}*
+            `;
+            
+            // Save report as workflow summary
+            await core.summary
+              .addRaw(report)
+              .write();
+            
+            // Output for next steps
+            core.setOutput('report', report);
+            core.setOutput('avgDuration', stats.avgDuration);
+            core.setOutput('successRate', stats.successRate);
+
+      - name: Check Turborepo cache effectiveness
+        run: |
+          echo "## Turborepo Cache Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # This would typically analyze .turbo directory and logs
+          # For now, we'll provide guidance
+          echo "### Cache Optimization Tips" >> $GITHUB_STEP_SUMMARY
+          echo "- Ensure \`turbo.json\` has proper inputs configured" >> $GITHUB_STEP_SUMMARY
+          echo "- Use \`--filter\` to build only affected packages" >> $GITHUB_STEP_SUMMARY
+          echo "- Enable remote caching for shared cache across CI runs" >> $GITHUB_STEP_SUMMARY
+          echo "- Monitor cache hit rates in Turborepo output" >> $GITHUB_STEP_SUMMARY

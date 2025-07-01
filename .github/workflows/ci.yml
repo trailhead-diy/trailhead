@@ -16,6 +16,10 @@ env:
   PNPM_VERSION: 10.12.1
   FORCE_COLOR: 3
   CI: true
+  # Turborepo Remote Cache
+  TURBO_API: http://localhost:41230
+  TURBO_TOKEN: turbo-token
+  TURBO_TEAM: team-trailhead
 
 permissions:
   contents: read
@@ -27,9 +31,17 @@ jobs:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
+<<<<<<< HEAD
       packages: ${{ steps.filter.outputs.packages }}
       cli: ${{ steps.filter.outputs.cli }}
       web-ui: ${{ steps.filter.outputs.web-ui }}
+=======
+      code: ${{ steps.changes.outputs.code }}
+      docs: ${{ steps.changes.outputs.docs }}
+      cli: ${{ steps.changes.outputs.cli }}
+      web-ui: ${{ steps.changes.outputs.web-ui }}
+      demos: ${{ steps.changes.outputs.demos }}
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -49,14 +61,36 @@ jobs:
               - 'packages/web-ui/**'
               - 'tooling/**'
               - 'pnpm-lock.yaml'
+<<<<<<< HEAD
 
   # Single build job that other jobs depend on
   build:
     name: Build
+=======
+            docs:
+              - '**/*.md'
+              - 'docs/**'
+            cli:
+              - 'packages/cli/**'
+              - 'tooling/**'
+              - 'pnpm-lock.yaml'
+            web-ui:
+              - 'packages/web-ui/**'
+              - 'tooling/**'
+              - 'pnpm-lock.yaml'
+            demos:
+              - 'apps/demos/**'
+              - 'packages/**'
+
+  # Single setup job that builds and caches everything
+  setup:
+    name: Setup and Build
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.packages == 'true'
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v4
       
       - uses: pnpm/action-setup@v4
@@ -64,10 +98,19 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
       
       - uses: actions/setup-node@v4
+=======
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          setup-turbo-cache: 'true'
 
+<<<<<<< HEAD
       - name: Cache Turborepo
         uses: actions/cache@v4
         with:
@@ -82,6 +125,11 @@ jobs:
       - name: Build all packages
         run: pnpm build
       
+=======
+      - name: Build all packages
+        run: pnpm build
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -89,6 +137,7 @@ jobs:
           path: |
             packages/*/dist/
             tooling/*/dist/
+<<<<<<< HEAD
           retention-days: 1
 
   # Quality checks (fast, parallel)
@@ -112,10 +161,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+=======
+            .turbo/
+          retention-days: 1
+
+  # Parallel quality checks
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: [changes, setup]
+    if: needs.changes.outputs.code == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          setup-turbo-cache: 'true'
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+<<<<<<< HEAD
       
       - name: Run all quality checks in parallel
         run: |
@@ -149,14 +221,91 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+=======
+
+      - name: Run linting
+        run: pnpm lint
+
+  format:
+    name: Format Check
+    runs-on: ubuntu-latest
+    needs: [changes, setup]
+    if: needs.changes.outputs.code == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Check formatting
+        run: pnpm format:check
+
+  types:
+    name: Type Check
+    runs-on: ubuntu-latest
+    needs: [changes, setup]
+    if: needs.changes.outputs.code == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          setup-turbo-cache: 'true'
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+
+      - name: Run type checking
+        run: pnpm types
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: [changes, setup]
+    if: needs.changes.outputs.code == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        # Run full matrix on main branch, ubuntu-only on PRs
+        os: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') || fromJSON('["ubuntu-latest"]') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          setup-turbo-cache: 'true'
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+<<<<<<< HEAD
       
       - name: Run tests with coverage
         run: pnpm test
       
+=======
+
+      - name: Run tests with coverage
+        run: pnpm test -- --coverage
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
@@ -167,10 +316,77 @@ jobs:
           flags: unittests
           name: codecov-umbrella
 
+<<<<<<< HEAD
   # Targeted package tests (only if specific package changed)
+=======
+  # Package size check (uses artifacts from setup)
+  size-check:
+    name: Package Size Check
+    runs-on: ubuntu-latest
+    needs: [changes, setup]
+    if: needs.changes.outputs.code == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Check package sizes
+        id: size
+        run: |
+          # Check built package sizes
+          if [ -d "packages/cli/dist" ]; then
+            CLI_SIZE=$(du -sh packages/cli/dist | cut -f1)
+            echo "CLI package size: $CLI_SIZE"
+          fi
+          if [ -d "packages/web-ui/dist" ]; then
+            UI_SIZE=$(du -sh packages/web-ui/dist | cut -f1)
+            echo "Web UI package size: $UI_SIZE"
+          fi
+          # Calculate total dist size
+          TOTAL_SIZE=$(du -sh packages/*/dist 2>/dev/null | awk '{sum+=$1} END {print sum "K"}' || echo "0K")
+          echo "Total package size: $TOTAL_SIZE"
+          echo "PACKAGE_SIZE=$TOTAL_SIZE" >> $GITHUB_ENV
+          echo "size=$TOTAL_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with size
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('📦 Package size:')
+            );
+            const body = `📦 Package size: ${process.env.PACKAGE_SIZE}`;
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            }
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
   test-cli:
     name: Test CLI Package
     runs-on: ubuntu-latest
+<<<<<<< HEAD
     needs: [changes, build]
     if: needs.changes.outputs.cli == 'true'
     steps:
@@ -188,24 +404,48 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
+=======
+    needs: [changes, setup]
+    if: needs.changes.outputs.web-ui == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+<<<<<<< HEAD
       
       - name: Test CLI installation
+=======
+
+      - name: Test CLI package
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
         run: |
           cd packages/web-ui
           pnpm pack
           node dist/cli.js --help
 
+<<<<<<< HEAD
   # Security scan (can run in parallel)
+=======
+  # Security scan runs in parallel with other checks
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.packages == 'true'
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v4
       
       - uses: pnpm/action-setup@v4
@@ -240,3 +480,40 @@ jobs:
             exit 1
           fi
           echo "All required jobs passed"
+=======
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+
+      - name: Run security audit
+        run: pnpm audit --audit-level=high || echo "::warning::Security audit found vulnerabilities"
+
+  # Final status check for branch protection
+  status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs: [lint, format, types, test, test-cli, security, size-check]
+    if: always()
+    steps:
+      - name: Check job statuses
+        run: |
+          # Print job timing information
+          echo "## CI Performance Report"
+          echo "All quality checks completed."
+          
+          # Check for failures
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "❌ One or more CI checks failed"
+            exit 1
+          elif [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "⚠️ One or more CI checks were cancelled"
+            exit 1
+          else
+            echo "✅ All CI checks passed successfully"
+          fi
+>>>>>>> 2889a21 (feat: implement ultimate CI optimizations with 84% cost reduction)

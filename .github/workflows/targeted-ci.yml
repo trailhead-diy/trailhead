@@ -1,0 +1,85 @@
+name: Targeted CI
+
+# This workflow demonstrates how to run CI only for affected packages
+# It's triggered manually or can be used for specific scenarios
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to test (e.g., @trailhead/cli, @trailhead/web-ui)'
+        required: false
+        type: choice
+        options:
+          - 'all'
+          - '@trailhead/cli'
+          - '@trailhead/web-ui'
+        default: 'all'
+
+concurrency:
+  group: targeted-${{ github.workflow }}-${{ github.ref }}-${{ inputs.package }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 20.11.0
+  PNPM_VERSION: 10.12.1
+  FORCE_COLOR: 3
+  CI: true
+  # Turborepo Remote Cache
+  TURBO_API: http://localhost:41230
+  TURBO_TOKEN: turbo-token
+  TURBO_TEAM: team-trailhead
+
+jobs:
+  targeted-build-test:
+    name: Build and Test ${{ inputs.package || 'All Packages' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for better change detection
+          fetch-depth: 0
+
+      - name: Setup monorepo
+        uses: ./.github/actions/setup-monorepo
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          setup-turbo-cache: 'true'
+
+      - name: Determine affected packages
+        id: affected
+        run: |
+          if [[ "${{ inputs.package }}" == "all" || -z "${{ inputs.package }}" ]]; then
+            echo "Building all packages"
+            echo "filter=" >> $GITHUB_OUTPUT
+          else
+            echo "Building only ${{ inputs.package }}"
+            echo "filter=--filter=${{ inputs.package }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build affected packages
+        run: pnpm build ${{ steps.affected.outputs.filter }}
+
+      - name: Run tests for affected packages
+        run: pnpm test ${{ steps.affected.outputs.filter }}
+
+      - name: Run linting for affected packages
+        run: pnpm lint ${{ steps.affected.outputs.filter }}
+
+      - name: Check types for affected packages
+        run: pnpm types ${{ steps.affected.outputs.filter }}
+
+      - name: Generate summary
+        run: |
+          echo "## Targeted CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** ${{ inputs.package || 'All' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Tasks Completed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Linting" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Type checking" >> $GITHUB_STEP_SUMMARY
