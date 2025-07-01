@@ -13,8 +13,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { join as pathJoin, resolve as pathResolve } from 'path'
 import type { FileSystem, Logger, InstallConfig } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../src/cli/core/installation/types.js'
+
+// Helper to create OS-agnostic test paths
+const projectPath = (...segments: string[]) => pathJoin('project', ...segments)
+const trailheadPath = (...segments: string[]) => pathJoin('trailhead', ...segments)
 
 // Mock ora spinner
 vi.mock('ora', () => ({
@@ -106,20 +111,20 @@ const getScenarioData = (scenario: ProjectScenario) => {
   const scenarios = {
     'empty-nextjs': {
       existingFiles: new Set([
-        '/project/package.json',
-        '/project/next.config.js',
-        '/project/app/layout.tsx',
+        projectPath('package.json'),
+        projectPath('next.config.js'),
+        projectPath('app', 'layout.tsx'),
         // Source files (would be from trailhead-ui package)
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
         '/project/package.json': {
@@ -341,10 +346,10 @@ describe('Installation Integration Tests', () => {
 
       // Step 2: Dependency Analysis
       const config: InstallConfig = {
-        catalystDir: '/project/catalyst-ui-kit',
+        catalystDir: projectPath('catalyst-ui-kit'),
         destinationDir: 'src/components/th',
-        componentsDir: '/project/src/components',
-        libDir: '/project/src/lib',
+        componentsDir: projectPath('src', 'components'),
+        libDir: projectPath('src', 'lib'),
         projectRoot,
       }
 
