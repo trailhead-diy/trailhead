@@ -984,136 +984,28 @@ it("should provide helpful error messages", async () => {
 
 ## Cross-Platform Testing
 
-### Why Cross-Platform Testing Matters
+@trailhead/cli provides built-in utilities to ensure your tests work correctly across Windows, macOS, and Linux. The memory filesystem automatically handles path normalization, and the testing module includes helpful utilities for cross-platform path handling.
 
-CLIs often handle file paths, which vary between Windows (`C:\path\to\file`) and Unix (`/path/to/file`). Without proper handling, tests may pass on one platform but fail on another.
+For a quick guide on common pitfalls and solutions, see the [Cross-Platform Testing Recipe](../recipes/cross-platform-testing.md).
 
-### Built-in Cross-Platform Support
-
-The memory filesystem automatically normalizes paths, so these work identically:
+### Quick Example
 
 ```typescript
-const fs = createMemoryFileSystem({
-  // Works on both Windows and Unix
-  '/config/app.json': '{"name": "app"}',
-  'C:\\config\\app.json': '{"name": "app"}',  // Same file!
-});
+import { pathAssertions, createPathRegex, testPaths } from '@trailhead/cli/testing';
 
-// Both of these will find the file
-await fs.readFile('/config/app.json');      // ✓ Unix style
-await fs.readFile('C:\\config\\app.json');  // ✓ Windows style
+// Compare paths regardless of separators
+expect(pathAssertions.equal('C:\\app\\config', '/app/config')).toBe(true);
+
+// Match patterns with wildcards
+const pattern = createPathRegex('src/components/*.tsx');
+expect(pattern.test('src\\components\\button.tsx')).toBe(true); // Windows
+expect(pattern.test('src/components/button.tsx')).toBe(true);   // Unix
+
+// Use platform-appropriate test paths
+const configPath = testPaths.config('app.json');
 ```
 
-### Using Path Utilities
-
-The testing module provides utilities for cross-platform path handling:
-
-```typescript
-import { 
-  pathAssertions, 
-  testPaths, 
-  normalizePath,
-  createPathRegex 
-} from '@trailhead/cli/testing';
-
-describe('File Operations', () => {
-  it('should handle paths correctly on all platforms', () => {
-    const filePath = testPaths.project('src', 'index.ts');
-    
-    // These assertions work regardless of platform
-    expect(pathAssertions.contains(filePath, 'src')).toBe(true);
-    expect(pathAssertions.endsWith(filePath, 'index.ts')).toBe(true);
-  });
-
-  it('should compare paths correctly', () => {
-    const path1 = '/user/documents/file.txt';
-    const path2 = 'C:\\user\\documents\\file.txt';
-    
-    // This handles separator differences
-    expect(pathAssertions.equal(path1, path2)).toBe(true);
-  });
-
-  it('should match path patterns', () => {
-    const pattern = createPathRegex('src/components/*.tsx');
-    
-    // Works with both separators
-    expect(pattern.test('src/components/button.tsx')).toBe(true);
-    expect(pattern.test('src\\components\\button.tsx')).toBe(true);
-  });
-});
-```
-
-### Testing Commands with Paths
-
-```typescript
-describe('Build Command', () => {
-  it('should output files to correct location', async () => {
-    const context = createTestContext();
-    
-    // Use platform-appropriate paths
-    const outputPath = testPaths.project('dist', 'bundle.js');
-    
-    const result = await buildCommand.execute({
-      input: testPaths.project('src', 'index.ts'),
-      output: outputPath
-    }, context);
-    
-    expect(result.success).toBe(true);
-    
-    // Verify file was created (works on all platforms)
-    const exists = await context.fs.exists(outputPath);
-    expect(exists.value).toBe(true);
-  });
-});
-```
-
-### Common Pitfalls and Solutions
-
-1. **Don't hardcode path separators**
-   ```typescript
-   // ❌ Bad - breaks on Windows
-   const configPath = projectDir + '/config.json';
-   
-   // ✅ Good - works everywhere
-   const configPath = join(projectDir, 'config.json');
-   ```
-
-2. **Don't assume paths in test data**
-   ```typescript
-   // ❌ Bad - Windows paths fail on Unix
-   expect(error.message).toBe('File not found: /tmp/missing.txt');
-   
-   // ✅ Good - use path assertions
-   expect(error.message).toContain('File not found');
-   expect(pathAssertions.contains(error.path, 'missing.txt')).toBe(true);
-   ```
-
-3. **Use test paths for consistency**
-   ```typescript
-   // ❌ Bad - hardcoded paths
-   const mockFiles = {
-     '/home/user/.config': '{}',
-     'C:\\Users\\user\\.config': '{}',
-   };
-   
-   // ✅ Good - platform-aware paths
-   const mockFiles = {
-     [testPaths.config('settings.json')]: '{}',
-   };
-   ```
-
-### CI Configuration for Multi-Platform Testing
-
-Ensure your CI tests on all platforms:
-
-```yaml
-# .github/workflows/test.yml
-strategy:
-  matrix:
-    os: [ubuntu-latest, windows-latest, macos-latest]
-    node: [18, 20]
-runs-on: ${{ matrix.os }}
-```
+See the [full recipe](../recipes/cross-platform-testing.md) for detailed patterns and examples.
 
 ## Summary
 
