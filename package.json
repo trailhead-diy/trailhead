@@ -33,8 +33,5 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx,js,jsx,json,md}": "prettier --write --ignore-path .gitignore"
   }
 }

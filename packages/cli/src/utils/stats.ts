@@ -64,6 +64,10 @@ export function updateStats<
   };
 }
 
+/**
+ * Get elapsed time since stats tracking started
+ * Returns time in milliseconds
+ */
 export function getElapsedTime(stats: StatsTracker): number {
   return Date.now() - stats.startTime;
 }
