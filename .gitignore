@@ -40,3 +40,6 @@ Thumbs.db
 
 # Claude Code local settings
 **/.claude/settings.local.json
+
+# Transform logs (web-ui package)
+**/transform-logs/
