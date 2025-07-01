@@ -268,66 +268,37 @@ describe('Command Execution', () => {
     it.skip('should handle unexpected errors in command action', async () => {
       // This test is skipped due to commander v14 compatibility issues
       // The main error handling through Result types is covered by the previous test
-      it('should handle failed result in command action', async () => {
-        const processExitSpy = vi
-          .spyOn(process, 'exit')
-          .mockImplementation(() => {
-            throw new Error('process.exit');
-          });
+      const processExitSpy = vi
+        .spyOn(process, 'exit')
+        .mockImplementation(() => {
+          throw new Error('process.exit');
+        });
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
-        const config: CommandConfig<{}> = {
-          name: 'error-command',
-          description: 'Command that errors',
-          action: async () => {
-            return Err(createError('TEST_ERROR', 'Test error message'));
-          },
-        };
+      const config: CommandConfig<{}> = {
+        name: 'error-command',
+        description: 'Command that errors',
+        action: async () => {
+          throw new Error('Unexpected error');
+        },
+      };
 
-        const command = createCommand(config, { projectRoot: '/test' });
+      const command = createCommand(config, { projectRoot: '/test' });
 
-        await expect(async () => {
-          await command.parseAsync(['node', 'test', 'error-command']);
-        }).rejects.toThrow('process.exit');
+      await expect(async () => {
+        await command.parseAsync(['node', 'test', 'error-command']);
+      }).rejects.toThrow('process.exit');
 
-        expect(processExitSpy).toHaveBeenCalledWith(1);
+      // Allow time for async error handling to complete
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
-        processExitSpy.mockRestore();
-      });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(processExitSpy).toHaveBeenCalledWith(1);
 
-      it.skip('should handle unexpected errors in command action', async () => {
-        // This test is skipped due to commander v14 compatibility issues
-        // The main error handling through Result types is covered by the previous test
-        const processExitSpy = vi
-          .spyOn(process, 'exit')
-          .mockImplementation(() => {
-            throw new Error('process.exit');
-          });
-        const consoleErrorSpy = vi
-          .spyOn(console, 'error')
-          .mockImplementation(() => {});
-
-        const config: CommandConfig<{}> = {
-          name: 'error-command',
-          description: 'Command that errors',
-          action: async () => {
-            throw new Error('Unexpected error');
-          },
-        };
-
-        const command = createCommand(config, { projectRoot: '/test' });
-
-        await expect(async () => {
-          await command.parseAsync(['node', 'test', 'error-command']);
-        }).rejects.toThrow('process.exit');
-
-        // Allow time for async error handling to complete
-        await new Promise((resolve) => setTimeout(resolve, 10));
-
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(processExitSpy).toHaveBeenCalledWith(1);
-
-        processExitSpy.mockRestore();
-        consoleErrorSpy.mockRestore();
-      });
+      processExitSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
     });
   });
+});
