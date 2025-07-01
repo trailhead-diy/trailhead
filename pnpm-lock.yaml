@@ -4,6 +4,8 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+pnpmfileChecksum: sha256-DyO6yjXE0gQbyrSMkuOoJ8hdZjiZkprg72xLxUslCdg=
+
 importers:
 
   .:
@@ -3767,6 +3769,10 @@ packages:
 
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
 
 snapshots:
 
