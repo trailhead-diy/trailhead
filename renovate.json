@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "group:monorepos",
     ":dependencyDashboard",
     ":semanticCommits",
@@ -28,7 +28,7 @@
   "packageRules": [
     {
       "description": "CLI package dependencies",
-      "matchPaths": [
+      "matchFileNames": [
         "packages/cli/**"
       ],
       "groupName": "@trailhead/cli dependencies",
@@ -39,8 +39,8 @@
       "semanticCommitScope": "cli"
     },
     {
-      "description": "Web UI package dependencies", 
-      "matchPaths": [
+      "description": "Web UI package dependencies",
+      "matchFileNames": [
         "packages/web-ui/**"
       ],
       "groupName": "@trailhead/web-ui dependencies",
@@ -52,7 +52,7 @@
     },
     {
       "description": "Demo applications dependencies",
-      "matchPaths": [
+      "matchFileNames": [
         "apps/demos/**"
       ],
       "groupName": "demo app dependencies",
@@ -64,7 +64,7 @@
     },
     {
       "description": "Tooling packages dependencies",
-      "matchPaths": [
+      "matchFileNames": [
         "tooling/**"
       ],
       "groupName": "tooling dependencies",
@@ -76,7 +76,7 @@
     },
     {
       "description": "Root workspace dependencies",
-      "matchPaths": [
+      "matchFileNames": [
         "package.json"
       ],
       "groupName": "root workspace dependencies",
