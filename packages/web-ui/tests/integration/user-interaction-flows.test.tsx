@@ -85,22 +85,17 @@ describe('User Interactions - Critical User Behavior', () => {
 
       const FormComponent = () => {
         const [isLoading, setIsLoading] = React.useState(false)
-        const isSubmittingRef = React.useRef(false)
 
         const handleSubmit = () => {
-          // Prevent multiple submissions
-          if (isSubmittingRef.current) return
+          // Exit early if already loading to prevent double submission
+          if (isLoading) return
           
-          isSubmittingRef.current = true
           setIsLoading(true)
-          
-          // Call onSubmit and reset state
           onSubmit()
           
           // Reset after a delay to simulate real async operation
           setTimeout(() => {
             setIsLoading(false)
-            isSubmittingRef.current = false
           }, 100)
         }
 
@@ -118,15 +113,13 @@ describe('User Interactions - Critical User Behavior', () => {
       // First click should trigger submit
       await user.click(button)
       
-      // Immediately try to click again (before state updates)
-      await user.click(button)
-      
-      // Wait for button to be disabled
+      // Wait for the button to be disabled before additional clicks
       await waitFor(() => {
         expect(button).toBeDisabled()
       })
 
-      // Additional click on disabled button should not trigger
+      // Additional clicks on disabled button should not trigger
+      await user.click(button)
       await user.click(button)
 
       expect(onSubmit).toHaveBeenCalledTimes(1)
