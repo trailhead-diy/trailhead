@@ -10,7 +10,7 @@
  */
 
 import { readFileSync, readdirSync, statSync } from 'fs';
-import { join, extname, relative } from 'path';
+import { join, extname, relative, basename } from 'path';
 import matter from 'gray-matter';
 import chalk from 'chalk';
 
@@ -300,10 +300,18 @@ function main(): void {
   // Filter out templates and other non-docs
   const docFiles = allFiles.filter((file) => {
     const relativePath = relative(process.cwd(), file);
+    const filename = basename(file);
+    
     return (
       !relativePath.includes('templates/') &&
       !relativePath.includes('node_modules/') &&
-      !relativePath.endsWith('CHANGELOG.md')
+      !filename.endsWith('CHANGELOG.md') &&
+      !filename.endsWith('README.md') &&
+      !filename.endsWith('CONTRIBUTING.md') &&
+      !filename.endsWith('CLAUDE.md') &&
+      !filename.endsWith('LICENSE.md') &&
+      !filename.endsWith('SECURITY.md') &&
+      !filename.endsWith('CODE_OF_CONDUCT.md')
     );
   });
 

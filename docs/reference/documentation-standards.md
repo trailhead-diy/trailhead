@@ -330,6 +330,26 @@ related:
 To add custom validation to your CLI commands...
 ```
 
+## File Scope and Exclusions
+
+### Files Subject to Diátaxis Standards
+
+- All `.md` files in `/docs/` directories
+- All `.md` files in `packages/*/docs/` directories  
+- User-facing technical documentation
+
+### Files Exempt from Diátaxis Standards
+
+- `README.md` - Project/package entry points with mixed content
+- `CONTRIBUTING.md` - Process documentation for contributors
+- `CHANGELOG.md` - Version history logs
+- `CLAUDE.md` - AI assistant instructions
+- `LICENSE.md` - Legal documents
+- `SECURITY.md` - Security policy documentation
+- `CODE_OF_CONDUCT.md` - Community guidelines
+
+**Rationale**: These files serve specific ecosystem roles requiring mixed content or non-technical formats that don't fit Diátaxis categories.
+
 ## Enforcement
 
 Documentation standards are enforced through:

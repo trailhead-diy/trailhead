@@ -22,6 +22,8 @@ Before manual review, ensure these automated checks pass:
 - [ ] **Link validation**: All links work
 - [ ] **Build check**: Documentation builds without errors
 
+**Note**: Standard files (README.md, CONTRIBUTING.md, CLAUDE.md, etc.) are exempt from Diátaxis validation but should still follow general quality standards.
+
 ## 1. Content Type Verification
 
 ### Frontmatter Check
