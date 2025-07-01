@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { resolve } from 'path'
 import { program } from 'commander'
 import { createInstallCommand } from '../../../../src/cli/commands/install.js'
 import type { CLIContext } from '../../../../src/cli/utils/types.js'
@@ -37,11 +38,11 @@ vi.mock('../../../../src/cli/core/installation/config.js', () => ({
   resolveConfiguration: vi.fn().mockResolvedValue({
     success: true,
     value: {
-      catalystDir: '/path/to/catalyst',
+      catalystDir: resolve('path', 'to', 'catalyst'),
       destinationDir: 'components/ui',
       componentsDir: 'components/ui',
       libDir: 'components/ui/lib',
-      projectRoot: '/project',
+      projectRoot: resolve('project'),
     },
   }),
 }))

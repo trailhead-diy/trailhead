@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
-import path from 'path'
 import { existsSync } from 'fs'
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
+import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
 
 describe('transforms pipeline integration', () => {
   let tempDir: string
-  const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+  const catalystSource = createAbsoluteTestPath('catalyst-ui-kit', 'typescript')
 
   // Skip tests in CI where catalyst-ui-kit is not available
   const skipInCI = !existsSync(catalystSource)
 
   beforeEach(async () => {
-    tempDir = path.join(process.cwd(), 'temp', `transforms2-test-${Date.now()}`)
+    tempDir = createTempPath('transforms2-test')
     await fs.mkdir(tempDir, { recursive: true })
   })
 
@@ -22,8 +22,8 @@ describe('transforms pipeline integration', () => {
 
   describe('full pipeline transformation', () => {
     it.skipIf(skipInCI).fails('transforms Button component with all enhancements', async () => {
-      const buttonSource = path.join(catalystSource, 'button.tsx')
-      const buttonDest = path.join(tempDir, 'button.tsx')
+      const buttonSource = safeJoin(catalystSource, 'button.tsx')
+      const buttonDest = safeJoin(tempDir, 'button.tsx')
       await fs.copyFile(buttonSource, buttonDest)
 
       await runMainPipeline({
@@ -62,7 +62,7 @@ describe('transforms pipeline integration', () => {
         // Copy multiple components
         const components = ['button.tsx', 'badge.tsx', 'checkbox.tsx', 'input.tsx']
         for (const component of components) {
-          await fs.copyFile(path.join(catalystSource, component), path.join(tempDir, component))
+          await fs.copyFile(safeJoin(catalystSource, component), safeJoin(tempDir, component))
         }
 
         // Run pipeline
@@ -75,7 +75,7 @@ describe('transforms pipeline integration', () => {
 
         // Verify all components were transformed
         for (const component of components) {
-          const content = await fs.readFile(path.join(tempDir, component), 'utf-8')
+          const content = await fs.readFile(safeJoin(tempDir, component), 'utf-8')
 
           // All should use cn utility
           expect(content).toContain('import { cn }')
@@ -89,8 +89,8 @@ describe('transforms pipeline integration', () => {
 
     it.skipIf(skipInCI)('preserves component functionality after transformation', async () => {
       // Copy a complex component
-      const tableSource = path.join(catalystSource, 'table.tsx')
-      const tableDest = path.join(tempDir, 'table.tsx')
+      const tableSource = safeJoin(catalystSource, 'table.tsx')
+      const tableDest = safeJoin(tempDir, 'table.tsx')
       await fs.copyFile(tableSource, tableDest)
 
       const originalContent = await fs.readFile(tableDest, 'utf-8')
@@ -138,7 +138,7 @@ export function MockComponent({ className }: { className?: string }) {
   )
 }
 `
-      const mockPath = path.join(tempDir, 'mock.tsx')
+      const mockPath = safeJoin(tempDir, 'mock.tsx')
       await fs.writeFile(mockPath, mockComponent)
 
       // Run pipeline
@@ -166,12 +166,12 @@ export function Broken({ className }) {
   return <div className={cn('bg-zinc-900'}>
 }
 `
-      const brokenPath = path.join(tempDir, 'broken.tsx')
+      const brokenPath = safeJoin(tempDir, 'broken.tsx')
       await fs.writeFile(brokenPath, malformedComponent)
 
       // Also add a valid component
-      const validPath = path.join(tempDir, 'valid.tsx')
-      await fs.copyFile(path.join(catalystSource, 'badge.tsx'), validPath)
+      const validPath = safeJoin(tempDir, 'valid.tsx')
+      await fs.copyFile(safeJoin(catalystSource, 'badge.tsx'), validPath)
 
       // Run pipeline - should not crash
       await runMainPipeline({
@@ -200,8 +200,8 @@ export function Broken({ className }) {
       // by checking that later transforms can depend on earlier ones
 
       // Copy a component that needs all transform phases
-      const dropdownSource = path.join(catalystSource, 'dropdown.tsx')
-      const dropdownDest = path.join(tempDir, 'dropdown.tsx')
+      const dropdownSource = safeJoin(catalystSource, 'dropdown.tsx')
+      const dropdownDest = safeJoin(tempDir, 'dropdown.tsx')
       await fs.copyFile(dropdownSource, dropdownDest)
 
       await runMainPipeline({

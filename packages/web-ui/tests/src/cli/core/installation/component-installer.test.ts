@@ -4,13 +4,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { sep, relative as pathRelative } from 'path'
 import type {
-  FileSystem,
   Logger,
   InstallConfig,
 } from '../../../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../../../src/cli/core/installation/types.js'
+import { createMockFileSystem } from '../../../../utils/mock-filesystem.js'
+import { normalizeMockPath } from '../../../../utils/cross-platform-paths.js'
 import {
   installCatalystComponents,
   installComponentWrappers,
@@ -61,85 +61,19 @@ vi.mock('../../../../../src/cli/core/filesystem/paths.js', () => ({
   createPathMappings: vi.fn(),
 }))
 
-// Mock filesystem
-const createMockFileSystem = (): FileSystem & {
-  mockFiles: Map<string, string>
-  mockDirs: Set<string>
-} => {
-  const mockFiles = new Map<string, string>()
-  const mockDirs = new Set<string>([
-    '/trailhead/src',
-    '/trailhead/src/components',
-    '/trailhead/src/components/lib',
-    '/project/components/th',
-    '/project/components/th/lib',
-  ])
+// Create test-specific mock filesystem
+const createTestMockFileSystem = (): ReturnType<typeof createMockFileSystem> => {
+  const mockFs = createMockFileSystem({
+    initialDirectories: [
+      normalizeMockPath('/trailhead/src'),
+      normalizeMockPath('/trailhead/src/components'),
+      normalizeMockPath('/trailhead/src/components/lib'),
+      normalizeMockPath('/project/components/th'),
+      normalizeMockPath('/project/components/th/lib'),
+    ]
+  })
 
-  return {
-    mockDirs,
-    mockFiles,
-    exists: vi.fn().mockImplementation(async (path: string) => {
-      // Check if it's a directory or a file
-      const isDirectory =
-        mockDirs.has(path) || Array.from(mockFiles.keys()).some((f) => f.startsWith(path + sep))
-      const isFile = mockFiles.has(path)
-      return Ok(isDirectory || isFile)
-    }),
-    readDir: vi.fn().mockImplementation(async (path: string) => {
-      const files = Array.from(mockFiles.keys())
-        .filter((f) => f.startsWith(path + sep))
-        .map((f) => pathRelative(path, f).split(sep)[0])
-        .filter((f) => f && !f.includes(sep))
-      return Ok([...new Set(files)])
-    }),
-    readFile: vi.fn().mockImplementation(async (path: string) => {
-      const content = mockFiles.get(path)
-      if (content !== undefined) {
-        return Ok(content)
-      }
-      return Err({
-        type: 'FileSystemError',
-        message: `File not found: ${path}`,
-        path,
-      })
-    }),
-    writeFile: vi.fn().mockImplementation(async (path: string, content: string) => {
-      mockFiles.set(path, content)
-      return Ok(undefined)
-    }),
-    readJson: vi.fn(),
-    writeJson: vi.fn(),
-    copy: vi.fn().mockImplementation(async (src: string, dest: string) => {
-      const content = mockFiles.get(src)
-      if (content) {
-        mockFiles.set(dest, content)
-        return Ok(undefined)
-      }
-      return Err({
-        type: 'FileSystemError',
-        message: `Source not found: ${src}`,
-        path: src,
-      })
-    }),
-    ensureDir: vi.fn().mockResolvedValue(Ok(undefined)),
-    stat: vi.fn().mockImplementation(async (path: string) => {
-      const isDirectory =
-        mockDirs.has(path) || Array.from(mockFiles.keys()).some((f) => f.startsWith(path + '/'))
-      const isFile = mockFiles.has(path)
-      if (!isDirectory && !isFile) {
-        return Err({
-          type: 'FileSystemError',
-          message: `Path not found: ${path}`,
-          path,
-        })
-      }
-      return Ok({
-        isDirectory: isDirectory,
-        isFile: isFile,
-      })
-    }),
-    remove: vi.fn(),
-  }
+  return mockFs
 }
 
 const createMockLogger = (): Logger => ({
@@ -152,20 +86,20 @@ const createMockLogger = (): Logger => ({
 })
 
 const createTestConfig = (): InstallConfig => ({
-  catalystDir: '/trailhead/src/components/lib',
-  destinationDir: '/project/components/th',
-  componentsDir: '/project/components/th',
-  libDir: '/project/components/th/lib',
-  projectRoot: '/project',
+  catalystDir: normalizeMockPath('/trailhead/src/components/lib'),
+  destinationDir: normalizeMockPath('/project/components/th'),
+  componentsDir: normalizeMockPath('/project/components/th'),
+  libDir: normalizeMockPath('/project/components/th/lib'),
+  projectRoot: normalizeMockPath('/project'),
 })
 
 describe('Component Installer', () => {
-  let fs: FileSystem & { mockFiles: Map<string, string>; mockDirs: Set<string> }
+  let fs: ReturnType<typeof createMockFileSystem>
   let logger: Logger
   let config: InstallConfig
 
   beforeEach(() => {
-    fs = createMockFileSystem()
+    fs = createTestMockFileSystem()
     logger = createMockLogger()
     config = createTestConfig()
   })
@@ -173,22 +107,22 @@ describe('Component Installer', () => {
   describe('installCatalystComponents (with wrappers)', () => {
     beforeEach(() => {
       // Set up source files
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         `
 export function CatalystButton() {
   return <button>Click me</button>
 }`
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-alert.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-alert.tsx'),
         `
 export function CatalystAlert({ children }) {
   return <div role="alert">{children}</div>
 }`
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         `
 export * from './catalyst-button'
 export * from './catalyst-alert'`
@@ -208,8 +142,8 @@ export * from './catalyst-alert'`
       }
 
       // Verify files were copied
-      expect(fs.mockFiles.has('/project/components/th/lib/catalyst-button.tsx')).toBe(true)
-      expect(fs.mockFiles.has('/project/components/th/lib/catalyst-alert.tsx')).toBe(true)
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))).toBe(true)
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-alert.tsx'))).toBe(true)
     })
 
     it('handles missing source directory', async () => {
@@ -233,16 +167,16 @@ export * from './catalyst-alert'`
   describe('installComponentWrappers', () => {
     beforeEach(() => {
       // Set up source wrapper files
-      fs.mockFiles.set(
-        '/trailhead/src/components/button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/button.tsx'),
         `export * from './lib/catalyst-button.js'`
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/alert.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/alert.tsx'),
         `export * from './lib/catalyst-alert.js'`
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/index.ts'),
         `
 export * from './button.js'
 export * from './alert.js'`
@@ -260,7 +194,7 @@ export * from './alert.js'`
       }
 
       // Verify wrapper content
-      const buttonWrapper = fs.mockFiles.get('/project/components/th/button.tsx')
+      const buttonWrapper = fs.mockFiles.get(normalizeMockPath('/project/components/th/button.tsx'))
       expect(buttonWrapper).toContain("export * from './lib/catalyst-button.js'")
     })
   })
@@ -268,8 +202,8 @@ export * from './alert.js'`
   describe('installTransformedComponents (no wrappers)', () => {
     beforeEach(() => {
       // Set up catalyst source files
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         `
 import { cn } from '../utils/cn'
 import { CatalystText } from './catalyst-text'
@@ -283,16 +217,16 @@ export function CatalystButton({ children }) {
 }`
       )
 
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-text.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-text.tsx'),
         `
 export function CatalystText({ children }) {
   return <span>{children}</span>
 }`
       )
 
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-alert.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-alert.tsx'),
         `
 import { CatalystAlertTitle } from './catalyst-alert'
 
@@ -310,8 +244,8 @@ export function CatalystAlertTitle({ children }) {
 }`
       )
 
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         `
 export * from './catalyst-button'
 export * from './catalyst-text'
@@ -332,21 +266,21 @@ export * from './catalyst-alert'`
       }
 
       // Verify transformations
-      const buttonContent = fs.mockFiles.get('/project/components/th/button.tsx')
+      const buttonContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/button.tsx'))
       expect(buttonContent).toBeDefined()
       expect(buttonContent).toContain("from './utils/cn'") // Path fixed
       expect(buttonContent).toContain("from './text'") // Import updated
       expect(buttonContent).toContain('export function Button') // Name changed
       expect(buttonContent).toContain('<Text>') // Reference updated
 
-      const alertContent = fs.mockFiles.get('/project/components/th/alert.tsx')
+      const alertContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/alert.tsx'))
       expect(alertContent).toBeDefined()
       expect(alertContent).toContain('export function Alert')
       expect(alertContent).toContain('export function AlertTitle')
       expect(alertContent).toContain('<AlertTitle>')
 
       // Verify index.ts transformation
-      const indexContent = fs.mockFiles.get('/project/components/th/index.ts')
+      const indexContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/index.ts'))
       expect(indexContent).toBeDefined()
       expect(indexContent).toContain("export * from './button'")
       expect(indexContent).toContain("export * from './text'")
@@ -361,16 +295,16 @@ export * from './catalyst-alert'`
       // - This causes a validation error as expected
 
       // Clear existing files and add only a file with no exports
-      fs.mockFiles.clear()
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-no-exports.tsx',
+      fs.clear()
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-no-exports.tsx'),
         `
 // This file has no exports and no Catalyst components to transform
 const internal = () => {}
 console.log('test')`
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         `
 export * from './catalyst-no-exports'`
       )
@@ -429,8 +363,8 @@ export * from './catalyst-no-exports'`
 
     it('preserves component functionality after transformation', async () => {
       // Complex component with multiple features
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-dialog.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-dialog.tsx'),
         `
 import React from 'react'
 import { CatalystDialogTitle, CatalystDialogBody } from './catalyst-dialog'
@@ -462,7 +396,7 @@ export function CatalystDialogBody({ children }) {
 
       expect(result.success).toBe(true)
 
-      const dialogContent = fs.mockFiles.get('/project/components/th/dialog.tsx')
+      const dialogContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/dialog.tsx'))
       expect(dialogContent).toBeDefined()
 
       // Verify all aspects are transformed correctly
@@ -478,19 +412,19 @@ export function CatalystDialogBody({ children }) {
   describe('integration scenarios', () => {
     it('supports both installation modes based on configuration', async () => {
       // Setup files for both modes
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         'export function CatalystButton() {}'
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/button.tsx'),
         "export * from './lib/catalyst-button.js'"
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         "export * from './catalyst-button'"
       )
-      fs.mockFiles.set('/trailhead/src/components/index.ts', "export * from './button.js'")
+      fs.addFile(normalizeMockPath('/trailhead/src/components/index.ts'), "export * from './button.js'")
 
       // Test with wrappers
       const withWrappersResult = await installCatalystComponents(
@@ -501,18 +435,18 @@ export function CatalystDialogBody({ children }) {
         false
       )
       expect(withWrappersResult.success).toBe(true)
-      expect(fs.mockFiles.has('/project/components/th/lib/catalyst-button.tsx')).toBe(true)
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))).toBe(true)
 
       // Clear installed files
-      fs.mockFiles.clear()
+      fs.clear()
 
       // Re-setup source files
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/catalyst-button.tsx',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         'export function CatalystButton() {}'
       )
-      fs.mockFiles.set(
-        '/trailhead/src/components/lib/index.ts',
+      fs.addFile(
+        normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         "export * from './catalyst-button'"
       )
 
@@ -525,8 +459,8 @@ export function CatalystDialogBody({ children }) {
         false
       )
       expect(withoutWrappersResult.success).toBe(true)
-      expect(fs.mockFiles.has('/project/components/th/button.tsx')).toBe(true)
-      expect(fs.mockFiles.has('/project/components/th/lib/catalyst-button.tsx')).toBe(false)
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/button.tsx'))).toBe(true)
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))).toBe(false)
     })
   })
 })

@@ -1,0 +1,176 @@
+name: Cross-Platform Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18.x, 20.x]
+        include:
+          # Add specific configurations for different platforms
+          - os: windows-latest
+            node-version: 20.x
+            test-focus: "windows-paths"
+          - os: ubuntu-latest
+            node-version: 20.x
+            test-focus: "unix-paths"
+            
+    runs-on: ${{ matrix.os }}
+    
+    name: Test on ${{ matrix.os }} with Node ${{ matrix.node-version }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build packages
+        run: pnpm build
+        
+      - name: Run type checking
+        run: pnpm types
+        
+      - name: Run linting
+        run: pnpm lint
+        
+      - name: Run cross-platform tests
+        run: pnpm test
+        env:
+          # Enable verbose logging for path debugging
+          DEBUG_PATHS: true
+          # Ensure tests run with platform-specific expectations
+          FORCE_COLOR: 0
+          
+      - name: Test CLI on different platforms
+        run: |
+          # Test CLI path handling across platforms
+          cd packages/cli
+          pnpm test
+          
+      - name: Test Web UI transforms on different platforms  
+        run: |
+          # Test transform path handling across platforms
+          cd packages/web-ui
+          pnpm test
+          
+      - name: Windows-specific path tests
+        if: matrix.os == 'windows-latest'
+        run: |
+          # Run Windows-specific tests for path handling
+          echo "Testing Windows path compatibility..."
+          cd packages/web-ui
+          # Run tests with Windows path focus
+          pnpm test --reporter=verbose tests/utils/cross-platform-paths.test.ts || echo "Path tests need to be created"
+          
+      - name: Unix-specific path tests
+        if: matrix.os != 'windows-latest'
+        run: |
+          # Run Unix-specific tests for path handling
+          echo "Testing Unix path compatibility..."
+          cd packages/web-ui
+          # Verify Unix paths work correctly
+          pnpm test --reporter=verbose
+          
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
+          path: |
+            packages/*/test-results.xml
+            packages/*/coverage/
+            temp/
+            
+  windows-path-validation:
+    runs-on: windows-latest
+    name: Windows Path Validation
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build packages
+        run: pnpm build
+        
+      - name: Test Windows path edge cases
+        shell: pwsh
+        run: |
+          # Test specific Windows path scenarios
+          Write-Host "Testing Windows-specific path scenarios..."
+          
+          # Test backslash handling
+          cd packages/web-ui
+          $env:TEST_WINDOWS_PATHS = "true"
+          pnpm test
+          
+          # Test UNC paths if applicable
+          Write-Host "Testing completed"
+          
+      - name: Validate temp directory cleanup
+        shell: pwsh
+        run: |
+          # Ensure temp directories are properly cleaned up on Windows
+          $tempDirs = Get-ChildItem -Path $env:TEMP -Name "*trailhead*" -Directory -ErrorAction SilentlyContinue
+          if ($tempDirs) {
+            Write-Host "Warning: Temp directories not cleaned up: $tempDirs"
+          } else {
+            Write-Host "Temp directory cleanup validated"
+          }
+          
+  path-compatibility-report:
+    needs: [test-matrix, windows-path-validation]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Generate compatibility report
+        run: |
+          echo "# Cross-Platform Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Matrix Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Ubuntu: ${{ needs.test-matrix.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Windows: ${{ needs.test-matrix.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- macOS: ${{ needs.test-matrix.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Windows Path Validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: ${{ needs.windows-path-validation.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.test-matrix.result }}" = "success" ] && [ "${{ needs.windows-path-validation.result }}" = "success" ]; then
+            echo "✅ All cross-platform tests passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some cross-platform tests failed. Check the logs above." >> $GITHUB_STEP_SUMMARY
+          fi

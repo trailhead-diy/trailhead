@@ -7,13 +7,13 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
-import path from 'path'
+import { createTempPath, safeJoin } from '../../../utils/cross-platform-paths.js'
 
 describe('Transform Revert Functionality', () => {
   let testDir: string
 
   beforeEach(async () => {
-    testDir = path.join(process.cwd(), 'temp', `revert-test-${Date.now()}`)
+    testDir = createTempPath('revert-test')
     await fs.mkdir(testDir, { recursive: true })
   })
 
@@ -23,7 +23,7 @@ describe('Transform Revert Functionality', () => {
 
   it('should track transformations and generate working revert scripts', async () => {
     // Create a test file with known content
-    const testFile = path.join(testDir, 'catalyst-test.tsx')
+    const testFile = safeJoin(testDir, 'catalyst-test.tsx')
     const originalContent = `import clsx from 'clsx'
 
 export function TestComponent({ className }) {
@@ -123,7 +123,7 @@ export const ${filename.replace('.tsx', '')} = ({ className }) => (
   <div className={clsx('test', className)}>Content</div>
 )
 `
-      const filepath = path.join(testDir, `catalyst-${filename}`)
+      const filepath = safeJoin(testDir, `catalyst-${filename}`)
       await fs.writeFile(filepath, content)
       originalContents.set(filepath, content)
     }
@@ -178,7 +178,7 @@ export const ${filename.replace('.tsx', '')} = ({ className }) => (
     }
 
     // Verify the session tracked all files
-    const sessionLogPath = path.join(process.cwd(), 'transform-logs', `${sessionId}.json`)
+    const sessionLogPath = safeJoin(process.cwd(), 'transform-logs', `${sessionId}.json`)
     const sessionData = JSON.parse(await fs.readFile(sessionLogPath, 'utf-8'))
 
     expect(sessionData.fileTransforms).toHaveLength(3)

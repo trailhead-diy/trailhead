@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { resolve } from 'path'
 import type { FileProcessingResult } from '../../../src/cli/core/shared/types'
 import {
   createConversionStats,
@@ -60,7 +61,7 @@ describe('file-utils', () => {
   describe('Path Utilities', () => {
     it('should handle relative path conversion for display', () => {
       // Test basic functionality without assuming exact format
-      const result1 = getRelativePath('/absolute/path/file.tsx')
+      const result1 = getRelativePath(resolve('absolute', 'path', 'file.tsx'))
       expect(typeof result1).toBe('string')
 
       const result2 = getRelativePath('./relative/path/file.tsx')

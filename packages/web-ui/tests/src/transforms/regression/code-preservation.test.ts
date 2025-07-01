@@ -10,7 +10,7 @@ import { baseMappingsTransform } from '../../../../src/transforms/components/com
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
 import { promises as fs } from 'fs'
 import { existsSync } from 'fs'
-import path from 'path'
+import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
 
 describe('code preservation and regression prevention', () => {
   describe('idempotent transformations', () => {
@@ -177,11 +177,11 @@ export function Component() {
 
   describe('full pipeline regression tests', () => {
     let tempDir: string
-    const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+    const catalystSource = createAbsoluteTestPath('catalyst-ui-kit', 'typescript')
     const skipInCI = !existsSync(catalystSource)
 
     beforeEach(async () => {
-      tempDir = path.join(process.cwd(), 'temp', `regression-test-${Date.now()}`)
+      tempDir = createTempPath('regression-test')
       await fs.mkdir(tempDir, { recursive: true })
     })
 
@@ -251,7 +251,7 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
 }
 `
 
-      const componentPath = path.join(tempDir, 'data-list.tsx')
+      const componentPath = safeJoin(tempDir, 'data-list.tsx')
       await fs.writeFile(componentPath, functionalComponent)
 
       await runMainPipeline({
@@ -295,8 +295,8 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
 
     it.skipIf(skipInCI)('handles real Catalyst component without breaking', async () => {
       // Copy a real complex component
-      const sourceFile = path.join(process.cwd(), 'catalyst-ui-kit/typescript/navbar.tsx')
-      const destFile = path.join(tempDir, 'navbar.tsx')
+      const sourceFile = createAbsoluteTestPath('catalyst-ui-kit', 'typescript', 'navbar.tsx')
+      const destFile = safeJoin(tempDir, 'navbar.tsx')
 
       if (
         await fs

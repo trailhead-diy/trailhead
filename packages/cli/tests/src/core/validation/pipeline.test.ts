@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { resolve } from 'path';
 import {
   createValidationPipeline,
   createRule,
@@ -93,7 +94,7 @@ describe('Validation Pipeline', () => {
       const mockValidator2 = vi.fn().mockReturnValue(Ok({}));
 
       const context: ValidationContext = {
-        projectRoot: '/test/project',
+        projectRoot: resolve('test', 'project'),
         verbose: true,
       };
 

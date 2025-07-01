@@ -10,9 +10,9 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { join as pathJoin } from 'path'
 import type { FileSystem } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '@trailhead/cli'
+import { createTestPath, normalizeMockPath } from '../../utils/cross-platform-paths.js'
 import {
   getFrameworkDefinitions,
   checkPackageJsonDependencies,
@@ -26,7 +26,7 @@ import {
 } from '../../../src/cli/core/installation/framework-detection.js'
 
 // Helper to create OS-agnostic test paths
-const testPath = (...segments: string[]) => pathJoin('test', 'project', ...segments)
+const testPath = (...segments: string[]) => createTestPath('test', 'project', ...segments)
 
 // Mock FileSystem for testing
 const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSystem => ({
@@ -215,8 +215,8 @@ describe('Framework Detection Tests', () => {
     it('should detect Next.js project correctly', async () => {
       const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        [testPath('next.config.js')]: true,
-        [testPath('package.json')]: {
+        [normalizeMockPath(testPath('next.config.js'))]: true,
+        [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             next: '^13.4.0',
             react: '^18.2.0',
@@ -235,9 +235,10 @@ describe('Framework Detection Tests', () => {
     })
 
     it('should detect Vite project correctly', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/vite.config.ts': true,
-        '/test/project/package.json': {
+        [normalizeMockPath(testPath('vite.config.ts'))]: true,
+        [normalizeMockPath(testPath('package.json'))]: {
           devDependencies: {
             vite: '^4.3.0',
             react: '^18.2.0',
@@ -245,7 +246,7 @@ describe('Framework Detection Tests', () => {
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(true)
       if (result.success) {
@@ -256,9 +257,10 @@ describe('Framework Detection Tests', () => {
     })
 
     it('should detect RedwoodSDK project correctly', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/wrangler.jsonc': true,
-        '/test/project/package.json': {
+        [normalizeMockPath(testPath('wrangler.jsonc'))]: true,
+        [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             rwsdk: '^1.0.0',
             react: '^18.2.0',
@@ -266,7 +268,7 @@ describe('Framework Detection Tests', () => {
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(true)
       if (result.success) {
@@ -276,8 +278,9 @@ describe('Framework Detection Tests', () => {
     })
 
     it('should fallback to generic React when only React is detected', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/package.json': {
+        [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             react: '^18.2.0',
             'react-dom': '^18.2.0',
@@ -285,7 +288,7 @@ describe('Framework Detection Tests', () => {
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(true)
       if (result.success) {
@@ -295,15 +298,16 @@ describe('Framework Detection Tests', () => {
     })
 
     it('should force framework when specified', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/package.json': {
+        [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             react: '^18.2.0',
           },
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project', 'nextjs')
+      const result = await detectFramework(mockFs, projectRoot, 'nextjs')
 
       expect(result.success).toBe(true)
       if (result.success) {
@@ -314,10 +318,11 @@ describe('Framework Detection Tests', () => {
 
     it('should prioritize frameworks correctly', async () => {
       // Project with both Next.js and Vite (should prefer Next.js due to higher priority)
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/next.config.js': true,
-        '/test/project/vite.config.js': true,
-        '/test/project/package.json': {
+        [normalizeMockPath(testPath('next.config.js'))]: true,
+        [normalizeMockPath(testPath('vite.config.js'))]: true,
+        [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             next: '^13.4.0',
             react: '^18.2.0',
@@ -328,7 +333,7 @@ describe('Framework Detection Tests', () => {
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(true)
       if (result.success) {
@@ -340,8 +345,9 @@ describe('Framework Detection Tests', () => {
 
     it('should handle missing package.json', async () => {
       const mockFs = createMockFileSystem({})
+      const projectRoot = testPath()
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(false)
       if (!result.success) {
@@ -351,13 +357,14 @@ describe('Framework Detection Tests', () => {
     })
 
     it('should return error for invalid forced framework', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/package.json': { dependencies: { react: '^18.2.0' } },
+        [normalizeMockPath(testPath('package.json'))]: { dependencies: { react: '^18.2.0' } },
       })
 
       const result = await detectFramework(
         mockFs,
-        '/test/project',
+        projectRoot,
         'invalid-framework' as FrameworkType
       )
 

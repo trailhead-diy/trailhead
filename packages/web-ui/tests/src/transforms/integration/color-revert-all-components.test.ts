@@ -6,11 +6,11 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
-import path from 'path'
 import { createHash } from 'crypto'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
 import { transformLogger } from '../../../../src/transforms/shared/transform-logger.js'
+import { createTempPath, createAbsoluteTestPath, safeJoin } from '../../../utils/cross-platform-paths.js'
 
 // Import only color-related transforms
 import { interactiveStatesTransform } from '../../../../src/transforms/components/common/colors/interactive-states.js'
@@ -82,10 +82,10 @@ async function createDirectoryStructure(
   tempDir: string,
   component: string
 ): Promise<DirectoryPaths> {
-  const componentDir = path.join(tempDir, component.replace('.tsx', ''))
-  const originalDir = path.join(componentDir, 'original')
-  const transformedDir = path.join(componentDir, 'transformed')
-  const revertedDir = path.join(componentDir, 'reverted')
+  const componentDir = safeJoin(tempDir, component.replace('.tsx', ''))
+  const originalDir = safeJoin(componentDir, 'original')
+  const transformedDir = safeJoin(componentDir, 'transformed')
+  const revertedDir = safeJoin(componentDir, 'reverted')
 
   await Promise.all([
     fs.mkdir(componentDir, { recursive: true }),
@@ -99,9 +99,9 @@ async function createDirectoryStructure(
 
 function getFilePaths(dirs: DirectoryPaths, transformedName: string): FilePaths {
   return {
-    originalPath: path.join(dirs.originalDir, transformedName),
-    transformedPath: path.join(dirs.transformedDir, transformedName),
-    revertedPath: path.join(dirs.revertedDir, transformedName),
+    originalPath: safeJoin(dirs.originalDir, transformedName),
+    transformedPath: safeJoin(dirs.transformedDir, transformedName),
+    revertedPath: safeJoin(dirs.revertedDir, transformedName),
   }
 }
 
@@ -168,7 +168,7 @@ async function createAndExecuteRevertScript(
     new RegExp(transformedDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
     revertedDir
   )
-  const modifiedScriptPath = path.join(componentDir, 'revert.sh')
+  const modifiedScriptPath = safeJoin(componentDir, 'revert.sh')
   await fs.writeFile(modifiedScriptPath, modifiedContent, { mode: 0o755 })
 
   // Execute revert script
@@ -187,9 +187,9 @@ async function saveDebugFiles(
   console.error(`  Reverted length: ${revertedContent.length}`)
 
   await Promise.all([
-    fs.writeFile(path.join(componentDir, 'diff-original.tsx'), originalContent),
-    fs.writeFile(path.join(componentDir, 'diff-reverted.tsx'), revertedContent),
-    fs.writeFile(path.join(componentDir, 'diff-transformed.tsx'), transformedContent),
+    fs.writeFile(safeJoin(componentDir, 'diff-original.tsx'), originalContent),
+    fs.writeFile(safeJoin(componentDir, 'diff-reverted.tsx'), revertedContent),
+    fs.writeFile(safeJoin(componentDir, 'diff-transformed.tsx'), transformedContent),
   ])
 
   console.error(`  Debug files saved to: ${componentDir}`)
@@ -199,13 +199,13 @@ describe('Color Transform→Revert for All Components', () => {
   let tempDir: string
   let sessionId: string
 
-  const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+  const catalystSource = createAbsoluteTestPath('catalyst-ui-kit', 'typescript')
 
   // Skip tests in CI where catalyst-ui-kit is not available
   const skipInCI = !existsSync(catalystSource)
 
   beforeEach(async () => {
-    tempDir = path.join(process.cwd(), 'temp', `color-revert-all-${Date.now()}`)
+    tempDir = createTempPath('color-revert-all')
     await fs.mkdir(tempDir, { recursive: true })
 
     // Start a new transform session
@@ -232,7 +232,7 @@ describe('Color Transform→Revert for All Components', () => {
       const paths = getFilePaths(dirs, transformedName)
 
       // Read and prepare original content
-      const source = path.join(catalystSource, component)
+      const source = safeJoin(catalystSource, component)
       const originalContent = await fs.readFile(source, 'utf-8')
       await Promise.all([
         fs.writeFile(paths.originalPath, originalContent),
@@ -322,9 +322,9 @@ describe('Color Transform→Revert for All Components', () => {
     // Process each component
     const results = await Promise.all(
       COMPONENTS.map(async (component) => {
-        const source = path.join(catalystSource, component)
+        const source = safeJoin(catalystSource, component)
         const transformedName = `catalyst-${component}`
-        const tempPath = path.join(tempDir, transformedName)
+        const tempPath = safeJoin(tempDir, transformedName)
 
         const originalContent = await fs.readFile(source, 'utf-8')
         await fs.writeFile(tempPath, originalContent)
@@ -356,7 +356,7 @@ describe('Color Transform→Revert for All Components', () => {
 
     // Save stats to file
     await fs.writeFile(
-      path.join(tempDir, 'color-transform-stats.json'),
+      safeJoin(tempDir, 'color-transform-stats.json'),
       JSON.stringify(stats, null, 2)
     )
 
@@ -399,7 +399,7 @@ describe('Color Transform→Revert for All Components', () => {
         const transformedName = `catalyst-${component}`
         const paths = getFilePaths(dirs, transformedName)
 
-        const source = path.join(catalystSource, component)
+        const source = safeJoin(catalystSource, component)
         const originalContent = await fs.readFile(source, 'utf-8')
         await Promise.all([
           fs.writeFile(paths.originalPath, originalContent),

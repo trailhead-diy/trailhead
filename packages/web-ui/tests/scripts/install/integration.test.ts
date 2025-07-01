@@ -16,6 +16,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { join as pathJoin } from 'path'
 import type { FileSystem, Logger, InstallConfig } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '../../../src/cli/core/installation/types.js'
+import { testPaths, isWindows } from '../../utils/cross-platform-paths.js'
 
 // Helper to create OS-agnostic test paths
 const projectPath = (...segments: string[]) => pathJoin('project', ...segments)
@@ -127,7 +128,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
         trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-nextjs-app',
           version: '1.0.0',
           dependencies: {
@@ -136,7 +137,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
             'react-dom': '^18.2.0',
           },
         },
-        '/project/app/layout.tsx': `
+        [projectPath('app', 'layout.tsx')]: `
           export default function RootLayout({ children }) {
             return <html><body>{children}</body></html>
           }
@@ -146,25 +147,25 @@ const getScenarioData = (scenario: ProjectScenario) => {
 
     'existing-nextjs-with-tailwind': {
       existingFiles: new Set([
-        '/project/package.json',
-        '/project/next.config.js',
-        '/project/app/layout.tsx',
-        '/project/app/globals.css',
-        '/project/tailwind.config.js',
+        projectPath('package.json'),
+        projectPath('next.config.js'),
+        projectPath('app', 'layout.tsx'),
+        projectPath('app', 'globals.css'),
+        projectPath('tailwind.config.js'),
         // Source files
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-nextjs-app',
           dependencies: {
             next: '^13.4.0',
@@ -173,7 +174,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
             clsx: '^2.1.1',
           },
         },
-        '/project/app/globals.css': `
+        [projectPath('app', 'globals.css')]: `
           @tailwind base;
           @tailwind components;
           @tailwind utilities;
@@ -184,7 +185,7 @@ const getScenarioData = (scenario: ProjectScenario) => {
             --primary: hsl(240 5.9% 10%);
           }
         `,
-        '/project/tailwind.config.js': `
+        [projectPath('tailwind.config.js')]: `
           module.exports = {
             theme: {
               extend: {
@@ -201,24 +202,24 @@ const getScenarioData = (scenario: ProjectScenario) => {
 
     'vite-react': {
       existingFiles: new Set([
-        '/project/package.json',
-        '/project/vite.config.ts',
-        '/project/src/main.tsx',
-        '/project/src/index.css',
+        projectPath('package.json'),
+        projectPath('vite.config.ts'),
+        projectPath('src', 'main.tsx'),
+        projectPath('src', 'index.css'),
         // Source files
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-vite-app',
           dependencies: {
             react: '^18.2.0',
@@ -234,23 +235,23 @@ const getScenarioData = (scenario: ProjectScenario) => {
 
     'redwood-sdk': {
       existingFiles: new Set([
-        '/project/package.json',
-        '/project/wrangler.jsonc',
-        '/project/src/styles.css',
+        projectPath('package.json'),
+        projectPath('wrangler.jsonc'),
+        projectPath('src', 'styles.css'),
         // Source files
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-redwood-app',
           dependencies: {
             rwsdk: '^1.0.0',
@@ -270,19 +271,19 @@ const getScenarioData = (scenario: ProjectScenario) => {
         '/project/src/components/theme-provider.tsx',
         '/project/src/components/button.tsx',
         // Source files
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-app-with-conflicts',
           dependencies: {
             next: '^13.4.0',
@@ -297,19 +298,19 @@ const getScenarioData = (scenario: ProjectScenario) => {
         '/project/package.json',
         '/project/next.config.js',
         // Source files
-        '/trailhead/src/components/theme/config.ts',
-        '/trailhead/src/components/theme/builder.ts',
-        '/trailhead/src/components/theme/registry.ts',
-        '/trailhead/src/components/theme/utils.ts',
-        '/trailhead/src/components/theme/presets.ts',
-        '/trailhead/src/components/lib/utils.ts',
-        '/trailhead/src/components/theme/semantic-tokens.ts',
-        '/trailhead/src/components/lib',
-        '/trailhead/src/components/theme/theme-provider.tsx',
-        '/trailhead/src/components/theme/theme-switcher.tsx',
+        trailheadPath('src', 'components', 'theme', 'config.ts'),
+        trailheadPath('src', 'components', 'theme', 'builder.ts'),
+        trailheadPath('src', 'components', 'theme', 'registry.ts'),
+        trailheadPath('src', 'components', 'theme', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'presets.ts'),
+        trailheadPath('src', 'components', 'lib', 'utils.ts'),
+        trailheadPath('src', 'components', 'theme', 'semantic-tokens.ts'),
+        trailheadPath('src', 'components', 'lib'),
+        trailheadPath('src', 'components', 'theme', 'theme-provider.tsx'),
+        trailheadPath('src', 'components', 'theme', 'theme-switcher.tsx'),
       ]),
       fileContents: {
-        '/project/package.json': {
+        [projectPath('package.json')]: {
           name: 'my-app-minimal-deps',
           dependencies: {
             next: '^13.4.0',
@@ -333,8 +334,8 @@ describe('Installation Integration Tests', () => {
     it.fails('should perform complete Next.js installation successfully', async () => {
       const mockFs = createMockFileSystem('empty-nextjs')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       // Step 1: Framework Detection
       const frameworkResult = await detectFramework(mockFs, projectRoot)
@@ -390,8 +391,8 @@ describe('Installation Integration Tests', () => {
     it.fails('should handle Vite React installation', async () => {
       const mockFs = createMockFileSystem('vite-react')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       // Framework Detection
       const frameworkResult = await detectFramework(mockFs, projectRoot)
@@ -429,8 +430,8 @@ describe('Installation Integration Tests', () => {
     it.fails('should handle RedwoodSDK installation', async () => {
       const mockFs = createMockFileSystem('redwood-sdk')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       // Framework Detection
       const frameworkResult = await detectFramework(mockFs, projectRoot)
@@ -466,8 +467,8 @@ describe('Installation Integration Tests', () => {
     it('should fail gracefully when files exist and force is false', async () => {
       const mockFs = createMockFileSystem('conflicting-files')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -493,8 +494,8 @@ describe('Installation Integration Tests', () => {
     it.fails('should succeed when files exist and force is true', async () => {
       const mockFs = createMockFileSystem('conflicting-files')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -525,8 +526,8 @@ describe('Installation Integration Tests', () => {
       })
 
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -559,8 +560,8 @@ describe('Installation Integration Tests', () => {
         )
 
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -646,8 +647,8 @@ describe('Installation Integration Tests', () => {
     it.skip('should maintain data consistency across all modules', async () => {
       const mockFs = createMockFileSystem('empty-nextjs')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       // Collect all operations and verify consistency
       const operations: string[] = []
@@ -714,8 +715,8 @@ describe('Installation Integration Tests', () => {
     it.skip('should handle partial failures and maintain consistent state', async () => {
       const mockFs = createMockFileSystem('empty-nextjs')
       const mockLogger = createMockLogger()
-      const trailheadRoot = '/trailhead'
-      const projectRoot = '/project'
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
+      const projectRoot = testPaths.mockProject
 
       // Simulate failure during installation
       let writeCount = 0

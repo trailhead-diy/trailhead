@@ -11,6 +11,7 @@ import {
 } from '@trailhead/cli/command';
 import { Ok, Err } from '@trailhead/cli';
 import { createError } from '@trailhead/cli/core';
+import { testPaths } from '../../../test-utils/cross-platform-paths.js';
 
 vi.mock('inquirer', () => ({
   default: {
@@ -23,7 +24,7 @@ describe('Command Execution', () => {
 
   beforeEach(() => {
     mockContext = {
-      projectRoot: '/test/project',
+      projectRoot: testPaths.mockProject,
       logger: {
         info: vi.fn(),
         success: vi.fn(),
@@ -56,7 +57,7 @@ describe('Command Execution', () => {
         examples: ['test-command --test value'],
       };
 
-      const command = createCommand(config, { projectRoot: '/test' });
+      const command = createCommand(config, { projectRoot: testPaths.mockCli });
 
       expect(command.name()).toBe('test-command');
       expect(command.description()).toBe('Test command');
@@ -254,7 +255,7 @@ describe('Command Execution', () => {
         },
       };
 
-      const command = createCommand(config, { projectRoot: '/test' });
+      const command = createCommand(config, { projectRoot: testPaths.mockCli });
 
       await expect(async () => {
         await command.parseAsync(['node', 'test', 'error-command']);
@@ -285,7 +286,7 @@ describe('Command Execution', () => {
         },
       };
 
-      const command = createCommand(config, { projectRoot: '/test' });
+      const command = createCommand(config, { projectRoot: testPaths.mockCli });
 
       await expect(async () => {
         await command.parseAsync(['node', 'test', 'error-command']);
