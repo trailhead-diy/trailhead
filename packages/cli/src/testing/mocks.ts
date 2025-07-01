@@ -2,6 +2,7 @@ import type { FileSystem } from '../filesystem/index.js';
 import type { Logger } from '../core/logger.js';
 import { ok, err } from '../core/errors/index.js';
 import type { Result } from '../core/errors/index.js';
+import { normalizePath } from './path-utils.js';
 
 /**
  * Create a mock filesystem for testing
@@ -9,10 +10,16 @@ import type { Result } from '../core/errors/index.js';
 export function mockFileSystem(
   initialFiles: Record<string, string> = {},
 ): FileSystem {
-  const files = new Map(Object.entries(initialFiles));
+  // Normalize all initial file paths for cross-platform compatibility
+  const normalizedFiles = new Map<string, string>();
+  for (const [path, content] of Object.entries(initialFiles)) {
+    normalizedFiles.set(normalizePath(path), content);
+  }
+  
+  const files = normalizedFiles;
   const directories = new Set<string>();
 
-  // Extract directories from file paths
+  // Extract directories from file paths using normalized paths
   for (const filePath of files.keys()) {
     const parts = filePath.split('/');
     for (let i = 1; i < parts.length; i++) {
@@ -22,11 +29,13 @@ export function mockFileSystem(
 
   return {
     exists: async (path: string): Promise<Result<boolean>> => {
-      return ok(files.has(path) || directories.has(path));
+      const normalized = normalizePath(path);
+      return ok(files.has(normalized) || directories.has(normalized));
     },
 
     readFile: async (path: string): Promise<Result<string>> => {
-      const content = files.get(path);
+      const normalized = normalizePath(path);
+      const content = files.get(normalized);
       if (content === undefined) {
         return err({
           code: 'FILE_NOT_FOUND',
@@ -39,10 +48,11 @@ export function mockFileSystem(
     },
 
     writeFile: async (path: string, content: string): Promise<Result<void>> => {
-      files.set(path, content);
+      const normalized = normalizePath(path);
+      files.set(normalized, content);
 
-      // Add parent directories
-      const parts = path.split('/');
+      // Add parent directories using normalized paths
+      const parts = normalized.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
@@ -51,12 +61,14 @@ export function mockFileSystem(
     },
 
     mkdir: async (path: string): Promise<Result<void>> => {
-      directories.add(path);
+      const normalized = normalizePath(path);
+      directories.add(normalized);
       return ok(undefined);
     },
 
     readdir: async (path: string): Promise<Result<string[]>> => {
-      if (!directories.has(path) && !files.has(path)) {
+      const normalized = normalizePath(path);
+      if (!directories.has(normalized) && !files.has(normalized)) {
         return err({
           code: 'DIR_NOT_FOUND',
           message: `Directory not found: ${path}`,
@@ -66,7 +78,7 @@ export function mockFileSystem(
       }
 
       const entries: string[] = [];
-      const prefix = path === '.' ? '' : path + '/';
+      const prefix = normalized === '.' ? '' : normalized + '/';
 
       // Find all direct children
       for (const filePath of files.keys()) {
@@ -88,7 +100,9 @@ export function mockFileSystem(
     },
 
     copy: async (src: string, dest: string): Promise<Result<void>> => {
-      const content = files.get(src);
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      const content = files.get(normalizedSrc);
       if (content === undefined) {
         return err({
           code: 'FILE_NOT_FOUND',
@@ -97,15 +111,16 @@ export function mockFileSystem(
           recoverable: false,
         });
       }
-      files.set(dest, content);
+      files.set(normalizedDest, content);
       return ok(undefined);
     },
 
     ensureDir: async (path: string): Promise<Result<void>> => {
-      directories.add(path);
+      const normalized = normalizePath(path);
+      directories.add(normalized);
 
-      // Add all parent directories
-      const parts = path.split('/');
+      // Add all parent directories using normalized paths
+      const parts = normalized.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
@@ -114,13 +129,19 @@ export function mockFileSystem(
     },
 
     readJson: async <T = any>(path: string): Promise<Result<T>> => {
-      const result = await mockFileSystem(initialFiles).readFile(path);
-      if (!result.success) {
-        return result;
+      const normalized = normalizePath(path);
+      const content = files.get(normalized);
+      if (content === undefined) {
+        return err({
+          code: 'FILE_NOT_FOUND',
+          message: `File not found: ${path}`,
+          path,
+          recoverable: false,
+        });
       }
 
       try {
-        const data = JSON.parse(result.value);
+        const data = JSON.parse(content);
         return ok(data as T);
       } catch {
         return err({
@@ -137,7 +158,16 @@ export function mockFileSystem(
       data: T,
     ): Promise<Result<void>> => {
       const content = JSON.stringify(data, null, 2);
-      return mockFileSystem(initialFiles).writeFile(path, content);
+      const normalized = normalizePath(path);
+      files.set(normalized, content);
+      
+      // Add parent directories
+      const parts = normalized.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+      
+      return ok(undefined);
     },
 
     // Test helpers
