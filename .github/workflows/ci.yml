@@ -17,6 +17,10 @@ env:
   FORCE_COLOR: 3
   CI: true
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   # Detect what changed to optimize what we run
   changes:
