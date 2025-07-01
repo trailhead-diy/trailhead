@@ -1,0 +1,10 @@
+# Frontmatter validation for Diátaxis compliance
+extends: existence
+message: "Missing required frontmatter: %s"
+level: error
+scope: raw
+
+# Check for required frontmatter fields
+tokens:
+  # This is a simple check - more complex validation in validate-docs.ts
+  - '(?i)^---[\s\S]*?type:\s*(tutorial|how-to|reference|explanation)[\s\S]*?---'

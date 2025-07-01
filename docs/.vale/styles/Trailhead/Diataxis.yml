@@ -1,0 +1,29 @@
+# Diátaxis framework compliance rules for Vale
+extends: existence
+message: "Diátaxis violation: %s"
+level: error
+scope: text
+
+# Common anti-patterns that violate Diátaxis principles
+tokens:
+  # Tutorial anti-patterns
+  - 'There are several ways to'
+  - 'You can also'
+  - 'Another option is'
+  - 'Alternatively, you could'
+  
+  # How-to anti-patterns in tutorials
+  - 'First, let me explain'
+  - 'Before we begin, you should understand'
+  - 'It''s important to know that'
+  
+  # Reference anti-patterns
+  - 'Follow these steps'
+  - 'First, do this'
+  - 'Next, you need to'
+  - 'To get started'
+  
+  # Explanation anti-patterns
+  - 'Run the following command'
+  - 'Copy this code'
+  - 'Execute this script'

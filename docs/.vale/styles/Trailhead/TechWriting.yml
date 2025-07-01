@@ -1,0 +1,40 @@
+# Technical writing best practices for Trailhead
+extends: existence
+message: "Technical writing: %s"
+level: warning
+scope: text
+
+# Patterns that often indicate poor technical writing
+tokens:
+  # Weak qualifiers
+  - 'pretty much'
+  - 'quite a few'
+  - 'very important'
+  - 'extremely useful'
+  - 'really good'
+  
+  # Unnecessary phrases
+  - 'it should be noted that'
+  - 'please note that'
+  - 'it is worth mentioning'
+  - 'keep in mind that'
+  - 'be aware that'
+  
+  # User-unfriendly language
+  - 'simply'
+  - 'just'
+  - 'easy'
+  - 'obviously'
+  - 'of course'
+  
+  # Vague pronouns
+  - 'This allows'
+  - 'This enables'
+  - 'This provides'
+  - 'It allows'
+  - 'It enables'
+  
+  # Future tense (prefer present)
+  - 'will return'
+  - 'will provide'
+  - 'will allow'
