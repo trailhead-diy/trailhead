@@ -63,6 +63,90 @@ Focus on high-ROI (Return on Investment) tests:
 - **Major Updates**: Require manual approval via Dependency Dashboard
 - **Schedule**: Monday mornings (4am EST) to minimize disruption
 
+### Documentation Standards - STRICTLY ENFORCED
+
+**CRITICAL**: All documentation MUST follow Diátaxis framework. Non-compliance blocks PRs.
+
+#### Diátaxis Framework (MANDATORY)
+
+Every documentation file MUST be categorized as ONE of these types:
+
+1. **TUTORIAL** (Learning-oriented): "Build Your First CLI App"
+   - Step-by-step learning experience
+   - Complete working project outcome
+   - NO options or alternatives
+   - For beginners learning concepts
+
+2. **HOW-TO** (Task-oriented): "How to Add Custom Validation"
+   - Solve specific user problems
+   - Assumes existing knowledge
+   - Multiple approaches OK
+   - For users with goals
+
+3. **REFERENCE** (Information-oriented): "API Reference"
+   - Comprehensive technical specs
+   - NO instructions or tutorials
+   - Consistent structure
+   - For lookup/verification
+
+4. **EXPLANATION** (Understanding-oriented): "Why We Use Result Types"
+   - Conceptual understanding
+   - Design decisions and trade-offs
+   - Background context
+   - For deeper comprehension
+
+#### Strict Requirements
+
+**EVERY documentation file MUST:**
+
+- Include correct frontmatter with `type` field
+- Match content to declared type (mixed content = REJECTED)
+- Follow templates in `docs/templates/`
+- Pass automated validation (`pnpm docs:validate`)
+
+**FORBIDDEN patterns:**
+
+- ❌ Tutorials with multiple solution paths
+- ❌ How-to guides explaining concepts
+- ❌ Reference docs with instructions
+- ❌ Explanations with step-by-step tasks
+- ❌ Mixed content types in single file
+
+#### Templates (REQUIRED)
+
+Use these templates for new documentation:
+
+- `docs/templates/tutorial-template.md`
+- `docs/templates/howto-template.md`
+- `docs/templates/reference-template.md`
+- `docs/templates/explanation-template.md`
+
+#### Quality Gates
+
+Documentation changes are BLOCKED if:
+
+- No frontmatter with correct `type`
+- Content doesn't match declared type
+- Fails Vale or markdownlint checks
+- Missing from required categories
+- Violates Diátaxis principles
+
+#### Commands
+
+```bash
+pnpm docs:validate    # Check all documentation
+pnpm docs:lint       # Style and format checks
+pnpm docs:new        # Create from templates
+```
+
+**Resources:**
+
+- [Full Standards](docs/DOCUMENTATION_STANDARDS.md)
+- [Review Checklist](docs/DOCUMENTATION_REVIEW_CHECKLIST.md)
+- [Quick Reference](docs/WRITING_DOCUMENTATION.md)
+
+**No exceptions.** Documentation quality is non-negotiable.
+
 ## Monorepo Overview
 
 Trailhead is a modern Turborepo monorepo containing UI libraries, CLI frameworks, and development tooling. The repository follows best practices for scalable monorepo architecture with shared configurations and optimized build caching.
@@ -142,7 +226,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@trailhead/_ or @repo/_)
+2. Add proper package.json with correct namespace (@trailhead/_or @repo/_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 
@@ -386,6 +470,9 @@ pnpm build                  # Production build
 - `quick` = Give me the most direct solution without explanation (for simple tasks)
 - `review` = Code review this as if you're a senior engineer: security, performance, best practices
 - `test` = Write high-ROI tests for this code following project principles
+- `gpr` = GitHub pull request: Create PR with title from commits, run validation checks,
+  assign reviewers based on changed files, and auto-link issues. Detects affected
+  packages in monorepo.
 
 ### Documentation Shortcuts
 

@@ -1,6 +1,6 @@
 import type { FileSystem } from '../filesystem/index.js';
 import type { Logger } from '../core/logger.js';
-import { ok, err } from '../core/errors/index.js';
+import { Ok, Err } from '../core/errors/index.js';
 import type { Result } from '../core/errors/index.js';
 import { normalizePath } from './path-utils.js';
 
@@ -30,21 +30,21 @@ export function mockFileSystem(
   return {
     exists: async (path: string): Promise<Result<boolean>> => {
       const normalized = normalizePath(path);
-      return ok(files.has(normalized) || directories.has(normalized));
+      return Ok(files.has(normalized) || directories.has(normalized));
     },
 
     readFile: async (path: string): Promise<Result<string>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
-        return err({
+        return Err({
           code: 'FILE_NOT_FOUND',
           message: `File not found: ${path}`,
           path,
           recoverable: false,
         });
       }
-      return ok(content);
+      return Ok(content);
     },
 
     writeFile: async (path: string, content: string): Promise<Result<void>> => {
@@ -57,19 +57,19 @@ export function mockFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     mkdir: async (path: string): Promise<Result<void>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     readdir: async (path: string): Promise<Result<string[]>> => {
       const normalized = normalizePath(path);
       if (!directories.has(normalized) && !files.has(normalized)) {
-        return err({
+        return Err({
           code: 'DIR_NOT_FOUND',
           message: `Directory not found: ${path}`,
           path,
@@ -96,7 +96,7 @@ export function mockFileSystem(
         }
       }
 
-      return ok(entries);
+      return Ok(entries);
     },
 
     copy: async (src: string, dest: string): Promise<Result<void>> => {
@@ -104,7 +104,7 @@ export function mockFileSystem(
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return err({
+        return Err({
           code: 'FILE_NOT_FOUND',
           message: `Source file not found: ${src}`,
           path: src,
@@ -112,7 +112,7 @@ export function mockFileSystem(
         });
       }
       files.set(normalizedDest, content);
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     ensureDir: async (path: string): Promise<Result<void>> => {
@@ -125,14 +125,14 @@ export function mockFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     readJson: async <T = any>(path: string): Promise<Result<T>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
-        return err({
+        return Err({
           code: 'FILE_NOT_FOUND',
           message: `File not found: ${path}`,
           path,
@@ -142,9 +142,9 @@ export function mockFileSystem(
 
       try {
         const data = JSON.parse(content);
-        return ok(data as T);
+        return Ok(data as T);
       } catch {
-        return err({
+        return Err({
           code: 'PARSE_ERROR',
           message: `Failed to parse JSON in ${path}`,
           path,
@@ -167,7 +167,7 @@ export function mockFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     // Test helpers
@@ -281,19 +281,19 @@ export function createEnhancedMockFileSystem(
 
     exists: async (path: string): Promise<Result<boolean>> => {
       const error = checkForSimulatedError('exists', path);
-      if (error) return err(error);
+      if (error) return Err(error);
       return basicFs.exists(path);
     },
 
     readFile: async (path: string): Promise<Result<string>> => {
       const error = checkForSimulatedError('readFile', path);
-      if (error) return err(error);
+      if (error) return Err(error);
       return basicFs.readFile(path);
     },
 
     writeFile: async (path: string, content: string): Promise<Result<void>> => {
       const error = checkForSimulatedError('writeFile', path);
-      if (error) return err(error);
+      if (error) return Err(error);
       return basicFs.writeFile(path, content);
     },
 

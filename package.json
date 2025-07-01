@@ -16,6 +16,10 @@
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+    "docs:validate": "tsx tooling/docs-tooling/src/validate-docs.ts",
+    "docs:lint": "vale docs && markdownlint docs/**/*.md",
+    "docs:coverage": "tsx tooling/docs-tooling/src/validate-docs.ts --coverage",
+    "docs:new": "tsx tooling/docs-tooling/src/create-doc.ts",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "turbo build --filter=./packages/* && changeset publish",
@@ -23,9 +27,14 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@inquirer/prompts": "^7.1.0",
+    "@types/node": "^24.0.10",
+    "chalk": "^5.3.0",
+    "gray-matter": "^4.0.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.2.5",
+    "tsx": "^4.20.3",
     "turbo": "^1.12.0",
     "typescript": "^5.3.0"
   },
@@ -33,5 +42,11 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob@<10": ">=11.0.0",
+      "inflight": "npm:@void/noop@^1.0.0"
+    }
   }
 }

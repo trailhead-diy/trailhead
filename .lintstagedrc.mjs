@@ -5,6 +5,10 @@ export default {
   // Format all supported files
   '**/*.{ts,tsx,js,jsx,json,md}': 'prettier --write --ignore-path .gitignore',
   
+  // Validate documentation files for Diátaxis compliance
+  'docs/**/*.md': 'pnpm docs:validate',
+  'packages/**/docs/**/*.md': 'pnpm docs:validate',
+  
   // Run tests only for changed source files (not test files themselves)
   'packages/**/*.{ts,tsx,js,jsx}': async (filenames) => {
     // Skip if only test/config files changed

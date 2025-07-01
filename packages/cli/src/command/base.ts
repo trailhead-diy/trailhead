@@ -1,49 +1,82 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
-import type { Result } from '../core/errors/types.js';
-import { displayError } from '../core/errors/handlers.js';
-import { createError } from '../core/errors/factory.js';
-import { createDefaultLogger, type Logger } from '../core/logger.js';
-import { createFileSystem, type FileSystem } from '../filesystem/index.js';
+import type { Result } from '../core/errors/index.js';
+import { displayError, createError } from '../core/errors/index.js';
+import { createDefaultLogger } from '../core/index.js';
+import { createFileSystem } from '../filesystem/index.js';
+import { processCommandOptions } from '../utils/index.js';
+import type { CommandContext, CommandPhase, CommandOption } from './types.js';
 
-export interface CommandContext {
-  readonly projectRoot: string;
-  readonly logger: Logger;
-  readonly verbose: boolean;
-  readonly fs: FileSystem;
-}
-
+/**
+ * Base command options available to all commands
+ */
 export interface CommandOptions {
+  /** Enable verbose logging output */
   readonly verbose?: boolean;
+  /** Preview mode - show what would be done without executing */
   readonly dryRun?: boolean;
 }
 
+/**
+ * Configuration for creating a CLI command
+ * @template T - Command options type extending CommandOptions
+ */
 export interface CommandConfig<T extends CommandOptions> {
+  /** Command name (used for CLI invocation) */
   readonly name: string;
+  /** Command description for help text */
   readonly description: string;
+  /** Command arguments specification (e.g., '<input> [output]') */
+  readonly arguments?: string;
+  /** Available command options/flags */
   readonly options?: CommandOption[];
+  /** Usage examples for help text */
   readonly examples?: string[];
+  /** Main command implementation */
   readonly action: CommandAction<T>;
+  /** Optional validation for command options */
   readonly validation?: CommandValidator<T>;
 }
 
-export interface CommandOption {
-  readonly flags: string;
-  readonly description: string;
-  readonly defaultValue?: any;
-}
 
+/**
+ * Command action function type
+ * @template T - Command options type
+ */
 export type CommandAction<T extends CommandOptions> = (
   options: T,
   context: CommandContext,
 ) => Promise<Result<void>>;
 
+/**
+ * Command validation function type
+ * @template T - Command options type
+ */
 export type CommandValidator<T extends CommandOptions> = (
   options: T,
 ) => Result<T>;
 
 /**
  * Create a command with standard error handling and context
+ * @template T - Command options type extending CommandOptions
+ * @param config - Command configuration
+ * @param globalContext - Global CLI context (project root, etc.)
+ * @returns Configured Commander.js Command instance
+ * @example
+ * ```typescript
+ * const buildCommand = createCommand({
+ *   name: 'build',
+ *   description: 'Build the project',
+ *   arguments: '[output-dir]',
+ *   options: [
+ *     { flags: '--watch', description: 'Watch for changes' }
+ *   ],
+ *   action: async (options, context) => {
+ *     // Command implementation
+ *     return ok(undefined);
+ *   }
+ * }, { projectRoot: process.cwd() });
+ * ```
  */
 export function createCommand<T extends CommandOptions>(
   config: CommandConfig<T>,
@@ -53,10 +86,21 @@ export function createCommand<T extends CommandOptions>(
     .description(config.description)
     .option('-v, --verbose', 'show detailed output', false);
 
+  // Add arguments if specified
+  if (config.arguments) {
+    command.arguments(config.arguments);
+  }
+
   // Add custom options
   if (config.options) {
     for (const option of config.options) {
-      command.option(option.flags, option.description, option.defaultValue);
+      if (option.flags) {
+        command.option(
+          option.flags,
+          option.description,
+          option.defaultValue ?? option.default,
+        );
+      }
     }
   }
 
@@ -69,12 +113,28 @@ export function createCommand<T extends CommandOptions>(
   }
 
   // Set up action with error handling
-  command.action(async (options: T) => {
+  command.action(async (...args: any[]) => {
+    // Commander passes options as the last argument
+    const rawOptions = args[args.length - 1];
+    // All arguments before the last are positional arguments
+    const positionalArgs = args.slice(0, -1);
+
+    // Process options to handle types and filter undefined values
+    const options: T = processCommandOptions<T>(
+      rawOptions,
+      config.options?.map(opt => ({
+        // Extract name from flags like '--confidence <number>' -> 'confidence'
+        name: opt.name || (opt.flags ? opt.flags.match(/--(\w+)/)?.[1] : '') || '',
+        type: opt.type,
+      })),
+    );
+
     const context: CommandContext = {
       projectRoot: globalContext.projectRoot,
       logger: createDefaultLogger(options.verbose ?? false),
       verbose: options.verbose ?? false,
       fs: createFileSystem(),
+      args: positionalArgs,
     };
 
     try {
@@ -126,10 +186,6 @@ export async function executeWithPhases<T>(
   return { success: true, value: data };
 }
 
-export interface CommandPhase<T> {
-  readonly name: string;
-  readonly execute: (data: T, context: CommandContext) => Promise<Result<T>>;
-}
 
 export async function executeWithProgress<T>(
   task: () => Promise<Result<T>>,

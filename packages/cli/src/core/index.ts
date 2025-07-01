@@ -1,5 +1,23 @@
-export { Ok, Err, isOk, isErr } from './errors/index.js';
-export type { Result } from './errors/index.js';
+export {
+  Ok,
+  Err,
+  isOk,
+  isErr,
+  unwrap,
+  unwrapOr,
+  map,
+  mapErr,
+  chain,
+  expect,
+  toNullable,
+  toOptional,
+  getErrorMessage,
+  match,
+  all,
+  tryCatch,
+  tryCatchAsync,
+} from './errors/index.js';
+export type { Result, AsyncResult } from './errors/index.js';
 
 export {
   createError,
@@ -47,5 +65,9 @@ export type {
   Framework,
 } from './validation/index.js';
 
-export { createLogger, createSilentLogger } from './logger.js';
+export {
+  createDefaultLogger,
+  createSilentLogger,
+  createPrefixedLogger,
+} from './logger.js';
 export type { Logger } from './logger.js';

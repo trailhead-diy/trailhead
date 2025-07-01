@@ -9,36 +9,41 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "default": "./dist/index.js"
     },
     "./core": {
       "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js"
+      "default": "./dist/core/index.js"
     },
     "./command": {
       "types": "./dist/command/index.d.ts",
-      "import": "./dist/command/index.js"
+      "default": "./dist/command/index.js"
     },
     "./filesystem": {
       "types": "./dist/filesystem/index.d.ts",
-      "import": "./dist/filesystem/index.js"
+      "default": "./dist/filesystem/index.js"
     },
     "./config": {
       "types": "./dist/config/index.d.ts",
-      "import": "./dist/config/index.js"
+      "default": "./dist/config/index.js"
     },
     "./prompts": {
       "types": "./dist/prompts/index.d.ts",
-      "import": "./dist/prompts/index.js"
+      "default": "./dist/prompts/index.js"
     },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
-      "import": "./dist/testing/index.js"
+      "default": "./dist/testing/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
     }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup && tsc --emitDeclarationOnly",
+    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
     "test": "vitest run --coverage",
     "test:coverage": "vitest --coverage",
     "lint": "oxlint",
@@ -61,6 +66,7 @@
     "@types/node": "^20.11.0",
     "@vitest/coverage-v8": "^1.2.0",
     "oxlint": "^0.2.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.3.0",
     "vitest": "^1.2.0"
   },
@@ -71,6 +77,7 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md"

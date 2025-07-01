@@ -7,9 +7,23 @@ export * from './handlers.js';
 export { Ok, Err } from './factory.js';
 export type { Result, AsyncResult, CLIError } from './types.js';
 
-export { Ok as ok, Err as err } from './factory.js';
-
-export { isOk, isErr, unwrap, unwrapOr, map, mapErr } from './utils.js';
+export {
+  isOk,
+  isErr,
+  unwrap,
+  unwrapOr,
+  map,
+  mapErr,
+  chain,
+  expect,
+  toNullable,
+  toOptional,
+  getErrorMessage,
+  match,
+  all,
+  tryCatch,
+  tryCatchAsync,
+} from './utils.js';
 export {
   displayError,
   formatError,

@@ -1,9 +1,11 @@
 import type { FileSystem } from './types.js';
-import { ok, err } from '../core/errors/index.js';
+import { Ok, Err } from '../core/errors/index.js';
 import { sep, posix, win32 } from 'path';
 
 /**
  * Normalizes paths for internal storage (always use forward slashes)
+ * @param path - Path to normalize
+ * @returns Normalized path with forward slashes
  */
 function normalizePath(path: string): string {
   // Convert any backslashes to forward slashes for consistent storage
@@ -16,6 +18,21 @@ function normalizePath(path: string): string {
  * Automatically handles cross-platform path differences by normalizing
  * all paths to forward slashes internally, while accepting both forward
  * and backward slashes in input paths.
+ *
+ * @param initialFiles - Optional initial files to populate the filesystem
+ * @returns FileSystem implementation backed by memory
+ * @example
+ * ```typescript
+ * const fs = createMemoryFileSystem({
+ *   'src/index.ts': 'export default {};',
+ *   'package.json': JSON.stringify({ name: 'test' })
+ * });
+ *
+ * const result = await fs.readFile('src/index.ts');
+ * if (result.success) {
+ *   console.log(result.value); // 'export default {};'
+ * }
+ * ```
  */
 export function createMemoryFileSystem(
   initialFiles: Record<string, string> = {},
@@ -39,21 +56,21 @@ export function createMemoryFileSystem(
   return {
     async exists(path: string) {
       const normalizedPath = normalizePath(path);
-      return ok(files.has(normalizedPath) || directories.has(normalizedPath));
+      return Ok(files.has(normalizedPath) || directories.has(normalizedPath));
     },
 
     async readFile(path: string) {
       const normalizedPath = normalizePath(path);
       const content = files.get(normalizedPath);
       if (content === undefined) {
-        return err({
+        return Err({
           code: 'ENOENT',
           message: `File not found: ${path}`,
           path,
           recoverable: true,
         });
       }
-      return ok(content);
+      return Ok(content);
     },
 
     async writeFile(path: string, content: string) {
@@ -66,7 +83,7 @@ export function createMemoryFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     async mkdir(path: string) {
@@ -79,13 +96,13 @@ export function createMemoryFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     async readdir(path: string) {
       const normalizedPath = normalizePath(path);
       if (!directories.has(normalizedPath) && normalizedPath !== '.') {
-        return err({
+        return Err({
           code: 'ENOENT',
           message: `Directory not found: ${path}`,
           path,
@@ -121,7 +138,7 @@ export function createMemoryFileSystem(
         }
       }
 
-      return ok(entries);
+      return Ok(entries);
     },
 
     async copy(src: string, dest: string) {
@@ -129,7 +146,7 @@ export function createMemoryFileSystem(
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return err({
+        return Err({
           code: 'ENOENT',
           message: `Source file not found: ${src}`,
           path: src,
@@ -144,7 +161,7 @@ export function createMemoryFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
 
     async ensureDir(path: string) {
@@ -159,9 +176,9 @@ export function createMemoryFileSystem(
 
       try {
         const data = JSON.parse(result.value) as T;
-        return ok(data);
+        return Ok(data);
       } catch {
-        return err({
+        return Err({
           code: 'JSON_PARSE_ERROR',
           message: `Failed to parse JSON in ${path}`,
           path,
