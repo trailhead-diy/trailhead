@@ -226,7 +226,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@trailhead/_ or @repo/_)
+2. Add proper package.json with correct namespace (@trailhead/_or @repo/_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 
@@ -470,6 +470,9 @@ pnpm build                  # Production build
 - `quick` = Give me the most direct solution without explanation (for simple tasks)
 - `review` = Code review this as if you're a senior engineer: security, performance, best practices
 - `test` = Write high-ROI tests for this code following project principles
+- `gpr` = GitHub pull request: Create PR with title from commits, run validation checks,
+  assign reviewers based on changed files, and auto-link issues. Detects affected
+  packages in monorepo.
 
 ### Documentation Shortcuts
 
