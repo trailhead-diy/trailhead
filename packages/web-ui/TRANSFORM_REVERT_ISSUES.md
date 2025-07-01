@@ -85,7 +85,6 @@ This suggests the issue is not with the revert mechanism but with the complexity
 1. **Use Color-Only Transforms for Testing**: Since these work reliably, focus revert testing on subsets of transforms
 
 2. **Consider Transform Grouping**:
-
    - Group related transforms that can be safely reverted together
    - Create separate revert scripts for different transform phases
 

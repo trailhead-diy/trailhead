@@ -8,7 +8,7 @@ import {
   determinePattern,
   buildIIFEWithColorsPattern,
   buildConditionalWithColorsPattern,
-  buildSimpleConditionalPattern
+  buildSimpleConditionalPattern,
 } from './ast-patterns.js'
 
 /**
@@ -20,19 +20,16 @@ export function buildSemanticResolution(
   config: ResolutionConfig
 ): VariableDeclaration {
   const { variableName } = config
-  
+
   // Determine which pattern to use
   const pattern = determinePattern(config)
-  
+
   // Build the appropriate expression based on pattern
   const expression = buildResolutionExpression(j, config, pattern)
-  
+
   // Create the variable declaration
   return j.variableDeclaration('const', [
-    j.variableDeclarator(
-      j.identifier(variableName),
-      expression
-    )
+    j.variableDeclarator(j.identifier(variableName), expression),
   ])
 }
 
@@ -48,13 +45,13 @@ function buildResolutionExpression(
   switch (pattern) {
     case 'iife-with-colors':
       return buildIIFEWithColorsPattern(j, config)
-    
+
     case 'conditional-with-colors':
       return buildConditionalWithColorsPattern(j, config)
-    
+
     case 'simple-conditional':
       return buildSimpleConditionalPattern(j, config)
-    
+
     default:
       // Type-safe exhaustive check
       const _exhaustive: never = pattern
@@ -66,9 +63,7 @@ function buildResolutionExpression(
  * Create a custom resolution builder with preset configuration
  * Higher-order function for creating specialized builders
  */
-export function createResolutionBuilder(
-  defaultConfig: Partial<ResolutionConfig>
-) {
+export function createResolutionBuilder(defaultConfig: Partial<ResolutionConfig>) {
   return (j: API['jscodeshift'], overrides: Partial<ResolutionConfig> = {}) => {
     const config: ResolutionConfig = {
       componentName: 'Component',
@@ -77,9 +72,9 @@ export function createResolutionBuilder(
       useIIFE: false,
       hasColorsObject: true,
       ...defaultConfig,
-      ...overrides
+      ...overrides,
     }
-    
+
     return buildSemanticResolution(j, config)
   }
 }
@@ -91,20 +86,20 @@ export const builders = {
   /** Builder for components with IIFE pattern and colors object */
   withIIFEAndColors: createResolutionBuilder({
     useIIFE: true,
-    hasColorsObject: true
+    hasColorsObject: true,
   }),
-  
+
   /** Builder for components with conditional pattern and colors object */
   withConditionalAndColors: createResolutionBuilder({
     useIIFE: false,
-    hasColorsObject: true
+    hasColorsObject: true,
   }),
-  
+
   /** Builder for components with simple conditional pattern */
   withSimpleConditional: createResolutionBuilder({
     useIIFE: false,
-    hasColorsObject: false
-  })
+    hasColorsObject: false,
+  }),
 }
 
 // Export individual builders for convenience

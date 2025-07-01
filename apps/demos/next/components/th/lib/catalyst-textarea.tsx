@@ -1,15 +1,18 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import React, { forwardRef } from 'react'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import React, { forwardRef } from 'react';
+import { cn } from '../utils/cn';
 
 export const CatalystTextarea = forwardRef(function CatalystTextarea(
   {
     className,
     resizable = true,
     ...props
-  }: { className?: string; resizable?: boolean } & Omit<Headless.TextareaProps, 'as' | 'className'>,
-  ref: React.ForwardedRef<HTMLTextAreaElement>
+  }: { className?: string; resizable?: boolean } & Omit<
+    Headless.TextareaProps,
+    'as' | 'className'
+  >,
+  ref: React.ForwardedRef<HTMLTextAreaElement>,
 ) {
   return (
     <span
@@ -51,5 +54,5 @@ export const CatalystTextarea = forwardRef(function CatalystTextarea(
         ])}
       />
     </span>
-  )
-})
+  );
+});

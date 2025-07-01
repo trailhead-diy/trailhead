@@ -1,6 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { Fieldset, Legend, Field, FieldGroup, Label, Description, ErrorMessage } from '../../src/components/fieldset'
+import {
+  Fieldset,
+  Legend,
+  Field,
+  FieldGroup,
+  Label,
+  Description,
+  ErrorMessage,
+} from '../../src/components/fieldset'
 
 describe('Fieldset Components', () => {
   it('should render accessible form structure with validation states', () => {

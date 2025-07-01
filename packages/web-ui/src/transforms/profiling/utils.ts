@@ -28,7 +28,7 @@ export function calculateStatistics(times: number[]): {
 } {
   const sorted = [...times].sort((a, b) => a - b)
   const total = sorted.reduce((sum, t) => sum + t, 0)
-  
+
   return {
     total,
     average: total / sorted.length,
@@ -63,7 +63,7 @@ export function createProfileResult(
 ): ProfileResult {
   const timeStats = calculateStatistics(times)
   const memoryStats = calculateMemoryStats(memories)
-  
+
   return {
     approach,
     totalTime: timeStats.total,
@@ -89,7 +89,8 @@ export function calculateComparison(
 ): { speedupFactor: number; memoryEfficiency: number } {
   return {
     speedupFactor: traditional.averageTime / transforms2.averageTime,
-    memoryEfficiency: ((traditional.memoryAverage - transforms2.memoryAverage) / traditional.memoryAverage) * 100,
+    memoryEfficiency:
+      ((traditional.memoryAverage - transforms2.memoryAverage) / traditional.memoryAverage) * 100,
   }
 }
 
@@ -100,11 +101,12 @@ export function parseOptions(args: string[]): ProfileOptions {
   // This will be enhanced when we implement commander
   const hasCompare = args.includes('--compare') || args.includes('-c')
   const hasVerbose = args.includes('--verbose') || args.includes('-v')
-  const iterationsIndex = args.findIndex(arg => arg === '--iterations' || arg === '-i')
-  const iterations = iterationsIndex >= 0 && args[iterationsIndex + 1] 
-    ? parseInt(args[iterationsIndex + 1], 10) || 3
-    : 3
-  
+  const iterationsIndex = args.findIndex((arg) => arg === '--iterations' || arg === '-i')
+  const iterations =
+    iterationsIndex >= 0 && args[iterationsIndex + 1]
+      ? parseInt(args[iterationsIndex + 1], 10) || 3
+      : 3
+
   return {
     compare: hasCompare,
     verbose: hasVerbose,
@@ -202,15 +204,15 @@ export function createProgressBar(current: number, total: number, width: number 
  */
 export function validateOptions(options: ProfileOptions): string[] {
   const errors: string[] = []
-  
+
   if (options.iterations < 1 || options.iterations > 10) {
     errors.push('Iterations must be between 1 and 10')
   }
-  
+
   if (!['full', 'simple', 'custom'].includes(options.mode)) {
     errors.push('Mode must be full, simple, or custom')
   }
-  
+
   return errors
 }
 

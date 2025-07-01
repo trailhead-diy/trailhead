@@ -11,6 +11,7 @@ Both demos are now configured to work properly with pnpm without triggering pare
 ## 📁 Available Demos
 
 ### 1. Next.js Demo (`demos/next/`)
+
 A simple, clean Next.js 15.3.4 application with React 19 and Tailwind CSS 4.
 
 ```bash
@@ -20,6 +21,7 @@ pnpm dev        # Start development server
 ```
 
 ### 2. RedwoodSDK Demo (`demos/rwsdk/`)
+
 A minimal RedwoodSDK starter for Cloudflare Workers.
 
 ```bash
@@ -31,19 +33,22 @@ pnpm dev        # Start development server
 ## 🛠️ Configuration Details
 
 ### What Was Fixed
+
 1. **Local Workspace Files** - Each demo has its own `pnpm-workspace.yaml` to override parent
-2. **Demo .npmrc Files** - Each demo has independent npm/pnpm configuration  
+2. **Demo .npmrc Files** - Each demo has independent npm/pnpm configuration
 3. **Script Prevention** - Parent husky scripts no longer run in demos
 4. **Local Dependencies** - Each demo uses its own `node_modules`
 5. **No Flags Needed** - `pnpm install` works normally without `--ignore-workspace`
 
 ### .npmrc Configuration
+
 Each demo includes:
+
 ```ini
 # Prevents parent scripts from running
 enable-pre-post-scripts=false
 
-# Independent from parent workspace  
+# Independent from parent workspace
 link-workspace-packages=false
 hoist=false
 
@@ -57,12 +62,14 @@ strict-peer-dependencies=false
 ### If pnpm still shows workspace issues:
 
 1. **Clean and reinstall (should work normally now):**
+
    ```bash
    rm -rf node_modules pnpm-lock.yaml
    pnpm install    # No flags needed!
    ```
 
 2. **Reinstall if needed:**
+
    ```bash
    pnpm install
    pnpm dev
@@ -74,7 +81,9 @@ strict-peer-dependencies=false
    ```
 
 ### If parent scripts still run:
+
 The `.npmrc` files should prevent this, but if it persists:
+
 - Check you're in the correct demo directory
 - Verify the `.npmrc` file exists and has the correct content
 - Use npm instead of pnpm as a fallback

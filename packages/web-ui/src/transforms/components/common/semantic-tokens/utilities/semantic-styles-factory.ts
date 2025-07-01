@@ -40,28 +40,27 @@ type SemanticStyleConfig = ObjectLookupConfig | CSSVariableConfig
 /**
  * Create a semantic style function based on configuration
  * Pure function that returns a function for generating semantic styles
- * 
+ *
  * @param config - Configuration object defining the pattern and behavior
  * @returns Function that takes a SemanticColorToken and returns CSS classes
  */
 export function createSemanticStylesFunction<T extends SemanticStyleConfig>(
   config: T
 ): (color: SemanticColorToken) => string {
-  
   switch (config.pattern) {
     case 'object-lookup':
       // Object lookup pattern: simple dictionary lookup with fallback
       return (color: SemanticColorToken): string => {
         return config.styles[color] || config.styles[config.defaultToken]
       }
-      
+
     case 'css-variables':
       // CSS variable template pattern: resolve token and apply template
       return (color: SemanticColorToken): string => {
         const resolvedToken = resolveSemanticToken(color)
         return config.template(resolvedToken).join(' ')
       }
-      
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = config
@@ -85,19 +84,17 @@ export function createObjectLookupStyles(
   return createSemanticStylesFunction({
     pattern: 'object-lookup',
     styles,
-    defaultToken
+    defaultToken,
   })
 }
 
 /**
- * Create CSS variable template style function  
+ * Create CSS variable template style function
  * Convenience wrapper for css-variables pattern
  */
-export function createCSSVariableStyles(
-  template: (token: string) => string[]
-) {
+export function createCSSVariableStyles(template: (token: string) => string[]) {
   return createSemanticStylesFunction({
     pattern: 'css-variables',
-    template
+    template,
   })
 }

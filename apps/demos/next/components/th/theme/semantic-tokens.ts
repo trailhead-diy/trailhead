@@ -17,7 +17,12 @@
 // TYPES AND MAPPINGS
 // ============================================================================
 
-export type SemanticColorToken = 'primary' | 'secondary' | 'success' | 'warning' | 'danger'
+export type SemanticColorToken =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger';
 
 /**
  * Hierarchical text semantic tokens that preserve visual hierarchy
@@ -27,7 +32,7 @@ export type HierarchicalTextToken =
   | 'text-secondary' // Medium-high contrast (zinc-700/300)
   | 'text-tertiary' // Medium contrast (zinc-600/400)
   | 'text-quaternary' // Lower contrast (zinc-500/500)
-  | 'text-muted' // Lowest contrast (zinc-400/600)
+  | 'text-muted'; // Lowest contrast (zinc-400/600)
 
 /**
  * Icon semantic tokens that preserve active/inactive states
@@ -38,7 +43,7 @@ export type IconSemanticToken =
   | 'icon-inactive' // Inactive/disabled icons
   | 'icon-active' // Active/selected icons
   | 'icon-hover' // Hover state icons
-  | 'icon-muted' // Decorative/low-priority icons
+  | 'icon-muted'; // Decorative/low-priority icons
 
 /**
  * Border semantic tokens with opacity preservation
@@ -47,7 +52,7 @@ export type BorderSemanticToken =
   | 'border-strong' // High contrast borders
   | 'border-medium' // Medium contrast borders
   | 'border-subtle' // Low contrast borders
-  | 'border-ghost' // Very subtle borders
+  | 'border-ghost'; // Very subtle borders
 
 /**
  * Component-specific semantic tokens for complex components
@@ -60,7 +65,7 @@ export type ComponentSemanticToken =
   | 'table-header-text'
   | 'table-body-text'
   | 'button-text-default'
-  | 'button-text-hover'
+  | 'button-text-hover';
 
 /**
  * All semantic token types combined
@@ -70,7 +75,7 @@ export type AllSemanticTokens =
   | HierarchicalTextToken
   | IconSemanticToken
   | BorderSemanticToken
-  | ComponentSemanticToken
+  | ComponentSemanticToken;
 
 /**
  * Maps semantic tokens to their corresponding CSS custom properties or Catalyst colors
@@ -82,7 +87,7 @@ export const SEMANTIC_MAPPINGS = {
   success: 'green', // Maps to existing Catalyst green
   warning: 'amber', // Maps to existing Catalyst amber
   danger: 'destructive', // Maps to shadcn destructive
-} as const
+} as const;
 
 /**
  * Hierarchical text token mappings with CSS variable fallback chains
@@ -94,7 +99,7 @@ export const HIERARCHICAL_TEXT_MAPPINGS = {
   'text-tertiary': 'tertiary-foreground',
   'text-quaternary': 'quaternary-foreground',
   'text-muted': 'muted-foreground',
-} as const
+} as const;
 
 /**
  * Icon semantic token mappings with state preservation
@@ -106,7 +111,7 @@ export const ICON_SEMANTIC_MAPPINGS = {
   'icon-active': 'icon-active',
   'icon-hover': 'icon-hover',
   'icon-muted': 'icon-muted',
-} as const
+} as const;
 
 /**
  * Border semantic token mappings with opacity information
@@ -116,7 +121,7 @@ export const BORDER_SEMANTIC_MAPPINGS = {
   'border-medium': 'border',
   'border-subtle': 'border-subtle',
   'border-ghost': 'border-ghost',
-} as const
+} as const;
 
 /**
  * Component-specific semantic token mappings
@@ -130,7 +135,7 @@ export const COMPONENT_SEMANTIC_MAPPINGS = {
   'table-body-text': 'table-body-text',
   'button-text-default': 'button-text-default',
   'button-text-hover': 'button-text-hover',
-} as const
+} as const;
 
 // ============================================================================
 // SEMANTIC TOKEN RESOLVERS (Pure Functions)
@@ -142,7 +147,7 @@ export const COMPONENT_SEMANTIC_MAPPINGS = {
  * @returns The resolved token value
  */
 export function resolveSemanticToken(token: SemanticColorToken): string {
-  return SEMANTIC_MAPPINGS[token]
+  return SEMANTIC_MAPPINGS[token];
 }
 
 /**
@@ -150,8 +155,10 @@ export function resolveSemanticToken(token: SemanticColorToken): string {
  * @param token - The hierarchical text token to resolve
  * @returns The resolved CSS variable name
  */
-export function resolveHierarchicalTextToken(token: HierarchicalTextToken): string {
-  return HIERARCHICAL_TEXT_MAPPINGS[token]
+export function resolveHierarchicalTextToken(
+  token: HierarchicalTextToken,
+): string {
+  return HIERARCHICAL_TEXT_MAPPINGS[token];
 }
 
 /**
@@ -160,7 +167,7 @@ export function resolveHierarchicalTextToken(token: HierarchicalTextToken): stri
  * @returns The resolved CSS variable name
  */
 export function resolveIconSemanticToken(token: IconSemanticToken): string {
-  return ICON_SEMANTIC_MAPPINGS[token]
+  return ICON_SEMANTIC_MAPPINGS[token];
 }
 
 /**
@@ -169,7 +176,7 @@ export function resolveIconSemanticToken(token: IconSemanticToken): string {
  * @returns The resolved CSS variable name
  */
 export function resolveBorderSemanticToken(token: BorderSemanticToken): string {
-  return BORDER_SEMANTIC_MAPPINGS[token]
+  return BORDER_SEMANTIC_MAPPINGS[token];
 }
 
 /**
@@ -177,8 +184,10 @@ export function resolveBorderSemanticToken(token: BorderSemanticToken): string {
  * @param token - The component semantic token to resolve
  * @returns The resolved CSS variable name
  */
-export function resolveComponentSemanticToken(token: ComponentSemanticToken): string {
-  return COMPONENT_SEMANTIC_MAPPINGS[token]
+export function resolveComponentSemanticToken(
+  token: ComponentSemanticToken,
+): string {
+  return COMPONENT_SEMANTIC_MAPPINGS[token];
 }
 
 /**
@@ -189,23 +198,23 @@ export function resolveComponentSemanticToken(token: ComponentSemanticToken): st
 export function resolveAnySemanticToken(token: string): string {
   // Try each token type in order
   if (token in SEMANTIC_MAPPINGS) {
-    return SEMANTIC_MAPPINGS[token as SemanticColorToken]
+    return SEMANTIC_MAPPINGS[token as SemanticColorToken];
   }
   if (token in HIERARCHICAL_TEXT_MAPPINGS) {
-    return HIERARCHICAL_TEXT_MAPPINGS[token as HierarchicalTextToken]
+    return HIERARCHICAL_TEXT_MAPPINGS[token as HierarchicalTextToken];
   }
   if (token in ICON_SEMANTIC_MAPPINGS) {
-    return ICON_SEMANTIC_MAPPINGS[token as IconSemanticToken]
+    return ICON_SEMANTIC_MAPPINGS[token as IconSemanticToken];
   }
   if (token in BORDER_SEMANTIC_MAPPINGS) {
-    return BORDER_SEMANTIC_MAPPINGS[token as BorderSemanticToken]
+    return BORDER_SEMANTIC_MAPPINGS[token as BorderSemanticToken];
   }
   if (token in COMPONENT_SEMANTIC_MAPPINGS) {
-    return COMPONENT_SEMANTIC_MAPPINGS[token as ComponentSemanticToken]
+    return COMPONENT_SEMANTIC_MAPPINGS[token as ComponentSemanticToken];
   }
 
   // Return original token if no mapping found
-  return token
+  return token;
 }
 
 /**
@@ -214,7 +223,7 @@ export function resolveAnySemanticToken(token: string): string {
  * @returns True if the value is a semantic token
  */
 export function isSemanticToken(value: string): value is SemanticColorToken {
-  return value in SEMANTIC_MAPPINGS
+  return value in SEMANTIC_MAPPINGS;
 }
 
 /**
@@ -229,7 +238,7 @@ export function isAnySemanticToken(value: string): value is AllSemanticTokens {
     value in ICON_SEMANTIC_MAPPINGS ||
     value in BORDER_SEMANTIC_MAPPINGS ||
     value in COMPONENT_SEMANTIC_MAPPINGS
-  )
+  );
 }
 
 // ============================================================================
@@ -244,22 +253,22 @@ export function isAnySemanticToken(value: string): value is AllSemanticTokens {
  */
 export function createSemanticStyles(
   token: SemanticColorToken,
-  variant: 'solid' | 'outline' | 'ghost' = 'solid'
+  variant: 'solid' | 'outline' | 'ghost' = 'solid',
 ): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   switch (variant) {
     case 'solid':
-      return `bg-${resolvedToken} text-${resolvedToken}-foreground hover:bg-${resolvedToken}/90`
+      return `bg-${resolvedToken} text-${resolvedToken}-foreground hover:bg-${resolvedToken}/90`;
 
     case 'outline':
-      return `border border-${resolvedToken} text-${resolvedToken} hover:bg-${resolvedToken}/10`
+      return `border border-${resolvedToken} text-${resolvedToken} hover:bg-${resolvedToken}/10`;
 
     case 'ghost':
-      return `text-${resolvedToken} hover:bg-${resolvedToken}/10`
+      return `text-${resolvedToken} hover:bg-${resolvedToken}/10`;
 
     default:
-      return `bg-${resolvedToken} text-${resolvedToken}-foreground`
+      return `bg-${resolvedToken} text-${resolvedToken}-foreground`;
   }
 }
 
@@ -269,20 +278,20 @@ export function createSemanticStyles(
  * @returns CSS class string for badge styling
  */
 export function createSemanticBadgeStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   // For Tailwind colors (green, amber), use appropriate contrast colors
   // For CSS variables (primary, secondary, destructive), use -foreground suffix
   const textColor = (() => {
     switch (resolvedToken) {
       case 'green':
-        return 'text-green-700 dark:text-green-400'
+        return 'text-green-700 dark:text-green-400';
       case 'amber':
-        return 'text-amber-700 dark:text-amber-400'
+        return 'text-amber-700 dark:text-amber-400';
       default:
-        return `text-${resolvedToken}-foreground dark:text-${resolvedToken}-foreground`
+        return `text-${resolvedToken}-foreground dark:text-${resolvedToken}-foreground`;
     }
-  })()
+  })();
 
   return [
     `bg-${resolvedToken}/15`,
@@ -290,7 +299,7 @@ export function createSemanticBadgeStyles(token: SemanticColorToken): string {
     `group-data-hover:bg-${resolvedToken}/25`,
     `dark:bg-${resolvedToken}/10`,
     `dark:group-data-hover:bg-${resolvedToken}/20`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -299,7 +308,7 @@ export function createSemanticBadgeStyles(token: SemanticColorToken): string {
  * @returns CSS class string for button styling
  */
 export function createSemanticButtonStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `text-white`,
@@ -309,7 +318,7 @@ export function createSemanticButtonStyles(token: SemanticColorToken): string {
     `[--btn-icon:var(--color-white)]/60`,
     `data-active:[--btn-icon:var(--color-white)]/80`,
     `data-hover:[--btn-icon:var(--color-white)]/80`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -317,14 +326,16 @@ export function createSemanticButtonStyles(token: SemanticColorToken): string {
  * @param token - The semantic token
  * @returns CSS class string for checkbox styling
  */
-export function createSemanticCheckboxStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+export function createSemanticCheckboxStyles(
+  token: SemanticColorToken,
+): string {
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `[--checkbox-check:var(--color-white)]`,
     `[--checkbox-checked-bg:var(--color-${resolvedToken})]`,
     `[--checkbox-checked-border:var(--color-${resolvedToken})]/90`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -333,13 +344,13 @@ export function createSemanticCheckboxStyles(token: SemanticColorToken): string 
  * @returns CSS class string for radio styling
  */
 export function createSemanticRadioStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `[--radio-checked-bg:var(--color-${resolvedToken})]`,
     `[--radio-checked-border:var(--color-${resolvedToken})]/90`,
     `[--radio-checked-indicator:var(--color-white)]`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -348,14 +359,14 @@ export function createSemanticRadioStyles(token: SemanticColorToken): string {
  * @returns CSS class string for switch styling
  */
 export function createSemanticSwitchStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `[--switch-bg-ring:var(--color-${resolvedToken})]/90`,
     `[--switch-bg:var(--color-${resolvedToken})]`,
     `dark:[--switch-bg-ring:transparent]`,
     `dark:[--switch-bg:var(--color-white)]/25`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -364,17 +375,17 @@ export function createSemanticSwitchStyles(token: SemanticColorToken): string {
  * @returns CSS class string for text styling
  */
 export function createSemanticTextStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   // For Tailwind colors (green, amber), use the base color
   // For CSS variables (primary, secondary, destructive), use -foreground suffix
   switch (resolvedToken) {
     case 'green':
-      return 'text-green-700 dark:text-green-400'
+      return 'text-green-700 dark:text-green-400';
     case 'amber':
-      return 'text-amber-700 dark:text-amber-400'
+      return 'text-amber-700 dark:text-amber-400';
     default:
-      return `text-${resolvedToken}-foreground dark:text-${resolvedToken}-foreground`
+      return `text-${resolvedToken}-foreground dark:text-${resolvedToken}-foreground`;
   }
 }
 
@@ -384,7 +395,7 @@ export function createSemanticTextStyles(token: SemanticColorToken): string {
  * @returns CSS class string for link styling
  */
 export function createSemanticLinkStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   // For Tailwind colors (green, amber), use appropriate link colors
   // For CSS variables (primary, secondary, destructive), use -foreground suffix
@@ -395,21 +406,21 @@ export function createSemanticLinkStyles(token: SemanticColorToken): string {
         'hover:text-green-800',
         'dark:text-green-400',
         'dark:hover:text-green-300',
-      ].join(' ')
+      ].join(' ');
     case 'amber':
       return [
         'text-amber-700',
         'hover:text-amber-800',
         'dark:text-amber-400',
         'dark:hover:text-amber-300',
-      ].join(' ')
+      ].join(' ');
     default:
       return [
         `text-${resolvedToken}-foreground`,
         `hover:text-${resolvedToken}-foreground/80`,
         `dark:text-${resolvedToken}-foreground`,
         `dark:hover:text-${resolvedToken}-foreground/80`,
-      ].join(' ')
+      ].join(' ');
   }
 }
 
@@ -419,7 +430,7 @@ export function createSemanticLinkStyles(token: SemanticColorToken): string {
  * @returns CSS class string for alert styling
  */
 export function createSemanticAlertStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   // For Tailwind colors (green, amber), use appropriate alert colors
   // For CSS variables (primary, secondary, destructive), use -foreground suffix
@@ -432,7 +443,7 @@ export function createSemanticAlertStyles(token: SemanticColorToken): string {
         'dark:bg-green-950',
         'dark:border-green-800',
         'dark:text-green-200',
-      ].join(' ')
+      ].join(' ');
     case 'amber':
       return [
         'bg-amber-50',
@@ -441,7 +452,7 @@ export function createSemanticAlertStyles(token: SemanticColorToken): string {
         'dark:bg-amber-950',
         'dark:border-amber-800',
         'dark:text-amber-200',
-      ].join(' ')
+      ].join(' ');
     default:
       return [
         `bg-${resolvedToken}/10`,
@@ -450,7 +461,7 @@ export function createSemanticAlertStyles(token: SemanticColorToken): string {
         `dark:bg-${resolvedToken}/10`,
         `dark:border-${resolvedToken}/20`,
         `dark:text-${resolvedToken}-foreground`,
-      ].join(' ')
+      ].join(' ');
   }
 }
 
@@ -460,14 +471,14 @@ export function createSemanticAlertStyles(token: SemanticColorToken): string {
  * @returns CSS class string for input validation styling
  */
 export function createSemanticInputStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `border-${resolvedToken}`,
     `focus:border-${resolvedToken}`,
     `focus:ring-2`,
     `focus:ring-${resolvedToken}/20`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -475,19 +486,22 @@ export function createSemanticInputStyles(token: SemanticColorToken): string {
  * @param token - The semantic token
  * @returns CSS class string for dropdown focus styling with proper contrast
  */
-export function createSemanticDropdownStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+export function createSemanticDropdownStyles(
+  token: SemanticColorToken,
+): string {
+  const resolvedToken = resolveSemanticToken(token);
 
   // Handle Tailwind colors vs CSS custom properties
   switch (resolvedToken) {
     case 'green':
-      return 'data-focus:bg-green-600 data-focus:text-white'
+      return 'data-focus:bg-green-600 data-focus:text-white';
     case 'amber':
-      return 'data-focus:bg-amber-600 data-focus:text-white'
+      return 'data-focus:bg-amber-600 data-focus:text-white';
     default:
-      return [`data-focus:bg-${resolvedToken}`, `data-focus:text-${resolvedToken}-foreground`].join(
-        ' '
-      )
+      return [
+        `data-focus:bg-${resolvedToken}`,
+        `data-focus:text-${resolvedToken}-foreground`,
+      ].join(' ');
   }
 }
 
@@ -497,18 +511,19 @@ export function createSemanticDropdownStyles(token: SemanticColorToken): string 
  * @returns CSS class string for listbox focus styling with proper contrast
  */
 export function createSemanticListboxStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   // Handle Tailwind colors vs CSS custom properties
   switch (resolvedToken) {
     case 'green':
-      return 'data-focus:bg-green-600 data-focus:text-white'
+      return 'data-focus:bg-green-600 data-focus:text-white';
     case 'amber':
-      return 'data-focus:bg-amber-600 data-focus:text-white'
+      return 'data-focus:bg-amber-600 data-focus:text-white';
     default:
-      return [`data-focus:bg-${resolvedToken}`, `data-focus:text-${resolvedToken}-foreground`].join(
-        ' '
-      )
+      return [
+        `data-focus:bg-${resolvedToken}`,
+        `data-focus:text-${resolvedToken}-foreground`,
+      ].join(' ');
   }
 }
 
@@ -517,19 +532,22 @@ export function createSemanticListboxStyles(token: SemanticColorToken): string {
  * @param token - The semantic token
  * @returns CSS class string for combobox focus styling with proper contrast
  */
-export function createSemanticComboboxStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+export function createSemanticComboboxStyles(
+  token: SemanticColorToken,
+): string {
+  const resolvedToken = resolveSemanticToken(token);
 
   // Handle Tailwind colors vs CSS custom properties
   switch (resolvedToken) {
     case 'green':
-      return 'data-focus:bg-green-600 data-focus:text-white'
+      return 'data-focus:bg-green-600 data-focus:text-white';
     case 'amber':
-      return 'data-focus:bg-amber-600 data-focus:text-white'
+      return 'data-focus:bg-amber-600 data-focus:text-white';
     default:
-      return [`data-focus:bg-${resolvedToken}`, `data-focus:text-${resolvedToken}-foreground`].join(
-        ' '
-      )
+      return [
+        `data-focus:bg-${resolvedToken}`,
+        `data-focus:text-${resolvedToken}-foreground`,
+      ].join(' ');
   }
 }
 
@@ -539,14 +557,14 @@ export function createSemanticComboboxStyles(token: SemanticColorToken): string 
  * @returns CSS class string for dialog styling
  */
 export function createSemanticDialogStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `border-${resolvedToken}/20`,
     `focus:border-${resolvedToken}`,
     `focus:ring-2`,
     `focus:ring-${resolvedToken}/20`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -555,9 +573,13 @@ export function createSemanticDialogStyles(token: SemanticColorToken): string {
  * @returns CSS class string for navbar styling
  */
 export function createSemanticNavbarStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
-  return [`border-b-${resolvedToken}/20`, `bg-${resolvedToken}/5`, `backdrop-blur-sm`].join(' ')
+  return [
+    `border-b-${resolvedToken}/20`,
+    `bg-${resolvedToken}/5`,
+    `backdrop-blur-sm`,
+  ].join(' ');
 }
 
 /**
@@ -566,13 +588,13 @@ export function createSemanticNavbarStyles(token: SemanticColorToken): string {
  * @returns CSS class string for table styling
  */
 export function createSemanticTableStyles(token: SemanticColorToken): string {
-  const resolvedToken = resolveSemanticToken(token)
+  const resolvedToken = resolveSemanticToken(token);
 
   return [
     `border-${resolvedToken}/20`,
     `hover:bg-${resolvedToken}/5`,
     `focus:bg-${resolvedToken}/10`,
-  ].join(' ')
+  ].join(' ');
 }
 
 // ============================================================================
@@ -589,26 +611,26 @@ export function createSemanticTableStyles(token: SemanticColorToken): string {
 export function resolveSemanticColor<T>(
   token: string,
   component: 'button' | 'badge' | 'input' | 'table',
-  fallbackColor: T
+  fallbackColor: T,
 ): string | T {
   if (!isSemanticToken(token)) {
-    return fallbackColor
+    return fallbackColor;
   }
 
   switch (component) {
     case 'button':
-      return createSemanticButtonStyles(token)
+      return createSemanticButtonStyles(token);
 
     case 'badge':
-      return createSemanticBadgeStyles(token)
+      return createSemanticBadgeStyles(token);
 
     case 'input':
     case 'table':
       // For inputs and tables, use simple semantic styles
-      return createSemanticStyles(token, 'outline')
+      return createSemanticStyles(token, 'outline');
 
     default:
-      return createSemanticStyles(token)
+      return createSemanticStyles(token);
   }
 }
 
@@ -624,14 +646,14 @@ export function resolveSemanticColor<T>(
  */
 export function resolveButtonColor(
   color: string | undefined,
-  _catalystStyles: Record<string, string[]>
+  _catalystStyles: Record<string, string[]>,
 ): string[] {
   if (!color || !isSemanticToken(color)) {
-    return []
+    return [];
   }
 
-  const semanticStyles = createSemanticButtonStyles(color)
-  return [semanticStyles]
+  const semanticStyles = createSemanticButtonStyles(color);
+  return [semanticStyles];
 }
 
 /**
@@ -642,13 +664,13 @@ export function resolveButtonColor(
  */
 export function resolveBadgeColor(
   color: string | undefined,
-  _catalystColors: Record<string, string>
+  _catalystColors: Record<string, string>,
 ): string {
   if (!color || !isSemanticToken(color)) {
-    return ''
+    return '';
   }
 
-  return createSemanticBadgeStyles(color)
+  return createSemanticBadgeStyles(color);
 }
 
 // ============================================================================
@@ -659,8 +681,11 @@ export function resolveBadgeColor(
  * Validates semantic token configuration
  * @returns Validation result with any errors
  */
-export function validateSemanticTokens(): { isValid: boolean; errors: string[] } {
-  const errors: string[] = []
+export function validateSemanticTokens(): {
+  isValid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
 
   // Check that all semantic tokens have mappings
   const requiredTokens: SemanticColorToken[] = [
@@ -669,18 +694,18 @@ export function validateSemanticTokens(): { isValid: boolean; errors: string[] }
     'success',
     'warning',
     'danger',
-  ]
+  ];
 
   for (const token of requiredTokens) {
     if (!(token in SEMANTIC_MAPPINGS)) {
-      errors.push(`Missing mapping for semantic token: ${token}`)
+      errors.push(`Missing mapping for semantic token: ${token}`);
     }
   }
 
   return {
     isValid: errors.length === 0,
     errors,
-  }
+  };
 }
 
 /**
@@ -688,7 +713,7 @@ export function validateSemanticTokens(): { isValid: boolean; errors: string[] }
  * @returns Array of semantic token names
  */
 export function getSemanticTokens(): SemanticColorToken[] {
-  return Object.keys(SEMANTIC_MAPPINGS) as SemanticColorToken[]
+  return Object.keys(SEMANTIC_MAPPINGS) as SemanticColorToken[];
 }
 
 // ============================================================================
@@ -700,11 +725,13 @@ export function getSemanticTokens(): SemanticColorToken[] {
  * @param token - The hierarchical text token
  * @returns CSS class string with fallback support
  */
-export function createHierarchicalTextStyles(token: HierarchicalTextToken): string {
-  const resolvedToken = resolveHierarchicalTextToken(token)
+export function createHierarchicalTextStyles(
+  token: HierarchicalTextToken,
+): string {
+  const resolvedToken = resolveHierarchicalTextToken(token);
 
   // Create CSS variable with fallback chain
-  return `text-${resolvedToken}`
+  return `text-${resolvedToken}`;
 }
 
 /**
@@ -713,9 +740,9 @@ export function createHierarchicalTextStyles(token: HierarchicalTextToken): stri
  * @returns CSS variable string for icon styling
  */
 export function createIconSemanticStyles(token: IconSemanticToken): string {
-  const resolvedToken = resolveIconSemanticToken(token)
+  const resolvedToken = resolveIconSemanticToken(token);
 
-  return `[--icon:var(--color-${resolvedToken})]`
+  return `[--icon:var(--color-${resolvedToken})]`;
 }
 
 /**
@@ -728,11 +755,11 @@ export function createIconSemanticStyles(token: IconSemanticToken): string {
 export function createButtonIconStyles(
   inactiveToken: IconSemanticToken,
   activeToken: IconSemanticToken,
-  hoverToken?: IconSemanticToken
+  hoverToken?: IconSemanticToken,
 ): string {
-  const inactive = resolveIconSemanticToken(inactiveToken)
-  const active = resolveIconSemanticToken(activeToken)
-  const hover = hoverToken ? resolveIconSemanticToken(hoverToken) : active
+  const inactive = resolveIconSemanticToken(inactiveToken);
+  const active = resolveIconSemanticToken(activeToken);
+  const hover = hoverToken ? resolveIconSemanticToken(hoverToken) : active;
 
   return [
     `[--btn-icon:var(--color-${inactive})]`,
@@ -741,7 +768,7 @@ export function createButtonIconStyles(
     `dark:[--btn-icon:var(--color-${inactive})]`,
     `dark:data-active:[--btn-icon:var(--color-${active})]`,
     `dark:data-hover:[--btn-icon:var(--color-${hover})]`,
-  ].join(' ')
+  ].join(' ');
 }
 
 /**
@@ -750,14 +777,17 @@ export function createButtonIconStyles(
  * @param opacity - Optional opacity value (e.g., 10, 20, 50)
  * @returns CSS class string for borders with opacity
  */
-export function createBorderSemanticStyles(token: BorderSemanticToken, opacity?: number): string {
-  const resolvedToken = resolveBorderSemanticToken(token)
+export function createBorderSemanticStyles(
+  token: BorderSemanticToken,
+  opacity?: number,
+): string {
+  const resolvedToken = resolveBorderSemanticToken(token);
 
   if (opacity) {
-    return `border-${resolvedToken}/${opacity}`
+    return `border-${resolvedToken}/${opacity}`;
   }
 
-  return `border-${resolvedToken}`
+  return `border-${resolvedToken}`;
 }
 
 /**
@@ -768,16 +798,16 @@ export function createBorderSemanticStyles(token: BorderSemanticToken, opacity?:
  */
 export function createComponentSemanticStyles(
   token: ComponentSemanticToken,
-  fallbackToken?: HierarchicalTextToken | IconSemanticToken
+  fallbackToken?: HierarchicalTextToken | IconSemanticToken,
 ): string {
-  const resolvedToken = resolveComponentSemanticToken(token)
+  const resolvedToken = resolveComponentSemanticToken(token);
 
   if (fallbackToken) {
-    const fallback = resolveAnySemanticToken(fallbackToken)
-    return `text-${resolvedToken} ${resolvedToken !== token ? `text-${fallback}` : ''}`
+    const fallback = resolveAnySemanticToken(fallbackToken);
+    return `text-${resolvedToken} ${resolvedToken !== token ? `text-${fallback}` : ''}`;
   }
 
-  return `text-${resolvedToken}`
+  return `text-${resolvedToken}`;
 }
 
 /**
@@ -792,17 +822,17 @@ export function createComponentSemanticStyles(
 export function createCSSVariableFallbackChain(
   primaryToken: AllSemanticTokens,
   fallbackTokens: string[],
-  property: 'text' | 'bg' | 'border' = 'text'
+  property: 'text' | 'bg' | 'border' = 'text',
 ): string {
-  const resolvedPrimary = resolveAnySemanticToken(primaryToken)
+  const resolvedPrimary = resolveAnySemanticToken(primaryToken);
 
   // Build fallback chain: primary → fallbacks → original Catalyst value
   const variableChain = [
     `var(--color-${resolvedPrimary})`,
     ...fallbackTokens.map((token) => `var(--color-${token})`),
-  ].join(', ')
+  ].join(', ');
 
-  return `${property}-[${variableChain}]`
+  return `${property}-[${variableChain}]`;
 }
 
 // ============================================================================
@@ -819,17 +849,23 @@ export function createCatalystThemeVariables(): Record<string, string> {
   return {
     // Hierarchical text tokens (secondary-foreground already exists in base theme)
     '--color-text-primary': 'var(--color-foreground)',
-    '--color-text-tertiary': 'var(--color-tertiary-foreground, var(--color-muted-foreground))',
-    '--color-text-quaternary': 'var(--color-quaternary-foreground, var(--color-muted-foreground))',
+    '--color-text-tertiary':
+      'var(--color-tertiary-foreground, var(--color-muted-foreground))',
+    '--color-text-quaternary':
+      'var(--color-quaternary-foreground, var(--color-muted-foreground))',
     '--color-text-muted': 'var(--color-muted-foreground)',
 
     // Icon state tokens
-    '--color-icon-primary': 'var(--color-icon-primary, var(--color-foreground))',
-    '--color-icon-secondary': 'var(--color-icon-secondary, var(--color-muted-foreground))',
-    '--color-icon-inactive': 'var(--color-icon-inactive, var(--color-muted-foreground))',
+    '--color-icon-primary':
+      'var(--color-icon-primary, var(--color-foreground))',
+    '--color-icon-secondary':
+      'var(--color-icon-secondary, var(--color-muted-foreground))',
+    '--color-icon-inactive':
+      'var(--color-icon-inactive, var(--color-muted-foreground))',
     '--color-icon-active': 'var(--color-icon-active, var(--color-foreground))',
     '--color-icon-hover': 'var(--color-icon-hover, var(--color-foreground))',
-    '--color-icon-muted': 'var(--color-icon-muted, var(--color-muted-foreground))',
+    '--color-icon-muted':
+      'var(--color-icon-muted, var(--color-muted-foreground))',
 
     // Border weight tokens
     '--color-border-strong': 'var(--color-border-strong, var(--color-border))',
@@ -838,25 +874,34 @@ export function createCatalystThemeVariables(): Record<string, string> {
     '--color-border-ghost': 'var(--color-border-ghost, var(--color-border))',
 
     // Component-specific tokens
-    '--color-sidebar-text-primary': 'var(--color-sidebar-text-primary, var(--color-foreground))',
+    '--color-sidebar-text-primary':
+      'var(--color-sidebar-text-primary, var(--color-foreground))',
     '--color-sidebar-text-secondary':
       'var(--color-sidebar-text-secondary, var(--color-muted-foreground))',
     '--color-sidebar-icon-default':
       'var(--color-sidebar-icon-default, var(--color-muted-foreground))',
-    '--color-sidebar-icon-active': 'var(--color-sidebar-icon-active, var(--color-foreground))',
-    '--color-table-header-text': 'var(--color-table-header-text, var(--color-muted-foreground))',
-    '--color-table-body-text': 'var(--color-table-body-text, var(--color-foreground))',
-    '--color-button-text-default': 'var(--color-button-text-default, var(--color-foreground))',
-    '--color-button-text-hover': 'var(--color-button-text-hover, var(--color-foreground))',
-  }
+    '--color-sidebar-icon-active':
+      'var(--color-sidebar-icon-active, var(--color-foreground))',
+    '--color-table-header-text':
+      'var(--color-table-header-text, var(--color-muted-foreground))',
+    '--color-table-body-text':
+      'var(--color-table-body-text, var(--color-foreground))',
+    '--color-button-text-default':
+      'var(--color-button-text-default, var(--color-foreground))',
+    '--color-button-text-hover':
+      'var(--color-button-text-hover, var(--color-foreground))',
+  };
 }
 
 /**
  * Enhanced validation for hierarchical semantic tokens
  * @returns Validation result with any errors
  */
-export function validateHierarchicalSemanticTokens(): { isValid: boolean; errors: string[] } {
-  const errors: string[] = []
+export function validateHierarchicalSemanticTokens(): {
+  isValid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
 
   // Validate all token mappings exist
   const allMappings = [
@@ -865,20 +910,20 @@ export function validateHierarchicalSemanticTokens(): { isValid: boolean; errors
     ...Object.keys(ICON_SEMANTIC_MAPPINGS),
     ...Object.keys(BORDER_SEMANTIC_MAPPINGS),
     ...Object.keys(COMPONENT_SEMANTIC_MAPPINGS),
-  ]
+  ];
 
   // Check for any undefined mappings
   allMappings.forEach((token) => {
-    const resolved = resolveAnySemanticToken(token)
+    const resolved = resolveAnySemanticToken(token);
     if (!resolved || resolved === token) {
-      errors.push(`Token "${token}" does not have a valid mapping`)
+      errors.push(`Token "${token}" does not have a valid mapping`);
     }
-  })
+  });
 
   return {
     isValid: errors.length === 0,
     errors,
-  }
+  };
 }
 
 /**
@@ -886,17 +931,19 @@ export function validateHierarchicalSemanticTokens(): { isValid: boolean; errors
  * @returns Object with all token categories
  */
 export function getAllSemanticTokens(): {
-  color: SemanticColorToken[]
-  text: HierarchicalTextToken[]
-  icon: IconSemanticToken[]
-  border: BorderSemanticToken[]
-  component: ComponentSemanticToken[]
+  color: SemanticColorToken[];
+  text: HierarchicalTextToken[];
+  icon: IconSemanticToken[];
+  border: BorderSemanticToken[];
+  component: ComponentSemanticToken[];
 } {
   return {
     color: Object.keys(SEMANTIC_MAPPINGS) as SemanticColorToken[],
     text: Object.keys(HIERARCHICAL_TEXT_MAPPINGS) as HierarchicalTextToken[],
     icon: Object.keys(ICON_SEMANTIC_MAPPINGS) as IconSemanticToken[],
     border: Object.keys(BORDER_SEMANTIC_MAPPINGS) as BorderSemanticToken[],
-    component: Object.keys(COMPONENT_SEMANTIC_MAPPINGS) as ComponentSemanticToken[],
-  }
+    component: Object.keys(
+      COMPONENT_SEMANTIC_MAPPINGS,
+    ) as ComponentSemanticToken[],
+  };
 }

@@ -89,7 +89,7 @@ export const removeColorPrefixTransform = createProtectedRegexTransform({
       replacement: 'var(--ring)',
       description: 'var(--color-ring) → var(--ring)',
     },
-    
+
     // Enhanced semantic tokens (optional)
     {
       pattern: /var\(--color-icon-inactive\)/g,
@@ -126,7 +126,7 @@ export const removeColorPrefixTransform = createProtectedRegexTransform({
       replacement: 'var(--border-ghost)',
       description: 'var(--color-border-ghost) → var(--border-ghost)',
     },
-    
+
     // Component-specific tokens
     {
       pattern: /var\(--color-button-secondary-bg\)/g,

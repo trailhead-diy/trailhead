@@ -98,18 +98,21 @@ The app will be available at [http://localhost:3000](http://localhost:3000) with
 ## 🔧 Configuration
 
 ### TypeScript
+
 - Strict type checking enabled
 - Modern ES2022 target
 - Path aliases configured (`@/*`)
 - Enhanced type safety options
 
 ### Next.js
+
 - React Strict Mode enabled
 - Image optimization configured
 - Type checking during build
 - ESLint validation during build
 
 ### Tailwind CSS
+
 - Modern utility classes
 - Dark mode support
 - Responsive design
@@ -150,6 +153,7 @@ pnpm build
 ```
 
 The build output will be optimized for production with automatic:
+
 - Code splitting
 - Image optimization
 - CSS minification

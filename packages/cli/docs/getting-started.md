@@ -62,14 +62,14 @@ Let's build a simple CLI tool that greets users and manages a todo list.
 Create `src/cli.ts`:
 
 ```typescript
-import { createCLI } from '@trailhead/cli'
+import { createCLI } from "@trailhead/cli";
 
 // Create the CLI instance
 export const cli = createCLI({
-  name: 'my-todo',
-  version: '1.0.0',
-  description: 'A simple todo management CLI'
-})
+  name: "my-todo",
+  version: "1.0.0",
+  description: "A simple todo management CLI",
+});
 ```
 
 ### 2. Create Your First Command
@@ -77,34 +77,34 @@ export const cli = createCLI({
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { createCommand } from '@trailhead/cli/command'
-import { ok } from '@trailhead/cli/core'
+import { createCommand } from "@trailhead/cli/command";
+import { ok } from "@trailhead/cli/core";
 
 export const greetCommand = createCommand({
-  name: 'greet',
-  description: 'Greet a user',
+  name: "greet",
+  description: "Greet a user",
   options: [
     {
-      name: 'name',
-      alias: 'n',
-      type: 'string',
-      description: 'Name to greet',
-      required: true
+      name: "name",
+      alias: "n",
+      type: "string",
+      description: "Name to greet",
+      required: true,
     },
     {
-      name: 'enthusiastic',
-      alias: 'e',
-      type: 'boolean',
-      description: 'Show enthusiasm',
-      default: false
-    }
+      name: "enthusiastic",
+      alias: "e",
+      type: "boolean",
+      description: "Show enthusiasm",
+      default: false,
+    },
   ],
   action: async (options, context) => {
-    const greeting = `Hello, ${options.name}${options.enthusiastic ? '!!!' : '!'}`
-    context.logger.success(greeting)
-    return ok(undefined)
-  }
-})
+    const greeting = `Hello, ${options.name}${options.enthusiastic ? "!!!" : "!"}`;
+    context.logger.success(greeting);
+    return ok(undefined);
+  },
+});
 ```
 
 ### 3. Add File-Based Todo Management
@@ -112,161 +112,168 @@ export const greetCommand = createCommand({
 Create `src/commands/todo.ts`:
 
 ```typescript
-import { createCommand } from '@trailhead/cli/command'
-import { ok, err } from '@trailhead/cli/core'
-import { prompt, select } from '@trailhead/cli/prompts'
-import type { CommandContext } from '@trailhead/cli/command'
+import { createCommand } from "@trailhead/cli/command";
+import { ok, err } from "@trailhead/cli/core";
+import { prompt, select } from "@trailhead/cli/prompts";
+import type { CommandContext } from "@trailhead/cli/command";
 
 interface Todo {
-  id: string
-  title: string
-  completed: boolean
-  createdAt: Date
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
 }
 
 interface TodoStore {
-  todos: Todo[]
+  todos: Todo[];
 }
 
 // Helper functions
 async function loadTodos(context: CommandContext): Promise<Result<TodoStore>> {
-  const result = await context.fs.readJson<TodoStore>('.todos.json')
+  const result = await context.fs.readJson<TodoStore>(".todos.json");
   if (!result.success) {
     // If file doesn't exist, return empty store
-    return ok({ todos: [] })
+    return ok({ todos: [] });
   }
-  return result
+  return result;
 }
 
-async function saveTodos(store: TodoStore, context: CommandContext): Promise<Result<void>> {
-  return context.fs.writeJson('.todos.json', store, { spaces: 2 })
+async function saveTodos(
+  store: TodoStore,
+  context: CommandContext,
+): Promise<Result<void>> {
+  return context.fs.writeJson(".todos.json", store, { spaces: 2 });
 }
 
 // List command
 export const listCommand = createCommand({
-  name: 'list',
-  description: 'List all todos',
+  name: "list",
+  description: "List all todos",
   action: async (_, context) => {
-    const result = await loadTodos(context)
+    const result = await loadTodos(context);
     if (!result.success) {
-      return result
+      return result;
     }
 
-    const { todos } = result.value
+    const { todos } = result.value;
     if (todos.length === 0) {
-      context.logger.info('No todos found. Create one with "todo add"')
-      return ok(undefined)
+      context.logger.info('No todos found. Create one with "todo add"');
+      return ok(undefined);
     }
 
-    context.logger.info('Your todos:')
+    context.logger.info("Your todos:");
     todos.forEach((todo, index) => {
-      const status = todo.completed ? '✓' : '○'
-      const style = todo.completed ? context.logger.chalk.dim : context.logger.chalk.white
-      context.logger.info(style(`  ${status} ${index + 1}. ${todo.title}`))
-    })
+      const status = todo.completed ? "✓" : "○";
+      const style = todo.completed
+        ? context.logger.chalk.dim
+        : context.logger.chalk.white;
+      context.logger.info(style(`  ${status} ${index + 1}. ${todo.title}`));
+    });
 
-    return ok(undefined)
-  }
-})
+    return ok(undefined);
+  },
+});
 
 // Add command
 export const addCommand = createCommand({
-  name: 'add',
-  description: 'Add a new todo',
+  name: "add",
+  description: "Add a new todo",
   options: [
     {
-      name: 'title',
-      alias: 't',
-      type: 'string',
-      description: 'Todo title'
-    }
+      name: "title",
+      alias: "t",
+      type: "string",
+      description: "Todo title",
+    },
   ],
   action: async (options, context) => {
     // Get title interactively if not provided
-    const title = options.title || await prompt({
-      message: 'What do you need to do?',
-      validate: (value) => value.length > 0 || 'Please enter a todo title'
-    })
+    const title =
+      options.title ||
+      (await prompt({
+        message: "What do you need to do?",
+        validate: (value) => value.length > 0 || "Please enter a todo title",
+      }));
 
     // Load existing todos
-    const loadResult = await loadTodos(context)
+    const loadResult = await loadTodos(context);
     if (!loadResult.success) {
-      return loadResult
+      return loadResult;
     }
 
     // Add new todo
-    const store = loadResult.value
+    const store = loadResult.value;
     const newTodo: Todo = {
       id: Date.now().toString(),
       title,
       completed: false,
-      createdAt: new Date()
-    }
-    store.todos.push(newTodo)
+      createdAt: new Date(),
+    };
+    store.todos.push(newTodo);
 
     // Save todos
-    const saveResult = await saveTodos(store, context)
+    const saveResult = await saveTodos(store, context);
     if (!saveResult.success) {
-      return saveResult
+      return saveResult;
     }
 
-    context.logger.success(`Added: "${title}"`)
-    return ok(undefined)
-  }
-})
+    context.logger.success(`Added: "${title}"`);
+    return ok(undefined);
+  },
+});
 
 // Complete command
 export const completeCommand = createCommand({
-  name: 'complete',
-  description: 'Mark a todo as completed',
+  name: "complete",
+  description: "Mark a todo as completed",
   action: async (_, context) => {
     // Load todos
-    const loadResult = await loadTodos(context)
+    const loadResult = await loadTodos(context);
     if (!loadResult.success) {
-      return loadResult
+      return loadResult;
     }
 
-    const store = loadResult.value
-    const incompleteTodos = store.todos.filter(t => !t.completed)
-    
+    const store = loadResult.value;
+    const incompleteTodos = store.todos.filter((t) => !t.completed);
+
     if (incompleteTodos.length === 0) {
-      context.logger.info('No incomplete todos!')
-      return ok(undefined)
+      context.logger.info("No incomplete todos!");
+      return ok(undefined);
     }
 
     // Let user select a todo
     const selected = await select({
-      message: 'Which todo did you complete?',
-      choices: incompleteTodos.map(todo => ({
+      message: "Which todo did you complete?",
+      choices: incompleteTodos.map((todo) => ({
         name: todo.title,
-        value: todo.id
-      }))
-    })
+        value: todo.id,
+      })),
+    });
 
     // Mark as completed
-    const todo = store.todos.find(t => t.id === selected)
+    const todo = store.todos.find((t) => t.id === selected);
     if (!todo) {
-      return err(new Error('Todo not found'))
+      return err(new Error("Todo not found"));
     }
-    todo.completed = true
+    todo.completed = true;
 
     // Save
-    const saveResult = await saveTodos(store, context)
+    const saveResult = await saveTodos(store, context);
     if (!saveResult.success) {
-      return saveResult
+      return saveResult;
     }
 
-    context.logger.success(`Completed: "${todo.title}"`)
-    return ok(undefined)
-  }
-})
+    context.logger.success(`Completed: "${todo.title}"`);
+    return ok(undefined);
+  },
+});
 
 // Create parent todo command
 export const todoCommand = createCommand({
-  name: 'todo',
-  description: 'Manage todos',
-  subcommands: [listCommand, addCommand, completeCommand]
-})
+  name: "todo",
+  description: "Manage todos",
+  subcommands: [listCommand, addCommand, completeCommand],
+});
 ```
 
 ### 4. Wire Everything Together
@@ -274,23 +281,21 @@ export const todoCommand = createCommand({
 Update `src/cli.ts`:
 
 ```typescript
-import { createCLI } from '@trailhead/cli'
-import { greetCommand } from './commands/greet'
-import { todoCommand } from './commands/todo'
+import { createCLI } from "@trailhead/cli";
+import { greetCommand } from "./commands/greet";
+import { todoCommand } from "./commands/todo";
 
 const cli = createCLI({
-  name: 'my-todo',
-  version: '1.0.0',
-  description: 'A simple todo management CLI'
-})
+  name: "my-todo",
+  version: "1.0.0",
+  description: "A simple todo management CLI",
+});
 
 // Add commands
-cli
-  .addCommand(greetCommand)
-  .addCommand(todoCommand)
+cli.addCommand(greetCommand).addCommand(todoCommand);
 
 // Export for bin script
-export { cli }
+export { cli };
 ```
 
 ### 5. Create the Executable
@@ -299,10 +304,10 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { cli } from './cli'
+import { cli } from "./cli";
 
 // Run the CLI
-cli.run(process.argv)
+cli.run(process.argv);
 ```
 
 ### 6. Configure package.json
@@ -408,57 +413,63 @@ Now that you have a working CLI application, explore these topics:
 ## Common Patterns
 
 ### Error Propagation
+
 ```typescript
-const configResult = await loadConfig(context)
+const configResult = await loadConfig(context);
 if (!configResult.success) {
-  return configResult // Propagate the error
+  return configResult; // Propagate the error
 }
 
-const dataResult = await processData(configResult.value)
+const dataResult = await processData(configResult.value);
 if (!dataResult.success) {
-  return dataResult
+  return dataResult;
 }
 
-return ok(dataResult.value)
+return ok(dataResult.value);
 ```
 
 ### Validation Pipeline
+
 ```typescript
-import { createValidationPipeline, createRule } from '@trailhead/cli/core'
+import { createValidationPipeline, createRule } from "@trailhead/cli/core";
 
 const validateEmail = createValidationPipeline([
-  createRule('required', (value: string) => 
-    value.length > 0 || 'Email is required'
+  createRule(
+    "required",
+    (value: string) => value.length > 0 || "Email is required",
   ),
-  createRule('format', (value: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email format'
-  )
-])
+  createRule(
+    "format",
+    (value: string) =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Invalid email format",
+  ),
+]);
 
 // In your command
-const result = validateEmail(options.email)
+const result = validateEmail(options.email);
 if (!result.success) {
-  context.logger.error(result.error.message)
-  return err(result.error)
+  context.logger.error(result.error.message);
+  return err(result.error);
 }
 ```
 
 ### Progress Tracking
-```typescript
-import { createSpinner } from '@trailhead/cli/utils'
 
-const spinner = createSpinner('Processing files...')
-spinner.start()
+```typescript
+import { createSpinner } from "@trailhead/cli/utils";
+
+const spinner = createSpinner("Processing files...");
+spinner.start();
 
 try {
-  const result = await processFiles()
+  const result = await processFiles();
   if (result.success) {
-    spinner.succeed('Files processed successfully')
+    spinner.succeed("Files processed successfully");
   } else {
-    spinner.fail(`Failed: ${result.error.message}`)
+    spinner.fail(`Failed: ${result.error.message}`);
   }
 } catch (error) {
-  spinner.fail('Unexpected error occurred')
+  spinner.fail("Unexpected error occurred");
 }
 ```
 
@@ -467,6 +478,7 @@ try {
 ### Common Issues
 
 **Issue**: Command not found
+
 ```bash
 # Make sure to build first
 npm run build
@@ -475,6 +487,7 @@ npm run build
 ```
 
 **Issue**: Module not found errors
+
 ```bash
 # Ensure all dependencies are installed
 pnpm install
@@ -483,15 +496,17 @@ pnpm install
 ```
 
 **Issue**: Async operations not completing
+
 ```typescript
 // Always await async operations
-const result = await someAsyncOperation() // ✓
-const result = someAsyncOperation() // ✗ Missing await
+const result = await someAsyncOperation(); // ✓
+const result = someAsyncOperation(); // ✗ Missing await
 ```
 
 ## Summary
 
 You've now created a functional CLI application with:
+
 - Command parsing and execution
 - Interactive prompts
 - File system operations

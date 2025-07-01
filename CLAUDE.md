@@ -29,6 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Focus on high-ROI (Return on Investment) tests:
 
 **High-ROI Tests (Keep These):**
+
 - **User Interaction Tests**: Click handlers, form submissions, keyboard navigation
 - **Business Logic Tests**: Theme transformations, data conversions, calculations
 - **Integration Tests**: Components working together, end-to-end workflows
@@ -37,6 +38,7 @@ Focus on high-ROI (Return on Investment) tests:
 - **Critical Path Tests**: Authentication, payment flows, data persistence
 
 **Low-ROI Tests (Remove These):**
+
 - **Basic Rendering Tests**: "renders without crashing", "should render"
 - **Props Forwarding Tests**: "passes className", "spreads props", "accepts ref"
 - **Framework Behavior Tests**: Testing React/library internals
@@ -127,7 +129,7 @@ pnpm build --filter=./packages/*
 - **Turborepo**: Optimized build system with intelligent caching
 - **PNPM Workspaces**: Efficient package management and dependency resolution
 - **Shared Tooling**: Common configurations in `tooling/` directory
-- **@repo/* Convention**: Internal packages use @repo/ namespace
+- **@repo/\* Convention**: Internal packages use @repo/ namespace
 - **Build Dependencies**: Proper dependency graph with `^build` dependencies
 
 ### Monorepo Workflow
@@ -140,7 +142,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@trailhead/* or @repo/*)
+2. Add proper package.json with correct namespace (@trailhead/_ or @repo/_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 
@@ -148,7 +150,7 @@ pnpm build --filter=./packages/*
 
 - **Monorepo First**: Always consider impact across packages
 - **Turborepo Caching**: Structure builds for optimal caching
-- **Shared Configurations**: Use @repo/* packages for consistency
+- **Shared Configurations**: Use @repo/\* packages for consistency
 - **Package Boundaries**: Respect package boundaries and dependencies
 - **Build Dependencies**: Ensure proper dependency order in turbo.json
 
@@ -273,6 +275,7 @@ pnpm format                 # Format code with prettier
 ### Key Features
 
 #### Theme System
+
 - 21 predefined themes (zinc, purple, green, orange, slate, etc.)
 - Functional theme builder API
 - Runtime theme switching with persistence
@@ -280,13 +283,16 @@ pnpm format                 # Format code with prettier
 - Full shadcn/ui compatibility
 
 #### Transform System
+
 - AST-based transformations for accurate conversions
 - Component-specific color mappings
 - Performance profiling tools
 - Converts hardcoded colors to semantic tokens
 
 #### Components
+
 All 26 Catalyst UI components with enhanced TypeScript support:
+
 - **Forms**: Button, Input, Textarea, Select, Checkbox, Radio, Switch
 - **Layout**: Dialog, Dropdown, Sidebar, SidebarLayout, StackedLayout, AuthLayout
 - **Data**: Table, Badge, Avatar, DescriptionList
@@ -308,6 +314,7 @@ Next.js demo application showcasing all Trailhead UI components.
 ### Overview
 
 This demo app demonstrates:
+
 - All 26 UI components in action
 - Theme switching capabilities
 - SSR with Next.js App Router
@@ -339,6 +346,7 @@ RedwoodJS SDK demo application showcasing Trailhead UI with RedwoodJS.
 ### Overview
 
 This demo app demonstrates:
+
 - Trailhead UI integration with RedwoodJS SDK
 - Server-side rendering with Waku
 - Edge deployment readiness
@@ -408,7 +416,8 @@ pnpm build                  # Production build
 - `verbose` = Full explanation with examples and context (when you need details)
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.

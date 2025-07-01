@@ -11,8 +11,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const radioSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Radio',
-  detectPattern: (content) => 
-    content.includes('Radio') && 
+  detectPattern: (content) =>
+    content.includes('Radio') &&
     content.includes('type Color = keyof typeof colors') &&
     content.includes('export function Radio'),
   defaultColor: 'dark/zinc',

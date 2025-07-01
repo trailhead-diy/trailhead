@@ -528,6 +528,7 @@ Options:
 ```
 
 The install command:
+
 - Auto-detects your project framework (Next.js, Vite, etc.)
 - Installs all 26 UI components with semantic color tokens
 - Sets up theme configuration

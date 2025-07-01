@@ -7,12 +7,12 @@
  * https://catalyst.tailwindui.com/docs#client-side-router-integration
  */
 
-import React, { forwardRef } from 'react'
+import React, { forwardRef } from 'react';
 // Semantic token imports removed - not used in this component
 
 export const CatalystLink = forwardRef(function CatalystLink(
   props: { href: string } & React.ComponentPropsWithoutRef<'a'>,
-  ref: React.ForwardedRef<HTMLAnchorElement>
+  ref: React.ForwardedRef<HTMLAnchorElement>,
 ) {
-  return <a {...props} ref={ref} />
-})
+  return <a {...props} ref={ref} />;
+});

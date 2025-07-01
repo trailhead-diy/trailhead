@@ -1,15 +1,20 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import * as Headless from '@headlessui/react'
-import { LayoutGroup, motion } from 'framer-motion'
-import React, { forwardRef, useId } from 'react'
-import { CatalystTouchTarget } from './catalyst-button'
-import { CatalystLink } from './catalyst-link'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import { LayoutGroup, motion } from 'framer-motion';
+import React, { forwardRef, useId } from 'react';
+import { CatalystTouchTarget } from './catalyst-button';
+import { CatalystLink } from './catalyst-link';
+import { cn } from '../utils/cn';
 
-export function CatalystSidebar({ className, ...props }: React.ComponentPropsWithoutRef<'nav'>) {
-  return <nav {...props} className={cn('flex h-full min-h-0 flex-col', className)} />
+export function CatalystSidebar({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'nav'>) {
+  return (
+    <nav {...props} className={cn('flex h-full min-h-0 flex-col', className)} />
+  );
 }
 
 export function CatalystSidebarHeader({
@@ -21,10 +26,10 @@ export function CatalystSidebarHeader({
       {...props}
       className={cn(
         'flex flex-col border-b border-border p-4 dark:border-border [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystSidebarBody({
@@ -36,10 +41,10 @@ export function CatalystSidebarBody({
       {...props}
       className={cn(
         'flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystSidebarFooter({
@@ -51,23 +56,27 @@ export function CatalystSidebarFooter({
       {...props}
       className={cn(
         'flex flex-col border-t border-border p-4 dark:border-border [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystSidebarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  let id = useId()
+  let id = useId();
 
   return (
     <LayoutGroup id={id}>
-      <div {...props} data-slot="section" className={cn('flex flex-col gap-0.5', className)} />
+      <div
+        {...props}
+        data-slot="section"
+        className={cn('flex flex-col gap-0.5', className)}
+      />
     </LayoutGroup>
-  )
+  );
 }
 
 export function CatalystSidebarDivider({
@@ -77,16 +86,25 @@ export function CatalystSidebarDivider({
   return (
     <hr
       {...props}
-      className={cn('my-4 border-t border-border lg:-mx-4 dark:border-border', className)}
+      className={cn(
+        'my-4 border-t border-border lg:-mx-4 dark:border-border',
+        className,
+      )}
     />
-  )
+  );
 }
 
 export function CatalystSidebarSpacer({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div aria-hidden="true" {...props} className={cn('mt-8 flex-1', className)} />
+  return (
+    <div
+      aria-hidden="true"
+      {...props}
+      className={cn('mt-8 flex-1', className)}
+    />
+  );
 }
 
 export function CatalystSidebarHeading({
@@ -98,10 +116,10 @@ export function CatalystSidebarHeading({
       {...props}
       className={cn(
         'mb-1 px-2 text-xs/6 font-medium text-muted-foreground dark:text-muted-foreground',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
@@ -114,7 +132,7 @@ export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<Headless.ButtonProps<typeof CatalystLink>, 'as' | 'className'>
   ),
-  ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
+  ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
 ) {
   let classes = cn(
     // Base
@@ -135,15 +153,17 @@ export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
     'dark:text-foreground dark:*:data-[slot=icon]:fill-muted-foreground',
     'dark:data-hover:bg-accent dark:data-hover:*:data-[slot=icon]:fill-foreground',
     'dark:data-active:bg-accent dark:data-active:*:data-[slot=icon]:fill-foreground',
-    'dark:data-current:*:data-[slot=icon]:fill-foreground'
-  )
+    'dark:data-current:*:data-[slot=icon]:fill-foreground',
+  );
 
   return (
     <span className={cn('relative', className)}>
       {current && (
         <motion.span
           layoutId="current-indicator"
-          className={cn('absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary')}
+          className={cn(
+            'absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary',
+          )}
         />
       )}
       {'href' in props ? (
@@ -167,12 +187,12 @@ export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
         </Headless.Button>
       )}
     </span>
-  )
-})
+  );
+});
 
 export function CatalystSidebarLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn('truncate', className)} />
+  return <span {...props} className={cn('truncate', className)} />;
 }

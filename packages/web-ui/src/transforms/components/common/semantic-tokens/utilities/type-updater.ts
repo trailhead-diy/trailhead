@@ -21,16 +21,18 @@ export function updateColorTypeAlias(
 ): TypeUpdateResult {
   const changes: any[] = []
   let hasChanges = false
-  
-  root.find(j.TSTypeAliasDeclaration, { id: { name: typeName } }).forEach(path => {
+
+  root.find(j.TSTypeAliasDeclaration, { id: { name: typeName } }).forEach((path) => {
     const typeAnnotation = path.node.typeAnnotation
-    if (typeAnnotation?.type === 'TSTypeReference' &&
-        typeAnnotation.typeName?.type === 'Identifier' &&
-        typeAnnotation.typeName.name === 'keyof') {
+    if (
+      typeAnnotation?.type === 'TSTypeReference' &&
+      typeAnnotation.typeName?.type === 'Identifier' &&
+      typeAnnotation.typeName.name === 'keyof'
+    ) {
       // Create union type with SemanticColorToken
       const newType = j.tsUnionType([
         typeAnnotation,
-        j.tsTypeReference(j.identifier('SemanticColorToken'))
+        j.tsTypeReference(j.identifier('SemanticColorToken')),
       ])
       path.node.typeAnnotation = newType
       hasChanges = true
@@ -40,7 +42,7 @@ export function updateColorTypeAlias(
       })
     }
   })
-  
+
   return { hasChanges, changes }
 }
 
@@ -55,9 +57,9 @@ export function addColorPropToInterface(
 ): TypeUpdateResult {
   const changes: any[] = []
   let hasChanges = false
-  
+
   // Find the interface/type and add color prop
-  root.find(j.TSTypeAliasDeclaration, { id: { name: interfaceName } }).forEach(path => {
+  root.find(j.TSTypeAliasDeclaration, { id: { name: interfaceName } }).forEach((path) => {
     const typeAnnotation = path.node.typeAnnotation
     if (typeAnnotation?.type === 'TSIntersectionType') {
       // Add color property to intersection
@@ -68,11 +70,11 @@ export function addColorPropToInterface(
             j.tsTypeAnnotation(
               j.tsUnionType([
                 j.tsTypeReference(j.identifier('SemanticColorToken')),
-                j.tsUndefinedKeyword()
+                j.tsUndefinedKeyword(),
               ])
             ),
             true // optional
-          )
+          ),
         ])
       )
       hasChanges = true
@@ -82,7 +84,7 @@ export function addColorPropToInterface(
       })
     }
   })
-  
+
   return { hasChanges, changes }
 }
 
@@ -96,17 +98,19 @@ export function updateColorPropType(
 ): TypeUpdateResult {
   const changes: any[] = []
   let hasChanges = false
-  
+
   // Find color property signatures
-  root.find(j.TSPropertySignature, { key: { name: 'color' } }).forEach(path => {
+  root.find(j.TSPropertySignature, { key: { name: 'color' } }).forEach((path) => {
     const typeAnnotation = path.node.typeAnnotation
-    if (typeAnnotation?.typeAnnotation?.type === 'TSTypeReference' &&
-        typeAnnotation.typeAnnotation.typeName?.type === 'Identifier' &&
-        typeAnnotation.typeAnnotation.typeName.name === 'keyof') {
+    if (
+      typeAnnotation?.typeAnnotation?.type === 'TSTypeReference' &&
+      typeAnnotation.typeAnnotation.typeName?.type === 'Identifier' &&
+      typeAnnotation.typeAnnotation.typeName.name === 'keyof'
+    ) {
       // Create union type with SemanticColorToken
       const newType = j.tsUnionType([
         typeAnnotation.typeAnnotation,
-        j.tsTypeReference(j.identifier('SemanticColorToken'))
+        j.tsTypeReference(j.identifier('SemanticColorToken')),
       ])
       path.node.typeAnnotation = j.tsTypeAnnotation(newType)
       hasChanges = true
@@ -116,7 +120,7 @@ export function updateColorPropType(
       })
     }
   })
-  
+
   return { hasChanges, changes }
 }
 
@@ -132,33 +136,34 @@ export function addPropsToInlineType(
 ): TypeUpdateResult {
   const changes: any[] = []
   let hasChanges = false
-  
+
   // Find function parameters with inline type objects (both regular and export functions)
-  root.find(j.FunctionDeclaration).forEach(funcPath => {
+  root.find(j.FunctionDeclaration).forEach((funcPath) => {
     const params = funcPath.node.params
     if (params.length > 0 && params[0].type === 'ObjectPattern') {
       const param = params[0] as any
       if (param.typeAnnotation?.typeAnnotation?.type === 'TSTypeLiteral') {
         // Check if this function actually uses className parameter
-        const hasClassNameParam = param.properties.some((prop: any) => 
-          prop.type === 'ObjectProperty' && prop.key?.name === 'className'
+        const hasClassNameParam = param.properties.some(
+          (prop: any) => prop.type === 'ObjectProperty' && prop.key?.name === 'className'
         )
-        
+
         // Only add to type if className parameter is actually being used
         if (hasClassNameParam || addColor) {
           const typeObject = param.typeAnnotation.typeAnnotation
           const members = typeObject.members
-          
+
           // Check if className already exists
-          const hasClassNameProp = members.some((member: any) => 
-            member.type === 'TSPropertySignature' && member.key?.name === 'className'
+          const hasClassNameProp = members.some(
+            (member: any) =>
+              member.type === 'TSPropertySignature' && member.key?.name === 'className'
           )
-          
-          // Check if color already exists  
-          const hasColorProp = members.some((member: any) =>
-            member.type === 'TSPropertySignature' && member.key?.name === 'color'
+
+          // Check if color already exists
+          const hasColorProp = members.some(
+            (member: any) => member.type === 'TSPropertySignature' && member.key?.name === 'color'
           )
-          
+
           // Add className prop if needed and className param is used
           if (addClassName && hasClassNameParam && !hasClassNameProp) {
             members.push(
@@ -174,7 +179,7 @@ export function addPropsToInlineType(
               description: 'Added className prop to inline type',
             })
           }
-          
+
           // Add color prop if needed
           if (addColor && !hasColorProp) {
             members.push(
@@ -183,7 +188,7 @@ export function addPropsToInlineType(
                 j.tsTypeAnnotation(
                   j.tsUnionType([
                     j.tsTypeReference(j.identifier('SemanticColorToken')),
-                    j.tsUndefinedKeyword()
+                    j.tsUndefinedKeyword(),
                   ])
                 ),
                 true // optional
@@ -199,6 +204,6 @@ export function addPropsToInlineType(
       }
     }
   })
-  
+
   return { hasChanges, changes }
 }

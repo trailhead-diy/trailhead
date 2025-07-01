@@ -1,6 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../../src/components/table'
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableHeader,
+  TableCell,
+} from '../../src/components/table'
 
 describe('Table Components', () => {
   it('should render accessible data table with semantic structure', () => {

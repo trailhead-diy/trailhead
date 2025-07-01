@@ -56,10 +56,7 @@ describe('transforms pipeline integration', () => {
       // Copy multiple components
       const components = ['button.tsx', 'badge.tsx', 'checkbox.tsx', 'input.tsx']
       for (const component of components) {
-        await fs.copyFile(
-          path.join(catalystSource, component),
-          path.join(tempDir, component)
-        )
+        await fs.copyFile(path.join(catalystSource, component), path.join(tempDir, component))
       }
 
       // Run pipeline
@@ -75,7 +72,7 @@ describe('transforms pipeline integration', () => {
         const content = await fs.readFile(path.join(tempDir, component), 'utf-8')
 
         // All should use cn utility
-        expect(content).toContain("import { cn }")
+        expect(content).toContain('import { cn }')
 
         // All should have consistent color tokens
         expect(content).not.toContain('zinc-950')
@@ -182,7 +179,10 @@ export function Broken({ className }) {
       expect(validContent).toContain('cn(')
 
       // Broken component should still exist (not deleted)
-      const brokenExists = await fs.access(brokenPath).then(() => true).catch(() => false)
+      const brokenExists = await fs
+        .access(brokenPath)
+        .then(() => true)
+        .catch(() => false)
       expect(brokenExists).toBe(true)
     })
   })
@@ -207,8 +207,8 @@ export function Broken({ className }) {
       const transformed = await fs.readFile(dropdownDest, 'utf-8')
 
       // Phase 1: Import transforms should run first
-      expect(transformed).toContain("import { cn }")
-      expect(transformed).not.toContain("import clsx")
+      expect(transformed).toContain('import { cn }')
+      expect(transformed).not.toContain('import clsx')
 
       // Phase 2: Structure transforms (className handling)
       expect(transformed).toMatch(/className[?:]?\s*[:=]/)
@@ -222,10 +222,11 @@ export function Broken({ className }) {
 
       // Phase 6: Formatting (check for consistent structure)
       const lines = transformed.split('\n')
-      const hasBlankLineAfterImports = lines.some((line, i) =>
-        line.trim() === '' &&
-        lines[i - 1]?.includes('import') &&
-        !lines[i + 1]?.includes('import')
+      const hasBlankLineAfterImports = lines.some(
+        (line, i) =>
+          line.trim() === '' &&
+          lines[i - 1]?.includes('import') &&
+          !lines[i + 1]?.includes('import')
       )
       expect(hasBlankLineAfterImports).toBe(true)
     })

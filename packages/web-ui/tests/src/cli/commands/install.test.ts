@@ -99,7 +99,6 @@ vi.mock('@trailhead/cli/core', async () => {
   }
 })
 
-
 describe('Install Command', () => {
   // Create mock context
   const mockContext: CLIContext = {
@@ -110,7 +109,6 @@ describe('Install Command', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
-
 
   describe('Command Configuration', () => {
     it('should register install command with correct configuration', () => {
@@ -181,70 +179,76 @@ describe('Install Command', () => {
   })
 
   describe('Error Handling', () => {
-    it('should handle installation errors gracefully', withConsoleSpy(async () => {
-      const prog = new program.constructor().name('test')
-      prog.addCommand(createInstallCommand(mockContext))
+    it(
+      'should handle installation errors gracefully',
+      withConsoleSpy(async () => {
+        const prog = new program.constructor().name('test')
+        prog.addCommand(createInstallCommand(mockContext))
 
-      // Mock installation to fail
-      const { performInstallation } = await import(
-        '../../../../src/cli/core/installation/orchestrator.js'
-      )
-      vi.mocked(performInstallation).mockResolvedValueOnce({
-        success: false,
-        error: {
-          type: 'InstallError',
-          message: 'Installation failed',
-        },
+        // Mock installation to fail
+        const { performInstallation } = await import(
+          '../../../../src/cli/core/installation/orchestrator.js'
+        )
+        vi.mocked(performInstallation).mockResolvedValueOnce({
+          success: false,
+          error: {
+            type: 'InstallError',
+            message: 'Installation failed',
+          },
+        })
+
+        // Capture process.exit
+        const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+          throw new Error('process.exit called')
+        })
+
+        try {
+          await prog.parseAsync(['node', 'test', 'install'], { from: 'node' })
+        } catch (_error) {
+          // Expected due to process.exit mock
+        }
+
+        expect(console.error).toHaveBeenCalled()
+        expect(exitSpy).toHaveBeenCalledWith(1)
+
+        exitSpy.mockRestore()
       })
+    )
 
-      // Capture process.exit
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('process.exit called')
+    it(
+      'should handle config resolution errors',
+      withConsoleSpy(async () => {
+        const prog = new program.constructor().name('test')
+        prog.addCommand(createInstallCommand(mockContext))
+
+        // Mock config to fail
+        const { resolveConfiguration } = await import(
+          '../../../../src/cli/core/installation/config.js'
+        )
+        vi.mocked(resolveConfiguration).mockResolvedValueOnce({
+          success: false,
+          error: {
+            type: 'ConfigError',
+            message: 'Invalid configuration',
+          },
+        })
+
+        const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+          throw new Error('process.exit called')
+        })
+
+        try {
+          await prog.parseAsync(['node', 'test', 'install'], { from: 'node' })
+        } catch (_error) {
+          // Expected
+        }
+
+        expect(console.error).toHaveBeenCalled()
+        expect(exitSpy).toHaveBeenCalledWith(1)
+
+        exitSpy.mockRestore()
       })
-
-      try {
-        await prog.parseAsync(['node', 'test', 'install'], { from: 'node' })
-      } catch (_error) {
-        // Expected due to process.exit mock
-      }
-
-      expect(console.error).toHaveBeenCalled()
-      expect(exitSpy).toHaveBeenCalledWith(1)
-
-      exitSpy.mockRestore()
-    }))
-
-    it('should handle config resolution errors', withConsoleSpy(async () => {
-      const prog = new program.constructor().name('test')
-      prog.addCommand(createInstallCommand(mockContext))
-
-      // Mock config to fail
-      const { resolveConfiguration } = await import(
-        '../../../../src/cli/core/installation/config.js'
-      )
-      vi.mocked(resolveConfiguration).mockResolvedValueOnce({
-        success: false,
-        error: {
-          type: 'ConfigError',
-          message: 'Invalid configuration',
-        },
-      })
-
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('process.exit called')
-      })
-
-      try {
-        await prog.parseAsync(['node', 'test', 'install'], { from: 'node' })
-      } catch (_error) {
-        // Expected
-      }
-
-      expect(console.error).toHaveBeenCalled()
-      expect(exitSpy).toHaveBeenCalledWith(1)
-
-      exitSpy.mockRestore()
-    }))
+    )
   })
 
   // Removed low-ROI integration test that checks implementation details

@@ -1,4 +1,3 @@
-
 export {
   Alert,
   AuthLayout,
@@ -29,15 +28,9 @@ export {
   Textarea,
 } from './components/index.js'
 
+export { ThemeProvider, useTheme } from './components/theme/theme-provider.js'
 
-export {
-  ThemeProvider,
-  useTheme,
-} from './components/theme/theme-provider.js'
-
-export {
-  ThemeSwitcher,
-} from './components/theme/theme-switcher.js'
+export { ThemeSwitcher } from './components/theme/theme-switcher.js'
 
 export {
   createThemeMap,
@@ -48,10 +41,7 @@ export {
   type ThemeMap,
 } from './components/theme/registry.js'
 
-export {
-  buildTheme,
-  createTheme,
-} from './components/theme/builder.js'
+export { buildTheme, createTheme } from './components/theme/builder.js'
 
 export {
   type TrailheadThemeConfig,
@@ -59,9 +49,7 @@ export {
   type ComponentThemeOverrides,
 } from './components/theme/config.js'
 
-
 export { cn } from './components/utils/cn.js'
-
 
 export { defineConfig } from './cli/core/config/define-config.js'
 

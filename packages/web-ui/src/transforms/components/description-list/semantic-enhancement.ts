@@ -2,9 +2,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
 
 export const descriptionListSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'DescriptionList',
-  detectPattern: (content) => 
-    content.includes('DescriptionList') && 
-    content.includes('export function DescriptionList'),
+  detectPattern: (content) =>
+    content.includes('DescriptionList') && content.includes('export function DescriptionList'),
   defaultColor: 'zinc',
   typePattern: 'prop',
   hasColorsObject: false,
@@ -45,5 +44,5 @@ export const descriptionListSemanticEnhancement = {
     return null
   },
   attributesToAdd: [],
-  transformImports: true
+  transformImports: true,
 }

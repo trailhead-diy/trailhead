@@ -1,7 +1,7 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Field, Label } from '@/components/th/fieldset'
-import { Select } from '@/components/th/select'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Field, Label } from '@/components/th/fieldset';
+import { Select } from '@/components/th/select';
 
 export default function SidebarPage(): React.JSX.Element {
   return (
@@ -20,5 +20,5 @@ export default function SidebarPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

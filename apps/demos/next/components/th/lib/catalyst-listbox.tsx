@@ -1,9 +1,9 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import * as Headless from '@headlessui/react'
-import { Fragment } from 'react'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import { Fragment } from 'react';
+import { cn } from '../utils/cn';
 
 export function CatalystListbox<T>({
   className,
@@ -13,11 +13,11 @@ export function CatalystListbox<T>({
   children: options,
   ...props
 }: {
-  className?: string
-  placeholder?: React.ReactNode
-  autoFocus?: boolean
-  'aria-label'?: string
-  children?: React.ReactNode
+  className?: string;
+  placeholder?: React.ReactNode;
+  autoFocus?: boolean;
+  'aria-label'?: string;
+  children?: React.ReactNode;
 } & Omit<Headless.ListboxProps<typeof Fragment, T>, 'as' | 'multiple'>) {
   return (
     <Headless.Listbox {...props} multiple={false}>
@@ -45,7 +45,11 @@ export function CatalystListbox<T>({
           as="span"
           options={options}
           placeholder={
-            placeholder && <span className={cn('block truncate text-zinc-500')}>{placeholder}</span>
+            placeholder && (
+              <span className={cn('block truncate text-zinc-500')}>
+                {placeholder}
+              </span>
+            )
           }
           className={cn([
             // Basic layout
@@ -67,11 +71,13 @@ export function CatalystListbox<T>({
           ])}
         />
         <span
-          className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}
+          className={cn(
+            'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2',
+          )}
         >
           <svg
             className={cn(
-              'size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 sm:size-4 dark:stroke-zinc-400 forced-colors:stroke-[CanvasText]'
+              'size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 sm:size-4 dark:stroke-zinc-400 forced-colors:stroke-[CanvasText]',
             )}
             viewBox="0 0 16 16"
             aria-hidden="true"
@@ -109,13 +115,13 @@ export function CatalystListbox<T>({
           // Shadows
           'shadow-lg ring-1 ring-zinc-950/10 dark:ring-ring dark:ring-inset',
           // Transitions
-          'transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none'
+          'transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none',
         )}
       >
         {options}
       </Headless.ListboxOptions>
     </Headless.Listbox>
-  )
+  );
 }
 
 export function CatalystListboxOption<T>({
@@ -134,14 +140,14 @@ export function CatalystListboxOption<T>({
     '*:data-[slot=icon]:text-muted-foreground group-data-focus/option:*:data-[slot=icon]:text-foreground dark:*:data-[slot=icon]:text-muted-foreground',
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
-    '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  )
+    '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5',
+  );
 
   return (
     <Headless.ListboxOption as={Fragment} {...props}>
       {({ selectedOption }) => {
         if (selectedOption) {
-          return <div className={cn(sharedClasses, className)}>{children}</div>
+          return <div className={cn(sharedClasses, className)}>{children}</div>;
         }
 
         return (
@@ -156,12 +162,12 @@ export function CatalystListboxOption<T>({
               // Forced colors mode
               'forced-color-adjust-none forced-colors:data-focus:bg-[Highlight] forced-colors:data-focus:text-[HighlightText]',
               // Disabled
-              'data-disabled:opacity-50'
+              'data-disabled:opacity-50',
             )}
           >
             <svg
               className={cn(
-                'relative hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4'
+                'relative hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4',
               )}
               viewBox="0 0 16 16"
               fill="none"
@@ -174,12 +180,14 @@ export function CatalystListboxOption<T>({
                 strokeLinejoin="round"
               />
             </svg>
-            <span className={cn(sharedClasses, 'col-start-2', className)}>{children}</span>
+            <span className={cn(sharedClasses, 'col-start-2', className)}>
+              {children}
+            </span>
           </div>
-        )
+        );
       }}
     </Headless.ListboxOption>
-  )
+  );
 }
 
 export function CatalystListboxLabel({
@@ -189,9 +197,12 @@ export function CatalystListboxLabel({
   return (
     <span
       {...props}
-      className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
+      className={cn(
+        'ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0',
+        className,
+      )}
     />
-  )
+  );
 }
 
 export function CatalystListboxDescription({
@@ -204,10 +215,10 @@ export function CatalystListboxDescription({
       {...props}
       className={cn(
         'flex flex-1 overflow-hidden text-muted-foreground group-data-focus/option:text-foreground before:w-2 before:min-w-0 before:shrink dark:text-muted-foreground',
-        className
+        className,
       )}
     >
       <span className={cn('flex-1 truncate')}>{children}</span>
     </span>
-  )
+  );
 }

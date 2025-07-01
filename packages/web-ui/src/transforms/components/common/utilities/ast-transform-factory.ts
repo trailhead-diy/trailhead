@@ -32,33 +32,33 @@ export function createASTTransform(config: ASTTransformConfig): Transform {
     name: config.name,
     description: config.description,
     type: 'ast',
-    
+
     execute(content: string): TransformResult {
       // Initialize jscodeshift
       const jscodeshift = require('jscodeshift')
       const j = jscodeshift.withParser('tsx')
       const root = j(content)
-      
+
       // Run the transformation
       const changes = config.transform(root, j)
-      
+
       // If changes were made, generate new source
       if (changes.length > 0) {
         const transformed = root.toSource(STANDARD_AST_OPTIONS)
-        
+
         return {
           content: transformed,
           changes,
           hasChanges: true,
         }
       }
-      
+
       // No changes needed
       return {
         content,
         changes: [],
         hasChanges: false,
       }
-    }
+    },
   }
 }

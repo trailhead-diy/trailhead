@@ -5,6 +5,7 @@ This directory contains detailed color mapping documentation for Catalyst UI com
 ## Purpose
 
 These documents help understand:
+
 - What CSS custom properties each component uses
 - How colors are applied in different variants (solid, outline, plain)
 - Color variations across different color schemes
@@ -14,6 +15,7 @@ These documents help understand:
 ## Structure
 
 Each component document follows this pattern:
+
 1. **Component Overview** - Brief description and available variants
 2. **Base Styles** - Colors used in the base component styles
 3. **Variant Styles** - Colors specific to each variant (solid, outline, plain)
@@ -27,6 +29,7 @@ Each component document follows this pattern:
 ## Usage
 
 These mappings are essential for:
+
 - Understanding the original Catalyst UI color system
 - Creating semantic token mappings
 - Theme customization

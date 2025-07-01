@@ -27,9 +27,9 @@ export class ProgressTracker {
     const ora_spinner = ora({
       text: message,
       spinner,
-      color: 'blue'
+      color: 'blue',
     }).start()
-    
+
     this.spinners.set(key, ora_spinner)
     this.startTimes.set(key, Date.now())
   }
@@ -50,12 +50,15 @@ export class ProgressTracker {
   succeed(key: string, message?: string): void {
     const spinner = this.spinners.get(key)
     const startTime = this.startTimes.get(key)
-    
+
     if (spinner) {
       const duration = startTime ? Date.now() - startTime : 0
       const finalMessage = message || spinner.text
-      const withDuration = duration > 0 ? `${finalMessage} ${chalk.gray(`(${formatDuration(duration)})`)}` : finalMessage
-      
+      const withDuration =
+        duration > 0
+          ? `${finalMessage} ${chalk.gray(`(${formatDuration(duration)})`)}`
+          : finalMessage
+
       spinner.succeed(withDuration)
       this.spinners.delete(key)
       this.startTimes.delete(key)
@@ -67,7 +70,7 @@ export class ProgressTracker {
    */
   fail(key: string, message?: string): void {
     const spinner = this.spinners.get(key)
-    
+
     if (spinner) {
       spinner.fail(message || spinner.text)
       this.spinners.delete(key)
@@ -80,7 +83,7 @@ export class ProgressTracker {
    */
   warn(key: string, message?: string): void {
     const spinner = this.spinners.get(key)
-    
+
     if (spinner) {
       spinner.warn(message || spinner.text)
       this.spinners.delete(key)
@@ -101,7 +104,7 @@ export class ProgressTracker {
    * Stop all spinners
    */
   stopAll(): void {
-    this.spinners.forEach(spinner => spinner.stop())
+    this.spinners.forEach((spinner) => spinner.stop())
     this.spinners.clear()
     this.startTimes.clear()
   }
@@ -146,7 +149,7 @@ export class ProfileProgressManager {
   startProfiling(approach: string, iterations: number): void {
     this.totalIterations = iterations
     this.currentIteration = 0
-    
+
     const message = `Profiling ${approach} approach (${iterations} iterations)`
     this.tracker.start('profile', message, 'dots2')
   }
@@ -159,7 +162,7 @@ export class ProfileProgressManager {
     const progress = createProgressBar(iteration, this.totalIterations, 15)
     const info = additionalInfo ? ` - ${additionalInfo}` : ''
     const message = `${approach}: ${progress}${info}`
-    
+
     this.tracker.update('profile', message)
   }
 
@@ -270,7 +273,7 @@ export const ProgressUtils = {
     const progress = createProgressBar(iteration, total, 10)
     const timeInfo = currentTime ? ` - ${formatDuration(currentTime)}` : ''
     return `Iteration ${iteration}/${total} ${progress}${timeInfo}`
-  }
+  },
 }
 
 /**
@@ -283,7 +286,7 @@ export class MultiStepProgress {
 
   constructor(tracker: ProgressTracker, steps: Array<{ key: string; message: string }>) {
     this.tracker = tracker
-    this.steps = steps.map(step => ({ ...step, completed: false }))
+    this.steps = steps.map((step) => ({ ...step, completed: false }))
   }
 
   /**
@@ -323,6 +326,6 @@ export class MultiStepProgress {
    * Check if all steps completed
    */
   isComplete(): boolean {
-    return this.steps.every(step => step.completed)
+    return this.steps.every((step) => step.completed)
   }
 }

@@ -26,7 +26,8 @@ export const sidebarEdgeCasesTransform = createProtectedRegexTransform({
     // Fix missing background on desktop sidebar wrapper (from traditional system)
     {
       pattern: /<div className="fixed inset-y-0 left-0 w-64 max-lg:hidden">/g,
-      replacement: '<div className="fixed inset-y-0 left-0 w-64 max-lg:hidden bg-white dark:bg-zinc-900">',
+      replacement:
+        '<div className="fixed inset-y-0 left-0 w-64 max-lg:hidden bg-white dark:bg-zinc-900">',
       description: 'Add background to desktop sidebar wrapper',
     },
   ],

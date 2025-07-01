@@ -2,9 +2,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
 
 export const stackedLayoutSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'StackedLayout',
-  detectPattern: (content) => 
-    content.includes('StackedLayout') && 
-    content.includes('export function StackedLayout'),
+  detectPattern: (content) =>
+    content.includes('StackedLayout') && content.includes('export function StackedLayout'),
   defaultColor: 'zinc',
   typePattern: 'prop',
   hasColorsObject: false,
@@ -43,5 +42,5 @@ export const stackedLayoutSemanticEnhancement = {
     return null
   },
   attributesToAdd: [],
-  transformImports: true
+  transformImports: true,
 }

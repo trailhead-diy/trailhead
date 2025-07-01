@@ -17,9 +17,11 @@ function ensureClassNameInCn(root: Collection<any>, j: JSCodeshift) {
     const hasClassNameParam = path.node.params.some((param: any) => {
       if (param.type === 'ObjectPattern') {
         return param.properties.some((prop: any) => {
-          return prop.type === 'Property' && 
-                 prop.key.type === 'Identifier' && 
-                 prop.key.name === 'className'
+          return (
+            prop.type === 'Property' &&
+            prop.key.type === 'Identifier' &&
+            prop.key.name === 'className'
+          )
         })
       }
       return false

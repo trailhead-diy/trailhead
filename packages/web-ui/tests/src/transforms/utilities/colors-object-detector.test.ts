@@ -10,7 +10,7 @@ import {
   isWithinColorsCSSVariable,
   createColorsObjectProtection,
   createColorsProtectedReplacer,
-  validateColorsObjectPreservation
+  validateColorsObjectPreservation,
 } from '../../../../src/transforms/components/common/utilities/colors-object-detector.js'
 
 describe('Colors Object Detector', () => {
@@ -94,7 +94,7 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
       const protection = createColorsObjectProtection()
       const pos = switchComponentMock.indexOf('var(--color-foreground)')
       const match = Object.assign(['var(--color-foreground)'], { index: pos }) as RegExpMatchArray
-      
+
       expect(protection(switchComponentMock, match)).toBe(true)
     })
 
@@ -102,36 +102,30 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
       const protection = createColorsObjectProtection()
       const pos = switchComponentMock.indexOf('bg-red-500')
       const match = Object.assign(['bg-red-500'], { index: pos }) as RegExpMatchArray
-      
+
       expect(protection(switchComponentMock, match)).toBe(false)
     })
   })
 
   describe('createColorsProtectedReplacer', () => {
     it('should protect colors CSS variables from transformation', () => {
-      const replacer = createColorsProtectedReplacer(
-        /var\(--color-(\w+)\)/g,
-        'var(--semantic-$1)'
-      )
-      
+      const replacer = createColorsProtectedReplacer(/var\(--color-(\w+)\)/g, 'var(--semantic-$1)')
+
       const result = replacer(switchComponentMock)
-      
+
       // Should not transform CSS variables in colors object
       expect(result).toContain('var(--color-foreground)')
       expect(result).toContain('var(--color-red-700)')
-      
+
       // Should still transform CSS variables outside colors object (if any)
       // In this case, there are none, so content should be unchanged
     })
 
     it('should allow transformation of non-protected content', () => {
-      const replacer = createColorsProtectedReplacer(
-        /bg-red-500/g,
-        'bg-primary-500'
-      )
-      
+      const replacer = createColorsProtectedReplacer(/bg-red-500/g, 'bg-primary-500')
+
       const result = replacer(switchComponentMock)
-      
+
       // Should transform regular classes outside colors object
       expect(result).toContain('bg-primary-500')
       expect(result).not.toContain('bg-red-500')
@@ -142,9 +136,9 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
     it('should validate preservation of colors CSS variables', () => {
       const original = switchComponentMock
       const preserved = switchComponentMock // No changes
-      
+
       const validation = validateColorsObjectPreservation(original, preserved)
-      
+
       expect(validation.isValid).toBe(true)
       expect(validation.violations).toHaveLength(0)
     })
@@ -152,9 +146,9 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
     it('should detect violations when colors variables are modified', () => {
       const original = switchComponentMock
       const modified = original.replace('var(--color-foreground)', 'var(--semantic-foreground)')
-      
+
       const validation = validateColorsObjectPreservation(original, modified)
-      
+
       expect(validation.isValid).toBe(false)
       expect(validation.violations.length).toBeGreaterThan(0)
       expect(validation.violations[0]).toContain('CSS variable removed or modified')
@@ -163,9 +157,9 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
     it('should detect when colors object is removed', () => {
       const original = switchComponentMock
       const modified = original.replace(/const colors = \{[\s\S]*?\}/g, '')
-      
+
       const validation = validateColorsObjectPreservation(original, modified)
-      
+
       expect(validation.isValid).toBe(false)
       expect(validation.violations).toContain('Colors object declaration was removed or modified')
     })

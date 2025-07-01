@@ -1,9 +1,13 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import { useState } from 'react'
-import { SemanticColorToken, isSemanticToken, createSemanticComboboxStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import { useState } from 'react';
+import {
+  SemanticColorToken,
+  isSemanticToken,
+  createSemanticComboboxStyles,
+} from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystCombobox<T>({
   options,
@@ -18,19 +22,19 @@ export function CatalystCombobox<T>({
   color,
   ...props
 }: {
-  options: T[]
-  displayValue: (value: T | null) => string | undefined
-  filter?: (value: T, query: string) => boolean
-  className?: string
-  placeholder?: string
-  autoFocus?: boolean
-  'aria-label'?: string
-  children: (value: NonNullable<T>) => React.ReactElement
-  color?: SemanticColorToken
+  options: T[];
+  displayValue: (value: T | null) => string | undefined;
+  filter?: (value: T, query: string) => boolean;
+  className?: string;
+  placeholder?: string;
+  autoFocus?: boolean;
+  'aria-label'?: string;
+  children: (value: NonNullable<T>) => React.ReactElement;
+  color?: SemanticColorToken;
 } & Omit<Headless.ComboboxProps<T, false>, 'as' | 'multiple' | 'children'> & {
-    anchor?: 'top' | 'bottom'
+    anchor?: 'top' | 'bottom';
   }) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('');
 
   const filteredOptions =
     query === ''
@@ -38,11 +42,11 @@ export function CatalystCombobox<T>({
       : options.filter((option) =>
           filter
             ? filter(option, query)
-            : displayValue(option)?.toLowerCase().includes(query.toLowerCase())
-        )
+            : displayValue(option)?.toLowerCase().includes(query.toLowerCase()),
+        );
 
   const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticComboboxStyles(color) : ''
+    color && isSemanticToken(color) ? createSemanticComboboxStyles(color) : '';
 
   return (
     <Headless.Combobox
@@ -69,7 +73,7 @@ export function CatalystCombobox<T>({
             // Invalid state
             'has-data-invalid:before:shadow-red-500/10',
           ],
-          resolvedColorClasses
+          resolvedColorClasses,
         )}
       >
         <Headless.ComboboxInput
@@ -101,19 +105,19 @@ export function CatalystCombobox<T>({
               // System icons
               'dark:scheme-dark',
             ],
-            resolvedColorClasses
+            resolvedColorClasses,
           )}
         />
         <Headless.ComboboxButton
           className={cn(
             'group absolute inset-y-0 right-0 flex items-center px-2',
-            resolvedColorClasses
+            resolvedColorClasses,
           )}
         >
           <svg
             className={cn(
               'size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 group-data-hover:stroke-zinc-700 sm:size-4 dark:stroke-zinc-400 dark:group-data-hover:stroke-zinc-300 forced-colors:stroke-[CanvasText]',
-              resolvedColorClasses
+              resolvedColorClasses,
             )}
             viewBox="0 0 16 16"
             aria-hidden="true"
@@ -146,13 +150,13 @@ export function CatalystCombobox<T>({
           'bg-white/75 backdrop-blur-xl dark:bg-muted/75', // Shadows
           'shadow-lg ring-1 ring-zinc-950/10 dark:ring-ring dark:ring-inset', // Transitions
           'transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none',
-          resolvedColorClasses
+          resolvedColorClasses,
         )}
       >
         {({ option }) => children(option)}
       </Headless.ComboboxOptions>
     </Headless.Combobox>
-  )
+  );
 }
 
 export function CatalystComboboxOption<T>({
@@ -171,8 +175,8 @@ export function CatalystComboboxOption<T>({
     '*:data-[slot=icon]:text-muted-foreground group-data-focus/option:*:data-[slot=icon]:text-foreground dark:*:data-[slot=icon]:text-muted-foreground',
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
-    '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  )
+    '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5',
+  );
 
   return (
     <Headless.ComboboxOption
@@ -187,22 +191,27 @@ export function CatalystComboboxOption<T>({
         // Forced colors mode
         'forced-color-adjust-none forced-colors:data-focus:bg-[Highlight] forced-colors:data-focus:text-[HighlightText]',
         // Disabled
-        'data-disabled:opacity-50'
+        'data-disabled:opacity-50',
       )}
     >
       <span className={cn(sharedClasses, className)}>{children}</span>
       <svg
         className={cn(
-          'relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4'
+          'relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4',
         )}
         viewBox="0 0 16 16"
         fill="none"
         aria-hidden="true"
       >
-        <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M4 8.5l3 3L12 4"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </Headless.ComboboxOption>
-  )
+  );
 }
 
 export function CatalystComboboxLabel({
@@ -212,9 +221,12 @@ export function CatalystComboboxLabel({
   return (
     <span
       {...props}
-      className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
+      className={cn(
+        'ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0',
+        className,
+      )}
     />
-  )
+  );
 }
 
 export function CatalystComboboxDescription({
@@ -227,10 +239,10 @@ export function CatalystComboboxDescription({
       {...props}
       className={cn(
         'flex flex-1 overflow-hidden text-muted-foreground group-data-focus/option:text-foreground before:w-2 before:min-w-0 before:shrink dark:text-muted-foreground',
-        className
+        className,
       )}
     >
       <span className={cn('flex-1 truncate')}>{children}</span>
     </span>
-  )
+  );
 }

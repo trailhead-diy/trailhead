@@ -69,7 +69,7 @@ export class ProfilingStrategyFactory implements StrategyFactory {
 
     return {
       name: strategy.name,
-      description: strategy.description
+      description: strategy.description,
     }
   }
 
@@ -77,12 +77,12 @@ export class ProfilingStrategyFactory implements StrategyFactory {
    * Get all strategy information
    */
   getAllStrategyInfo(): Array<{ mode: string; name: string; description: string }> {
-    return this.getAvailableStrategies().map(mode => {
+    return this.getAvailableStrategies().map((mode) => {
       const info = this.getStrategyInfo(mode)
       return {
         mode,
         name: info?.name || mode,
-        description: info?.description || 'No description available'
+        description: info?.description || 'No description available',
       }
     })
   }
@@ -122,9 +122,7 @@ export interface StrategyPair {
 /**
  * Create strategy pair for comparison profiling
  */
-export function createStrategyPair(
-  primaryMode: string,
-): StrategyPair | null {
+export function createStrategyPair(primaryMode: string): StrategyPair | null {
   const primary = strategyFactory.createStrategy(primaryMode)
 
   if (!primary) {
@@ -134,6 +132,6 @@ export function createStrategyPair(
   // Comparison functionality has been removed
   return {
     primary,
-    comparison: undefined
+    comparison: undefined,
   }
 }

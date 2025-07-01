@@ -9,9 +9,9 @@ export {
   dim,
   italic,
   underline,
-} from './chalk.js'
-export { ora, createSpinner, withSpinner } from './spinner.js'
-export { createLogger } from '../core/logger.js'
+} from './chalk.js';
+export { ora, createSpinner, withSpinner } from './spinner.js';
+export { createLogger } from '../core/logger.js';
 
 export {
   createStats,
@@ -19,6 +19,6 @@ export {
   getElapsedTime,
   formatStats,
   type StatsTracker,
-} from './stats.js'
+} from './stats.js';
 
-export type { Logger } from '../core/logger.js'
+export type { Logger } from '../core/logger.js';

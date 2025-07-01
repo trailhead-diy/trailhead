@@ -3,15 +3,15 @@
  */
 
 import { pipe } from './composition.js'
-import { 
-  fixImportSemicolons, 
-  normalizeImportSpacing, 
-  ensureBlankLineAfterImports 
+import {
+  fixImportSemicolons,
+  normalizeImportSpacing,
+  ensureBlankLineAfterImports,
 } from './functions/imports.js'
-import { 
-  reorderClassNameArgs, 
-  restoreCnCallsForSemanticTokens, 
-  preserveMultilineCnCalls 
+import {
+  reorderClassNameArgs,
+  restoreCnCallsForSemanticTokens,
+  preserveMultilineCnCalls,
 } from './functions/classnames.js'
 import { fixFunctionEndingSemicolons } from './functions/semicolons.js'
 

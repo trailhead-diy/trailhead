@@ -21,7 +21,7 @@ export function ThemeScript() {
         }
       } catch (e) {}
     })();
-  `.trim()
+  `.trim();
 
-  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />
+  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />;
 }

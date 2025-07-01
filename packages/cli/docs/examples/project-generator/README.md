@@ -5,12 +5,14 @@
 ```typescript
 const projectGenerator = {
   generate: async (type: string) => {
-    if (type === 'documentation') {
-      return err(new Error('Stack overflow: Generator generating generator docs'))
+    if (type === "documentation") {
+      return err(
+        new Error("Stack overflow: Generator generating generator docs"),
+      );
     }
-    return ok('Coming soon!')
-  }
-}
+    return ok("Coming soon!");
+  },
+};
 ```
 
 ### What This Generator Will Generate
@@ -26,14 +28,14 @@ const projectGenerator = {
 ```typescript
 const generateDocs = async () => {
   // First, we need a project generator
-  const generator = await generateProjectGenerator()
-  
+  const generator = await generateProjectGenerator();
+
   // Then use it to generate documentation
-  const docs = await generator.generate('docs')
-  
+  const docs = await generator.generate("docs");
+
   // But wait, how did we generate the generator?
-  throw new Error('Inception exceeded maximum depth')
-}
+  throw new Error("Inception exceeded maximum depth");
+};
 ```
 
 ### Planned Template Types
@@ -48,9 +50,9 @@ const generateDocs = async () => {
 
 ```typescript
 interface GeneratorConfig {
-  complexity: 'simple' | 'enterprise' | 'job-security'
-  patterns: ['factory', 'singleton', 'factory-that-makes-singletons']
-  overEngineering: boolean // always true
+  complexity: "simple" | "enterprise" | "job-security";
+  patterns: ["factory", "singleton", "factory-that-makes-singletons"];
+  overEngineering: boolean; // always true
 }
 ```
 
@@ -58,20 +60,20 @@ interface GeneratorConfig {
 
 ```typescript
 const scaffold = async (template: string, context: CommandContext) => {
-  const templatePath = `templates/${template}`
-  const files = await context.fs.readdir(templatePath)
-  
+  const templatePath = `templates/${template}`;
+  const files = await context.fs.readdir(templatePath);
+
   // Copy with variable substitution
   for (const file of files) {
-    const content = await context.fs.readFile(`${templatePath}/${file}`)
+    const content = await context.fs.readFile(`${templatePath}/${file}`);
     const processed = content.replace(/{{(\w+)}}/g, (_, key) => {
-      return context.variables[key] || ''
-    })
-    await context.fs.writeFile(file, processed)
+      return context.variables[key] || "";
+    });
+    await context.fs.writeFile(file, processed);
   }
-  
-  return ok({ filesCreated: files.length })
-}
+
+  return ok({ filesCreated: files.length });
+};
 ```
 
 ### Coming Soon Features
@@ -84,6 +86,6 @@ const scaffold = async (template: string, context: CommandContext) => {
 
 ---
 
-*"Give a developer a template, and they'll code for a day. Teach them to generate templates, and they'll never code again."*
+_"Give a developer a template, and they'll code for a day. Teach them to generate templates, and they'll never code again."_
 
 Need a project generator now? `pnpm create vite` and pretend this doesn't exist yet!

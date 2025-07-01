@@ -105,7 +105,8 @@ const DARK_ICON_FILLS: ColorMapping[] = [
   {
     pattern: /dark:\*:data-\[slot=icon\]:fill-zinc-400/g,
     replacement: 'dark:*:data-[slot=icon]:fill-muted-foreground',
-    description: 'dark:*:data-[slot=icon]:fill-zinc-400 → dark:*:data-[slot=icon]:fill-muted-foreground',
+    description:
+      'dark:*:data-[slot=icon]:fill-zinc-400 → dark:*:data-[slot=icon]:fill-muted-foreground',
   },
 ]
 

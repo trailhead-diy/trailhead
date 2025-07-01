@@ -2,9 +2,9 @@
  * Semantic token types and definitions
  */
 
-export type SemanticColorToken = 
+export type SemanticColorToken =
   | 'primary'
-  | 'secondary' 
+  | 'secondary'
   | 'destructive'
   | 'muted'
   | 'accent'
@@ -20,5 +20,5 @@ export const SEMANTIC_TOKENS: readonly SemanticColorToken[] = [
   'accent',
   'card',
   'popover',
-  'border'
+  'border',
 ] as const

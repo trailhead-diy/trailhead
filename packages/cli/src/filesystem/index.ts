@@ -5,11 +5,11 @@ export type {
   FileStats,
   CopyOptions,
   MkdirOptions,
-} from './types.js'
+} from './types.js';
 
-export { createFileSystem } from './factory.js'
-export { createNodeFileSystem } from './node.js'
-export { createMemoryFileSystem } from './memory.js'
+export { createFileSystem } from './factory.js';
+export { createNodeFileSystem } from './node.js';
+export { createMemoryFileSystem } from './memory.js';
 
 export {
   findFiles,
@@ -25,4 +25,4 @@ export {
   updateFileStats,
   type FileComparison,
   type FileStats as FileStatsTracker,
-} from './file-utils.js'
+} from './file-utils.js';

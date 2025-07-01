@@ -14,7 +14,8 @@
     "lint": "turbo lint",
     "types": "turbo types",
     "clean": "turbo clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "turbo build --filter=./packages/* && changeset publish"

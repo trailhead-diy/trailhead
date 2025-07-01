@@ -15,7 +15,7 @@ function removeUnusedClassName(root: Collection<any>, j: JSCodeshift) {
   // Helper to check if className is used in component body
   function isClassNameUsed(componentBody: any, j: JSCodeshift): boolean {
     let used = false
-    
+
     j(componentBody)
       .find(j.Identifier, { name: 'className' })
       .forEach((path) => {
@@ -25,22 +25,23 @@ function removeUnusedClassName(root: Collection<any>, j: JSCodeshift) {
           used = true
         }
       })
-    
+
     return used
   }
 
   // Process function components
   root.find(j.FunctionDeclaration).forEach((path) => {
     const componentName = path.node.id?.name || 'unknown'
-    
+
     if (path.node.params.length > 0 && path.node.params[0].type === 'ObjectPattern') {
       const objectPattern = path.node.params[0]
-      const classNamePropIndex = objectPattern.properties.findIndex((prop: any) => 
-        prop.type === 'Property' && 
-        prop.key.type === 'Identifier' && 
-        prop.key.name === 'className'
+      const classNamePropIndex = objectPattern.properties.findIndex(
+        (prop: any) =>
+          prop.type === 'Property' &&
+          prop.key.type === 'Identifier' &&
+          prop.key.name === 'className'
       )
-      
+
       if (classNamePropIndex >= 0 && !isClassNameUsed(path.node.body, j)) {
         objectPattern.properties.splice(classNamePropIndex, 1)
         changes.push({
@@ -55,17 +56,20 @@ function removeUnusedClassName(root: Collection<any>, j: JSCodeshift) {
   root.find(j.VariableDeclarator).forEach((path) => {
     const node = path.node
     const componentName = node.id?.type === 'Identifier' ? node.id.name : 'unknown'
-    
-    if (node.init?.type === 'ArrowFunctionExpression' &&
-        node.init.params.length > 0 && 
-        node.init.params[0].type === 'ObjectPattern') {
+
+    if (
+      node.init?.type === 'ArrowFunctionExpression' &&
+      node.init.params.length > 0 &&
+      node.init.params[0].type === 'ObjectPattern'
+    ) {
       const objectPattern = node.init.params[0]
-      const classNamePropIndex = objectPattern.properties.findIndex((prop: any) => 
-        prop.type === 'Property' && 
-        prop.key.type === 'Identifier' && 
-        prop.key.name === 'className'
+      const classNamePropIndex = objectPattern.properties.findIndex(
+        (prop: any) =>
+          prop.type === 'Property' &&
+          prop.key.type === 'Identifier' &&
+          prop.key.name === 'className'
       )
-      
+
       if (classNamePropIndex >= 0 && !isClassNameUsed(node.init.body, j)) {
         objectPattern.properties.splice(classNamePropIndex, 1)
         changes.push({

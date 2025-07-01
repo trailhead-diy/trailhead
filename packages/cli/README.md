@@ -69,33 +69,31 @@ npm install github:esteban-url/trailhead#packages/cli
 ## Quick Start
 
 ```typescript
-import { createCLI } from '@trailhead/cli'
-import { ok, err } from '@trailhead/cli/core'
-import { createCommand } from '@trailhead/cli/command'
+import { createCLI } from "@trailhead/cli";
+import { ok, err } from "@trailhead/cli/core";
+import { createCommand } from "@trailhead/cli/command";
 
 // Create a CLI application
 const cli = createCLI({
-  name: 'my-cli',
-  version: '1.0.0',
-  description: 'My awesome CLI tool',
-})
+  name: "my-cli",
+  version: "1.0.0",
+  description: "My awesome CLI tool",
+});
 
 // Create a command
 const greetCommand = createCommand({
-  name: 'greet',
-  description: 'Greet someone',
-  options: [
-    { name: 'name', alias: 'n', type: 'string', required: true }
-  ],
+  name: "greet",
+  description: "Greet someone",
+  options: [{ name: "name", alias: "n", type: "string", required: true }],
   action: async (options, context) => {
-    context.logger.info(`Hello, ${options.name}!`)
-    return ok(undefined)
+    context.logger.info(`Hello, ${options.name}!`);
+    return ok(undefined);
   },
-})
+});
 
 // Add command and run
-cli.addCommand(greetCommand)
-cli.run(process.argv)
+cli.addCommand(greetCommand);
+cli.run(process.argv);
 ```
 
 ## Module Exports
@@ -105,16 +103,16 @@ cli.run(process.argv)
 Result types and error handling utilities:
 
 ```typescript
-import { ok, err, isOk, isErr } from '@trailhead/cli/core'
-import type { Result } from '@trailhead/cli/core'
+import { ok, err, isOk, isErr } from "@trailhead/cli/core";
+import type { Result } from "@trailhead/cli/core";
 
 // Create results
-const success = ok(42)
-const failure = err(new Error('Something went wrong'))
+const success = ok(42);
+const failure = err(new Error("Something went wrong"));
 
 // Check results
 if (isOk(result)) {
-  console.log(result.value)
+  console.log(result.value);
 }
 ```
 
@@ -123,17 +121,17 @@ if (isOk(result)) {
 Command creation and execution patterns:
 
 ```typescript
-import { createCommand, executeWithPhases } from '@trailhead/cli/command'
-import type { Command, CommandContext } from '@trailhead/cli/command'
+import { createCommand, executeWithPhases } from "@trailhead/cli/command";
+import type { Command, CommandContext } from "@trailhead/cli/command";
 
 // Phased execution
 const phases = [
-  { name: 'Validate', execute: validatePhase },
-  { name: 'Process', execute: processPhase },
-  { name: 'Complete', execute: completePhase },
-]
+  { name: "Validate", execute: validatePhase },
+  { name: "Process", execute: processPhase },
+  { name: "Complete", execute: completePhase },
+];
 
-const result = await executeWithPhases(phases, data, context)
+const result = await executeWithPhases(phases, data, context);
 ```
 
 ### FileSystem (`@trailhead/cli/filesystem`)
@@ -141,15 +139,15 @@ const result = await executeWithPhases(phases, data, context)
 Abstract filesystem operations:
 
 ```typescript
-import { createFileSystem } from '@trailhead/cli/filesystem'
-import type { FileSystem } from '@trailhead/cli/filesystem'
+import { createFileSystem } from "@trailhead/cli/filesystem";
+import type { FileSystem } from "@trailhead/cli/filesystem";
 
-const fs = createFileSystem()
+const fs = createFileSystem();
 
 // All operations return Results
-const result = await fs.readFile('config.json')
+const result = await fs.readFile("config.json");
 if (result.success) {
-  const content = result.value
+  const content = result.value;
 }
 ```
 
@@ -158,18 +156,18 @@ if (result.success) {
 Type-safe configuration management:
 
 ```typescript
-import { defineConfig, loadConfig } from '@trailhead/cli/config'
-import { z } from 'zod'
+import { defineConfig, loadConfig } from "@trailhead/cli/config";
+import { z } from "zod";
 
 const configSchema = z.object({
   api: z.object({
     endpoint: z.string().url(),
     timeout: z.number().default(30000),
   }),
-})
+});
 
-const config = defineConfig(configSchema)
-const result = await config.load()
+const config = defineConfig(configSchema);
+const result = await config.load();
 ```
 
 ### Prompts (`@trailhead/cli/prompts`)
@@ -177,17 +175,17 @@ const result = await config.load()
 Interactive user prompts:
 
 ```typescript
-import { prompt, select, confirm } from '@trailhead/cli/prompts'
+import { prompt, select, confirm } from "@trailhead/cli/prompts";
 
 const name = await prompt({
-  message: 'What is your name?',
-  validate: (value) => value.length > 0 || 'Name is required',
-})
+  message: "What is your name?",
+  validate: (value) => value.length > 0 || "Name is required",
+});
 
 const framework = await select({
-  message: 'Choose a framework',
-  choices: ['React', 'Vue', 'Angular'],
-})
+  message: "Choose a framework",
+  choices: ["React", "Vue", "Angular"],
+});
 ```
 
 ### Testing (`@trailhead/cli/testing`)
@@ -195,20 +193,20 @@ const framework = await select({
 Comprehensive testing utilities:
 
 ```typescript
-import { createTestContext, mockFileSystem } from '@trailhead/cli/testing'
+import { createTestContext, mockFileSystem } from "@trailhead/cli/testing";
 
-describe('MyCommand', () => {
-  it('should execute successfully', async () => {
+describe("MyCommand", () => {
+  it("should execute successfully", async () => {
     const fs = mockFileSystem({
-      'config.json': '{"key": "value"}',
-    })
+      "config.json": '{"key": "value"}',
+    });
 
-    const context = createTestContext({ filesystem: fs })
-    const result = await myCommand.execute(context)
+    const context = createTestContext({ filesystem: fs });
+    const result = await myCommand.execute(context);
 
-    expect(result.success).toBe(true)
-  })
-})
+    expect(result.success).toBe(true);
+  });
+});
 ```
 
 ## Architecture
@@ -251,117 +249,114 @@ pnpm lint
 ## Basic CLI Application
 
 ```typescript
-import { createCLI } from '@trailhead/cli'
-import { createCommand } from '@trailhead/cli/command'
-import { createFileSystem } from '@trailhead/cli/filesystem'
-import { ok, err } from '@trailhead/cli/core'
+import { createCLI } from "@trailhead/cli";
+import { createCommand } from "@trailhead/cli/command";
+import { createFileSystem } from "@trailhead/cli/filesystem";
+import { ok, err } from "@trailhead/cli/core";
 
 const cli = createCLI({
-  name: 'my-app',
-  version: '1.0.0',
-  description: 'My CLI application',
-})
+  name: "my-app",
+  version: "1.0.0",
+  description: "My CLI application",
+});
 
 // Example: Config command
 const configCommand = createCommand({
-  name: 'config',
-  description: 'Manage configuration',
+  name: "config",
+  description: "Manage configuration",
   subcommands: [
     createCommand({
-      name: 'get',
-      description: 'Get config value',
-      options: [
-        { name: 'key', alias: 'k', type: 'string', required: true }
-      ],
+      name: "get",
+      description: "Get config value",
+      options: [{ name: "key", alias: "k", type: "string", required: true }],
       action: async (options, context) => {
-        const fs = createFileSystem()
-        const result = await fs.readFile('./config.json')
-        
+        const fs = createFileSystem();
+        const result = await fs.readFile("./config.json");
+
         if (!result.success) {
-          return err(new Error('Config file not found'))
+          return err(new Error("Config file not found"));
         }
-        
-        const config = JSON.parse(result.value)
-        const value = config[options.key]
-        
+
+        const config = JSON.parse(result.value);
+        const value = config[options.key];
+
         if (value === undefined) {
-          return err(new Error(`Key "${options.key}" not found`))
+          return err(new Error(`Key "${options.key}" not found`));
         }
-        
-        context.logger.info(`${options.key}: ${value}`)
-        return ok(undefined)
-      }
+
+        context.logger.info(`${options.key}: ${value}`);
+        return ok(undefined);
+      },
     }),
     createCommand({
-      name: 'set',
-      description: 'Set config value',
+      name: "set",
+      description: "Set config value",
       options: [
-        { name: 'key', alias: 'k', type: 'string', required: true },
-        { name: 'value', alias: 'v', type: 'string', required: true }
+        { name: "key", alias: "k", type: "string", required: true },
+        { name: "value", alias: "v", type: "string", required: true },
       ],
       action: async (options, context) => {
-        const fs = createFileSystem()
-        
+        const fs = createFileSystem();
+
         // Read existing config or create new
-        const readResult = await fs.readFile('./config.json')
-        const config = readResult.success 
-          ? JSON.parse(readResult.value)
-          : {}
-        
+        const readResult = await fs.readFile("./config.json");
+        const config = readResult.success ? JSON.parse(readResult.value) : {};
+
         // Update config
-        config[options.key] = options.value
-        
+        config[options.key] = options.value;
+
         // Write back
         const writeResult = await fs.writeFile(
-          './config.json', 
-          JSON.stringify(config, null, 2)
-        )
-        
+          "./config.json",
+          JSON.stringify(config, null, 2),
+        );
+
         if (!writeResult.success) {
-          return writeResult
+          return writeResult;
         }
-        
-        context.logger.success(`Set ${options.key} = ${options.value}`)
-        return ok(undefined)
-      }
-    })
-  ]
-})
+
+        context.logger.success(`Set ${options.key} = ${options.value}`);
+        return ok(undefined);
+      },
+    }),
+  ],
+});
 
 // Add commands to CLI
-cli
-  .addCommand(configCommand)
-  .addCommand(
-    createCommand({
-      name: 'init',
-      description: 'Initialize project',
-      options: [
-        { name: 'template', alias: 't', type: 'string', default: 'default' },
-        { name: 'force', alias: 'f', type: 'boolean', default: false },
-      ],
-      action: async (options, context) => {
-        const fs = createFileSystem()
-        
-        const exists = await fs.exists('./config.json')
-        if (exists.success && exists.value && !options.force) {
-          return err(new Error('Already initialized. Use --force to overwrite.'))
-        }
+cli.addCommand(configCommand).addCommand(
+  createCommand({
+    name: "init",
+    description: "Initialize project",
+    options: [
+      { name: "template", alias: "t", type: "string", default: "default" },
+      { name: "force", alias: "f", type: "boolean", default: false },
+    ],
+    action: async (options, context) => {
+      const fs = createFileSystem();
 
-        const config = { template: options.template, created: new Date() }
-        const result = await fs.writeFile('./config.json', JSON.stringify(config, null, 2))
-        
-        if (!result.success) {
-          return err(new Error(`Failed: ${result.error.message}`))
-        }
+      const exists = await fs.exists("./config.json");
+      if (exists.success && exists.value && !options.force) {
+        return err(new Error("Already initialized. Use --force to overwrite."));
+      }
 
-        context.logger.success('Initialized successfully!')
-        return ok(undefined)
-      },
-    })
-  )
+      const config = { template: options.template, created: new Date() };
+      const result = await fs.writeFile(
+        "./config.json",
+        JSON.stringify(config, null, 2),
+      );
+
+      if (!result.success) {
+        return err(new Error(`Failed: ${result.error.message}`));
+      }
+
+      context.logger.success("Initialized successfully!");
+      return ok(undefined);
+    },
+  }),
+);
 
 // Run the CLI
-cli.run(process.argv)
+cli.run(process.argv);
 ```
 
 ## License

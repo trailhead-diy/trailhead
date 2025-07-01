@@ -9,7 +9,7 @@ export interface ProfileOptions {
   mode: 'full' | 'simple'
   outDir?: string
   interactive?: boolean
-  
+
   // Optional advanced configuration
   keepTempFiles?: boolean
   forceGc?: boolean

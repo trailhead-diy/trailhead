@@ -4,7 +4,11 @@
 
 import type { FrameworkInfo } from '../framework-detection.js'
 import type { FrameworkGuidance, ConfigTemplate } from './types.js'
-import { generateCSSCustomProperties, generateTailwindColors, generateTailwindBorderRadius } from './shared.js'
+import {
+  generateCSSCustomProperties,
+  generateTailwindColors,
+  generateTailwindBorderRadius,
+} from './shared.js'
 
 // ============================================================================
 // VITE GUIDANCE
@@ -226,5 +230,5 @@ ${generateCSSCustomProperties()}
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-}`
+}`,
 })

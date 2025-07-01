@@ -11,9 +11,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const checkboxSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Checkbox',
-  detectPattern: (content) => 
-    content.includes('Checkbox') && 
-    content.includes('type Color = keyof typeof colors'),
+  detectPattern: (content) =>
+    content.includes('Checkbox') && content.includes('type Color = keyof typeof colors'),
   defaultColor: 'dark/zinc',
   typePattern: 'alias',
   typeAliasName: 'Color',

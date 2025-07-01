@@ -58,17 +58,21 @@ describe('Install Workflow Integration', () => {
 
       mockFs.readFile.mockImplementation((path: string) => {
         if (path.includes('package.json')) {
-          return Promise.resolve(JSON.stringify({
-            name: 'test-nextjs-app',
-            dependencies: { next: '^14.0.0', react: '^18.0.0' },
-          }))
+          return Promise.resolve(
+            JSON.stringify({
+              name: 'test-nextjs-app',
+              dependencies: { next: '^14.0.0', react: '^18.0.0' },
+            })
+          )
         }
         if (path.includes('tsconfig.json')) {
-          return Promise.resolve(JSON.stringify({
-            compilerOptions: {
-              paths: { '@/*': ['./src/*'] },
-            },
-          }))
+          return Promise.resolve(
+            JSON.stringify({
+              compilerOptions: {
+                paths: { '@/*': ['./src/*'] },
+              },
+            })
+          )
         }
         return Promise.resolve('')
       })
@@ -115,10 +119,12 @@ describe('Install Workflow Integration', () => {
       mockFs.exists.mockResolvedValue(true)
       mockFs.readFile.mockImplementation((path: string) => {
         if (path.includes('package.json')) {
-          return Promise.resolve(JSON.stringify({
-            name: 'test-app',
-            dependencies: {},
-          }))
+          return Promise.resolve(
+            JSON.stringify({
+              name: 'test-app',
+              dependencies: {},
+            })
+          )
         }
         return Promise.resolve('')
       })
@@ -245,9 +251,11 @@ describe('Install Workflow Integration', () => {
 
       mockFs.readFile.mockImplementation((path: string) => {
         if (path.includes('package.json')) {
-          return Promise.resolve(JSON.stringify({
-            dependencies: { vite: '^5.0.0', react: '^18.0.0' },
-          }))
+          return Promise.resolve(
+            JSON.stringify({
+              dependencies: { vite: '^5.0.0', react: '^18.0.0' },
+            })
+          )
         }
         if (path.includes('vite.config')) {
           return Promise.resolve('export default {}')
@@ -272,9 +280,11 @@ describe('Install Workflow Integration', () => {
 
       mockFs.readFile.mockImplementation((path: string) => {
         if (path.includes('package.json')) {
-          return Promise.resolve(JSON.stringify({
-            devDependencies: { '@redwoodjs/core': '^6.0.0' },
-          }))
+          return Promise.resolve(
+            JSON.stringify({
+              devDependencies: { '@redwoodjs/core': '^6.0.0' },
+            })
+          )
         }
         return Promise.resolve('')
       })

@@ -85,15 +85,15 @@ function Example() {
 
 ## CLI vs Manual Setup Comparison
 
-| Feature                    | CLI Installation            | Manual Setup                  |
-| -------------------------- | --------------------------- | ----------------------------- |
-| **Framework Detection**    | ✅ Automatic                | ❌ Manual configuration       |
-| **Theme Setup**            | ✅ Complete with 8 themes  | ❌ Manual theme configuration |
-| **Component Installation** | ✅ All 27 components        | ❌ Manual component copying   |
-| **Configuration Files**    | ✅ Generated automatically  | ❌ Manual creation            |
-| **Dependencies**           | ✅ Installed automatically  | ❌ Manual installation        |
-| **Color Transformation**   | ✅ Semantic tokens applied  | ❌ Manual transformation needed   |
-| **Setup Time**             | ⚡ ~2 minutes               | 🐌 ~30 minutes                |
+| Feature                    | CLI Installation           | Manual Setup                    |
+| -------------------------- | -------------------------- | ------------------------------- |
+| **Framework Detection**    | ✅ Automatic               | ❌ Manual configuration         |
+| **Theme Setup**            | ✅ Complete with 8 themes  | ❌ Manual theme configuration   |
+| **Component Installation** | ✅ All 27 components       | ❌ Manual component copying     |
+| **Configuration Files**    | ✅ Generated automatically | ❌ Manual creation              |
+| **Dependencies**           | ✅ Installed automatically | ❌ Manual installation          |
+| **Color Transformation**   | ✅ Semantic tokens applied | ❌ Manual transformation needed |
+| **Setup Time**             | ⚡ ~2 minutes              | 🐌 ~30 minutes                  |
 
 ## Theme Switching
 

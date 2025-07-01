@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Badge } from '@/components/th/badge'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Badge } from '@/components/th/badge';
 
 export default function BadgePage(): React.JSX.Element {
   return (
@@ -15,5 +15,5 @@ export default function BadgePage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

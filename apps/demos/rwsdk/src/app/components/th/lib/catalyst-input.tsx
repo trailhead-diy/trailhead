@@ -1,8 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import React, { forwardRef } from 'react'
-import { SemanticColorToken, isSemanticToken, createSemanticInputStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import React, { forwardRef } from 'react';
+import {
+  SemanticColorToken,
+  isSemanticToken,
+  createSemanticInputStyles,
+} from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystInputGroup({
   children,
@@ -17,16 +21,16 @@ export function CatalystInputGroup({
         '*:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4',
         '[&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5 [&>[data-slot=icon]:last-child]:right-3 sm:[&>[data-slot=icon]:last-child]:right-2.5',
         '*:data-[slot=icon]:text-muted-foreground dark:*:data-[slot=icon]:text-muted-foreground',
-        className
+        className,
       )}
     >
       {children}
     </span>
-  )
+  );
 }
 
-const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week']
-type DateType = (typeof dateTypes)[number]
+const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week'];
+type DateType = (typeof dateTypes)[number];
 
 export const CatalystInput = forwardRef(function CatalystInput(
   {
@@ -34,13 +38,22 @@ export const CatalystInput = forwardRef(function CatalystInput(
     color,
     ...props
   }: {
-    className?: string
-    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | DateType
-    color?: SemanticColorToken
+    className?: string;
+    type?:
+      | 'email'
+      | 'number'
+      | 'password'
+      | 'search'
+      | 'tel'
+      | 'text'
+      | 'url'
+      | DateType;
+    color?: SemanticColorToken;
   } & Omit<Headless.InputProps, 'as' | 'className'>,
-  ref: React.ForwardedRef<HTMLInputElement>
+  ref: React.ForwardedRef<HTMLInputElement>,
 ) {
-  const resolvedStyles = color && isSemanticToken(color) ? createSemanticInputStyles(color) : ''
+  const resolvedStyles =
+    color && isSemanticToken(color) ? createSemanticInputStyles(color) : '';
   return (
     <span
       data-slot="control"
@@ -60,7 +73,7 @@ export const CatalystInput = forwardRef(function CatalystInput(
           // Invalid state
           'has-data-invalid:before:shadow-destructive/10',
         ],
-        resolvedStyles
+        resolvedStyles,
       )}
     >
       <Headless.Input
@@ -101,9 +114,9 @@ export const CatalystInput = forwardRef(function CatalystInput(
             // System icons
             'dark:scheme-dark',
           ],
-          resolvedStyles
+          resolvedStyles,
         )}
       />
     </span>
-  )
-})
+  );
+});

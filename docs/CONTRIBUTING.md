@@ -9,14 +9,15 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
    - PNPM 8+
 
 2. **Package Manager Notes**
-   
+
    The monorepo uses different PNPM versions:
    - **Root**: PNPM 8.15.0 (specified in root package.json)
    - **@trailhead/web-ui**: PNPM 10.12.1 (specified in its package.json)
-   
+
    This is intentional to support different feature requirements. The root version manages the monorepo infrastructure while individual packages can specify their own versions for optimal compatibility.
 
 3. **Installation**
+
    ```bash
    pnpm install
    ```
@@ -53,7 +54,7 @@ pnpm build --filter=./packages/*
 Use conventional commits:
 
 - `feat:` - New features
-- `fix:` - Bug fixes  
+- `fix:` - Bug fixes
 - `refactor:` - Code refactoring
 - `docs:` - Documentation changes
 - `test:` - Test changes
@@ -69,8 +70,8 @@ Use conventional commits:
 
 ## Package Structure
 
-- **packages/**: Public packages (@trailhead/*)
+- **packages/**: Public packages (@trailhead/\*)
 - **apps/**: Applications and demos
-- **tooling/**: Internal configurations (@repo/*)
+- **tooling/**: Internal configurations (@repo/\*)
 
 All internal tooling packages use the `@repo/*` namespace and are marked as private.

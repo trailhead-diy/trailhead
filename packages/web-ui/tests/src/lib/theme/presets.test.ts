@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { themePresets, getPresetTheme, generateAllPresetThemes } from '../../../../src/components/theme/presets'
-import { createThemeMap, applyThemeToDocument, getTheme } from '../../../../src/components/theme/registry'
+import {
+  themePresets,
+  getPresetTheme,
+  generateAllPresetThemes,
+} from '../../../../src/components/theme/presets'
+import {
+  createThemeMap,
+  applyThemeToDocument,
+  getTheme,
+} from '../../../../src/components/theme/registry'
 import { parseOKLCHColor } from '../../../../src/components/theme/utils'
 
 describe('theme-presets', () => {

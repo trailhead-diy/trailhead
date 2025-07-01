@@ -311,6 +311,5 @@ describe('Semantic Enhancement Registry', () => {
         expect(info?.implementation).toBeDefined()
       })
     })
-
   })
 })

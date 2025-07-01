@@ -11,8 +11,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const badgeSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Badge',
-  detectPattern: (content) => 
-    content.includes('Badge') && 
+  detectPattern: (content) =>
+    content.includes('Badge') &&
     content.includes('colors') &&
     content.includes('export function Badge'),
   defaultColor: 'zinc',

@@ -1,6 +1,6 @@
 /**
  * Edge Case Integration Tests
- * 
+ *
  * Tests complex real-world scenarios and edge cases that could break transforms.
  * These tests ensure the pipeline handles unusual but valid code patterns.
  */
@@ -297,7 +297,10 @@ export function Broken({ className }) {
       })
 
       // File should still exist
-      const exists = await fs.access(componentPath).then(() => true).catch(() => false)
+      const exists = await fs
+        .access(componentPath)
+        .then(() => true)
+        .catch(() => false)
       expect(exists).toBe(true)
     })
 

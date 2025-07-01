@@ -1,5 +1,5 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
 import {
   Description,
   Fieldset,
@@ -9,7 +9,7 @@ import {
   Checkbox,
   CheckboxField,
   CheckboxGroup,
-} from '@/components/th'
+} from '@/components/th';
 
 export default function CheckboxPage(): React.JSX.Element {
   return (
@@ -21,9 +21,15 @@ export default function CheckboxPage(): React.JSX.Element {
             <Text>Decide where your events can be found across the web.</Text>
             <CheckboxGroup>
               <CheckboxField>
-                <Checkbox name="discoverability" value="show_on_events_page" defaultChecked />
+                <Checkbox
+                  name="discoverability"
+                  value="show_on_events_page"
+                  defaultChecked
+                />
                 <Label>Show on events page</Label>
-                <Description>Make this event visible on your profile.</Description>
+                <Description>
+                  Make this event visible on your profile.
+                </Description>
               </CheckboxField>
               <CheckboxField>
                 <Checkbox name="discoverability" value="allow_embedding" />
@@ -37,5 +43,5 @@ export default function CheckboxPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

@@ -2,7 +2,12 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { Combobox, ComboboxOption, ComboboxLabel, ComboboxDescription } from '../../src/components/combobox'
+import {
+  Combobox,
+  ComboboxOption,
+  ComboboxLabel,
+  ComboboxDescription,
+} from '../../src/components/combobox'
 
 describe('Combobox Components', () => {
   const mockObjectOptions = [

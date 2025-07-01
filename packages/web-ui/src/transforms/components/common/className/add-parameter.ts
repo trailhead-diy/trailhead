@@ -53,9 +53,7 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
     if (node.params.length === 0) {
       // Add object parameter with className
       node.params = [
-        j.objectPattern([
-          j.property('init', j.identifier('className'), j.identifier('className')),
-        ]),
+        j.objectPattern([j.property('init', j.identifier('className'), j.identifier('className'))]),
       ]
       changes.push({
         type: 'parameter',
@@ -102,9 +100,7 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
     if (node.init.params.length === 0) {
       // Add object parameter with className
       node.init.params = [
-        j.objectPattern([
-          j.property('init', j.identifier('className'), j.identifier('className')),
-        ]),
+        j.objectPattern([j.property('init', j.identifier('className'), j.identifier('className'))]),
       ]
       changes.push({
         type: 'parameter',
@@ -134,47 +130,49 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
   })
 
   // Process React.forwardRef components
-  root.find(j.CallExpression, {
-    callee: {
-      type: 'MemberExpression',
-      object: { type: 'Identifier', name: 'React' },
-      property: { type: 'Identifier', name: 'forwardRef' },
-    },
-  }).forEach((path) => {
-    const args = path.node.arguments
-    if (args.length > 0 && args[0].type === 'ArrowFunctionExpression') {
-      const func = args[0]
-      
-      // Check if first param is object pattern without className
-      if (
-        func.params.length > 0 &&
-        func.params[0].type === 'ObjectPattern' &&
-        !func.params[0].properties.some((prop: any) => {
-          if (prop.type === 'Property' && prop.key.type === 'Identifier') {
-            return prop.key.name === 'className'
-          }
-          return false
-        })
-      ) {
-        // Check component name from parent variable
-        const parent = path.parent
-        if (parent.node.type === 'VariableDeclarator' && parent.node.id.type === 'Identifier') {
-          const componentName = parent.node.id.name
-          
-          // Skip if it's a component that shouldn't have className
-          if (!COMPONENTS_WITHOUT_CLASSNAME.includes(componentName)) {
-            func.params[0].properties.push(
-              j.property('init', j.identifier('className'), j.identifier('className'))
-            )
-            changes.push({
-              type: 'parameter',
-              description: `Added className to ${componentName} forwardRef`,
-            })
+  root
+    .find(j.CallExpression, {
+      callee: {
+        type: 'MemberExpression',
+        object: { type: 'Identifier', name: 'React' },
+        property: { type: 'Identifier', name: 'forwardRef' },
+      },
+    })
+    .forEach((path) => {
+      const args = path.node.arguments
+      if (args.length > 0 && args[0].type === 'ArrowFunctionExpression') {
+        const func = args[0]
+
+        // Check if first param is object pattern without className
+        if (
+          func.params.length > 0 &&
+          func.params[0].type === 'ObjectPattern' &&
+          !func.params[0].properties.some((prop: any) => {
+            if (prop.type === 'Property' && prop.key.type === 'Identifier') {
+              return prop.key.name === 'className'
+            }
+            return false
+          })
+        ) {
+          // Check component name from parent variable
+          const parent = path.parent
+          if (parent.node.type === 'VariableDeclarator' && parent.node.id.type === 'Identifier') {
+            const componentName = parent.node.id.name
+
+            // Skip if it's a component that shouldn't have className
+            if (!COMPONENTS_WITHOUT_CLASSNAME.includes(componentName)) {
+              func.params[0].properties.push(
+                j.property('init', j.identifier('className'), j.identifier('className'))
+              )
+              changes.push({
+                type: 'parameter',
+                description: `Added className to ${componentName} forwardRef`,
+              })
+            }
           }
         }
       }
-    }
-  })
+    })
 
   return changes
 }

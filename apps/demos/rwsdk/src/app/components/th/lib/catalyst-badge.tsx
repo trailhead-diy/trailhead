@@ -1,10 +1,10 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import React, { forwardRef } from 'react'
-import { CatalystTouchTarget } from './catalyst-button'
-import { CatalystLink } from './catalyst-link'
-import { isSemanticToken, createSemanticBadgeStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import React, { forwardRef } from 'react';
+import { CatalystTouchTarget } from './catalyst-button';
+import { CatalystLink } from './catalyst-link';
+import { isSemanticToken, createSemanticBadgeStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 const colors = {
   red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20',
@@ -35,14 +35,19 @@ const colors = {
   rose: 'bg-rose-400/15 text-rose-700 group-data-hover:bg-rose-400/25 dark:bg-rose-400/10 dark:text-rose-400 dark:group-data-hover:bg-rose-400/20',
   zinc: 'bg-zinc-600/10 text-zinc-700 group-data-hover:bg-zinc-600/20 dark:bg-muted dark:text-muted-foreground dark:group-data-hover:bg-accent',
   // Semantic token variants
-  primary: 'bg-primary/15 text-primary group-data-hover:bg-primary/25 dark:bg-primary/10 dark:text-primary dark:group-data-hover:bg-primary/20',
-  secondary: 'bg-secondary/15 text-secondary-foreground group-data-hover:bg-secondary/25 dark:bg-secondary/10 dark:text-secondary-foreground dark:group-data-hover:bg-secondary/20',
-  accent: 'bg-accent text-accent-foreground group-data-hover:bg-accent/80 dark:bg-accent dark:text-accent-foreground dark:group-data-hover:bg-accent/80',
-  destructive: 'bg-destructive/15 text-destructive group-data-hover:bg-destructive/25 dark:bg-destructive/10 dark:text-destructive dark:group-data-hover:bg-destructive/20',
-  muted: 'bg-muted text-muted-foreground group-data-hover:bg-muted/80 dark:bg-muted dark:text-muted-foreground dark:group-data-hover:bg-muted/80',
-}
+  primary:
+    'bg-primary/15 text-primary group-data-hover:bg-primary/25 dark:bg-primary/10 dark:text-primary dark:group-data-hover:bg-primary/20',
+  secondary:
+    'bg-secondary/15 text-secondary-foreground group-data-hover:bg-secondary/25 dark:bg-secondary/10 dark:text-secondary-foreground dark:group-data-hover:bg-secondary/20',
+  accent:
+    'bg-accent text-accent-foreground group-data-hover:bg-accent/80 dark:bg-accent dark:text-accent-foreground dark:group-data-hover:bg-accent/80',
+  destructive:
+    'bg-destructive/15 text-destructive group-data-hover:bg-destructive/25 dark:bg-destructive/10 dark:text-destructive dark:group-data-hover:bg-destructive/20',
+  muted:
+    'bg-muted text-muted-foreground group-data-hover:bg-muted/80 dark:bg-muted dark:text-muted-foreground dark:group-data-hover:bg-muted/80',
+};
 
-type BadgeProps = { color?: keyof typeof colors }
+type BadgeProps = { color?: keyof typeof colors };
 
 export function CatalystBadge({
   color = 'zinc',
@@ -52,17 +57,17 @@ export function CatalystBadge({
   const resolvedColorClasses =
     color && isSemanticToken(color)
       ? createSemanticBadgeStyles(color)
-      : colors[color] || colors.zinc
+      : colors[color] || colors.zinc;
   return (
     <span
       {...props}
       className={cn(
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline',
         resolvedColorClasses,
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
@@ -75,15 +80,19 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
     ),
-  ref: React.ForwardedRef<HTMLElement>
+  ref: React.ForwardedRef<HTMLElement>,
 ) {
   let classes = cn(
     'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
-    className
-  )
+    className,
+  );
 
   return 'href' in props ? (
-    <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+    <CatalystLink
+      {...props}
+      className={classes}
+      ref={ref as React.ForwardedRef<HTMLAnchorElement>}
+    >
       <CatalystTouchTarget>
         <CatalystBadge color={color}>{children}</CatalystBadge>
       </CatalystTouchTarget>
@@ -94,5 +103,5 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
         <CatalystBadge color={color}>{children}</CatalystBadge>
       </CatalystTouchTarget>
     </Headless.Button>
-  )
-})
+  );
+});

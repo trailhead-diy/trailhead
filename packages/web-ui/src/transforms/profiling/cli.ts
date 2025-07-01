@@ -20,7 +20,11 @@ export function createCLI(): Command {
   program
     .option('-c, --compare', 'Compare with traditional approach', DEFAULT_OPTIONS.compare)
     .option('-v, --verbose', 'Show detailed output', DEFAULT_OPTIONS.verbose)
-    .option('-i, --iterations <number>', 'Number of iterations (1-10)', DEFAULT_OPTIONS.iterations.toString())
+    .option(
+      '-i, --iterations <number>',
+      'Number of iterations (1-10)',
+      DEFAULT_OPTIONS.iterations.toString()
+    )
     .option('-m, --mode <type>', 'Profile mode: full|simple', DEFAULT_OPTIONS.mode)
     .option('-o, --output <path>', 'Output directory for markdown reports')
     .option('--interactive', 'Interactive mode with prompts', DEFAULT_OPTIONS.interactive)
@@ -28,8 +32,7 @@ export function createCLI(): Command {
     .option('--gc', 'Run with garbage collection between iterations')
 
   // Transform filtering
-  program
-    .option('--exclude <list>', 'Comma-separated list of transforms to exclude')
+  program.option('--exclude <list>', 'Comma-separated list of transforms to exclude')
 
   // Performance options
   program
@@ -45,10 +48,13 @@ export function createCLI(): Command {
  */
 export function parseCliOptions(program: Command): ProfileOptions {
   const options = program.opts()
-  
+
   // Parse iterations with validation
-  const iterations = parseInt(options.iterations?.toString() || DEFAULT_OPTIONS.iterations.toString(), 10)
-  
+  const iterations = parseInt(
+    options.iterations?.toString() || DEFAULT_OPTIONS.iterations.toString(),
+    10
+  )
+
   // Parse exclude list
   const excludeList = options.exclude
     ? options.exclude.split(',').map((t: string) => t.trim())
@@ -76,18 +82,21 @@ export function parseCliOptions(program: Command): ProfileOptions {
 /**
  * Pure function to validate CLI options
  */
-export function validateCliOptions(options: ProfileOptions): { isValid: boolean; errors: string[] } {
+export function validateCliOptions(options: ProfileOptions): {
+  isValid: boolean
+  errors: string[]
+} {
   const errors = validateOptions(options)
-  
+
   // Additional CLI-specific validations
-  
+
   if (options.warmupIterations && (options.warmupIterations < 0 || options.warmupIterations > 5)) {
     errors.push('Warmup iterations must be between 0 and 5')
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   }
 }
 /**
@@ -95,10 +104,11 @@ export function validateCliOptions(options: ProfileOptions): { isValid: boolean;
  */
 export function setupCLI(): Command {
   const program = createCLI()
-  
+
   // Add help for transforms
-  program
-    .addHelpText('after', `
+  program.addHelpText(
+    'after',
+    `
 Examples:
   $ profile-transforms                          # Basic profiling
   $ profile-transforms --compare --verbose      # Compare with traditional approach
@@ -111,7 +121,8 @@ Performance Tips:
   - Use --warmup for more stable timing results
   - Use --verbose to see detailed component breakdown
   - Use --no-cleanup to inspect transformed files
-`)
+`
+  )
 
   return program
 }
@@ -122,12 +133,12 @@ Performance Tips:
 export function parseAndValidate(argv: string[]): { options: ProfileOptions; errors: string[] } {
   const program = setupCLI()
   program.parse(argv)
-  
+
   const options = parseCliOptions(program)
   const validation = validateCliOptions(options)
-  
+
   return {
     options,
-    errors: validation.errors
+    errors: validation.errors,
   }
 }

@@ -31,7 +31,10 @@ export interface ResolutionResult {
 /**
  * Pattern type for resolution building
  */
-export type ResolutionPattern = 'iife-with-colors' | 'conditional-with-colors' | 'simple-conditional'
+export type ResolutionPattern =
+  | 'iife-with-colors'
+  | 'conditional-with-colors'
+  | 'simple-conditional'
 
 /**
  * Context for AST building operations

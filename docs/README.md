@@ -33,9 +33,9 @@ pnpm dev
 
 The Trailhead monorepo follows modern best practices:
 
-- **packages/**: Public packages (@trailhead/*)
+- **packages/**: Public packages (@trailhead/\*)
 - **apps/**: Applications and demos
-- **tooling/**: Internal shared configurations (@repo/*)
+- **tooling/**: Internal shared configurations (@repo/\*)
 - **docs/**: Monorepo documentation
 
 ## Development Workflow

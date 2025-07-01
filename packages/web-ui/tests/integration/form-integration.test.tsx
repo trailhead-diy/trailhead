@@ -10,15 +10,15 @@
  * KNOWN LIMITATIONS WITH HEADLESS UI + TESTING LIBRARY:
  * Many tests in this file are skipped due to fundamental incompatibilities between
  * Headless UI v2 components and jsdom/Testing Library:
- * 
+ *
  * 1. Complex form controls (Select, RadioGroup) require browser-level event handling
  * 2. Controlled inputs may not update state synchronously in test environment
  * 3. Focus management and keyboard navigation don't work reliably in jsdom
- * 
+ *
  * These are test environment limitations, not component bugs. The components work
  * correctly in real browsers. For comprehensive form testing, consider using
  * browser-based testing tools like Playwright or Cypress.
- * 
+ *
  * See: https://github.com/tailwindlabs/headlessui/issues/3294
  */
 

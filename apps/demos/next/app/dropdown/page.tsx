@@ -1,7 +1,12 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/th/dropdown'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from '@/components/th/dropdown';
+import { ChevronDownIcon } from '@heroicons/react/16/solid';
 
 export default function DropdownPage(): React.JSX.Element {
   function deleteUser() {
@@ -27,5 +32,5 @@ export default function DropdownPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

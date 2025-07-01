@@ -23,7 +23,7 @@ export const installThemeSystem = async (
 ): Promise<Result<string[], InstallError>> => {
   const sourcePaths = generateSourcePaths(trailheadRoot)
   const destPaths = generateDestinationPaths(config)
-  
+
   // Ensure destination theme directory exists
   const ensureDirResult = await ensureDirectories(fs, [destPaths.themeDir])
   if (!ensureDirResult.success) return ensureDirResult
@@ -34,26 +34,41 @@ export const installThemeSystem = async (
     { src: sourcePaths.themeRegistry, dest: destPaths.themeRegistry, name: 'theme/registry.ts' },
     { src: sourcePaths.themeUtils, dest: destPaths.themeUtils, name: 'theme/utils.ts' },
     { src: sourcePaths.themePresets, dest: destPaths.themePresets, name: 'theme/presets.ts' },
-    { src: sourcePaths.catalystTheme, dest: destPaths.catalystTheme, name: 'theme/catalyst-theme.ts' },
-    { src: sourcePaths.semanticTokens, dest: destPaths.semanticTokens, name: 'theme/semantic-tokens.ts' },
-    { src: sourcePaths.semanticEnhancements, dest: destPaths.semanticEnhancements, name: 'theme/semantic-enhancements.ts' },
-    { src: sourcePaths.themeProvider, dest: destPaths.themeProvider, name: 'theme/theme-provider.tsx' },
-    { src: sourcePaths.themeSwitcher, dest: destPaths.themeSwitcher, name: 'theme/theme-switcher.tsx' },
+    {
+      src: sourcePaths.catalystTheme,
+      dest: destPaths.catalystTheme,
+      name: 'theme/catalyst-theme.ts',
+    },
+    {
+      src: sourcePaths.semanticTokens,
+      dest: destPaths.semanticTokens,
+      name: 'theme/semantic-tokens.ts',
+    },
+    {
+      src: sourcePaths.semanticEnhancements,
+      dest: destPaths.semanticEnhancements,
+      name: 'theme/semantic-enhancements.ts',
+    },
+    {
+      src: sourcePaths.themeProvider,
+      dest: destPaths.themeProvider,
+      name: 'theme/theme-provider.tsx',
+    },
+    {
+      src: sourcePaths.themeSwitcher,
+      dest: destPaths.themeSwitcher,
+      name: 'theme/theme-switcher.tsx',
+    },
     { src: sourcePaths.themeIndex, dest: destPaths.themeIndex, name: 'theme/index.ts' },
   ]
 
-  const copyResult = await copyFiles(
-    fs,
-    themeFiles,
-    { overwrite: force },
-    logger
-  )
-  
+  const copyResult = await copyFiles(fs, themeFiles, { overwrite: force }, logger)
+
   if (!copyResult.success) return copyResult
-  
+
   logger.success(`Installed ${copyResult.value.length} theme system files`)
-  
-  return Ok(themeFiles.map(f => f.name))
+
+  return Ok(themeFiles.map((f) => f.name))
 }
 
 // ============================================================================
@@ -72,7 +87,7 @@ export const installThemeComponents = async (
 ): Promise<Result<string[], InstallError>> => {
   const sourcePaths = generateSourcePaths(trailheadRoot)
   const destPaths = generateDestinationPaths(config)
-  
+
   // Ensure destination components directory exists
   const ensureDirResult = await ensureDirectories(fs, [config.componentsDir])
   if (!ensureDirResult.success) return ensureDirResult
@@ -84,14 +99,14 @@ export const installThemeComponents = async (
 
   const copyResult = await copyFiles(
     fs,
-    componentFiles.filter(f => f.src && f.dest), // Filter out any undefined paths
+    componentFiles.filter((f) => f.src && f.dest), // Filter out any undefined paths
     { overwrite: force },
     logger
   )
-  
+
   if (!copyResult.success) return copyResult
-  
+
   logger.success(`Installed ${copyResult.value.length} theme components`)
-  
+
   return Ok(copyResult.value)
 }

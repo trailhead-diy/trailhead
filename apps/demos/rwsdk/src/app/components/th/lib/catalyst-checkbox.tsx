@@ -1,8 +1,8 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
-import { isSemanticToken, createSemanticCheckboxStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
+import { isSemanticToken, createSemanticCheckboxStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystCheckboxGroup({
   className,
@@ -17,10 +17,10 @@ export function CatalystCheckboxGroup({
         'space-y-3',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystCheckboxField({
@@ -42,10 +42,10 @@ export function CatalystCheckboxField({
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 const base = [
@@ -74,7 +74,7 @@ const base = [
   // Forced colors mode
   'forced-colors:[--checkbox-check:HighlightText] forced-colors:[--checkbox-checked-bg:Highlight] forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
   'dark:forced-colors:[--checkbox-check:HighlightText] dark:forced-colors:[--checkbox-checked-bg:Highlight] dark:forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
-]
+];
 
 const colors = {
   'dark/zinc': [
@@ -116,29 +116,33 @@ const colors = {
   pink: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-pink-500)] [--checkbox-checked-border:var(--color-pink-600)]/90',
   rose: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-rose-500)] [--checkbox-checked-border:var(--color-rose-600)]/90',
   // Semantic token variants
-  primary: '[--checkbox-check:var(--color-primary-foreground)] [--checkbox-checked-bg:var(--primary)] [--checkbox-checked-border:var(--primary)]/90',
-  secondary: '[--checkbox-check:var(--color-secondary-foreground)] [--checkbox-checked-bg:var(--secondary)] [--checkbox-checked-border:var(--secondary)]/90',
-  accent: '[--checkbox-check:var(--color-accent-foreground)] [--checkbox-checked-bg:var(--accent)] [--checkbox-checked-border:var(--accent)]/90',
-  destructive: '[--checkbox-check:var(--color-destructive-foreground)] [--checkbox-checked-bg:var(--destructive)] [--checkbox-checked-border:var(--destructive)]/90',
-}
+  primary:
+    '[--checkbox-check:var(--color-primary-foreground)] [--checkbox-checked-bg:var(--primary)] [--checkbox-checked-border:var(--primary)]/90',
+  secondary:
+    '[--checkbox-check:var(--color-secondary-foreground)] [--checkbox-checked-bg:var(--secondary)] [--checkbox-checked-border:var(--secondary)]/90',
+  accent:
+    '[--checkbox-check:var(--color-accent-foreground)] [--checkbox-checked-bg:var(--accent)] [--checkbox-checked-border:var(--accent)]/90',
+  destructive:
+    '[--checkbox-check:var(--color-destructive-foreground)] [--checkbox-checked-bg:var(--destructive)] [--checkbox-checked-border:var(--destructive)]/90',
+};
 
-type Color = keyof typeof colors
+type Color = keyof typeof colors;
 
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color
-  className?: string
+  color?: Color;
+  className?: string;
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticCheckboxStyles(color)
+      return createSemanticCheckboxStyles(color);
     }
 
-    return colors[color] || colors['dark/zinc']
-  })()
+    return colors[color] || colors['dark/zinc'];
+  })();
 
   return (
     <Headless.Checkbox
@@ -149,7 +153,7 @@ export function CatalystCheckbox({
       <span className={cn([base, resolvedColorClasses])}>
         <svg
           className={cn(
-            'size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5'
+            'size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5',
           )}
           viewBox="0 0 14 14"
           fill="none"
@@ -173,5 +177,5 @@ export function CatalystCheckbox({
         </svg>
       </span>
     </Headless.Checkbox>
-  )
+  );
 }

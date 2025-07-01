@@ -126,7 +126,7 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
   }
 
   const validated = pkg as any
-  
+
   // Validate dependencies structure if present
   if (validated.dependencies !== undefined) {
     if (typeof validated.dependencies !== 'object' || validated.dependencies === null) {
@@ -145,7 +145,7 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
       }
     }
   }
-  
+
   // Validate devDependencies structure if present
   if (validated.devDependencies !== undefined) {
     if (typeof validated.devDependencies !== 'object' || validated.devDependencies === null) {

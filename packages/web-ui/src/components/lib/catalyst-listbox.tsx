@@ -65,8 +65,8 @@ export function CatalystListbox<T>({
               'group-data-invalid:border-red-500 group-data-hover:group-data-invalid:border-red-500 dark:group-data-invalid:border-red-600 dark:data-hover:group-data-invalid:border-red-600',
               // Disabled state
               'group-data-disabled:border-zinc-950/20 group-data-disabled:opacity-100 dark:group-data-disabled:border-white/15 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:data-hover:border-white/15',
-              className
-            ])
+              className,
+            ]),
           } as any)}
         />
         <span

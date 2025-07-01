@@ -4,11 +4,11 @@
 
 import type { FrameworkInfo } from '../framework-detection.js'
 import type { FrameworkGuidance, ConfigTemplate } from './types.js'
-import { 
-  generateCSSCustomProperties, 
+import {
+  generateCSSCustomProperties,
   generateThemeProviderUsage,
   generateTailwindColors,
-  generateTailwindBorderRadius
+  generateTailwindBorderRadius,
 } from './shared.js'
 
 // ============================================================================
@@ -123,5 +123,5 @@ export const generateGenericReactCSSTemplate = (): ConfigTemplate => ({
 
 @layer base {
 ${generateCSSCustomProperties()}
-}`
+}`,
 })

@@ -1,7 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Dialog, DialogTitle, DialogDescription, DialogBody, DialogActions } from '../../src/components/dialog'
+import {
+  Dialog,
+  DialogTitle,
+  DialogDescription,
+  DialogBody,
+  DialogActions,
+} from '../../src/components/dialog'
 
 describe('Dialog Components', () => {
   describe('Modal Behavior', () => {

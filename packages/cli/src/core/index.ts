@@ -1,5 +1,5 @@
-export { Ok, Err, isOk, isErr } from './errors/index.js'
-export type { Result } from './errors/index.js'
+export { Ok, Err, isOk, isErr } from './errors/index.js';
+export type { Result } from './errors/index.js';
 
 export {
   createError,
@@ -11,8 +11,8 @@ export {
   createExitHandler,
   retryWithBackoff,
   tryRecover,
-} from './errors/index.js'
-export type { CLIError } from './errors/index.js'
+} from './errors/index.js';
+export type { CLIError } from './errors/index.js';
 
 export {
   createValidationPipeline,
@@ -36,7 +36,7 @@ export {
   filePath,
   ValidationOk,
   ValidationErr,
-} from './validation/index.js'
+} from './validation/index.js';
 export type {
   ValidationPipeline,
   ValidationRule,
@@ -45,7 +45,7 @@ export type {
   ValidationContext,
   Validator,
   Framework,
-} from './validation/index.js'
+} from './validation/index.js';
 
-export { createLogger, createSilentLogger } from './logger.js'
-export type { Logger } from './logger.js'
+export { createLogger, createSilentLogger } from './logger.js';
+export type { Logger } from './logger.js';

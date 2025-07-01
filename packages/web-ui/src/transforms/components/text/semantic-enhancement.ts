@@ -11,9 +11,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const textSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Text',
-  detectPattern: (content) => 
-    content.includes('Text') && 
-    content.includes('function Text'),
+  detectPattern: (content) => content.includes('Text') && content.includes('function Text'),
   defaultColor: '', // Text doesn't have default color
   typePattern: 'none', // Text adds new color prop
   hasColorsObject: false, // Text doesn't use colors object

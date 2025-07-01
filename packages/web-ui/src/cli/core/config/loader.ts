@@ -74,7 +74,10 @@ function formatZodError(error: z.ZodError, configFile?: string): ConfigurationEr
   const firstError = error.errors[0]
 
   if (!firstError) {
-    return configurationError('Invalid configuration', `Config file: ${configFile || 'unknown'}. Check your configuration file for errors.`)
+    return configurationError(
+      'Invalid configuration',
+      `Config file: ${configFile || 'unknown'}. Check your configuration file for errors.`
+    )
   }
 
   // Build the field path
@@ -122,7 +125,9 @@ function formatZodError(error: z.ZodError, configFile?: string): ConfigurationEr
   // Get the actual value that was provided
   const actualValue = firstError.code === 'invalid_type' ? firstError.received : undefined
 
-  return configurationError(`Configuration error in field '${fieldPath || 'unknown'}': Expected ${expectedType}, got ${JSON.stringify(actualValue)}. Example: ${exampleValue}`)
+  return configurationError(
+    `Configuration error in field '${fieldPath || 'unknown'}': Expected ${expectedType}, got ${JSON.stringify(actualValue)}. Example: ${exampleValue}`
+  )
 }
 
 /**

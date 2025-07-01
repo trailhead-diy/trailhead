@@ -15,11 +15,13 @@ export const normalizeBlankLines = (code: string): string => {
  * Ensures functions have proper spacing for readability
  */
 export const addFunctionSpacing = (code: string): string => {
-  return code
-    // Add blank line before function declarations
-    .replace(/([^\n])\n(export\s+)?function/g, '$1\n\n$2function')
-    // Add blank line before arrow functions
-    .replace(/([^\n])\n(export\s+)?const\s+\w+\s*=\s*\(/g, '$1\n\n$2const $3 = (')
+  return (
+    code
+      // Add blank line before function declarations
+      .replace(/([^\n])\n(export\s+)?function/g, '$1\n\n$2function')
+      // Add blank line before arrow functions
+      .replace(/([^\n])\n(export\s+)?const\s+\w+\s*=\s*\(/g, '$1\n\n$2const $3 = (')
+  )
 }
 
 /**

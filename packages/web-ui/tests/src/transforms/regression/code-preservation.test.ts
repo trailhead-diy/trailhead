@@ -1,6 +1,6 @@
 /**
  * Code Preservation Regression Tests
- * 
+ *
  * Ensures transforms don't break valid code or introduce regressions.
  * Tests that transformations are idempotent and preserve functionality.
  */
@@ -295,7 +295,12 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
       const sourceFile = path.join(process.cwd(), 'catalyst-ui-kit/typescript/navbar.tsx')
       const destFile = path.join(tempDir, 'navbar.tsx')
 
-      if (await fs.access(sourceFile).then(() => true).catch(() => false)) {
+      if (
+        await fs
+          .access(sourceFile)
+          .then(() => true)
+          .catch(() => false)
+      ) {
         await fs.copyFile(sourceFile, destFile)
 
         const original = await fs.readFile(destFile, 'utf-8')

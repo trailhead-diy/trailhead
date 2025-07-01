@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { validateTheme, applyTheme, generateThemeCSS, createCustomTheme } from '../../../../src/components/theme/config'
+import {
+  validateTheme,
+  applyTheme,
+  generateThemeCSS,
+  createCustomTheme,
+} from '../../../../src/components/theme/config'
 import { getPresetTheme } from '../../../../src/components/theme/presets'
 import type { TrailheadThemeConfig } from '../../../../src/components/theme/config'
 

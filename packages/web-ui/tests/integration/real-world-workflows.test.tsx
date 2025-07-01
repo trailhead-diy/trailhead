@@ -192,9 +192,7 @@ describe('Real-World User Workflows', () => {
         const [data] = React.useState(mockData)
 
         const filteredData = React.useMemo(() => {
-          return data.filter((item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+          return data.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
         }, [data, searchTerm])
 
         return (
@@ -264,7 +262,7 @@ describe('Real-World User Workflows', () => {
       await waitFor(() => {
         const table = screen.getByRole('table')
         expect(table).toBeInTheDocument()
-        
+
         // Verify all projects are initially visible
         expect(screen.getByText('Project Alpha')).toBeInTheDocument()
         expect(screen.getByText('Project Beta')).toBeInTheDocument()
@@ -449,7 +447,12 @@ describe('Real-World User Workflows', () => {
             />
 
             {error && (
-              <Alert open={!!error} onClose={() => setError(null)} color="red" data-testid="error-alert">
+              <Alert
+                open={!!error}
+                onClose={() => setError(null)}
+                color="red"
+                data-testid="error-alert"
+              >
                 <p>{error}</p>
                 <Button onClick={retry} data-testid="retry-button" className="mt-2">
                   Try Again
@@ -458,7 +461,12 @@ describe('Real-World User Workflows', () => {
             )}
 
             {success && (
-              <Alert open={success} onClose={() => setSuccess(false)} color="green" data-testid="success-alert">
+              <Alert
+                open={success}
+                onClose={() => setSuccess(false)}
+                color="green"
+                data-testid="success-alert"
+              >
                 Form submitted successfully!
               </Alert>
             )}

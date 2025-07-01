@@ -16,15 +16,17 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
     // Hierarchical text tokens
     {
       pattern: /\btext-tertiary-foreground\b/g,
-      replacement: 'text-[color:var(--tertiary-foreground,color-mix(in_oklch,var(--foreground)_70%,transparent))]',
+      replacement:
+        'text-[color:var(--tertiary-foreground,color-mix(in_oklch,var(--foreground)_70%,transparent))]',
       description: 'Add fallback to tertiary-foreground (70% foreground)',
     },
     {
       pattern: /\btext-quaternary-foreground\b/g,
-      replacement: 'text-[color:var(--quaternary-foreground,color-mix(in_oklch,var(--foreground)_50%,transparent))]',
+      replacement:
+        'text-[color:var(--quaternary-foreground,color-mix(in_oklch,var(--foreground)_50%,transparent))]',
       description: 'Add fallback to quaternary-foreground (50% foreground)',
     },
-    
+
     // Icon state tokens - stroke
     {
       pattern: /\bstroke-icon-primary\b/g,
@@ -56,7 +58,7 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
       replacement: 'stroke-[var(--icon-muted,var(--muted))]',
       description: 'Add fallback to icon-muted stroke',
     },
-    
+
     // Icon state tokens - fill
     {
       pattern: /\bfill-icon-primary\b/g,
@@ -88,7 +90,7 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
       replacement: 'fill-[var(--icon-muted,var(--muted))]',
       description: 'Add fallback to icon-muted fill',
     },
-    
+
     // Border weight tokens
     {
       pattern: /\bborder-border-strong\b/g,
@@ -97,22 +99,25 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
     },
     {
       pattern: /\bborder-border-subtle\b/g,
-      replacement: 'border-[color:var(--border-subtle,color-mix(in_oklch,var(--border)_60%,transparent))]',
+      replacement:
+        'border-[color:var(--border-subtle,color-mix(in_oklch,var(--border)_60%,transparent))]',
       description: 'Add fallback to border-subtle (60% border)',
     },
     {
       pattern: /\bborder-border-ghost\b/g,
-      replacement: 'border-[color:var(--border-ghost,color-mix(in_oklch,var(--border)_30%,transparent))]',
+      replacement:
+        'border-[color:var(--border-ghost,color-mix(in_oklch,var(--border)_30%,transparent))]',
       description: 'Add fallback to border-ghost (30% border)',
     },
-    
+
     // Ring weight tokens
     {
       pattern: /\bring-border-subtle\b/g,
-      replacement: 'ring-[color:var(--border-subtle,color-mix(in_oklch,var(--ring)_60%,transparent))]',
+      replacement:
+        'ring-[color:var(--border-subtle,color-mix(in_oklch,var(--ring)_60%,transparent))]',
       description: 'Add fallback to ring border-subtle',
     },
-    
+
     // Component-specific tokens
     {
       pattern: /\btext-sidebar-text-primary\b/g,
@@ -134,16 +139,18 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
       replacement: 'text-[color:var(--table-body-text,var(--foreground))]',
       description: 'Add fallback to table-body-text',
     },
-    
+
     // Dark mode variations
     {
       pattern: /\bdark:text-tertiary-foreground\b/g,
-      replacement: 'dark:text-[color:var(--tertiary-foreground,color-mix(in_oklch,var(--foreground)_70%,transparent))]',
+      replacement:
+        'dark:text-[color:var(--tertiary-foreground,color-mix(in_oklch,var(--foreground)_70%,transparent))]',
       description: 'Add fallback to dark tertiary-foreground',
     },
     {
       pattern: /\bdark:text-quaternary-foreground\b/g,
-      replacement: 'dark:text-[color:var(--quaternary-foreground,color-mix(in_oklch,var(--foreground)_50%,transparent))]',
+      replacement:
+        'dark:text-[color:var(--quaternary-foreground,color-mix(in_oklch,var(--foreground)_50%,transparent))]',
       description: 'Add fallback to dark quaternary-foreground',
     },
     {
@@ -168,7 +175,8 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
     },
     {
       pattern: /\bdark:ring-border-subtle\b/g,
-      replacement: 'dark:ring-[color:var(--border-subtle,color-mix(in_oklch,var(--ring)_60%,transparent))]',
+      replacement:
+        'dark:ring-[color:var(--border-subtle,color-mix(in_oklch,var(--ring)_60%,transparent))]',
       description: 'Add fallback to dark ring border-subtle',
     },
   ],

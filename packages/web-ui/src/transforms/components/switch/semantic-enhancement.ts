@@ -11,8 +11,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const switchSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Switch',
-  detectPattern: (content) => 
-    content.includes('Switch') && 
+  detectPattern: (content) =>
+    content.includes('Switch') &&
     content.includes('type Color = keyof typeof colors') &&
     content.includes('export function Switch'),
   defaultColor: 'dark/zinc',

@@ -120,11 +120,6 @@ const ICON_FILL_STATES: ColorMapping[] = [
 export const interactiveStatesTransform = createRegexTransform({
   name: 'interactive-states-colors',
   description: 'Transform interactive state colors to semantic tokens',
-  mappings: [
-    ...FOCUS_COLORS,
-    ...HOVER_STATES,
-    ...ACTIVE_STATES,
-    ...ICON_FILL_STATES,
-  ],
+  mappings: [...FOCUS_COLORS, ...HOVER_STATES, ...ACTIVE_STATES, ...ICON_FILL_STATES],
   changeType: 'interactive-color',
 })

@@ -1,6 +1,6 @@
 /**
  * Resolution Builder Tests
- * 
+ *
  * Tests the modular AST pattern building system for semantic token resolution.
  * Testing behavior, not implementation.
  */
@@ -8,7 +8,10 @@
 import { describe, it, expect } from 'vitest'
 import jscodeshift from 'jscodeshift'
 import { buildSemanticResolution } from '../../../../src/transforms/components/common/semantic-tokens/utilities/resolution-builder/ast-builders.js'
-import { insertSemanticResolution, checkVariableExists } from '../../../../src/transforms/components/common/semantic-tokens/utilities/resolution-builder/insertion-logic.js'
+import {
+  insertSemanticResolution,
+  checkVariableExists,
+} from '../../../../src/transforms/components/common/semantic-tokens/utilities/resolution-builder/insertion-logic.js'
 import * as builders from '../../../../src/transforms/components/common/semantic-tokens/utilities/resolution-builder/ast-builders.js'
 
 const j = jscodeshift.withParser('tsx')
@@ -21,7 +24,7 @@ describe('resolution builder system', () => {
         variableName: 'resolvedColorClasses',
         defaultColor: 'dark',
         useIIFE: true,
-        hasColorsObject: true
+        hasColorsObject: true,
       }
 
       const ast = buildSemanticResolution(j, config)
@@ -39,7 +42,7 @@ describe('resolution builder system', () => {
         variableName: 'resolvedColorClasses',
         defaultColor: 'zinc',
         useIIFE: false,
-        hasColorsObject: true
+        hasColorsObject: true,
       }
 
       const ast = buildSemanticResolution(j, config)
@@ -56,7 +59,7 @@ describe('resolution builder system', () => {
         variableName: 'resolvedColorClasses',
         defaultColor: 'zinc',
         useIIFE: false,
-        hasColorsObject: false
+        hasColorsObject: false,
       }
 
       const ast = buildSemanticResolution(j, config)
@@ -73,7 +76,7 @@ describe('resolution builder system', () => {
       const pattern = builders.withIIFEAndColors(j, {
         componentName: 'Switch',
         variableName: 'resolvedStyles',
-        defaultColor: 'dark/zinc'
+        defaultColor: 'dark/zinc',
       })
 
       const code = j(pattern).toSource()
@@ -86,7 +89,7 @@ describe('resolution builder system', () => {
     it.fails('withConditionalAndColors creates ternary with colors fallback', () => {
       const pattern = builders.withConditionalAndColors(j, {
         componentName: 'Radio',
-        variableName: 'colorClasses'
+        variableName: 'colorClasses',
       })
 
       const code = j(pattern).toSource()
@@ -99,7 +102,7 @@ describe('resolution builder system', () => {
     it('withSimpleConditional creates basic ternary pattern', () => {
       const pattern = builders.withSimpleConditional(j, {
         componentName: 'Link',
-        variableName: 'linkStyles'
+        variableName: 'linkStyles',
       })
 
       const code = j(pattern).toSource()
@@ -123,10 +126,7 @@ function TestComponent({ color }: { color?: string }) {
       const functionBody = ast.find(j.FunctionDeclaration).at(0).get('body')
 
       const resolution = j.variableDeclaration('const', [
-        j.variableDeclarator(
-          j.identifier('resolvedColorClasses'),
-          j.literal('test-value')
-        )
+        j.variableDeclarator(j.identifier('resolvedColorClasses'), j.literal('test-value')),
       ])
 
       const inserted = insertSemanticResolution(j, functionBody, resolution)
@@ -193,7 +193,7 @@ export function Switch({ color = 'dark/zinc' }: { color?: Color }) {
         variableName: 'resolvedColorClasses',
         defaultColor: 'dark/zinc',
         useIIFE: true,
-        hasColorsObject: true
+        hasColorsObject: true,
       })
 
       const body = functionDecl.get('body')

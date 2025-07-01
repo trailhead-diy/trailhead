@@ -3,6 +3,7 @@
 ## Component Overview
 
 The Alert component is a modal dialog system with backdrop overlay. It consists of several sub-components:
+
 - **Alert** - Main container with backdrop and positioning
 - **AlertTitle** - Title text with semantic styling
 - **AlertDescription** - Description text using the Text component
@@ -16,10 +17,12 @@ Unlike other components, Alert uses a minimal color scheme focused on neutrals a
 Colors used in the primary Alert component:
 
 ### Backdrop
+
 - **Light Mode**: `bg-zinc-950/15` - Semi-transparent dark overlay
 - **Dark Mode**: `dark:bg-zinc-950/50` - Heavier dark overlay for better contrast
 
 ### Dialog Panel
+
 - **Background**:
   - Light: `bg-white` - Clean white background
   - Dark: `dark:bg-zinc-900` - Dark surface
@@ -44,28 +47,32 @@ Uses the Text component for description styling - inherits its color system.
 
 ## Color Properties Summary
 
-| Element | Light Mode | Dark Mode | Purpose |
-|---------|------------|-----------|---------|
-| **Backdrop** | `bg-zinc-950/15` | `dark:bg-zinc-950/50` | Modal overlay |
-| **Panel Background** | `bg-white` | `dark:bg-zinc-900` | Content surface |
-| **Panel Border** | `ring-zinc-950/10` | `dark:ring-white/10` | Panel definition |
-| **Title Text** | `text-zinc-950` | `dark:text-white` | Primary text |
-| **Description** | Inherits from Text component | Inherits from Text component | Secondary text |
+| Element              | Light Mode                   | Dark Mode                    | Purpose          |
+| -------------------- | ---------------------------- | ---------------------------- | ---------------- |
+| **Backdrop**         | `bg-zinc-950/15`             | `dark:bg-zinc-950/50`        | Modal overlay    |
+| **Panel Background** | `bg-white`                   | `dark:bg-zinc-900`           | Content surface  |
+| **Panel Border**     | `ring-zinc-950/10`           | `dark:ring-white/10`         | Panel definition |
+| **Title Text**       | `text-zinc-950`              | `dark:text-white`            | Primary text     |
+| **Description**      | Inherits from Text component | Inherits from Text component | Secondary text   |
 
 ## Design Patterns
 
 ### Neutral Color Scheme
+
 Alert uses only neutral colors (zinc/white) to:
+
 - Maintain focus on content over decoration
 - Ensure accessibility across all contexts
 - Provide maximum flexibility for different alert types
 
 ### Layered Transparency
+
 - **Backdrop**: Uses transparency to maintain context
 - **Borders**: Subtle transparency for elegant separation
 - **No brand colors**: Keeps alerts contextually neutral
 
 ### High Contrast Support
+
 - **Forced colors mode**: `forced-colors:outline` ensures visibility
 - **Strong text contrast**: zinc-950 on white, white on zinc-900
 - **Accessible transparency levels**: 15% and 50% for optimal readability
@@ -73,6 +80,7 @@ Alert uses only neutral colors (zinc/white) to:
 ## Semantic Mapping Recommendations
 
 For migration to semantic tokens:
+
 - **Panel background**: `bg-white` / `dark:bg-zinc-900` → `card` or `popover` token
 - **Panel border**: `ring-zinc-950/10` / `dark:ring-white/10` → `border` token
 - **Title text**: `text-zinc-950` / `dark:text-white` → `foreground` token

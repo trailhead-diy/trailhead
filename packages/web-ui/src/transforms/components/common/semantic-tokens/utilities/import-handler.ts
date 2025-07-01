@@ -21,7 +21,7 @@ export interface ImportHandlerResult {
 const NOOP_COMPONENTS = new Set([
   'DescriptionList', // No styling function defined
   'Divider', // No styling function defined
-  'Heading', // No styling function defined  
+  'Heading', // No styling function defined
   'Pagination', // No styling function defined
   'Select', // No styling function defined
   'Sidebar', // No styling function defined
@@ -100,7 +100,7 @@ function addBasicSemanticImports(
         (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === imported
       )
     })
-    
+
     // Check legacy theme import
     const existsInLegacy = legacyThemeImport.some((path) => {
       const importSpecifiers = path.node.specifiers || []
@@ -108,7 +108,7 @@ function addBasicSemanticImports(
         (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === imported
       )
     })
-    
+
     return existsInCorrect || existsInLegacy
   })
 
@@ -126,7 +126,7 @@ function addBasicSemanticImports(
         const exists = importSpecifiers.some(
           (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === imported
         )
-        
+
         // Also check if it exists in legacy theme import
         const existsInLegacy = legacyThemeImport.some((legacyPath) => {
           const legacySpecifiers = legacyPath.node.specifiers || []
@@ -134,7 +134,7 @@ function addBasicSemanticImports(
             (spec) => spec.type === 'ImportSpecifier' && spec.imported.name === imported
           )
         })
-        
+
         if (!exists && !existsInLegacy) {
           importSpecifiers.push(j.importSpecifier(j.identifier(imported)))
           added = true
@@ -160,7 +160,7 @@ function addBasicSemanticImports(
       })
       return !existsInLegacy
     })
-    
+
     // Add new import after the last import only if there are imports to add
     if (importsToActuallyAdd.length > 0) {
       const lastImport = root.find(j.ImportDeclaration).at(-1)

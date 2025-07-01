@@ -1,7 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { Listbox, ListboxOption, ListboxLabel, ListboxDescription } from '../../src/components/listbox'
+import {
+  Listbox,
+  ListboxOption,
+  ListboxLabel,
+  ListboxDescription,
+} from '../../src/components/listbox'
 
 describe('Listbox Components', () => {
   it('should handle single value selection and display', async () => {

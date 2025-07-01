@@ -32,11 +32,41 @@ export const generateSourcePaths = (trailheadRoot: string) => {
     themeUtils: path.join(trailheadRoot, basePath, 'components', 'theme', `utils${ext}`),
     themePresets: path.join(trailheadRoot, basePath, 'components', 'theme', `presets${ext}`),
     themeIndex: path.join(trailheadRoot, basePath, 'components', 'theme', `index${ext}`),
-    themeProvider: path.join(trailheadRoot, basePath, 'components', 'theme', `theme-provider${componentExt}`),
-    themeSwitcher: path.join(trailheadRoot, basePath, 'components', 'theme', `theme-switcher${componentExt}`),
-    catalystTheme: path.join(trailheadRoot, basePath, 'components', 'theme', `catalyst-theme${ext}`),
-    semanticTokens: path.join(trailheadRoot, basePath, 'components', 'theme', `semantic-tokens${ext}`),
-    semanticEnhancements: path.join(trailheadRoot, basePath, 'components', 'theme', `semantic-enhancements${ext}`),
+    themeProvider: path.join(
+      trailheadRoot,
+      basePath,
+      'components',
+      'theme',
+      `theme-provider${componentExt}`
+    ),
+    themeSwitcher: path.join(
+      trailheadRoot,
+      basePath,
+      'components',
+      'theme',
+      `theme-switcher${componentExt}`
+    ),
+    catalystTheme: path.join(
+      trailheadRoot,
+      basePath,
+      'components',
+      'theme',
+      `catalyst-theme${ext}`
+    ),
+    semanticTokens: path.join(
+      trailheadRoot,
+      basePath,
+      'components',
+      'theme',
+      `semantic-tokens${ext}`
+    ),
+    semanticEnhancements: path.join(
+      trailheadRoot,
+      basePath,
+      'components',
+      'theme',
+      `semantic-enhancements${ext}`
+    ),
 
     // Utility files
     cnUtils: path.join(trailheadRoot, basePath, 'components', 'utils', `cn${ext}`),
@@ -46,7 +76,7 @@ export const generateSourcePaths = (trailheadRoot: string) => {
 
     // Component wrapper directory
     wrapperComponentsDir: path.join(trailheadRoot, basePath, 'components'),
-    
+
     // Index files
     componentsIndex: path.join(trailheadRoot, basePath, 'components', `index${ext}`),
     libIndex: path.join(trailheadRoot, basePath, 'components', 'lib', `index${ext}`),
@@ -83,7 +113,7 @@ export const generateDestinationPaths = (config: InstallConfig) => ({
 
   // Component wrapper destination (in destinationDir/components/)
   wrapperComponentsDir: path.join(config.componentsDir),
-  
+
   // Index files
   componentsIndex: path.join(config.componentsDir, 'index.ts'),
   libIndex: path.join(config.componentsDir, 'lib', 'index.ts'),

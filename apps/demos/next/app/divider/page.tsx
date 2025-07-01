@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Divider } from '@/components/th/divider'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Divider } from '@/components/th/divider';
 
 export default function DividerPage(): React.JSX.Element {
   return (
@@ -11,5 +11,5 @@ export default function DividerPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

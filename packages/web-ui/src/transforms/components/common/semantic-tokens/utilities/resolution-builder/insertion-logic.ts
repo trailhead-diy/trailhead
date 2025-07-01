@@ -14,9 +14,9 @@ export function checkVariableExists(
   variableName: string
 ): boolean {
   const existingVariable = j(functionBody).find(j.VariableDeclarator, {
-    id: { name: variableName }
+    id: { name: variableName },
   })
-  
+
   return existingVariable.length > 0
 }
 
@@ -26,11 +26,11 @@ export function checkVariableExists(
  */
 export function extractVariableName(resolution: VariableDeclaration): string | null {
   const firstDeclarator = resolution.declarations[0] as any
-  
+
   if (!firstDeclarator || !firstDeclarator.id || firstDeclarator.id.type !== 'Identifier') {
     return null
   }
-  
+
   return firstDeclarator.id.name as string
 }
 
@@ -38,12 +38,9 @@ export function extractVariableName(resolution: VariableDeclaration): string | n
  * Find the insertion point for the resolution
  * Returns the return statement collection or null
  */
-export function findInsertionPoint(
-  j: API['jscodeshift'],
-  functionBody: any
-): any {
+export function findInsertionPoint(j: API['jscodeshift'], functionBody: any): any {
   const returnStatement = j(functionBody).find(j.ReturnStatement).at(0)
-  
+
   return returnStatement.length > 0 ? returnStatement : null
 }
 
@@ -61,18 +58,18 @@ export function insertSemanticResolution(
   if (!variableName) {
     return false
   }
-  
+
   // Check if variable already exists
   if (checkVariableExists(j, functionBody, variableName)) {
     return false
   }
-  
+
   // Find insertion point
   const insertionPoint = findInsertionPoint(j, functionBody)
   if (!insertionPoint) {
     return false
   }
-  
+
   // Insert the resolution
   insertionPoint.insertBefore(resolution)
   return true
@@ -92,17 +89,17 @@ export function insertAtBeginning(
   if (!variableName) {
     return false
   }
-  
+
   // Check if variable already exists
   if (checkVariableExists(j, functionBody, variableName)) {
     return false
   }
-  
+
   // Insert at the beginning of the function body
   if (functionBody.body && Array.isArray(functionBody.body)) {
     functionBody.body.unshift(resolution)
     return true
   }
-  
+
   return false
 }

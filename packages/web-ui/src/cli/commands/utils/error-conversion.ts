@@ -46,7 +46,11 @@ export function installErrorToCLIError(error: InstallError): CLIError {
     case 'UserInputError':
       return { code: 'USER_INPUT_ERROR', ...baseError }
     default:
-      return { code: 'UNKNOWN_ERROR', ...baseError, message: (error as any).message || 'Unknown error' }
+      return {
+        code: 'UNKNOWN_ERROR',
+        ...baseError,
+        message: (error as any).message || 'Unknown error',
+      }
   }
 }
 

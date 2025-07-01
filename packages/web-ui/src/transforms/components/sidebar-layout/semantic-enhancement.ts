@@ -2,9 +2,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
 
 export const sidebarLayoutSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'SidebarLayout',
-  detectPattern: (content) => 
-    content.includes('SidebarLayout') && 
-    content.includes('export function SidebarLayout'),
+  detectPattern: (content) =>
+    content.includes('SidebarLayout') && content.includes('export function SidebarLayout'),
   defaultColor: 'zinc',
   typePattern: 'prop',
   hasColorsObject: false,
@@ -41,5 +40,5 @@ export const sidebarLayoutSemanticEnhancement = {
     return null
   },
   attributesToAdd: [],
-  transformImports: true
+  transformImports: true,
 }

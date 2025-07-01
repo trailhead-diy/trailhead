@@ -168,7 +168,6 @@ The semantic colors are additive - they don't replace existing colors.
 ## Best Practices
 
 1. **Use semantic tokens for common UI patterns**:
-
    - `primary` for main CTAs and primary actions
    - `secondary` for secondary actions
    - `destructive` for delete/remove actions
@@ -176,7 +175,6 @@ The semantic colors are additive - they don't replace existing colors.
    - `muted` for disabled or archived content
 
 2. **Keep brand colors for specific branding needs**:
-
    - Use `indigo`, `purple`, etc. when you need a specific brand color
    - Semantic tokens should map to your brand colors in your theme
 

@@ -7,21 +7,13 @@ const baseConfig = createVitestConfig()
 const packageSpecificConfig = defineConfig({
   test: {
     include: ['./tests/**/*.test.{ts,tsx}'],
-    exclude: [
-      './tests/scripts/install/future/**/*',
-    ],
+    exclude: ['./tests/scripts/install/future/**/*'],
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary'],
       include: ['{scripts,src}/**/**/*.{ts,tsx}'],
-      exclude: [
-        '**/index.ts',
-        '**/types.ts',
-        '**/*.config.ts',
-        '**/*.setup.ts',
-        '**/*.d.ts',
-      ],
+      exclude: ['**/index.ts', '**/types.ts', '**/*.config.ts', '**/*.setup.ts', '**/*.d.ts'],
     },
   },
   resolve: {

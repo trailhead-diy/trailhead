@@ -5,6 +5,7 @@ Modern Turborepo monorepo containing enhanced Catalyst UI components, CLI framew
 ## Overview
 
 Trailhead provides:
+
 - **[@trailhead/web-ui](./packages/web-ui)** - Enhanced Catalyst UI with advanced theming system
 - **[@trailhead/cli](./packages/cli)** - Reusable CLI framework for development tools
 - **Demo Applications** - Next.js and RedwoodJS examples showcasing all components
@@ -77,14 +78,18 @@ pnpm add github:esteban-url/trailhead#packages/cli
 ## Packages
 
 ### [@trailhead/web-ui](./packages/web-ui)
+
 Enhanced Catalyst UI with advanced theming system:
+
 - 21 predefined themes using OKLCH color space
 - Runtime theme switching with next-themes integration
 - Semantic color tokens for consistent theming
 - Professional CLI with smart framework detection
 
 ### [@trailhead/cli](./packages/cli)
+
 Reusable CLI framework extracted from the UI project:
+
 - Complete error handling system with Result types
 - Validation pipeline with composable validators
 - FileSystem abstraction with Node.js and memory implementations
@@ -93,6 +98,7 @@ Reusable CLI framework extracted from the UI project:
 ## Development
 
 Built with modern tooling:
+
 - **pnpm workspaces** for package management and dependency resolution
 - **Turborepo** for optimized build system with intelligent caching
 - **Renovate** for automated dependency updates and security monitoring

@@ -7,11 +7,13 @@
  * Traditional: some imports have semicolons, some don't - keep the original pattern
  */
 export const fixImportSemicolons = (code: string): string => {
-  return code
-    // First normalize all imports to no semicolons
-    .replace(/^(import .+);$/gm, '$1')
-    // Then add semicolons only to imports ending with .js (traditional pattern)
-    .replace(/^(import .+from '[^']+\.js')$/gm, '$1;')
+  return (
+    code
+      // First normalize all imports to no semicolons
+      .replace(/^(import .+);$/gm, '$1')
+      // Then add semicolons only to imports ending with .js (traditional pattern)
+      .replace(/^(import .+from '[^']+\.js')$/gm, '$1;')
+  )
 }
 
 /**

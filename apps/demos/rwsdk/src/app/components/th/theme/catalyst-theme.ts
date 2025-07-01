@@ -1,11 +1,11 @@
 /**
  * Catalyst Theme with Full Enhanced Variables
- * 
+ *
  * This theme provides 1:1 visual parity with the original Catalyst UI
  * by including all enhanced semantic tokens with exact zinc color mappings.
  */
 
-import { type TrailheadThemeConfig } from './config'
+import { type TrailheadThemeConfig } from './config';
 
 /**
  * Create the Catalyst theme with all enhanced variables for perfect 1:1 parity
@@ -145,5 +145,5 @@ export function createCatalystTheme(): TrailheadThemeConfig {
       'button-text-default': 'oklch(0.985 0.002 264.52)', // zinc-50
       'button-text-hover': 'oklch(0.985 0.002 264.52)', // zinc-50
     },
-  }
+  };
 }

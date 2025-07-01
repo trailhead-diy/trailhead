@@ -3,7 +3,13 @@
  */
 
 import { Ok, Err } from '@trailhead/cli'
-import { createCommand, executeWithPhases, displaySummary, type CommandOptions, type CommandPhase } from '@trailhead/cli/command'
+import {
+  createCommand,
+  executeWithPhases,
+  displaySummary,
+  type CommandOptions,
+  type CommandPhase,
+} from '@trailhead/cli/command'
 import type { TrailheadConfig } from '../core/config/index.js'
 import { existsSync } from 'fs'
 import { rm } from 'fs/promises'

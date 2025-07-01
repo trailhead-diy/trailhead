@@ -16,35 +16,36 @@ export function hasImport(root: Collection<any>, j: JSCodeshift, source: string)
  * Check if a specific named import exists
  */
 export function hasNamedImport(
-  root: Collection<any>, 
-  j: JSCodeshift, 
-  source: string, 
+  root: Collection<any>,
+  j: JSCodeshift,
+  source: string,
   specifier: string
 ): boolean {
-  return root
-    .find(j.ImportDeclaration, { source: { value: source } })
-    .find(j.ImportSpecifier, { imported: { name: specifier } })
-    .length > 0
+  return (
+    root
+      .find(j.ImportDeclaration, { source: { value: source } })
+      .find(j.ImportSpecifier, { imported: { name: specifier } }).length > 0
+  )
 }
 
 /**
  * Add an import declaration with named imports
  */
 export function addImport(
-  root: Collection<any>, 
-  j: JSCodeshift, 
-  source: string, 
+  root: Collection<any>,
+  j: JSCodeshift,
+  source: string,
   specifiers: string[]
 ): void {
   // Don't add if already exists
   if (hasImport(root, j, source)) return
-  
+
   // Create import declaration
   const importDeclaration = j.importDeclaration(
-    specifiers.map(s => j.importSpecifier(j.identifier(s))),
+    specifiers.map((s) => j.importSpecifier(j.identifier(s))),
     j.literal(source)
   )
-  
+
   // Find the best place to insert
   const firstImport = root.find(j.ImportDeclaration).at(0)
   if (firstImport.length) {
@@ -60,11 +61,7 @@ export function addImport(
 /**
  * Remove an import declaration
  */
-export function removeImport(
-  root: Collection<any>, 
-  j: JSCodeshift, 
-  source: string
-): void {
+export function removeImport(root: Collection<any>, j: JSCodeshift, source: string): void {
   root.find(j.ImportDeclaration, { source: { value: source } }).remove()
 }
 
@@ -78,13 +75,13 @@ export function replaceImportSource(
   newSource: string
 ): boolean {
   const imports = root.find(j.ImportDeclaration, { source: { value: oldSource } })
-  
+
   if (imports.length === 0) return false
-  
-  imports.forEach(path => {
+
+  imports.forEach((path) => {
     path.node.source = j.literal(newSource)
   })
-  
+
   return true
 }
 
@@ -99,9 +96,9 @@ export function addNamedImport(
 ): void {
   // Check if import already exists
   if (hasNamedImport(root, j, source, specifier)) return
-  
+
   const importDecl = root.find(j.ImportDeclaration, { source: { value: source } })
-  
+
   if (importDecl.length > 0) {
     // Add to existing import
     const firstImport = importDecl.at(0)
@@ -122,15 +119,15 @@ export function getImportsFromSource(
   source: string
 ): string[] {
   const imports: string[] = []
-  
+
   root
     .find(j.ImportDeclaration, { source: { value: source } })
     .find(j.ImportSpecifier)
-    .forEach(path => {
+    .forEach((path) => {
       if (path.node.imported.type === 'Identifier') {
         imports.push(path.node.imported.name)
       }
     })
-  
+
   return imports
 }

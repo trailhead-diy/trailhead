@@ -2,9 +2,9 @@
  * Shared types for the modular transform system
  */
 
-export type SemanticColorToken = 
+export type SemanticColorToken =
   | 'primary'
-  | 'secondary' 
+  | 'secondary'
   | 'destructive'
   | 'muted'
   | 'accent'

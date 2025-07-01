@@ -1,5 +1,5 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
 import {
   Pagination,
   PaginationGap,
@@ -7,7 +7,7 @@ import {
   PaginationNext,
   PaginationPage,
   PaginationPrevious,
-} from '@/components/th/pagination'
+} from '@/components/th/pagination';
 
 export default function PaginationsPage(): React.JSX.Element {
   return (
@@ -32,5 +32,5 @@ export default function PaginationsPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

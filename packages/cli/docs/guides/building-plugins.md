@@ -4,16 +4,16 @@
 
 ```typescript
 const plugin = createPlugin({
-  name: 'my-awesome-plugin',
-  version: '0.0.0',
+  name: "my-awesome-plugin",
+  version: "0.0.0",
   activate: async (context) => {
     // Your plugin code would go here...
     // If we had a plugin system...
     // Which we totally will...
     // Eventually...
-    return ok(undefined)
-  }
-})
+    return ok(undefined);
+  },
+});
 ```
 
 ### What to Expect (Maybe)
@@ -37,22 +37,22 @@ Until the plugin system arrives, you can extend functionality using:
 
 ```typescript
 // Command composition
-const enhancedCommand = withLogging(withAuth(baseCommand))
+const enhancedCommand = withLogging(withAuth(baseCommand));
 
 // Custom middleware
 const withCustomBehavior = (cmd: Command) => ({
   ...cmd,
   action: async (options, context) => {
     // Your custom logic here
-    const result = await cmd.action(options, context)
+    const result = await cmd.action(options, context);
     // More custom logic
-    return result
-  }
-})
+    return result;
+  },
+});
 ```
 
 ---
 
-*"A plugin system is never late, nor is it early. It arrives precisely when it means to."* - Gandalf, probably
+_"A plugin system is never late, nor is it early. It arrives precisely when it means to."_ - Gandalf, probably
 
 Check back later, or better yet, [open an issue](https://github.com/esteban-url/trailhead/issues) to tell us what plugin features you need!

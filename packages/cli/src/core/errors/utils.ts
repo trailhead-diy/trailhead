@@ -1,17 +1,21 @@
-import type { Result } from './types.js'
+import type { Result } from './types.js';
 
 /**
  * Type guard to check if a Result is successful
  */
-export function isOk<T, E = any>(result: Result<T, E>): result is { success: true; value: T } {
-  return result.success === true
+export function isOk<T, E = any>(
+  result: Result<T, E>,
+): result is { success: true; value: T } {
+  return result.success === true;
 }
 
 /**
  * Type guard to check if a Result is an error
  */
-export function isErr<T, E = any>(result: Result<T, E>): result is { success: false; error: E } {
-  return result.success === false
+export function isErr<T, E = any>(
+  result: Result<T, E>,
+): result is { success: false; error: E } {
+  return result.success === false;
 }
 
 /**
@@ -19,26 +23,29 @@ export function isErr<T, E = any>(result: Result<T, E>): result is { success: fa
  */
 export function unwrap<T, E = any>(result: Result<T, E>): T {
   if (!result.success) {
-    throw new Error((result.error as any).message || 'Result is an error')
+    throw new Error((result.error as any).message || 'Result is an error');
   }
-  return result.value
+  return result.value;
 }
 
 /**
  * Unwrap a Result with a default value
  */
 export function unwrapOr<T, E = any>(result: Result<T, E>, defaultValue: T): T {
-  return result.success ? result.value : defaultValue
+  return result.success ? result.value : defaultValue;
 }
 
 /**
  * Map over a successful Result
  */
-export function map<T, U, E = any>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {
+export function map<T, U, E = any>(
+  result: Result<T, E>,
+  fn: (value: T) => U,
+): Result<U, E> {
   if (!result.success) {
-    return result
+    return result;
   }
-  return { success: true, value: fn(result.value) }
+  return { success: true, value: fn(result.value) };
 }
 
 /**
@@ -46,10 +53,10 @@ export function map<T, U, E = any>(result: Result<T, E>, fn: (value: T) => U): R
  */
 export function mapErr<T, E = any, F = any>(
   result: Result<T, E>,
-  fn: (error: E) => F
+  fn: (error: E) => F,
 ): Result<T, F> {
   if (result.success) {
-    return result
+    return result;
   }
-  return { success: false, error: fn(result.error) }
+  return { success: false, error: fn(result.error) };
 }

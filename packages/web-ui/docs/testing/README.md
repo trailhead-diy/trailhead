@@ -342,6 +342,7 @@ pnpm test:future
 ```
 
 **Purpose of Future Tests:**
+
 - Serve as living documentation for planned features
 - Define expected behavior before implementation
 - Guide development of new features

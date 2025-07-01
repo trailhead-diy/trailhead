@@ -45,7 +45,7 @@ export function createRegexTransform(config: RegexTransformConfig): Transform {
           transformed = transformed.replace(pattern, replacement)
           changes.push({
             type: config.changeType || 'color-mapping',
-            description: String(description)
+            description: String(description),
           })
         }
       }
@@ -58,6 +58,6 @@ export function createRegexTransform(config: RegexTransformConfig): Transform {
         changes,
         hasChanges: changes.length > 0,
       }
-    }
+    },
   }
 }

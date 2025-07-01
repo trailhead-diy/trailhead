@@ -1,6 +1,6 @@
 /**
  * ClassName Handling Critical Path Tests
- * 
+ *
  * Tests the transformation of className handling to use cn utility.
  * Verifies proper integration with semantic tokens and existing styles.
  */
@@ -33,24 +33,18 @@ const addClassNameParameter = (content: string) => {
 
 const wrapStaticClassName = (content: string) => {
   // Wrap static className strings with cn()
-  return content.replace(
-    /className="([^"]+)"/g,
-    (match, classes) => {
-      if (classes.includes('cn(')) return match
-      return `className={cn("${classes}")}`
-    }
-  )
+  return content.replace(/className="([^"]+)"/g, (match, classes) => {
+    if (classes.includes('cn(')) return match
+    return `className={cn("${classes}")}`
+  })
 }
 
 const ensureClassNameInCn = (content: string) => {
   // Ensure className prop is included in cn() calls
-  return content.replace(
-    /cn\(([^)]+)\)/g,
-    (match, args) => {
-      if (args.includes('className')) return match
-      return `cn(${args}, className)`
-    }
-  )
+  return content.replace(/cn\(([^)]+)\)/g, (match, args) => {
+    if (args.includes('className')) return match
+    return `cn(${args}, className)`
+  })
 }
 
 describe('className handling transformations', () => {
@@ -62,7 +56,7 @@ describe('className handling transformations', () => {
         `import clsx from "clsx"`,
       ]
 
-      inputs.forEach(input => {
+      inputs.forEach((input) => {
         const result = clsxToCnTransform(input)
         expect(result).toBe("import { cn } from '../utils.js'")
       })
@@ -104,7 +98,7 @@ export function Alert({ title, severity = 'info' }) {
 
       const result = addClassNameParameter(input)
 
-      expect(result).toContain('{ title, severity = \'info\', className }')
+      expect(result).toContain("{ title, severity = 'info', className }")
     })
 
     it('handles components that already have className', () => {
@@ -199,9 +193,7 @@ export function Badge({ color, className }) {
 `
 
       // The className should be last for proper override behavior
-      expect(componentWithSemanticTokens).toMatch(
-        /cn\([^)]*resolvedColorClasses[^)]*className\)/
-      )
+      expect(componentWithSemanticTokens).toMatch(/cn\([^)]*resolvedColorClasses[^)]*className\)/)
     })
   })
 

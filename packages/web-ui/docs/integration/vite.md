@@ -274,8 +274,7 @@ export const themeConfig = {
 
 // src/main.tsx
 import { themeConfig } from './config/theme.config'
-
-<ThemeProvider defaultTheme={themeConfig.defaultTheme}>
+;<ThemeProvider defaultTheme={themeConfig.defaultTheme}>
   <App />
 </ThemeProvider>
 ```

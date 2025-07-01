@@ -4,12 +4,12 @@
 
 ```typescript
 async function fetchDocs() {
-  const response = await fetch('/api/examples/api-client')
+  const response = await fetch("/api/examples/api-client");
   if (response.status === 404) {
-    return { error: 'Docs not found, but you found this!' }
+    return { error: "Docs not found, but you found this!" };
   }
   // Eternal optimism
-  return { status: 'coming_soon', retryAfter: 86400 }
+  return { status: "coming_soon", retryAfter: 86400 };
 }
 ```
 
@@ -25,20 +25,20 @@ async function fetchDocs() {
 
 ```typescript
 const apiCommand = createCommand({
-  name: 'api',
-  description: 'Call APIs like a pro',
+  name: "api",
+  description: "Call APIs like a pro",
   subcommands: [
     createCommand({
-      name: 'get',
-      description: 'GET request (revolutionary, we know)',
+      name: "get",
+      description: "GET request (revolutionary, we know)",
       action: async (options, context) => {
         // TODO: Implement after we figure out
         // if fetch or axios is more functional
-        return err(new Error('HTTP 501 Not Implemented'))
-      }
-    })
-  ]
-})
+        return err(new Error("HTTP 501 Not Implemented"));
+      },
+    }),
+  ],
+});
 ```
 
 ### Planned Features
@@ -61,19 +61,19 @@ const apiCommand = createCommand({
 // Wrap fetch in Result type
 const safeFetch = async (url: string): Promise<Result<Response>> => {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url);
     if (!response.ok) {
-      return err(new Error(`HTTP ${response.status}`))
+      return err(new Error(`HTTP ${response.status}`));
     }
-    return ok(response)
+    return ok(response);
   } catch (error) {
-    return err(error as Error)
+    return err(error as Error);
   }
-}
+};
 ```
 
 ---
 
-*"The best API client is the one that hasn't been written yet, because it has no bugs."* - Wise Developer
+_"The best API client is the one that hasn't been written yet, because it has no bugs."_ - Wise Developer
 
 Need an API client now? There's probably an SDK for that!

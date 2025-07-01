@@ -11,8 +11,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const inputSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Input',
-  detectPattern: (content) => 
-    content.includes('Input') && 
+  detectPattern: (content) =>
+    content.includes('Input') &&
     content.includes('forwardRef') &&
     content.includes('export const Input ='),
   defaultColor: '', // Input doesn't have default color

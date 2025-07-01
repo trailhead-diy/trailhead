@@ -177,7 +177,7 @@ export function ThemeProvider({
           enableSystem,
           enableColorScheme: false,
           disableTransitionOnChange: true,
-          attribute: "data-theme"
+          attribute: 'data-theme',
         } as any)}
       >
         {children}

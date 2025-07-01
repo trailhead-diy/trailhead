@@ -1,9 +1,9 @@
 /**
  * @fileoverview Tests for Catalyst Theme Generation
- * 
+ *
  * HIGH-ROI tests focusing on:
  * - Theme structure validation
- * - Color value correctness 
+ * - Color value correctness
  * - Light/dark mode consistency
  * - Enhanced token completeness
  */
@@ -33,14 +33,28 @@ describe('Catalyst Theme Generation', () => {
 
     it('should include all required shadcn/ui tokens', () => {
       const requiredTokens = [
-        'background', 'foreground', 'card', 'card-foreground',
-        'popover', 'popover-foreground', 'primary', 'primary-foreground',
-        'secondary', 'secondary-foreground', 'muted', 'muted-foreground',
-        'accent', 'accent-foreground', 'destructive', 'destructive-foreground',
-        'border', 'input', 'ring'
+        'background',
+        'foreground',
+        'card',
+        'card-foreground',
+        'popover',
+        'popover-foreground',
+        'primary',
+        'primary-foreground',
+        'secondary',
+        'secondary-foreground',
+        'muted',
+        'muted-foreground',
+        'accent',
+        'accent-foreground',
+        'destructive',
+        'destructive-foreground',
+        'border',
+        'input',
+        'ring',
       ]
 
-      requiredTokens.forEach(token => {
+      requiredTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -52,8 +66,8 @@ describe('Catalyst Theme Generation', () => {
       const lightColors = Object.values(theme.light)
       const darkColors = Object.values(theme.dark)
       const allColors = lightColors.concat(darkColors)
-      
-      allColors.forEach(color => {
+
+      allColors.forEach((color) => {
         expect(color).toMatch(/^oklch\(/)
       })
     })
@@ -68,7 +82,7 @@ describe('Catalyst Theme Generation', () => {
       // Light mode: background should have high lightness, foreground should have low lightness
       expect(theme.light.background).toBe('oklch(1 0 0)') // white
       expect(theme.light.foreground).toBe('oklch(0.1136 0.013 265.626)') // zinc-950
-      
+
       // Dark mode: background should have low lightness, foreground should have high lightness
       expect(theme.dark.background).toBe('oklch(0.1136 0.013 265.626)') // zinc-950
       expect(theme.dark.foreground).toBe('oklch(0.985 0.002 264.52)') // zinc-50
@@ -78,8 +92,8 @@ describe('Catalyst Theme Generation', () => {
   describe('Enhanced Token Completeness', () => {
     it('should include hierarchical text tokens', () => {
       const hierarchicalTokens = ['tertiary-foreground', 'quaternary-foreground']
-      
-      hierarchicalTokens.forEach(token => {
+
+      hierarchicalTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -87,11 +101,15 @@ describe('Catalyst Theme Generation', () => {
 
     it('should include icon state tokens', () => {
       const iconTokens = [
-        'icon-primary', 'icon-secondary', 'icon-inactive', 
-        'icon-active', 'icon-hover', 'icon-muted'
+        'icon-primary',
+        'icon-secondary',
+        'icon-inactive',
+        'icon-active',
+        'icon-hover',
+        'icon-muted',
       ]
-      
-      iconTokens.forEach(token => {
+
+      iconTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -99,8 +117,8 @@ describe('Catalyst Theme Generation', () => {
 
     it('should include border weight tokens', () => {
       const borderTokens = ['border-strong', 'border-subtle', 'border-ghost']
-      
-      borderTokens.forEach(token => {
+
+      borderTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -108,13 +126,17 @@ describe('Catalyst Theme Generation', () => {
 
     it('should include component-specific tokens', () => {
       const componentTokens = [
-        'sidebar-text-primary', 'sidebar-text-secondary',
-        'sidebar-icon-default', 'sidebar-icon-active',
-        'table-header-text', 'table-body-text',
-        'button-text-default', 'button-text-hover'
+        'sidebar-text-primary',
+        'sidebar-text-secondary',
+        'sidebar-icon-default',
+        'sidebar-icon-active',
+        'table-header-text',
+        'table-body-text',
+        'button-text-default',
+        'button-text-hover',
       ]
-      
-      componentTokens.forEach(token => {
+
+      componentTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -124,8 +146,8 @@ describe('Catalyst Theme Generation', () => {
   describe('Chart Colors', () => {
     it('should include all chart color tokens', () => {
       const chartTokens = ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5']
-      
-      chartTokens.forEach(token => {
+
+      chartTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -141,11 +163,17 @@ describe('Catalyst Theme Generation', () => {
   describe('Sidebar Colors', () => {
     it('should include all sidebar color tokens', () => {
       const sidebarTokens = [
-        'sidebar', 'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground',
-        'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border', 'sidebar-ring'
+        'sidebar',
+        'sidebar-foreground',
+        'sidebar-primary',
+        'sidebar-primary-foreground',
+        'sidebar-accent',
+        'sidebar-accent-foreground',
+        'sidebar-border',
+        'sidebar-ring',
       ]
-      
-      sidebarTokens.forEach(token => {
+
+      sidebarTokens.forEach((token) => {
         expect(theme.light).toHaveProperty(token)
         expect(theme.dark).toHaveProperty(token)
       })
@@ -155,7 +183,7 @@ describe('Catalyst Theme Generation', () => {
       // Sidebar should have proper contrast with its foreground
       expect(theme.light.sidebar).toBe('oklch(1 0 0)') // white background
       expect(theme.light['sidebar-foreground']).toBe('oklch(0.1136 0.013 265.626)') // dark text
-      
+
       expect(theme.dark.sidebar).toBe('oklch(0.1887 0.015 265.729)') // dark background
       expect(theme.dark['sidebar-foreground']).toBe('oklch(0.985 0.002 264.52)') // light text
     })
@@ -165,7 +193,7 @@ describe('Catalyst Theme Generation', () => {
     it('should return same object structure on multiple calls', () => {
       const theme1 = createCatalystTheme()
       const theme2 = createCatalystTheme()
-      
+
       expect(Object.keys(theme1)).toEqual(Object.keys(theme2))
       expect(Object.keys(theme1.light)).toEqual(Object.keys(theme2.light))
       expect(Object.keys(theme1.dark)).toEqual(Object.keys(theme2.dark))
@@ -174,7 +202,7 @@ describe('Catalyst Theme Generation', () => {
     it('should be immutable (pure function)', () => {
       const originalTheme = createCatalystTheme()
       const modifiedTheme = createCatalystTheme()
-      
+
       // Modifying one shouldn't affect the other
       modifiedTheme.name = 'Modified'
       expect(originalTheme.name).toBe('Catalyst')

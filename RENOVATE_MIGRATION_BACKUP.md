@@ -64,6 +64,7 @@ updates:
 ### Current pnpm Configuration Files
 
 #### Root .npmrc
+
 ```
 # pnpm configuration for optimal performance
 
@@ -119,6 +120,7 @@ publish-branch=main
 ```
 
 #### Next.js Demo .npmrc
+
 ```
 # Configure this Next.js demo to work independently from parent workspace
 # This makes npm/pnpm install work normally without flags
@@ -145,6 +147,7 @@ link-workspace-packages=false
 ### Current Lockfile Structure
 
 Multiple pnpm-lock.yaml files exist:
+
 - `./pnpm-lock.yaml` (root workspace)
 - `./packages/web-ui/pnpm-lock.yaml` (redundant)
 - `./apps/demos/next/pnpm-lock.yaml` (needed for ignore-workspace)

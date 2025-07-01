@@ -14,7 +14,7 @@ export const wrapStaticClassNameTransform = createASTTransform({
   description: 'Wrap static className strings with cn()',
   transform: (root, j) => {
     const changes: any[] = []
-    
+
     // Find JSX attributes with name="className"
     root
       .find(j.JSXAttribute, {
@@ -22,14 +22,14 @@ export const wrapStaticClassNameTransform = createASTTransform({
       })
       .forEach((path) => {
         const value = path.node.value
-        
+
         // Only process string literals
         if (value?.type === 'StringLiteral' || value?.type === 'Literal') {
           // Create cn() call
           const cnCall = j.jsxExpressionContainer(
             j.callExpression(j.identifier('cn'), [j.stringLiteral(value.value as string)])
           )
-          
+
           path.node.value = cnCall
           changes.push({
             type: 'className',
@@ -37,7 +37,7 @@ export const wrapStaticClassNameTransform = createASTTransform({
           })
         }
       })
-    
+
     return changes
-  }
+  },
 })

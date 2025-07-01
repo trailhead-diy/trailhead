@@ -12,14 +12,25 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Table, TableHead, TableHeader, TableRow, TableCell, TableBody } from '../../src/components/table'
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '../../src/components/table'
 import { Pagination } from '../../src/components/pagination'
 import { Text, Strong } from '../../src/components/text'
 import { Badge } from '../../src/components/badge'
 import { Button } from '../../src/components/button'
 import { Input } from '../../src/components/input'
 import { Select } from '../../src/components/select'
-import { DescriptionList, DescriptionTerm, DescriptionDetails } from '../../src/components/description-list'
+import {
+  DescriptionList,
+  DescriptionTerm,
+  DescriptionDetails,
+} from '../../src/components/description-list'
 
 // Mock data for testing
 const mockUsers = [
@@ -310,65 +321,68 @@ describe('Data Display Integration Tests', () => {
       // Test search functionality
       const searchInput = screen.getByTestId('search-input')
       await user.type(searchInput, 'john')
-      
+
       // Wait for input value to be set and give React time to re-render
       await waitFor(() => {
         expect(searchInput).toHaveValue('john')
       })
-      
+
       // Small delay to ensure React state update completes
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
       // Wait for the filter to be applied
-      await waitFor(() => {
-        // The results summary should show "Showing 2 of 5 users"
-        const summaryText = screen.getByTestId('results-summary').textContent
-        expect(summaryText).toBe('Showing 2 of 5 users')
-      }, { timeout: 3000 })
-      
+      await waitFor(
+        () => {
+          // The results summary should show "Showing 2 of 5 users"
+          const summaryText = screen.getByTestId('results-summary').textContent
+          expect(summaryText).toBe('Showing 2 of 5 users')
+        },
+        { timeout: 3000 }
+      )
+
       expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument() // John Doe
       expect(screen.getByTestId('filtered-user-3')).toBeInTheDocument() // Bob Johnson
       expect(screen.queryByTestId('filtered-user-2')).not.toBeInTheDocument()
 
       // Clear search and test status filter
       await user.clear(screen.getByTestId('search-input'))
-      
+
       // Wait for clear to take effect
       await waitFor(() => {
         expect(searchInput).toHaveValue('')
       })
-      
+
       await user.selectOptions(screen.getByTestId('status-filter'), 'active')
-      
+
       await waitFor(() => {
         expect(
           screen.getByText((content) => content.includes('Showing 3 of 5 users'))
         ).toBeInTheDocument()
       })
-      
+
       expect(screen.queryByTestId('filtered-user-3')).not.toBeInTheDocument() // Bob is inactive
 
       // Test role filter
       await user.selectOptions(screen.getByTestId('role-filter'), 'admin')
-      
+
       await waitFor(() => {
         expect(
           screen.getByText((content) => content.includes('Showing 1 of 5 users'))
         ).toBeInTheDocument()
       })
-      
+
       expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument() // John is admin and active
 
       // Test no results
       await user.selectOptions(screen.getByTestId('role-filter'), 'moderator')
       await user.selectOptions(screen.getByTestId('status-filter'), 'inactive')
-      
+
       await waitFor(() => {
         expect(
           screen.getByText((content) => content.includes('Showing 0 of 5 users'))
         ).toBeInTheDocument()
       })
-      
+
       expect(screen.getByTestId('no-results')).toBeInTheDocument()
     })
   })

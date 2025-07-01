@@ -9,10 +9,8 @@ import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/sem
  * Create semantic radio styles
  * Created using semantic styles factory for consistent behavior
  */
-export const createSemanticRadioStyles = createCSSVariableStyles(
-  (token: string) => [
-    `[--radio-checked-bg:var(--color-${token})]`,
-    `[--radio-checked-border:var(--color-${token})]/90`,
-    `[--radio-checked-indicator:var(--color-${token})]`,
-  ]
-)
+export const createSemanticRadioStyles = createCSSVariableStyles((token: string) => [
+  `[--radio-checked-bg:var(--color-${token})]`,
+  `[--radio-checked-border:var(--color-${token})]/90`,
+  `[--radio-checked-indicator:var(--color-${token})]`,
+])

@@ -1,7 +1,7 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Field, Label } from '@/components/th/fieldset'
-import { Listbox, ListboxLabel, ListboxOption } from '@/components/th/listbox'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Field, Label } from '@/components/th/fieldset';
+import { Listbox, ListboxLabel, ListboxOption } from '@/components/th/listbox';
 
 export default function ListboxPage(): React.JSX.Element {
   return (
@@ -28,5 +28,5 @@ export default function ListboxPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

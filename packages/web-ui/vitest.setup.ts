@@ -47,7 +47,7 @@ globalThis.__originalConsole = originalConsole
 // Mock next-themes with proper state management
 vi.mock('next-themes', () => {
   let currentTheme = 'zinc'
-  
+
   const setTheme = vi.fn((theme: string) => {
     currentTheme = theme
     if (document?.documentElement) {
@@ -64,12 +64,12 @@ vi.mock('next-themes', () => {
       themes: ['light', 'dark', 'zinc', 'purple', 'green', 'orange', 'rose', 'violet'],
       systemTheme: 'light',
     })),
-    ThemeProvider: ({ 
-      children, 
-      defaultTheme = 'zinc' 
-    }: { 
+    ThemeProvider: ({
+      children,
+      defaultTheme = 'zinc',
+    }: {
       children: React.ReactNode
-      defaultTheme?: string 
+      defaultTheme?: string
     }) => {
       React.useEffect(() => {
         currentTheme = defaultTheme
@@ -77,7 +77,7 @@ vi.mock('next-themes', () => {
           document.documentElement.setAttribute('data-theme', defaultTheme)
         }
       }, [defaultTheme])
-      
+
       return children
     },
   }
@@ -119,7 +119,7 @@ vi.mock('ora', () => ({
 // Essential browser API mocks
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -169,10 +169,10 @@ Object.defineProperty(HTMLElement.prototype, 'focus', {
       configurable: true,
       value: this,
     })
-    
+
     // Trigger focus event
     this.dispatchEvent(new FocusEvent('focus', { bubbles: true }))
-    
+
     // Add visual focus indicators
     this.setAttribute('data-focused', 'true')
   }),

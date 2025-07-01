@@ -1,6 +1,6 @@
 /**
  * Dialog semantic enhancement transform
- * 
+ *
  * Since dialog doesn't have a colors object or color prop,
  * this is a no-op transform that maintains compatibility
  */
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const dialogSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Dialog',
-  detectPattern: (content) => 
+  detectPattern: (content) =>
     content.includes('export function Dialog') ||
     content.includes('export function DialogTitle') ||
     content.includes('export function DialogDescription'),

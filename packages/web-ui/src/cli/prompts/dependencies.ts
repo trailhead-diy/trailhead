@@ -38,7 +38,7 @@ export async function runDependencyPrompts(
   if (options.isCI || !options.canInstall) {
     return { strategy: { type: 'skip' } }
   }
-  
+
   return { strategy: { type: 'auto' } }
 }
 

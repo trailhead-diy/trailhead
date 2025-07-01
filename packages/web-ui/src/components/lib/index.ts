@@ -32,4 +32,3 @@ export * from './catalyst-switch'
 export * from './catalyst-table'
 export * from './catalyst-text'
 export * from './catalyst-textarea'
-

@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Avatar } from '@/components/th/avatar'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Avatar } from '@/components/th/avatar';
 import {
   Dropdown,
   DropdownButton,
@@ -8,7 +8,7 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/th/dropdown'
+} from '@/components/th/dropdown';
 import {
   Navbar,
   NavbarDivider,
@@ -16,7 +16,7 @@ import {
   NavbarLabel,
   NavbarSection,
   NavbarSpacer,
-} from '@/components/th/navbar'
+} from '@/components/th/navbar';
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -25,8 +25,8 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid'
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+} from '@heroicons/react/16/solid';
+import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 
 export default function NavbarPage(): React.JSX.Element {
   return (
@@ -51,7 +51,11 @@ export default function NavbarPage(): React.JSX.Element {
                   <DropdownLabel>Tailwind Labs</DropdownLabel>
                 </DropdownItem>
                 <DropdownItem href="/teams/2">
-                  <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
+                  <Avatar
+                    slot="icon"
+                    initials="WC"
+                    className="bg-purple-500 text-white"
+                  />
                   <DropdownLabel>Workcation</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />
@@ -111,5 +115,5 @@ export default function NavbarPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 /**
  * Catalyst Theme with Full Enhanced Variables
- * 
+ *
  * This theme provides 1:1 visual parity with the original Catalyst UI
  * by including all enhanced semantic tokens with exact zinc color mappings.
  */

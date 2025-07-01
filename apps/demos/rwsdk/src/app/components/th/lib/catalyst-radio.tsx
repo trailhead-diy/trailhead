@@ -1,12 +1,15 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import { isSemanticToken, createSemanticRadioStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import { isSemanticToken, createSemanticRadioStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystRadioGroup({
   className,
   ...props
-}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<
+  Headless.RadioGroupProps,
+  'as' | 'className'
+>) {
   return (
     <Headless.RadioGroup
       data-slot="control"
@@ -16,10 +19,10 @@ export function CatalystRadioGroup({
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystRadioField({
@@ -41,10 +44,10 @@ export function CatalystRadioField({
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 const base = [
@@ -74,7 +77,7 @@ const base = [
   'group-data-disabled:opacity-50',
   'group-data-disabled:border-border group-data-disabled:bg-card/5 group-data-disabled:[--radio-checked-indicator:var(--color-foreground)]/50 group-data-disabled:before:bg-transparent',
   'dark:group-data-disabled:border-border dark:group-data-disabled:bg-muted/10 dark:group-data-disabled:[--radio-checked-indicator:var(--color-background)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
-]
+];
 
 const colors = {
   'dark/zinc': [
@@ -116,13 +119,17 @@ const colors = {
   pink: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
   rose: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
   // Semantic token variants
-  primary: '[--radio-checked-bg:var(--primary)] [--radio-checked-border:var(--primary)]/90 [--radio-checked-indicator:var(--primary-foreground)]',
-  secondary: '[--radio-checked-bg:var(--secondary)] [--radio-checked-border:var(--secondary)]/90 [--radio-checked-indicator:var(--secondary-foreground)]',
-  accent: '[--radio-checked-bg:var(--accent)] [--radio-checked-border:var(--accent)]/90 [--radio-checked-indicator:var(--accent-foreground)]',
-  destructive: '[--radio-checked-bg:var(--destructive)] [--radio-checked-border:var(--destructive)]/90 [--radio-checked-indicator:var(--destructive-foreground)]',
-}
+  primary:
+    '[--radio-checked-bg:var(--primary)] [--radio-checked-border:var(--primary)]/90 [--radio-checked-indicator:var(--primary-foreground)]',
+  secondary:
+    '[--radio-checked-bg:var(--secondary)] [--radio-checked-border:var(--secondary)]/90 [--radio-checked-indicator:var(--secondary-foreground)]',
+  accent:
+    '[--radio-checked-bg:var(--accent)] [--radio-checked-border:var(--accent)]/90 [--radio-checked-indicator:var(--accent-foreground)]',
+  destructive:
+    '[--radio-checked-bg:var(--destructive)] [--radio-checked-border:var(--destructive)]/90 [--radio-checked-indicator:var(--destructive-foreground)]',
+};
 
-type Color = keyof typeof colors
+type Color = keyof typeof colors;
 
 export function CatalystRadio({
   color = 'dark/zinc',
@@ -134,11 +141,11 @@ export function CatalystRadio({
 >) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticRadioStyles(color)
+      return createSemanticRadioStyles(color);
     }
 
-    return colors[color] || colors['dark/zinc']
-  })()
+    return colors[color] || colors['dark/zinc'];
+  })();
 
   return (
     <Headless.Radio
@@ -151,10 +158,10 @@ export function CatalystRadio({
           className={cn(
             'size-full rounded-full border-[4.5px] border-transparent bg-(--radio-indicator) bg-clip-padding',
             // Forced colors mode
-            'forced-colors:border-[Canvas] forced-colors:group-data-checked:border-[Highlight]'
+            'forced-colors:border-[Canvas] forced-colors:group-data-checked:border-[Highlight]',
           )}
         />
       </span>
     </Headless.Radio>
-  )
+  );
 }

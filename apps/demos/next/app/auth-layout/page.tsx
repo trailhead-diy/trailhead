@@ -1,12 +1,12 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { AuthLayout } from '@/components/th/auth-layout'
-import { Button } from '@/components/th/button'
-import { Checkbox, CheckboxField } from '@/components/th/checkbox'
-import { Field, Label } from '@/components/th/fieldset'
-import { Heading } from '@/components/th/heading'
-import { Input } from '@/components/th/input'
-import { Strong, Text, TextLink } from '@/components/th/text'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { AuthLayout } from '@/components/th/auth-layout';
+import { Button } from '@/components/th/button';
+import { Checkbox, CheckboxField } from '@/components/th/checkbox';
+import { Field, Label } from '@/components/th/fieldset';
+import { Heading } from '@/components/th/heading';
+import { Input } from '@/components/th/input';
+import { Strong, Text, TextLink } from '@/components/th/text';
 // import { Logo } from './logo'
 export default function AuthLayoutPage(): React.JSX.Element {
   return (
@@ -14,7 +14,11 @@ export default function AuthLayoutPage(): React.JSX.Element {
       <List title="Auth Layout">
         <Item title="Login Form">
           <AuthLayout>
-            <form action="#" method="POST" className="grid w-full max-w-sm grid-cols-1 gap-8">
+            <form
+              action="#"
+              method="POST"
+              className="grid w-full max-w-sm grid-cols-1 gap-8"
+            >
               {/* <Logo className="h-6 text-zinc-950 dark:text-white forced-colors:text-[CanvasText]" /> */}
               <Heading>Sign in to your account</Heading>
               <Field>
@@ -50,5 +54,5 @@ export default function AuthLayoutPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

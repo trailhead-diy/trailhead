@@ -1,8 +1,8 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
-import { isSemanticToken, createSemanticSwitchStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
+import { isSemanticToken, createSemanticSwitchStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystSwitchGroup({
   className,
@@ -17,10 +17,10 @@ export function CatalystSwitchGroup({
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 export function CatalystSwitchField({
@@ -42,10 +42,10 @@ export function CatalystSwitchField({
         '*:data-[slot=description]:col-start-1 *:data-[slot=description]:row-start-2',
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        className,
       )}
     />
-  )
+  );
 }
 
 const colors = {
@@ -154,25 +154,25 @@ const colors = {
     '[--switch-bg-ring:var(--destructive)]/90 [--switch-bg:var(--destructive)] dark:[--switch-bg-ring:transparent]',
     '[--switch:var(--destructive-foreground)] [--switch-ring:var(--destructive)]/90 [--switch-shadow:var(--destructive)]/20',
   ],
-}
+};
 
-type Color = keyof typeof colors
+type Color = keyof typeof colors;
 
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color
-  className?: string
+  color?: Color;
+  className?: string;
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticSwitchStyles(color)
+      return createSemanticSwitchStyles(color);
     }
 
-    return colors[color] || colors['dark/zinc']
-  })()
+    return colors[color] || colors['dark/zinc'];
+  })();
 
   return (
     <Headless.Switch
@@ -198,7 +198,7 @@ export function CatalystSwitch({
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
         resolvedColorClasses,
-        className
+        className,
       )}
     >
       <span
@@ -216,9 +216,9 @@ export function CatalystSwitch({
           'group-data-checked:bg-(--switch) group-data-checked:shadow-(--switch-shadow) group-data-checked:ring-(--switch-ring)',
           'group-data-checked:translate-x-4 sm:group-data-checked:translate-x-3',
           // Disabled
-          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-muted/50'
+          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-muted/50',
         )}
       />
     </Headless.Switch>
-  )
+  );
 }

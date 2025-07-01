@@ -1,9 +1,11 @@
 # Functional Programming Principles Applied in Semantic Enhancement Refactoring
 
 ## Overview
+
 This refactoring demonstrates key functional programming principles by transforming repetitive, imperative code into composable, functional utilities.
 
 ## 1. **Pure Functions**
+
 Each utility function is pure - given the same inputs, it always produces the same outputs without side effects.
 
 ```typescript
@@ -20,6 +22,7 @@ export function updateColorTypeAlias(
 ```
 
 ## 2. **Composition Over Inheritance**
+
 Instead of inheritance or complex class hierarchies, we compose behavior through configuration:
 
 ```typescript
@@ -33,13 +36,16 @@ export const checkboxSemanticEnhancementTransform = createSemanticEnhancementTra
 ```
 
 ## 3. **Single Responsibility**
+
 Each function has one clear purpose:
+
 - `addSemanticImports` - Only handles imports
 - `updateColorTypeAlias` - Only updates type aliases
 - `buildSemanticResolution` - Only builds resolution logic
 - `createSemanticEnhancementTransform` - Only orchestrates
 
 ## 4. **Immutability**
+
 Functions return new structures rather than mutating existing ones:
 
 ```typescript
@@ -51,6 +57,7 @@ return {
 ```
 
 ## 5. **Function as First-Class Citizens**
+
 Functions are passed as configuration, enabling flexible behavior:
 
 ```typescript
@@ -63,6 +70,7 @@ interface ComponentConfig {
 ```
 
 ## 6. **Declarative Over Imperative**
+
 Configuration describes WHAT should happen, not HOW:
 
 ```typescript
@@ -78,6 +86,7 @@ Configuration describes WHAT should happen, not HOW:
 ```
 
 ## 7. **Type Safety**
+
 Strong TypeScript types ensure correctness at compile time:
 
 ```typescript
@@ -91,13 +100,16 @@ export interface ComponentConfig {
 ```
 
 ## 8. **Separation of Concerns**
+
 Clear boundaries between:
+
 - **Data**: Configuration objects
 - **Logic**: Pure utility functions
 - **Orchestration**: Transform factory
 - **Side Effects**: Isolated to file I/O
 
 ## 9. **Testability**
+
 Each pure function can be tested in isolation:
 
 ```typescript
@@ -112,7 +124,9 @@ describe('updateColorTypeAlias', () => {
 ```
 
 ## 10. **DRY (Don't Repeat Yourself)**
+
 Common patterns extracted once, reused everywhere:
+
 - 90% code reduction
 - Single source of truth for each pattern
 - Changes propagate to all consumers
@@ -120,6 +134,7 @@ Common patterns extracted once, reused everywhere:
 ## Results
 
 This refactoring achieves:
+
 - **67% total code reduction** (1,800 → 600 lines)
 - **90% reduction per component** (225 → 25 lines)
 - **100% behavior preservation**

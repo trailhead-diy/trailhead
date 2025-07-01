@@ -142,6 +142,7 @@ pnpm profile
 ```
 
 The transform system (`/src/transforms/`) features:
+
 - **AST-based transformations** for accurate code modifications
 - **Component-specific mappings** for each UI component
 - **Semantic token resolution** converting colors like `zinc-500` → `muted-foreground`

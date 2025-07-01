@@ -7,10 +7,7 @@
  * Ensures proper tailwind-merge behavior by placing custom classes last
  */
 export const reorderClassNameArgs = (code: string): string => {
-  return code.replace(
-    /className={cn\(\s*className,\s*([^}]+)\)}/g,
-    'className={cn($1, className)}'
-  )
+  return code.replace(/className={cn\(\s*className,\s*([^}]+)\)}/g, 'className={cn($1, className)}')
 }
 
 /**
@@ -29,11 +26,8 @@ export const restoreCnCallsForSemanticTokens = (code: string): string => {
  * Maintains readability for complex className expressions
  */
 export const preserveMultilineCnCalls = (code: string): string => {
-  return code.replace(
-    /className={cn\('([^']{80,}[^']*)'([^}]*)\)}/g,
-    (match, longString, rest) => {
-      // Split long strings into multiline format
-      return `className={cn(\n        '${longString}'${rest}\n      )}`
-    }
-  )
+  return code.replace(/className={cn\('([^']{80,}[^']*)'([^}]*)\)}/g, (match, longString, rest) => {
+    // Split long strings into multiline format
+    return `className={cn(\n        '${longString}'${rest}\n      )}`
+  })
 }

@@ -98,45 +98,48 @@ describe('Theme Accessibility - Contrast Ratios', () => {
   })
 
   describe('Destructive Colors - High Priority Accessibility', () => {
-    it.fails('should have sufficient contrast for error states across all themes', withConsole(() => {
-      const themeNames = Object.keys(themePresets) as Array<keyof typeof themePresets>
-      const failures: Array<{ theme: string; mode: string; contrast: number }> = []
+    it.fails(
+      'should have sufficient contrast for error states across all themes',
+      withConsole(() => {
+        const themeNames = Object.keys(themePresets) as Array<keyof typeof themePresets>
+        const failures: Array<{ theme: string; mode: string; contrast: number }> = []
 
-      themeNames.forEach((themeName) => {
-        const theme = getPresetTheme(themeName)
+        themeNames.forEach((themeName) => {
+          const theme = getPresetTheme(themeName)
 
-        // Check light mode
-        if (theme.light.destructive) {
-          const lightContrast = getContrast(
-            theme.light.destructive,
-            theme.light['destructive-foreground'] || theme.light.background
-          )
-          if (lightContrast < WCAG_AA_NORMAL) {
-            failures.push({ theme: themeName, mode: 'light', contrast: lightContrast })
+          // Check light mode
+          if (theme.light.destructive) {
+            const lightContrast = getContrast(
+              theme.light.destructive,
+              theme.light['destructive-foreground'] || theme.light.background
+            )
+            if (lightContrast < WCAG_AA_NORMAL) {
+              failures.push({ theme: themeName, mode: 'light', contrast: lightContrast })
+            }
           }
-        }
 
-        // Check dark mode
-        if (theme.dark.destructive) {
-          const darkContrast = getContrast(
-            theme.dark.destructive,
-            theme.dark['destructive-foreground'] || theme.dark.background
-          )
-          if (darkContrast < WCAG_AA_NORMAL) {
-            failures.push({ theme: themeName, mode: 'dark', contrast: darkContrast })
+          // Check dark mode
+          if (theme.dark.destructive) {
+            const darkContrast = getContrast(
+              theme.dark.destructive,
+              theme.dark['destructive-foreground'] || theme.dark.background
+            )
+            if (darkContrast < WCAG_AA_NORMAL) {
+              failures.push({ theme: themeName, mode: 'dark', contrast: darkContrast })
+            }
           }
-        }
-      })
-
-      if (failures.length > 0) {
-        console.log('Destructive color contrast failures:')
-        failures.forEach((f) => {
-          console.log(`  ${f.theme} (${f.mode}): ${f.contrast.toFixed(2)}`)
         })
-      }
 
-      expect(failures).toHaveLength(0)
-    }))
+        if (failures.length > 0) {
+          console.log('Destructive color contrast failures:')
+          failures.forEach((f) => {
+            console.log(`  ${f.theme} (${f.mode}): ${f.contrast.toFixed(2)}`)
+          })
+        }
+
+        expect(failures).toHaveLength(0)
+      })
+    )
   })
 
   describe('Interactive Elements - Focus States', () => {
@@ -183,36 +186,39 @@ describe('Theme Accessibility - Contrast Ratios', () => {
   })
 
   describe('Text on Interactive Elements', () => {
-    it.fails('should ensure button text meets contrast requirements', withConsole(() => {
-      const criticalThemes = ['catalyst', 'red', 'yellow'] // Yellow is often problematic
+    it.fails(
+      'should ensure button text meets contrast requirements',
+      withConsole(() => {
+        const criticalThemes = ['catalyst', 'red', 'yellow'] // Yellow is often problematic
 
-      criticalThemes.forEach((themeName) => {
-        const theme = getPresetTheme(themeName as keyof typeof themePresets)
+        criticalThemes.forEach((themeName) => {
+          const theme = getPresetTheme(themeName as keyof typeof themePresets)
 
-        // Primary button text
-        const lightPrimaryContrast = getContrast(
-          theme.light.primary,
-          theme.light['primary-foreground']
-        )
-        const darkPrimaryContrast = getContrast(
-          theme.dark.primary,
-          theme.dark['primary-foreground']
-        )
-
-        // Should meet AA standards
-        expect(lightPrimaryContrast).toBeGreaterThanOrEqual(WCAG_AA_NORMAL)
-        expect(darkPrimaryContrast).toBeGreaterThanOrEqual(WCAG_AA_NORMAL)
-
-        // For better UX, primary buttons should ideally meet AAA
-        if (lightPrimaryContrast < WCAG_AAA_NORMAL) {
-          console.log(
-            `${themeName}: Light primary button contrast is ${lightPrimaryContrast.toFixed(
-              2
-            )} (AAA requires ${WCAG_AAA_NORMAL})`
+          // Primary button text
+          const lightPrimaryContrast = getContrast(
+            theme.light.primary,
+            theme.light['primary-foreground']
           )
-        }
+          const darkPrimaryContrast = getContrast(
+            theme.dark.primary,
+            theme.dark['primary-foreground']
+          )
+
+          // Should meet AA standards
+          expect(lightPrimaryContrast).toBeGreaterThanOrEqual(WCAG_AA_NORMAL)
+          expect(darkPrimaryContrast).toBeGreaterThanOrEqual(WCAG_AA_NORMAL)
+
+          // For better UX, primary buttons should ideally meet AAA
+          if (lightPrimaryContrast < WCAG_AAA_NORMAL) {
+            console.log(
+              `${themeName}: Light primary button contrast is ${lightPrimaryContrast.toFixed(
+                2
+              )} (AAA requires ${WCAG_AAA_NORMAL})`
+            )
+          }
+        })
       })
-    }))
+    )
   })
 
   describe('Sidebar Accessibility', () => {

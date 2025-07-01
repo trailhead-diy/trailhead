@@ -4,7 +4,7 @@
 
 ```typescript
 // This page loads in O(1) time because there's nothing here yet
-const content = null // Peak performance achieved!
+const content = null; // Peak performance achieved!
 ```
 
 ### What We're Optimizing For
@@ -28,40 +28,38 @@ When this guide materializes from the quantum foam, expect:
 ```typescript
 // Tip #1: Lazy loading (we're experts at this)
 const performanceGuide = async () => {
-  await new Promise(resolve => setTimeout(resolve, Infinity))
-  return "Check back later!"
-}
+  await new Promise((resolve) => setTimeout(resolve, Infinity));
+  return "Check back later!";
+};
 
 // Tip #2: Memoization (remember to write this guide)
-const memoizedExcuse = memoize(() => 
-  "We're still benchmarking the best way to write about benchmarking"
-)
+const memoizedExcuse = memoize(
+  () => "We're still benchmarking the best way to write about benchmarking",
+);
 
 // Tip #3: Early returns (like this page)
-if (!content) return "Coming soon!"
+if (!content) return "Coming soon!";
 ```
 
 ### Actually Helpful Performance Patterns
 
 ```typescript
 // Stream large files instead of loading into memory
-import { pipeline } from 'stream/promises'
+import { pipeline } from "stream/promises";
 
 // Use async iterators for large datasets
 async function* processLargeDataset(data: string[]) {
   for (const item of data) {
-    yield await transform(item)
+    yield await transform(item);
   }
 }
 
 // Batch operations
-const results = await Promise.all(
-  files.map(file => processFile(file))
-)
+const results = await Promise.all(files.map((file) => processFile(file)));
 ```
 
 ---
 
-*"Premature optimization is the root of all evil, but late documentation is a close second."* - Donald Knuth, paraphrased
+_"Premature optimization is the root of all evil, but late documentation is a close second."_ - Donald Knuth, paraphrased
 
 Want this guide faster? [Contribute your performance tips!](https://github.com/esteban-url/trailhead)

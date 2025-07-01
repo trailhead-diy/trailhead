@@ -9,10 +9,8 @@ import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/sem
  * Create semantic switch styles
  * Created using semantic styles factory for consistent behavior
  */
-export const createSemanticSwitchStyles = createCSSVariableStyles(
-  (token: string) => [
-    `[--switch-bg-ring:var(--color-${token})]`,
-    `[--switch-bg:var(--color-${token})]`,
-    `dark:[--switch-bg:var(--color-${token})]`,
-  ]
-)
+export const createSemanticSwitchStyles = createCSSVariableStyles((token: string) => [
+  `[--switch-bg-ring:var(--color-${token})]`,
+  `[--switch-bg:var(--color-${token})]`,
+  `dark:[--switch-bg:var(--color-${token})]`,
+])

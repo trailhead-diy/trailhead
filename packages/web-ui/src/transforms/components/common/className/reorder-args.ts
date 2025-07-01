@@ -37,7 +37,7 @@ function moveClassNameToEnd(root: Collection<any>, j: JSCodeshift) {
 
         // Add them at the end
         args.push(...classNameArgs.reverse())
-        
+
         changes.push({
           type: 'className-reorder',
           description: 'Moved className to end of cn() call',

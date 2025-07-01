@@ -7,16 +7,10 @@
     ":semanticCommits",
     ":preserveSemverRanges"
   ],
-  "schedule": [
-    "before 4am on monday"
-  ],
+  "schedule": ["before 4am on monday"],
   "timezone": "America/New_York",
-  "labels": [
-    "dependencies"
-  ],
-  "assignees": [
-    "esteban-url"
-  ],
+  "labels": ["dependencies"],
+  "assignees": ["esteban-url"],
   "commitMessagePrefix": "deps:",
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
@@ -29,98 +23,61 @@
   "packageRules": [
     {
       "description": "CLI package dependencies",
-      "matchFileNames": [
-        "packages/cli/**"
-      ],
+      "matchFileNames": ["packages/cli/**"],
       "groupName": "@trailhead/cli dependencies",
-      "labels": [
-        "cli",
-        "dependencies"
-      ],
+      "labels": ["cli", "dependencies"],
       "semanticCommitScope": "cli"
     },
     {
       "description": "Web UI package dependencies",
-      "matchFileNames": [
-        "packages/web-ui/**"
-      ],
+      "matchFileNames": ["packages/web-ui/**"],
       "groupName": "@trailhead/web-ui dependencies",
-      "labels": [
-        "web-ui",
-        "dependencies"
-      ],
+      "labels": ["web-ui", "dependencies"],
       "semanticCommitScope": "web-ui"
     },
     {
       "description": "Demo applications dependencies",
-      "matchFileNames": [
-        "apps/demos/**"
-      ],
+      "matchFileNames": ["apps/demos/**"],
       "groupName": "demo app dependencies",
-      "labels": [
-        "demos",
-        "dependencies"
-      ],
+      "labels": ["demos", "dependencies"],
       "semanticCommitScope": "demos"
     },
     {
       "description": "Tooling packages dependencies",
-      "matchFileNames": [
-        "tooling/**"
-      ],
+      "matchFileNames": ["tooling/**"],
       "groupName": "tooling dependencies",
-      "labels": [
-        "tooling",
-        "dependencies"
-      ],
+      "labels": ["tooling", "dependencies"],
       "semanticCommitScope": "tooling"
     },
     {
       "description": "Root workspace dependencies",
-      "matchFileNames": [
-        "package.json"
-      ],
+      "matchFileNames": ["package.json"],
       "groupName": "root workspace dependencies",
-      "labels": [
-        "workspace",
-        "dependencies"
-      ],
+      "labels": ["workspace", "dependencies"],
       "semanticCommitScope": "workspace"
     },
     {
       "description": "Major version updates - require manual review",
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "labels": [
-        "major-update"
-      ],
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-update"],
       "dependencyDashboardApproval": true,
       "semanticCommitType": "feat"
     },
     {
       "description": "Security updates - high priority",
-      "matchDepTypes": [
-        "vulnerabilities"
-      ],
-      "labels": [
-        "security"
-      ],
+      "matchDepTypes": ["vulnerabilities"],
+      "labels": ["security"],
       "prPriority": 10,
       "semanticCommitType": "fix"
     },
     {
       "description": "Development dependencies",
-      "matchDepTypes": [
-        "devDependencies"
-      ],
+      "matchDepTypes": ["devDependencies"],
       "semanticCommitType": "chore"
     },
     {
       "description": "Production dependencies",
-      "matchDepTypes": [
-        "dependencies"
-      ],
+      "matchDepTypes": ["dependencies"],
       "semanticCommitType": "deps"
     },
     {
@@ -132,22 +89,13 @@
         "@types/react-dom"
       ],
       "groupName": "React ecosystem",
-      "labels": [
-        "react"
-      ]
+      "labels": ["react"]
     },
     {
       "description": "TypeScript ecosystem - group together",
-      "matchPackageNames": [
-        "typescript",
-        "@types/node",
-        "ts-node",
-        "tsx"
-      ],
+      "matchPackageNames": ["typescript", "@types/node", "ts-node", "tsx"],
       "groupName": "TypeScript ecosystem",
-      "labels": [
-        "typescript"
-      ]
+      "labels": ["typescript"]
     },
     {
       "description": "Testing ecosystem - group together",
@@ -159,22 +107,13 @@
         "@testing-library/jest-dom"
       ],
       "groupName": "Testing ecosystem",
-      "labels": [
-        "testing"
-      ]
+      "labels": ["testing"]
     },
     {
       "description": "Build tools - group together",
-      "matchPackageNames": [
-        "turbo",
-        "vite",
-        "esbuild",
-        "tsup"
-      ],
+      "matchPackageNames": ["turbo", "vite", "esbuild", "tsup"],
       "groupName": "Build tools",
-      "labels": [
-        "build-tools"
-      ]
+      "labels": ["build-tools"]
     },
     {
       "description": "Tailwind ecosystem - group together",
@@ -186,17 +125,12 @@
         "postcss"
       ],
       "groupName": "Tailwind ecosystem",
-      "labels": [
-        "tailwind"
-      ]
+      "labels": ["tailwind"]
     }
   ],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "labels": [
-      "security",
-      "vulnerability"
-    ]
+    "labels": ["security", "vulnerability"]
   },
   "configMigration": true,
   "dependencyDashboardTitle": "🤖 Trailhead Dependency Dashboard",

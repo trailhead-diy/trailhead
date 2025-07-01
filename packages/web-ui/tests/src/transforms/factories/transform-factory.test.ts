@@ -1,6 +1,6 @@
 /**
  * Factory System Tests for transforms
- * 
+ *
  * High-ROI tests for transform factories. Testing each factory provides
  * coverage for all transforms it generates.
  */
@@ -15,11 +15,23 @@ describe('transform factories', () => {
       const transform = createRegexTransform({
         name: 'test-transform',
         mappings: [
-          { pattern: /bg-zinc-950/g, replacement: 'bg-foreground', description: 'bg-zinc-950 → bg-foreground' },
-          { pattern: /text-white/g, replacement: 'text-background', description: 'text-white → text-background' },
-          { pattern: /border-zinc-200/g, replacement: 'border-border', description: 'border-zinc-200 → border-border' },
+          {
+            pattern: /bg-zinc-950/g,
+            replacement: 'bg-foreground',
+            description: 'bg-zinc-950 → bg-foreground',
+          },
+          {
+            pattern: /text-white/g,
+            replacement: 'text-background',
+            description: 'text-white → text-background',
+          },
+          {
+            pattern: /border-zinc-200/g,
+            replacement: 'border-border',
+            description: 'border-zinc-200 → border-border',
+          },
         ],
-        description: 'Test regex transform'
+        description: 'Test regex transform',
       })
 
       const input = `
@@ -43,9 +55,13 @@ describe('transform factories', () => {
         name: 'conditional-transform',
         description: 'Transform with content filter',
         mappings: [
-          { pattern: /bg-red-600/g, replacement: 'bg-destructive', description: 'bg-red-600 → bg-destructive' }
+          {
+            pattern: /bg-red-600/g,
+            replacement: 'bg-destructive',
+            description: 'bg-red-600 → bg-destructive',
+          },
         ],
-        contentFilter: (content) => content.includes('Button')
+        contentFilter: (content) => content.includes('Button'),
       })
 
       const buttonComponent = 'export function Button() { return <div className="bg-red-600" /> }'
@@ -68,11 +84,12 @@ describe('transform factories', () => {
         name: 'metadata-test',
         mappings: [
           {
-            pattern: /zinc-(\d+)/g, replacement: 'neutral-$1',
-            description: 'zinc-$1 → neutral-$1'
-          }
-        ]
-        , description: 'Test transform for metadata'
+            pattern: /zinc-(\d+)/g,
+            replacement: 'neutral-$1',
+            description: 'zinc-$1 → neutral-$1',
+          },
+        ],
+        description: 'Test transform for metadata',
       })
 
       const input = 'bg-zinc-100 text-zinc-900 border-zinc-500'
@@ -82,10 +99,10 @@ describe('transform factories', () => {
       expect(result.type).toBe('regex')
       expect(result.phase).toBe('color')
       expect(result.changes).toHaveLength(3)
-      expect(result.changes.map(c => c.description)).toEqual([
+      expect(result.changes.map((c) => c.description)).toEqual([
         'zinc-100 → neutral-100',
         'zinc-900 → neutral-900',
-        'zinc-500 → neutral-500'
+        'zinc-500 → neutral-500',
       ])
     })
   })
@@ -96,10 +113,14 @@ describe('transform factories', () => {
         name: 'test-component',
         description: 'Test protected transform',
         mappings: [
-          { pattern: /var\(--btn-bg\)/g, replacement: 'var(--btn-bg-semantic)', description: 'CSS var protection' },
+          {
+            pattern: /var\(--btn-bg\)/g,
+            replacement: 'var(--btn-bg-semantic)',
+            description: 'CSS var protection',
+          },
           { pattern: /zinc-900/g, replacement: 'foreground', description: 'zinc-900 → foreground' },
-          { pattern: /white/g, replacement: 'background', description: 'white → background' }
-        ]
+          { pattern: /white/g, replacement: 'background', description: 'white → background' },
+        ],
       })
 
       const input = `
@@ -125,9 +146,17 @@ describe('transform factories', () => {
         name: 'button',
         description: 'Button CSS variable transform',
         mappings: [
-          { pattern: /\[--btn-bg:theme\(colors\.zinc\.900\)\]/g, replacement: '[--btn-bg:theme(colors.foreground)]', description: 'Button bg CSS var' },
-          { pattern: /\[--btn-icon:theme\(colors\.zinc\.400\)\]/g, replacement: '[--btn-icon:theme(colors.muted.foreground)]', description: 'Button icon CSS var' }
-        ]
+          {
+            pattern: /\[--btn-bg:theme\(colors\.zinc\.900\)\]/g,
+            replacement: '[--btn-bg:theme(colors.foreground)]',
+            description: 'Button bg CSS var',
+          },
+          {
+            pattern: /\[--btn-icon:theme\(colors\.zinc\.400\)\]/g,
+            replacement: '[--btn-icon:theme(colors.muted.foreground)]',
+            description: 'Button icon CSS var',
+          },
+        ],
       })
 
       const input = `
@@ -176,10 +205,7 @@ export function Button({ color = 'dark', children, ...props }: ButtonProps) {
                 "import React from 'react'",
                 "import React from 'react'\nimport { isSemanticToken, createSemanticButtonStyles } from '../semantic-tokens.js'"
               )
-              .replace(
-                'export function Button(',
-                'export function Button('
-              )
+              .replace('export function Button(', 'export function Button(')
               .replace(
                 '<Headless.Button className="px-4 py-2"',
                 '<Headless.Button className={cn("px-4 py-2", resolvedColorClasses)}'
@@ -202,7 +228,7 @@ ${functionBody}`
               phase: transform.phase,
               hasChanges: true,
               content: result,
-              changes: ['Added semantic token support']
+              changes: ['Added semantic token support'],
             }
           }
 
@@ -212,9 +238,9 @@ ${functionBody}`
             phase: transform.phase,
             hasChanges: false,
             content,
-            changes: []
+            changes: [],
           }
-        }
+        },
       }
 
       const result = transform.execute(mockComponent)
@@ -244,8 +270,8 @@ export function Button({ color }: { color?: string }) {
           phase: 'structure' as const,
           hasChanges: false,
           content,
-          changes: []
-        })
+          changes: [],
+        }),
       }
 
       const result = transform.execute(alreadyEnhanced)
@@ -260,17 +286,17 @@ export function Button({ color }: { color?: string }) {
         execute: (content: string) => ({
           hasChanges: true,
           content: content.replace('className="', 'className={cn("'),
-          changes: ['Added cn wrapper']
-        })
+          changes: ['Added cn wrapper'],
+        }),
       }
 
       // Second transform: Color mappings
       const colorTransform = createRegexTransform({
         name: 'colors',
         mappings: [
-          { pattern: /zinc-900/g, replacement: 'foreground', description: 'zinc-900 → foreground' }
-        ]
-        , description: 'Color mapping transform'
+          { pattern: /zinc-900/g, replacement: 'foreground', description: 'zinc-900 → foreground' },
+        ],
+        description: 'Color mapping transform',
       })
 
       let content = '<div className="bg-zinc-900 p-4" />'

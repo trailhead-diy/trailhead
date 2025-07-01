@@ -11,7 +11,7 @@ import type { ProfileProgressManager } from '../progress.js'
 export abstract class ProfileStrategy {
   abstract readonly name: string
   abstract readonly description: string
-  
+
   /**
    * Execute profiling strategy
    */
@@ -57,7 +57,7 @@ export abstract class ProfileStrategy {
       strategy: this.name,
       description: this.description,
       transforms: this.getTransforms(),
-      estimatedDuration: this.getEstimatedDuration(options)
+      estimatedDuration: this.getEstimatedDuration(options),
     }
   }
 }
@@ -108,7 +108,7 @@ export function createMeasurement(
     executionTime: endTime - startTime,
     memoryBefore,
     memoryAfter,
-    memoryUsed: memoryAfter - memoryBefore
+    memoryUsed: memoryAfter - memoryBefore,
   }
 }
 
@@ -121,14 +121,14 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
    */
   protected validateCommon(options: ProfileOptions): { isValid: boolean; errors: string[] } {
     const errors: string[] = []
-    
+
     if (options.iterations < 1 || options.iterations > 10) {
       errors.push('Iterations must be between 1 and 10')
     }
-    
+
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     }
   }
 
@@ -152,7 +152,7 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
     if (options.warmupIterations && options.warmupIterations > 0) {
       for (let i = 0; i < options.warmupIterations; i++) {
         await profileFn()
-        
+
         // Force GC between warmup iterations
         if (options.forceGc && global.gc) {
           global.gc()
@@ -170,22 +170,22 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
     profileFn: (iteration: number) => Promise<ProfilingMeasurement>
   ): Promise<ProfilingMeasurement[]> {
     const measurements: ProfilingMeasurement[] = []
-    
+
     for (let i = 0; i < options.iterations; i++) {
       progressManager.updateProfiling(this.name, i + 1, `Iteration ${i + 1}/${options.iterations}`)
-      
+
       const measurement = await profileFn(i)
       measurements.push(measurement)
-      
+
       // Force garbage collection between iterations if requested
       if (options.forceGc && global.gc) {
         global.gc()
       }
-      
+
       // Small delay to allow system to stabilize
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100))
     }
-    
+
     return measurements
   }
 
@@ -196,17 +196,17 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
     measurements: ProfilingMeasurement[],
     options: ProfileOptions
   ): ProfileResult {
-    const times = measurements.map(m => m.executionTime)
-    const memories = measurements.map(m => m.memoryUsed)
-    
+    const times = measurements.map((m) => m.executionTime)
+    const memories = measurements.map((m) => m.memoryUsed)
+
     const timesSorted = [...times].sort((a, b) => a - b)
     const totalTime = times.reduce((sum, t) => sum + t, 0)
     const averageTime = totalTime / times.length
     const medianTime = timesSorted[Math.floor(timesSorted.length / 2)]
-    
+
     const memoryPeak = Math.max(...memories)
     const memoryAverage = memories.reduce((sum, m) => sum + m, 0) / memories.length
-    
+
     return {
       approach: this.name,
       totalTime,
@@ -219,7 +219,7 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
       componentsProcessed: 27, // All Catalyst components
       componentsPerSecond: (27 * 1000) / averageTime,
       componentProfiles: [], // Can be filled by specific strategies
-      iterations: options.iterations
+      iterations: options.iterations,
     }
   }
 }

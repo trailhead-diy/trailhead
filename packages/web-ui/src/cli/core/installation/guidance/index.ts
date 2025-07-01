@@ -10,12 +10,20 @@ export * from './types.js'
 
 // Import framework-specific guidance
 import { generateRedwoodSDKGuidance, generateRedwoodSDKCSSTemplate } from './redwood-sdk.js'
-import { generateNextJSGuidance, generateNextJSTailwindConfig, generateNextJSCSSTemplate } from './nextjs.js'
-import { generateViteGuidance, generateViteTailwindConfig, generateViteCSSTemplate } from './vite.js'
-import { 
-  generateGenericReactGuidance, 
-  generateGenericReactTailwindConfig, 
-  generateGenericReactCSSTemplate 
+import {
+  generateNextJSGuidance,
+  generateNextJSTailwindConfig,
+  generateNextJSCSSTemplate,
+} from './nextjs.js'
+import {
+  generateViteGuidance,
+  generateViteTailwindConfig,
+  generateViteCSSTemplate,
+} from './vite.js'
+import {
+  generateGenericReactGuidance,
+  generateGenericReactTailwindConfig,
+  generateGenericReactCSSTemplate,
 } from './generic-react.js'
 
 // Re-export shared utilities

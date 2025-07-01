@@ -18,11 +18,7 @@ import {
   compareFiles as frameworkCompareFiles,
   type FileComparison,
 } from '@trailhead/cli/filesystem'
-import {
-  createStats,
-  updateStats as frameworkUpdateStats,
-  type StatsTracker,
-} from '@trailhead/cli'
+import { createStats, updateStats as frameworkUpdateStats, type StatsTracker } from '@trailhead/cli'
 import type {
   ConversionStats,
   FileProcessingResult,
@@ -86,9 +82,10 @@ export function updateStats(
     custom: { totalConversions: stats.totalConversions },
   }
 
-  const operationTypes = result.success && result.changes > 0
-    ? conversionTypes.map(({ description }) => ({ type: description, count: 1 }))
-    : []
+  const operationTypes =
+    result.success && result.changes > 0
+      ? conversionTypes.map(({ description }) => ({ type: description, count: 1 }))
+      : []
 
   const updatedTracker = frameworkUpdateStats(tracker, {
     filesProcessed: 1,
@@ -379,7 +376,6 @@ export async function copyFreshFiles(
     }
   }
 }
-
 
 //TODO: Delete?
 /**

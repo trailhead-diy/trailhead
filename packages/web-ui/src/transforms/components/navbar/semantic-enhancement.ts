@@ -1,6 +1,6 @@
 /**
  * Navbar semantic enhancement transform
- * 
+ *
  * Since navbar doesn't have a colors object or color prop,
  * this is a no-op transform that maintains compatibility
  */
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const navbarSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Navbar',
-  detectPattern: (content) => 
+  detectPattern: (content) =>
     content.includes('export function Navbar') ||
     content.includes('export const NavbarItem') ||
     content.includes('export function NavbarDivider'),

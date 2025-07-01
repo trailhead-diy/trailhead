@@ -1,5 +1,7 @@
-import styles from './styles.css?url'
-export const Document: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+import styles from './styles.css?url';
+export const Document: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <html lang="en">
     <head>
       <meta charSet="utf-8" />
@@ -15,4 +17,4 @@ export const Document: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <script>import("/src/client.tsx")</script>
     </body>
   </html>
-)
+);

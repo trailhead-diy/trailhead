@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Avatar } from '@/components/th/avatar'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Avatar } from '@/components/th/avatar';
 import {
   Dropdown,
   DropdownButton,
@@ -8,8 +8,13 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/th/dropdown'
-import { Navbar, NavbarItem, NavbarSection, NavbarSpacer } from '@/components/th/navbar'
+} from '@/components/th/dropdown';
+import {
+  Navbar,
+  NavbarItem,
+  NavbarSection,
+  NavbarSpacer,
+} from '@/components/th/navbar';
 import {
   Sidebar,
   SidebarBody,
@@ -20,8 +25,8 @@ import {
   SidebarLabel,
   SidebarSection,
   SidebarSpacer,
-} from '@/components/th/sidebar'
-import { SidebarLayout } from '@/components/th/sidebar-layout'
+} from '@/components/th/sidebar';
+import { SidebarLayout } from '@/components/th/sidebar-layout';
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -31,7 +36,7 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid'
+} from '@heroicons/react/16/solid';
 import {
   Cog6ToothIcon,
   HomeIcon,
@@ -42,7 +47,7 @@ import {
   SparklesIcon,
   Square2StackIcon,
   TicketIcon,
-} from '@heroicons/react/20/solid'
+} from '@heroicons/react/20/solid';
 
 export default function SidebarLayoutPage(): React.JSX.Element {
   return (
@@ -101,7 +106,10 @@ export default function SidebarLayoutPage(): React.JSX.Element {
                       <SidebarLabel>Tailwind Labs</SidebarLabel>
                       <ChevronDownIcon />
                     </DropdownButton>
-                    <DropdownMenu className="min-w-80 lg:min-w-64" anchor="bottom start">
+                    <DropdownMenu
+                      className="min-w-80 lg:min-w-64"
+                      anchor="bottom start"
+                    >
                       <DropdownItem href="/teams/1/settings">
                         <Cog8ToothIcon />
                         <DropdownLabel>Settings</DropdownLabel>
@@ -112,7 +120,11 @@ export default function SidebarLayoutPage(): React.JSX.Element {
                         <DropdownLabel>Tailwind Labs</DropdownLabel>
                       </DropdownItem>
                       <DropdownItem href="/teams/2">
-                        <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
+                        <Avatar
+                          slot="icon"
+                          initials="WC"
+                          className="bg-purple-500 text-white"
+                        />
                         <DropdownLabel>Workcation</DropdownLabel>
                       </DropdownItem>
                       <DropdownDivider />
@@ -158,10 +170,16 @@ export default function SidebarLayoutPage(): React.JSX.Element {
                   </SidebarSection>
                   <SidebarSection className="max-lg:hidden">
                     <SidebarHeading>Upcoming Events</SidebarHeading>
-                    <SidebarItem href="/events/1">Bear Hug: Live in Concert</SidebarItem>
+                    <SidebarItem href="/events/1">
+                      Bear Hug: Live in Concert
+                    </SidebarItem>
                     <SidebarItem href="/events/2">Viking People</SidebarItem>
-                    <SidebarItem href="/events/3">Six Fingers — DJ Set</SidebarItem>
-                    <SidebarItem href="/events/4">We All Look The Same</SidebarItem>
+                    <SidebarItem href="/events/3">
+                      Six Fingers — DJ Set
+                    </SidebarItem>
+                    <SidebarItem href="/events/4">
+                      We All Look The Same
+                    </SidebarItem>
                   </SidebarSection>
                   <SidebarSpacer />
                   <SidebarSection>
@@ -179,7 +197,12 @@ export default function SidebarLayoutPage(): React.JSX.Element {
                   <Dropdown>
                     <DropdownButton as={SidebarItem}>
                       <span className="flex min-w-0 items-center gap-3">
-                        <Avatar src="/profile-photo.jpg" className="size-10" square alt="" />
+                        <Avatar
+                          src="/profile-photo.jpg"
+                          className="size-10"
+                          square
+                          alt=""
+                        />
                         <span className="min-w-0">
                           <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
                             Erica
@@ -225,5 +248,5 @@ export default function SidebarLayoutPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

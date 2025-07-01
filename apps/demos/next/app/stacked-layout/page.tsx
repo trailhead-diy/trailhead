@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Avatar } from '@/components/th/avatar'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Avatar } from '@/components/th/avatar';
 import {
   Dropdown,
   DropdownButton,
@@ -8,7 +8,7 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/th/dropdown'
+} from '@/components/th/dropdown';
 import {
   Navbar,
   NavbarDivider,
@@ -16,7 +16,7 @@ import {
   NavbarLabel,
   NavbarSection,
   NavbarSpacer,
-} from '@/components/th/navbar'
+} from '@/components/th/navbar';
 import {
   Sidebar,
   SidebarBody,
@@ -24,8 +24,8 @@ import {
   SidebarItem,
   SidebarLabel,
   SidebarSection,
-} from '@/components/th/sidebar'
-import { StackedLayout } from '@/components/th/stacked-layout'
+} from '@/components/th/sidebar';
+import { StackedLayout } from '@/components/th/stacked-layout';
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -34,8 +34,8 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid'
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+} from '@heroicons/react/16/solid';
+import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 
 const navItems = [
   { label: 'Home', url: '/' },
@@ -43,7 +43,7 @@ const navItems = [
   { label: 'Orders', url: '/orders' },
   { label: 'Broadcasts', url: '/broadcasts' },
   { label: 'Settings', url: '/settings' },
-]
+];
 export default function StackedLayoutPage(): React.JSX.Element {
   return (
     <DemoLayout>
@@ -137,7 +137,7 @@ export default function StackedLayoutPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }
 
 function TeamDropdownMenu() {
@@ -153,7 +153,11 @@ function TeamDropdownMenu() {
         <DropdownLabel>Tailwind Labs</DropdownLabel>
       </DropdownItem>
       <DropdownItem href="/teams/2">
-        <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
+        <Avatar
+          slot="icon"
+          initials="WC"
+          className="bg-purple-500 text-white"
+        />
         <DropdownLabel>Workcation</DropdownLabel>
       </DropdownItem>
       <DropdownDivider />
@@ -162,5 +166,5 @@ function TeamDropdownMenu() {
         <DropdownLabel>New team&hellip;</DropdownLabel>
       </DropdownItem>
     </DropdownMenu>
-  )
+  );
 }

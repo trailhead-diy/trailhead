@@ -32,6 +32,7 @@ The CLI provides the best installation experience with automatic framework detec
 ### CLI Binary Names
 
 The CLI is available under three different binary names for your convenience:
+
 - `trailhead-ui` - Primary command name
 - `trailhead-web-ui` - Alternative full name
 - `thui` - Short alias for quick typing

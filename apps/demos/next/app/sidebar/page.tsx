@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Avatar } from '@/components/th/avatar'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Avatar } from '@/components/th/avatar';
 import {
   Dropdown,
   DropdownButton,
@@ -8,7 +8,7 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/th/dropdown'
+} from '@/components/th/dropdown';
 import {
   Sidebar,
   SidebarBody,
@@ -18,7 +18,7 @@ import {
   SidebarLabel,
   SidebarSection,
   SidebarSpacer,
-} from '@/components/th/sidebar'
+} from '@/components/th/sidebar';
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -28,7 +28,7 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid'
+} from '@heroicons/react/16/solid';
 import {
   Cog6ToothIcon,
   HomeIcon,
@@ -39,7 +39,7 @@ import {
   SparklesIcon,
   Square2StackIcon,
   TicketIcon,
-} from '@heroicons/react/20/solid'
+} from '@heroicons/react/20/solid';
 
 export default function SidebarPage(): React.JSX.Element {
   return (
@@ -65,7 +65,11 @@ export default function SidebarPage(): React.JSX.Element {
                     <DropdownLabel>Tailwind Labs</DropdownLabel>
                   </DropdownItem>
                   <DropdownItem href="/teams/2">
-                    <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
+                    <Avatar
+                      slot="icon"
+                      initials="WC"
+                      className="bg-purple-500 text-white"
+                    />
                     <DropdownLabel>Workcation</DropdownLabel>
                   </DropdownItem>
                   <DropdownDivider />
@@ -125,7 +129,12 @@ export default function SidebarPage(): React.JSX.Element {
               <Dropdown>
                 <DropdownButton as={SidebarItem}>
                   <span className="flex min-w-0 items-center gap-3">
-                    <Avatar src="/profile-photo.jpg" className="size-10" square alt="" />
+                    <Avatar
+                      src="/profile-photo.jpg"
+                      className="size-10"
+                      square
+                      alt=""
+                    />
                     <span className="min-w-0">
                       <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
                         Erica
@@ -167,5 +176,5 @@ export default function SidebarPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

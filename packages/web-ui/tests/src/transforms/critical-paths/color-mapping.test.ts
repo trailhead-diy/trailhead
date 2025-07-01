@@ -1,6 +1,6 @@
 /**
  * Color Mapping Critical Path Tests
- * 
+ *
  * Tests the core business logic of color transformations.
  * Verifies that Catalyst colors map correctly to semantic tokens.
  */

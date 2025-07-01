@@ -5,11 +5,11 @@
 ```typescript
 // Migration status
 const migrationGuide = {
-  from: 'TODO',
-  to: 'DONE',
+  from: "TODO",
+  to: "DONE",
   progress: 0.001,
-  estimatedCompletion: new Date('2099-12-31')
-}
+  estimatedCompletion: new Date("2099-12-31"),
+};
 ```
 
 ### Migrations We're Planning to Document
@@ -25,20 +25,20 @@ const migrationGuide = {
 ```typescript
 // Old way (other frameworks)
 try {
-  const result = await riskyOperation()
-  console.log('Success!')
+  const result = await riskyOperation();
+  console.log("Success!");
 } catch (error) {
-  console.error('Failed:', error)
-  process.exit(1)
+  console.error("Failed:", error);
+  process.exit(1);
 }
 
 // New way (@trailhead/cli)
-const result = await riskyOperation()
+const result = await riskyOperation();
 if (!result.success) {
-  logger.error(result.error.message)
-  return result
+  logger.error(result.error.message);
+  return result;
 }
-logger.success('Success!')
+logger.success("Success!");
 ```
 
 ### Pre-Migration Checklist
@@ -54,23 +54,23 @@ While waiting for the full guide:
 
 ```typescript
 // Step 1: Denial
-console.log("I don't need to migrate")
+console.log("I don't need to migrate");
 
 // Step 2: Anger
-throw new Error("Why isn't there a migration guide yet?!")
+throw new Error("Why isn't there a migration guide yet?!");
 
 // Step 3: Bargaining
 if (hasMigrationGuide) {
-  return migrate()
+  return migrate();
 } else {
-  return waitAndHope()
+  return waitAndHope();
 }
 
 // Step 4: Depression
-logger.error("Still no migration guide...")
+logger.error("Still no migration guide...");
 
 // Step 5: Acceptance
-const result = ok("I'll figure it out myself")
+const result = ok("I'll figure it out myself");
 ```
 
 ### Actually Useful Migration Tips
@@ -84,16 +84,16 @@ const result = ok("I'll figure it out myself")
 // Wrap existing async functions
 const wrapAsync = <T>(fn: () => Promise<T>): Promise<Result<T>> => {
   try {
-    const value = await fn()
-    return ok(value)
+    const value = await fn();
+    return ok(value);
   } catch (error) {
-    return err(error as Error)
+    return err(error as Error);
   }
-}
+};
 ```
 
 ---
 
-*"Migration is not about the destination, it's about the journey. And also the destination. But mostly waiting for documentation."*
+_"Migration is not about the destination, it's about the journey. And also the destination. But mostly waiting for documentation."_
 
 Need migration help now? [Open an issue](https://github.com/esteban-url/trailhead/issues) and we'll help you personally!

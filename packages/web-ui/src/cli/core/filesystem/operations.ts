@@ -333,7 +333,7 @@ export const executeBatchOperations = async (
           }
           const existsResult = await fs.exists(op.path)
           if (!existsResult.success) return existsResult
-          
+
           if (existsResult.value) {
             const removeResult = await fs.remove(op.path)
             if (!removeResult.success) return removeResult

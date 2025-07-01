@@ -145,8 +145,7 @@ describe('Business Logic - Critical Theme Operations', () => {
         expect(() => parseOKLCHColor(color)).not.toThrow()
       })
     })
-
-    it('should parse and format OKLCH values correctly', () => {
+    ;(it('should parse and format OKLCH values correctly', () => {
       const result = parseOKLCHColor('oklch(0.7 0.2 300)')
       expect(result.l).toBe(0.7)
       expect(result.c).toBe(0.2)
@@ -172,7 +171,7 @@ describe('Business Logic - Critical Theme Operations', () => {
 
         // Test values with decimals
         expect(() => parseOKLCHColor('oklch(0.75 0.25 123.45)')).not.toThrow()
-      })
+      }))
   })
 
   describe('Preset Themes Validation', () => {
@@ -237,7 +236,7 @@ describe('Business Logic - Critical Theme Operations', () => {
   })
 
   describe('Utility Functions', () => {
-    it('should combine class names correctly', () => {
+    ;(it('should combine class names correctly', () => {
       // Basic combination
       expect(cn('class1', 'class2')).toBe('class1 class2')
 
@@ -283,7 +282,7 @@ describe('Business Logic - Critical Theme Operations', () => {
         expect(getButtonClasses('secondary', 'small', true)).toBe(
           'base-button bg-secondary text-secondary-foreground px-3 py-1 text-sm opacity-50 cursor-not-allowed'
         )
-      })
+      }))
   })
 
   describe('Performance and Memory Management', () => {

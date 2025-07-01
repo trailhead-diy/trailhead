@@ -1,10 +1,10 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
 import {
   DescriptionDetails,
   DescriptionList,
   DescriptionTerm,
-} from '@/components/th/description-list'
+} from '@/components/th/description-list';
 
 export default function DescriptionListPage(): React.JSX.Element {
   return (
@@ -33,5 +33,5 @@ export default function DescriptionListPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

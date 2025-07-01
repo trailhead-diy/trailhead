@@ -4,7 +4,11 @@
 
 import type { FrameworkInfo } from '../framework-detection.js'
 import type { FrameworkGuidance, ConfigTemplate } from './types.js'
-import { generateCSSCustomProperties, generateTailwindColors, generateTailwindBorderRadius } from './shared.js'
+import {
+  generateCSSCustomProperties,
+  generateTailwindColors,
+  generateTailwindBorderRadius,
+} from './shared.js'
 
 // ============================================================================
 // NEXT.JS GUIDANCE
@@ -253,5 +257,5 @@ export const generateNextJSCSSTemplate = (): ConfigTemplate => ({
 
 @layer base {
 ${generateCSSCustomProperties()}
-}`
+}`,
 })

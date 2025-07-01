@@ -111,7 +111,8 @@ export const buttonColorMappingsTransform = createProtectedRegexTransform({
     },
     {
       pattern: /\[--btn-border:var\(--color-zinc-200\)\]/g,
-      replacement: '[--btn-border:var(--border-subtle,color-mix(in oklch, var(--border) 60%, transparent))]',
+      replacement:
+        '[--btn-border:var(--border-subtle,color-mix(in oklch, var(--border) 60%, transparent))]',
       description:
         '[--btn-border:var(--color-zinc-200)] → [--btn-border:var(--border-subtle,lighter border)]',
     },

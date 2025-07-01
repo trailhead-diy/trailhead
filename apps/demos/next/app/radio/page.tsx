@@ -1,8 +1,8 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Description, Fieldset, Label, Legend } from '@/components/th/fieldset'
-import { Radio, RadioField, RadioGroup } from '@/components/th/radio'
-import { Text } from '@/components/th/text'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Description, Fieldset, Label, Legend } from '@/components/th/fieldset';
+import { Radio, RadioField, RadioGroup } from '@/components/th/radio';
+import { Text } from '@/components/th/text';
 
 export default function RadioPage(): React.JSX.Element {
   return (
@@ -17,7 +17,8 @@ export default function RadioPage(): React.JSX.Element {
                 <Radio value="permit" />
                 <Label>Allow tickets to be resold</Label>
                 <Description>
-                  Customers can resell or transfer their tickets if they can’t make it to the event.
+                  Customers can resell or transfer their tickets if they can’t
+                  make it to the event.
                 </Description>
               </RadioField>
               <RadioField>
@@ -32,5 +33,5 @@ export default function RadioPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

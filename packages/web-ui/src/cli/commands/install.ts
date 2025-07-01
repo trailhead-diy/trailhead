@@ -52,17 +52,20 @@ const createInstallValidation = () => {
         'Framework must be valid if specified',
         (value: unknown) => {
           const options = value as InstallOptions
-          
+
           // Only validate if framework is explicitly provided
           if (options.framework) {
             if (!VALID_FRAMEWORKS.includes(options.framework as any)) {
-              return ValidationErr(`Invalid framework. Must be one of: ${VALID_FRAMEWORKS.join(', ')}`, 'framework')
+              return ValidationErr(
+                `Invalid framework. Must be one of: ${VALID_FRAMEWORKS.join(', ')}`,
+                'framework'
+              )
             }
           }
 
           return ValidationOk(options)
         },
-false // Not required, but validated when provided
+        false // Not required, but validated when provided
       )
     )
     .add(
@@ -109,7 +112,10 @@ false // Not required, but validated when provided
 
           const validStrategies = ['auto', 'smart', 'selective', 'manual', 'skip', 'force']
           if (!validStrategies.includes(options.dependencyStrategy)) {
-            return ValidationErr(`Invalid dependency strategy. Must be one of: ${validStrategies.join(', ')}`, 'dependencyStrategy')
+            return ValidationErr(
+              `Invalid dependency strategy. Must be one of: ${validStrategies.join(', ')}`,
+              'dependencyStrategy'
+            )
           }
 
           return ValidationOk(options)

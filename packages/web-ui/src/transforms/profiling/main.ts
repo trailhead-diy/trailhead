@@ -43,13 +43,17 @@ export class TransformProfiler {
       // Validate strategies
       const primaryValidation = strategies.primary.validate(this.options)
       if (!primaryValidation.isValid) {
-        throw new Error(`Primary strategy validation failed: ${primaryValidation.errors.join(', ')}`)
+        throw new Error(
+          `Primary strategy validation failed: ${primaryValidation.errors.join(', ')}`
+        )
       }
 
       if (strategies.comparison) {
         const comparisonValidation = strategies.comparison.validate(this.options)
         if (!comparisonValidation.isValid) {
-          throw new Error(`Comparison strategy validation failed: ${comparisonValidation.errors.join(', ')}`)
+          throw new Error(
+            `Comparison strategy validation failed: ${comparisonValidation.errors.join(', ')}`
+          )
         }
       }
 
@@ -89,11 +93,10 @@ export class TransformProfiler {
         transforms2: primaryResult,
         traditional: comparisonResult,
         speedupFactor,
-        memoryEfficiency
+        memoryEfficiency,
       }
 
       return result
-
     } catch (error) {
       this.progressManager.error('profile', error instanceof Error ? error.message : String(error))
       throw error
@@ -137,11 +140,10 @@ export async function runProfiler(options: ProfileOptions): Promise<ComparisonRe
     // Generate markdown report if requested
     if (options.outDir) {
       const savedFile = await saveReport('markdown', result, options, options.outDir)
-      createReportSummary([savedFile], options).forEach(line => console.log(line))
+      createReportSummary([savedFile], options).forEach((line) => console.log(line))
     }
 
     return result
-
   } finally {
     await profiler.cleanup()
   }
@@ -155,7 +157,7 @@ export async function runCLI(argv: string[] = process.argv): Promise<void> {
     const { options, errors } = parseAndValidate(argv)
 
     if (errors.length > 0) {
-      displayError(`Configuration errors:\n${errors.map(e => `  - ${e}`).join('\n')}`)
+      displayError(`Configuration errors:\n${errors.map((e) => `  - ${e}`).join('\n')}`)
       process.exit(1)
     }
 
@@ -176,7 +178,6 @@ export async function runCLI(argv: string[] = process.argv): Promise<void> {
     }
 
     displaySuccess('Profiling completed successfully!')
-
   } catch (error) {
     displayError(error instanceof Error ? error.message : String(error))
     process.exit(1)

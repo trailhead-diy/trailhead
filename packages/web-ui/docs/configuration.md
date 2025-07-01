@@ -65,9 +65,7 @@ function ThemeControls() {
 
   // Register custom theme
   const addCustomTheme = () => {
-    const customTheme = createTheme('custom')
-      .withPrimaryColor('oklch(0.7 0.2 180)')
-      .build()
+    const customTheme = createTheme('custom').withPrimaryColor('oklch(0.7 0.2 180)').build()
     registerTheme('custom', customTheme)
   }
 }
@@ -389,6 +387,7 @@ const config = themeConfig[buildMode] || themeConfig.production
 ```
 
 This approach provides:
+
 - Type safety with TypeScript
 - Easier testing and mocking
 - No runtime environment variable dependencies

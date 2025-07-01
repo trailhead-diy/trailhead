@@ -1,15 +1,19 @@
 /**
  * Protected Regex Transform Factory
- * 
+ *
  * Creates regex-based transforms that respect style object contexts and CSS variables
- * 
+ *
  * This factory extends the base regex transform to protect component style objects
  * from being modified, preserving critical functionality like Button/Badge color schemes
  */
 
 import type { Transform, TransformResult } from '@/transforms/shared/types.js'
 import { createProtectedReplacer, createStyleObjectProtection } from './style-object-detector.js'
-import { createColorsProtectedReplacer, createColorsObjectProtection, createCombinedProtection } from './colors-object-detector.js'
+import {
+  createColorsProtectedReplacer,
+  createColorsObjectProtection,
+  createCombinedProtection,
+} from './colors-object-detector.js'
 
 export interface ProtectedColorMapping {
   pattern: RegExp
@@ -37,7 +41,7 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
     name: config.name,
     description: config.description,
     type: 'regex',
-    
+
     execute(content: string): TransformResult {
       // Apply content filter if provided
       if (config.contentFilter && !config.contentFilter(content)) {
@@ -47,27 +51,27 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
           hasChanges: false,
         }
       }
-      
+
       let transformed = content
       const changes: TransformResult['changes'] = []
-      
+
       // Apply each mapping pattern with protection
       for (const mapping of config.mappings) {
-        const shouldProtectStyles = config.globalProtection !== false && 
-                                   mapping.respectStyleObjects !== false
-        const shouldProtectColors = config.globalProtection !== false && 
-                                   mapping.respectColorsObjects !== false
-        
+        const shouldProtectStyles =
+          config.globalProtection !== false && mapping.respectStyleObjects !== false
+        const shouldProtectColors =
+          config.globalProtection !== false && mapping.respectColorsObjects !== false
+
         if (shouldProtectStyles || shouldProtectColors) {
           let protectedReplace
-          
+
           if (shouldProtectStyles && shouldProtectColors) {
             // Use combined protection for both style and colors objects
             const styleProtection = createStyleObjectProtection()
             const colorsProtection = createColorsObjectProtection()
             const combinedProtection = createCombinedProtection(styleProtection, colorsProtection)
-            
-            protectedReplace = function(content: string): string {
+
+            protectedReplace = function (content: string): string {
               return content.replace(mapping.pattern, (match, ...args) => {
                 const offset = args[args.length - 2]
                 if (typeof offset === 'number') {
@@ -76,7 +80,7 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
                     return match // Return original match unchanged
                   }
                 }
-                
+
                 if (typeof mapping.replacement === 'function') {
                   return (mapping.replacement as Function)(match, ...args)
                 }
@@ -90,10 +94,10 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
             // Use colors object protection only
             protectedReplace = createColorsProtectedReplacer(mapping.pattern, mapping.replacement)
           }
-          
+
           const originalContent = transformed
           transformed = protectedReplace(transformed)
-          
+
           // Check if any changes were made
           if (transformed !== originalContent) {
             changes.push({
@@ -113,13 +117,13 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
           }
         }
       }
-      
+
       return {
         content: transformed,
         changes,
         hasChanges: changes.length > 0,
       }
-    }
+    },
   }
 }
 
@@ -127,14 +131,16 @@ export function createProtectedRegexTransform(config: ProtectedRegexTransformCon
  * Convert standard ColorMapping to ProtectedColorMapping
  * Utility for migrating existing transforms
  */
-export function makeProtected(mappings: Array<{
-  pattern: RegExp
-  replacement: string
-  description: string
-}>): ProtectedColorMapping[] {
-  return mappings.map(mapping => ({
+export function makeProtected(
+  mappings: Array<{
+    pattern: RegExp
+    replacement: string
+    description: string
+  }>
+): ProtectedColorMapping[] {
+  return mappings.map((mapping) => ({
     ...mapping,
     respectStyleObjects: true,
-    respectColorsObjects: true
+    respectColorsObjects: true,
   }))
 }

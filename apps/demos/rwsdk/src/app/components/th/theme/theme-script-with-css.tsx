@@ -4,7 +4,10 @@
  */
 
 // Mini theme registry for script
-const themes: Record<string, { light: Record<string, string>; dark: Record<string, string> }> = {
+const themes: Record<
+  string,
+  { light: Record<string, string>; dark: Record<string, string> }
+> = {
   orange: {
     light: {
       background: 'oklch(1 0 0)',
@@ -26,7 +29,7 @@ const themes: Record<string, { light: Record<string, string>; dark: Record<strin
     },
   },
   // Add other themes as needed
-}
+};
 
 export function ThemeScriptWithCSS() {
   const scriptContent = `
@@ -87,7 +90,7 @@ export function ThemeScriptWithCSS() {
         // Silent fail
       }
     })();
-  `.trim()
+  `.trim();
 
-  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />
+  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />;
 }

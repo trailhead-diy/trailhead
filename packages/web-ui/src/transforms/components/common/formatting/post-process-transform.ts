@@ -13,25 +13,27 @@ export const postProcessTransform: Transform = {
   name: 'post-process-formatting',
   description: 'Apply final AST formatting',
   type: 'ast',
-  
+
   execute(content: string): TransformResult {
     const processed = postProcessAstOutput(content)
-    
+
     if (processed !== content) {
       return {
         content: processed,
-        changes: [{
-          type: 'formatting',
-          description: 'Applied post-processing formatting',
-        }],
+        changes: [
+          {
+            type: 'formatting',
+            description: 'Applied post-processing formatting',
+          },
+        ],
         hasChanges: true,
       }
     }
-    
+
     return {
       content,
       changes: [],
       hasChanges: false,
     }
-  }
+  },
 }

@@ -1,6 +1,6 @@
 /**
  * Semantic Enhancement Critical Path Tests
- * 
+ *
  * Tests the addition of semantic token support to components.
  * Verifies AST transformations maintain component functionality.
  */
@@ -30,7 +30,7 @@ const mockSemanticEnhancement = (fileInfo: FileInfo, api: API) => {
       j.importDeclaration(
         [
           j.importSpecifier(j.identifier('isSemanticToken')),
-          j.importSpecifier(j.identifier('createSemanticStyles'))
+          j.importSpecifier(j.identifier('createSemanticStyles')),
         ],
         j.literal('../semantic-tokens.js')
       )
@@ -40,19 +40,14 @@ const mockSemanticEnhancement = (fileInfo: FileInfo, api: API) => {
   // Add color prop to interface/type
   const componentName = fileInfo.path.match(/(\w+)\.tsx$/)?.[1] || 'Component'
   const propsInterface = root.find(j.TSInterfaceDeclaration, {
-    id: { name: `${componentName}Props` }
+    id: { name: `${componentName}Props` },
   })
 
   if (propsInterface.size() > 0) {
-    propsInterface.forEach(path => {
+    propsInterface.forEach((path) => {
       const colorProp = j.tsPropertySignature(
         j.identifier('color'),
-        j.tsTypeAnnotation(
-          j.tsUnionType([
-            j.tsStringKeyword(),
-            j.tsUndefinedKeyword()
-          ])
-        )
+        j.tsTypeAnnotation(j.tsUnionType([j.tsStringKeyword(), j.tsUndefinedKeyword()]))
       )
       colorProp.optional = true
       path.node.body.body.push(colorProp)
@@ -61,11 +56,11 @@ const mockSemanticEnhancement = (fileInfo: FileInfo, api: API) => {
 
   // Add resolution logic to component
   const functionDecl = root.find(j.FunctionDeclaration, {
-    id: { name: componentName }
+    id: { name: componentName },
   })
 
   if (functionDecl.size() > 0) {
-    functionDecl.forEach(path => {
+    functionDecl.forEach((path) => {
       const body = path.node.body
       if (body && body.body.length > 0) {
         const resolution = j.variableDeclaration('const', [
@@ -80,7 +75,7 @@ const mockSemanticEnhancement = (fileInfo: FileInfo, api: API) => {
               j.callExpression(j.identifier('createSemanticStyles'), [j.identifier('color')]),
               j.literal('')
             )
-          )
+          ),
         ])
 
         body.body.unshift(resolution)
@@ -111,10 +106,9 @@ export function Button({ children, className }: ButtonProps) {
 }
 `
 
-      const result = mockSemanticEnhancement(
-        { path: 'button.tsx', source: input },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'button.tsx', source: input }, {
+        jscodeshift: j,
+      } as API)
 
       // Verify imports added
       expect(result).toContain('isSemanticToken')
@@ -149,10 +143,9 @@ export function Badge({ color = 'blue', children }: BadgeProps) {
 }
 `
 
-      const result = mockSemanticEnhancement(
-        { path: 'badge.tsx', source: input },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'badge.tsx', source: input }, {
+        jscodeshift: j,
+      } as API)
 
       // Should add semantic token handling
       expect(result).toContain('isSemanticToken')
@@ -176,10 +169,9 @@ export function Text({ color, children }) {
 }
 `
 
-      const result = mockSemanticEnhancement(
-        { path: 'text.tsx', source: input },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'text.tsx', source: input }, {
+        jscodeshift: j,
+      } as API)
 
       // Should not duplicate
       expect(result.match(/isSemanticToken/g)?.length).toBe(2) // Import + usage
@@ -226,10 +218,9 @@ export const Input = forwardRef<HTMLInputElement, { placeholder?: string }>(
 `
 
       // Transform should handle forwardRef pattern
-      const result = mockSemanticEnhancement(
-        { path: 'input.tsx', source: forwardRefComponent },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'input.tsx', source: forwardRefComponent }, {
+        jscodeshift: j,
+      } as API)
 
       expect(result).toContain('isSemanticToken')
       // Real transform would need to handle forwardRef specifically
@@ -250,10 +241,9 @@ export function Table({ children }) {
 }
 `
 
-      const result = mockSemanticEnhancement(
-        { path: 'table.tsx', source: multiExport },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'table.tsx', source: multiExport }, {
+        jscodeshift: j,
+      } as API)
 
       // Should only enhance the main component
       expect(result).toContain('isSemanticToken')
@@ -282,10 +272,9 @@ export function Alert({ severity, children, onClose }: AlertProps) {
 }
 `
 
-      const result = mockSemanticEnhancement(
-        { path: 'alert.tsx', source: typedComponent },
-        { jscodeshift: j } as API
-      )
+      const result = mockSemanticEnhancement({ path: 'alert.tsx', source: typedComponent }, {
+        jscodeshift: j,
+      } as API)
 
       // Should add color prop with proper typing
       expect(result).toContain('color?:')

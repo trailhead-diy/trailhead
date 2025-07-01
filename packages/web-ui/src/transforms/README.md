@@ -19,7 +19,7 @@ A fully modular transformation system that converts Catalyst UI components to us
 ### Infrastructure
 
 - **Transform System**: 48 implemented transforms + 2 delegated to external tools
-- **Factory Systems**: 6 specialized factories for different transform patterns  
+- **Factory Systems**: 6 specialized factories for different transform patterns
 - **Pipeline Orchestration**: Dependency-aware execution with parallel support
 - **Formatting System**: Composable function pipelines for post-processing
 - **Resolution Builder**: Modular AST pattern system for semantic token resolution
@@ -126,7 +126,7 @@ const result = baseMappingsTransform.execute(content)
 4. **Semantic Enhancement Factory** - Component semantic token integration
 5. **Resolution Builder System** - Modular AST patterns for semantic token resolution
    - IIFE pattern builder for immediate execution contexts
-   - Conditional pattern builder for ternary expressions  
+   - Conditional pattern builder for ternary expressions
    - Simple pattern builder for basic token checks
    - Exported builders: `withIIFEAndColors`, `withConditionalAndColors`, `withSimpleConditional`
 

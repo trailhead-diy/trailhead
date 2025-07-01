@@ -1,6 +1,6 @@
-'use client'
-import { DemoLayout, Item, List } from '@/components/demo-layout'
-import { Button } from '@/components/th/button'
+'use client';
+import { DemoLayout, Item, List } from '@/components/demo-layout';
+import { Button } from '@/components/th/button';
 
 export default function ButtonPage(): React.JSX.Element {
   return (
@@ -11,5 +11,5 @@ export default function ButtonPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  )
+  );
 }

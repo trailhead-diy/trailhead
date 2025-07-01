@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Button, Select } from '../'
-import { cn } from '../utils/cn'
-import { themePresets } from './presets'
-import { useTheme } from './theme-provider'
+import { useEffect, useState } from 'react';
+import { Button, Select } from '../';
+import { cn } from '../utils/cn';
+import { themePresets } from './presets';
+import { useTheme } from './theme-provider';
 
 interface ThemeSwitcherProps {
-  className?: string
-  showDarkModeToggle?: boolean
-  showQuickSelect?: boolean
-  maxQuickSelectThemes?: number
+  className?: string;
+  showDarkModeToggle?: boolean;
+  showQuickSelect?: boolean;
+  maxQuickSelectThemes?: number;
 }
 
 /**
@@ -25,28 +25,30 @@ export const ThemeSwitcher = ({
   showQuickSelect = true,
   maxQuickSelectThemes = 5,
 }: ThemeSwitcherProps) => {
-  const { currentTheme, isDark, themes, setTheme, toggleDarkMode } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { currentTheme, isDark, themes, setTheme, toggleDarkMode } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   // Get theme display names from presets
   const getThemeDisplayName = (themeName: string): string => {
     // Check if it's a preset theme
-    const presetName = Object.keys(themePresets).find((key) => key === themeName)
+    const presetName = Object.keys(themePresets).find(
+      (key) => key === themeName,
+    );
     if (presetName) {
-      return presetName.charAt(0).toUpperCase() + presetName.slice(1)
+      return presetName.charAt(0).toUpperCase() + presetName.slice(1);
     }
     // For custom themes, just capitalize the name
-    return themeName.charAt(0).toUpperCase() + themeName.slice(1)
-  }
+    return themeName.charAt(0).toUpperCase() + themeName.slice(1);
+  };
 
   const themeOptions = themes.map((theme) => ({
     value: theme,
     label: getThemeDisplayName(theme),
-  }))
+  }));
 
   // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
@@ -54,20 +56,22 @@ export const ThemeSwitcher = ({
       <div
         className={cn(
           'fixed top-4 right-4 z-50 flex items-center gap-3 rounded-lg bg-card/95 backdrop-blur-sm border border-border shadow-lg p-3',
-          className
+          className,
         )}
       >
         <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
-        {showDarkModeToggle && <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />}
+        {showDarkModeToggle && (
+          <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
+        )}
       </div>
-    )
+    );
   }
 
   return (
     <div
       className={cn(
         'fixed top-4 right-4 z-50 flex items-center gap-3 rounded-lg bg-card/95 backdrop-blur-sm border border-border shadow-lg p-3',
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2">
@@ -88,13 +92,17 @@ export const ThemeSwitcher = ({
 
       {/* Dark mode toggle */}
       {showDarkModeToggle && (
-        <Button onClick={toggleDarkMode} outline className="px-3 py-1.5 text-xs">
+        <Button
+          onClick={toggleDarkMode}
+          outline
+          className="px-3 py-1.5 text-xs"
+        >
           {isDark ? '☀️ Light' : '🌙 Dark'}
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 /**
  * Theme Preview Component
@@ -102,7 +110,7 @@ export const ThemeSwitcher = ({
  * Shows how different components look with the current theme
  */
 export const ThemePreview = () => {
-  const { currentTheme, isDark } = useTheme()
+  const { currentTheme, isDark } = useTheme();
 
   return (
     <div className="z space-y-6 rounded-lg border border-border bg-card p-6">
@@ -113,7 +121,8 @@ export const ThemePreview = () => {
           {isDark ? 'dark' : 'light'} mode)
         </p>
         <p className="text-muted-foreground">
-          All components automatically adapt to the selected theme without any code changes.
+          All components automatically adapt to the selected theme without any
+          code changes.
         </p>
       </div>
 
@@ -133,13 +142,27 @@ export const ThemePreview = () => {
       <div className="space-y-2">
         <h4 className="text-sm font-medium">Color System</h4>
         <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-          <div className="rounded bg-primary p-3 text-primary-foreground">Primary</div>
-          <div className="rounded bg-secondary p-3 text-secondary-foreground">Secondary</div>
-          <div className="rounded bg-accent p-3 text-accent-foreground">Accent</div>
-          <div className="rounded bg-muted p-3 text-muted-foreground">Muted</div>
-          <div className="rounded border bg-card p-3 text-card-foreground">Card</div>
-          <div className="rounded border bg-popover p-3 text-popover-foreground">Popover</div>
-          <div className="rounded bg-destructive p-3 text-white">Destructive</div>
+          <div className="rounded bg-primary p-3 text-primary-foreground">
+            Primary
+          </div>
+          <div className="rounded bg-secondary p-3 text-secondary-foreground">
+            Secondary
+          </div>
+          <div className="rounded bg-accent p-3 text-accent-foreground">
+            Accent
+          </div>
+          <div className="rounded bg-muted p-3 text-muted-foreground">
+            Muted
+          </div>
+          <div className="rounded border bg-card p-3 text-card-foreground">
+            Card
+          </div>
+          <div className="rounded border bg-popover p-3 text-popover-foreground">
+            Popover
+          </div>
+          <div className="rounded bg-destructive p-3 text-white">
+            Destructive
+          </div>
           <div className="rounded border-2 border-border p-3">Border</div>
         </div>
       </div>
@@ -198,5 +221,5 @@ export const ThemePreview = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

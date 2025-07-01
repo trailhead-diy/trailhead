@@ -24,11 +24,11 @@ pnpm trailhead-ui install
 Create a new file `src/app/components/layout.tsx`:
 
 ```tsx
-import { ThemeProvider } from '@/app/components/th'
+import { ThemeProvider } from "@/app/components/th";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider>{children}</ThemeProvider>
-)
+);
 ```
 
 ### 3. Update Home Page
@@ -36,15 +36,15 @@ export const Layout = ({ children }: { children: React.ReactNode }) => (
 Update `src/app/pages/Home.tsx`:
 
 ```tsx
-import { RequestInfo } from 'rwsdk/worker'
-import { Layout } from '../components/layout'
+import { RequestInfo } from "rwsdk/worker";
+import { Layout } from "../components/layout";
 
 export function Home({ ctx }: RequestInfo) {
   return (
     <Layout>
       <h1>Hello World</h1>
     </Layout>
-  )
+  );
 }
 ```
 
@@ -67,7 +67,7 @@ export default defineConfig({
       viteEnvironment: { name: "worker" },
     }),
     redwood(),
-    tailwindcss()
+    tailwindcss(),
   ],
 });
 ```
@@ -81,7 +81,7 @@ Create a new file `src/app/styles.css`:
 
 @theme {
   --font-sans: Inter, sans-serif;
-  --font-sans--font-feature-settings: 'cv11';
+  --font-sans--font-feature-settings: "cv11";
 
   /* Define semantic colors for Tailwind utilities */
   --color-background: var(--background);
@@ -160,11 +160,11 @@ Create a new file `src/app/styles.css`:
   }
 
   /* Ensure sidebar has immediate background */
-  nav:has([data-slot='sidebar']) {
+  nav:has([data-slot="sidebar"]) {
     background-color: var(--card, oklch(100% 0 0));
   }
 
-  .dark nav:has([data-slot='sidebar']) {
+  .dark nav:has([data-slot="sidebar"]) {
     background-color: var(--card, oklch(21% 0.006 285.885));
   }
 }

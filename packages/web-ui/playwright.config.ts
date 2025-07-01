@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Playwright Configuration
- * 
+ *
  * - Type safety with TypeScript
  * - Clear separation of concerns (E2E vs unit tests)
  * - Performance optimization (parallel execution, smart retries)
@@ -39,32 +39,31 @@ export default defineConfig({
     // Base URL for relative navigation
     baseURL: 'http://localhost:3000',
 
-    
     // Collect trace on first retry for debugging
     trace: 'on-first-retry',
-    
+
     // Screenshot on failure
     screenshot: 'only-on-failure',
-    
+
     // Video on first retry
     video: 'on-first-retry',
-    
+
     // Viewport size (standard desktop)
     viewport: { width: 1280, height: 720 },
-    
+
     // Action timeout (30 seconds)
     actionTimeout: 30 * 1000,
-    
+
     // Navigation timeout (30 seconds)
     navigationTimeout: 30 * 1000,
   },
-  
+
   // Test timeout (2 minutes per test)
   timeout: 2 * 60 * 1000,
-  
+
   // Global setup/teardown timeout
   globalTimeout: 10 * 60 * 1000,
-  
+
   // Configure projects for different browsers
   projects: [
     {

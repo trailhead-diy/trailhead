@@ -2,9 +2,8 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
 
 export const authLayoutSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'AuthLayout',
-  detectPattern: (content) => 
-    content.includes('AuthLayout') && 
-    content.includes('export function AuthLayout'),
+  detectPattern: (content) =>
+    content.includes('AuthLayout') && content.includes('export function AuthLayout'),
   defaultColor: 'zinc',
   typePattern: 'prop',
   hasColorsObject: false,
@@ -41,5 +40,5 @@ export const authLayoutSemanticEnhancement = {
     return null
   },
   attributesToAdd: [],
-  transformImports: true
+  transformImports: true,
 }

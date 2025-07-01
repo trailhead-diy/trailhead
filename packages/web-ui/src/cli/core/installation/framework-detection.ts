@@ -5,7 +5,12 @@ import { Ok, Err } from './types.js'
 
 export type FrameworkType = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react'
 
-export const VALID_FRAMEWORKS: readonly FrameworkType[] = ['nextjs', 'vite', 'redwood-sdk', 'generic-react'] as const
+export const VALID_FRAMEWORKS: readonly FrameworkType[] = [
+  'nextjs',
+  'vite',
+  'redwood-sdk',
+  'generic-react',
+] as const
 
 export interface FrameworkInfo {
   readonly type: FrameworkType

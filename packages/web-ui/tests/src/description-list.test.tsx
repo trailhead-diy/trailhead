@@ -1,5 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { DescriptionList, DescriptionTerm, DescriptionDetails } from '../../src/components/description-list'
+import {
+  DescriptionList,
+  DescriptionTerm,
+  DescriptionDetails,
+} from '../../src/components/description-list'
 import { describe, expect, it } from 'vitest'
 
 describe('DescriptionList Components', () => {

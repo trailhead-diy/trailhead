@@ -7,7 +7,9 @@ Trailhead UI now supports framework-specific dependency installation. This means
 The installation system detects your framework and installs only the required dependencies:
 
 ### Core Dependencies (All Frameworks)
+
 These dependencies are installed for all frameworks:
+
 - `@headlessui/react` - UI components
 - `@heroicons/react` - Icon library
 - `framer-motion` - Animation library
@@ -20,12 +22,15 @@ These dependencies are installed for all frameworks:
 ### Framework-Specific Dependencies
 
 #### Vite & RedwoodSDK
+
 - `@tailwindcss/vite` - Tailwind CSS Vite plugin for optimal performance
 
 #### Next.js
+
 - No additional dependencies (uses Next.js built-in CSS support)
 
 #### Generic React
+
 - No additional dependencies
 
 ## Installation Examples
@@ -52,6 +57,7 @@ trailhead-ui install --dry-run
 ```
 
 This will show you:
+
 - Which dependencies would be added
 - Which files would be installed
 - No actual changes will be made

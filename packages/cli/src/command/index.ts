@@ -4,7 +4,7 @@ export type {
   CommandOption,
   CommandPhase,
   InteractiveOptions,
-} from './types.js'
+} from './types.js';
 
 export {
   createCommand,
@@ -15,7 +15,7 @@ export {
   withGlobalOptions,
   displaySummary,
   confirmAction,
-} from './base.js'
+} from './base.js';
 
 export {
   executeInteractiveCommand as executeInteractive,
@@ -24,13 +24,18 @@ export {
   executeSubprocess,
   executeBatch,
   executeWithConfiguration,
-} from './patterns.js'
+} from './patterns.js';
 
-export type { CommandOptions, CommandConfig, CommandAction, CommandValidator } from './base.js'
+export type {
+  CommandOptions,
+  CommandConfig,
+  CommandAction,
+  CommandValidator,
+} from './base.js';
 
 export type {
   InteractiveCommandOptions,
   FileSystemOperation,
   SubprocessConfig,
   ConfigurationOptions,
-} from './patterns.js'
+} from './patterns.js';

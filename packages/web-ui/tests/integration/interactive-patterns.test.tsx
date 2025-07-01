@@ -2,15 +2,15 @@
  * KNOWN LIMITATIONS WITH HEADLESS UI + TESTING LIBRARY:
  * All tests in this file are skipped due to complex interactions between multiple
  * Headless UI v2 components that don't work reliably in jsdom:
- * 
+ *
  * 1. Dropdown + Form interactions require proper focus management
  * 2. Modal dialogs need real browser event propagation for proper behavior
  * 3. Multi-step wizards with complex state don't update synchronously
  * 4. RadioGroup and Select components need browser-level event handling
- * 
+ *
  * These patterns work correctly in production but require browser-based testing
  * (Playwright/Cypress) for reliable automated testing.
- * 
+ *
  * See: https://github.com/tailwindlabs/headlessui/issues/3294
  */
 
