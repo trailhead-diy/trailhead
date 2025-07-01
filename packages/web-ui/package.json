@@ -176,7 +176,11 @@
       "**/*.d.ts"
     ]
   },
-  "packageManager": "pnpm@10.12.1+sha256.889bac470ec93ccc3764488a19d6ba8f9c648ad5e50a9a6e4be3768a5de387a3",
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "lint-staged": {
     "**/*.{ts,tsx}": [
       "oxlint '{src,scripts,tests}/**/*.{ts,tsx}' --fix",
