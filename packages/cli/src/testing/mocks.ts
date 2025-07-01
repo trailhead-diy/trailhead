@@ -180,6 +180,217 @@ export function mockFileSystem(
   };
 }
 
+export interface MockFileSystemOptions {
+  /**
+   * Initial files to populate the mock filesystem with
+   * Keys should use forward slashes for consistency
+   */
+  initialFiles?: Record<string, string>;
+  
+  /**
+   * Initial directories to create
+   * Will be created with forward slashes and normalized
+   */
+  initialDirectories?: string[];
+  
+  /**
+   * Whether to simulate filesystem errors
+   */
+  simulateErrors?: boolean;
+  
+  /**
+   * Case sensitivity (Windows is case-insensitive)
+   */
+  caseSensitive?: boolean;
+}
+
+export interface EnhancedMockFileSystem extends FileSystem {
+  // Additional methods for test control
+  addFile: (path: string, content: string) => void;
+  addDirectory: (path: string) => void;
+  simulateError: (operation: string, path: string, error: any) => void;
+  getStoredPaths: () => string[];
+}
+
+/**
+ * Create an enhanced mock filesystem with additional testing features
+ * 
+ * @example
+ * ```ts
+ * const fs = createEnhancedMockFileSystem({
+ *   initialFiles: {
+ *     'project/package.json': JSON.stringify({ name: 'test' }),
+ *     'project/src/index.ts': 'console.log("Hello")'
+ *   },
+ *   simulateErrors: true
+ * });
+ * 
+ * // Add files dynamically
+ * fs.addFile('project/new-file.ts', 'export const newFile = true;');
+ * 
+ * // Simulate errors
+ * fs.simulateError('readFile', 'project/error.txt', { code: 'PERMISSION_DENIED' });
+ * ```
+ */
+export function createEnhancedMockFileSystem(
+  options: MockFileSystemOptions = {},
+): EnhancedMockFileSystem {
+  const { 
+    initialFiles = {}, 
+    initialDirectories = [], 
+    simulateErrors = false,
+    caseSensitive = process.platform !== 'win32'
+  } = options;
+
+  // Start with the basic mock filesystem
+  const basicFs = mockFileSystem(initialFiles);
+  
+  // Get the internal maps (assuming they're accessible)
+  const files = basicFs.getFiles!();
+  const directories = basicFs.getDirectories!();
+  
+  // Add initial directories
+  for (const dir of initialDirectories) {
+    directories.add(normalizePath(dir));
+  }
+
+  // Error simulation
+  const errorSimulations = new Map<string, any>();
+  
+  const simulateError = (operation: string, path: string, error: any) => {
+    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
+    errorSimulations.set(`${operation}:${normalizedPath}`, error);
+  };
+  
+  const checkForSimulatedError = (operation: string, path: string): any | null => {
+    if (!simulateErrors) return null;
+    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
+    return errorSimulations.get(`${operation}:${normalizedPath}`) || null;
+  };
+
+  // Override filesystem methods to include error simulation
+  const enhancedFs: EnhancedMockFileSystem = {
+    ...basicFs,
+    
+    exists: async (path: string): Promise<Result<boolean>> => {
+      const error = checkForSimulatedError('exists', path);
+      if (error) return err(error);
+      return basicFs.exists(path);
+    },
+
+    readFile: async (path: string): Promise<Result<string>> => {
+      const error = checkForSimulatedError('readFile', path);
+      if (error) return err(error);
+      return basicFs.readFile(path);
+    },
+
+    writeFile: async (path: string, content: string): Promise<Result<void>> => {
+      const error = checkForSimulatedError('writeFile', path);
+      if (error) return err(error);
+      return basicFs.writeFile(path, content);
+    },
+
+    // Enhanced test utilities
+    addFile: (path: string, content: string) => {
+      const normalized = normalizePath(path);
+      files.set(normalized, content);
+      
+      // Add parent directories
+      const parts = normalized.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+    },
+
+    addDirectory: (path: string) => {
+      const normalized = normalizePath(path);
+      directories.add(normalized);
+      
+      // Add parent directories
+      const parts = normalized.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+    },
+
+    simulateError,
+
+    getStoredPaths: () => {
+      const allPaths = new Set<string>();
+      for (const path of files.keys()) {
+        allPaths.add(path);
+      }
+      for (const path of directories) {
+        allPaths.add(path);
+      }
+      return Array.from(allPaths).sort();
+    },
+
+    clear: () => {
+      files.clear();
+      directories.clear();
+      errorSimulations.clear();
+    },
+  };
+
+  return enhancedFs;
+}
+
+/**
+ * Create a mock filesystem with common test files
+ */
+export function createTestMockFileSystem(): EnhancedMockFileSystem {
+  return createEnhancedMockFileSystem({
+    initialFiles: {
+      'project/package.json': JSON.stringify({ 
+        name: 'test-project', 
+        version: '1.0.0',
+        dependencies: { react: '^18.0.0' }
+      }),
+      'project/src/index.ts': 'console.log("Hello World");',
+      'project/src/components/button.tsx': 'export const Button = () => <button />;',
+      'project/README.md': '# Test Project\n\nA test project for mock filesystem.',
+    },
+    initialDirectories: ['project/dist', 'project/node_modules']
+  });
+}
+
+/**
+ * Create a mock filesystem for CLI package testing
+ */
+export function createCLIMockFileSystem(): EnhancedMockFileSystem {
+  return createEnhancedMockFileSystem({
+    initialFiles: {
+      'cli-project/package.json': JSON.stringify({
+        name: 'test-cli',
+        version: '1.0.0',
+        bin: { 'test-cli': './dist/index.js' },
+        dependencies: { '@trailhead/cli': 'workspace:*' }
+      }),
+      'cli-project/src/index.ts': 'import { createCommand } from "@trailhead/cli";',
+      'cli-project/src/commands/build.ts': 'export const buildCommand = createCommand();',
+      'cli-project/tsconfig.json': JSON.stringify({ compilerOptions: { target: 'es2020' } }),
+    }
+  });
+}
+
+/**
+ * Create a mock filesystem with cross-platform path testing
+ */
+export function createCrossPlatformMockFileSystem(): EnhancedMockFileSystem {
+  return createEnhancedMockFileSystem({
+    initialFiles: {
+      // Unix-style paths
+      'unix/project/src/index.ts': 'console.log("Unix");',
+      // Windows-style paths (will be normalized)
+      'windows\\project\\src\\index.ts': 'console.log("Windows");',
+      // Mixed separators
+      'mixed/project\\src/index.ts': 'console.log("Mixed");',
+    },
+    caseSensitive: false // Test Windows behavior
+  });
+}
+
 /**
  * Create a mock logger for testing
  */
