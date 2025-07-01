@@ -87,6 +87,7 @@ describe('User Interactions - Critical User Behavior', () => {
         const [isLoading, setIsLoading] = React.useState(false)
 
         const handleSubmit = async () => {
+          if (isLoading) return // Prevent double calls
           setIsLoading(true)
           await onSubmit()
           // Simulate async operation
