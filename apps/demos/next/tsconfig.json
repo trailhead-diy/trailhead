@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    // Target modern JavaScript for better performance
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    // JavaScript support
+    "allowJs": true,
+    "skipLibCheck": true,
+
+    // Strict type checking for better code quality
+    "strict": true,
+    "noEmit": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Module system
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // JSX
+    "jsx": "preserve",
+
+    // Performance
+    "incremental": true,
+
+    // Next.js plugin
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "allowImportingTsExtensions": null,
+
+    // Path mapping
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
