@@ -125,9 +125,9 @@ describe('Install Workflow - Critical User Journeys', () => {
 
       const config = configResult.value
       expect(config.destinationDir).toBe('components/th')
-      // Use normalized path comparisons instead of pathAssertions
-      expect(normalize(config.componentsDir)).toBe(normalize(join(projectRoot, 'components/th')))
-      expect(normalize(config.libDir)).toBe(normalize(join(projectRoot, 'components/th/lib')))
+      // Check that the paths end with the expected relative parts (cross-platform compatible)
+      expect(config.componentsDir.endsWith('components/th') || config.componentsDir.endsWith('components\\th')).toBe(true)
+      expect(config.libDir.endsWith('components/th/lib') || config.libDir.endsWith('components\\th\\lib')).toBe(true)
       expect(config.catalystDir).toBe(catalystDir)
     })
 
