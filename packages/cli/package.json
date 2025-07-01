@@ -39,7 +39,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:coverage": "vitest --coverage",
     "lint": "oxlint",
     "types": "tsc --noEmit",

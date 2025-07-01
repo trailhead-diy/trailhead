@@ -50,7 +50,7 @@
     "lint": "oxlint",
     "lint:fix": "pnpm run lint --fix",
     "fix:all": "pnpm run format && npm run lint:fix",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:coverage": "c8 --reporter=text --reporter=html  vitest",
     "test:cov": "c8 --reporter=text-summary vitest",
     "test:debug": "VITEST_CONSOLE_DEBUG=true vitest",

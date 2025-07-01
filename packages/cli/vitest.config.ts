@@ -8,7 +8,6 @@ const packageSpecificConfig = defineConfig({
   test: {
     environment: 'node',
     coverage: {
-      reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules',
         'dist',

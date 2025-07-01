@@ -126,12 +126,25 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Upload coverage to Codecov
+      - name: Check for coverage files
         if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20'
+        id: coverage-check
+        run: |
+          if find . -name "lcov.info" -o -name "coverage-final.json" | grep -q .; then
+            echo "Coverage files found"
+            echo "has-coverage=true" >> $GITHUB_OUTPUT
+          else
+            echo "No coverage files found - tests may not be configured to generate coverage"
+            echo "has-coverage=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20' && steps.coverage-check.outputs.has-coverage == 'true'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+          verbose: true
 
   build:
     name: Build

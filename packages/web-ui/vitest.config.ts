@@ -11,7 +11,6 @@ const packageSpecificConfig = defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'text-summary'],
       include: ['{scripts,src}/**/**/*.{ts,tsx}'],
       exclude: ['**/index.ts', '**/types.ts', '**/*.config.ts', '**/*.setup.ts', '**/*.d.ts'],
     },
