@@ -200,7 +200,7 @@ describe('Color Transform→Revert for All Components', () => {
   let sessionId: string
 
   const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
-  
+
   // Skip tests in CI where catalyst-ui-kit is not available
   const skipInCI = !existsSync(catalystSource)
 

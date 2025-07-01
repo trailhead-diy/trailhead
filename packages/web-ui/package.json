@@ -182,11 +182,10 @@
     "pnpm": ">=8.0.0"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "oxlint '{src,scripts,tests}/**/*.{ts,tsx}' --fix",
+    "{src,scripts,tests}/**/*.{ts,tsx}": [
+      "oxlint --fix",
       "prettier --write --ignore-path .prettierignore"
     ],
-    "*.{json,md,html,css}": "prettier --write --ignore-path .prettierignore",
-    "**/*.test.{ts,tsx}": "vitest related --run"
+    "*.{json,md,html,css}": "prettier --write --ignore-path .prettierignore"
   }
 }

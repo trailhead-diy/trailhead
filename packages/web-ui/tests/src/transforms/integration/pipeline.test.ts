@@ -7,7 +7,7 @@ import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
 describe('transforms pipeline integration', () => {
   let tempDir: string
   const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
-  
+
   // Skip tests in CI where catalyst-ui-kit is not available
   const skipInCI = !existsSync(catalystSource)
 
@@ -56,33 +56,36 @@ describe('transforms pipeline integration', () => {
       expect(transformed).toMatch(/className.*cn\(/)
     })
 
-    it.skipIf(skipInCI).fails('transforms multiple components maintaining consistency', async () => {
-      // Copy multiple components
-      const components = ['button.tsx', 'badge.tsx', 'checkbox.tsx', 'input.tsx']
-      for (const component of components) {
-        await fs.copyFile(path.join(catalystSource, component), path.join(tempDir, component))
+    it.skipIf(skipInCI).fails(
+      'transforms multiple components maintaining consistency',
+      async () => {
+        // Copy multiple components
+        const components = ['button.tsx', 'badge.tsx', 'checkbox.tsx', 'input.tsx']
+        for (const component of components) {
+          await fs.copyFile(path.join(catalystSource, component), path.join(tempDir, component))
+        }
+
+        // Run pipeline
+        await runMainPipeline({
+          srcDir: tempDir,
+          outDir: tempDir,
+          verbose: false,
+          dryRun: false,
+        })
+
+        // Verify all components were transformed
+        for (const component of components) {
+          const content = await fs.readFile(path.join(tempDir, component), 'utf-8')
+
+          // All should use cn utility
+          expect(content).toContain('import { cn }')
+
+          // All should have consistent color tokens
+          expect(content).not.toContain('zinc-950')
+          expect(content).not.toContain('zinc-900')
+        }
       }
-
-      // Run pipeline
-      await runMainPipeline({
-        srcDir: tempDir,
-        outDir: tempDir,
-        verbose: false,
-        dryRun: false,
-      })
-
-      // Verify all components were transformed
-      for (const component of components) {
-        const content = await fs.readFile(path.join(tempDir, component), 'utf-8')
-
-        // All should use cn utility
-        expect(content).toContain('import { cn }')
-
-        // All should have consistent color tokens
-        expect(content).not.toContain('zinc-950')
-        expect(content).not.toContain('zinc-900')
-      }
-    })
+    )
 
     it('preserves component functionality after transformation', async () => {
       // Copy a complex component
