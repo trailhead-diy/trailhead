@@ -7,12 +7,15 @@
       "outputs": ["dist/**", ".next/**"]
     },
     "test": {
-      "dependsOn": ["build"],
-      "outputs": ["coverage/**"],
-      "cache": false
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**", "test-results/**"],
+      "inputs": ["src/**", "tests/**", "*.config.*"],
+      "cache": true
     },
     "lint": {
-      "outputs": []
+      "outputs": [],
+      "inputs": ["src/**", "tests/**", "*.config.*"],
+      "cache": true
     },
     "dev": {
       "cache": false,
@@ -20,7 +23,9 @@
     },
     "types": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "inputs": ["src/**", "tests/**", "*.config.*"],
+      "cache": true
     }
   }
 }
