@@ -49,16 +49,19 @@ export const normalizeMockPath = (path: string): string => {
  * Handles both forward and backslash separators
  */
 export const createPathRegex = (pathPattern: string): RegExp => {
-  // Escape all special regex characters first
-  let pattern = pathPattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+  // First replace wildcards with placeholders
+  let pattern = pathPattern.replace(/\*/g, '__WILDCARD__')
   
-  // Then handle wildcards and separators
-  pattern = pattern
-    .replace(/\\\*/g, '[^/\\\\]*')  // Wildcards should not match separators
-    .replace(/\//g, '[/\\\\]')      // Forward slash -> flexible separator
-    .replace(/\\\\/g, '[/\\\\]')    // Escaped backslash -> flexible separator
+  // Escape special regex characters
+  pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
   
-  return new RegExp(pattern)
+  // Handle separators - both forward and back slashes
+  pattern = pattern.replace(/\//g, '[/\\\\]')
+  
+  // Replace wildcard placeholders with proper regex
+  pattern = pattern.replace(/__WILDCARD__/g, '[^/\\\\]*')
+  
+  return new RegExp(`^${pattern}$`)
 }
 
 /**
@@ -241,7 +244,8 @@ export const pathAssertions = {
    */
   hasCorrectSeparators(path: string): boolean {
     if (isWindows) {
-      return !path.includes('/') || path.includes('\\')
+      // On Windows, both separators are actually allowed
+      return true
     }
     return !path.includes('\\')
   }

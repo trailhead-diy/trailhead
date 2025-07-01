@@ -1,13 +1,31 @@
 import type { FileSystem } from './types.js';
 import { ok, err } from '../core/errors/index.js';
+import { sep, posix, win32 } from 'path';
+
+/**
+ * Normalizes paths for internal storage (always use forward slashes)
+ */
+function normalizePath(path: string): string {
+  // Convert any backslashes to forward slashes for consistent storage
+  return path.split(win32.sep).join(posix.sep);
+}
 
 /**
  * Create an in-memory filesystem for testing
+ * 
+ * Automatically handles cross-platform path differences by normalizing
+ * all paths to forward slashes internally, while accepting both forward
+ * and backward slashes in input paths.
  */
 export function createMemoryFileSystem(
   initialFiles: Record<string, string> = {},
 ): FileSystem {
-  const files = new Map(Object.entries(initialFiles));
+  // Normalize all initial file paths
+  const files = new Map<string, string>();
+  for (const [path, content] of Object.entries(initialFiles)) {
+    files.set(normalizePath(path), content);
+  }
+  
   const directories = new Set<string>();
 
   // Extract directories from initial files
@@ -20,11 +38,13 @@ export function createMemoryFileSystem(
 
   return {
     async exists(path: string) {
-      return ok(files.has(path) || directories.has(path));
+      const normalizedPath = normalizePath(path);
+      return ok(files.has(normalizedPath) || directories.has(normalizedPath));
     },
 
     async readFile(path: string) {
-      const content = files.get(path);
+      const normalizedPath = normalizePath(path);
+      const content = files.get(normalizedPath);
       if (content === undefined) {
         return err({
           code: 'ENOENT',
@@ -37,10 +57,11 @@ export function createMemoryFileSystem(
     },
 
     async writeFile(path: string, content: string) {
-      files.set(path, content);
+      const normalizedPath = normalizePath(path);
+      files.set(normalizedPath, content);
 
       // Add parent directories
-      const parts = path.split('/');
+      const parts = normalizedPath.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
@@ -49,10 +70,11 @@ export function createMemoryFileSystem(
     },
 
     async mkdir(path: string) {
-      directories.add(path);
+      const normalizedPath = normalizePath(path);
+      directories.add(normalizedPath);
 
       // Add parent directories
-      const parts = path.split('/');
+      const parts = normalizedPath.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
@@ -61,7 +83,8 @@ export function createMemoryFileSystem(
     },
 
     async readdir(path: string) {
-      if (!directories.has(path) && path !== '.') {
+      const normalizedPath = normalizePath(path);
+      if (!directories.has(normalizedPath) && normalizedPath !== '.') {
         return err({
           code: 'ENOENT',
           message: `Directory not found: ${path}`,
@@ -71,7 +94,7 @@ export function createMemoryFileSystem(
       }
 
       const entries: string[] = [];
-      const prefix = path === '.' ? '' : path + '/';
+      const prefix = normalizedPath === '.' ? '' : normalizedPath + '/';
 
       // Find all direct children
       for (const filePath of files.keys()) {
@@ -90,7 +113,7 @@ export function createMemoryFileSystem(
       }
 
       for (const dirPath of directories) {
-        if (dirPath.startsWith(prefix) && dirPath !== path) {
+        if (dirPath.startsWith(prefix) && dirPath !== normalizedPath) {
           const relative = dirPath.slice(prefix.length);
           if (!relative.includes('/') && !entries.includes(relative)) {
             entries.push(relative);
@@ -102,7 +125,9 @@ export function createMemoryFileSystem(
     },
 
     async copy(src: string, dest: string) {
-      const content = files.get(src);
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      const content = files.get(normalizedSrc);
       if (content === undefined) {
         return err({
           code: 'ENOENT',
@@ -111,10 +136,10 @@ export function createMemoryFileSystem(
           recoverable: true,
         });
       }
-      files.set(dest, content);
+      files.set(normalizedDest, content);
 
       // Add parent directories for dest
-      const parts = dest.split('/');
+      const parts = normalizedDest.split('/');
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }

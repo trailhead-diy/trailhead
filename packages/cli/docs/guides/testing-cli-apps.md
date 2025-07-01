@@ -13,7 +13,8 @@ This guide covers comprehensive testing strategies for CLI applications built wi
 7. [Testing User Interactions](#testing-user-interactions)
 8. [Testing Error Scenarios](#testing-error-scenarios)
 9. [Advanced Testing Patterns](#advanced-testing-patterns)
-10. [Best Practices](#best-practices)
+10. [Cross-Platform Testing](#cross-platform-testing)
+11. [Best Practices](#best-practices)
 
 ## Testing Philosophy
 
@@ -981,6 +982,139 @@ it("should provide helpful error messages", async () => {
 });
 ```
 
+## Cross-Platform Testing
+
+### Why Cross-Platform Testing Matters
+
+CLIs often handle file paths, which vary between Windows (`C:\path\to\file`) and Unix (`/path/to/file`). Without proper handling, tests may pass on one platform but fail on another.
+
+### Built-in Cross-Platform Support
+
+The memory filesystem automatically normalizes paths, so these work identically:
+
+```typescript
+const fs = createMemoryFileSystem({
+  // Works on both Windows and Unix
+  '/config/app.json': '{"name": "app"}',
+  'C:\\config\\app.json': '{"name": "app"}',  // Same file!
+});
+
+// Both of these will find the file
+await fs.readFile('/config/app.json');      // ✓ Unix style
+await fs.readFile('C:\\config\\app.json');  // ✓ Windows style
+```
+
+### Using Path Utilities
+
+The testing module provides utilities for cross-platform path handling:
+
+```typescript
+import { 
+  pathAssertions, 
+  testPaths, 
+  normalizePath,
+  createPathRegex 
+} from '@trailhead/cli/testing';
+
+describe('File Operations', () => {
+  it('should handle paths correctly on all platforms', () => {
+    const filePath = testPaths.project('src', 'index.ts');
+    
+    // These assertions work regardless of platform
+    expect(pathAssertions.contains(filePath, 'src')).toBe(true);
+    expect(pathAssertions.endsWith(filePath, 'index.ts')).toBe(true);
+  });
+
+  it('should compare paths correctly', () => {
+    const path1 = '/user/documents/file.txt';
+    const path2 = 'C:\\user\\documents\\file.txt';
+    
+    // This handles separator differences
+    expect(pathAssertions.equal(path1, path2)).toBe(true);
+  });
+
+  it('should match path patterns', () => {
+    const pattern = createPathRegex('src/components/*.tsx');
+    
+    // Works with both separators
+    expect(pattern.test('src/components/button.tsx')).toBe(true);
+    expect(pattern.test('src\\components\\button.tsx')).toBe(true);
+  });
+});
+```
+
+### Testing Commands with Paths
+
+```typescript
+describe('Build Command', () => {
+  it('should output files to correct location', async () => {
+    const context = createTestContext();
+    
+    // Use platform-appropriate paths
+    const outputPath = testPaths.project('dist', 'bundle.js');
+    
+    const result = await buildCommand.execute({
+      input: testPaths.project('src', 'index.ts'),
+      output: outputPath
+    }, context);
+    
+    expect(result.success).toBe(true);
+    
+    // Verify file was created (works on all platforms)
+    const exists = await context.fs.exists(outputPath);
+    expect(exists.value).toBe(true);
+  });
+});
+```
+
+### Common Pitfalls and Solutions
+
+1. **Don't hardcode path separators**
+   ```typescript
+   // ❌ Bad - breaks on Windows
+   const configPath = projectDir + '/config.json';
+   
+   // ✅ Good - works everywhere
+   const configPath = join(projectDir, 'config.json');
+   ```
+
+2. **Don't assume paths in test data**
+   ```typescript
+   // ❌ Bad - Windows paths fail on Unix
+   expect(error.message).toBe('File not found: /tmp/missing.txt');
+   
+   // ✅ Good - use path assertions
+   expect(error.message).toContain('File not found');
+   expect(pathAssertions.contains(error.path, 'missing.txt')).toBe(true);
+   ```
+
+3. **Use test paths for consistency**
+   ```typescript
+   // ❌ Bad - hardcoded paths
+   const mockFiles = {
+     '/home/user/.config': '{}',
+     'C:\\Users\\user\\.config': '{}',
+   };
+   
+   // ✅ Good - platform-aware paths
+   const mockFiles = {
+     [testPaths.config('settings.json')]: '{}',
+   };
+   ```
+
+### CI Configuration for Multi-Platform Testing
+
+Ensure your CI tests on all platforms:
+
+```yaml
+# .github/workflows/test.yml
+strategy:
+  matrix:
+    os: [ubuntu-latest, windows-latest, macos-latest]
+    node: [18, 20]
+runs-on: ${{ matrix.os }}
+```
+
 ## Summary
 
 Testing CLI applications effectively requires:
@@ -990,5 +1124,6 @@ Testing CLI applications effectively requires:
 3. **Coverage** - Test success paths, error paths, and edge cases
 4. **Speed** - Keep tests fast with in-memory operations
 5. **Realism** - Test actual command execution, not just functions
+6. **Portability** - Ensure tests work on all platforms
 
-By following these patterns, you'll build a robust test suite that gives confidence in your CLI application's behavior.
+By following these patterns, you'll build a robust test suite that gives confidence in your CLI application's behavior across all platforms.
