@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { sep, join as pathJoin, relative as pathRelative } from 'path'
 import type {
   FileSystem,
   Logger,
@@ -80,16 +81,16 @@ const createMockFileSystem = (): FileSystem & {
     exists: vi.fn().mockImplementation(async (path: string) => {
       // Check if it's a directory or a file
       const isDirectory =
-        mockDirs.has(path) || Array.from(mockFiles.keys()).some((f) => f.startsWith(path + '/'))
+        mockDirs.has(path) || Array.from(mockFiles.keys()).some((f) => f.startsWith(path + sep))
       const isFile = mockFiles.has(path)
       return Ok(isDirectory || isFile)
     }),
     readDir: vi.fn().mockImplementation(async (path: string) => {
       const files = Array.from(mockFiles.keys())
-        .filter((f) => f.startsWith(path + '/'))
-        .map((f) => f.substring(path.length + 1))
-        .filter((f) => !f.includes('/'))
-      return Ok(files)
+        .filter((f) => f.startsWith(path + sep))
+        .map((f) => pathRelative(path, f).split(sep)[0])
+        .filter((f) => f && !f.includes(sep))
+      return Ok([...new Set(files)])
     }),
     readFile: vi.fn().mockImplementation(async (path: string) => {
       const content = mockFiles.get(path)

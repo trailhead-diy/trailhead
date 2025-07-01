@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { sep, join as pathJoin, dirname as pathDirname, resolve as pathResolve } from 'path'
 import type { FileSystem } from '../../../../src/cli/core/filesystem/index.js'
 import type { Logger } from '@trailhead/cli/core'
 import { performInstallation } from '../../../../src/cli/core/installation/index.js'
@@ -28,9 +29,9 @@ describe('Install Workflow Integration', () => {
       glob: vi.fn(),
       isFile: vi.fn(),
       isDirectory: vi.fn(),
-      resolve: vi.fn().mockImplementation((...parts) => parts.join('/')),
-      dirname: vi.fn().mockImplementation((path) => path.split('/').slice(0, -1).join('/')),
-      join: vi.fn().mockImplementation((...parts) => parts.join('/')),
+      resolve: vi.fn().mockImplementation((...parts) => pathResolve(...parts)),
+      dirname: vi.fn().mockImplementation((path) => pathDirname(path)),
+      join: vi.fn().mockImplementation((...parts) => pathJoin(...parts)),
       relative: vi.fn(),
       normalize: vi.fn(),
     }

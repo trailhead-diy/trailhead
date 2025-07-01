@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
+import { join as pathJoin } from 'path'
 import type { FileSystem } from '../../../src/cli/core/installation/types.js'
 import { Ok, Err } from '@trailhead/cli'
 import {
@@ -23,6 +24,9 @@ import {
   type FrameworkType,
   type FrameworkInfo,
 } from '../../../src/cli/core/installation/framework-detection.js'
+
+// Helper to create OS-agnostic test paths
+const testPath = (...segments: string[]) => pathJoin('test', 'project', ...segments)
 
 // Mock FileSystem for testing
 const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSystem => ({
@@ -209,9 +213,10 @@ describe('Framework Detection Tests', () => {
 
   describe('Complete Framework Detection', () => {
     it('should detect Next.js project correctly', async () => {
+      const projectRoot = testPath()
       const mockFs = createMockFileSystem({
-        '/test/project/next.config.js': true,
-        '/test/project/package.json': {
+        [testPath('next.config.js')]: true,
+        [testPath('package.json')]: {
           dependencies: {
             next: '^13.4.0',
             react: '^18.2.0',
@@ -219,7 +224,7 @@ describe('Framework Detection Tests', () => {
         },
       })
 
-      const result = await detectFramework(mockFs, '/test/project')
+      const result = await detectFramework(mockFs, projectRoot)
 
       expect(result.success).toBe(true)
       if (result.success) {
