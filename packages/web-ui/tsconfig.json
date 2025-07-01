@@ -1,0 +1,31 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ES2022"],
+    "jsx": "react-jsx",
+    "types": ["vitest/jsdom", "node", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"],
+      "@scripts/*": ["./scripts/*"]
+    },
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": false,
+    "declarationMap": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+  },
+  "tsc-alias": {
+    "verbose": false,
+    "resolveFullPaths": true,
+    "fileExtensions": {
+      "inputGlob": "{js,jsx,mjs}",
+      "outputCheck": ["js", "json", "jsx", "mjs"]
+    }
+  },
+  "include": ["src/**/*", "vitest.config.ts", "vitest.setup.ts"],
+  "exclude": ["node_modules", "dist", "tests/**/*"]
+}

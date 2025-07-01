@@ -1,0 +1,12 @@
+# Generated files
+dist/
+coverage/
+node_modules/
+
+# Build outputs
+.next/
+.vite/
+temp/
+
+# Exclude catalyst-ui-kit from formatting
+catalyst-ui-kit/
