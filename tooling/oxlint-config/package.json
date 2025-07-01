@@ -1,0 +1,12 @@
+{
+  "name": "@repo/oxlint-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "oxlintrc.json",
+  "files": ["oxlintrc.json"],
+  "scripts": {
+    "build": "echo 'Config package - no build required'",
+    "types": "echo 'Config package - no types to check'",
+    "test": "echo 'Config package - no tests'"
+  }
+}

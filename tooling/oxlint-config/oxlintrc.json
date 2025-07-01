@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oxc-project.github.io/oxlint/schema.json",
+  "rules": {
+    "no-unused-vars": "error",
+    "no-console": "warn",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always"],
+    "no-debugger": "error"
+  },
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "coverage",
+    "*.config.js",
+    "*.config.ts"
+  ]
+}
