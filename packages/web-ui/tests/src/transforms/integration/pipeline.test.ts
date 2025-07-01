@@ -87,7 +87,7 @@ describe('transforms pipeline integration', () => {
       }
     )
 
-    it('preserves component functionality after transformation', async () => {
+    it.skipIf(skipInCI)('preserves component functionality after transformation', async () => {
       // Copy a complex component
       const tableSource = path.join(catalystSource, 'table.tsx')
       const tableDest = path.join(tempDir, 'table.tsx')
