@@ -52,6 +52,15 @@ Focus on high-ROI (Return on Investment) tests:
 - Consider impact across packages when making changes
 - Test related packages when making cross-cutting changes
 
+### Dependency Management
+
+- **Renovate**: Automated dependency updates via GitHub App
+- **Dependency Dashboard**: View all pending updates in GitHub Issues
+- **Security Updates**: Automatically prioritized and labeled
+- **Monorepo Grouping**: Dependencies grouped by package and ecosystem
+- **Major Updates**: Require manual approval via Dependency Dashboard
+- **Schedule**: Monday mornings (4am EST) to minimize disruption
+
 ## Monorepo Overview
 
 Trailhead is a modern Turborepo monorepo containing UI libraries, CLI frameworks, and development tooling. The repository follows best practices for scalable monorepo architecture with shared configurations and optimized build caching.

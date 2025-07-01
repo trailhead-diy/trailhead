@@ -95,6 +95,7 @@ Reusable CLI framework extracted from the UI project:
 Built with modern tooling:
 - **pnpm workspaces** for package management and dependency resolution
 - **Turborepo** for optimized build system with intelligent caching
+- **Renovate** for automated dependency updates and security monitoring
 - **Changesets** for coordinated versioning and releases
 - **TypeScript** for type safety across all packages
 - **OXLint** for fast, modern linting
