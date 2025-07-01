@@ -1,0 +1,9 @@
+node_modules
+.vscode
+dist
+catalyst-ui-kit/
+coverage/
+scripts/prepare-demo-files/
+demo/
+demos/
+pnpm-lock.yaml

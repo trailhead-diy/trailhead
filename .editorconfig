@@ -1,0 +1,70 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# TypeScript and JavaScript
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_style = space
+indent_size = 2
+quote_type = single
+
+# JSON and JSONC
+[*.{json,jsonc}]
+indent_style = space
+indent_size = 2
+
+# YAML
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+max_line_length = 80
+
+# HTML
+[*.html]
+indent_style = space
+indent_size = 2
+
+# CSS and preprocessors
+[*.{css,scss,sass,less}]
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.{sh,bash,zsh}]
+end_of_line = lf
+
+# Windows scripts
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+# Python (if any)
+[*.py]
+indent_size = 4
+
+# Configuration files
+[.{editorconfig,gitignore,gitattributes,prettierrc,eslintrc}]
+indent_style = space
+indent_size = 2
+
+# Package files
+[{package.json,pnpm-lock.yaml,tsconfig.json}]
+indent_style = space
+indent_size = 2

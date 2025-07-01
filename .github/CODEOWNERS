@@ -1,0 +1,26 @@
+# Code Owners for Trailhead UI
+# These owners will be automatically requested for review
+
+# Global owners
+* @esteban-url
+
+# Documentation
+/docs/ @esteban-url
+*.md @esteban-url
+
+# Core library
+/src/components/ @esteban-url
+/src/components/theme/ @esteban-url
+
+# CLI system
+/src/cli/ @esteban-url
+/scripts/ @esteban-url
+
+# Transform system
+/src/transforms/ @esteban-url
+
+# Configuration
+/.github/ @esteban-url
+/tsconfig.json @esteban-url
+/package.json @esteban-url
+/.npmrc @esteban-url

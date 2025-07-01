@@ -1,0 +1,89 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# TypeScript and JavaScript
+*.ts text
+*.tsx text
+*.js text
+*.jsx text
+
+# Configs
+*.json text
+*.jsonc text
+*.yaml text
+*.yml text
+*.toml text
+
+# Documentation
+*.md text
+*.mdx text
+README text
+LICENSE text
+*.txt text
+
+# Web files
+*.html text
+*.css text
+*.scss text
+*.sass text
+*.less text
+
+# Scripts
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Lock files (treat as binary to avoid merge conflicts)
+pnpm-lock.yaml binary
+package-lock.json binary
+yarn.lock binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+
+# Fonts
+*.ttf binary
+*.eot binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+
+# Git
+.gitignore text
+.gitattributes text
+
+# Diff behavior for common files
+*.md diff=markdown
+*.tsx diff=tsx
+*.ts diff=ts
+
+# Exclude files from archive exports
+.husky export-ignore
+.github export-ignore
+docs export-ignore
+tests export-ignore
+scripts export-ignore
+*.test.* export-ignore
+*.spec.* export-ignore
+.eslintrc* export-ignore
+.prettierrc* export-ignore
+tsconfig.*.json export-ignore
+vitest.*.ts export-ignore
+CLAUDE.md export-ignore
