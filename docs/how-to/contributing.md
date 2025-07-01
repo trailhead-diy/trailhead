@@ -1,4 +1,20 @@
-# Contributing to Trailhead
+---
+type: how-to
+title: "How to Contribute to Trailhead"
+description: "Development workflow and contribution guidelines for the Trailhead monorepo"
+prerequisites:
+  - "Node.js 18+ installed"
+  - "PNPM 8+ installed"
+  - "Git knowledge"
+  - "Basic TypeScript familiarity"
+related:
+  - /docs/reference/documentation-standards.md
+  - /docs/reference/writing-guide.md
+  - /packages/cli/docs/README.md
+  - /packages/web-ui/docs/README.md
+---
+
+# How to Contribute to Trailhead
 
 Thank you for contributing to the Trailhead monorepo! This guide covers the development workflow and contribution guidelines.
 

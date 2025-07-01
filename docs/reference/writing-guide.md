@@ -1,3 +1,14 @@
+---
+type: reference
+title: "Writing Documentation - Quick Reference"
+description: "Quick reference guide for writing Diátaxis-compliant documentation in Trailhead"
+related:
+  - /docs/reference/documentation-standards.md
+  - /docs/reference/review-checklist.md
+  - /docs/reference/templates/
+  - /docs/how-to/contributing.md
+---
+
 # Writing Documentation - Quick Reference
 
 Quick reference for writing documentation that follows Diátaxis principles in the Trailhead monorepo.
@@ -171,13 +182,13 @@ related:
 **Bad**: A single doc that tries to be tutorial + reference
 
 ```markdown
-# Getting Started (BAD)
+# Getting Started (BAD EXAMPLE)
 
-First, let's build an app... [tutorial content]
+❌ Build an application step-by-step... [tutorial content mixed in]
 
 ## API Reference
 
-Here are all the functions... [reference content]
+❌ Here are all the functions... [reference content mixed in]
 ```
 
 **Good**: Separate docs for each purpose

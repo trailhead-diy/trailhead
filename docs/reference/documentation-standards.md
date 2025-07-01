@@ -1,3 +1,14 @@
+---
+type: reference
+title: "Documentation Standards - Diátaxis Framework"
+description: "Complete specification of documentation standards and Diátaxis framework implementation for Trailhead"
+related:
+  - /docs/reference/writing-guide.md
+  - /docs/reference/review-checklist.md
+  - /docs/reference/templates/
+  - /docs/README.md
+---
+
 # Documentation Standards - Diátaxis Framework
 
 This guide establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these principles to ensure clarity, discoverability, and usefulness.

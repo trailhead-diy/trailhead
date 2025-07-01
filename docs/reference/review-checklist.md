@@ -1,6 +1,17 @@
+---
+type: reference
+title: "Documentation Review Checklist"
+description: "Comprehensive checklist for reviewing documentation changes following Diátaxis principles"
+related:
+  - /docs/reference/documentation-standards.md
+  - /docs/reference/writing-guide.md
+  - /docs/reference/templates/
+  - /docs/how-to/contributing.md
+---
+
 # Documentation Review Checklist
 
-Use this checklist when reviewing documentation changes in the Trailhead monorepo. All documentation must follow [Diátaxis principles](./DOCUMENTATION_STANDARDS.md).
+Use this checklist when reviewing documentation changes in the Trailhead monorepo. All documentation must follow [Diátaxis principles](./documentation-standards.md).
 
 ## Pre-Review: Automated Checks
 
