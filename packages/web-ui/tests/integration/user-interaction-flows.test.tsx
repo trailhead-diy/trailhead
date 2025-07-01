@@ -88,19 +88,21 @@ describe('User Interactions - Critical User Behavior', () => {
         const isSubmittingRef = React.useRef(false)
 
         const handleSubmit = async () => {
-          // Use ref to prevent race conditions
-          if (isSubmittingRef.current || isLoading) return
+          // Prevent multiple submissions
+          if (isSubmittingRef.current) return
           
           isSubmittingRef.current = true
           setIsLoading(true)
           
-          await onSubmit()
-          
-          // Simulate async operation
-          setTimeout(() => {
-            setIsLoading(false)
-            isSubmittingRef.current = false
-          }, 100)
+          try {
+            await onSubmit()
+          } finally {
+            // Reset after a delay to simulate real async operation
+            setTimeout(() => {
+              setIsLoading(false)
+              isSubmittingRef.current = false
+            }, 100)
+          }
         }
 
         return (
@@ -117,13 +119,15 @@ describe('User Interactions - Critical User Behavior', () => {
       // First click should trigger submit
       await user.click(button)
       
+      // Immediately try to click again (before state updates)
+      await user.click(button)
+      
       // Wait for button to be disabled
       await waitFor(() => {
         expect(button).toBeDisabled()
       })
 
-      // Additional clicks on disabled button should not trigger
-      await user.click(button)
+      // Additional click on disabled button should not trigger
       await user.click(button)
 
       expect(onSubmit).toHaveBeenCalledTimes(1)
