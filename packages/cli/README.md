@@ -69,8 +69,7 @@ npm install github:esteban-url/trailhead#packages/cli
 ## Quick Start
 
 ```typescript
-import { createCLI } from "@trailhead/cli";
-import { ok, err } from "@trailhead/cli/core";
+import { createCLI, Ok, Err } from "@trailhead/cli";
 import { createCommand } from "@trailhead/cli/command";
 
 // Create a CLI application
@@ -87,7 +86,7 @@ const greetCommand = createCommand({
   options: [{ name: "name", alias: "n", type: "string", required: true }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`);
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 
@@ -103,12 +102,12 @@ cli.run(process.argv);
 Result types and error handling utilities:
 
 ```typescript
-import { ok, err, isOk, isErr } from "@trailhead/cli/core";
-import type { Result } from "@trailhead/cli/core";
+import { Ok, Err, isOk, isErr } from "@trailhead/cli";
+import type { Result } from "@trailhead/cli";
 
 // Create results
-const success = ok(42);
-const failure = err(new Error("Something went wrong"));
+const success = Ok(42);
+const failure = Err(new Error("Something went wrong"));
 
 // Check results
 if (isOk(result)) {
@@ -249,10 +248,13 @@ pnpm lint
 ## Basic CLI Application
 
 ```typescript
-import { createCLI } from "@trailhead/cli";
-import { createCommand } from "@trailhead/cli/command";
-import { createFileSystem } from "@trailhead/cli/filesystem";
-import { ok, err } from "@trailhead/cli/core";
+import {
+  createCLI,
+  Ok,
+  Err,
+  createCommand,
+  createFileSystem,
+} from "@trailhead/cli";
 
 const cli = createCLI({
   name: "my-app",
@@ -274,18 +276,18 @@ const configCommand = createCommand({
         const result = await fs.readFile("./config.json");
 
         if (!result.success) {
-          return err(new Error("Config file not found"));
+          return Err(new Error("Config file not found"));
         }
 
         const config = JSON.parse(result.value);
         const value = config[options.key];
 
         if (value === undefined) {
-          return err(new Error(`Key "${options.key}" not found`));
+          return Err(new Error(`Key "${options.key}" not found`));
         }
 
         context.logger.info(`${options.key}: ${value}`);
-        return ok(undefined);
+        return Ok(undefined);
       },
     }),
     createCommand({
@@ -316,7 +318,7 @@ const configCommand = createCommand({
         }
 
         context.logger.success(`Set ${options.key} = ${options.value}`);
-        return ok(undefined);
+        return Ok(undefined);
       },
     }),
   ],
@@ -336,7 +338,7 @@ cli.addCommand(configCommand).addCommand(
 
       const exists = await fs.exists("./config.json");
       if (exists.success && exists.value && !options.force) {
-        return err(new Error("Already initialized. Use --force to overwrite."));
+        return Err(new Error("Already initialized. Use --force to overwrite."));
       }
 
       const config = { template: options.template, created: new Date() };
@@ -346,11 +348,11 @@ cli.addCommand(configCommand).addCommand(
       );
 
       if (!result.success) {
-        return err(new Error(`Failed: ${result.error.message}`));
+        return Err(new Error(`Failed: ${result.error.message}`));
       }
 
       context.logger.success("Initialized successfully!");
-      return ok(undefined);
+      return Ok(undefined);
     },
   }),
 );

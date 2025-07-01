@@ -77,8 +77,7 @@ export const cli = createCLI({
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { createCommand } from "@trailhead/cli/command";
-import { ok } from "@trailhead/cli/core";
+import { createCommand, Ok } from "@trailhead/cli";
 
 export const greetCommand = createCommand({
   name: "greet",
@@ -102,7 +101,7 @@ export const greetCommand = createCommand({
   action: async (options, context) => {
     const greeting = `Hello, ${options.name}${options.enthusiastic ? "!!!" : "!"}`;
     context.logger.success(greeting);
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 ```
@@ -112,10 +111,8 @@ export const greetCommand = createCommand({
 Create `src/commands/todo.ts`:
 
 ```typescript
-import { createCommand } from "@trailhead/cli/command";
-import { ok, err } from "@trailhead/cli/core";
-import { prompt, select } from "@trailhead/cli/prompts";
-import type { CommandContext } from "@trailhead/cli/command";
+import { createCommand, Ok, Err, prompt, select } from "@trailhead/cli";
+import type { CommandContext, Result } from "@trailhead/cli";
 
 interface Todo {
   id: string;
@@ -133,7 +130,7 @@ async function loadTodos(context: CommandContext): Promise<Result<TodoStore>> {
   const result = await context.fs.readJson<TodoStore>(".todos.json");
   if (!result.success) {
     // If file doesn't exist, return empty store
-    return ok({ todos: [] });
+    return Ok({ todos: [] });
   }
   return result;
 }
@@ -158,7 +155,7 @@ export const listCommand = createCommand({
     const { todos } = result.value;
     if (todos.length === 0) {
       context.logger.info('No todos found. Create one with "todo add"');
-      return ok(undefined);
+      return Ok(undefined);
     }
 
     context.logger.info("Your todos:");
@@ -170,7 +167,7 @@ export const listCommand = createCommand({
       context.logger.info(style(`  ${status} ${index + 1}. ${todo.title}`));
     });
 
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 
@@ -218,7 +215,7 @@ export const addCommand = createCommand({
     }
 
     context.logger.success(`Added: "${title}"`);
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 
@@ -238,7 +235,7 @@ export const completeCommand = createCommand({
 
     if (incompleteTodos.length === 0) {
       context.logger.info("No incomplete todos!");
-      return ok(undefined);
+      return Ok(undefined);
     }
 
     // Let user select a todo
@@ -253,7 +250,7 @@ export const completeCommand = createCommand({
     // Mark as completed
     const todo = store.todos.find((t) => t.id === selected);
     if (!todo) {
-      return err(new Error("Todo not found"));
+      return Err(new Error("Todo not found"));
     }
     todo.completed = true;
 
@@ -264,7 +261,7 @@ export const completeCommand = createCommand({
     }
 
     context.logger.success(`Completed: "${todo.title}"`);
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 
@@ -425,7 +422,7 @@ if (!dataResult.success) {
   return dataResult;
 }
 
-return ok(dataResult.value);
+return Ok(dataResult.value);
 ```
 
 ### Validation Pipeline
@@ -449,7 +446,7 @@ const validateEmail = createValidationPipeline([
 const result = validateEmail(options.email);
 if (!result.success) {
   context.logger.error(result.error.message);
-  return err(result.error);
+  return Err(result.error);
 }
 ```
 
