@@ -1,6 +1,6 @@
 import type { CommandContext } from '../command/index.js';
 import type { FileSystem } from '../filesystem/index.js';
-import type { Logger } from '../core/logger.js';
+import type { Logger } from '../core/index.js';
 import { mockFileSystem, mockLogger } from './mocks.js';
 
 export interface TestContextOptions {
@@ -8,6 +8,7 @@ export interface TestContextOptions {
   filesystem?: FileSystem;
   logger?: Logger;
   verbose?: boolean;
+  args?: string[];
 }
 
 /**
@@ -21,6 +22,7 @@ export function createTestContext(
     logger: options.logger ?? mockLogger(),
     verbose: options.verbose ?? false,
     fs: options.filesystem ?? mockFileSystem(),
+    args: options.args ?? [],
   };
 }
 

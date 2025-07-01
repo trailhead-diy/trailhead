@@ -3,7 +3,7 @@ import type {
   Command as CommandInterface,
   CommandContext,
 } from './command/index.js';
-import { createLogger } from './core/logger.js';
+import { createDefaultLogger } from './core/logger.js';
 import { createFileSystem } from './filesystem/index.js';
 
 export interface CLIConfig {
@@ -66,12 +66,18 @@ export function createCLI(config: CLIConfig): CLI {
         cmd.option('-v, --verbose', 'show detailed output', false);
 
         // Set up action handler
-        cmd.action(async (options) => {
+        cmd.action(async (...args: any[]) => {
+          // Commander passes options as the last argument
+          const options = args[args.length - 1];
+          // All arguments before the last are positional arguments
+          const positionalArgs = args.slice(0, -1);
+
           const context: CommandContext = {
             projectRoot: process.cwd(),
-            logger: createLogger(options.verbose),
+            logger: createDefaultLogger(options.verbose),
             verbose: options.verbose,
             fs: createFileSystem(),
+            args: positionalArgs,
           };
 
           try {

@@ -11,7 +11,7 @@ export {
   underline,
 } from './chalk.js';
 export { ora, createSpinner, withSpinner } from './spinner.js';
-export { createLogger } from '../core/logger.js';
+export { createDefaultLogger } from '../core/logger.js';
 
 export {
   createStats,
@@ -22,3 +22,10 @@ export {
 } from './stats.js';
 
 export type { Logger } from '../core/logger.js';
+
+export {
+  filterUndefined,
+  mergeOptionsWithDefaults,
+  coerceOptionType,
+  processCommandOptions,
+} from './options.js';

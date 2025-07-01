@@ -69,8 +69,12 @@ npm install github:esteban-url/trailhead#packages/cli
 ## Quick Start
 
 ```typescript
+// Import core utilities from the main export
 import { createCLI, Ok, Err } from "@trailhead/cli";
+
+// Import specific modules using subpath exports
 import { createCommand } from "@trailhead/cli/command";
+import { createDefaultLogger } from "@trailhead/cli/core";
 
 // Create a CLI application
 const cli = createCLI({
@@ -96,6 +100,18 @@ cli.run(process.argv);
 ```
 
 ## Module Exports
+
+> **Important**: @trailhead/cli uses subpath exports for optimal tree-shaking. The main export contains only essential utilities (`Ok`, `Err`, `isOk`, `isErr`, `createCLI`). Import all other functionality from specific modules.
+
+### Main Export (`@trailhead/cli`)
+
+```typescript
+import { Ok, Err, isOk, isErr, createCLI } from "@trailhead/cli";
+import type { Result, CLI, CLIConfig } from "@trailhead/cli";
+```
+
+- **Result utilities**: `Ok`, `Err`, `isOk`, `isErr` - Core error handling
+- **CLI creation**: `createCLI` - Main CLI factory function
 
 ### Core (`@trailhead/cli/core`)
 
