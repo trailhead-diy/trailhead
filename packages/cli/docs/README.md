@@ -1,57 +1,66 @@
+---
+type: explanation
+title: "@trailhead/cli Documentation Overview"
+description: "Complete documentation hub for the functional CLI framework"
+related:
+  - /docs/tutorials/first-cli-app
+  - /docs/reference/api/core
+  - /docs/explanation/architecture
+---
+
 # @trailhead/cli Documentation
 
-Welcome to the @trailhead/cli documentation! This framework provides a robust foundation for building command-line applications using functional programming principles.
+This framework provides a robust foundation for building command-line applications using functional programming principles.
 
-## Overview
+## Framework Philosophy
 
-@trailhead/cli is a modern CLI framework that emphasizes:
+@trailhead/cli is built around four core principles:
 
 - **Functional programming** - Pure functions, immutability, and composition
-- **Explicit error handling** - Result types instead of exceptions
+- **Explicit error handling** - Result types instead of exceptions  
 - **Type safety** - Full TypeScript support with strict types
 - **Testability** - Built-in testing utilities and patterns
-- **Modularity** - Tree-shakeable exports for optimal bundle size
 
 ## Documentation Structure
 
 ### Getting Started
 
-- [Quick Start Guide](./getting-started.md) - Get up and running in minutes
-- [Core Concepts](./guides/core-concepts.md) - Understand the fundamental principles
-- [Your First CLI](./examples/hello-world/README.md) - Build your first CLI application
+- [Quick Start Guide](./tutorials/getting-started.md) - Get up and running in minutes
+- [Architecture Overview](./explanation/architecture.md) - Understand the fundamental principles
+- [Working Examples](../examples/README.md) - Explore real CLI applications
 
 ### API Reference
 
 Complete API documentation for all modules:
 
-- [Core Module](./api/core.md) - Result types and error handling
-- [Command Module](./api/command.md) - Command creation and execution
-- [FileSystem Module](./api/filesystem.md) - File system abstractions
-- [Config Module](./api/config.md) - Configuration management
-- [Validation Module](./api/validation.md) - Input validation pipelines
-- [Prompts Module](./api/prompts.md) - Interactive user prompts
-- [Testing Module](./api/testing.md) - Testing utilities and helpers
-- [Utils Module](./api/utils.md) - Logger, spinner, and other utilities
+- [Core Module](./reference/core.md) - Result types and error handling
+- [Command Module](./reference/command.md) - Command creation and execution
+- [FileSystem Module](./reference/filesystem.md) - File system abstractions
+- [Config Module](./reference/config.md) - Configuration management
+- [Prompts Module](./reference/prompts.md) - Interactive user prompts
+- [Testing Module](./reference/testing.md) - Testing utilities and helpers
+- [Utils Module](./reference/utils.md) - Logger, spinner, and other utilities
+- [Types Reference](./reference/types.md) - TypeScript type definitions
 
-### Guides
+### How-To Guides
 
-In-depth guides on specific topics:
+Task-oriented guides for common scenarios:
 
-- [Error Handling](./guides/error-handling.md) - Master the Result pattern
-- [Testing CLI Applications](./guides/testing-cli-apps.md) - Write effective tests
-- [Functional Patterns](./guides/functional-patterns.md) - Apply FP principles
-- [Building Plugins](./guides/building-plugins.md) - Extend the framework
-- [Performance Optimization](./guides/performance.md) - Build fast CLIs
-- [Migration Guide](./guides/migration.md) - Migrate from other frameworks
+- [Functional Patterns](./how-to/functional-patterns.md) - Apply FP principles effectively
+- [Import Patterns](./how-to/import-patterns.md) - Structure your CLI imports
+- [Optimization Guide](./how-to/optimization-guide.md) - Build fast CLIs
 
-### Examples
+### Working Examples
 
 Real-world examples with full source code:
 
-- [Todo CLI](./examples/todo-cli/) - Task management application
-- [File Processor](./examples/file-processor/) - Batch file processing
-- [API Client](./examples/api-client/) - HTTP API client CLI
-- [Project Generator](./examples/project-generator/) - Scaffolding tool
+- [API Client](../examples/api-client/) - HTTP client with retry logic
+- [File Processor](../examples/file-processor/) - Advanced file processing  
+- [Project Generator](../examples/project-generator/) - Scaffolding tool
+- [Todo CLI](../examples/todo-cli/) - Complete CRUD application
+- [Cross-Platform CLI](../examples/cross-platform-cli/) - OS-specific functionality
+
+See [examples directory](../examples/README.md) for complete list and usage instructions.
 
 ## Key Features
 
@@ -62,9 +71,9 @@ import { ok, err } from "@trailhead/cli/core";
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
-    return err(new Error("Division by zero"));
+    return Err(new Error("Division by zero"));
   }
-  return ok(a / b);
+  return Ok(a / b);
 }
 ```
 
@@ -79,7 +88,7 @@ const greetCommand = createCommand({
   options: [{ name: "name", alias: "n", type: "string", required: true }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`);
-    return ok(undefined);
+    return Ok(undefined);
   },
 });
 ```
@@ -191,10 +200,10 @@ it("should read configuration", async () => {
 
 ## Next Steps
 
-1. Follow the [Getting Started Guide](./getting-started.md) to build your first CLI
-2. Read about [Core Concepts](./guides/core-concepts.md) to understand the framework
-3. Explore the [API Reference](./api/core.md) for detailed documentation
-4. Check out [Examples](./examples/) for real-world applications
+1. Follow the [Getting Started Guide](./tutorials/getting-started.md) to build your first CLI
+2. Read about [Architecture](./explanation/architecture.md) to understand the framework
+3. Explore the [API Reference](./reference/core.md) for detailed documentation
+4. Check out [Working Examples](../examples/) for real-world applications
 
 ## Contributing
 
@@ -209,7 +218,7 @@ We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md
 
 - **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
-- **Examples**: See the [examples directory](./examples/)
+- **Examples**: See the [examples directory](../examples/)
 
 ## License
 
