@@ -87,22 +87,21 @@ describe('User Interactions - Critical User Behavior', () => {
         const [isLoading, setIsLoading] = React.useState(false)
         const isSubmittingRef = React.useRef(false)
 
-        const handleSubmit = async () => {
+        const handleSubmit = () => {
           // Prevent multiple submissions
           if (isSubmittingRef.current) return
           
           isSubmittingRef.current = true
           setIsLoading(true)
           
-          try {
-            await onSubmit()
-          } finally {
-            // Reset after a delay to simulate real async operation
-            setTimeout(() => {
-              setIsLoading(false)
-              isSubmittingRef.current = false
-            }, 100)
-          }
+          // Call onSubmit and reset state
+          onSubmit()
+          
+          // Reset after a delay to simulate real async operation
+          setTimeout(() => {
+            setIsLoading(false)
+            isSubmittingRef.current = false
+          }, 100)
         }
 
         return (
