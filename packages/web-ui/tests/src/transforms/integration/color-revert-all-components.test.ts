@@ -9,6 +9,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { createHash } from 'crypto'
 import { execSync } from 'child_process'
+import { existsSync } from 'fs'
 import { transformLogger } from '../../../../src/transforms/shared/transform-logger.js'
 
 // Import only color-related transforms
@@ -199,6 +200,9 @@ describe('Color Transform→Revert for All Components', () => {
   let sessionId: string
 
   const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+  
+  // Skip tests in CI where catalyst-ui-kit is not available
+  const skipInCI = !existsSync(catalystSource)
 
   beforeEach(async () => {
     tempDir = path.join(process.cwd(), 'temp', `color-revert-all-${Date.now()}`)
@@ -219,7 +223,7 @@ describe('Color Transform→Revert for All Components', () => {
 
   // Create individual test for each component
   COMPONENTS.forEach((component) => {
-    it(`should revert color transforms on ${component}`, async () => {
+    it.skipIf(skipInCI)(`should revert color transforms on ${component}`, async () => {
       // Create directory structure
       const dirs = await createDirectoryStructure(tempDir, component)
 
@@ -289,7 +293,7 @@ describe('Color Transform→Revert for All Components', () => {
   })
 
   // Summary test
-  it('should track color transform statistics', async () => {
+  it.skipIf(skipInCI)('should track color transform statistics', async () => {
     interface ComponentStats {
       name: string
       changes: number

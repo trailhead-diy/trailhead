@@ -1,11 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { existsSync } from 'fs'
 import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
 
 describe('transforms pipeline integration', () => {
   let tempDir: string
   const catalystSource = path.join(process.cwd(), 'catalyst-ui-kit/typescript')
+  
+  // Skip tests in CI where catalyst-ui-kit is not available
+  const skipInCI = !existsSync(catalystSource)
 
   beforeEach(async () => {
     tempDir = path.join(process.cwd(), 'temp', `transforms2-test-${Date.now()}`)
@@ -17,7 +21,7 @@ describe('transforms pipeline integration', () => {
   })
 
   describe('full pipeline transformation', () => {
-    it.fails('transforms Button component with all enhancements', async () => {
+    it.skipIf(skipInCI).fails('transforms Button component with all enhancements', async () => {
       const buttonSource = path.join(catalystSource, 'button.tsx')
       const buttonDest = path.join(tempDir, 'button.tsx')
       await fs.copyFile(buttonSource, buttonDest)
@@ -52,7 +56,7 @@ describe('transforms pipeline integration', () => {
       expect(transformed).toMatch(/className.*cn\(/)
     })
 
-    it.fails('transforms multiple components maintaining consistency', async () => {
+    it.skipIf(skipInCI).fails('transforms multiple components maintaining consistency', async () => {
       // Copy multiple components
       const components = ['button.tsx', 'badge.tsx', 'checkbox.tsx', 'input.tsx']
       for (const component of components) {
@@ -151,7 +155,7 @@ export function MockComponent({ className }: { className?: string }) {
       expect(transformed).not.toContain('text-foreground-foreground')
     })
 
-    it('handles errors gracefully without corrupting files', async () => {
+    it.skipIf(skipInCI)('handles errors gracefully without corrupting files', async () => {
       // Create a malformed component
       const malformedComponent = `
 export function Broken({ className }) {
@@ -188,7 +192,7 @@ export function Broken({ className }) {
   })
 
   describe('pipeline phases', () => {
-    it.fails('executes transforms in correct dependency order', async () => {
+    it.skipIf(skipInCI).fails('executes transforms in correct dependency order', async () => {
       // This test verifies that transforms run in the correct order
       // by checking that later transforms can depend on earlier ones
 
