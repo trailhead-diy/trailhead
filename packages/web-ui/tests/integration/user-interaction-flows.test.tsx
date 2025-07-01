@@ -85,13 +85,22 @@ describe('User Interactions - Critical User Behavior', () => {
 
       const FormComponent = () => {
         const [isLoading, setIsLoading] = React.useState(false)
+        const isSubmittingRef = React.useRef(false)
 
         const handleSubmit = async () => {
-          if (isLoading) return // Prevent double calls
+          // Use ref to prevent race conditions
+          if (isSubmittingRef.current || isLoading) return
+          
+          isSubmittingRef.current = true
           setIsLoading(true)
+          
           await onSubmit()
+          
           // Simulate async operation
-          setTimeout(() => setIsLoading(false), 100)
+          setTimeout(() => {
+            setIsLoading(false)
+            isSubmittingRef.current = false
+          }, 100)
         }
 
         return (
