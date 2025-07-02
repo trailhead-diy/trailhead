@@ -1,4 +1,4 @@
-import type { FileSystem } from './types.js';
+import type { FileSystem, MoveOptions, MkdirOptions, CopyOptions } from './types.js';
 import { createNodeFileSystem } from './node.js';
 import { createMemoryFileSystem } from './memory.js';
 
@@ -33,16 +33,32 @@ function createDryRunFileSystem(fs: FileSystem): FileSystem {
       console.log(`[DRY RUN] Would write file: ${path}`);
       return { success: true, value: undefined };
     },
-    mkdir: async (path: string, _options?) => {
+    mkdir: async (path: string, _options?: MkdirOptions) => {
       console.log(`[DRY RUN] Would create directory: ${path}`);
       return { success: true, value: undefined };
     },
-    copy: async (src: string, dest: string, _options?) => {
+    copy: async (src: string, dest: string, _options?: CopyOptions) => {
       console.log(`[DRY RUN] Would copy: ${src} -> ${dest}`);
       return { success: true, value: undefined };
     },
     writeJson: async (path: string, _data: any) => {
       console.log(`[DRY RUN] Would write JSON to: ${path}`);
+      return { success: true, value: undefined };
+    },
+    move: async (src: string, dest: string, _options?: MoveOptions) => {
+      console.log(`[DRY RUN] Would move: ${src} -> ${dest}`);
+      return { success: true, value: undefined };
+    },
+    remove: async (path: string) => {
+      console.log(`[DRY RUN] Would remove: ${path}`);
+      return { success: true, value: undefined };
+    },
+    emptyDir: async (path: string) => {
+      console.log(`[DRY RUN] Would empty directory: ${path}`);
+      return { success: true, value: undefined };
+    },
+    outputFile: async (path: string, _content: string) => {
+      console.log(`[DRY RUN] Would output file: ${path}`);
       return { success: true, value: undefined };
     },
   };

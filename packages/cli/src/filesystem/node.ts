@@ -1,6 +1,6 @@
-import fs from 'fs/promises';
+import fse from 'fs-extra';
 import path from 'path';
-import type { FileSystem, FileSystemError } from './types.js';
+import type { FileSystem, FileSystemError, CopyOptions, MoveOptions, MkdirOptions } from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
 
 export function createNodeFileSystem(): FileSystem {
@@ -8,27 +8,78 @@ export function createNodeFileSystem(): FileSystem {
     operation: string,
     filePath: string,
     error: any,
-  ): FileSystemError => ({
-    code: error.code || 'FS_ERROR',
-    message: `${operation} failed for ${filePath}: ${error.message}`,
-    path: filePath,
-    recoverable: error.code === 'ENOENT',
-  });
+  ): FileSystemError => {
+    // Map fs-extra/Node.js error codes to more descriptive messages
+    const errorCode = error.code || 'FS_ERROR';
+    let message: string;
+    let recoverable: boolean;
+
+    switch (errorCode) {
+      case 'ENOENT':
+        message = `${operation} failed: File or directory '${filePath}' does not exist`;
+        recoverable = true;
+        break;
+      case 'EEXIST':
+        message = `${operation} failed: File or directory '${filePath}' already exists`;
+        recoverable = true;
+        break;
+      case 'EACCES':
+      case 'EPERM':
+        message = `${operation} failed: Permission denied for '${filePath}'`;
+        recoverable = false;
+        break;
+      case 'EISDIR':
+        message = `${operation} failed: Expected file but '${filePath}' is a directory`;
+        recoverable = false;
+        break;
+      case 'ENOTDIR':
+        message = `${operation} failed: Expected directory but '${filePath}' is a file`;
+        recoverable = false;
+        break;
+      case 'ENOTEMPTY':
+        message = `${operation} failed: Directory '${filePath}' is not empty`;
+        recoverable = true;
+        break;
+      case 'EMFILE':
+      case 'ENFILE':
+        message = `${operation} failed: Too many open files (system limit reached)`;
+        recoverable = true; // Can be retried after closing files
+        break;
+      case 'ENOSPC':
+        message = `${operation} failed: No space left on device for '${filePath}'`;
+        recoverable = false;
+        break;
+      case 'EROFS':
+        message = `${operation} failed: File system is read-only for '${filePath}'`;
+        recoverable = false;
+        break;
+      default:
+        message = `${operation} failed for '${filePath}': ${error.message || 'Unknown error'}`;
+        recoverable = ['ENOENT', 'EAGAIN', 'EBUSY'].includes(errorCode);
+    }
+
+    return {
+      code: errorCode,
+      message,
+      path: filePath,
+      recoverable,
+    };
+  };
 
   return {
     async exists(filePath: string) {
       try {
-        await fs.access(filePath);
-        return Ok(true);
-      } catch {
-        return Ok(false);
+        const exists = await fse.pathExists(filePath);
+        return Ok(exists);
+      } catch (error) {
+        return Err(createError('Check exists', filePath, error));
       }
     },
 
     async readFile(filePath: string, encoding = 'utf-8') {
       try {
-        const content = await fs.readFile(filePath, encoding as BufferEncoding);
-        return Ok(content as string);
+        const content = await fse.readFile(filePath, { encoding: encoding as BufferEncoding });
+        return Ok(content);
       } catch (error) {
         return Err(createError('Read file', filePath, error));
       }
@@ -36,17 +87,20 @@ export function createNodeFileSystem(): FileSystem {
 
     async writeFile(filePath: string, content: string) {
       try {
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        await fs.writeFile(filePath, content, 'utf-8');
+        await fse.outputFile(filePath, content, 'utf-8');
         return Ok(undefined);
       } catch (error) {
         return Err(createError('Write file', filePath, error));
       }
     },
 
-    async mkdir(dirPath: string, options = {}) {
+    async mkdir(dirPath: string, options: MkdirOptions = {}) {
       try {
-        await fs.mkdir(dirPath, { recursive: (options as any).recursive });
+        if (options.recursive) {
+          await fse.ensureDir(dirPath);
+        } else {
+          await fse.mkdir(dirPath);
+        }
         return Ok(undefined);
       } catch (error) {
         return Err(createError('Create directory', dirPath, error));
@@ -55,26 +109,29 @@ export function createNodeFileSystem(): FileSystem {
 
     async readdir(dirPath: string) {
       try {
-        const entries = await fs.readdir(dirPath);
+        const entries = await fse.readdir(dirPath);
         return Ok(entries);
       } catch (error) {
         return Err(createError('Read directory', dirPath, error));
       }
     },
 
-    async copy(src: string, dest: string, _options = {}) {
+    async copy(src: string, dest: string, options: CopyOptions = {}) {
       try {
-        await fs.mkdir(path.dirname(dest), { recursive: true });
-        await fs.copyFile(src, dest);
+        const copyOptions: fse.CopyOptions = {
+          overwrite: options.overwrite !== false,
+          errorOnExist: false,
+        };
+        await fse.copy(src, dest, copyOptions);
         return Ok(undefined);
       } catch (error) {
-        return Err(createError('Copy file', `${src} to ${dest}`, error));
+        return Err(createError('Copy', `${src} to ${dest}`, error));
       }
     },
 
     async ensureDir(dirPath: string) {
       try {
-        await fs.mkdir(dirPath, { recursive: true });
+        await fse.ensureDir(dirPath);
         return Ok(undefined);
       } catch (error) {
         return Err(createError('Ensure directory', dirPath, error));
@@ -82,15 +139,13 @@ export function createNodeFileSystem(): FileSystem {
     },
 
     async readJson<T = any>(filePath: string) {
-      const result = await this.readFile(filePath);
-      if (!result.success) {
-        return result;
-      }
-
       try {
-        const data = JSON.parse(result.value) as T;
+        const data = await fse.readJson(filePath) as T;
         return Ok(data);
       } catch (error) {
+        if ((error as any).code === 'ENOENT') {
+          return Err(createError('Read JSON', filePath, error));
+        }
         return Err({
           code: 'JSON_PARSE_ERROR',
           message: `Failed to parse JSON in ${filePath}: ${(error as Error).message}`,
@@ -105,9 +160,52 @@ export function createNodeFileSystem(): FileSystem {
       data: T,
       options?: { spaces?: number },
     ) {
-      const spaces = options?.spaces ?? 2;
-      const content = JSON.stringify(data, null, spaces);
-      return this.writeFile(filePath, content);
+      try {
+        await fse.outputJson(filePath, data, {
+          spaces: options?.spaces ?? 2,
+        });
+        return Ok(undefined);
+      } catch (error) {
+        return Err(createError('Write JSON', filePath, error));
+      }
+    },
+
+    async move(src: string, dest: string, options: MoveOptions = {}) {
+      try {
+        await fse.move(src, dest, {
+          overwrite: options.overwrite !== false,
+        });
+        return Ok(undefined);
+      } catch (error) {
+        return Err(createError('Move', `${src} to ${dest}`, error));
+      }
+    },
+
+    async remove(filePath: string) {
+      try {
+        await fse.remove(filePath);
+        return Ok(undefined);
+      } catch (error) {
+        return Err(createError('Remove', filePath, error));
+      }
+    },
+
+    async emptyDir(dirPath: string) {
+      try {
+        await fse.emptyDir(dirPath);
+        return Ok(undefined);
+      } catch (error) {
+        return Err(createError('Empty directory', dirPath, error));
+      }
+    },
+
+    async outputFile(filePath: string, content: string) {
+      try {
+        await fse.outputFile(filePath, content, 'utf-8');
+        return Ok(undefined);
+      } catch (error) {
+        return Err(createError('Output file', filePath, error));
+      }
     },
   };
 }

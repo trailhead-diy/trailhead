@@ -1,4 +1,4 @@
-import type { FileSystem } from './types.js';
+import type { FileSystem, MoveOptions } from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
 import { sep, posix, win32 } from 'path';
 
@@ -194,6 +194,109 @@ export function createMemoryFileSystem(
     ) {
       const spaces = options?.spaces ?? 2;
       const content = JSON.stringify(data, null, spaces);
+      return this.writeFile(path, content);
+    },
+
+    async move(src: string, dest: string, options: MoveOptions = {}) {
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      
+      if (!files.has(normalizedSrc)) {
+        return Err({
+          code: 'ENOENT',
+          message: `Source file not found: ${src}`,
+          path: src,
+          recoverable: true,
+        });
+      }
+
+      if (files.has(normalizedDest) && !options.overwrite) {
+        return Err({
+          code: 'EEXIST',
+          message: `Destination already exists: ${dest}`,
+          path: dest,
+          recoverable: true,
+        });
+      }
+
+      const content = files.get(normalizedSrc)!;
+      files.set(normalizedDest, content);
+      files.delete(normalizedSrc);
+      
+      // Update directory structure
+      const destDir = normalizedDest.substring(0, normalizedDest.lastIndexOf('/'));
+      if (destDir) {
+        directories.add(destDir);
+      }
+
+      return Ok(undefined);
+    },
+
+    async remove(path: string) {
+      const normalizedPath = normalizePath(path);
+      
+      // Remove file if it exists
+      if (files.has(normalizedPath)) {
+        files.delete(normalizedPath);
+        return Ok(undefined);
+      }
+
+      // Remove directory and all its contents
+      if (directories.has(normalizedPath)) {
+        directories.delete(normalizedPath);
+        
+        // Remove all files in this directory
+        const prefix = normalizedPath + '/';
+        for (const filePath of files.keys()) {
+          if (filePath.startsWith(prefix)) {
+            files.delete(filePath);
+          }
+        }
+        
+        // Remove all subdirectories
+        for (const dir of directories) {
+          if (dir.startsWith(prefix)) {
+            directories.delete(dir);
+          }
+        }
+        
+        return Ok(undefined);
+      }
+
+      return Err({
+        code: 'ENOENT',
+        message: `Path not found: ${path}`,
+        path,
+        recoverable: true,
+      });
+    },
+
+    async emptyDir(path: string) {
+      const normalizedPath = normalizePath(path);
+      
+      // Create directory if it doesn't exist
+      directories.add(normalizedPath);
+      
+      // Remove all files in this directory
+      const prefix = normalizedPath + '/';
+      for (const filePath of files.keys()) {
+        if (filePath.startsWith(prefix)) {
+          files.delete(filePath);
+        }
+      }
+      
+      // Remove all subdirectories
+      for (const dir of directories) {
+        if (dir.startsWith(prefix)) {
+          directories.delete(dir);
+        }
+      }
+      
+      return Ok(undefined);
+    },
+
+    async outputFile(path: string, content: string) {
+      // This is just like writeFile but ensures parent directories exist
       return this.writeFile(path, content);
     },
 
