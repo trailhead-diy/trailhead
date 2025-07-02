@@ -56,6 +56,7 @@
     "test:examples:fast": "./examples/test-examples.sh --fast",
     "test:all": "pnpm test && pnpm test:examples",
     "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
     "pretest": "pnpm build",
