@@ -4,6 +4,8 @@ export * from './factory.js';
 
 export * from './handlers.js';
 
+export * from './retry-advanced.js';
+
 export { Ok, Err } from './factory.js';
 export type { Result, AsyncResult, CLIError } from './types.js';
 
@@ -44,3 +46,15 @@ export {
   httpError,
   missingDependencyError,
 } from './factory.js';
+export {
+  retryAdvanced,
+  RetryStrategies,
+  createRetryWrapper,
+  createCircuitBreaker,
+  retryWithTimeout,
+  retryParallel,
+  createProgressiveRetry,
+  type AdvancedRetryOptions,
+  type CircuitBreakerOptions,
+  type CircuitBreaker,
+} from './retry-advanced.js';

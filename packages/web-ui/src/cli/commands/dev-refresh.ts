@@ -7,7 +7,6 @@ import {
   createCommand,
   executeWithPhases,
   displaySummary,
-  type CommandOptions,
   type CommandPhase,
 } from '@trailhead/cli/command'
 import type { TrailheadConfig } from '../core/config/index.js'
@@ -18,16 +17,15 @@ import { join } from 'path'
 // Import local utilities
 import { copyFreshFilesBatch, ensureDirectory } from '../core/shared/file-utils.js'
 import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js'
+import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js'
+import { type StrictDevRefreshOptions } from '../core/types/command-options.js'
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-interface DevRefreshOptions extends CommandOptions {
-  src?: string
-  dest?: string
-  clean?: boolean
-}
+// Use strict typing for better type safety
+type DevRefreshOptions = StrictDevRefreshOptions
 
 interface RefreshConfig {
   source: string
@@ -45,21 +43,23 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
     execute: async (config) => {
       // Check if source exists
       if (!existsSync(config.source)) {
-        return Err({
-          code: 'PATH_NOT_FOUND',
-          message: `Source directory not found: ${config.source}`,
-          details: `Please ensure catalyst-ui-kit is installed or provide a valid source path`,
-          recoverable: true,
-        })
+        return Err(createCLIError(
+          CLI_ERROR_CODES.PATH_NOT_FOUND,
+          `Source directory not found: ${config.source}`,
+          { 
+            details: 'Please ensure catalyst-ui-kit is installed or provide a valid source path',
+            recoverable: true 
+          }
+        ))
       }
 
       // Source and dest cannot be the same
       if (config.source === config.dest) {
-        return Err({
-          code: 'INVALID_CONFIG',
-          message: 'Source and destination cannot be the same directory',
-          recoverable: true,
-        })
+        return Err(createCLIError(
+          CLI_ERROR_CODES.CONFIG_ERROR,
+          'Source and destination cannot be the same directory',
+          { recoverable: true }
+        ))
       }
 
       return Ok(config)
@@ -75,20 +75,20 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
 
         const result = await ensureDirectory(config.dest)
         if (!result.success) {
-          return Err({
-            code: 'FILESYSTEM_ERROR',
-            message: `Failed to create destination directory: ${result.error.message}`,
-            recoverable: false,
-          })
+          return Err(createCLIError(
+            CLI_ERROR_CODES.FS_ERROR,
+            `Failed to create destination directory: ${result.error.message}`,
+            { recoverable: false }
+          ))
         }
 
         return Ok(config)
       } catch (error) {
-        return Err({
-          code: 'FILESYSTEM_ERROR',
-          message: `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          recoverable: false,
-        })
+        return Err(createCLIError(
+          CLI_ERROR_CODES.FS_ERROR,
+          `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          { recoverable: false }
+        ))
       }
     },
   },
@@ -101,7 +101,7 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
 /**
  * Create dev:refresh command
  */
-export const createDevRefreshCommand = (context: { projectRoot: string }) => {
+export const createDevRefreshCommand = () => {
   return createCommand<DevRefreshOptions>(
     {
       name: 'dev:refresh',
@@ -111,17 +111,17 @@ export const createDevRefreshCommand = (context: { projectRoot: string }) => {
         {
           flags: '-s, --src <path>',
           description: 'source directory containing Catalyst components',
-          defaultValue: 'catalyst-ui-kit/typescript',
+          default: 'catalyst-ui-kit/typescript',
         },
         {
           flags: '-d, --dest <path>',
           description: 'destination directory for components',
-          defaultValue: 'src/components/lib',
+          default: 'src/components/lib',
         },
         {
           flags: '--clean',
           description: 'clean destination directory before copying',
-          defaultValue: true,
+          default: true,
         },
         {
           flags: '--no-clean',
@@ -138,7 +138,7 @@ export const createDevRefreshCommand = (context: { projectRoot: string }) => {
 
       action: async (options, cmdContext) => {
         // Load configuration
-        const configResult = loadConfigSync(context.projectRoot)
+        const configResult = loadConfigSync(cmdContext.projectRoot)
         let loadedConfig: TrailheadConfig | null = null
         let configPath: string | null = null
 
@@ -161,11 +161,11 @@ export const createDevRefreshCommand = (context: { projectRoot: string }) => {
         const devRefreshConfig = loadedConfig?.devRefresh
         const config: RefreshConfig = {
           source: join(
-            context.projectRoot,
+            cmdContext.projectRoot,
             options.src || devRefreshConfig?.srcDir || 'catalyst-ui-kit/typescript'
           ),
           dest: join(
-            context.projectRoot,
+            cmdContext.projectRoot,
             options.dest || devRefreshConfig?.destDir || 'src/components/lib'
           ),
           clean: options.clean ?? true,
@@ -201,11 +201,11 @@ export const createDevRefreshCommand = (context: { projectRoot: string }) => {
         )
 
         if (!copyResult.success) {
-          return Err({
-            code: 'COPY_FAILED',
-            message: `Failed to copy files: ${copyResult.error.message}`,
-            recoverable: false,
-          })
+          return Err(createCLIError(
+            CLI_ERROR_CODES.FS_ERROR,
+            `Failed to copy files: ${copyResult.error.message}`,
+            { recoverable: false }
+          ))
         }
 
         const { copied, skipped, failed } = copyResult.value
@@ -242,7 +242,5 @@ export const createDevRefreshCommand = (context: { projectRoot: string }) => {
 
         return Ok(undefined)
       },
-    },
-    context
-  )
+    })
 }

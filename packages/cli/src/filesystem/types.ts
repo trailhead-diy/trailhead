@@ -19,6 +19,10 @@ export interface CopyOptions {
   recursive?: boolean;
 }
 
+export interface MoveOptions {
+  overwrite?: boolean;
+}
+
 export interface MkdirOptions {
   recursive?: boolean;
 }
@@ -40,6 +44,12 @@ export interface FileSystem {
     data: T,
     options?: { spaces?: number },
   ): Promise<Result<void>>;
+
+  // New fs-extra powered operations
+  move(src: string, dest: string, options?: MoveOptions): Promise<Result<void>>;
+  remove(path: string): Promise<Result<void>>;
+  emptyDir(path: string): Promise<Result<void>>;
+  outputFile(path: string, content: string): Promise<Result<void>>;
 
   // For testing
   getFiles?: () => Map<string, string>;

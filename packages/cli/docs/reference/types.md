@@ -142,11 +142,7 @@ type Err<E> = { readonly success: false; readonly error: E };
 
 ```typescript
 interface CLI {
-  name: string;
-  version: string;
-  description?: string;
-  addCommand(command: Command): CLI;
-  run(argv: string[]): Promise<void>;
+  run(argv?: string[]): Promise<void>;
 }
 
 interface CLIConfig {
@@ -175,8 +171,9 @@ interface CommandContext {
 }
 
 interface CommandOption {
-  name: string;
+  name?: string;
   alias?: string;
+  flags?: string;
   description: string;
   type?: "string" | "boolean" | "number";
   required?: boolean;

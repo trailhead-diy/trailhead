@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createCLI, Ok, Err, isOk } from '@trailhead/cli';
 import { createCommand } from '@trailhead/cli/command';
-import { unwrap, match, tryCatch, chain, all } from '@trailhead/cli/core';
+import { unwrap, match, tryCatch, tryCatchAsync, chain, all } from '@trailhead/cli/core';
 import { filterUndefined, mergeOptionsWithDefaults } from '@trailhead/cli/utils';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -18,10 +18,10 @@ interface ProcessOptions {
 
 // Helper function using Result utilities
 async function readFileContent(filePath: string) {
-  return tryCatch(
+  return tryCatchAsync(
     async () => {
       const content = await fs.readFile(filePath, 'utf-8');
-      return content;
+      return content || ''; // Return empty string for empty files
     },
     (error) => ({
       code: 'FILE_READ_ERROR',
@@ -37,7 +37,7 @@ async function writeFileContent(filePath: string, content: string, dryRun: boole
     return Ok(undefined);
   }
   
-  return tryCatch(
+  return tryCatchAsync(
     async () => {
       await fs.writeFile(filePath, content, 'utf-8');
     },
@@ -51,7 +51,7 @@ async function writeFileContent(filePath: string, content: string, dryRun: boole
 
 const processCommand = createCommand<ProcessOptions>({
   name: 'process',
-  description: 'Process files with various transformations',
+  description: 'Process files with various transformations\n\nExamples:\n  process input.txt\n  process data.json --output result.csv --format csv\n  process config.yml --dry-run',
   arguments: '<input>',
   options: [
     {
@@ -62,7 +62,7 @@ const processCommand = createCommand<ProcessOptions>({
     {
       flags: '-f, --format <format>',
       description: 'Output format',
-      defaultValue: 'text',
+      default: 'text',
       type: 'string',
     },
     {
@@ -87,36 +87,34 @@ const processCommand = createCommand<ProcessOptions>({
     
     const options = mergeOptionsWithDefaults(defaults, filterUndefined(rawOptions));
     
-    // Chain multiple operations using Result utilities
-    const result = await chain(
-      await readFileContent(options.input),
-      async (content) => {
-        context.logger.step(`Processing ${content.length} characters...`);
-        
-        // Transform content based on format
-        const transformed = match(
-          tryCatch(() => {
-            switch (options.format) {
-              case 'json':
-                return JSON.stringify({ content, timestamp: new Date() }, null, 2);
-              case 'csv':
-                return content.split('\n').map(line => `"${line}"`).join(',\n');
-              case 'text':
-              default:
-                return content.toUpperCase();
-            }
-          }),
-          {
-            ok: (value) => Ok(value),
-            err: (error) => Err({
-              code: 'TRANSFORM_ERROR',
-              message: `Failed to transform content: ${error}`,
-            }),
-          },
-        );
-        
-        return transformed;
+    // Read file content
+    const fileContent = await readFileContent(options.input);
+    
+    if (!isOk(fileContent)) {
+      context.logger.error(`Error: ${fileContent.error.message}`);
+      return fileContent;
+    }
+    
+    const content = unwrap(fileContent);
+    context.logger.info(`→ Processing ${content.length} characters...`);
+    
+    // Transform content based on format
+    const result = tryCatch(
+      () => {
+        switch (options.format) {
+          case 'json':
+            return JSON.stringify({ content, timestamp: new Date() }, null, 2);
+          case 'csv':
+            return content.split('\n').map(line => `"${line}"`).join(',\n');
+          case 'text':
+          default:
+            return content.toUpperCase();
+        }
       },
+      (error) => ({
+        code: 'TRANSFORM_ERROR',
+        message: `Failed to transform content: ${error}`,
+      }),
     );
     
     // Handle the result
@@ -139,7 +137,7 @@ const processCommand = createCommand<ProcessOptions>({
     
     return writeResult;
   },
-}, { projectRoot: process.cwd() });
+});
 
 // Batch processing command demonstrating 'all' utility
 const batchCommand = createCommand({
@@ -150,17 +148,18 @@ const batchCommand = createCommand({
     {
       flags: '--prefix <prefix>',
       description: 'Output file prefix',
-      defaultValue: 'processed_',
+      default: 'processed_',
     },
   ],
   action: async (options, context) => {
     const pattern = context.args[0];
     
     // Find files matching pattern
-    const files = await tryCatch(
+    const dir = path.dirname(pattern);
+    const basename = path.basename(pattern);
+    
+    const files = await tryCatchAsync(
       async () => {
-        const dir = path.dirname(pattern);
-        const basename = path.basename(pattern);
         const entries = await fs.readdir(dir);
         return entries.filter(entry => entry.includes(basename.replace('*', '')));
       },
@@ -171,16 +170,27 @@ const batchCommand = createCommand({
     );
     
     if (!isOk(files)) {
+      context.logger.error(files.error.message);
       return files;
+    }
+    
+    const fileList = unwrap(files);
+    
+    if (!Array.isArray(fileList)) {
+      return Err({
+        code: 'INVALID_RESULT',
+        message: 'Expected array of files but got: ' + typeof fileList,
+      });
     }
     
     // Process all files
     const results = await Promise.all(
-      unwrap(files).map(async (file) => {
-        const content = await readFileContent(file);
+      fileList.map(async (file) => {
+        const fullPath = path.join(dir, file);
+        const content = await readFileContent(fullPath);
         if (!isOk(content)) return content;
         
-        const output = `${options.prefix}${file}`;
+        const output = path.join(dir, `${options.prefix}${file}`);
         return writeFileContent(output, unwrap(content).toUpperCase(), false);
       }),
     );
@@ -195,17 +205,15 @@ const batchCommand = createCommand({
     
     return combined;
   },
-}, { projectRoot: process.cwd() });
+});
 
 // Create and configure CLI
 const cli = createCLI({
   name: 'file-processor',
   version: '2.0.0',
   description: 'Advanced file processing CLI with Result type handling',
+  commands: [processCommand, batchCommand],
 });
-
-cli.addCommand(processCommand);
-cli.addCommand(batchCommand);
 
 // Add global error handling
 process.on('uncaughtException', (error) => {

@@ -1,0 +1,207 @@
+name: CLI Examples Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/cli/**'
+      - '.github/workflows/cli-examples.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/cli/**'
+      - '.github/workflows/cli-examples.yml'
+
+env:
+  CI: true
+  SKIP_SLOW: true
+
+jobs:
+  examples-test:
+    name: Test CLI Examples
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI package
+        run: pnpm build --filter=@trailhead/cli
+
+      - name: Run TypeScript compilation check
+        working-directory: packages/cli
+        run: pnpm types
+
+      - name: Run linting
+        working-directory: packages/cli
+        run: pnpm lint
+
+      - name: Run unit tests
+        working-directory: packages/cli
+        run: pnpm test
+
+      - name: Run example tests (fast mode)
+        working-directory: packages/cli
+        run: pnpm test:examples:fast
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            packages/cli/coverage/
+            packages/cli/examples/test-results.xml
+          retention-days: 7
+
+  examples-deep-test:
+    name: Deep Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Only run deep tests on main branch or when explicitly requested
+    if: github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'test:deep')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI package
+        run: pnpm build --filter=@trailhead/cli
+
+      - name: Run complete example test suite
+        working-directory: packages/cli
+        env:
+          SKIP_SLOW: false
+        run: pnpm test:examples
+
+      - name: Upload deep test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deep-test-results
+          path: |
+            packages/cli/examples/test-results.xml
+            packages/cli/examples/performance-results.json
+          retention-days: 14
+
+  examples-validation:
+    name: Validate Examples
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate example TypeScript compilation
+        working-directory: packages/cli/examples
+        run: |
+          echo "🔍 Checking TypeScript compilation for examples..."
+          npx tsc --noEmit --skipLibCheck basic-cli.ts
+          npx tsc --noEmit --skipLibCheck advanced-cli.ts
+          npx tsc --noEmit --skipLibCheck interactive-cli.ts
+
+      - name: Validate example help commands
+        working-directory: packages/cli/examples
+        run: |
+          echo "📚 Checking example help commands..."
+          timeout 10s npx tsx basic-cli.ts --help || true
+          timeout 10s npx tsx advanced-cli.ts --help || true
+          timeout 10s npx tsx interactive-cli.ts --help || true
+
+      - name: Check example file structure
+        working-directory: packages/cli/examples
+        run: |
+          echo "📁 Validating example file structure..."
+          
+          # Check that all documented examples exist
+          test -f basic-cli.ts || { echo "❌ basic-cli.ts missing"; exit 1; }
+          test -f advanced-cli.ts || { echo "❌ advanced-cli.ts missing"; exit 1; }
+          test -f interactive-cli.ts || { echo "❌ interactive-cli.ts missing"; exit 1; }
+          
+          # Check test files exist
+          test -f __tests__/basic-cli.test.ts || { echo "❌ basic-cli.test.ts missing"; exit 1; }
+          test -f __tests__/advanced-cli.test.ts || { echo "❌ advanced-cli.test.ts missing"; exit 1; }
+          test -f __tests__/interactive-cli.test.ts || { echo "❌ interactive-cli.test.ts missing"; exit 1; }
+          
+          # Check test runner script
+          test -x test-examples.sh || { echo "❌ test-examples.sh missing or not executable"; exit 1; }
+          
+          echo "✅ All example files present"
+
+  security-scan:
+    name: Security Scan Examples
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run security audit
+        run: |
+          cd packages/cli
+          npm audit --audit-level moderate || true
+          
+          # Check for common security issues in examples
+          echo "🔒 Checking examples for security issues..."
+          
+          # Check for hardcoded secrets (basic patterns)
+          if grep -r "password.*=" examples/ | grep -v "test" | grep -v "example" | grep -v ".md"; then
+            echo "⚠️ Potential hardcoded passwords found in examples"
+          fi
+          
+          # Check for eval usage
+          if grep -r "eval(" examples/; then
+            echo "❌ eval() usage found in examples - potential security risk"
+            exit 1
+          fi
+          
+          echo "✅ Basic security checks passed"

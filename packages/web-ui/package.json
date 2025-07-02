@@ -1,7 +1,12 @@
 {
   "name": "@trailhead/web-ui",
   "version": "1.0.1",
+  "private": false,
   "description": "Enhanced Catalyst UI components with advanced theming system, semantic tokens, and professional CLI",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "@trailhead:registry": "https://npm.pkg.github.com"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "type": "module",

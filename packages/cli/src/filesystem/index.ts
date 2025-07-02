@@ -4,6 +4,7 @@ export type {
   FileSystemError,
   FileStats,
   CopyOptions,
+  MoveOptions,
   MkdirOptions,
 } from './types.js';
 

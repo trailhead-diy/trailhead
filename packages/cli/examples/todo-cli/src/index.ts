@@ -87,4 +87,4 @@ const cli = createCLI({
   commands: [addCommand, listCommand],
 });
 
-cli.run();
+cli.run(process.argv);

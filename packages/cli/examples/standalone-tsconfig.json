@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@trailhead/cli": ["../src/index.ts"],
+      "@trailhead/cli/*": ["../src/*/index.ts"]
+    },
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "**/__tests__/**"]
+}

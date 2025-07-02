@@ -67,21 +67,7 @@ See the [Import Patterns Guide](./how-to/import-patterns.md) for complete detail
 
 Let's build a simple greeting CLI that demonstrates core concepts.
 
-### 1. Create the CLI Instance
-
-Create `src/cli.ts`:
-
-```typescript
-import { createCLI } from "@trailhead/cli";
-
-export const cli = createCLI({
-  name: "hello-cli",
-  version: "1.0.0",
-  description: "My first CLI application",
-});
-```
-
-### 2. Create a Command
+### 1. Create Commands
 
 Create `src/commands/greet.ts`:
 
@@ -97,28 +83,33 @@ export const greetCommand = createCommand({
     {
       name: "name",
       alias: "n",
-      type: "string",
       description: "Name to greet",
-      required: true,
+      type: "string",
+      default: "World",
     },
   ],
   action: async (options, context: CommandContext) => {
-    context.logger.success(`Hello, ${options.name}! 👋`);
+    context.logger.info(`Hello, ${options.name}!`);
     return Ok(undefined);
   },
 });
 ```
 
-### 3. Wire Everything Together
+### 2. Create the CLI Application
 
 Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { cli } from "./cli";
+import { createCLI } from "@trailhead/cli";
 import { greetCommand } from "./commands/greet";
 
-cli.addCommand(greetCommand);
+const cli = createCLI({
+  name: "hello-cli",
+  version: "1.0.0",
+  description: "My first CLI application",
+  commands: [greetCommand],
+});
 
 // Run the CLI with command line arguments
 cli.run(process.argv);
@@ -184,7 +175,7 @@ const readCommand = createCommand({
   name: "read",
   description: "Read a file",
   options: [
-    { name: "file", alias: "f", type: "string", required: true },
+    { name: "file", alias: "f", type: "string", required: true, description: "File to read" },
   ],
   action: async (options, context) => {
     const fs = createFileSystem();
@@ -262,12 +253,6 @@ import { createCommand } from "@trailhead/cli/command";
 import { createFileSystem } from "@trailhead/cli/filesystem";
 import { prompt } from "@trailhead/cli/prompts";
 
-const cli = createCLI({
-  name: "my-cli",
-  version: "1.0.0",
-  description: "A complete example CLI",
-});
-
 const mainCommand = createCommand({
   name: "process",
   description: "Process a file interactively",
@@ -295,7 +280,13 @@ const mainCommand = createCommand({
   },
 });
 
-cli.addCommand(mainCommand);
+const cli = createCLI({
+  name: "my-cli",
+  version: "1.0.0",
+  description: "A complete example CLI",
+  commands: [mainCommand],
+});
+
 cli.run(process.argv);
 ```
 

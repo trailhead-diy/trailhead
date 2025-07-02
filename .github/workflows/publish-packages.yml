@@ -1,0 +1,165 @@
+name: Publish Packages to GitHub Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (cli, web-ui, or all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - cli
+          - web-ui
+
+env:
+  CI: true
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    strategy:
+      matrix:
+        package: ${{ github.event.inputs.package == 'all' && fromJson('["cli", "web-ui"]') || fromJson(format('["{0}"]', github.event.inputs.package)) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@trailhead'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            **/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test --filter=@trailhead/${{ matrix.package }}
+
+      - name: Run linting
+        run: pnpm lint --filter=@trailhead/${{ matrix.package }}
+
+      - name: Run type checking
+        run: pnpm types --filter=@trailhead/${{ matrix.package }}
+
+      - name: Check package.json configuration
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          echo "🔍 Verifying package.json configuration for @trailhead/${{ matrix.package }}"
+          
+          # Check publishConfig exists
+          if ! grep -q "publishConfig" package.json; then
+            echo "❌ Missing publishConfig in package.json"
+            exit 1
+          fi
+          
+          # Check registry configuration
+          if ! grep -q "npm.pkg.github.com" package.json; then
+            echo "❌ Missing GitHub Packages registry configuration"
+            exit 1
+          fi
+          
+          # Check package is not private
+          if grep -q '"private": true' package.json; then
+            echo "❌ Package is marked as private"
+            exit 1
+          fi
+          
+          echo "✅ Package configuration is valid"
+
+      - name: Publish @trailhead/${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
+        run: |
+          echo "📦 Publishing @trailhead/${{ matrix.package }} to GitHub Packages"
+          
+          # Show package info
+          echo "Package: $(jq -r '.name' package.json)"
+          echo "Version: $(jq -r '.version' package.json)"
+          echo "Registry: $(jq -r '.publishConfig.registry' package.json)"
+          
+          # Publish package
+          npm publish --verbose
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify publication
+        run: |
+          echo "🔍 Verifying package publication"
+          
+          PACKAGE_NAME="@trailhead/${{ matrix.package }}"
+          PACKAGE_VERSION=$(jq -r '.version' packages/${{ matrix.package }}/package.json)
+          
+          # Wait a moment for package to be available
+          sleep 10
+          
+          # Try to view the package
+          if npm view $PACKAGE_NAME@$PACKAGE_VERSION --registry=https://npm.pkg.github.com; then
+            echo "✅ Package $PACKAGE_NAME@$PACKAGE_VERSION successfully published"
+          else
+            echo "⚠️ Package may not be immediately visible (this is normal)"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: publish
+    if: success()
+    
+    steps:
+      - name: Success notification
+        run: |
+          echo "🎉 Successfully published packages to GitHub Packages"
+          echo "📦 Packages are now available for installation with:"
+          echo "npm install @trailhead/cli --registry=https://npm.pkg.github.com"
+          echo "npm install @trailhead/web-ui --registry=https://npm.pkg.github.com"
+
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: publish
+    if: failure()
+    
+    steps:
+      - name: Failure notification
+        run: |
+          echo "❌ Package publication failed"
+          echo "🔍 Check the workflow logs for details"
+          echo "💡 Common issues:"
+          echo "  - Missing GITHUB_TOKEN permissions"
+          echo "  - Package version already exists"
+          echo "  - Network connectivity issues"
+          echo "  - Invalid package.json configuration"

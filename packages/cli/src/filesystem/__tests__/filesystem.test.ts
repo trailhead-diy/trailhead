@@ -350,4 +350,101 @@ describe('FileSystem', () => {
       expect(unwrap(dirExists)).toBe(false);
     });
   });
+
+  describe('New fs-extra methods', () => {
+    describe('move', () => {
+      it('should move file to new location', async () => {
+        await fs.writeFile('/source.txt', 'content to move');
+        const moveResult = await fs.move('/source.txt', '/destination.txt');
+        expect(isOk(moveResult)).toBe(true);
+
+        // Source should not exist
+        const sourceExists = await fs.exists('/source.txt');
+        expect(unwrap(sourceExists)).toBe(false);
+
+        // Destination should exist with content
+        const destContent = await fs.readFile('/destination.txt');
+        expect(unwrap(destContent)).toBe('content to move');
+      });
+
+      it('should return error when moving non-existent file', async () => {
+        const result = await fs.move('/non-existent.txt', '/dest.txt');
+        expect(isErr(result)).toBe(true);
+        expect(getErrorMessage(result)).toContain('not found');
+      });
+    });
+
+    describe('remove', () => {
+      it('should remove file', async () => {
+        await fs.writeFile('/file-to-remove.txt', 'content');
+        const removeResult = await fs.remove('/file-to-remove.txt');
+        expect(isOk(removeResult)).toBe(true);
+
+        const exists = await fs.exists('/file-to-remove.txt');
+        expect(unwrap(exists)).toBe(false);
+      });
+
+      it('should remove directory and its contents', async () => {
+        await fs.writeFile('/dir/file1.txt', 'content1');
+        await fs.writeFile('/dir/file2.txt', 'content2');
+        await fs.mkdir('/dir/subdir', { recursive: true });
+        
+        const removeResult = await fs.remove('/dir');
+        expect(isOk(removeResult)).toBe(true);
+
+        const dirExists = await fs.exists('/dir');
+        expect(unwrap(dirExists)).toBe(false);
+        
+        const file1Exists = await fs.exists('/dir/file1.txt');
+        expect(unwrap(file1Exists)).toBe(false);
+      });
+
+      it('should return error when removing non-existent path', async () => {
+        const result = await fs.remove('/non-existent');
+        expect(isErr(result)).toBe(true);
+        expect(getErrorMessage(result)).toContain('not found');
+      });
+    });
+
+    describe('emptyDir', () => {
+      it('should empty directory contents', async () => {
+        await fs.writeFile('/dir/file1.txt', 'content1');
+        await fs.writeFile('/dir/file2.txt', 'content2');
+        await fs.mkdir('/dir/subdir', { recursive: true });
+        
+        const emptyResult = await fs.emptyDir('/dir');
+        expect(isOk(emptyResult)).toBe(true);
+
+        const dirExists = await fs.exists('/dir');
+        expect(unwrap(dirExists)).toBe(true);
+        
+        const file1Exists = await fs.exists('/dir/file1.txt');
+        expect(unwrap(file1Exists)).toBe(false);
+        
+        const subdirExists = await fs.exists('/dir/subdir');
+        expect(unwrap(subdirExists)).toBe(false);
+      });
+
+      it('should create directory if it does not exist', async () => {
+        const result = await fs.emptyDir('/new-empty-dir');
+        expect(isOk(result)).toBe(true);
+        
+        const exists = await fs.exists('/new-empty-dir');
+        expect(unwrap(exists)).toBe(true);
+      });
+    });
+
+    describe('outputFile', () => {
+      it('should write file creating parent directories', async () => {
+        const result = await fs.outputFile('/deep/nested/path/file.txt', 'content');
+        expect(isOk(result)).toBe(true);
+        
+        const content = await fs.readFile('/deep/nested/path/file.txt');
+        expect(unwrap(content)).toBe('content');
+        
+        const dirExists = await fs.exists('/deep/nested/path');
+        expect(unwrap(dirExists)).toBe(true);
+      });
+    });
+  });
 });

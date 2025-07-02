@@ -123,6 +123,25 @@ export const stringArray = (field?: string): Validator<string[]> =>
   array(string(), field);
 
 /**
+ * Create a field validator that extracts and validates a specific property from an object
+ * Returns the original object if validation passes
+ */
+export const field = <T extends Record<string, unknown>>(
+  fieldName: string,
+  validator: Validator<unknown>,
+): Validator<T> => 
+  (value) => {
+    if (!isObject(value)) {
+      return Err(`Value must be an object to validate field ${fieldName}`);
+    }
+    const fieldResult = validator(value[fieldName]);
+    if (!fieldResult.success) {
+      return fieldResult;
+    }
+    return Ok(value as T);
+  };
+
+/**
  * Create a composable validator
  */
 export function createValidator<T>(
@@ -131,24 +150,24 @@ export function createValidator<T>(
   return {
     validate: validator,
 
-    and<U>(other: Validator<U>): ComposableValidator<T & U> {
+    and<U>(other: ComposableValidator<U>): ComposableValidator<T & U> {
       return createValidator((value) => {
         const result1 = validator(value);
         if (!result1.success) return result1;
 
-        const result2 = other(value);
+        const result2 = other.validate(value);
         if (!result2.success) return result2;
 
         return Ok({ ...result1.value, ...result2.value } as T & U);
       });
     },
 
-    or<U>(other: Validator<U>): ComposableValidator<T | U> {
+    or<U>(other: ComposableValidator<U>): ComposableValidator<T | U> {
       return createValidator((value) => {
         const result1 = validator(value);
         if (result1.success) return result1 as Result<T | U, ValidationError>;
 
-        const result2 = other(value);
+        const result2 = other.validate(value);
         if (result2.success) return result2 as Result<T | U, ValidationError>;
 
         return Err(

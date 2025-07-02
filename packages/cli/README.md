@@ -26,6 +26,7 @@ A functional CLI framework for building robust, testable command-line applicatio
 - 🧪 **Testing utilities** - Mocks, test contexts, runners
 - 🎨 **Beautiful output** - Chalk styling, Ora spinners, progress tracking
 - 🔍 **Full type safety** - Strict TypeScript with comprehensive types
+- 🔄 **Advanced retry patterns** - Circuit breakers, exponential backoff, jitter
 
 ## Installation
 
@@ -76,26 +77,26 @@ import { createCLI, Ok, Err } from "@trailhead/cli";
 import { createCommand } from "@trailhead/cli/command";
 import { createDefaultLogger } from "@trailhead/cli/core";
 
-// Create a CLI application
-const cli = createCLI({
-  name: "my-cli",
-  version: "1.0.0",
-  description: "My awesome CLI tool",
-});
-
 // Create a command
 const greetCommand = createCommand({
   name: "greet",
   description: "Greet someone",
-  options: [{ name: "name", alias: "n", type: "string", required: true }],
+  options: [{ name: "name", alias: "n", type: "string", required: true, description: "Name to greet" }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`);
     return Ok(undefined);
   },
 });
 
-// Add command and run
-cli.addCommand(greetCommand);
+// Create a CLI application with commands
+const cli = createCLI({
+  name: "my-cli",
+  version: "1.0.0",
+  description: "My awesome CLI tool",
+  commands: [greetCommand],
+});
+
+// Run the CLI
 cli.run(process.argv);
 ```
 
@@ -115,7 +116,7 @@ import type { Result, CLI, CLIConfig } from "@trailhead/cli";
 
 ### Core (`@trailhead/cli/core`)
 
-Result types and error handling utilities:
+Result types, error handling utilities, and advanced retry patterns:
 
 ```typescript
 import { Ok, Err, isOk, isErr } from "@trailhead/cli";
@@ -130,6 +131,72 @@ if (isOk(result)) {
   console.log(result.value);
 }
 ```
+
+#### Retry Patterns
+
+The framework includes comprehensive retry functionality powered by p-retry:
+
+```typescript
+import { 
+  retryWithBackoff, 
+  retryAdvanced, 
+  RetryStrategies,
+  createCircuitBreaker,
+  retryWithTimeout 
+} from "@trailhead/cli/core";
+
+// Basic retry with exponential backoff
+const result = await retryWithBackoff(
+  async () => {
+    const response = await fetch('/api/data');
+    if (!response.ok) {
+      return Err({ 
+        code: 'API_ERROR', 
+        message: 'Request failed',
+        recoverable: true 
+      });
+    }
+    return Ok(await response.json());
+  },
+  { maxRetries: 3, initialDelay: 1000 }
+);
+
+// Advanced retry with pre-configured strategies
+const apiResult = await retryAdvanced(
+  async () => callUnreliableAPI(),
+  {
+    ...RetryStrategies.network(), // 3 retries, 1s-10s delays, with jitter
+    onFailedAttempt: (error, attempt, retriesLeft) => {
+      logger.warn(`Attempt ${attempt} failed: ${error.message}`);
+    }
+  }
+);
+
+// Circuit breaker pattern for preventing cascading failures
+const breaker = createCircuitBreaker({
+  failureThreshold: 5,
+  resetTimeout: 60000
+});
+
+const protectedResult = await breaker.execute(
+  async () => callProtectedService(),
+  RetryStrategies.conservative()
+);
+
+// Retry with overall timeout
+const timedResult = await retryWithTimeout(
+  async () => slowOperation(),
+  5000, // 5 second timeout
+  { retries: 10 }
+);
+```
+
+Available retry strategies:
+- `RetryStrategies.conservative()` - 5 retries, 2-30s delays
+- `RetryStrategies.aggressive()` - 10 retries, 100ms-5s delays  
+- `RetryStrategies.network()` - 3 retries with jitter for network calls
+- `RetryStrategies.filesystem()` - 2 retries, minimal delays
+- `RetryStrategies.infinite()` - Unlimited retries (use with caution)
 
 ### Command (`@trailhead/cli/command`)
 
@@ -151,7 +218,7 @@ const result = await executeWithPhases(phases, data, context);
 
 ### FileSystem (`@trailhead/cli/filesystem`)
 
-Abstract filesystem operations:
+Powerful filesystem operations built on fs-extra with Result type safety:
 
 ```typescript
 import { createFileSystem } from "@trailhead/cli/filesystem";
@@ -159,11 +226,21 @@ import type { FileSystem } from "@trailhead/cli/filesystem";
 
 const fs = createFileSystem();
 
-// All operations return Results
-const result = await fs.readFile("config.json");
-if (result.success) {
-  const content = result.value;
-}
+// Basic operations
+const content = await fs.readFile("config.json");
+const writeResult = await fs.writeFile("output.txt", "data");
+const exists = await fs.exists("some-file.txt");
+
+// Advanced operations (powered by fs-extra)
+const copyResult = await fs.copy("src", "dest", { recursive: true });
+const moveResult = await fs.move("old-path", "new-path");
+const removeResult = await fs.remove("temp-dir"); // Recursive removal
+const emptyResult = await fs.emptyDir("cache"); // Empty directory
+const outputResult = await fs.outputFile("deep/path/file.txt", "content"); // Auto-create dirs
+
+// JSON operations
+const data = await fs.readJson("package.json");
+const writeJsonResult = await fs.writeJson("output.json", { name: "test" });
 ```
 
 ### Configuration (`@trailhead/cli/config`)
@@ -272,12 +349,6 @@ import {
   createFileSystem,
 } from "@trailhead/cli";
 
-const cli = createCLI({
-  name: "my-app",
-  version: "1.0.0",
-  description: "My CLI application",
-});
-
 // Example: Config command
 const configCommand = createCommand({
   name: "config",
@@ -286,7 +357,7 @@ const configCommand = createCommand({
     createCommand({
       name: "get",
       description: "Get config value",
-      options: [{ name: "key", alias: "k", type: "string", required: true }],
+      options: [{ name: "key", alias: "k", type: "string", required: true, description: "Configuration key to get" }],
       action: async (options, context) => {
         const fs = createFileSystem();
         const result = await fs.readFile("./config.json");
@@ -310,8 +381,8 @@ const configCommand = createCommand({
       name: "set",
       description: "Set config value",
       options: [
-        { name: "key", alias: "k", type: "string", required: true },
-        { name: "value", alias: "v", type: "string", required: true },
+        { name: "key", alias: "k", type: "string", required: true, description: "Configuration key to set" },
+        { name: "value", alias: "v", type: "string", required: true, description: "Configuration value to set" },
       ],
       action: async (options, context) => {
         const fs = createFileSystem();
@@ -340,38 +411,44 @@ const configCommand = createCommand({
   ],
 });
 
-// Add commands to CLI
-cli.addCommand(configCommand).addCommand(
-  createCommand({
-    name: "init",
-    description: "Initialize project",
-    options: [
-      { name: "template", alias: "t", type: "string", default: "default" },
-      { name: "force", alias: "f", type: "boolean", default: false },
-    ],
-    action: async (options, context) => {
-      const fs = createFileSystem();
+// Create init command
+const initCommand = createCommand({
+  name: "init",
+  description: "Initialize project",
+  options: [
+    { name: "template", alias: "t", type: "string", default: "default", description: "Template to use for initialization" },
+    { name: "force", alias: "f", type: "boolean", default: false, description: "Force overwrite existing configuration" },
+  ],
+  action: async (options, context) => {
+    const fs = createFileSystem();
 
-      const exists = await fs.exists("./config.json");
-      if (exists.success && exists.value && !options.force) {
-        return Err(new Error("Already initialized. Use --force to overwrite."));
-      }
+    const exists = await fs.exists("./config.json");
+    if (exists.success && exists.value && !options.force) {
+      return Err(new Error("Already initialized. Use --force to overwrite."));
+    }
 
-      const config = { template: options.template, created: new Date() };
-      const result = await fs.writeFile(
-        "./config.json",
-        JSON.stringify(config, null, 2),
-      );
+    const config = { template: options.template, created: new Date() };
+    const result = await fs.writeFile(
+      "./config.json",
+      JSON.stringify(config, null, 2),
+    );
 
-      if (!result.success) {
-        return Err(new Error(`Failed: ${result.error.message}`));
-      }
+    if (!result.success) {
+      return Err(new Error(`Failed: ${result.error.message}`));
+    }
 
-      context.logger.success("Initialized successfully!");
-      return Ok(undefined);
-    },
-  }),
-);
+    context.logger.success("Initialized successfully!");
+    return Ok(undefined);
+  },
+});
+
+// Create CLI with all commands
+const cli = createCLI({
+  name: "my-app",
+  version: "1.0.0",
+  description: "My CLI application",
+  commands: [configCommand, initCommand],
+});
 
 // Run the CLI
 cli.run(process.argv);

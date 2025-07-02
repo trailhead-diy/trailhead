@@ -29,8 +29,15 @@ export {
   createExitHandler,
   retryWithBackoff,
   tryRecover,
+  retryAdvanced,
+  RetryStrategies,
+  createRetryWrapper,
+  createCircuitBreaker,
+  retryWithTimeout,
+  retryParallel,
+  createProgressiveRetry,
 } from './errors/index.js';
-export type { CLIError } from './errors/index.js';
+export type { CLIError, AdvancedRetryOptions, CircuitBreakerOptions, CircuitBreaker } from './errors/index.js';
 
 export {
   createValidationPipeline,

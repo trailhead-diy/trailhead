@@ -1,4 +1,4 @@
-import type { FileSystem } from '../filesystem/index.js';
+import type { FileSystem, MoveOptions } from '../filesystem/index.js';
 import type { Logger } from '../core/logger.js';
 import { Ok, Err } from '../core/errors/index.js';
 import type { Result } from '../core/errors/index.js';
@@ -25,6 +25,11 @@ export function mockFileSystem(
     for (let i = 1; i < parts.length; i++) {
       directories.add(parts.slice(0, i).join('/'));
     }
+  }
+  
+  // Always ensure root directory exists
+  if (files.size > 0 || directories.size > 0) {
+    directories.add('.');
   }
 
   return {
@@ -173,6 +178,54 @@ export function mockFileSystem(
     // Test helpers
     getFiles: () => new Map(files),
     getDirectories: () => new Set(directories),
+    move: async (src: string, dest: string, _options?: MoveOptions): Promise<Result<void>> => {
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      const content = files.get(normalizedSrc);
+      if (content === undefined) {
+        return Err({
+          code: 'FILE_NOT_FOUND',
+          message: `Source file not found: ${src}`,
+          path: src,
+          recoverable: false,
+        });
+      }
+      files.set(normalizedDest, content);
+      files.delete(normalizedSrc);
+      return Ok(undefined);
+    },
+
+    remove: async (path: string): Promise<Result<void>> => {
+      const normalized = normalizePath(path);
+      files.delete(normalized);
+      directories.delete(normalized);
+      return Ok(undefined);
+    },
+
+    emptyDir: async (path: string): Promise<Result<void>> => {
+      const normalized = normalizePath(path);
+      directories.add(normalized);
+      // Remove all files in this directory
+      const prefix = normalized + '/';
+      for (const filePath of files.keys()) {
+        if (filePath.startsWith(prefix)) {
+          files.delete(filePath);
+        }
+      }
+      return Ok(undefined);
+    },
+
+    outputFile: async (path: string, content: string): Promise<Result<void>> => {
+      const normalized = normalizePath(path);
+      files.set(normalized, content);
+      // Add parent directories
+      const parts = normalized.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+      return Ok(undefined);
+    },
+
     clear: () => {
       files.clear();
       directories.clear();
@@ -282,19 +335,65 @@ export function createEnhancedMockFileSystem(
     exists: async (path: string): Promise<Result<boolean>> => {
       const error = checkForSimulatedError('exists', path);
       if (error) return Err(error);
-      return basicFs.exists(path);
+      const normalized = caseSensitive 
+        ? normalizePath(path) 
+        : normalizePath(path).toLowerCase();
+      
+      if (!caseSensitive) {
+        // Check if any file or directory matches case-insensitively
+        const lowerFiles = Array.from(files.keys()).map(k => k.toLowerCase());
+        const lowerDirs = Array.from(directories).map(d => d.toLowerCase());
+        return Ok(lowerFiles.includes(normalized) || lowerDirs.includes(normalized));
+      }
+      
+      return Ok(files.has(normalized) || directories.has(normalized));
     },
 
     readFile: async (path: string): Promise<Result<string>> => {
       const error = checkForSimulatedError('readFile', path);
       if (error) return Err(error);
-      return basicFs.readFile(path);
+      const normalized = caseSensitive 
+        ? normalizePath(path) 
+        : normalizePath(path).toLowerCase();
+      
+      let content: string | undefined;
+      
+      if (!caseSensitive) {
+        // Find the actual file with case-insensitive search
+        for (const [filePath, fileContent] of files.entries()) {
+          if (filePath.toLowerCase() === normalized) {
+            content = fileContent;
+            break;
+          }
+        }
+      } else {
+        content = files.get(normalized);
+      }
+      
+      if (content === undefined) {
+        return Err({
+          code: 'FILE_NOT_FOUND',
+          message: `File not found: ${path}`,
+          path,
+          recoverable: false,
+        });
+      }
+      return Ok(content);
     },
 
     writeFile: async (path: string, content: string): Promise<Result<void>> => {
       const error = checkForSimulatedError('writeFile', path);
       if (error) return Err(error);
-      return basicFs.writeFile(path, content);
+      const normalized = normalizePath(path);
+      files.set(normalized, content);
+
+      // Add parent directories
+      const parts = normalized.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+
+      return Ok(undefined);
     },
 
     // Enhanced test utilities

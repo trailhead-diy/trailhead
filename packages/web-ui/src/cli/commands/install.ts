@@ -1,8 +1,8 @@
-import { Command } from 'commander'
-import chalk from 'chalk'
-import type { CLIContext } from '../utils/types.js'
-import { runInstallationPrompts } from '../prompts/installation.js'
 import { Ok as CliOk, Err as CliErr, type Result } from '@trailhead/cli'
+import {
+  createCommand,
+  type CommandContext,
+} from '@trailhead/cli/command'
 import {
   createValidationPipeline,
   createRule,
@@ -10,6 +10,7 @@ import {
   ValidationErr,
 } from '@trailhead/cli/core'
 import { createNodeFileSystem } from '@trailhead/cli/filesystem'
+import { runInstallationPrompts } from '../prompts/installation.js'
 import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js'
 import {
   performInstallation,
@@ -19,23 +20,13 @@ import {
 import { resolveConfiguration } from '../core/installation/config.js'
 import { detectFramework, VALID_FRAMEWORKS } from '../core/installation/framework-detection.js'
 import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js'
-import { createDefaultLogger } from '@trailhead/cli/core'
 import { convertInstallResult } from './utils/error-conversion.js'
 import { getTrailheadPackageRoot } from '../utils/context.js'
+import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js'
+import { type StrictInstallOptions, isValidFramework, isValidDependencyStrategy } from '../core/types/command-options.js'
 
-interface InstallOptions {
-  interactive?: boolean
-  framework?: string
-  dest?: string
-  catalystDir?: string
-  force?: boolean
-  dryRun?: boolean
-  noConfig?: boolean
-  overwrite?: boolean
-  verbose?: boolean
-  wrappers?: boolean
-  dependencyStrategy?: string
-}
+// Use strict typing for better type safety
+type InstallOptions = StrictInstallOptions
 
 // ============================================================================
 // VALIDATION
@@ -55,10 +46,20 @@ const createInstallValidation = () => {
 
           // Only validate if framework is explicitly provided
           if (options.framework) {
-            if (!VALID_FRAMEWORKS.includes(options.framework as any)) {
+            if (!isValidFramework(options.framework)) {
               return ValidationErr(
-                `Invalid framework. Must be one of: ${VALID_FRAMEWORKS.join(', ')}`,
+                `Invalid framework. Must be one of: nextjs, vite, redwood-sdk, generic-react`,
                 'framework'
+              )
+            }
+          }
+          
+          // Validate dependency strategy if provided
+          if (options.dependencyStrategy) {
+            if (!isValidDependencyStrategy(options.dependencyStrategy)) {
+              return ValidationErr(
+                `Invalid dependency strategy. Must be one of: auto, smart, selective, manual, skip, force`,
+                'dependencyStrategy'
               )
             }
           }
@@ -134,13 +135,13 @@ const createInstallValidation = () => {
  */
 async function executeInstallation(
   options: InstallOptions,
-  context: CLIContext,
+  context: CommandContext,
   finalOptions?: InstallOptions
 ): Promise<Result<void>> {
   // Create dependencies
   const nodeFS = createNodeFileSystem()
   const fs = adaptSharedToInstallFS(nodeFS)
-  const logger = createDefaultLogger(options.verbose ?? false)
+  const logger = context.logger
 
   try {
     // Load new config system
@@ -279,23 +280,23 @@ function displayInstallationSummary(
     themes: string[]
   }
 ): void {
-  console.log('')
-  console.log(chalk.green('✅ Trailhead UI installed successfully!'))
-  console.log('')
+  logger.info('')
+  logger.success('✅ Trailhead UI installed successfully!')
+  logger.info('')
 
-  console.log(chalk.bold('📦 Installed:'))
-  console.log(`   • ${summary.filesInstalled} files`)
-  console.log(`   • ${summary.themes.length} themes available`)
-  console.log('')
+  logger.info('📦 Installed:')
+  logger.info(`   • ${summary.filesInstalled} files`)
+  logger.info(`   • ${summary.themes.length} themes available`)
+  logger.info('')
 
-  console.log(chalk.bold('🚀 Next Steps:'))
+  logger.info('🚀 Next Steps:')
   const steps = getFrameworkSteps(summary.framework)
   steps.forEach((step, index) => {
-    console.log(`   ${index + 1}. ${step}`)
+    logger.info(`   ${index + 1}. ${step}`)
   })
-  console.log('')
+  logger.info('')
 
-  console.log(`📚 Docs: ${chalk.cyan('https://github.com/esteban-url/trailhead-ui#readme')}`)
+  logger.info('📚 Docs: https://github.com/esteban-url/trailhead-ui#readme')
 }
 
 /**
@@ -337,31 +338,35 @@ function getFrameworkSteps(framework: string): string[] {
 /**
  * Handle install command execution
  */
-async function handleInstall(options: InstallOptions, context: CLIContext): Promise<void> {
+async function handleInstall(options: InstallOptions, context: CommandContext): Promise<Result<void>> {
   // Validate options
   const validation = createInstallValidation()
   const validationResult = validation.validateSync(options)
 
   if (validationResult.overall === 'fail') {
-    console.error(chalk.red('❌ Invalid options:'))
+    context.logger.error('❌ Invalid options:')
     // Simple error display until formatValidationSummary is available
     validationResult.failed.forEach((result) => {
-      console.error(`  • ${result.message}`)
+      context.logger.error(`  • ${result.message}`)
     })
-    process.exit(1)
+    return CliErr(createCLIError(
+      CLI_ERROR_CODES.VALIDATION_ERROR,
+      'Invalid installation options',
+      { recoverable: true }
+    ))
   }
 
   // Show warnings if any
   if (validationResult.overall === 'warning') {
     validationResult.warnings.forEach((result) => {
-      console.warn(chalk.yellow(`⚠ ${result.message}`))
+      context.logger.info(`⚠ ${result.message}`)
     })
   }
 
   // Run interactive prompts if needed
   let finalOptions = options
   if (options.interactive || (!options.framework && !options.dryRun)) {
-    console.log(chalk.blue('🚀 Interactive Installation Mode\n'))
+    context.logger.info('🚀 Interactive Installation Mode\n')
     const promptResults = await runInstallationPrompts()
 
     // Merge with CLI options (only override if explicitly provided)
@@ -385,13 +390,15 @@ async function handleInstall(options: InstallOptions, context: CLIContext): Prom
   const result = await executeInstallation(finalOptions, context, finalOptions)
 
   if (!result.success) {
-    console.error(chalk.red('❌ Installation failed:'))
-    console.error(result.error.message)
+    context.logger.error('❌ Installation failed:')
+    context.logger.error(result.error.message)
     if (options.verbose && result.error.details) {
-      console.error('Details:', result.error.details)
+      context.logger.error('Details:' + result.error.details)
     }
-    process.exit(1)
+    return result
   }
+
+  return CliOk(undefined)
 }
 
 // ============================================================================
@@ -401,35 +408,65 @@ async function handleInstall(options: InstallOptions, context: CLIContext): Prom
 /**
  * Create refactored install command
  */
-export const createInstallCommand = (context: CLIContext): Command => {
-  return new Command('install')
-    .description('Install and configure Trailhead UI components with enhanced theming')
-    .option('--catalyst-dir <path>', 'path to catalyst-ui-kit directory')
-    .option('-d, --dest <path>', 'destination directory for installation')
-    .option('-f, --framework <type>', 'framework type (redwood-sdk, nextjs, vite, generic-react)')
-    .option('--force', 'overwrite existing component files')
-    .option('--dry-run', 'show what would be done without making changes')
-    .option('--no-config', 'skip generating configuration files')
-    .option('--overwrite', 'always overwrite config files without prompting')
-    .option('-i, --interactive', 'run in interactive mode')
-    .option('-v, --verbose', 'show detailed output')
-    .option('--no-wrappers', 'install components without wrapper files')
-    .option(
-      '--dependency-strategy <strategy>',
-      'dependency installation strategy (auto, smart, selective, manual, skip, force)'
-    )
-    .action(async (options: InstallOptions) => {
-      await handleInstall(options, context)
-    })
-    .addHelpText(
-      'after',
-      `
-Examples:
-  $ trailhead-ui install
-  $ trailhead-ui install --framework nextjs
-  $ trailhead-ui install --dest src/ui
-  $ trailhead-ui install --dry-run
-  $ trailhead-ui install --interactive
-`
-    )
+export const createInstallCommand = () => {
+  return createCommand<InstallOptions>({
+    name: 'install',
+    description: 'Install and configure Trailhead UI components with enhanced theming',
+    
+    options: [
+      {
+        flags: '--catalyst-dir <path>',
+        description: 'path to catalyst-ui-kit directory',
+      },
+      {
+        flags: '-d, --dest <path>',
+        description: 'destination directory for installation',
+      },
+      {
+        flags: '-f, --framework <type>',
+        description: 'framework type (redwood-sdk, nextjs, vite, generic-react)',
+      },
+      {
+        flags: '--force',
+        description: 'overwrite existing component files',
+        default: false,
+      },
+      {
+        flags: '--no-config',
+        description: 'skip generating configuration files',
+        default: false,
+      },
+      {
+        flags: '--overwrite',
+        description: 'always overwrite config files without prompting',
+        default: false,
+      },
+      {
+        flags: '-i, --interactive',
+        description: 'run in interactive mode',
+        default: false,
+      },
+      {
+        flags: '--no-wrappers',
+        description: 'install components without wrapper files',
+        default: false,
+      },
+      {
+        flags: '--dependency-strategy <strategy>',
+        description: 'dependency installation strategy (auto, smart, selective, manual, skip, force)',
+      },
+    ],
+
+    examples: [
+      '$ trailhead-ui install',
+      '$ trailhead-ui install --framework nextjs',
+      '$ trailhead-ui install --dest src/ui',
+      '$ trailhead-ui install --dry-run',
+      '$ trailhead-ui install --interactive',
+    ],
+
+    action: async (options, cmdContext) => {
+      return await handleInstall(options, cmdContext)
+    },
+  })
 }

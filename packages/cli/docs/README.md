@@ -163,9 +163,10 @@ const cli = createCLI({
   name: "my-app",
   version: "1.0.0",
   description: "My awesome CLI tool",
+  commands: [greetCommand, configCommand],
 });
 
-cli.addCommand(greetCommand).addCommand(configCommand).run(process.argv);
+cli.run(process.argv);
 ```
 
 ### Error Handling Pattern
