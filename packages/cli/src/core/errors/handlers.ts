@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import pRetry, { AbortError } from 'p-retry';
 import type {
   CLIError,
   Result,
@@ -8,6 +9,7 @@ import type {
   SeverityError,
   ErrorChain,
 } from './types.js';
+import { RetryableError } from './retry-error.js';
 
 export function formatError(
   error: CLIError,
@@ -175,7 +177,30 @@ export async function tryRecover<T, E extends CLIError>(
 }
 
 /**
- * Retry an operation with exponential backoff
+ * Retry an operation with exponential backoff using p-retry
+ * 
+ * @param operation - Async function that returns a Result type
+ * @param options - Retry configuration options
+ * @param options.maxRetries - Maximum number of retry attempts (default: 3)
+ * @param options.initialDelay - Initial delay in milliseconds (default: 1000)
+ * @param options.maxDelay - Maximum delay between retries in milliseconds (default: 30000)
+ * @param options.factor - Exponential backoff factor (default: 2)
+ * @param options.shouldRetry - Function to determine if an error should be retried (default: checks error.recoverable)
+ * @returns Promise resolving to Result<T, E>
+ * 
+ * @example
+ * ```typescript
+ * const result = await retryWithBackoff(
+ *   async () => {
+ *     const response = await fetch('/api/data');
+ *     if (!response.ok) {
+ *       return Err({ code: 'API_ERROR', message: 'Failed', recoverable: true });
+ *     }
+ *     return Ok(await response.json());
+ *   },
+ *   { maxRetries: 5, initialDelay: 500 }
+ * );
+ * ```
  */
 export async function retryWithBackoff<T, E extends CLIError>(
   operation: () => AsyncResult<T, E>,
@@ -195,30 +220,65 @@ export async function retryWithBackoff<T, E extends CLIError>(
     shouldRetry = (error) => error.recoverable,
   } = options;
 
-  let delay = initialDelay;
   let lastError: E | undefined;
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const result = await operation();
-
-    if (result.success) {
-      return result;
+  try {
+    const result = await pRetry(
+      async () => {
+        const operationResult = await operation();
+        
+        if (operationResult.success) {
+          return operationResult;
+        }
+        
+        lastError = operationResult.error;
+        
+        // Check if we should retry this error
+        if (!shouldRetry(operationResult.error)) {
+          // Don't retry - throw a special error to stop p-retry
+          throw new AbortError(operationResult.error.message);
+        }
+        
+        // Throw a RetryableError to trigger retry (p-retry requires Error instances)
+        throw new RetryableError(operationResult.error.message, operationResult.error);
+      },
+      {
+        retries: maxRetries,
+        minTimeout: initialDelay,
+        maxTimeout: maxDelay,
+        factor: factor,
+        onFailedAttempt: (error) => {
+          // p-retry provides attempt number and retriesLeft
+          if (error.retriesLeft === 0) {
+            // This is the last attempt
+            return;
+          }
+        },
+      }
+    );
+    
+    return result;
+  } catch (error) {
+    // Handle abort errors (non-retryable errors)
+    if (error instanceof AbortError && lastError) {
+      return { success: false, error: lastError };
     }
-
-    lastError = result.error;
-
-    if (!shouldRetry(result.error) || attempt === maxRetries) {
-      return result;
+    
+    // Handle other errors (exhausted retries)
+    if (lastError) {
+      return { success: false, error: lastError };
     }
-
-    // Wait before retrying
-    await new Promise((resolve) => setTimeout(resolve, delay));
-
-    // Increase delay for next attempt
-    delay = Math.min(delay * factor, maxDelay);
+    
+    // Fallback error (shouldn't happen)
+    return {
+      success: false,
+      error: {
+        code: 'RETRY_FAILED',
+        message: error instanceof Error ? error.message : 'Unknown retry error',
+        recoverable: false,
+      } as E,
+    };
   }
-
-  return { success: false, error: lastError! };
 }
 
 export function mapError<T, E1 extends CLIError, E2 extends CLIError>(
