@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander'
-import chalk from 'chalk'
+import { createCLI } from '@trailhead/cli'
+import { chalk } from '@trailhead/cli/utils'
 import { createCLIContext, getScriptDir } from './cli/utils/context.js'
 import { createInstallCommand } from './cli/commands/install.js'
 import { createTransformsCommand } from './cli/commands/transforms.js'
 import { createProfileCommand } from './cli/commands/profile.js'
 import { createDevRefreshCommand } from './cli/commands/dev-refresh.js'
+import { createInitCommand } from './cli/commands/init.js'
+import { createAddCommand } from './cli/commands/add.js'
 process.on('uncaughtException', (error) => {
   if (error instanceof Error && error.name === 'ExitPromptError') {
     console.log(chalk.gray('\n👋 Installation cancelled'))
@@ -23,41 +25,24 @@ async function main(): Promise<void> {
   try {
     const context = createCLIContext(getScriptDir())
 
-    const program = new Command()
-      .name('trailhead-ui')
-      .description('Trailhead UI - Catalyst UI with advanced theming system')
-      .version(context.version)
-    program.addCommand(createInstallCommand(context))
-    program.addCommand(createTransformsCommand(context))
-    program.addCommand(createProfileCommand(context))
-    program.addCommand(createDevRefreshCommand(context))
-    program
-      .command('init')
-      .description('Initialize a new Trailhead UI project')
-      .option('-n, --name <name>', 'project name')
-      .option('-t, --template <template>', 'project template')
-      .action(async (_options) => {
-        console.log(chalk.yellow('🚧 Init command coming soon!'))
-        console.log('For now, use:', chalk.cyan('trailhead-ui install'))
-      })
+    const cli = createCLI({
+      name: 'trailhead-ui',
+      description: 'Trailhead UI - Catalyst UI with advanced theming system',
+      version: context.version,
+      commands: [
+        createInstallCommand(),
+        createTransformsCommand(),
+        createProfileCommand(),
+        createDevRefreshCommand(),
+        createInitCommand(),
+        createAddCommand(),
+      ],
+    })
 
-    program
-      .command('add')
-      .description('Add individual components')
-      .argument('[components...]', 'component names to add')
-      .option('-f, --force', 'overwrite existing files')
-      .action(async (_components, _options) => {
-        console.log(chalk.yellow('🚧 Add command coming soon!'))
-        console.log('For now, use:', chalk.cyan('trailhead-ui install'))
-      })
-
-    if (process.argv.length <= 2) {
-      program.help()
-    }
-    await program.parseAsync(process.argv)
+    await cli.run(process.argv)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    console.error(chalk.red('❌ CLI Error:'), errorMessage)
+    console.error(chalk.red('❌ Unexpected error:'), errorMessage)
 
     if (process.env.NODE_ENV === 'development' && error instanceof Error) {
       console.error(error.stack)

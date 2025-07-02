@@ -18,7 +18,7 @@ import {
   compareFiles as frameworkCompareFiles,
   type FileComparison,
 } from '@trailhead/cli/filesystem'
-import { createStats, updateStats as frameworkUpdateStats, type StatsTracker } from '@trailhead/cli'
+import { createStats, updateStats as frameworkUpdateStats, type StatsTracker } from '@trailhead/cli/utils'
 import type {
   ConversionStats,
   FileProcessingResult,
