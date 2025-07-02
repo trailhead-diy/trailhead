@@ -261,7 +261,12 @@ import * as cli from '@trailhead/cli/command';
 import { createCommand } from '@trailhead/cli/command'; // This is also included
 
 // ✅ Proper tree-shaking
-import { createCommand, executeWithPhases } from '@trailhead/cli/command';
+import { 
+  createCommand, 
+  executeWithPhases, 
+  executeWithDryRun,
+  displaySummary 
+} from '@trailhead/cli/command';
 ```
 
 ### Issue: TypeScript can't resolve subpath imports

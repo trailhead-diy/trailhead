@@ -86,8 +86,9 @@ interface CommandConfig<T = any> {
 
 ```typescript
 interface CommandOption {
-  name: string;              // Long name (--name)
+  name?: string;             // Option name for programmatic access
   alias?: string;            // Short alias (-n)
+  flags?: string;            // Commander.js style flags (e.g., '-v, --verbose')
   description: string;       // Help text
   type?: "string" | "boolean" | "number";
   required?: boolean;
@@ -116,8 +117,8 @@ const command = createCommand({
   name: "create",
   description: "Create a new project",
   options: [
-    { name: "name", type: "string", required: true },
-    { name: "template", type: "string", choices: ["basic", "advanced"] },
+    { name: "name", type: "string", required: true, description: "Project name" },
+    { name: "template", type: "string", choices: ["basic", "advanced"], description: "Project template" },
   ],
   validate: (options) => {
     if (!/^[a-z0-9-]+$/.test(options.name)) {
@@ -150,7 +151,7 @@ const userCommand = createCommand({
     createCommand({
       name: "add",
       description: "Add a user",
-      options: [{ name: "name", required: true }],
+      options: [{ name: "name", required: true, description: "User name" }],
       action: async (options, context) => {
         context.logger.success(`Added user: ${options.name}`);
         return Ok(undefined);
@@ -201,39 +202,42 @@ const result = await executeWithPhases(
 );
 ```
 
-### With Progress
+### With Dry-Run Support
 
-Show progress for long-running operations.
+Execute commands with dry-run preview capability.
 
 ```typescript
-import { executeWithProgress } from "@trailhead/cli/command";
+import { executeWithDryRun } from "@trailhead/cli/command";
 
-const command = createCommand({
-  name: "process",
+interface ProcessOptions {
+  dryRun?: boolean;
+  input: string;
+  output: string;
+}
+
+const command = createCommand<ProcessOptions>({
+  name: "transform",
+  options: [
+    { flags: '--dry-run', description: 'Preview changes without executing', type: 'boolean' },
+    { flags: '--input <file>', description: 'Input file', type: 'string', required: true },
+    { flags: '--output <file>', description: 'Output file', type: 'string', required: true },
+  ],
   action: async (options, context) => {
-    return executeWithProgress({
-      title: "Processing files",
-      tasks: [
-        { name: "Reading", weight: 1 },
-        { name: "Transforming", weight: 3 },
-        { name: "Writing", weight: 1 },
-      ],
-      execute: async (progress) => {
-        // Read files
-        progress.update(0);
-        await readFiles();
+    return executeWithDryRun(
+      options,
+      async (config) => {
+        if (config.dryRun) {
+          context.logger.info(`Would transform ${config.input} -> ${config.output}`);
+          return Ok(undefined);
+        }
         
-        // Transform
-        progress.update(1);
-        await transform();
-        
-        // Write
-        progress.update(2);
-        await writeFiles();
-        
+        // Actual transformation logic
+        context.logger.info(`Transforming ${config.input} -> ${config.output}`);
         return Ok(undefined);
       },
-    });
+      context,
+      "This will overwrite the output file. Continue?"
+    );
   },
 });
 ```
@@ -259,31 +263,37 @@ const result = await executeInteractive({
 
 ## Command Composition
 
-### Combining Commands
+### Display Summary
+
+Show formatted results and configuration summaries.
 
 ```typescript
-import { composeCommands } from "@trailhead/cli/command";
+import { displaySummary } from "@trailhead/cli/command";
 
-const composedCommand = composeCommands([
-  cleanCommand,
-  buildCommand,
-  testCommand,
-], {
-  name: "ci",
-  description: "Run CI pipeline",
-  stopOnError: true,
+const command = createCommand({
+  name: "status",
+  action: async (options, context) => {
+    // Show configuration summary
+    displaySummary(
+      "Project Configuration",
+      [
+        { label: "Project Name", value: "my-app" },
+        { label: "Version", value: "1.0.0" },
+        { label: "Environment", value: "production" },
+        { label: "Hot Reload", value: true },
+        { label: "Source Maps", value: false },
+      ],
+      context,
+      [
+        { label: "Total Files", value: 42 },
+        { label: "Bundle Size", value: "2.3 MB" },
+        { label: "Build Time", value: "1.2s" },
+      ]
+    );
+    
+    return Ok(undefined);
+  },
 });
-```
-
-### Global Options
-
-```typescript
-import { withGlobalOptions } from "@trailhead/cli/command";
-
-const enhancedCommand = withGlobalOptions(myCommand, [
-  { name: "config", alias: "c", type: "string", description: "Config file" },
-  { name: "dry-run", type: "boolean", description: "Simulate execution" },
-]);
 ```
 
 ## Type Reference

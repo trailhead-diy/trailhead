@@ -56,10 +56,13 @@ interface FileSystem {
   
   // File operations
   copy(src: string, dest: string, options?: CopyOptions): Promise<Result<void>>;
-  rm(path: string, options?: RemoveOptions): Promise<Result<void>>;
+  move(src: string, dest: string, options?: { overwrite?: boolean }): Promise<Result<void>>;
+  remove(path: string): Promise<Result<void>>;
   
   // Utility operations
   ensureDir(path: string): Promise<Result<void>>;
+  emptyDir(path: string): Promise<Result<void>>;
+  outputFile(path: string, content: string): Promise<Result<void>>;
   readJson<T = any>(path: string): Promise<Result<T>>;
   writeJson<T = any>(path: string, data: T, options?: JsonOptions): Promise<Result<void>>;
 }
@@ -196,9 +199,64 @@ await fs.copy("/src/dir", "/dest/dir", {
   overwrite: false 
 });
 
-// Remove file or directory
-await fs.rm("/old/file.txt");
-await fs.rm("/old/directory", { recursive: true });
+// Move file or directory
+await fs.move("/src/file.txt", "/dest/file.txt");
+await fs.move("/old/dir", "/new/dir", { overwrite: true });
+
+// Remove file or directory (recursive by default)
+await fs.remove("/old/file.txt");
+await fs.remove("/old/directory"); // Removes recursively
+
+// Empty directory contents (keeps the directory)
+await fs.emptyDir("/temp");
+
+// Output file with automatic directory creation
+await fs.outputFile("/deep/nested/path/file.txt", "content");
+```
+
+### Enhanced Operations (fs-extra powered)
+
+These methods provide additional functionality powered by the fs-extra library:
+
+```typescript
+// Move operations - atomically move files/directories
+const moveResult = await fs.move("/source/file.txt", "/destination/file.txt");
+if (moveResult.success) {
+  console.log("File moved successfully");
+}
+
+// Move with overwrite protection
+const safeMove = await fs.move("/src", "/dest", { overwrite: false });
+
+// Remove operations - safely remove any file/directory
+await fs.remove("/temporary-file.txt");      // Remove file
+await fs.remove("/temporary-directory");     // Remove directory recursively
+await fs.remove("/path/that/might/not/exist"); // Safe - won't error if missing
+
+// Empty directory - clear contents but keep directory
+await fs.emptyDir("/cache");           // Empties /cache but keeps the directory
+await fs.emptyDir("/logs");            // Clears all log files
+await fs.emptyDir("/temp/downloads");   // Cleans download directory
+
+// Output file - write with automatic parent directory creation
+await fs.outputFile("/deep/nested/structure/config.json", '{"key": "value"}');
+// Creates /deep, /deep/nested, /deep/nested/structure automatically
+
+// Practical examples
+
+// Backup and replace pattern
+const backupPath = `/backups/${Date.now()}-config.json`;
+await fs.move("/app/config.json", backupPath);  // Backup original
+await fs.outputFile("/app/config.json", newConfig); // Write new config
+
+// Clean and recreate pattern
+await fs.remove("/build");              // Remove old build
+await fs.ensureDir("/build");           // Ensure build directory exists
+await fs.outputFile("/build/index.js", bundledCode); // Output new build
+
+// Safe cleanup pattern
+await fs.emptyDir("/temp");             // Clear temp files but keep directory
+await fs.remove("/cache/expired");      // Remove expired cache entries
 ```
 
 ## Error Handling
