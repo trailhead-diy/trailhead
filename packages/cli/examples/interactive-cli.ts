@@ -16,7 +16,7 @@ interface ProjectOptions {
 
 const initCommand = createCommand<ProjectOptions>({
   name: 'init',
-  description: 'Initialize a new project interactively',
+  description: 'Initialize a new project interactively\n\nExamples:\n  init my-project\n  init my-project --template react --typescript\n  init --interactive',
   arguments: '[name]',
   options: [
     {
@@ -154,7 +154,7 @@ const initCommand = createCommand<ProjectOptions>({
       context,
     );
   },
-}, { projectRoot: process.cwd() });
+});
 
 // Configuration command with complex prompts
 const configCommand = createCommand({
@@ -297,17 +297,15 @@ const configCommand = createCommand({
     
     return Ok(undefined);
   },
-}, { projectRoot: process.cwd() });
+});
 
 // Create CLI
 const cli = createCLI({
   name: 'interactive-example',
   version: '1.0.0',
   description: 'Interactive CLI example with prompts and user input',
+  commands: [initCommand, configCommand],
 });
-
-cli.addCommand(initCommand);
-cli.addCommand(configCommand);
 
 // Run CLI
 cli.run(process.argv);
