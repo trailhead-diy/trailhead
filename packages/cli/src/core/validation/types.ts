@@ -76,8 +76,8 @@ export type AsyncValidator<T> = (
  */
 export interface ComposableValidator<T> {
   validate: Validator<T>;
-  and: <U>(other: Validator<U>) => ComposableValidator<T & U>;
-  or: <U>(other: Validator<U>) => ComposableValidator<T | U>;
+  and: <U>(other: ComposableValidator<U>) => ComposableValidator<T & U>;
+  or: <U>(other: ComposableValidator<U>) => ComposableValidator<T | U>;
   map: <U>(fn: (value: T) => U) => ComposableValidator<U>;
   mapError: (
     fn: (error: ValidationError) => ValidationError,
