@@ -8,8 +8,6 @@ overrides:
   glob@<10: '>=11.0.0'
   inflight: npm:@void/noop@^1.0.0
 
-pnpmfileChecksum: sha256-DyO6yjXE0gQbyrSMkuOoJ8hdZjiZkprg72xLxUslCdg=
-
 importers:
 
   .:
@@ -66,8 +64,8 @@ importers:
         specifier: ^11.3.0
         version: 11.3.0
       glob:
-        specifier: ^10.3.0
-        version: 10.4.5
+        specifier: ^11.0.0
+        version: 11.0.3
       ora:
         specifier: ^8.0.1
         version: 8.2.0
@@ -91,17 +89,17 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/glob':
-        specifier: ^8.1.0
-        version: 8.1.0
+        specifier: ^9.0.0
+        version: 9.0.0
       '@types/node':
         specifier: ^20.11.0
         version: 20.19.2
       '@vitest/coverage-v8':
-        specifier: ^1.2.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.19.2)(jsdom@26.1.0)(lightningcss@1.30.1))
+        specifier: ^3.0.0
+        version: 3.2.4(vitest@1.6.1(@types/node@20.19.2)(jsdom@26.1.0)(lightningcss@1.30.1))
       oxlint:
-        specifier: ^0.2.0
-        version: 0.2.18
+        specifier: ^1.0.0
+        version: 1.4.0
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
@@ -542,9 +540,6 @@ packages:
   '@babel/types@7.27.7':
     resolution: {integrity: sha512-8OLQgDScAOHXnAz2cV+RfzzNMipuLVBz2biuAJFMV9bfkNf393je3VM8CLkjQodW5+iWsSJdSgSWT6rsZoXHPw==}
     engines: {node: '>=6.9.0'}
-
-  '@bcoe/v8-coverage@0.2.3':
-    resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
   '@bcoe/v8-coverage@1.0.2':
     resolution: {integrity: sha512-6zABk/ECA/QYSCQ1NGiVwwbQerUCZ+TQbp64Q3AgmfNvurHH0j8TtXa1qbShXA6qqkpAj4V5W8pP6mLe1mcMqA==}
@@ -1156,19 +1151,9 @@ packages:
   '@oxc-project/types@0.75.0':
     resolution: {integrity: sha512-QMW+06WOXs7+F301Y3X0VpmWhwuQVc/X/RP2zF9OIwvSMmsif3xURS2wxbakFIABYsytgBcHpUcFepVS0Qnd3A==}
 
-  '@oxlint/darwin-arm64@0.2.18':
-    resolution: {integrity: sha512-DpPId0O8hHh1/PjbtJSMi3DvgK5ol49hB+jiogYGXvBPOF2/8/tG1v7dtbACx4pcorUMu4EHHKHigasnx114cQ==}
-    cpu: [arm64]
-    os: [darwin]
-
   '@oxlint/darwin-arm64@1.4.0':
     resolution: {integrity: sha512-G3UsDnZpykvQ5GDzDCAhgBMwM6SzbQyH1If/oH5e/CutUC7sq/QTY8a2l1Hu7liK/euvKiZtM3C/cKdUKy1DNw==}
     cpu: [arm64]
-    os: [darwin]
-
-  '@oxlint/darwin-x64@0.2.18':
-    resolution: {integrity: sha512-hdnPhG/nxF2F8YI9lg3uYMH1ZYxSKiDPu2srey1Xvo2LZChNnvbvxXNS5UYAxG9f/U6VbH4WYfUcqbNZW5Tnzw==}
-    cpu: [x64]
     os: [darwin]
 
   '@oxlint/darwin-x64@1.4.0':
@@ -1176,18 +1161,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@0.2.18':
-    resolution: {integrity: sha512-bhCHYlIn8I5bw5AulQKhYJzanLFoi7mgIkqzfiJibCrGrQh3IKv3h0k8bWHqLEYMmufhGz7yhS96oY3Pe0K1Aw==}
-    cpu: [arm64]
-    os: [linux]
-
   '@oxlint/linux-arm64-gnu@1.4.0':
     resolution: {integrity: sha512-9qZarfKyq6v56GhcN0IyejQsmv8GiSi+lJjjXQ/uaa50JrY4/2+i63uRJceUT7SBZbCj1PHvgZuqN+QXov6dWg==}
-    cpu: [arm64]
-    os: [linux]
-
-  '@oxlint/linux-arm64-musl@0.2.18':
-    resolution: {integrity: sha512-TbZONlryL36xWLUCNRhYZ0m92io6hiN0Ho8ez4T5BoTWwaKwyTdAvpbH7vFDlVDAsp33GB81DXsFSAjPq8PIng==}
     cpu: [arm64]
     os: [linux]
 
@@ -1196,18 +1171,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@0.2.18':
-    resolution: {integrity: sha512-Leupfl0E85BC1t8zB+vqUeeKami+Lo/8HiihLUQAbjz+O8J2WuNaOmt/GURK5jINQhEASBw8dnhNFBMKYe6ZgA==}
-    cpu: [x64]
-    os: [linux]
-
   '@oxlint/linux-x64-gnu@1.4.0':
     resolution: {integrity: sha512-z/71xdZpvudjZsaEDk+EJxEzDIcyCaKbvUtGjAfKv60jLuP83bDHD0VD8GI8FSPjhlLpDPmrbcXWbT690Q7NAA==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oxlint/linux-x64-musl@0.2.18':
-    resolution: {integrity: sha512-THG4LZ8KeCy87E4tHqC765acRW0dyXdgzqERi3idjSupCH8juTpk9UfZVcpxcqEicXnEuZDkBQpO8nboyFng3Q==}
     cpu: [x64]
     os: [linux]
 
@@ -1216,19 +1181,9 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@0.2.18':
-    resolution: {integrity: sha512-X/boJsMQiuO2Wfu3eabWefFlb0+O5oSXjcG0gmIE9aySNMy/pVyCno2/RGy+0f4xSjBZXmamCsEoQp/E8NeDQQ==}
-    cpu: [arm64]
-    os: [win32]
-
   '@oxlint/win32-arm64@1.4.0':
     resolution: {integrity: sha512-wFa7ywGt0jnuukynANm5k/D189YwrQKHIdNgBjBsTvvJZNxGzVy8Q5dwsG0qwWS6RkVh9CMUpOTccPsKBdGHkQ==}
     cpu: [arm64]
-    os: [win32]
-
-  '@oxlint/win32-x64@0.2.18':
-    resolution: {integrity: sha512-LmwDhDaZYd20WKmHPeITYNazGVUBFvs7D9+WJ+ecx+bX/6euFp8j+e/4sUzxR5gk6pecqyA6WEld52Gy6W92jg==}
-    cpu: [x64]
     os: [win32]
 
   '@oxlint/win32-x64@1.4.0':
@@ -1622,8 +1577,9 @@ packages:
   '@types/fs-extra@11.0.4':
     resolution: {integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==}
 
-  '@types/glob@8.1.0':
-    resolution: {integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==}
+  '@types/glob@9.0.0':
+    resolution: {integrity: sha512-00UxlRaIUvYm4R4W9WYkN8/J+kV8fmOQ7okeH6YFtGWFMt3odD45tpG5yA5wnL7HE6lLgjaTW5n14ju2hl2NNA==}
+    deprecated: This is a stub types definition. glob provides its own type definitions, so you do not need this installed.
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -1633,9 +1589,6 @@ packages:
 
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
-
-  '@types/minimatch@5.1.2':
-    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
 
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
@@ -1668,11 +1621,6 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0-beta.0
-
-  '@vitest/coverage-v8@1.6.1':
-    resolution: {integrity: sha512-6YeRZwuO4oTGKxD3bijok756oktHSIm3eczVVzNe3scqzuhLwltIF3S9ZL/vwOVIpURmU6SnZhziXXAfw8/Qlw==}
-    peerDependencies:
-      vitest: 1.6.1
 
   '@vitest/coverage-v8@3.2.4':
     resolution: {integrity: sha512-EyF9SXU6kS5Ku/U82E259WSnvg6c8KTjppUncuNdm5QHpe17mwREHnjDzozC8x9MZ0xfBUFSaLkRv4TMA75ALQ==}
@@ -1828,9 +1776,6 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
-  brace-expansion@1.1.12:
-    resolution: {integrity: sha512-9T9UjW3r0UW5c1Q7GTwllptXwhvYmEzFhzMfZ9H7FQWt+uZePjZPjBP/W1ZEyZ1twGWom5/56TF4lPcqjnDHcg==}
-
   brace-expansion@2.0.2:
     resolution: {integrity: sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==}
 
@@ -1974,9 +1919,6 @@ packages:
 
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
-
-  concat-map@0.0.1:
-    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
@@ -2749,9 +2691,6 @@ packages:
     resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
     engines: {node: 20 || >=22}
 
-  minimatch@3.1.2:
-    resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
-
   minimatch@9.0.5:
     resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
     engines: {node: '>=16 || 14 >=14.17'}
@@ -2878,11 +2817,6 @@ packages:
 
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
-
-  oxlint@0.2.18:
-    resolution: {integrity: sha512-/6tR2hm9vN/cjJarItkDPeSWDqPbkQ6pVDzePR2La5cNA+kn1Gt7k0ZHxcpTuhZOI/lhRD2z4C0v/m9kja/0cQ==}
-    engines: {node: '>=14.*'}
-    hasBin: true
 
   oxlint@1.4.0:
     resolution: {integrity: sha512-whu+lxSL9GCzO+b+X++tk81d5UoCeAq+plU5DWSoLqmwjCV0OyDkRlfGPDhbBHXm2z6GrepvF0d0Sb66z6SG4A==}
@@ -3480,10 +3414,6 @@ packages:
 
   term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
-    engines: {node: '>=8'}
-
-  test-exclude@6.0.0:
-    resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
     engines: {node: '>=8'}
 
   test-exclude@7.0.1:
@@ -4222,8 +4152,6 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-
-  '@bcoe/v8-coverage@0.2.3': {}
 
   '@bcoe/v8-coverage@1.0.2': {}
 
@@ -5031,49 +4959,25 @@ snapshots:
 
   '@oxc-project/types@0.75.0': {}
 
-  '@oxlint/darwin-arm64@0.2.18':
-    optional: true
-
   '@oxlint/darwin-arm64@1.4.0':
-    optional: true
-
-  '@oxlint/darwin-x64@0.2.18':
     optional: true
 
   '@oxlint/darwin-x64@1.4.0':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@0.2.18':
-    optional: true
-
   '@oxlint/linux-arm64-gnu@1.4.0':
-    optional: true
-
-  '@oxlint/linux-arm64-musl@0.2.18':
     optional: true
 
   '@oxlint/linux-arm64-musl@1.4.0':
     optional: true
 
-  '@oxlint/linux-x64-gnu@0.2.18':
-    optional: true
-
   '@oxlint/linux-x64-gnu@1.4.0':
-    optional: true
-
-  '@oxlint/linux-x64-musl@0.2.18':
     optional: true
 
   '@oxlint/linux-x64-musl@1.4.0':
     optional: true
 
-  '@oxlint/win32-arm64@0.2.18':
-    optional: true
-
   '@oxlint/win32-arm64@1.4.0':
-    optional: true
-
-  '@oxlint/win32-x64@0.2.18':
     optional: true
 
   '@oxlint/win32-x64@1.4.0':
@@ -5404,10 +5308,9 @@ snapshots:
       '@types/jsonfile': 6.1.4
       '@types/node': 24.0.10
 
-  '@types/glob@8.1.0':
+  '@types/glob@9.0.0':
     dependencies:
-      '@types/minimatch': 5.1.2
-      '@types/node': 22.15.34
+      glob: 11.0.3
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
@@ -5419,8 +5322,6 @@ snapshots:
   '@types/jsonfile@6.1.4':
     dependencies:
       '@types/node': 24.0.10
-
-  '@types/minimatch@5.1.2': {}
 
   '@types/node@12.20.55': {}
 
@@ -5460,10 +5361,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@1.6.1(vitest@1.6.1(@types/node@20.19.2)(jsdom@26.1.0)(lightningcss@1.30.1))':
+  '@vitest/coverage-v8@3.2.4(vitest@1.6.1(@types/node@20.19.2)(jsdom@26.1.0)(lightningcss@1.30.1))':
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@bcoe/v8-coverage': 0.2.3
+      '@bcoe/v8-coverage': 1.0.2
+      ast-v8-to-istanbul: 0.3.3
       debug: 4.4.1
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
@@ -5471,10 +5373,9 @@ snapshots:
       istanbul-reports: 3.1.7
       magic-string: 0.30.17
       magicast: 0.3.5
-      picocolors: 1.1.1
       std-env: 3.9.0
-      strip-literal: 2.1.1
-      test-exclude: 6.0.0
+      test-exclude: 7.0.1
+      tinyrainbow: 2.0.0
       vitest: 1.6.1(@types/node@20.19.2)(jsdom@26.1.0)(lightningcss@1.30.1)
     transitivePeerDependencies:
       - supports-color
@@ -5646,11 +5547,6 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  brace-expansion@1.1.12:
-    dependencies:
-      balanced-match: 1.0.2
-      concat-map: 0.0.1
-
   brace-expansion@2.0.2:
     dependencies:
       balanced-match: 1.0.2
@@ -5797,8 +5693,6 @@ snapshots:
   commander@9.5.0: {}
 
   commondir@1.0.1: {}
-
-  concat-map@0.0.1: {}
 
   confbox@0.1.8: {}
 
@@ -6569,10 +6463,6 @@ snapshots:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
 
-  minimatch@3.1.2:
-    dependencies:
-      brace-expansion: 1.1.12
-
   minimatch@9.0.5:
     dependencies:
       brace-expansion: 2.0.2
@@ -6693,17 +6583,6 @@ snapshots:
   os-tmpdir@1.0.2: {}
 
   outdent@0.5.0: {}
-
-  oxlint@0.2.18:
-    optionalDependencies:
-      '@oxlint/darwin-arm64': 0.2.18
-      '@oxlint/darwin-x64': 0.2.18
-      '@oxlint/linux-arm64-gnu': 0.2.18
-      '@oxlint/linux-arm64-musl': 0.2.18
-      '@oxlint/linux-x64-gnu': 0.2.18
-      '@oxlint/linux-x64-musl': 0.2.18
-      '@oxlint/win32-arm64': 0.2.18
-      '@oxlint/win32-x64': 0.2.18
 
   oxlint@1.4.0:
     optionalDependencies:
@@ -7202,12 +7081,6 @@ snapshots:
       yallist: 5.0.0
 
   term-size@2.2.1: {}
-
-  test-exclude@6.0.0:
-    dependencies:
-      '@istanbuljs/schema': 0.1.3
-      glob: 11.0.3
-      minimatch: 3.1.2
 
   test-exclude@7.0.1:
     dependencies:
