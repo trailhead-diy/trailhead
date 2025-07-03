@@ -140,6 +140,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build CLI package
+        run: pnpm build --filter=@esteban-url/trailhead-cli
+
       - name: Validate example TypeScript compilation
         working-directory: packages/cli/examples
         run: |
