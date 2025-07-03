@@ -6,7 +6,7 @@ import os from 'os';
  * Create a temporary directory for testing
  */
 export async function createTestTempDir(): Promise<string> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'trailhead-cli-test-'));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'esteban-url-trailhead-cli-test-'));
   return tempDir;
 }
 

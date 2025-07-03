@@ -45,7 +45,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI package
-        run: pnpm build --filter=@trailhead/cli
+        run: pnpm build --filter=@esteban-url/trailhead-cli
 
       - name: Run TypeScript compilation check
         working-directory: packages/cli
@@ -99,7 +99,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI package
-        run: pnpm build --filter=@trailhead/cli
+        run: pnpm build --filter=@esteban-url/trailhead-cli
 
       - name: Run complete example test suite
         working-directory: packages/cli
