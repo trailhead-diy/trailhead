@@ -50,7 +50,6 @@ describe('CLI Integration Tests', () => {
     });
   });
 
-
   describe('run', () => {
     it('should execute simple command successfully', async () => {
       const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
@@ -70,7 +69,7 @@ describe('CLI Integration Tests', () => {
       await cli.run(['node', 'cli.js', 'build']);
 
       expect(mockExecute).toHaveBeenCalledTimes(1);
-      
+
       const [options, context] = mockExecute.mock.calls[0];
       expect(options.verbose).toBe(false);
       expect(context.projectRoot).toBe('/test/project');
@@ -241,7 +240,7 @@ describe('CLI Integration Tests', () => {
           code: 'TEST_ERROR',
           message: 'Test error occurred',
           suggestion: 'Try again',
-        })
+        }),
       );
 
       const mockCommand: Command = {
@@ -265,7 +264,9 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should exit with code 1 on command exception', async () => {
-      const mockExecute = vi.fn().mockRejectedValue(new Error('Unexpected error'));
+      const mockExecute = vi
+        .fn()
+        .mockRejectedValue(new Error('Unexpected error'));
 
       const mockCommand: Command = {
         name: 'crash',

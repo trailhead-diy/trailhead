@@ -226,7 +226,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@esteban-url/*_or @repo/*_)
+2. Add proper package.json with correct namespace (@esteban-url/_\_or @repo/_\_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 
@@ -473,6 +473,15 @@ pnpm build                  # Production build
 - `gpr` = GitHub pull request: Create PR with title from commits, run validation checks,
   assign reviewers based on changed files, and auto-link issues. Detects affected
   packages in monorepo.
+- `gbcp` = Git branch, commit, push/PR workflow: 1) Create new feature branch from current
+  branch, 2) Stage all changes and commit with meaningful message (gcwm), 3) Push branch
+  and create PR with auto-generated description (gpr).
+- `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger
+  automated release via GitHub Action, 4) The automation handles version bumping, changelog
+  generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
+- `pubdr` = Publish dry-run: Check what would be published without actually releasing.
+  Runs `pnpm release:dry-run` to preview package contents and verify everything looks
+  correct before actual publish. Use before `pub` to ensure safety.
 
 ### Documentation Shortcuts
 

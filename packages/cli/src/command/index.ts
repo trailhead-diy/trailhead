@@ -7,9 +7,7 @@ export type {
   InteractiveOptions,
 } from './types.js';
 
-export {
-  createCommand,
-} from './base.js';
+export { createCommand } from './base.js';
 
 export {
   validateCommandOption,
@@ -30,9 +28,9 @@ export {
   executeBatch,
   executeWithConfiguration,
   // Requiered by @esteban-url/trailhead-web-ui
-  executeWithPhases,      // Multi-step transformation workflows
-  executeWithDryRun,      // Safe preview of file operations  
-  displaySummary,         // Formatted configuration/result display
+  executeWithPhases, // Multi-step transformation workflows
+  executeWithDryRun, // Safe preview of file operations
+  displaySummary, // Formatted configuration/result display
 } from './patterns.js';
 
 export type {

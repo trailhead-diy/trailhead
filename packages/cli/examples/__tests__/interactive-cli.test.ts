@@ -1,14 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { execSync, spawn } from 'child_process';
 import { resolve } from 'path';
-import { runInteractiveTest, createInteractiveTestHelper } from '../../src/testing/interactive.js';
+import {
+  runInteractiveTest,
+  createInteractiveTestHelper,
+} from '../../src/testing/interactive.js';
 
 // Skip example CLI tests - they require @esteban-url/trailhead-cli to be published or dist files built
 // These tests execute actual CLI files that import from dist/index.js
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('Interactive CLI Example Integration Tests', () => {
   const interactiveCliPath = resolve(__dirname, '../interactive-cli.ts');
-  const testHelper = createInteractiveTestHelper(interactiveCliPath, resolve(__dirname, '..'));
+  const testHelper = createInteractiveTestHelper(
+    interactiveCliPath,
+    resolve(__dirname, '..'),
+  );
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -20,11 +26,14 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
 
   describe('init command - non-interactive mode', () => {
     it('should create project with provided name and options', () => {
-      const result = execSync(`npx tsx "${interactiveCliPath}" init test-project --template react --typescript`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const result = execSync(
+        `npx tsx "${interactiveCliPath}" init test-project --template react --typescript`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(result).toContain('Creating project: test-project');
       expect(result).toContain('Template: react');
@@ -36,11 +45,14 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
     });
 
     it('should handle project name from argument', () => {
-      const result = execSync(`npx tsx "${interactiveCliPath}" init my-awesome-project --template cli --no-install`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const result = execSync(
+        `npx tsx "${interactiveCliPath}" init my-awesome-project --template cli --no-install`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(result).toContain('Creating project: my-awesome-project');
       expect(result).toContain('Template: cli');
@@ -48,11 +60,14 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
     });
 
     it('should use default values when minimal options provided', () => {
-      const result = execSync(`npx tsx "${interactiveCliPath}" init simple-project`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const result = execSync(
+        `npx tsx "${interactiveCliPath}" init simple-project`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(result).toContain('Creating project: simple-project');
       expect(result).toContain('Project simple-project created successfully!');
@@ -66,7 +81,9 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
         cwd: process.cwd(),
       });
 
-      expect(result).toContain('Use --interactive flag to configure interactively');
+      expect(result).toContain(
+        'Use --interactive flag to configure interactively',
+      );
     });
   });
 
@@ -78,7 +95,9 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
       });
 
       expect(result).toContain('interactive-example');
-      expect(result).toContain('Interactive CLI example with prompts and user input');
+      expect(result).toContain(
+        'Interactive CLI example with prompts and user input',
+      );
       expect(result).toContain('init');
       expect(result).toContain('config');
     });
@@ -134,7 +153,7 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
           { prompt: 'Would you like to use TypeScript?', response: 'Y' },
           { prompt: 'Install dependencies now?', response: 'n' }, // No install
         ],
-        20000
+        20000,
       );
 
       expect(result.exitCode).toBe(0);
@@ -145,7 +164,11 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
     });
 
     it('should handle init with defaults using helper', async () => {
-      const result = await testHelper.testWithDefaults(['init', '--interactive'], 5, 15000);
+      const result = await testHelper.testWithDefaults(
+        ['init', '--interactive'],
+        5,
+        15000,
+      );
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('Creating project:');
@@ -170,7 +193,7 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
           { prompt: 'Max requests per minute:', response: '200' },
           { prompt: 'Save this configuration?', response: 'Y' },
         ],
-        25000
+        25000,
       );
 
       expect(result.exitCode).toBe(0);
@@ -191,7 +214,7 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
           { prompt: 'Enable REST API?', response: 'n' }, // Disable API
           { prompt: 'Save this configuration?', response: 'Y' },
         ],
-        15000
+        15000,
       );
 
       expect(result.exitCode).toBe(0);
@@ -220,7 +243,7 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
           { prompt: 'Please enter a positive number', response: '100' }, // Corrected
           { prompt: 'Save this configuration?', response: 'Y' },
         ],
-        20000
+        20000,
       );
 
       expect(result.exitCode).toBe(0);
@@ -243,7 +266,7 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
           { prompt: 'Enable rate limiting?', response: 'n' },
           { prompt: 'Save this configuration?', response: 'n' }, // Discard
         ],
-        15000
+        15000,
       );
 
       expect(result.exitCode).toBe(0);
@@ -265,11 +288,14 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
     });
 
     it('should handle invalid template option', () => {
-      const result = execSync(`npx tsx "${interactiveCliPath}" init test --template invalid-template`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const result = execSync(
+        `npx tsx "${interactiveCliPath}" init test --template invalid-template`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       // Should still work, just use the provided template value
       expect(result).toContain('Creating project: test');
@@ -279,11 +305,14 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
 
   describe('validation and edge cases', () => {
     it('should handle project with valid special characters', () => {
-      const result = execSync(`npx tsx "${interactiveCliPath}" init my-project_123 --template node`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const result = execSync(
+        `npx tsx "${interactiveCliPath}" init my-project_123 --template node`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(result).toContain('Creating project: my-project_123');
       expect(result).toContain('Template: node');
@@ -291,13 +320,16 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
 
     it('should handle all template options', () => {
       const templates = ['react', 'vue', 'node', 'cli', 'library'];
-      
+
       for (const template of templates) {
-        const result = execSync(`npx tsx "${interactiveCliPath}" init test-${template} --template ${template} --no-install`, {
-          encoding: 'utf8',
-          cwd: process.cwd(),
-          timeout: 10000,
-        });
+        const result = execSync(
+          `npx tsx "${interactiveCliPath}" init test-${template} --template ${template} --no-install`,
+          {
+            encoding: 'utf8',
+            cwd: process.cwd(),
+            timeout: 10000,
+          },
+        );
 
         expect(result).toContain(`Creating project: test-${template}`);
         expect(result).toContain(`Template: ${template}`);
@@ -306,20 +338,26 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
 
     it('should handle TypeScript flag variations', () => {
       // Test with TypeScript enabled
-      const withTs = execSync(`npx tsx "${interactiveCliPath}" init ts-project --typescript --no-install`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const withTs = execSync(
+        `npx tsx "${interactiveCliPath}" init ts-project --typescript --no-install`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(withTs).toContain('TypeScript: Yes');
 
       // Test without explicit TypeScript flag (should default)
-      const defaultTs = execSync(`npx tsx "${interactiveCliPath}" init default-project --no-install`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const defaultTs = execSync(
+        `npx tsx "${interactiveCliPath}" init default-project --no-install`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(defaultTs).toContain('Creating project: default-project');
     });
@@ -327,20 +365,26 @@ describe.skip('Interactive CLI Example Integration Tests', () => {
     // Skip this test - requires stable module resolution that can be affected by build timing
     it.skip('should show correct next steps based on install flag', () => {
       // Test with install
-      const withInstall = execSync(`npx tsx "${interactiveCliPath}" init install-project`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const withInstall = execSync(
+        `npx tsx "${interactiveCliPath}" init install-project`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(withInstall).toContain('npm start');
 
       // Test without install
-      const noInstall = execSync(`npx tsx "${interactiveCliPath}" init no-install-project --no-install`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-        timeout: 10000,
-      });
+      const noInstall = execSync(
+        `npx tsx "${interactiveCliPath}" init no-install-project --no-install`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          timeout: 10000,
+        },
+      );
 
       expect(noInstall).toContain('npm install && npm start');
     });

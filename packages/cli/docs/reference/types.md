@@ -14,20 +14,16 @@ Comprehensive index of all types exported by @esteban-url/trailhead-cli modules.
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
+| Property    | Value                        |
+| ----------- | ---------------------------- |
 | **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | All modules |
-| **Since** | `v1.0.0` |
+| **Module**  | All modules                  |
+| **Since**   | `v1.0.0`                     |
 
 ## Import
 
 ```typescript
-import type { 
-  Result, 
-  CLI, 
-  CLIConfig 
-} from "@esteban-url/trailhead-cli";
+import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
 ```
 
 ## Import by Module
@@ -35,11 +31,7 @@ import type {
 ### Main Export (`@esteban-url/trailhead-cli`)
 
 ```typescript
-import type { 
-  Result, 
-  CLI, 
-  CLIConfig 
-} from "@esteban-url/trailhead-cli";
+import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
 ```
 
 ### Core Types (`@esteban-url/trailhead-cli/core`)
@@ -56,7 +48,7 @@ import type {
   Logger,
   ValidationRule,
   ValidationPipeline,
-  Validator
+  Validator,
 } from "@esteban-url/trailhead-cli/core";
 ```
 
@@ -71,7 +63,7 @@ import type {
   CommandPhase,
   ParsedOptions,
   ExecutionOptions,
-  ProgressOptions
+  ProgressOptions,
 } from "@esteban-url/trailhead-cli/command";
 ```
 
@@ -85,7 +77,7 @@ import type {
   MkdirOptions,
   CopyOptions,
   RemoveOptions,
-  JsonOptions
+  JsonOptions,
 } from "@esteban-url/trailhead-cli/filesystem";
 ```
 
@@ -95,7 +87,7 @@ import type {
 import type {
   ConfigDefinition,
   ConfigSchema,
-  LoadOptions
+  LoadOptions,
 } from "@esteban-url/trailhead-cli/config";
 ```
 
@@ -108,7 +100,7 @@ import type {
   MockLogger,
   MockPrompts,
   RunOptions,
-  CommandTestRunner
+  CommandTestRunner,
 } from "@esteban-url/trailhead-cli/testing";
 ```
 
@@ -121,7 +113,7 @@ import type {
   Stats,
   StatsSummary,
   OptionSchema,
-  StyleFunction
+  StyleFunction,
 } from "@esteban-url/trailhead-cli/utils";
 ```
 
@@ -218,7 +210,11 @@ interface FileSystem {
   rm(path: string, options?: RemoveOptions): Promise<Result<void>>;
   ensureDir(path: string): Promise<Result<void>>;
   readJson<T = any>(path: string): Promise<Result<T>>;
-  writeJson<T = any>(path: string, data: T, options?: JsonOptions): Promise<Result<void>>;
+  writeJson<T = any>(
+    path: string,
+    data: T,
+    options?: JsonOptions,
+  ): Promise<Result<void>>;
 }
 
 interface FileStats {
@@ -257,7 +253,10 @@ All types are designed to work together:
 
 ```typescript
 // Example: Command using multiple module types
-import type { Command, CommandContext } from "@esteban-url/trailhead-cli/command";
+import type {
+  Command,
+  CommandContext,
+} from "@esteban-url/trailhead-cli/command";
 import type { Result } from "@esteban-url/trailhead-cli";
 import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
 import type { Logger } from "@esteban-url/trailhead-cli/core";
@@ -265,10 +264,13 @@ import type { Logger } from "@esteban-url/trailhead-cli/core";
 const myCommand: Command<MyOptions> = {
   name: "process",
   description: "Process files",
-  execute: async (options: MyOptions, context: CommandContext): Promise<Result<void>> => {
+  execute: async (
+    options: MyOptions,
+    context: CommandContext,
+  ): Promise<Result<void>> => {
     const fs: FileSystem = context.fs;
     const logger: Logger = context.logger;
-    
+
     // Implementation using typed modules
     return Ok(undefined);
   },

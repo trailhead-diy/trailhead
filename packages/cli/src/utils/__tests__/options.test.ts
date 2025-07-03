@@ -116,7 +116,7 @@ describe('Options Utilities', () => {
 
       expect(result).toEqual({
         timeout: 5000, // default preserved
-        retries: 5,    // option applied
+        retries: 5, // option applied
         verbose: false, // default preserved
       });
     });
@@ -301,17 +301,15 @@ describe('Options Utilities', () => {
         missing: undefined,
       };
 
-      const optionDefinitions = [
-        { name: 'port', type: 'number' as const },
-      ];
+      const optionDefinitions = [{ name: 'port', type: 'number' as const }];
 
       const result = processCommandOptions(rawOptions, optionDefinitions);
 
       expect(result).toEqual({
-        port: 3000,      // type coerced
-        name: 'test',    // preserved as-is
+        port: 3000, // type coerced
+        name: 'test', // preserved as-is
         verbose: 'true', // preserved as-is
-        extra: 'value',  // preserved as-is
+        extra: 'value', // preserved as-is
         // missing is filtered out
       });
     });
@@ -379,11 +377,11 @@ describe('Options Utilities', () => {
       // Simulate commander.js-style options
       const rawOptions = {
         input: 'file.txt',
-        output: undefined,  // Not provided
+        output: undefined, // Not provided
         format: 'json',
         verbose: true,
         port: '3000',
-        ssl: undefined,     // Not provided
+        ssl: undefined, // Not provided
       };
 
       const defaults = {
@@ -394,9 +392,7 @@ describe('Options Utilities', () => {
         ssl: false,
       };
 
-      const optionDefinitions = [
-        { name: 'port', type: 'number' as const },
-      ];
+      const optionDefinitions = [{ name: 'port', type: 'number' as const }];
 
       // Process and merge
       const processed = processCommandOptions(rawOptions, optionDefinitions);
@@ -405,10 +401,10 @@ describe('Options Utilities', () => {
       expect(final).toEqual({
         input: 'file.txt',
         output: 'output.txt', // default preserved (undefined filtered)
-        format: 'json',       // option applied
-        verbose: true,        // option applied
-        port: 3000,          // option applied and coerced
-        ssl: false,          // default preserved (undefined filtered)
+        format: 'json', // option applied
+        verbose: true, // option applied
+        port: 3000, // option applied and coerced
+        ssl: false, // default preserved (undefined filtered)
       });
     });
 

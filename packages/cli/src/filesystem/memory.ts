@@ -200,7 +200,7 @@ export function createMemoryFileSystem(
     async move(src: string, dest: string, options: MoveOptions = {}) {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
-      
+
       if (!files.has(normalizedSrc)) {
         return Err({
           code: 'ENOENT',
@@ -222,9 +222,12 @@ export function createMemoryFileSystem(
       const content = files.get(normalizedSrc)!;
       files.set(normalizedDest, content);
       files.delete(normalizedSrc);
-      
+
       // Update directory structure
-      const destDir = normalizedDest.substring(0, normalizedDest.lastIndexOf('/'));
+      const destDir = normalizedDest.substring(
+        0,
+        normalizedDest.lastIndexOf('/'),
+      );
       if (destDir) {
         directories.add(destDir);
       }
@@ -234,7 +237,7 @@ export function createMemoryFileSystem(
 
     async remove(path: string) {
       const normalizedPath = normalizePath(path);
-      
+
       // Remove file if it exists
       if (files.has(normalizedPath)) {
         files.delete(normalizedPath);
@@ -244,7 +247,7 @@ export function createMemoryFileSystem(
       // Remove directory and all its contents
       if (directories.has(normalizedPath)) {
         directories.delete(normalizedPath);
-        
+
         // Remove all files in this directory
         const prefix = normalizedPath + '/';
         for (const filePath of files.keys()) {
@@ -252,14 +255,14 @@ export function createMemoryFileSystem(
             files.delete(filePath);
           }
         }
-        
+
         // Remove all subdirectories
         for (const dir of directories) {
           if (dir.startsWith(prefix)) {
             directories.delete(dir);
           }
         }
-        
+
         return Ok(undefined);
       }
 
@@ -273,10 +276,10 @@ export function createMemoryFileSystem(
 
     async emptyDir(path: string) {
       const normalizedPath = normalizePath(path);
-      
+
       // Create directory if it doesn't exist
       directories.add(normalizedPath);
-      
+
       // Remove all files in this directory
       const prefix = normalizedPath + '/';
       for (const filePath of files.keys()) {
@@ -284,14 +287,14 @@ export function createMemoryFileSystem(
           files.delete(filePath);
         }
       }
-      
+
       // Remove all subdirectories
       for (const dir of directories) {
         if (dir.startsWith(prefix)) {
           directories.delete(dir);
         }
       }
-      
+
       return Ok(undefined);
     },
 

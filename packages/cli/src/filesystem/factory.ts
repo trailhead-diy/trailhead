@@ -1,4 +1,9 @@
-import type { FileSystem, MoveOptions, MkdirOptions, CopyOptions } from './types.js';
+import type {
+  FileSystem,
+  MoveOptions,
+  MkdirOptions,
+  CopyOptions,
+} from './types.js';
 import { createNodeFileSystem } from './node.js';
 import { createMemoryFileSystem } from './memory.js';
 

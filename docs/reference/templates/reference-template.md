@@ -18,11 +18,11 @@ related:
 
 <!-- High-level summary and key information -->
 
-| Property    | Value                           |
-| ----------- | ------------------------------- |
+| Property    | Value                                       |
+| ----------- | ------------------------------------------- |
 | **Package** | `@esteban-url/trailhead-[package]`          |
 | **Module**  | `@esteban-url/trailhead-[package]/[module]` |
-| **Since**   | `v1.0.0`                        |
+| **Since**   | `v1.0.0`                                    |
 
 ## Import
 

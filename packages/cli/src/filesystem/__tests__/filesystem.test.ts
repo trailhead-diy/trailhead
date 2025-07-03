@@ -1,7 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createFileSystem } from '../factory.js';
 import { createMemoryFileSystem } from '../memory.js';
-import { isOk, isErr, unwrap, getErrorMessage } from '../../core/errors/index.js';
+import {
+  isOk,
+  isErr,
+  unwrap,
+  getErrorMessage,
+} from '../../core/errors/index.js';
 import type { FileSystem } from '../types.js';
 
 describe('FileSystem', () => {
@@ -75,7 +80,7 @@ describe('FileSystem', () => {
       it('should overwrite existing file', async () => {
         await fs.writeFile('/test.txt', 'old content');
         const newContent = 'new content';
-        
+
         const writeResult = await fs.writeFile('/test.txt', newContent);
         expect(isOk(writeResult)).toBe(true);
 
@@ -100,7 +105,9 @@ describe('FileSystem', () => {
       });
 
       it('should create nested directories with recursive option', async () => {
-        const result = await fs.mkdir('/parent/child/grandchild', { recursive: true });
+        const result = await fs.mkdir('/parent/child/grandchild', {
+          recursive: true,
+        });
         expect(isOk(result)).toBe(true);
 
         const exists = await fs.exists('/parent/child/grandchild');
@@ -130,7 +137,7 @@ describe('FileSystem', () => {
 
         const result = await fs.readdir('/dir');
         expect(isOk(result)).toBe(true);
-        
+
         const entries = unwrap(result);
         expect(entries).toHaveLength(3);
         expect(entries).toContain('file1.txt');
@@ -165,7 +172,7 @@ describe('FileSystem', () => {
       it('should copy file', async () => {
         const content = 'file content';
         await fs.writeFile('/source.txt', content);
-        
+
         const result = await fs.copy('/source.txt', '/dest.txt');
         expect(isOk(result)).toBe(true);
 
@@ -219,7 +226,11 @@ describe('FileSystem', () => {
     describe('JSON operations', () => {
       describe('readJson', () => {
         it('should read and parse JSON file', async () => {
-          const data = { name: 'test', value: 42, nested: { array: [1, 2, 3] } };
+          const data = {
+            name: 'test',
+            value: 42,
+            nested: { array: [1, 2, 3] },
+          };
           await fs.writeFile('/data.json', JSON.stringify(data));
 
           const result = await fs.readJson('/data.json');
@@ -264,7 +275,9 @@ describe('FileSystem', () => {
 
         it('should write JSON with custom spacing', async () => {
           const data = { name: 'test' };
-          const result = await fs.writeJson('/output.json', data, { spaces: 4 });
+          const result = await fs.writeJson('/output.json', data, {
+            spaces: 4,
+          });
           expect(isOk(result)).toBe(true);
 
           const content = await fs.readFile('/output.json');
@@ -273,7 +286,9 @@ describe('FileSystem', () => {
 
         it('should write minified JSON with spaces: 0', async () => {
           const data = { name: 'test', value: 42 };
-          const result = await fs.writeJson('/output.json', data, { spaces: 0 });
+          const result = await fs.writeJson('/output.json', data, {
+            spaces: 0,
+          });
           expect(isOk(result)).toBe(true);
 
           const content = await fs.readFile('/output.json');
@@ -388,13 +403,13 @@ describe('FileSystem', () => {
         await fs.writeFile('/dir/file1.txt', 'content1');
         await fs.writeFile('/dir/file2.txt', 'content2');
         await fs.mkdir('/dir/subdir', { recursive: true });
-        
+
         const removeResult = await fs.remove('/dir');
         expect(isOk(removeResult)).toBe(true);
 
         const dirExists = await fs.exists('/dir');
         expect(unwrap(dirExists)).toBe(false);
-        
+
         const file1Exists = await fs.exists('/dir/file1.txt');
         expect(unwrap(file1Exists)).toBe(false);
       });
@@ -411,16 +426,16 @@ describe('FileSystem', () => {
         await fs.writeFile('/dir/file1.txt', 'content1');
         await fs.writeFile('/dir/file2.txt', 'content2');
         await fs.mkdir('/dir/subdir', { recursive: true });
-        
+
         const emptyResult = await fs.emptyDir('/dir');
         expect(isOk(emptyResult)).toBe(true);
 
         const dirExists = await fs.exists('/dir');
         expect(unwrap(dirExists)).toBe(true);
-        
+
         const file1Exists = await fs.exists('/dir/file1.txt');
         expect(unwrap(file1Exists)).toBe(false);
-        
+
         const subdirExists = await fs.exists('/dir/subdir');
         expect(unwrap(subdirExists)).toBe(false);
       });
@@ -428,7 +443,7 @@ describe('FileSystem', () => {
       it('should create directory if it does not exist', async () => {
         const result = await fs.emptyDir('/new-empty-dir');
         expect(isOk(result)).toBe(true);
-        
+
         const exists = await fs.exists('/new-empty-dir');
         expect(unwrap(exists)).toBe(true);
       });
@@ -436,12 +451,15 @@ describe('FileSystem', () => {
 
     describe('outputFile', () => {
       it('should write file creating parent directories', async () => {
-        const result = await fs.outputFile('/deep/nested/path/file.txt', 'content');
+        const result = await fs.outputFile(
+          '/deep/nested/path/file.txt',
+          'content',
+        );
         expect(isOk(result)).toBe(true);
-        
+
         const content = await fs.readFile('/deep/nested/path/file.txt');
         expect(unwrap(content)).toBe('content');
-        
+
         const dirExists = await fs.exists('/deep/nested/path');
         expect(unwrap(dirExists)).toBe(true);
       });

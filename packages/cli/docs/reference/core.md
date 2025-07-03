@@ -14,11 +14,11 @@ Fundamental types and utilities for error handling, validation, and logging.
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/core` |
-| **Since** | `v1.0.0` |
+| Property    | Value                             |
+| ----------- | --------------------------------- |
+| **Package** | `@esteban-url/trailhead-cli`      |
+| **Module**  | `@esteban-url/trailhead-cli/core` |
+| **Since**   | `v1.0.0`                          |
 
 ## Result Types
 
@@ -94,8 +94,8 @@ const error = unwrap(Err(new Error("Oops"))); // Throws Error
 Transforms a successful value.
 
 ```typescript
-const doubled = map(Ok(21), x => x * 2); // Ok(42)
-const error = map(Err("error"), x => x * 2); // Err("error")
+const doubled = map(Ok(21), (x) => x * 2); // Ok(42)
+const error = map(Err("error"), (x) => x * 2); // Err("error")
 ```
 
 #### `chain<T, U, E>(result: Result<T, E>, fn: (value: T) => Result<U, E>): Result<U, E>`
@@ -103,9 +103,7 @@ const error = map(Err("error"), x => x * 2); // Err("error")
 Chains operations that return Results.
 
 ```typescript
-const result = chain(Ok(10), x => 
-  x > 0 ? Ok(x * 2) : Err("negative")
-); // Ok(20)
+const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err("negative"))); // Ok(20)
 ```
 
 ## Error Handling
@@ -139,10 +137,10 @@ interface CLIError extends Error {
 #### Specialized Errors
 
 ```typescript
-import { 
-  fileSystemError, 
+import {
+  fileSystemError,
   validationError,
-  displayError 
+  displayError,
 } from "@esteban-url/trailhead-cli/core";
 
 // File system error
@@ -178,7 +176,7 @@ const pipeline = createValidationPipeline([
   },
   {
     name: "email",
-    validate: (value) => 
+    validate: (value) =>
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Invalid email",
   },
 ]);
@@ -189,10 +187,10 @@ const result = await pipeline.validate("user@example.com");
 ### Built-in Validators
 
 ```typescript
-import { 
-  string, 
-  number, 
-  boolean, 
+import {
+  string,
+  number,
+  boolean,
   array,
   minLength,
   maxLength,
@@ -200,22 +198,19 @@ import {
   max,
   pattern,
   email,
-  url
+  url,
 } from "@esteban-url/trailhead-cli/core";
 
 // String validation
-const nameValidator = string()
-  .pipe(minLength(2))
-  .pipe(maxLength(50));
+const nameValidator = string().pipe(minLength(2)).pipe(maxLength(50));
 
-// Number validation  
-const ageValidator = number()
-  .pipe(min(0))
-  .pipe(max(150));
+// Number validation
+const ageValidator = number().pipe(min(0)).pipe(max(150));
 
 // Pattern validation
-const usernameValidator = string()
-  .pipe(pattern(/^[a-zA-Z0-9_]+$/, "Only alphanumeric and underscore"));
+const usernameValidator = string().pipe(
+  pattern(/^[a-zA-Z0-9_]+$/, "Only alphanumeric and underscore"),
+);
 ```
 
 ## Logging
@@ -235,10 +230,10 @@ interface Logger {
 ### Logger Creation
 
 ```typescript
-import { 
+import {
   createDefaultLogger,
   createSilentLogger,
-  createPrefixedLogger 
+  createPrefixedLogger,
 } from "@esteban-url/trailhead-cli/core";
 
 // Standard console logger with colors

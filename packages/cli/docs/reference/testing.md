@@ -14,35 +14,35 @@ Utilities for testing CLI applications with mocked dependencies and test runners
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/testing` |
-| **Since** | `v1.0.0` |
+| Property    | Value                                |
+| ----------- | ------------------------------------ |
+| **Package** | `@esteban-url/trailhead-cli`         |
+| **Module**  | `@esteban-url/trailhead-cli/testing` |
+| **Since**   | `v1.0.0`                             |
 
 ## Import
 
 ```typescript
-import { 
-  createTestContext, 
-  mockFileSystem, 
+import {
+  createTestContext,
+  mockFileSystem,
   mockLogger,
   mockPrompts,
   expectResult,
-  expectError
+  expectError,
 } from "@esteban-url/trailhead-cli/testing";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { 
-  createTestContext, 
-  mockFileSystem, 
+import {
+  createTestContext,
+  mockFileSystem,
   mockLogger,
   mockPrompts,
   expectResult,
-  expectError
+  expectError,
 } from "@esteban-url/trailhead-cli/testing";
 ```
 
@@ -125,7 +125,7 @@ expect(logger.logs).toEqual([
 ]);
 
 // Check specific levels
-const errors = logger.logs.filter(l => l.level === "error");
+const errors = logger.logs.filter((l) => l.level === "error");
 expect(errors).toHaveLength(1);
 
 // Clear logs
@@ -198,7 +198,7 @@ test("init command", async () => {
       "Project name?": "my-project",
     }),
   });
-  
+
   expectResult(result);
 });
 ```
@@ -235,16 +235,13 @@ test("processes files correctly", async () => {
     "input.txt": "Hello, World!",
     "config.json": '{"uppercase": true}',
   });
-  
+
   const context = createTestContext({ filesystem: fs });
-  
-  const result = await processCommand.execute(
-    { file: "input.txt" },
-    context
-  );
-  
+
+  const result = await processCommand.execute({ file: "input.txt" }, context);
+
   expectResult(result);
-  
+
   // Verify output
   const output = await fs.readFile("output.txt");
   expect(expectResult(output)).toBe("HELLO, WORLD!");
@@ -260,30 +257,31 @@ test("interactive setup", async () => {
     "Choose template:": "typescript",
     "Install dependencies?": true,
   });
-  
+
   const fs = mockFileSystem();
   const logger = mockLogger();
-  
-  const context = createTestContext({ 
+
+  const context = createTestContext({
     filesystem: fs,
     prompts,
     logger,
   });
-  
+
   const result = await setupCommand.execute({}, context);
   expectResult(result);
-  
+
   // Verify created files
-  expect(await fs.exists("awesome-cli/package.json")).toEqual({ 
-    success: true, 
-    value: true 
+  expect(await fs.exists("awesome-cli/package.json")).toEqual({
+    success: true,
+    value: true,
   });
-  
+
   // Verify logs
-  expect(logger.logs.some(l => 
-    l.level === "success" && 
-    l.message.includes("Project created")
-  )).toBe(true);
+  expect(
+    logger.logs.some(
+      (l) => l.level === "success" && l.message.includes("Project created"),
+    ),
+  ).toBe(true);
 });
 ```
 
@@ -293,12 +291,9 @@ test("interactive setup", async () => {
 test("handles missing file", async () => {
   const fs = mockFileSystem(); // No files
   const context = createTestContext({ filesystem: fs });
-  
-  const result = await readCommand.execute(
-    { file: "missing.txt" },
-    context
-  );
-  
+
+  const result = await readCommand.execute({ file: "missing.txt" }, context);
+
   const error = expectError(result);
   expect(error.message).toContain("File not found");
   expect(error.code).toBe("ENOENT");
@@ -310,12 +305,12 @@ test("handles missing file", async () => {
 ```typescript
 test("validates options", async () => {
   const context = createTestContext();
-  
+
   const result = await deployCommand.execute(
     { environment: "invalid" },
-    context
+    context,
   );
-  
+
   const error = expectError(result);
   expect(error.message).toContain("Invalid environment");
 });
@@ -326,10 +321,10 @@ test("validates options", async () => {
 ### Path Utilities
 
 ```typescript
-import { 
-  normalizePath, 
+import {
+  normalizePath,
   joinPath,
-  resolvePath 
+  resolvePath,
 } from "@esteban-url/trailhead-cli/testing";
 
 // Normalize paths for consistent testing
@@ -371,18 +366,21 @@ Example test setup with Vitest:
 
 ```typescript
 import { describe, it, expect, beforeEach } from "vitest";
-import { createTestContext, mockFileSystem } from "@esteban-url/trailhead-cli/testing";
+import {
+  createTestContext,
+  mockFileSystem,
+} from "@esteban-url/trailhead-cli/testing";
 import { myCommand } from "../src/commands/my-command";
 
 describe("MyCommand", () => {
   let context: TestContext;
-  
+
   beforeEach(() => {
     context = createTestContext({
       filesystem: mockFileSystem(),
     });
   });
-  
+
   it("should execute successfully", async () => {
     const result = await myCommand.execute({}, context);
     expect(result.success).toBe(true);

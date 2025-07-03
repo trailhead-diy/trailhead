@@ -24,7 +24,7 @@ describe('Error Utils', () => {
     it('should return true for successful results', () => {
       const result = Ok(42);
       expect(isOk(result)).toBe(true);
-      
+
       // Type narrowing test
       if (isOk(result)) {
         expect(result.value).toBe(42);
@@ -41,7 +41,7 @@ describe('Error Utils', () => {
     it('should return true for error results', () => {
       const result = Err('error');
       expect(isErr(result)).toBe(true);
-      
+
       // Type narrowing test
       if (isErr(result)) {
         expect(result.error).toBe('error');
@@ -86,24 +86,24 @@ describe('Error Utils', () => {
   describe('map', () => {
     it('should transform successful results', () => {
       const result = Ok(5);
-      const mapped = map(result, x => x * 2);
-      
+      const mapped = map(result, (x) => x * 2);
+
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe(10);
     });
 
     it('should pass through error results unchanged', () => {
       const result = Err('error');
-      const mapped = map(result, x => x * 2);
-      
+      const mapped = map(result, (x) => x * 2);
+
       expect(mapped.success).toBe(false);
       expect(mapped.error).toBe('error');
     });
 
     it('should handle type transformations', () => {
       const result = Ok(42);
-      const mapped = map(result, x => x.toString());
-      
+      const mapped = map(result, (x) => x.toString());
+
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe('42');
       expect(typeof mapped.value).toBe('string');
@@ -113,16 +113,16 @@ describe('Error Utils', () => {
   describe('mapErr', () => {
     it('should transform error results', () => {
       const result = Err('network error');
-      const mapped = mapErr(result, e => `Failed: ${e}`);
-      
+      const mapped = mapErr(result, (e) => `Failed: ${e}`);
+
       expect(mapped.success).toBe(false);
       expect(mapped.error).toBe('Failed: network error');
     });
 
     it('should pass through successful results unchanged', () => {
       const result = Ok(42);
-      const mapped = mapErr(result, e => `Failed: ${e}`);
-      
+      const mapped = mapErr(result, (e) => `Failed: ${e}`);
+
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe(42);
     });
@@ -131,32 +131,36 @@ describe('Error Utils', () => {
   describe('chain', () => {
     it('should chain successful operations', () => {
       const result = Ok(5);
-      const chained = chain(result, x => x > 0 ? Ok(x * 2) : Err('negative'));
-      
+      const chained = chain(result, (x) =>
+        x > 0 ? Ok(x * 2) : Err('negative'),
+      );
+
       expect(chained.success).toBe(true);
       expect(chained.value).toBe(10);
     });
 
     it('should stop chain on first error', () => {
       const result = Ok(-5);
-      const chained = chain(result, x => x > 0 ? Ok(x * 2) : Err('negative'));
-      
+      const chained = chain(result, (x) =>
+        x > 0 ? Ok(x * 2) : Err('negative'),
+      );
+
       expect(chained.success).toBe(false);
       expect(chained.error).toBe('negative');
     });
 
     it('should pass through initial errors', () => {
       const result = Err('initial error');
-      const chained = chain(result, x => Ok(x * 2));
-      
+      const chained = chain(result, (x) => Ok(x * 2));
+
       expect(chained.success).toBe(false);
       expect(chained.error).toBe('initial error');
     });
 
     it('should handle type transformations in chain', () => {
       const result = Ok(42);
-      const chained = chain(result, x => Ok(x.toString()));
-      
+      const chained = chain(result, (x) => Ok(x.toString()));
+
       expect(chained.success).toBe(true);
       expect(chained.value).toBe('42');
       expect(typeof chained.value).toBe('string');
@@ -171,7 +175,9 @@ describe('Error Utils', () => {
 
     it('should throw with custom message for error results', () => {
       const result = Err('original error');
-      expect(() => expectResult(result, 'Custom error message')).toThrow('Custom error message');
+      expect(() => expectResult(result, 'Custom error message')).toThrow(
+        'Custom error message',
+      );
     });
   });
 
@@ -235,37 +241,37 @@ describe('Error Utils', () => {
     it('should call ok handler for successful results', () => {
       const result = Ok(42);
       const message = match(result, {
-        ok: value => `Success: ${value}`,
-        err: error => `Error: ${error}`,
+        ok: (value) => `Success: ${value}`,
+        err: (error) => `Error: ${error}`,
       });
-      
+
       expect(message).toBe('Success: 42');
     });
 
     it('should call err handler for error results', () => {
       const result = Err('failed');
       const message = match(result, {
-        ok: value => `Success: ${value}`,
-        err: error => `Error: ${error}`,
+        ok: (value) => `Success: ${value}`,
+        err: (error) => `Error: ${error}`,
       });
-      
+
       expect(message).toBe('Error: failed');
     });
 
     it('should handle different return types', () => {
       const successResult = Ok(42);
       const errorResult = Err('failed');
-      
+
       const successCount = match(successResult, {
-        ok: value => value * 2,
+        ok: (value) => value * 2,
         err: () => 0,
       });
-      
+
       const errorCount = match(errorResult, {
-        ok: value => value * 2,
+        ok: (value) => value * 2,
         err: () => 0,
       });
-      
+
       expect(successCount).toBe(84);
       expect(errorCount).toBe(0);
     });
@@ -275,7 +281,7 @@ describe('Error Utils', () => {
     it('should combine successful results', () => {
       const results = [Ok(1), Ok(2), Ok(3)] as const;
       const combined = all(results);
-      
+
       expect(combined.success).toBe(true);
       expect(combined.value).toEqual([1, 2, 3]);
     });
@@ -283,7 +289,7 @@ describe('Error Utils', () => {
     it('should return first error when any result fails', () => {
       const results = [Ok(1), Err('failed'), Ok(3)] as const;
       const combined = all(results);
-      
+
       expect(combined.success).toBe(false);
       expect(combined.error).toBe('failed');
     });
@@ -291,7 +297,7 @@ describe('Error Utils', () => {
     it('should handle empty array', () => {
       const results: Result<never, never>[] = [];
       const combined = all(results);
-      
+
       expect(combined.success).toBe(true);
       expect(combined.value).toEqual([]);
     });
@@ -299,7 +305,7 @@ describe('Error Utils', () => {
     it('should preserve types', () => {
       const results = [Ok('hello'), Ok(42), Ok(true)] as const;
       const combined = all(results);
-      
+
       if (combined.success) {
         // TypeScript should infer the correct tuple type
         expect(combined.value[0]).toBe('hello');
@@ -312,14 +318,14 @@ describe('Error Utils', () => {
   describe('tryCatch', () => {
     it('should wrap successful function calls', () => {
       const result = tryCatch(() => JSON.parse('{"valid": true}'));
-      
+
       expect(result.success).toBe(true);
       expect(result.value).toEqual({ valid: true });
     });
 
     it('should catch and wrap exceptions', () => {
       const result = tryCatch(() => JSON.parse('invalid json'));
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBeInstanceOf(SyntaxError);
     });
@@ -327,9 +333,9 @@ describe('Error Utils', () => {
     it('should use custom error mapper', () => {
       const result = tryCatch(
         () => JSON.parse('invalid json'),
-        error => `Parse failed: ${(error as Error).message}`
+        (error) => `Parse failed: ${(error as Error).message}`,
       );
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toContain('Parse failed:');
     });
@@ -338,7 +344,7 @@ describe('Error Utils', () => {
       const result = tryCatch(() => {
         throw 'string error';
       });
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('string error');
     });
@@ -349,7 +355,7 @@ describe('Error Utils', () => {
       const result = await tryCatchAsync(async () => {
         return Promise.resolve('success');
       });
-      
+
       expect(result.success).toBe(true);
       expect(result.value).toBe('success');
     });
@@ -358,7 +364,7 @@ describe('Error Utils', () => {
       const result = await tryCatchAsync(async () => {
         throw new Error('async error');
       });
-      
+
       expect(result.success).toBe(false);
       expect((result.error as Error).message).toBe('async error');
     });
@@ -367,7 +373,7 @@ describe('Error Utils', () => {
       const result = await tryCatchAsync(async () => {
         return Promise.reject(new Error('rejected'));
       });
-      
+
       expect(result.success).toBe(false);
       expect((result.error as Error).message).toBe('rejected');
     });
@@ -377,9 +383,9 @@ describe('Error Utils', () => {
         async () => {
           throw new Error('network failure');
         },
-        error => `Network error: ${(error as Error).message}`
+        (error) => `Network error: ${(error as Error).message}`,
       );
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Network error: network failure');
     });
@@ -388,21 +394,21 @@ describe('Error Utils', () => {
       const result = await tryCatchAsync(async () => {
         throw 'async string error';
       });
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('async string error');
     });
 
     it('should work with real async operations', async () => {
       const mockFetch = vi.fn().mockResolvedValue({
-        json: () => Promise.resolve({ data: 'test' })
+        json: () => Promise.resolve({ data: 'test' }),
       });
-      
+
       const result = await tryCatchAsync(async () => {
         const response = await mockFetch('/api/data');
         return response.json();
       });
-      
+
       expect(result.success).toBe(true);
       expect(result.value).toEqual({ data: 'test' });
       expect(mockFetch).toHaveBeenCalledWith('/api/data');
@@ -423,24 +429,15 @@ describe('Error Utils', () => {
       const double = (num: number): Result<number, string> => Ok(num * 2);
 
       // Chain multiple operations
-      const result = chain(
-        chain(
-          parseNumber('42'),
-          validatePositive
-        ),
-        double
-      );
+      const result = chain(chain(parseNumber('42'), validatePositive), double);
 
       expect(result.success).toBe(true);
       expect(result.value).toBe(84);
 
       // Test failure in chain
       const failResult = chain(
-        chain(
-          parseNumber('-5'),
-          validatePositive
-        ),
-        double
+        chain(parseNumber('-5'), validatePositive),
+        double,
       );
 
       expect(failResult.success).toBe(false);
@@ -449,10 +446,10 @@ describe('Error Utils', () => {
 
     it('should handle map and chain combinations', () => {
       const result = Ok(10);
-      
+
       const processed = chain(
-        map(result, x => x.toString()),
-        str => str.length > 1 ? Ok(str) : Err('Too short')
+        map(result, (x) => x.toString()),
+        (str) => (str.length > 1 ? Ok(str) : Err('Too short')),
       );
 
       expect(processed.success).toBe(true);
@@ -464,11 +461,7 @@ describe('Error Utils', () => {
         return id > 0 ? Ok(`User ${id}`) : Err(`Invalid ID: ${id}`);
       };
 
-      const allSuccess = all([
-        getUserData(1),
-        getUserData(2),
-        getUserData(3)
-      ]);
+      const allSuccess = all([getUserData(1), getUserData(2), getUserData(3)]);
 
       expect(allSuccess.success).toBe(true);
       expect(allSuccess.value).toEqual(['User 1', 'User 2', 'User 3']);
@@ -476,7 +469,7 @@ describe('Error Utils', () => {
       const withFailure = all([
         getUserData(1),
         getUserData(-1),
-        getUserData(3)
+        getUserData(3),
       ]);
 
       expect(withFailure.success).toBe(false);

@@ -37,7 +37,11 @@ export const createTempPath = (
   timestamp = Date.now(),
 ): string => {
   return normalize(
-    join(tmpdir(), 'esteban-url-trailhead-cli-tests', `${testName}-${timestamp}`),
+    join(
+      tmpdir(),
+      'esteban-url-trailhead-cli-tests',
+      `${testName}-${timestamp}`,
+    ),
   );
 };
 

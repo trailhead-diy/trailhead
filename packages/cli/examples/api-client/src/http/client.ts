@@ -4,10 +4,12 @@ import type { Result } from '@esteban-url/trailhead-cli';
 import type { RequestOptions, ResponseData, RetryOptions } from './types.js';
 
 export class HttpClient {
-  private async makeRequest(options: RequestOptions): Promise<Result<ResponseData>> {
+  private async makeRequest(
+    options: RequestOptions,
+  ): Promise<Result<ResponseData>> {
     try {
       const { method, url, headers = {}, body, timeout = 10000 } = options;
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -21,7 +23,7 @@ export class HttpClient {
 
       let data: any;
       const contentType = response.headers.get('content-type');
-      
+
       if (contentType?.includes('application/json')) {
         data = await response.json();
       } else {
@@ -41,14 +43,17 @@ export class HttpClient {
     }
   }
 
-  async request(options: RequestOptions, retryOptions?: RetryOptions): Promise<Result<ResponseData>> {
+  async request(
+    options: RequestOptions,
+    retryOptions?: RetryOptions,
+  ): Promise<Result<ResponseData>> {
     const maxAttempts = retryOptions?.attempts || 1;
     let delay = retryOptions?.delay || 1000;
     const backoff = retryOptions?.backoff || 2;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       const result = await this.makeRequest(options);
-      
+
       if (result.success) {
         const response = result.value;
         // Don't retry on success or client errors (4xx)
@@ -56,10 +61,10 @@ export class HttpClient {
           return result;
         }
       }
-      
+
       // Don't wait after the last attempt
       if (attempt < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         delay *= backoff;
       }
     }

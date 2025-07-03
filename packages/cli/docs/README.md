@@ -17,7 +17,7 @@ This framework provides a robust foundation for building command-line applicatio
 @esteban-url/trailhead-cli is built around four core principles:
 
 - **Functional programming** - Pure functions, immutability, and composition
-- **Explicit error handling** - Result types instead of exceptions  
+- **Explicit error handling** - Result types instead of exceptions
 - **Type safety** - Full TypeScript support with strict types
 - **Testability** - Built-in testing utilities and patterns
 
@@ -55,7 +55,7 @@ Task-oriented guides for common scenarios:
 Real-world examples with full source code:
 
 - [API Client](../examples/api-client/) - HTTP client with retry logic
-- [File Processor](../examples/file-processor/) - Advanced file processing  
+- [File Processor](../examples/file-processor/) - Advanced file processing
 - [Project Generator](../examples/project-generator/) - Scaffolding tool
 - [Todo CLI](../examples/todo-cli/) - Complete CRUD application
 - [Cross-Platform CLI](../examples/cross-platform-cli/) - OS-specific functionality
@@ -112,7 +112,10 @@ const config = defineConfig(schema);
 ### 4. Composable Validation
 
 ```typescript
-import { createValidationPipeline, createRule } from "@esteban-url/trailhead-cli/core";
+import {
+  createValidationPipeline,
+  createRule,
+} from "@esteban-url/trailhead-cli/core";
 
 const pipeline = createValidationPipeline([
   createRule(
@@ -184,7 +187,10 @@ const config = JSON.parse(result.value);
 ### Testing Pattern
 
 ```typescript
-import { createTestContext, mockFileSystem } from "@esteban-url/trailhead-cli/testing";
+import {
+  createTestContext,
+  mockFileSystem,
+} from "@esteban-url/trailhead-cli/testing";
 
 it("should read configuration", async () => {
   const fs = mockFileSystem({

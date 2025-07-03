@@ -19,7 +19,7 @@ const TODO_FILE = join(homedir(), '.todos.json');
 async function loadTodos(fs: FileSystem): Promise<Todo[]> {
   const result = await fs.readFile(TODO_FILE);
   if (!result.success) return [];
-  
+
   try {
     return JSON.parse(result.value);
   } catch {
@@ -42,9 +42,9 @@ const addCommand = createCommand({
 
     const fs = new FileSystem();
     const todos = await loadTodos(fs);
-    
+
     const newTodo: Todo = {
-      id: Math.max(0, ...todos.map(t => t.id)) + 1,
+      id: Math.max(0, ...todos.map((t) => t.id)) + 1,
       text,
       completed: false,
       createdAt: new Date().toISOString(),
@@ -71,7 +71,7 @@ const listCommand = createCommand({
     }
 
     console.log('\nTodos:');
-    todos.forEach(todo => {
+    todos.forEach((todo) => {
       const status = todo.completed ? '✓' : '○';
       console.log(`  ${status} ${todo.id}: ${todo.text}`);
     });

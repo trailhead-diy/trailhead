@@ -26,27 +26,27 @@ TypeError: nameAndArgs.match is not a function or its return value is not iterab
 ### Minimal Test Case
 
 ```typescript
-import { createCLI } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { createCLI } from "@esteban-url/trailhead-cli";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
 
 const testCommand = createCommand({
-  name: 'test',
-  description: 'Test command',
+  name: "test",
+  description: "Test command",
   action: async (options, context) => {
-    context.logger.info('Test command works!')
-    return { success: true, value: undefined }
-  }
-})
+    context.logger.info("Test command works!");
+    return { success: true, value: undefined };
+  },
+});
 
 const cli = createCLI({
-  name: 'test-cli',
-  version: '1.0.0',
-  description: 'Test CLI',
-  commands: [testCommand]
-})
+  name: "test-cli",
+  version: "1.0.0",
+  description: "Test CLI",
+  commands: [testCommand],
+});
 
 // This line fails:
-cli.run(process.argv)
+cli.run(process.argv);
 ```
 
 ### Steps to Reproduce
@@ -70,7 +70,7 @@ Looking at the Trailhead CLI source (`packages/cli/src/cli.ts`), the issue appea
 // Register all commands
 for (const command of commands) {
   const cmd = program
-    .command(command.name)  // <- This line fails
+    .command(command.name) // <- This line fails
     .description(command.description);
   // ...
 }

@@ -134,8 +134,6 @@
     "oxlint": "^1.1.0",
     "playwright": "^1.53.1",
     "prettier": "^3.5.3",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-tailwindcss": "^0.6.12",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.2",
@@ -148,22 +146,7 @@
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "printWidth": 100,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "bracketSpacing": true,
-    "overrides": [
-      {
-        "files": "*.jsonc",
-        "options": {
-          "trailingComma": "none"
-        }
-      }
-    ]
-  },
+  "prettier": "@repo/prettier-config",
   "c8": {
     "all": true,
     "reporter": [
@@ -184,12 +167,5 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
-  },
-  "lint-staged": {
-    "{src,scripts,tests}/**/*.{ts,tsx}": [
-      "oxlint --fix",
-      "prettier --write --ignore-path .prettierignore"
-    ],
-    "*.{json,md,html,css}": "prettier --write --ignore-path .prettierignore"
   }
 }

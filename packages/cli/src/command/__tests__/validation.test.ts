@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  validateCommandOption, 
+import {
+  validateCommandOption,
   validateCommandConfig,
-  validateCommandConfigWithCache 
+  validateCommandConfigWithCache,
 } from '../validation.js';
 import type { CommandOption, CommandConfig, CommandOptions } from '../base.js';
 
@@ -146,10 +146,7 @@ describe('Command Validation', () => {
       const config: CommandConfig<CommandOptions> = {
         name: 'build',
         description: 'Build command',
-        examples: [
-          'build --output dist',
-          'build --watch',
-        ],
+        examples: ['build --output dist', 'build --watch'],
         action: async () => ({ success: true, value: undefined }),
       };
 
@@ -267,10 +264,7 @@ describe('Command Validation', () => {
       const config: CommandConfig<CommandOptions> = {
         name: 'test',
         description: 'Test command',
-        examples: [
-          'valid example',
-          123 as any,
-        ],
+        examples: ['valid example', 123 as any],
         action: async () => ({ success: true, value: undefined }),
       };
 

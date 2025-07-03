@@ -23,12 +23,12 @@ import { createCommand } from '@esteban-url/trailhead-cli/command';
 let apiCallCount = 0;
 async function unreliableApi(): Promise<{ data: string }> {
   apiCallCount++;
-  
+
   // Fail first 2 attempts
   if (apiCallCount < 3) {
     throw new Error(`API temporarily unavailable (attempt ${apiCallCount})`);
   }
-  
+
   return { data: 'Success!' };
 }
 
@@ -38,7 +38,7 @@ const apiCommand = createCommand({
   description: 'Call unreliable API with retry',
   action: async (_, context) => {
     apiCallCount = 0;
-    
+
     const result = await retryAdvanced(
       async () => {
         try {
@@ -56,18 +56,18 @@ const apiCommand = createCommand({
         ...RetryStrategies.network(),
         onFailedAttempt: (error, attempt, retriesLeft) => {
           context.logger.warn(
-            `Attempt ${attempt} failed: ${error.message} (${retriesLeft} retries left)`
+            `Attempt ${attempt} failed: ${error.message} (${retriesLeft} retries left)`,
           );
         },
-      }
+      },
     );
-    
+
     if (isOk(result)) {
       context.logger.success(`API call succeeded: ${result.value.data}`);
     } else {
       context.logger.error(`API call failed: ${result.error.message}`);
     }
-    
+
     return result;
   },
 });
@@ -83,29 +83,26 @@ const protectedCommand = createCommand({
   name: 'protected',
   description: 'API call with circuit breaker protection',
   action: async (_, context) => {
-    const result = await circuitBreaker.execute(
-      async () => {
-        // Simulate random failures
-        if (Math.random() < 0.7) {
-          return Err({
-            code: 'RANDOM_FAILURE',
-            message: 'Random API failure',
-            recoverable: true,
-          });
-        }
-        return Ok('Success!');
-      },
-      RetryStrategies.aggressive()
-    );
-    
+    const result = await circuitBreaker.execute(async () => {
+      // Simulate random failures
+      if (Math.random() < 0.7) {
+        return Err({
+          code: 'RANDOM_FAILURE',
+          message: 'Random API failure',
+          recoverable: true,
+        });
+      }
+      return Ok('Success!');
+    }, RetryStrategies.aggressive());
+
     context.logger.info(`Circuit breaker state: ${circuitBreaker.getState()}`);
-    
+
     if (isOk(result)) {
       context.logger.success('Operation succeeded');
     } else {
       context.logger.error(`Operation failed: ${result.error.message}`);
     }
-    
+
     return result;
   },
 });
@@ -118,22 +115,22 @@ const timeoutCommand = createCommand({
     const result = await retryWithTimeout(
       async () => {
         // Simulate slow operation
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         return Ok('Eventually succeeded');
       },
       5000, // 5 second timeout
       {
         retries: 10,
         minTimeout: 100,
-      }
+      },
     );
-    
+
     if (isOk(result)) {
       context.logger.success('Operation completed within timeout');
     } else {
       context.logger.error(`Operation timed out: ${result.error.message}`);
     }
-    
+
     return result;
   },
 });
@@ -152,11 +149,11 @@ const smartCommand = createCommand({
   description: 'Smart retry with error-specific delays',
   action: async (_, context) => {
     let attemptCount = 0;
-    
+
     const result = await smartRetry(
       async () => {
         attemptCount++;
-        
+
         // Simulate different error types
         if (attemptCount === 1) {
           return Err({
@@ -171,16 +168,16 @@ const smartCommand = createCommand({
             recoverable: true,
           });
         }
-        
+
         return Ok('Success after smart retry');
       },
-      { retries: 5 }
+      { retries: 5 },
     );
-    
+
     if (isOk(result)) {
       context.logger.success(`Succeeded after ${attemptCount} attempts`);
     }
-    
+
     return result;
   },
 });
@@ -222,12 +219,12 @@ const parallelCommand = createCommand({
         return Ok('Op3 success');
       },
     ];
-    
+
     const result = await retryParallel(operations, {
       retries: 3,
       minTimeout: 500,
     });
-    
+
     if (isOk(result)) {
       context.logger.success('All operations succeeded');
       result.value.forEach((val, i) => {
@@ -236,7 +233,7 @@ const parallelCommand = createCommand({
     } else {
       context.logger.error(`Some operations failed: ${result.error.message}`);
     }
-    
+
     return result;
   },
 });
@@ -281,13 +278,13 @@ const serviceCommand = createCommand({
       }
       return Ok('Service call succeeded');
     });
-    
+
     if (isOk(result)) {
       context.logger.success(result.value);
     } else {
       context.logger.error(`Service call failed: ${result.error.message}`);
     }
-    
+
     return result;
   },
 });

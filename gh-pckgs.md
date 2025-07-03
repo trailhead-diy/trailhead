@@ -33,7 +33,7 @@ GitHub Packages is a private package registry that integrates with GitHub reposi
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Generate new token with these scopes:
    - `read:packages` - Download packages
-   - `write:packages` - Publish packages  
+   - `write:packages` - Publish packages
    - `repo` - Access private repositories
    - `delete:packages` - Delete packages (optional)
 
@@ -170,23 +170,23 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@esteban-url'
-      
+          node-version: "18"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@esteban-url"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build package
         run: npm run build
-      
+
       - name: Publish package
         run: npm publish
         env:

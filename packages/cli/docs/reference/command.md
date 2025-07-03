@@ -14,24 +14,30 @@ Utilities for creating and executing CLI commands with options, subcommands, and
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/command` |
-| **Since** | `v1.0.0` |
+| Property    | Value                                |
+| ----------- | ------------------------------------ |
+| **Package** | `@esteban-url/trailhead-cli`         |
+| **Module**  | `@esteban-url/trailhead-cli/command` |
+| **Since**   | `v1.0.0`                             |
 
 ## Import
 
 ```typescript
 import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type { Command, CommandContext } from "@esteban-url/trailhead-cli/command";
+import type {
+  Command,
+  CommandContext,
+} from "@esteban-url/trailhead-cli/command";
 ```
 
 ## Basic Usage
 
 ```typescript
 import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type { Command, CommandContext } from "@esteban-url/trailhead-cli/command";
+import type {
+  Command,
+  CommandContext,
+} from "@esteban-url/trailhead-cli/command";
 ```
 
 ## Command Creation
@@ -54,7 +60,7 @@ const command = createCommand({
     },
     {
       name: "force",
-      alias: "f", 
+      alias: "f",
       type: "boolean",
       default: false,
       description: "Force deployment",
@@ -86,14 +92,14 @@ interface CommandConfig<T = any> {
 
 ```typescript
 interface CommandOption {
-  name?: string;             // Option name for programmatic access
-  alias?: string;            // Short alias (-n)
-  flags?: string;            // Commander.js style flags (e.g., '-v, --verbose')
-  description: string;       // Help text
+  name?: string; // Option name for programmatic access
+  alias?: string; // Short alias (-n)
+  flags?: string; // Commander.js style flags (e.g., '-v, --verbose')
+  description: string; // Help text
   type?: "string" | "boolean" | "number";
   required?: boolean;
   default?: any;
-  choices?: string[];        // Allowed values
+  choices?: string[]; // Allowed values
 }
 ```
 
@@ -117,8 +123,18 @@ const command = createCommand({
   name: "create",
   description: "Create a new project",
   options: [
-    { name: "name", type: "string", required: true, description: "Project name" },
-    { name: "template", type: "string", choices: ["basic", "advanced"], description: "Project template" },
+    {
+      name: "name",
+      type: "string",
+      required: true,
+      description: "Project name",
+    },
+    {
+      name: "template",
+      type: "string",
+      choices: ["basic", "advanced"],
+      description: "Project template",
+    },
   ],
   validate: (options) => {
     if (!/^[a-z0-9-]+$/.test(options.name)) {
@@ -198,7 +214,7 @@ const phases: CommandPhase<BuildData>[] = [
 const result = await executeWithPhases(
   phases,
   { validated: false, built: false, deployed: false },
-  context
+  context,
 );
 ```
 
@@ -218,25 +234,41 @@ interface ProcessOptions {
 const command = createCommand<ProcessOptions>({
   name: "transform",
   options: [
-    { flags: '--dry-run', description: 'Preview changes without executing', type: 'boolean' },
-    { flags: '--input <file>', description: 'Input file', type: 'string', required: true },
-    { flags: '--output <file>', description: 'Output file', type: 'string', required: true },
+    {
+      flags: "--dry-run",
+      description: "Preview changes without executing",
+      type: "boolean",
+    },
+    {
+      flags: "--input <file>",
+      description: "Input file",
+      type: "string",
+      required: true,
+    },
+    {
+      flags: "--output <file>",
+      description: "Output file",
+      type: "string",
+      required: true,
+    },
   ],
   action: async (options, context) => {
     return executeWithDryRun(
       options,
       async (config) => {
         if (config.dryRun) {
-          context.logger.info(`Would transform ${config.input} -> ${config.output}`);
+          context.logger.info(
+            `Would transform ${config.input} -> ${config.output}`,
+          );
           return Ok(undefined);
         }
-        
+
         // Actual transformation logic
         context.logger.info(`Transforming ${config.input} -> ${config.output}`);
         return Ok(undefined);
       },
       context,
-      "This will overwrite the output file. Continue?"
+      "This will overwrite the output file. Continue?",
     );
   },
 });
@@ -288,9 +320,9 @@ const command = createCommand({
         { label: "Total Files", value: 42 },
         { label: "Bundle Size", value: "2.3 MB" },
         { label: "Build Time", value: "1.2s" },
-      ]
+      ],
     );
-    
+
     return Ok(undefined);
   },
 });

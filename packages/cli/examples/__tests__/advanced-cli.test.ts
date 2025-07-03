@@ -1,4 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+} from 'vitest';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
@@ -19,10 +28,16 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
     testDir = await fs.mkdtemp(path.join(tmpdir(), 'advanced-cli-test-'));
     testInputFile = path.join(testDir, 'test-input.txt');
     testInputFile2 = path.join(testDir, 'test-input2.txt');
-    
+
     // Create test files
-    await fs.writeFile(testInputFile, 'Hello World\nThis is a test file\nWith multiple lines');
-    await fs.writeFile(testInputFile2, 'Another test file\nWith different content');
+    await fs.writeFile(
+      testInputFile,
+      'Hello World\nThis is a test file\nWith multiple lines',
+    );
+    await fs.writeFile(
+      testInputFile2,
+      'Another test file\nWith different content',
+    );
   });
 
   afterAll(async () => {
@@ -44,17 +59,22 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
   describe('process command', () => {
     it('should process file with default text format', async () => {
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}"`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Successfully processed file');
 
       // Check that output file was created
       const outputPath = `${testInputFile}.processed`;
       const outputContent = await fs.readFile(outputPath, 'utf-8');
-      expect(outputContent).toBe('HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES');
+      expect(outputContent).toBe(
+        'HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES',
+      );
 
       // Cleanup
       await fs.unlink(outputPath);
@@ -62,18 +82,23 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should process file with JSON format', async () => {
       const outputPath = path.join(testDir, 'output.json');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}" --format json`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}" --format json`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Successfully processed file');
 
       // Check JSON output
       const outputContent = await fs.readFile(outputPath, 'utf-8');
       const parsed = JSON.parse(outputContent);
-      expect(parsed.content).toBe('Hello World\nThis is a test file\nWith multiple lines');
+      expect(parsed.content).toBe(
+        'Hello World\nThis is a test file\nWith multiple lines',
+      );
       expect(parsed.timestamp).toBeDefined();
 
       // Cleanup
@@ -82,27 +107,35 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should process file with CSV format', async () => {
       const outputPath = path.join(testDir, 'output.csv');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}" --format csv`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}" --format csv`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Successfully processed file');
 
       // Check CSV output
       const outputContent = await fs.readFile(outputPath, 'utf-8');
-      expect(outputContent).toBe('"Hello World",\n"This is a test file",\n"With multiple lines"');
+      expect(outputContent).toBe(
+        '"Hello World",\n"This is a test file",\n"With multiple lines"',
+      );
 
       // Cleanup
       await fs.unlink(outputPath);
     });
 
     it('should handle dry run mode', () => {
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --dry-run`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" --dry-run`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('[DRY RUN] Would write to:');
       expect(result).toContain('Successfully processed file (dry run)');
@@ -110,27 +143,35 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should use custom output path', async () => {
       const outputPath = path.join(testDir, 'custom-output.txt');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}"`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputPath}"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Successfully processed file');
 
       // Check that file was created at custom path
       const outputContent = await fs.readFile(outputPath, 'utf-8');
-      expect(outputContent).toBe('HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES');
+      expect(outputContent).toBe(
+        'HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES',
+      );
 
       // Cleanup
       await fs.unlink(outputPath);
     });
 
     it('should handle verbose mode', () => {
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --verbose --dry-run`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" --verbose --dry-run`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Processing');
       expect(result).toContain('characters...');
@@ -138,7 +179,7 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should handle missing input file error', () => {
       const nonExistentFile = path.join(testDir, 'does-not-exist.txt');
-      
+
       try {
         execSync(`npx tsx "${advancedCliPath}" process "${nonExistentFile}"`, {
           encoding: 'utf8',
@@ -152,11 +193,14 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should use short flags', async () => {
       const outputPath = path.join(testDir, 'short-flags.json');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" -o "${outputPath}" -f json`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${testInputFile}" -o "${outputPath}" -f json`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Successfully processed file');
 
@@ -172,11 +216,14 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
     it('should process multiple files with default prefix', async () => {
       // Create pattern that matches our test files
       const pattern = path.join(testDir, 'test-input');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" batch "${pattern}"`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" batch "${pattern}"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Processed');
       expect(result).toContain('files');
@@ -188,7 +235,9 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
       const content1 = await fs.readFile(processedFile1, 'utf-8');
       const content2 = await fs.readFile(processedFile2, 'utf-8');
 
-      expect(content1).toBe('HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES');
+      expect(content1).toBe(
+        'HELLO WORLD\nTHIS IS A TEST FILE\nWITH MULTIPLE LINES',
+      );
       expect(content2).toBe('ANOTHER TEST FILE\nWITH DIFFERENT CONTENT');
 
       // Cleanup
@@ -198,11 +247,14 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should use custom prefix', async () => {
       const pattern = path.join(testDir, 'test-input');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" batch "${pattern}" --prefix "custom_"`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" batch "${pattern}" --prefix "custom_"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Processed');
 
@@ -220,7 +272,7 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
 
     it('should handle directory not found error', () => {
       const invalidPattern = '/nonexistent/directory/pattern';
-      
+
       try {
         execSync(`npx tsx "${advancedCliPath}" batch "${invalidPattern}"`, {
           encoding: 'utf8',
@@ -241,7 +293,9 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
       });
 
       expect(result).toContain('file-processor');
-      expect(result).toContain('Advanced file processing CLI with Result type handling');
+      expect(result).toContain(
+        'Advanced file processing CLI with Result type handling',
+      );
       expect(result).toContain('process');
       expect(result).toContain('batch');
     });
@@ -267,7 +321,9 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
       expect(result).toContain('--dry-run');
       expect(result).toContain('Examples:');
       expect(result).toContain('process input.txt');
-      expect(result).toContain('process data.json --output result.csv --format csv');
+      expect(result).toContain(
+        'process data.json --output result.csv --format csv',
+      );
     });
 
     it('should show batch command help', () => {
@@ -297,11 +353,14 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
     it('should handle empty file processing', async () => {
       const emptyFile = path.join(testDir, 'empty.txt');
       await fs.writeFile(emptyFile, '');
-      
-      const result = execSync(`npx tsx "${advancedCliPath}" process "${emptyFile}" --dry-run`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+
+      const result = execSync(
+        `npx tsx "${advancedCliPath}" process "${emptyFile}" --dry-run`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Processing 0 characters');
       expect(result).toContain('Successfully processed file (dry run)');
@@ -314,25 +373,32 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
       // Create a file in a directory that doesn't allow writes (if possible)
       const readOnlyDir = path.join(testDir, 'readonly');
       await fs.mkdir(readOnlyDir);
-      
+
       try {
         // Try to make directory read-only (may not work on all systems)
         await fs.chmod(readOnlyDir, 0o444);
-        
+
         const outputInReadOnly = path.join(readOnlyDir, 'output.txt');
-        
+
         try {
-          execSync(`npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputInReadOnly}"`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-          });
+          execSync(
+            `npx tsx "${advancedCliPath}" process "${testInputFile}" --output "${outputInReadOnly}"`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+            },
+          );
           expect.fail('Should have failed due to permission error');
         } catch (error: any) {
-          expect(error.stdout || error.stderr).toContain('Failed to write file');
+          expect(error.stdout || error.stderr).toContain(
+            'Failed to write file',
+          );
         }
       } catch (error) {
         // Skip this test if we can't create read-only directory
-        console.log('Skipping permission test - unable to create read-only directory');
+        console.log(
+          'Skipping permission test - unable to create read-only directory',
+        );
       } finally {
         // Restore permissions and cleanup
         try {

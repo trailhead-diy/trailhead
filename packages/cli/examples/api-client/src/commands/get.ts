@@ -44,7 +44,7 @@ export const getCommand = createCommand({
   ],
   action: async (options: GetOptions, context: CommandContext) => {
     const [url] = context.args;
-    
+
     if (!url) {
       return Err(new Error('URL is required. Usage: api-client get <url>'));
     }
@@ -58,13 +58,13 @@ export const getCommand = createCommand({
 
     const client = new HttpClient();
     const headers: Record<string, string> = {};
-    
+
     if (options['auth-key']) {
       headers['Authorization'] = `Bearer ${options['auth-key']}`;
     }
 
     context.logger.info(`Making GET request to ${url}...`);
-    
+
     const result = await client.request(
       {
         method: 'GET',
@@ -72,11 +72,13 @@ export const getCommand = createCommand({
         headers,
         timeout: options.timeout,
       },
-      options.retry && options.retry > 1 ? {
-        attempts: options.retry,
-        delay: 1000,
-        backoff: 2,
-      } : undefined
+      options.retry && options.retry > 1
+        ? {
+            attempts: options.retry,
+            delay: 1000,
+            backoff: 2,
+          }
+        : undefined,
     );
 
     if (!result.success) {
@@ -85,7 +87,7 @@ export const getCommand = createCommand({
     }
 
     const response = result.value;
-    
+
     switch (options['output-format']) {
       case 'headers':
         console.log(JSON.stringify(response.headers, null, 2));
@@ -104,7 +106,9 @@ export const getCommand = createCommand({
     if (response.status >= 400) {
       context.logger.warn(`HTTP ${response.status}: ${response.statusText}`);
     } else {
-      context.logger.success(`Request completed successfully (${response.status})`);
+      context.logger.success(
+        `Request completed successfully (${response.status})`,
+      );
     }
 
     return Ok(undefined);

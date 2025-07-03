@@ -335,7 +335,7 @@ To add custom validation to your CLI commands...
 ### Files Subject to Diátaxis Standards
 
 - All `.md` files in `/docs/` directories
-- All `.md` files in `packages/*/docs/` directories  
+- All `.md` files in `packages/*/docs/` directories
 - User-facing technical documentation
 
 ### Files Exempt from Diátaxis Standards

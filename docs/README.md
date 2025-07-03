@@ -34,24 +34,28 @@ By strictly separating these concerns, each document serves its purpose exceptio
 ### The Four Documentation Types
 
 **Tutorials (Learning-Oriented)**
+
 - Step-by-step learning experiences
 - One clear path, no alternatives
 - Build confidence through doing
 - Example: "Build Your First CLI Application"
 
-**How-To Guides (Task-Oriented)** 
+**How-To Guides (Task-Oriented)**
+
 - Solutions to specific problems
 - Assume basic knowledge
 - Multiple approaches when relevant
 - Example: "How to Add Custom Validation Rules"
 
 **Reference (Information-Oriented)**
+
 - Technical specifications and lookups
-- Comprehensive and authoritative 
+- Comprehensive and authoritative
 - No instructions or explanations
 - Example: "Core Module API Reference"
 
 **Explanation (Understanding-Oriented)**
+
 - Conceptual understanding and context
 - Design decisions and trade-offs
 - Background and implications
@@ -60,6 +64,7 @@ By strictly separating these concerns, each document serves its purpose exceptio
 ### Quality as a Non-Negotiable
 
 Every documentation file must:
+
 - Include proper frontmatter with correct type classification
 - Follow the appropriate template structure
 - Pass automated validation checks
@@ -74,13 +79,15 @@ Every documentation file must:
 **Context**: Documentation often degrades over time as contributors add mixed content
 
 **Options considered**:
+
 1. Guidelines-based approach - Rely on reviewer vigilance
-2. Template enforcement - Provide templates but allow flexibility  
+2. Template enforcement - Provide templates but allow flexibility
 3. Automated validation - Block non-compliant documentation
 
 **Decision**: Automated validation with blocking CI checks
 
-**Trade-offs**: 
+**Trade-offs**:
+
 - **Gained**: Consistent quality, clear user expectations, reduced cognitive load
 - **Lost**: Some flexibility, higher barrier for quick documentation updates
 
@@ -91,6 +98,7 @@ Every documentation file must:
 **Decision**: Mandatory templates for all documentation types
 
 **Trade-offs**:
+
 - **Gained**: Consistent structure, faster writing, quality guidance
 - **Lost**: Creative freedom, unique document structures
 
@@ -101,6 +109,7 @@ Every documentation file must:
 **Decision**: Each package maintains its own documentation hub while following monorepo standards
 
 **Trade-offs**:
+
 - **Gained**: Package-focused workflows, specialized content
 - **Lost**: Single source of truth, some duplication
 
@@ -136,6 +145,7 @@ Just as you wouldn't put a guided tour in the card catalog, we don't mix documen
 **Long-term benefit**: Clear expectations, faster writing with templates, reduced review cycles
 
 Contributors must:
+
 - Choose the correct documentation type before writing
 - Follow template structures closely
 - Validate documentation before submitting
@@ -146,6 +156,7 @@ Contributors must:
 **Long-term benefit**: Faster task completion, reduced frustration, clear learning paths
 
 Users can:
+
 - Navigate directly to the type of help they need
 - Trust that tutorials will teach, references will inform, guides will solve problems
 - Expect consistent quality across all packages
@@ -161,6 +172,7 @@ Users can:
 ### Monorepo-Level Documentation
 
 **In `/docs/`:**
+
 - `README.md` - This overview and philosophy (explanation)
 - `reference/documentation-standards.md` - Complete framework specification (reference)
 - `how-to/contributing.md` - Contribution guidelines and workflows (how-to)
@@ -169,12 +181,14 @@ Users can:
 ### Package Documentation Hubs
 
 **CLI Framework (`/packages/cli/docs/`)**
+
 - Framework architecture and design decisions
 - API reference for all modules
 - Tutorials for building CLI applications
 - How-to guides for specific implementations
 
 **Web UI Library (`/packages/web-ui/docs/`)**
+
 - Component documentation and theming system
 - Integration guides for different frameworks
 - CLI tool usage and configuration
@@ -200,6 +214,7 @@ pnpm docs:new        # Create new documentation from templates
 ### Quality Metrics
 
 The validation system tracks:
+
 - **Type compliance**: Content matches declared type
 - **Template adherence**: Structure follows official templates
 - **Cross-reference integrity**: Links point to valid documents

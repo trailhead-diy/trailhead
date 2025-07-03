@@ -27,7 +27,9 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock console methods
-const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+const mockConsoleError = vi
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('Command Base', () => {
@@ -77,7 +79,7 @@ describe('Command Base', () => {
       };
 
       const command = createCommand(config);
-      
+
       expect(command.options).toEqual([
         {
           flags: '--output <dir>',
@@ -110,12 +112,4 @@ describe('Command Base', () => {
       expect(mockAction).toHaveBeenCalledWith(mockOptions, mockContext);
     });
   });
-
-
-
-
-
-
-
-
 });

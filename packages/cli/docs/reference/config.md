@@ -14,11 +14,11 @@ Type-safe configuration management with schema validation using Zod and flexible
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/config` |
-| **Since** | `v1.0.0` |
+| Property    | Value                               |
+| ----------- | ----------------------------------- |
+| **Package** | `@esteban-url/trailhead-cli`        |
+| **Module**  | `@esteban-url/trailhead-cli/config` |
+| **Since**   | `v1.0.0`                            |
 
 ## Import
 
@@ -56,10 +56,12 @@ const configSchema = z.object({
     url: z.string().url(),
     poolSize: z.number().min(1).max(100).default(10),
   }),
-  features: z.object({
-    auth: z.boolean().default(true),
-    rateLimit: z.boolean().default(false),
-  }).default({}),
+  features: z
+    .object({
+      auth: z.boolean().default(true),
+      rateLimit: z.boolean().default(false),
+    })
+    .default({}),
 });
 
 // Create config definition
@@ -95,10 +97,10 @@ const result = await config.load({
 
 ```typescript
 interface LoadOptions {
-  searchFrom?: string;      // Directory to search from
-  configName?: string;      // Config file name (without extension)
-  stopAt?: string;          // Directory to stop searching
-  transform?: (config: any) => any;  // Transform loaded config
+  searchFrom?: string; // Directory to search from
+  configName?: string; // Config file name (without extension)
+  stopAt?: string; // Directory to stop searching
+  transform?: (config: any) => any; // Transform loaded config
 }
 ```
 
@@ -124,55 +126,61 @@ The config module searches for configuration in the following locations (in orde
 const configSchema = z.object({
   // String with constraints
   name: z.string().min(1).max(100),
-  
+
   // Number with range
   timeout: z.number().min(0).max(60000).default(5000),
-  
+
   // Enum
   environment: z.enum(["development", "staging", "production"]),
-  
+
   // Array
   allowedOrigins: z.array(z.string().url()).default([]),
-  
+
   // Nested object
   smtp: z.object({
     host: z.string(),
     port: z.number().default(587),
     secure: z.boolean().default(false),
-    auth: z.object({
-      user: z.string(),
-      pass: z.string(),
-    }).optional(),
+    auth: z
+      .object({
+        user: z.string(),
+        pass: z.string(),
+      })
+      .optional(),
   }),
-  
+
   // Union types
-  logLevel: z.union([
-    z.literal("debug"),
-    z.literal("info"),
-    z.literal("warn"),
-    z.literal("error"),
-  ]).default("info"),
+  logLevel: z
+    .union([
+      z.literal("debug"),
+      z.literal("info"),
+      z.literal("warn"),
+      z.literal("error"),
+    ])
+    .default("info"),
 });
 ```
 
 ### Custom Validation
 
 ```typescript
-const configSchema = z.object({
-  port: z.number(),
-  host: z.string(),
-}).refine(
-  (data) => {
-    // Custom validation logic
-    if (data.port === 80 && data.host !== "localhost") {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: "Port 80 only allowed on localhost",
-  }
-);
+const configSchema = z
+  .object({
+    port: z.number(),
+    host: z.string(),
+  })
+  .refine(
+    (data) => {
+      // Custom validation logic
+      if (data.port === 80 && data.host !== "localhost") {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Port 80 only allowed on localhost",
+    },
+  );
 ```
 
 ## Environment Variables
@@ -181,15 +189,9 @@ Combine with environment variables:
 
 ```typescript
 const configSchema = z.object({
-  port: z.number().default(
-    parseInt(process.env.PORT || "3000", 10)
-  ),
-  apiKey: z.string().default(
-    process.env.API_KEY || ""
-  ),
-  debug: z.boolean().default(
-    process.env.NODE_ENV === "development"
-  ),
+  port: z.number().default(parseInt(process.env.PORT || "3000", 10)),
+  apiKey: z.string().default(process.env.API_KEY || ""),
+  debug: z.boolean().default(process.env.NODE_ENV === "development"),
 });
 ```
 
@@ -202,7 +204,7 @@ const result = await config.load();
 
 if (!result.success) {
   const error = result.error;
-  
+
   if (error.code === "VALIDATION_ERROR") {
     console.error("Invalid configuration:");
     console.error(error.details);
@@ -317,21 +319,21 @@ test("config loading", async () => {
       host: "127.0.0.1",
     }),
   });
-  
+
   const schema = z.object({
     port: z.number(),
     host: z.string(),
   });
-  
+
   const config = defineConfig(schema);
-  
+
   // Mock filesystem for testing
   const result = await config.load({
     searchFrom: "/",
     // Use test filesystem
     fs,
   });
-  
+
   expect(result.success).toBe(true);
   expect(result.value.port).toBe(4000);
 });
@@ -356,9 +358,9 @@ const result = await config.load();
 if (result.success) {
   // TypeScript knows all properties
   result.value.api.endpoint; // string
-  result.value.api.timeout;  // number
-  result.value.api.retries;  // number (with default)
-  
+  result.value.api.timeout; // number
+  result.value.api.retries; // number (with default)
+
   // TypeScript prevents errors
   // result.value.api.invalid; // Error: Property 'invalid' does not exist
 }

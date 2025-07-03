@@ -48,8 +48,14 @@ export class InteractiveTestRunner extends EventEmitter {
   /**
    * Add multiple responses at once
    */
-  addResponses(responses: Array<{ prompt: string | RegExp; response: string; delay?: number }>): this {
-    this.responses.push(...responses.map(r => ({ delay: 100, ...r })));
+  addResponses(
+    responses: Array<{
+      prompt: string | RegExp;
+      response: string;
+      delay?: number;
+    }>,
+  ): this {
+    this.responses.push(...responses.map((r) => ({ delay: 100, ...r })));
     return this;
   }
 
@@ -59,7 +65,7 @@ export class InteractiveTestRunner extends EventEmitter {
   async run(): Promise<InteractiveTestResult> {
     return new Promise((resolve, reject) => {
       this.startTime = Date.now();
-      
+
       this.child = spawn(this.config.command, this.config.args, {
         stdio: ['pipe', 'pipe', 'pipe'],
         cwd: this.config.cwd || process.cwd(),
@@ -94,7 +100,7 @@ export class InteractiveTestRunner extends EventEmitter {
 
       this.child.on('close', (code: number | null) => {
         clearTimeout(timeoutHandle);
-        
+
         resolve({
           exitCode: code,
           stdout: this.stdout,
@@ -120,9 +126,10 @@ export class InteractiveTestRunner extends EventEmitter {
     }
 
     const response = this.responses[this.currentResponseIndex];
-    const matches = typeof response.prompt === 'string' 
-      ? text.includes(response.prompt)
-      : response.prompt.test(text);
+    const matches =
+      typeof response.prompt === 'string'
+        ? text.includes(response.prompt)
+        : response.prompt.test(text);
 
     if (matches) {
       setTimeout(() => {
@@ -131,7 +138,7 @@ export class InteractiveTestRunner extends EventEmitter {
           this.emit('response', response.prompt, response.response);
         }
       }, response.delay);
-      
+
       this.currentResponseIndex++;
     }
   }
@@ -177,7 +184,11 @@ export class InteractiveTestRunner extends EventEmitter {
  */
 export async function runInteractiveTest(
   config: InteractiveTestConfig,
-  responses: Array<{ prompt: string | RegExp; response: string; delay?: number }>
+  responses: Array<{
+    prompt: string | RegExp;
+    response: string;
+    delay?: number;
+  }>,
 ): Promise<InteractiveTestResult> {
   const runner = new InteractiveTestRunner(config);
   runner.addResponses(responses);
@@ -187,7 +198,10 @@ export async function runInteractiveTest(
 /**
  * Create a test helper for common interactive patterns
  */
-export function createInteractiveTestHelper(baseCommand: string, baseCwd?: string) {
+export function createInteractiveTestHelper(
+  baseCommand: string,
+  baseCwd?: string,
+) {
   return {
     /**
      * Test a command with simple text responses
@@ -195,11 +209,16 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
     async testWithResponses(
       args: string[],
       responses: Array<{ prompt: string; response: string }>,
-      timeout = 15000
+      timeout = 15000,
     ): Promise<InteractiveTestResult> {
       return runInteractiveTest(
-        { command: 'npx', args: ['tsx', baseCommand, ...args], cwd: baseCwd, timeout },
-        responses
+        {
+          command: 'npx',
+          args: ['tsx', baseCommand, ...args],
+          cwd: baseCwd,
+          timeout,
+        },
+        responses,
       );
     },
 
@@ -209,11 +228,16 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
     async testWithRegexResponses(
       args: string[],
       responses: Array<{ prompt: RegExp; response: string }>,
-      timeout = 15000
+      timeout = 15000,
     ): Promise<InteractiveTestResult> {
       return runInteractiveTest(
-        { command: 'npx', args: ['tsx', baseCommand, ...args], cwd: baseCwd, timeout },
-        responses
+        {
+          command: 'npx',
+          args: ['tsx', baseCommand, ...args],
+          cwd: baseCwd,
+          timeout,
+        },
+        responses,
       );
     },
 
@@ -223,7 +247,7 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
     async testWithDefaults(
       args: string[],
       promptCount: number,
-      timeout = 15000
+      timeout = 15000,
     ): Promise<InteractiveTestResult> {
       const responses = Array.from({ length: promptCount }, (_, i) => ({
         prompt: new RegExp('.+[?:]\\s*$', 'm'), // Match lines ending with ? or :
@@ -231,8 +255,13 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
       }));
 
       return runInteractiveTest(
-        { command: 'npx', args: ['tsx', baseCommand, ...args], cwd: baseCwd, timeout },
-        responses
+        {
+          command: 'npx',
+          args: ['tsx', baseCommand, ...args],
+          cwd: baseCwd,
+          timeout,
+        },
+        responses,
       );
     },
   };

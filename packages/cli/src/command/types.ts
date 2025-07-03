@@ -4,7 +4,7 @@ import type { Logger } from '../core/index.js';
 
 /**
  * Context object provided to command actions during execution
- * 
+ *
  * Contains all the runtime context needed for command execution including
  * project information, logging utilities, filesystem access, and parsed arguments.
  */
@@ -23,7 +23,7 @@ export interface CommandContext {
 
 /**
  * Configuration for a command option/flag
- * 
+ *
  * Defines the structure for command-line options that can be passed to commands.
  * Supports both Commander.js style flags and programmatic name/alias definitions.
  */
@@ -60,10 +60,10 @@ export interface CommandArgument {
 
 /**
  * Command interface object for CLI registration
- * 
+ *
  * Represents a complete command that can be registered with a CLI instance.
  * Created by the createCommand() function and consumed by createCLI().
- * 
+ *
  * @template T - Type of options object passed to the execute function
  */
 export interface Command<T = any> {
@@ -81,13 +81,13 @@ export interface Command<T = any> {
 
 /**
  * Phase definition for multi-phase command execution
- * 
+ *
  * Represents a single phase in a multi-step command execution process.
  * Each phase receives data from the previous phase and can transform it.
- * 
- * REQUIRED BY WEB-UI: Used by @esteban-url/trailhead-web-ui transforms command for 
+ *
+ * REQUIRED BY WEB-UI: Used by @esteban-url/trailhead-web-ui transforms command for
  * multi-step file transformation workflows (validate → prepare → execute).
- * 
+ *
  * @template T - Type of data passed between phases
  */
 export interface CommandPhase<T> {
@@ -99,7 +99,7 @@ export interface CommandPhase<T> {
 
 /**
  * Options for interactive command behavior
- * 
+ *
  * Configuration for commands that support interactive mode with user prompts.
  */
 export interface InteractiveOptions {

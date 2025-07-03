@@ -81,7 +81,15 @@ import { createDefaultLogger } from "@esteban-url/trailhead-cli/core";
 const greetCommand = createCommand({
   name: "greet",
   description: "Greet someone",
-  options: [{ name: "name", alias: "n", type: "string", required: true, description: "Name to greet" }],
+  options: [
+    {
+      name: "name",
+      alias: "n",
+      type: "string",
+      required: true,
+      description: "Name to greet",
+    },
+  ],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`);
     return Ok(undefined);
@@ -137,63 +145,61 @@ if (isOk(result)) {
 The framework includes comprehensive retry functionality powered by p-retry:
 
 ```typescript
-import { 
-  retryWithBackoff, 
-  retryAdvanced, 
+import {
+  retryWithBackoff,
+  retryAdvanced,
   RetryStrategies,
   createCircuitBreaker,
-  retryWithTimeout 
+  retryWithTimeout,
 } from "@esteban-url/trailhead-cli/core";
 
 // Basic retry with exponential backoff
 const result = await retryWithBackoff(
   async () => {
-    const response = await fetch('/api/data');
+    const response = await fetch("/api/data");
     if (!response.ok) {
-      return Err({ 
-        code: 'API_ERROR', 
-        message: 'Request failed',
-        recoverable: true 
+      return Err({
+        code: "API_ERROR",
+        message: "Request failed",
+        recoverable: true,
       });
     }
     return Ok(await response.json());
   },
-  { maxRetries: 3, initialDelay: 1000 }
+  { maxRetries: 3, initialDelay: 1000 },
 );
 
 // Advanced retry with pre-configured strategies
-const apiResult = await retryAdvanced(
-  async () => callUnreliableAPI(),
-  {
-    ...RetryStrategies.network(), // 3 retries, 1s-10s delays, with jitter
-    onFailedAttempt: (error, attempt, retriesLeft) => {
-      logger.warn(`Attempt ${attempt} failed: ${error.message}`);
-    }
-  }
-);
+const apiResult = await retryAdvanced(async () => callUnreliableAPI(), {
+  ...RetryStrategies.network(), // 3 retries, 1s-10s delays, with jitter
+  onFailedAttempt: (error, attempt, retriesLeft) => {
+    logger.warn(`Attempt ${attempt} failed: ${error.message}`);
+  },
+});
 
 // Circuit breaker pattern for preventing cascading failures
 const breaker = createCircuitBreaker({
   failureThreshold: 5,
-  resetTimeout: 60000
+  resetTimeout: 60000,
 });
 
 const protectedResult = await breaker.execute(
   async () => callProtectedService(),
-  RetryStrategies.conservative()
+  RetryStrategies.conservative(),
 );
 
 // Retry with overall timeout
 const timedResult = await retryWithTimeout(
   async () => slowOperation(),
   5000, // 5 second timeout
-  { retries: 10 }
+  { retries: 10 },
 );
 ```
 
 Available retry strategies:
+
 - `RetryStrategies.conservative()` - 5 retries, 2-30s delays
-- `RetryStrategies.aggressive()` - 10 retries, 100ms-5s delays  
+- `RetryStrategies.aggressive()` - 10 retries, 100ms-5s delays
 - `RetryStrategies.network()` - 3 retries with jitter for network calls
 - `RetryStrategies.filesystem()` - 2 retries, minimal delays
 - `RetryStrategies.infinite()` - Unlimited retries (use with caution)
@@ -203,8 +209,14 @@ Available retry strategies:
 Command creation and execution patterns:
 
 ```typescript
-import { createCommand, executeWithPhases } from "@esteban-url/trailhead-cli/command";
-import type { Command, CommandContext } from "@esteban-url/trailhead-cli/command";
+import {
+  createCommand,
+  executeWithPhases,
+} from "@esteban-url/trailhead-cli/command";
+import type {
+  Command,
+  CommandContext,
+} from "@esteban-url/trailhead-cli/command";
 
 // Phased execution
 const phases = [
@@ -285,7 +297,10 @@ const framework = await select({
 Comprehensive testing utilities:
 
 ```typescript
-import { createTestContext, mockFileSystem } from "@esteban-url/trailhead-cli/testing";
+import {
+  createTestContext,
+  mockFileSystem,
+} from "@esteban-url/trailhead-cli/testing";
 
 describe("MyCommand", () => {
   it("should execute successfully", async () => {
@@ -357,7 +372,15 @@ const configCommand = createCommand({
     createCommand({
       name: "get",
       description: "Get config value",
-      options: [{ name: "key", alias: "k", type: "string", required: true, description: "Configuration key to get" }],
+      options: [
+        {
+          name: "key",
+          alias: "k",
+          type: "string",
+          required: true,
+          description: "Configuration key to get",
+        },
+      ],
       action: async (options, context) => {
         const fs = createFileSystem();
         const result = await fs.readFile("./config.json");
@@ -381,8 +404,20 @@ const configCommand = createCommand({
       name: "set",
       description: "Set config value",
       options: [
-        { name: "key", alias: "k", type: "string", required: true, description: "Configuration key to set" },
-        { name: "value", alias: "v", type: "string", required: true, description: "Configuration value to set" },
+        {
+          name: "key",
+          alias: "k",
+          type: "string",
+          required: true,
+          description: "Configuration key to set",
+        },
+        {
+          name: "value",
+          alias: "v",
+          type: "string",
+          required: true,
+          description: "Configuration value to set",
+        },
       ],
       action: async (options, context) => {
         const fs = createFileSystem();
@@ -416,8 +451,20 @@ const initCommand = createCommand({
   name: "init",
   description: "Initialize project",
   options: [
-    { name: "template", alias: "t", type: "string", default: "default", description: "Template to use for initialization" },
-    { name: "force", alias: "f", type: "boolean", default: false, description: "Force overwrite existing configuration" },
+    {
+      name: "template",
+      alias: "t",
+      type: "string",
+      default: "default",
+      description: "Template to use for initialization",
+    },
+    {
+      name: "force",
+      alias: "f",
+      type: "boolean",
+      default: false,
+      description: "Force overwrite existing configuration",
+    },
   ],
   action: async (options, context) => {
     const fs = createFileSystem();

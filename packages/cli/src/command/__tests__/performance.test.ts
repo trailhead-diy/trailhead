@@ -6,7 +6,6 @@ import {
 import type { CommandOption } from '../types.js';
 
 describe('Command Performance', () => {
-
   describe('processOptionWithCache', () => {
     it('should process option with flags', () => {
       const option: CommandOption = {
@@ -15,7 +14,7 @@ describe('Command Performance', () => {
       };
 
       const result = processOptionWithCache(option, 0);
-      
+
       expect(result).toEqual({
         flags: '--output <dir>',
         name: 'output',
@@ -35,7 +34,7 @@ describe('Command Performance', () => {
       };
 
       const result = processOptionWithCache(option, 0);
-      
+
       expect(result).toEqual({
         flags: '-o, --output <value>',
         name: 'output',
@@ -52,7 +51,7 @@ describe('Command Performance', () => {
       };
 
       const result = processOptionWithCache(option, 0);
-      
+
       expect(result).toEqual({
         flags: '--watch',
         name: 'watch',
@@ -68,7 +67,7 @@ describe('Command Performance', () => {
       };
 
       const result = processOptionWithCache(option, 0);
-      
+
       expect(result.name).toBe('verbose');
       expect(result.flags).toBe('-v, --verbose');
     });
@@ -81,7 +80,7 @@ describe('Command Performance', () => {
       };
 
       const result = processOptionWithCache(option, 0);
-      
+
       expect(result.name).toBe('output');
       expect(result.flags).toBe('--output <value>');
     });
@@ -94,10 +93,10 @@ describe('Command Performance', () => {
 
       // First call
       const result1 = processOptionWithCache(option, 0);
-      
+
       // Second call should return same object reference (cached)
       const result2 = processOptionWithCache(option, 0);
-      
+
       expect(result1).toBe(result2);
     });
 
@@ -106,7 +105,9 @@ describe('Command Performance', () => {
         description: 'Invalid option',
       };
 
-      expect(() => processOptionWithCache(option, 0)).toThrow('Option at index 0 has no name or flags');
+      expect(() => processOptionWithCache(option, 0)).toThrow(
+        'Option at index 0 has no name or flags',
+      );
     });
   });
 
@@ -133,7 +134,7 @@ describe('Command Performance', () => {
       ];
 
       const result = processCommandOptionsWithCache(options);
-      
+
       expect(result).toHaveLength(3);
       expect(result[0].name).toBe('output');
       expect(result[0].flags).toBe('-o, --output <value>');
@@ -153,18 +154,18 @@ describe('Command Performance', () => {
 
       // First call
       const result1 = processCommandOptionsWithCache(options);
-      
+
       // Second call should return same array reference (cached)
       const result2 = processCommandOptionsWithCache(options);
-      
+
       expect(result1).toStrictEqual(result2);
     });
 
     it('should handle empty options array', () => {
       const options: CommandOption[] = [];
-      
+
       const result = processCommandOptionsWithCache(options);
-      
+
       expect(result).toEqual([]);
     });
   });
@@ -178,10 +179,10 @@ describe('Command Performance', () => {
 
       // First call creates processed option
       const result1 = processOptionWithCache(option, 0);
-      
+
       // Second call returns same cached instance
       const result2 = processOptionWithCache(option, 0);
-      
+
       // Should be the same object reference (cached)
       expect(result1).toBe(result2);
       expect(result1.name).toBe('output');
@@ -193,15 +194,15 @@ describe('Command Performance', () => {
         name: 'input',
         description: 'Input file',
       };
-      
+
       const option2: CommandOption = {
-        name: 'output', 
+        name: 'output',
         description: 'Output file',
       };
 
       const result1 = processOptionWithCache(option1, 0);
       const result2 = processOptionWithCache(option2, 1);
-      
+
       // Different options should have different results
       expect(result1).not.toBe(result2);
       expect(result1.name).toBe('input');

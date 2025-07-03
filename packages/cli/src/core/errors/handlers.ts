@@ -178,7 +178,7 @@ export async function tryRecover<T, E extends CLIError>(
 
 /**
  * Retry an operation with exponential backoff using p-retry
- * 
+ *
  * @param operation - Async function that returns a Result type
  * @param options - Retry configuration options
  * @param options.maxRetries - Maximum number of retry attempts (default: 3)
@@ -187,7 +187,7 @@ export async function tryRecover<T, E extends CLIError>(
  * @param options.factor - Exponential backoff factor (default: 2)
  * @param options.shouldRetry - Function to determine if an error should be retried (default: checks error.recoverable)
  * @returns Promise resolving to Result<T, E>
- * 
+ *
  * @example
  * ```typescript
  * const result = await retryWithBackoff(
@@ -226,21 +226,24 @@ export async function retryWithBackoff<T, E extends CLIError>(
     const result = await pRetry(
       async () => {
         const operationResult = await operation();
-        
+
         if (operationResult.success) {
           return operationResult;
         }
-        
+
         lastError = operationResult.error;
-        
+
         // Check if we should retry this error
         if (!shouldRetry(operationResult.error)) {
           // Don't retry - throw a special error to stop p-retry
           throw new AbortError(operationResult.error.message);
         }
-        
+
         // Throw a RetryableError to trigger retry (p-retry requires Error instances)
-        throw new RetryableError(operationResult.error.message, operationResult.error);
+        throw new RetryableError(
+          operationResult.error.message,
+          operationResult.error,
+        );
       },
       {
         retries: maxRetries,
@@ -254,21 +257,21 @@ export async function retryWithBackoff<T, E extends CLIError>(
             return;
           }
         },
-      }
+      },
     );
-    
+
     return result;
   } catch (error) {
     // Handle abort errors (non-retryable errors)
     if (error instanceof AbortError && lastError) {
       return { success: false, error: lastError };
     }
-    
+
     // Handle other errors (exhausted retries)
     if (lastError) {
       return { success: false, error: lastError };
     }
-    
+
     // Fallback error (shouldn't happen)
     return {
       success: false,

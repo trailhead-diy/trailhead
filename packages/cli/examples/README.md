@@ -5,18 +5,23 @@ Working code examples demonstrating various patterns and use cases with @esteban
 ## Available Examples
 
 ### [api-client](./api-client/)
+
 HTTP client with retry logic, authentication, and error handling.
 
 ### [cross-platform-cli](./cross-platform-cli/)
+
 Cross-platform CLI demonstrating OS-specific functionality.
 
 ### [file-processor](./file-processor/)
+
 Advanced file processing with streaming and batch operations.
 
 ### [project-generator](./project-generator/)
+
 Project scaffolding and template generation.
 
 ### [todo-cli](./todo-cli/)
+
 Complete CRUD application with persistent storage.
 
 ## Running Examples
@@ -76,14 +81,16 @@ To use an example as a template for your own project:
 
 1. Copy the example directory to your location
 2. Update the `package.json` dependency:
+
    ```json
    // Change from:
    "@esteban-url/trailhead-cli": "file:../.."
-   
+
    // To one of:
    "@esteban-url/trailhead-cli": "github:esteban-url/trailhead#packages/cli"  // GitHub
    "@esteban-url/trailhead-cli": "^0.1.0"  // NPM (when published)
    ```
+
 3. Install and use normally:
    ```bash
    npm install
@@ -93,6 +100,7 @@ To use an example as a template for your own project:
 ### Building Examples
 
 To compile TypeScript:
+
 ```bash
 npm run build
 node dist/index.js <command> [options]
@@ -101,7 +109,7 @@ node dist/index.js <command> [options]
 ## Learning Path
 
 1. Start with **api-client** for basic CLI structure
-2. Try **cross-platform-cli** for OS integration  
+2. Try **cross-platform-cli** for OS integration
 3. Explore **file-processor** for filesystem operations
 4. Build **project-generator** for scaffolding patterns
 5. Complete **todo-cli** for full application development

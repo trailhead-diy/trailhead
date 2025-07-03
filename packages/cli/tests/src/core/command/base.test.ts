@@ -137,7 +137,9 @@ describe('Command Execution', () => {
 
       expect(result.success).toBe(true);
       expect(result.value).toBe('dry run result');
-      expect(mockContext.logger.info).toHaveBeenCalledWith('🔍 DRY RUN MODE - No changes will be made');
+      expect(mockContext.logger.info).toHaveBeenCalledWith(
+        '🔍 DRY RUN MODE - No changes will be made',
+      );
       expect(executeFn).toHaveBeenCalledWith({ dryRun: true });
     });
 
@@ -170,7 +172,7 @@ describe('Command Execution', () => {
         [
           { label: 'Total size', value: '2.3 MB' },
           { label: 'Build time', value: '1.2s' },
-        ]
+        ],
       );
 
       expect(mockContext.logger.info).toHaveBeenCalledWith('');
@@ -197,7 +199,7 @@ describe('Command Execution', () => {
 
       // Test the action directly since command interface doesn't have parseAsync
       const result = await command.execute({}, mockContext);
-      
+
       expect(result.success).toBe(false);
       expect(result.error.code).toBe('TEST_ERROR');
       expect(result.error.message).toBe('Test error message');

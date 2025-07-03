@@ -5,7 +5,7 @@ A comprehensive example of building an HTTP client CLI with @esteban-url/trailhe
 ## Features
 
 - GET, POST, PUT, and DELETE requests
-- Authentication with API keys  
+- Authentication with API keys
 - Retry logic with exponential backoff
 - JSON response formatting
 - Request/response logging

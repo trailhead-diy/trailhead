@@ -35,7 +35,7 @@ class Command extends BaseCommand {
   constructor(private deps: Dependencies) {
     super();
   }
-  
+
   async run() {
     try {
       // Complex inheritance chains
@@ -60,7 +60,7 @@ const command: Command = {
     // Pure functions
     // Explicit dependencies via context
     // Easy to test and compose
-  }
+  },
 };
 ```
 
@@ -76,7 +76,7 @@ const command: Command = {
   name: "build",
   execute: async (options, context) => {
     // Pure function with explicit dependencies
-  }
+  },
 };
 ```
 
@@ -101,8 +101,8 @@ The framework organizes functionality into independent modules that can be impor
 
 ```typescript
 // Import only what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from "@esteban-url/trailhead-cli/filesystem";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
 // Only these modules affect your bundle size
 ```
 
@@ -117,8 +117,9 @@ These concepts form a coherent philosophy: functional patterns create predictabl
 **Context**: CLI frameworks traditionally use object-oriented patterns with command classes, but this creates problems with bundle size and testing complexity.
 
 **Options considered**:
+
 1. Class-based commands - Familiar but poor tree-shaking and complex testing
-2. Functional commands - Better performance but steeper learning curve  
+2. Functional commands - Better performance but steeper learning curve
 3. Hybrid approach - Complexity without clear benefits
 
 **Decision**: Pure functional approach with commands as data structures
@@ -133,11 +134,12 @@ const buildCommand: Command = {
   name: "build",
   execute: async (options, context) => {
     // Pure function with explicit dependencies
-  }
+  },
 };
 ```
 
 This enables:
+
 - **Superior tree-shaking**: Unused functions are eliminated completely
 - **Trivial testing**: Test pure functions without complex mocking
 - **Natural composition**: Combine commands and behaviors easily
@@ -148,6 +150,7 @@ This enables:
 **Context**: Traditional error handling with exceptions hides failure modes in function signatures and makes error composition difficult.
 
 **Options considered**:
+
 1. Exception-based errors - Familiar but hidden failure modes
 2. Result types - Explicit but more verbose
 3. Error-first callbacks - Functional but awkward with async/await
@@ -171,6 +174,7 @@ async function readConfig(path: string): Promise<Result<Config>> {
 ```
 
 This enables:
+
 - **Type-safe error handling**: TypeScript enforces error checking
 - **Composable operations**: Chain fallible operations cleanly
 - **Clear contracts**: Function signatures document failure modes
@@ -181,6 +185,7 @@ This enables:
 **Context**: Traditional packages use a single entry point that re-exports everything, leading to bundle bloat and circular dependency issues.
 
 **Options considered**:
+
 1. Barrel exports - Simple but causes bundle bloat
 2. Subpath exports - Better optimization but more complex imports
 3. Separate packages - Maximum isolation but dependency overhead
@@ -191,12 +196,13 @@ This enables:
 
 ```typescript
 // Granular imports
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from "@esteban-url/trailhead-cli/filesystem";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
 // Only these specific modules are bundled
 ```
 
 This creates:
+
 - **Minimal bundles**: Import only the code you actually use
 - **Clear boundaries**: Modules cannot create circular dependencies
 - **Better development**: Faster builds with less code to process
@@ -207,6 +213,7 @@ This creates:
 **Context**: Direct imports of filesystem, loggers, and other I/O create hidden dependencies that are difficult to test and configure.
 
 **Options considered**:
+
 1. Global imports - Simple but hard to test and configure
 2. Context injection - More explicit but requires threading context
 3. Service locator pattern - Flexible but creates hidden dependencies
@@ -228,6 +235,7 @@ async function processFile(path: string, context: Context) {
 ```
 
 This enables:
+
 - **Comprehensive testing**: Inject mocks for all external dependencies
 - **Environmental flexibility**: Different implementations for different contexts
 - **Clear contracts**: All dependencies are visible in function signatures
@@ -238,6 +246,7 @@ This enables:
 **Context**: Configuration needs runtime validation since TypeScript types don't exist at runtime, but manual validation is error-prone.
 
 **Options considered**:
+
 1. TypeScript interfaces only - Simple but no runtime safety
 2. Manual validation - Complete control but error-prone
 3. Schema libraries (Zod, Joi, etc.) - Robust but adds dependency
@@ -257,6 +266,7 @@ type Config = z.infer<typeof ConfigSchema>; // Type inferred from schema
 ```
 
 This provides:
+
 - **Runtime safety**: Invalid configuration is caught early with clear errors
 - **Type inference**: No need to maintain separate type definitions
 - **Rich validation**: Complex validation rules with good error messages
@@ -267,6 +277,7 @@ This provides:
 ### Think of It Like...
 
 The framework's design is like a **professional toolbox** where:
+
 - Each tool (module) has a specific purpose and works independently
 - You only carry the tools you need for each job (subpath imports)
 - Every tool tells you exactly what it does and what can go wrong (Result types)
@@ -318,8 +329,8 @@ When building a CLI that processes files, the design decisions work together:
 
 ```typescript
 // Only import what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from "@esteban-url/trailhead-cli/filesystem";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
 
 const processCommand: Command = {
   name: "process",
@@ -329,13 +340,13 @@ const processCommand: Command = {
     if (!fileResult.success) {
       return fileResult; // Propagate error
     }
-    
+
     // Pure function for processing
     const processed = processContent(fileResult.value);
-    
+
     // Context injection enables testing
     return context.fs.writeFile(options.output, processed);
-  }
+  },
 };
 ```
 
@@ -351,13 +362,16 @@ const ConfigSchema = z.object({
 });
 
 // Result types for composable error handling
-const loadConfig = async (path: string, fs: FileSystem): Promise<Result<Config>> => {
+const loadConfig = async (
+  path: string,
+  fs: FileSystem,
+): Promise<Result<Config>> => {
   const fileResult = await fs.readFile(path);
   if (!fileResult.success) return fileResult;
-  
+
   const parseResult = parseJSON(fileResult.value);
   if (!parseResult.success) return parseResult;
-  
+
   return validateConfig(ConfigSchema, parseResult.value);
 };
 ```
@@ -401,6 +415,7 @@ This approach catches configuration errors early with clear messages, rather tha
 ### How We Got Here
 
 The design evolved through practical experience:
+
 1. **Bundle size concerns** led to subpath exports exploration
 2. **Testing complexity** drove the adoption of functional patterns
 3. **Error handling problems** motivated Result type implementation
@@ -413,6 +428,7 @@ The framework has reached architectural stability with all major patterns proven
 ### Future Considerations
 
 Potential evolution areas:
+
 - **Plugin architecture**: Building on the modular foundation
 - **Streaming operations**: Extending filesystem abstractions
 - **Performance optimizations**: Leveraging functional patterns for better caching
@@ -444,4 +460,3 @@ Different teams may weigh these trade-offs differently. The framework's modular 
 ---
 
 **Questions?** These are complex topics with nuanced trade-offs. Feel free to discuss in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions) or [Discord community](https://discord.gg/trailhead).
-

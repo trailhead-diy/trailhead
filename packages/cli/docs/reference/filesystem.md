@@ -14,11 +14,11 @@ Abstraction layer for file system operations with consistent error handling and 
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/filesystem` |
-| **Since** | `v1.0.0` |
+| Property    | Value                                   |
+| ----------- | --------------------------------------- |
+| **Package** | `@esteban-url/trailhead-cli`            |
+| **Module**  | `@esteban-url/trailhead-cli/filesystem` |
+| **Since**   | `v1.0.0`                                |
 
 ## Import
 
@@ -44,27 +44,35 @@ const fs = createFileSystem();
 interface FileSystem {
   // Check existence
   exists(path: string): Promise<Result<boolean>>;
-  
+
   // Read operations
   readFile(path: string, encoding?: string): Promise<Result<string>>;
   readdir(path: string): Promise<Result<string[]>>;
   stat(path: string): Promise<Result<FileStats>>;
-  
+
   // Write operations
   writeFile(path: string, content: string): Promise<Result<void>>;
   mkdir(path: string, options?: MkdirOptions): Promise<Result<void>>;
-  
+
   // File operations
   copy(src: string, dest: string, options?: CopyOptions): Promise<Result<void>>;
-  move(src: string, dest: string, options?: { overwrite?: boolean }): Promise<Result<void>>;
+  move(
+    src: string,
+    dest: string,
+    options?: { overwrite?: boolean },
+  ): Promise<Result<void>>;
   remove(path: string): Promise<Result<void>>;
-  
+
   // Utility operations
   ensureDir(path: string): Promise<Result<void>>;
   emptyDir(path: string): Promise<Result<void>>;
   outputFile(path: string, content: string): Promise<Result<void>>;
   readJson<T = any>(path: string): Promise<Result<T>>;
-  writeJson<T = any>(path: string, data: T, options?: JsonOptions): Promise<Result<void>>;
+  writeJson<T = any>(
+    path: string,
+    data: T,
+    options?: JsonOptions,
+  ): Promise<Result<void>>;
 }
 ```
 
@@ -106,7 +114,10 @@ interface JsonOptions {
 ### Real FileSystem (Default)
 
 ```typescript
-import { createFileSystem, createNodeFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import {
+  createFileSystem,
+  createNodeFileSystem,
+} from "@esteban-url/trailhead-cli/filesystem";
 
 // Using factory (recommended)
 const fs = createFileSystem();
@@ -194,9 +205,9 @@ if (result.success) {
 await fs.copy("/src/file.txt", "/dest/file.txt");
 
 // Copy directory
-await fs.copy("/src/dir", "/dest/dir", { 
+await fs.copy("/src/dir", "/dest/dir", {
   recursive: true,
-  overwrite: false 
+  overwrite: false,
 });
 
 // Move file or directory
@@ -229,14 +240,14 @@ if (moveResult.success) {
 const safeMove = await fs.move("/src", "/dest", { overwrite: false });
 
 // Remove operations - safely remove any file/directory
-await fs.remove("/temporary-file.txt");      // Remove file
-await fs.remove("/temporary-directory");     // Remove directory recursively
+await fs.remove("/temporary-file.txt"); // Remove file
+await fs.remove("/temporary-directory"); // Remove directory recursively
 await fs.remove("/path/that/might/not/exist"); // Safe - won't error if missing
 
 // Empty directory - clear contents but keep directory
-await fs.emptyDir("/cache");           // Empties /cache but keeps the directory
-await fs.emptyDir("/logs");            // Clears all log files
-await fs.emptyDir("/temp/downloads");   // Cleans download directory
+await fs.emptyDir("/cache"); // Empties /cache but keeps the directory
+await fs.emptyDir("/logs"); // Clears all log files
+await fs.emptyDir("/temp/downloads"); // Cleans download directory
 
 // Output file - write with automatic parent directory creation
 await fs.outputFile("/deep/nested/structure/config.json", '{"key": "value"}');
@@ -246,17 +257,17 @@ await fs.outputFile("/deep/nested/structure/config.json", '{"key": "value"}');
 
 // Backup and replace pattern
 const backupPath = `/backups/${Date.now()}-config.json`;
-await fs.move("/app/config.json", backupPath);  // Backup original
+await fs.move("/app/config.json", backupPath); // Backup original
 await fs.outputFile("/app/config.json", newConfig); // Write new config
 
 // Clean and recreate pattern
-await fs.remove("/build");              // Remove old build
-await fs.ensureDir("/build");           // Ensure build directory exists
+await fs.remove("/build"); // Remove old build
+await fs.ensureDir("/build"); // Ensure build directory exists
 await fs.outputFile("/build/index.js", bundledCode); // Output new build
 
 // Safe cleanup pattern
-await fs.emptyDir("/temp");             // Clear temp files but keep directory
-await fs.remove("/cache/expired");      // Remove expired cache entries
+await fs.emptyDir("/temp"); // Clear temp files but keep directory
+await fs.remove("/cache/expired"); // Remove expired cache entries
 ```
 
 ## Error Handling
@@ -292,11 +303,11 @@ if (!result.success) {
       console.log("File not found, creating default...");
       await fs.writeFile("/protected/file.txt", "default content");
       break;
-      
+
     case "EACCES":
       console.error("Permission denied");
       break;
-      
+
     default:
       console.error(`Unexpected error: ${result.error.message}`);
   }
@@ -315,14 +326,14 @@ test("file processing", async () => {
     "/input.txt": "test content",
     "/config.json": '{"enabled": true}',
   });
-  
+
   // Use in test context
   const context = createTestContext({ filesystem: fs });
-  
+
   // Run command
   const result = await myCommand.execute({}, context);
   expect(result.success).toBe(true);
-  
+
   // Verify output
   const output = await fs.readFile("/output.txt");
   expect(output.success).toBe(true);
@@ -352,12 +363,12 @@ fs.clear();
 ### File Utilities
 
 ```typescript
-import { 
+import {
   findFiles,
   fileExists,
   readFile,
   writeFile,
-  ensureDirectory 
+  ensureDirectory,
 } from "@esteban-url/trailhead-cli/filesystem";
 
 // Find files matching pattern
@@ -376,7 +387,10 @@ await writeFile(fs, "/data.json", content, { backup: true });
 ### Path Utilities
 
 ```typescript
-import { getRelativePath, compareFiles } from "@esteban-url/trailhead-cli/filesystem";
+import {
+  getRelativePath,
+  compareFiles,
+} from "@esteban-url/trailhead-cli/filesystem";
 
 // Get relative path
 const relative = getRelativePath("/home/user", "/home/user/project/src");
@@ -402,7 +416,7 @@ function createFileSystem(adapter?: FileSystemAdapter): FileSystem;
 
 // Memory filesystem factory
 function createMemoryFileSystem(
-  initialFiles?: Record<string, string>
+  initialFiles?: Record<string, string>,
 ): FileSystem & {
   getFiles(): Map<string, string>;
   getDirectories(): Set<string>;

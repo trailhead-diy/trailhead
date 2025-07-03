@@ -28,7 +28,7 @@ export interface StatsTracker<
  * ```typescript
  * const stats = createStats();
  * console.log(stats.filesProcessed); // 0
- * 
+ *
  * const customStats = createStats({ errors: [], warnings: 0 });
  * console.log(customStats.custom?.errors); // []
  * ```

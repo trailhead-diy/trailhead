@@ -24,13 +24,14 @@ Traditional JavaScript packages often use "barrel exports" - a single index file
 
 ```typescript
 // ❌ Traditional barrel export
-export * from './core';
-export * from './command';
-export * from './filesystem';
+export * from "./core";
+export * from "./command";
+export * from "./filesystem";
 // ... etc
 ```
 
 This approach has significant drawbacks:
+
 - **Bundle bloat**: Importing one function pulls in the entire library
 - **Tree-shaking failures**: Bundlers struggle to eliminate unused code
 - **Circular dependencies**: Modules can accidentally depend on each other
@@ -52,6 +53,7 @@ This approach has significant drawbacks:
 ```
 
 Benefits:
+
 - **Minimal bundles**: Import only what you use
 - **Clear dependencies**: Each module is independent
 - **Faster builds**: Less code to process
@@ -75,7 +77,7 @@ const command: Command = {
   name: "build",
   execute: async (options, context) => {
     // Pure function with explicit dependencies
-  }
+  },
 };
 ```
 
@@ -103,6 +105,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 **Context**: JavaScript packages traditionally use a single entry point that re-exports everything, but this creates bundle bloat and circular dependency risks.
 
 **Options considered**:
+
 1. Traditional barrel exports - Simple but causes bundle bloat
 2. Subpath exports - More complex setup but optimal bundling
 3. Separate packages - Maximum isolation but dependency management overhead
@@ -116,6 +119,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 **Context**: Most CLI frameworks use class-based architectures, but classes don't tree-shake well and create testing complexity.
 
 **Options considered**:
+
 1. Class-based commands - Familiar but poor tree-shaking
 2. Functional commands - Better performance but learning curve
 3. Hybrid approach - Complexity without clear benefits
@@ -129,6 +133,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 **Context**: Traditional error handling with try/catch hides failure modes and makes composition difficult.
 
 **Options considered**:
+
 1. Traditional exceptions - Familiar but error-prone
 2. Result types - Explicit but more verbose
 3. Error callbacks - Functional but awkward in async code
@@ -142,6 +147,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 ### Think of It Like...
 
 The architecture is like a **well-organized toolbox** where:
+
 - Each drawer (module) contains specific tools for one job
 - You can grab just the screwdriver without carrying the whole toolbox
 - Every tool has a clear purpose and doesn't depend on others
@@ -188,8 +194,8 @@ The architecture is like a **well-organized toolbox** where:
 When building a CLI that processes files, you only import what you need:
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command';
-import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem';
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { readFile, writeFile } from "@esteban-url/trailhead-cli/filesystem";
 
 // Only file and command modules are bundled
 ```
@@ -201,8 +207,8 @@ The modular architecture ensures your CLI doesn't include prompt functionality, 
 ```typescript
 const result = await chain(
   readConfig(configPath),
-  config => validateConfig(config),
-  config => applyConfig(config)
+  (config) => validateConfig(config),
+  (config) => applyConfig(config),
 );
 
 // Each step can fail, but composition remains clean
@@ -284,6 +290,7 @@ The Result type system enables clean error propagation without losing context or
 ### How We Got Here
 
 The architecture evolved from recognizing the limitations of traditional CLI frameworks:
+
 1. Started with bundle size concerns from subpath exports
 2. Functional patterns emerged to improve tree-shaking
 3. Result types solved error composition problems
@@ -296,6 +303,7 @@ The architecture is stable and production-ready, with all major patterns establi
 ### Future Considerations
 
 Potential areas for enhancement include:
+
 - Plugin system for extending functionality
 - Additional filesystem adapters (S3, SSH, etc.)
 - Streaming support for large file operations

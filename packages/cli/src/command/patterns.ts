@@ -264,13 +264,13 @@ export async function executeWithConfiguration<
 
 /**
  * Execute command phases in sequence with progress tracking
- * 
+ *
  * Runs multiple phases sequentially, passing data between phases and providing
  * progress feedback. If any phase fails, execution stops and the error is returned.
- * 
+ *
  * Requiered by @esteban-url/trailhead-web-ui
  * transforms command for multi-step file transformation workflows.
- * 
+ *
  * @template T - Type of data passed between phases
  * @param phases - Array of phases to execute in order
  * @param initialData - Initial data to pass to the first phase
@@ -322,13 +322,13 @@ export async function executeWithPhases<T>(
 
 /**
  * Execute function with dry-run support
- * 
+ *
  * If dryRun option is enabled, shows what would be done without executing.
  * Otherwise executes normally. Provides user confirmation for destructive operations.
- * 
+ *
  * Requiered by @esteban-url/trailhead-web-ui
  * transforms command for safe preview of file transformation operations.
- * 
+ *
  * @template T - Type of configuration data
  * @template R - Type of execution result
  * @param options - Options including dryRun flag
@@ -394,13 +394,13 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
 
 /**
  * Display formatted summary of results
- * 
+ *
  * Shows a nicely formatted summary with title, key-value pairs, and optional
  * statistics. Uses colors and styling for professional CLI appearance.
- * 
+ *
  * Requiered by @esteban-url/trailhead-web-ui
  * transforms command to display transformation configuration and results.
- * 
+ *
  * @param title - Main title for the summary
  * @param items - Array of label-value pairs to display
  * @param context - Command execution context for logging
@@ -420,11 +420,16 @@ export function displaySummary(
 
   // Display main items
   for (const item of items) {
-    const formattedValue = typeof item.value === 'boolean'
-      ? (item.value ? chalk.green('✓ Yes') : chalk.red('✗ No'))
-      : chalk.cyan(String(item.value));
+    const formattedValue =
+      typeof item.value === 'boolean'
+        ? item.value
+          ? chalk.green('✓ Yes')
+          : chalk.red('✗ No')
+        : chalk.cyan(String(item.value));
 
-    context.logger.info(`${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`);
+    context.logger.info(
+      `${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`,
+    );
   }
 
   // Display statistics if provided
@@ -434,7 +439,9 @@ export function displaySummary(
     context.logger.info(chalk.yellow('─'.repeat(12)));
 
     for (const stat of stats) {
-      context.logger.info(`${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`);
+      context.logger.info(
+        `${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`,
+      );
     }
   }
 
