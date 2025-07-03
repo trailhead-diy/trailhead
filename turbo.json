@@ -72,6 +72,17 @@
         "prettier.config.*"
       ],
       "cache": true
+    },
+    "lint:fix": {
+      "outputs": [],
+      "inputs": [
+        "src/**",
+        "tests/**", 
+        "oxlintrc.*",
+        ".oxlintrc.*",
+        "package.json"
+      ],
+      "cache": false
     }
   }
 }
