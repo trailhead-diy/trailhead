@@ -42,6 +42,11 @@ describe('FileSystem Edge Cases', () => {
     });
 
     it('should handle directory permission errors', async () => {
+      // Skip this test on Windows as permission handling differs
+      if (process.platform === 'win32') {
+        return;
+      }
+
       // Create a directory in temp
       const testDir = path.join(tempDir, 'protected');
       await fs.mkdir(testDir);

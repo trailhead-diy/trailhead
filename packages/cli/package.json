@@ -60,7 +60,6 @@
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "pretest": "pnpm build",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test:all"
   },
