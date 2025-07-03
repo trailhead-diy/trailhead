@@ -26,10 +26,10 @@ The sidebar uses hardcoded colors for the current page indicator which doesn't a
 
 ```tsx
 // Current - HARDCODED
-'absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white'
+'absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white';
 
 // Recommended Fix
-'absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary'
+'absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary';
 ```
 
 **Impact**: Current section indicator invisible in themed environments, breaking sidebar navigation context.

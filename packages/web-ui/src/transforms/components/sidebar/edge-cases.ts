@@ -3,7 +3,7 @@
  * Handles sidebar background and other sidebar-specific patterns
  */
 
-import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Sidebar edge cases transform
@@ -33,5 +33,5 @@ export const sidebarEdgeCasesTransform = createProtectedRegexTransform({
   ],
   changeType: 'edge-case',
   // Only process sidebar-related files
-  contentFilter: (content) => content.includes('sidebar') || content.includes('Sidebar'),
-})
+  contentFilter: content => content.includes('sidebar') || content.includes('Sidebar'),
+});

@@ -7,7 +7,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const alertColorMappings = makeProtected([
   // Background overlay colors
@@ -57,7 +57,7 @@ const alertColorMappings = makeProtected([
     replacement: 'dark:text-foreground',
     description: 'Convert dark mode white text to semantic foreground',
   },
-])
+]);
 
 /**
  * Alert color mapping transform
@@ -70,10 +70,10 @@ export const alertColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'alert-color-semantic',
 
   // Only apply to alert files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Alert') ||
     content.includes('export function AlertTitle') ||
     content.includes('export function AlertDescription') ||
     content.includes('AlertBody') ||
     content.includes('AlertActions'),
-})
+});

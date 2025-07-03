@@ -1,7 +1,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const authLayoutColorMappings = makeProtected([
   // Background patterns
@@ -142,11 +142,11 @@ const authLayoutColorMappings = makeProtected([
     replacement: 'shadow-border/20',
     description: 'Convert zinc shadow to semantic border shadow',
   },
-])
+]);
 
 export const authLayoutColorMappingsTransform = createProtectedRegexTransform({
   name: 'auth-layout-color-mappings',
   description: 'Convert auth layout hardcoded colors to semantic tokens',
   mappings: authLayoutColorMappings,
   changeType: 'auth-layout-color-semantic',
-})
+});

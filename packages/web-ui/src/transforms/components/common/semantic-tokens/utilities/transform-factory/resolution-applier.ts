@@ -2,25 +2,25 @@
  * Resolution application utilities
  */
 
-import type { TransformContext, ComponentConfig } from './types.js'
+import type { TransformContext, ComponentConfig } from './types.js';
 
 /**
  * Apply semantic resolution to component
  * Handles custom logic or defaults
  */
 export function applySemanticResolution(functionBody: any, context: TransformContext): void {
-  const { root, j, config, changes } = context
-  const { variableName = 'resolvedColorClasses', hasColorsObject, applyResolution } = config
+  const { root, j, config, changes } = context;
+  const { variableName = 'resolvedColorClasses', hasColorsObject, applyResolution } = config;
 
   if (applyResolution) {
     // Use custom resolution logic
-    applyResolution(root, j, variableName)
+    applyResolution(root, j, variableName);
   } else if (hasColorsObject) {
     // Default: replace colors[color] with resolved variable
-    applyDefaultColorsResolution(root, j, variableName)
+    applyDefaultColorsResolution(root, j, variableName);
   } else {
     // For components without colors, add to className
-    applyClassNameResolution(functionBody, j, variableName, changes)
+    applyClassNameResolution(functionBody, j, variableName, changes);
   }
 }
 
@@ -34,8 +34,8 @@ function applyDefaultColorsResolution(root: any, j: any, variableName: string): 
       object: { name: 'colors' },
     })
     .forEach((memberPath: any) => {
-      j(memberPath).replaceWith(j.identifier(variableName))
-    })
+      j(memberPath).replaceWith(j.identifier(variableName));
+    });
 }
 
 /**
@@ -53,7 +53,7 @@ function applyClassNameResolution(
       name: { name: 'className' },
     })
     .forEach((attrPath: any) => {
-      const value = attrPath.node.value
+      const value = attrPath.node.value;
 
       if (
         value?.type === 'JSXExpressionContainer' &&
@@ -61,14 +61,14 @@ function applyClassNameResolution(
         value.expression.callee?.name === 'cn'
       ) {
         // Add resolved variable to cn() call
-        value.expression.arguments.push(j.identifier(variableName))
+        value.expression.arguments.push(j.identifier(variableName));
 
         changes.push({
           type: 'logic',
           description: 'Added semantic styles to className',
-        })
+        });
       }
-    })
+    });
 }
 
 /**
@@ -76,24 +76,24 @@ function applyClassNameResolution(
  * Pure function for validation
  */
 export function needsResolution(functionBody: any, j: any, config: ComponentConfig): boolean {
-  const { hasColorsObject, variableName = 'resolvedColorClasses' } = config
+  const { hasColorsObject, variableName = 'resolvedColorClasses' } = config;
 
   // Check if variable already exists
   const hasVariable =
     j(functionBody).find(j.VariableDeclarator, {
       id: { name: variableName },
-    }).length > 0
+    }).length > 0;
 
-  if (hasVariable) return false
+  if (hasVariable) return false;
 
   // Check if colors object is used
   if (hasColorsObject) {
     const usesColors =
       j(functionBody).find(j.MemberExpression, {
         object: { name: 'colors' },
-      }).length > 0
+      }).length > 0;
 
-    return usesColors
+    return usesColors;
   }
 
   // For components without colors, always add if className exists
@@ -101,5 +101,5 @@ export function needsResolution(functionBody: any, j: any, config: ComponentConf
     j(functionBody).find(j.JSXAttribute, {
       name: { name: 'className' },
     }).length > 0
-  )
+  );
 }

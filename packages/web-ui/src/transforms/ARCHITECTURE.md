@@ -154,10 +154,10 @@ createSemanticStyles(config: {
 
 ```typescript
 // Modular pattern builders
-buildSemanticResolution(j, config)
-builders.withIIFEAndColors(j, overrides)
-builders.withConditionalAndColors(j, overrides)
-builders.withSimpleConditional(j, overrides)
+buildSemanticResolution(j, config);
+builders.withIIFEAndColors(j, overrides);
+builders.withConditionalAndColors(j, overrides);
+builders.withSimpleConditional(j, overrides);
 ```
 
 - Modular AST pattern construction
@@ -205,7 +205,7 @@ export const TRANSFORM_ORDER: TransformPhase[] = [
   { path: 'common/className/add-parameter', type: 'ast' },
   { path: 'components/*/semantic-enhancement', type: 'ast', parallel: true },
   // ... more phases
-]
+];
 ```
 
 ### Parallel Execution
@@ -255,8 +255,8 @@ The formatting system uses mathematical function composition:
 // Basic composition
 const pipe =
   (...fns) =>
-  (x) =>
-    fns.reduce((v, f) => f(v), x)
+  x =>
+    fns.reduce((v, f) => f(v), x);
 
 // Creating pipelines
 const standardASTPostProcessing = pipe(
@@ -267,7 +267,7 @@ const standardASTPostProcessing = pipe(
   fixFunctionEndingSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports
-)
+);
 ```
 
 ### Formatting Functions
@@ -330,10 +330,10 @@ resolution-builder/
    ```typescript
    const resolvedClasses = (() => {
      if (color && isSemanticToken(color)) {
-       return createSemanticStyles(color)
+       return createSemanticStyles(color);
      }
-     return colors[color] || colors['default']
-   })()
+     return colors[color] || colors['default'];
+   })();
    ```
 
 2. **Conditional with Colors Pattern**
@@ -342,12 +342,12 @@ resolution-builder/
    const resolvedClasses =
      color && isSemanticToken(color)
        ? createSemanticStyles(color)
-       : colors[color ?? 'default'] || colors['default']
+       : colors[color ?? 'default'] || colors['default'];
    ```
 
 3. **Simple Conditional Pattern**
    ```typescript
-   const resolvedClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : ''
+   const resolvedClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
    ```
 
 ### Builder API
@@ -362,12 +362,12 @@ buildSemanticResolution(j, {
   defaultColor: 'zinc',
   useIIFE: true,
   hasColorsObject: true,
-})
+});
 
 // High-level: Preset builders
-builders.withIIFEAndColors(j, { componentName: 'Badge' })
-builders.withConditionalAndColors(j, { componentName: 'Alert' })
-builders.withSimpleConditional(j, { componentName: 'Text' })
+builders.withIIFEAndColors(j, { componentName: 'Badge' });
+builders.withConditionalAndColors(j, { componentName: 'Alert' });
+builders.withSimpleConditional(j, { componentName: 'Text' });
 ```
 
 ### Benefits of Modularization
@@ -384,34 +384,34 @@ builders.withSimpleConditional(j, { componentName: 'Text' })
 
 ```typescript
 interface Transform {
-  name: string
-  description: string
-  type: 'ast' | 'regex' | 'hybrid'
-  execute: (content: string, options?: TransformOptions) => TransformResult
+  name: string;
+  description: string;
+  type: 'ast' | 'regex' | 'hybrid';
+  execute: (content: string, options?: TransformOptions) => TransformResult;
 }
 
 interface TransformResult {
-  name?: string // Transform identifier for tracking
-  type?: 'ast' | 'regex' | 'hybrid' // Transform type metadata
-  phase?: string // Pipeline phase (e.g., 'color', 'structure')
-  content: string // Transformed content
-  changes: Change[] // Structured change descriptions
-  hasChanges: boolean // Quick change detection
+  name?: string; // Transform identifier for tracking
+  type?: 'ast' | 'regex' | 'hybrid'; // Transform type metadata
+  phase?: string; // Pipeline phase (e.g., 'color', 'structure')
+  content: string; // Transformed content
+  changes: Change[]; // Structured change descriptions
+  hasChanges: boolean; // Quick change detection
 }
 
 interface Change {
-  type: string // Change category (e.g., 'color-mapping')
-  description: string // Human-readable change description
-  line?: number // Optional line number
-  before?: string // Optional before value
-  after?: string // Optional after value
+  type: string; // Change category (e.g., 'color-mapping')
+  description: string; // Human-readable change description
+  line?: number; // Optional line number
+  before?: string; // Optional before value
+  after?: string; // Optional after value
 }
 
 interface TransformPhase {
-  path: string // Transform module path
-  type: 'ast' | 'regex' // Transform execution type
-  parallel?: boolean // Can run in parallel with others
-  optional?: boolean // Won't fail pipeline if missing
+  path: string; // Transform module path
+  type: 'ast' | 'regex'; // Transform execution type
+  parallel?: boolean; // Can run in parallel with others
+  optional?: boolean; // Won't fail pipeline if missing
 }
 ```
 

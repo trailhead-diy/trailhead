@@ -10,6 +10,6 @@
  */
 
 // Re-export main transform creation function
-export { createSemanticEnhancementTransform } from './transform-factory/create-transform.js'
+export { createSemanticEnhancementTransform } from './transform-factory/create-transform.js';
 // Re-export types
-export type { ComponentConfig, TransformContext } from './transform-factory/types.js'
+export type { ComponentConfig, TransformContext } from './transform-factory/types.js';

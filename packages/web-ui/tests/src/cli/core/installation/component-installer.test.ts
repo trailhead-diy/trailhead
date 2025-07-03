@@ -3,16 +3,16 @@
  * Focuses on user-facing behavior
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { Logger, InstallConfig } from '../../../../../src/cli/core/installation/types.js'
-import { Ok, Err } from '../../../../../src/cli/core/installation/types.js'
-import { createMockFileSystem } from '../../../../utils/mock-filesystem.js'
-import { normalizeMockPath } from '../../../../utils/cross-platform-paths.js'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Logger, InstallConfig } from '../../../../../src/cli/core/installation/types.js';
+import { Ok, Err } from '../../../../../src/cli/core/installation/types.js';
+import { createMockFileSystem } from '../../../../utils/mock-filesystem.js';
+import { normalizeMockPath } from '../../../../utils/cross-platform-paths.js';
 import {
   installCatalystComponents,
   installComponentWrappers,
   installTransformedComponents,
-} from '../../../../../src/cli/core/installation/component-installer.js'
+} from '../../../../../src/cli/core/installation/component-installer.js';
 // Mock the paths module to return development paths
 vi.mock('../../../../../src/cli/core/filesystem/paths.js', () => ({
   generateSourcePaths: vi.fn((trailheadRoot: string) => ({
@@ -33,7 +33,7 @@ vi.mock('../../../../../src/cli/core/filesystem/paths.js', () => ({
     componentsIndex: `${trailheadRoot}/src/components/index.ts`,
     libIndex: `${trailheadRoot}/src/components/lib/index.ts`,
   })),
-  generateDestinationPaths: vi.fn((config) => ({
+  generateDestinationPaths: vi.fn(config => ({
     themeDir: `${config.componentsDir}/theme`,
     themeConfig: `${config.componentsDir}/theme/config.ts`,
     themeBuilder: `${config.componentsDir}/theme/builder.ts`,
@@ -56,7 +56,7 @@ vi.mock('../../../../../src/cli/core/filesystem/paths.js', () => ({
   isPathWithinProject: vi.fn(),
   getComponentName: vi.fn(),
   createPathMappings: vi.fn(),
-}))
+}));
 
 // Create test-specific mock filesystem
 const createTestMockFileSystem = (): ReturnType<typeof createMockFileSystem> => {
@@ -68,10 +68,10 @@ const createTestMockFileSystem = (): ReturnType<typeof createMockFileSystem> => 
       normalizeMockPath('/project/components/th'),
       normalizeMockPath('/project/components/th/lib'),
     ],
-  })
+  });
 
-  return mockFs
-}
+  return mockFs;
+};
 
 const createMockLogger = (): Logger => ({
   info: vi.fn(),
@@ -80,7 +80,7 @@ const createMockLogger = (): Logger => ({
   error: vi.fn(),
   debug: vi.fn(),
   step: vi.fn(),
-})
+});
 
 const createTestConfig = (): InstallConfig => ({
   catalystDir: normalizeMockPath('/trailhead/src/components/lib'),
@@ -88,18 +88,18 @@ const createTestConfig = (): InstallConfig => ({
   componentsDir: normalizeMockPath('/project/components/th'),
   libDir: normalizeMockPath('/project/components/th/lib'),
   projectRoot: normalizeMockPath('/project'),
-})
+});
 
 describe('Component Installer', () => {
-  let fs: ReturnType<typeof createMockFileSystem>
-  let logger: Logger
-  let config: InstallConfig
+  let fs: ReturnType<typeof createMockFileSystem>;
+  let logger: Logger;
+  let config: InstallConfig;
 
   beforeEach(() => {
-    fs = createTestMockFileSystem()
-    logger = createMockLogger()
-    config = createTestConfig()
-  })
+    fs = createTestMockFileSystem();
+    logger = createMockLogger();
+    config = createTestConfig();
+  });
 
   describe('installCatalystComponents (with wrappers)', () => {
     beforeEach(() => {
@@ -110,42 +110,42 @@ describe('Component Installer', () => {
 export function CatalystButton() {
   return <button>Click me</button>
 }`
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-alert.tsx'),
         `
 export function CatalystAlert({ children }) {
   return <div role="alert">{children}</div>
 }`
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         `
 export * from './catalyst-button'
 export * from './catalyst-alert'`
-      )
-    })
+      );
+    });
 
     it('installs catalyst components to lib directory', async () => {
-      const result = await installCatalystComponents(fs, logger, '/trailhead', config, false)
+      const result = await installCatalystComponents(fs, logger, '/trailhead', config, false);
 
       // Check the result
 
-      expect(result.success).toBe(true)
+      expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('lib/catalyst-button.tsx')
-        expect(result.value).toContain('lib/catalyst-alert.tsx')
-        expect(result.value).toContain('lib/index.ts')
+        expect(result.value).toContain('lib/catalyst-button.tsx');
+        expect(result.value).toContain('lib/catalyst-alert.tsx');
+        expect(result.value).toContain('lib/index.ts');
       }
 
       // Verify files were copied
       expect(
         fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))
-      ).toBe(true)
+      ).toBe(true);
       expect(
         fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-alert.tsx'))
-      ).toBe(true)
-    })
+      ).toBe(true);
+    });
 
     it('handles missing source directory', async () => {
       fs.readDir = vi.fn().mockResolvedValue(
@@ -154,16 +154,16 @@ export * from './catalyst-alert'`
           message: 'Directory not found',
           path: '/trailhead/src/components/lib',
         })
-      )
+      );
 
-      const result = await installCatalystComponents(fs, logger, '/trailhead', config, false)
+      const result = await installCatalystComponents(fs, logger, '/trailhead', config, false);
 
-      expect(result.success).toBe(false)
+      expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('FileSystemError')
+        expect(result.error.type).toBe('FileSystemError');
       }
-    })
-  })
+    });
+  });
 
   describe('installComponentWrappers', () => {
     beforeEach(() => {
@@ -171,34 +171,36 @@ export * from './catalyst-alert'`
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/button.tsx'),
         `export * from './lib/catalyst-button.js'`
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/alert.tsx'),
         `export * from './lib/catalyst-alert.js'`
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/index.ts'),
         `
 export * from './button.js'
 export * from './alert.js'`
-      )
-    })
+      );
+    });
 
     it('installs wrapper components', async () => {
-      const result = await installComponentWrappers(fs, logger, '/trailhead', config, false)
+      const result = await installComponentWrappers(fs, logger, '/trailhead', config, false);
 
-      expect(result.success).toBe(true)
+      expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('button.tsx')
-        expect(result.value).toContain('alert.tsx')
-        expect(result.value).toContain('index.ts')
+        expect(result.value).toContain('button.tsx');
+        expect(result.value).toContain('alert.tsx');
+        expect(result.value).toContain('index.ts');
       }
 
       // Verify wrapper content
-      const buttonWrapper = fs.mockFiles.get(normalizeMockPath('/project/components/th/button.tsx'))
-      expect(buttonWrapper).toContain("export * from './lib/catalyst-button.js'")
-    })
-  })
+      const buttonWrapper = fs.mockFiles.get(
+        normalizeMockPath('/project/components/th/button.tsx')
+      );
+      expect(buttonWrapper).toContain("export * from './lib/catalyst-button.js'");
+    });
+  });
 
   describe('installTransformedComponents (no wrappers)', () => {
     beforeEach(() => {
@@ -216,7 +218,7 @@ export function CatalystButton({ children }) {
     </button>
   )
 }`
-      )
+      );
 
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-text.tsx'),
@@ -224,7 +226,7 @@ export function CatalystButton({ children }) {
 export function CatalystText({ children }) {
   return <span>{children}</span>
 }`
-      )
+      );
 
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-alert.tsx'),
@@ -243,7 +245,7 @@ export function CatalystAlert({ title, children }) {
 export function CatalystAlertTitle({ children }) {
   return <h3>{children}</h3>
 }`
-      )
+      );
 
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/index.ts'),
@@ -251,42 +253,44 @@ export function CatalystAlertTitle({ children }) {
 export * from './catalyst-button'
 export * from './catalyst-text'
 export * from './catalyst-alert'`
-      )
-    })
+      );
+    });
 
     it('transforms and installs components without wrappers', async () => {
-      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false)
+      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false);
 
-      expect(result.success).toBe(true)
+      expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain('button.tsx')
-        expect(result.value).toContain('text.tsx')
-        expect(result.value).toContain('alert.tsx')
-        expect(result.value).toContain('index.ts')
-        expect(result.value).not.toContain('catalyst-')
+        expect(result.value).toContain('button.tsx');
+        expect(result.value).toContain('text.tsx');
+        expect(result.value).toContain('alert.tsx');
+        expect(result.value).toContain('index.ts');
+        expect(result.value).not.toContain('catalyst-');
       }
 
       // Verify transformations
-      const buttonContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/button.tsx'))
-      expect(buttonContent).toBeDefined()
-      expect(buttonContent).toContain("from './utils/cn'") // Path fixed
-      expect(buttonContent).toContain("from './text'") // Import updated
-      expect(buttonContent).toContain('export function Button') // Name changed
-      expect(buttonContent).toContain('<Text>') // Reference updated
+      const buttonContent = fs.mockFiles.get(
+        normalizeMockPath('/project/components/th/button.tsx')
+      );
+      expect(buttonContent).toBeDefined();
+      expect(buttonContent).toContain("from './utils/cn'"); // Path fixed
+      expect(buttonContent).toContain("from './text'"); // Import updated
+      expect(buttonContent).toContain('export function Button'); // Name changed
+      expect(buttonContent).toContain('<Text>'); // Reference updated
 
-      const alertContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/alert.tsx'))
-      expect(alertContent).toBeDefined()
-      expect(alertContent).toContain('export function Alert')
-      expect(alertContent).toContain('export function AlertTitle')
-      expect(alertContent).toContain('<AlertTitle>')
+      const alertContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/alert.tsx'));
+      expect(alertContent).toBeDefined();
+      expect(alertContent).toContain('export function Alert');
+      expect(alertContent).toContain('export function AlertTitle');
+      expect(alertContent).toContain('<AlertTitle>');
 
       // Verify index.ts transformation
-      const indexContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/index.ts'))
-      expect(indexContent).toBeDefined()
-      expect(indexContent).toContain("export * from './button'")
-      expect(indexContent).toContain("export * from './text'")
-      expect(indexContent).not.toContain('catalyst-')
-    })
+      const indexContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/index.ts'));
+      expect(indexContent).toBeDefined();
+      expect(indexContent).toContain("export * from './button'");
+      expect(indexContent).toContain("export * from './text'");
+      expect(indexContent).not.toContain('catalyst-');
+    });
 
     it('handles transformation validation errors', async () => {
       // This test was incorrectly expecting failure. The actual behavior is:
@@ -296,21 +300,21 @@ export * from './catalyst-alert'`
       // - This causes a validation error as expected
 
       // Clear existing files and add only a file with no exports
-      fs.clear()
+      fs.clear();
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-no-exports.tsx'),
         `
 // This file has no exports and no Catalyst components to transform
 const internal = () => {}
 console.log('test')`
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         `
 export * from './catalyst-no-exports'`
-      )
+      );
 
-      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false)
+      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false);
 
       // Actually, looking at the implementation, it seems the file might be skipped
       // or the transformation might succeed even with no exports.
@@ -318,28 +322,28 @@ export * from './catalyst-no-exports'`
       if (result.success) {
         // If it succeeds, the file with no exports might have been skipped
         // or transformed successfully (empty to empty is valid)
-        expect(result.value).toBeDefined()
+        expect(result.value).toBeDefined();
         // The file should be transformed to no-exports.tsx
-        const transformedFiles = result.value
-        expect(transformedFiles).toContain('no-exports.tsx')
+        const transformedFiles = result.value;
+        expect(transformedFiles).toContain('no-exports.tsx');
       } else {
         // If it fails, it should be a validation error
-        expect(result.error.type).toBe('ValidationError')
-        expect(result.error.message).toContain('No exports found')
+        expect(result.error.type).toBe('ValidationError');
+        expect(result.error.message).toContain('No exports found');
       }
       if (!result.success) {
-        expect(result.error.type).toBe('ValidationError')
-        expect(result.error.message).toContain('No exports found')
+        expect(result.error.type).toBe('ValidationError');
+        expect(result.error.message).toContain('No exports found');
       }
-    })
+    });
 
     it('logs transformation details in debug mode', async () => {
-      await installTransformedComponents(fs, logger, '/trailhead', config, false)
+      await installTransformedComponents(fs, logger, '/trailhead', config, false);
 
       // Verify debug logging
-      expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Transformations for'))
-      expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Renamed export'))
-    })
+      expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Transformations for'));
+      expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Renamed export'));
+    });
 
     it('handles file write errors gracefully', async () => {
       fs.writeFile = vi
@@ -351,16 +355,16 @@ export * from './catalyst-no-exports'`
             message: 'Permission denied',
             path: '/project/components/th/text.tsx',
           })
-        )
+        );
 
-      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false)
+      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false);
 
-      expect(result.success).toBe(false)
+      expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('FileSystemError')
-        expect(result.error.message).toContain('Permission denied')
+        expect(result.error.type).toBe('FileSystemError');
+        expect(result.error.message).toContain('Permission denied');
       }
-    })
+    });
 
     it('preserves component functionality after transformation', async () => {
       // Complex component with multiple features
@@ -391,24 +395,26 @@ export function CatalystDialogTitle({ children }) {
 export function CatalystDialogBody({ children }) {
   return <div>{children}</div>
 }`
-      )
+      );
 
-      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false)
+      const result = await installTransformedComponents(fs, logger, '/trailhead', config, false);
 
-      expect(result.success).toBe(true)
+      expect(result.success).toBe(true);
 
-      const dialogContent = fs.mockFiles.get(normalizeMockPath('/project/components/th/dialog.tsx'))
-      expect(dialogContent).toBeDefined()
+      const dialogContent = fs.mockFiles.get(
+        normalizeMockPath('/project/components/th/dialog.tsx')
+      );
+      expect(dialogContent).toBeDefined();
 
       // Verify all aspects are transformed correctly
-      expect(dialogContent).toContain('export interface DialogProps')
-      expect(dialogContent).toContain('export function Dialog')
-      expect(dialogContent).toContain('export function DialogTitle')
-      expect(dialogContent).toContain('export function DialogBody')
-      expect(dialogContent).toContain("from './utils/cn'")
-      expect(dialogContent).not.toContain('Catalyst')
-    })
-  })
+      expect(dialogContent).toContain('export interface DialogProps');
+      expect(dialogContent).toContain('export function Dialog');
+      expect(dialogContent).toContain('export function DialogTitle');
+      expect(dialogContent).toContain('export function DialogBody');
+      expect(dialogContent).toContain("from './utils/cn'");
+      expect(dialogContent).not.toContain('Catalyst');
+    });
+  });
 
   describe('integration scenarios', () => {
     it('supports both installation modes based on configuration', async () => {
@@ -416,19 +422,19 @@ export function CatalystDialogBody({ children }) {
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         'export function CatalystButton() {}'
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/button.tsx'),
         "export * from './lib/catalyst-button.js'"
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         "export * from './catalyst-button'"
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/index.ts'),
         "export * from './button.js'"
-      )
+      );
 
       // Test with wrappers
       const withWrappersResult = await installCatalystComponents(
@@ -437,24 +443,24 @@ export function CatalystDialogBody({ children }) {
         '/trailhead',
         config,
         false
-      )
-      expect(withWrappersResult.success).toBe(true)
+      );
+      expect(withWrappersResult.success).toBe(true);
       expect(
         fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))
-      ).toBe(true)
+      ).toBe(true);
 
       // Clear installed files
-      fs.clear()
+      fs.clear();
 
       // Re-setup source files
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/catalyst-button.tsx'),
         'export function CatalystButton() {}'
-      )
+      );
       fs.addFile(
         normalizeMockPath('/trailhead/src/components/lib/index.ts'),
         "export * from './catalyst-button'"
-      )
+      );
 
       // Test without wrappers
       const withoutWrappersResult = await installTransformedComponents(
@@ -463,12 +469,12 @@ export function CatalystDialogBody({ children }) {
         '/trailhead',
         config,
         false
-      )
-      expect(withoutWrappersResult.success).toBe(true)
-      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/button.tsx'))).toBe(true)
+      );
+      expect(withoutWrappersResult.success).toBe(true);
+      expect(fs.mockFiles.has(normalizeMockPath('/project/components/th/button.tsx'))).toBe(true);
       expect(
         fs.mockFiles.has(normalizeMockPath('/project/components/th/lib/catalyst-button.tsx'))
-      ).toBe(false)
-    })
-  })
-})
+      ).toBe(false);
+    });
+  });
+});

@@ -145,7 +145,7 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};
 ```
 
 ## Step 4: Add ThemeProvider
@@ -156,34 +156,34 @@ Wrap your app with the ThemeProvider component. The exact location depends on yo
 
 ```tsx
 // src/App.tsx or src/App.jsx
-import { ThemeProvider } from './components/theme-provider'
-import './index.css' // or your CSS file
+import { ThemeProvider } from './components/theme-provider';
+import './index.css'; // or your CSS file
 
 function App() {
-  return <ThemeProvider>{/* Your app content */}</ThemeProvider>
+  return <ThemeProvider>{/* Your app content */}</ThemeProvider>;
 }
 
-export default App
+export default App;
 ```
 
 ### Option 2: Index File
 
 ```tsx
 // src/index.tsx or src/index.jsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { ThemeProvider } from './components/theme-provider'
-import App from './App'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ThemeProvider } from './components/theme-provider';
+import App from './App';
+import './index.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'))
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider>
       <App />
     </ThemeProvider>
   </React.StrictMode>
-)
+);
 ```
 
 ## Step 5: Import Styles
@@ -192,7 +192,7 @@ Make sure your CSS file is imported early in your application:
 
 ```tsx
 // In your root component or index file
-import './index.css' // or your CSS file path
+import './index.css'; // or your CSS file path
 ```
 
 ## Step 6: Start Using Components
@@ -200,7 +200,7 @@ import './index.css' // or your CSS file path
 Now you can use Trailhead UI components:
 
 ```tsx
-import { Button, Input, Card, Badge } from 'trailhead-ui'
+import { Button, Input, Card, Badge } from 'trailhead-ui';
 
 function MyComponent() {
   return (
@@ -228,7 +228,7 @@ function MyComponent() {
         </div>
       </form>
     </Card>
-  )
+  );
 }
 ```
 
@@ -249,7 +249,7 @@ module.exports = {
       },
     ],
   },
-}
+};
 ```
 
 ### Rollup
@@ -258,7 +258,7 @@ For Rollup, use the PostCSS plugin:
 
 ```js
 // rollup.config.js
-import postcss from 'rollup-plugin-postcss'
+import postcss from 'rollup-plugin-postcss';
 
 export default {
   plugins: [
@@ -270,7 +270,7 @@ export default {
       minimize: true,
     }),
   ],
-}
+};
 ```
 
 ### PostCSS Configuration
@@ -283,7 +283,7 @@ module.exports = {
     tailwindcss: {},
     autoprefixer: {},
   },
-}
+};
 ```
 
 ## TypeScript Configuration
@@ -331,10 +331,10 @@ If using TypeScript, add path mappings to your `tsconfig.json`:
 
 ```tsx
 // components/theme-provider.tsx
-'use client'
+'use client';
 
-import * as React from 'react'
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 export function ThemeProvider({
   children,
@@ -344,7 +344,7 @@ export function ThemeProvider({
     <NextThemesProvider attribute="class" defaultTheme="system" enableSystem {...props}>
       {children}
     </NextThemesProvider>
-  )
+  );
 }
 ```
 
@@ -352,11 +352,11 @@ export function ThemeProvider({
 
 ```tsx
 // components/theme-switcher.tsx
-import { useTheme } from 'next-themes'
-import { Button } from 'trailhead-ui'
+import { useTheme } from 'next-themes';
+import { Button } from 'trailhead-ui';
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
 
   return (
     <Button
@@ -366,7 +366,7 @@ export function ThemeSwitcher() {
     >
       {theme === 'dark' ? '☀️' : '🌙'}
     </Button>
-  )
+  );
 }
 ```
 
@@ -388,11 +388,11 @@ If your setup supports SSR:
 ### With React Testing Library
 
 ```tsx
-import { render } from '@testing-library/react'
-import { ThemeProvider } from 'trailhead-ui'
+import { render } from '@testing-library/react';
+import { ThemeProvider } from 'trailhead-ui';
 
 function renderWithTheme(ui: React.ReactElement) {
-  return render(<ThemeProvider defaultTheme="light">{ui}</ThemeProvider>)
+  return render(<ThemeProvider defaultTheme="light">{ui}</ThemeProvider>);
 }
 ```
 
@@ -406,7 +406,7 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-}
+};
 ```
 
 ## Resources

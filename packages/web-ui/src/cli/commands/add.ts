@@ -2,12 +2,12 @@
  * Add Command - Add individual components
  */
 
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
-import { type StrictAddOptions } from '../core/types/command-options.js'
+import { Ok } from '@esteban-url/trailhead-cli';
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
+import { type StrictAddOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
-type AddOptions = StrictAddOptions
+type AddOptions = StrictAddOptions;
 
 export const createAddCommand = () => {
   return createCommand<AddOptions>({
@@ -30,9 +30,9 @@ export const createAddCommand = () => {
     ],
 
     action: async (_options: AddOptions, context: CommandContext) => {
-      context.logger.info('🚧 Add command coming soon!')
-      context.logger.info('For now, use: trailhead-ui install')
-      return Ok(undefined)
+      context.logger.info('🚧 Add command coming soon!');
+      context.logger.info('For now, use: trailhead-ui install');
+      return Ok(undefined);
     },
-  })
-}
+  });
+};

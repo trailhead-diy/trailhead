@@ -22,25 +22,25 @@
  * See: https://github.com/tailwindlabs/headlessui/issues/3294
  */
 
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Button } from '../../src/components/button'
-import { Input } from '../../src/components/input'
-import { Textarea } from '../../src/components/textarea'
-import { Select } from '../../src/components/select'
-import { Checkbox } from '../../src/components/checkbox'
-import { Radio, RadioGroup } from '../../src/components/radio'
-import { Switch } from '../../src/components/switch'
-import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset'
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { Button } from '../../src/components/button';
+import { Input } from '../../src/components/input';
+import { Textarea } from '../../src/components/textarea';
+import { Select } from '../../src/components/select';
+import { Checkbox } from '../../src/components/checkbox';
+import { Radio, RadioGroup } from '../../src/components/radio';
+import { Switch } from '../../src/components/switch';
+import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset';
 
 describe('Form Integration Tests', () => {
   describe('Complete Form Workflows', () => {
     it.skip('should handle complex form submission with validation', async () => {
-      const user = userEvent.setup()
-      const onSubmit = vi.fn()
-      const onValidation = vi.fn()
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      const onValidation = vi.fn();
 
       const ComplexForm = () => {
         const [formData, setFormData] = React.useState({
@@ -51,37 +51,37 @@ describe('Form Integration Tests', () => {
           newsletter: true,
           role: '',
           bio: '',
-        })
-        const [errors, setErrors] = React.useState<Record<string, string>>({})
+        });
+        const [errors, setErrors] = React.useState<Record<string, string>>({});
 
         const handleSubmit = (e: React.FormEvent) => {
-          e.preventDefault()
+          e.preventDefault();
 
-          const newErrors: Record<string, string> = {}
+          const newErrors: Record<string, string> = {};
 
-          if (!formData.email) newErrors.email = 'Email is required'
-          if (!formData.password) newErrors.password = 'Password is required'
+          if (!formData.email) newErrors.email = 'Email is required';
+          if (!formData.password) newErrors.password = 'Password is required';
           if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match'
+            newErrors.confirmPassword = 'Passwords do not match';
           }
-          if (!formData.terms) newErrors.terms = 'You must accept terms'
-          if (!formData.role) newErrors.role = 'Role is required'
+          if (!formData.terms) newErrors.terms = 'You must accept terms';
+          if (!formData.role) newErrors.role = 'Role is required';
 
-          setErrors(newErrors)
-          onValidation(newErrors)
+          setErrors(newErrors);
+          onValidation(newErrors);
 
           if (Object.keys(newErrors).length === 0) {
-            onSubmit(formData)
+            onSubmit(formData);
           }
-        }
+        };
 
         const updateField = (field: string, value: any) => {
-          setFormData((prev) => ({ ...prev, [field]: value }))
+          setFormData(prev => ({ ...prev, [field]: value }));
           // Clear error when user starts typing
           if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: '' }))
+            setErrors(prev => ({ ...prev, [field]: '' }));
           }
-        }
+        };
 
         return (
           <form onSubmit={handleSubmit}>
@@ -94,7 +94,7 @@ describe('Form Integration Tests', () => {
                   type="email"
                   placeholder="Enter your email"
                   value={formData.email}
-                  onChange={(e) => updateField('email', e.target.value)}
+                  onChange={e => updateField('email', e.target.value)}
                   aria-invalid={!!errors.email}
                   aria-describedby={errors.email ? 'email-error' : undefined}
                 />
@@ -111,7 +111,7 @@ describe('Form Integration Tests', () => {
                   type="password"
                   placeholder="Enter password"
                   value={formData.password}
-                  onChange={(e) => updateField('password', e.target.value)}
+                  onChange={e => updateField('password', e.target.value)}
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'password-error' : undefined}
                 />
@@ -128,7 +128,7 @@ describe('Form Integration Tests', () => {
                   type="password"
                   placeholder="Confirm password"
                   value={formData.confirmPassword}
-                  onChange={(e) => updateField('confirmPassword', e.target.value)}
+                  onChange={e => updateField('confirmPassword', e.target.value)}
                   aria-invalid={!!errors.confirmPassword}
                   aria-describedby={errors.confirmPassword ? 'confirm-error' : undefined}
                 />
@@ -147,7 +147,7 @@ describe('Form Integration Tests', () => {
                 <Select
                   name="role"
                   value={formData.role}
-                  onChange={(e) => updateField('role', e.target.value)}
+                  onChange={e => updateField('role', e.target.value)}
                   aria-invalid={!!errors.role}
                   aria-describedby={errors.role ? 'role-error' : undefined}
                 >
@@ -168,7 +168,7 @@ describe('Form Integration Tests', () => {
                   name="bio"
                   placeholder="Tell us about yourself"
                   value={formData.bio}
-                  onChange={(e) => updateField('bio', e.target.value)}
+                  onChange={e => updateField('bio', e.target.value)}
                   rows={4}
                 />
               </div>
@@ -180,7 +180,7 @@ describe('Form Integration Tests', () => {
               <div>
                 <Checkbox
                   checked={formData.terms}
-                  onChange={(checked) => updateField('terms', checked)}
+                  onChange={checked => updateField('terms', checked)}
                   aria-invalid={!!errors.terms}
                   aria-describedby={errors.terms ? 'terms-error' : undefined}
                 >
@@ -196,7 +196,7 @@ describe('Form Integration Tests', () => {
               <div>
                 <Switch
                   checked={formData.newsletter}
-                  onChange={(checked) => updateField('newsletter', checked)}
+                  onChange={checked => updateField('newsletter', checked)}
                   aria-label="Subscribe to newsletter"
                 />
                 <span>Subscribe to newsletter</span>
@@ -205,17 +205,17 @@ describe('Form Integration Tests', () => {
 
             <Button type="submit">Create Account</Button>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<ComplexForm />)
+      render(<ComplexForm />);
 
       // Test initial state
-      expect(screen.getByPlaceholderText('Enter your email')).toHaveValue('')
-      expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('Enter your email')).toHaveValue('');
+      expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
 
       // Test validation on empty form submission
-      await user.click(screen.getByRole('button', { name: 'Create Account' }))
+      await user.click(screen.getByRole('button', { name: 'Create Account' }));
 
       await waitFor(() => {
         expect(onValidation).toHaveBeenCalledWith(
@@ -225,21 +225,21 @@ describe('Form Integration Tests', () => {
             terms: 'You must accept terms',
             role: 'Role is required',
           })
-        )
-      })
+        );
+      });
 
       // Fill out form with valid data
-      await user.type(screen.getByPlaceholderText('Enter your email'), 'test@example.com')
-      await user.type(screen.getByPlaceholderText('Enter password'), 'password123')
-      await user.type(screen.getByPlaceholderText('Confirm password'), 'password123')
+      await user.type(screen.getByPlaceholderText('Enter your email'), 'test@example.com');
+      await user.type(screen.getByPlaceholderText('Enter password'), 'password123');
+      await user.type(screen.getByPlaceholderText('Confirm password'), 'password123');
 
-      await user.selectOptions(screen.getByRole('combobox'), 'developer')
-      await user.type(screen.getByPlaceholderText('Tell us about yourself'), 'I love coding!')
+      await user.selectOptions(screen.getByRole('combobox'), 'developer');
+      await user.type(screen.getByPlaceholderText('Tell us about yourself'), 'I love coding!');
 
-      await user.click(screen.getByRole('checkbox', { name: /accept the terms/i }))
+      await user.click(screen.getByRole('checkbox', { name: /accept the terms/i }));
 
       // Submit valid form
-      await user.click(screen.getByRole('button', { name: 'Create Account' }))
+      await user.click(screen.getByRole('button', { name: 'Create Account' }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({
@@ -250,26 +250,26 @@ describe('Form Integration Tests', () => {
           newsletter: true,
           role: 'developer',
           bio: 'I love coding!',
-        })
-      })
-    })
+        });
+      });
+    });
 
     it.skip('should handle password mismatch validation', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const PasswordForm = () => {
-        const [password, setPassword] = React.useState('')
-        const [confirmPassword, setConfirmPassword] = React.useState('')
-        const [error, setError] = React.useState('')
+        const [password, setPassword] = React.useState('');
+        const [confirmPassword, setConfirmPassword] = React.useState('');
+        const [error, setError] = React.useState('');
 
         const handleSubmit = (e: React.FormEvent) => {
-          e.preventDefault()
+          e.preventDefault();
           if (password !== confirmPassword) {
-            setError('Passwords do not match')
+            setError('Passwords do not match');
           } else {
-            setError('')
+            setError('');
           }
-        }
+        };
 
         return (
           <form onSubmit={handleSubmit}>
@@ -277,43 +277,43 @@ describe('Form Integration Tests', () => {
               type="password"
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
             <Input
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={e => setConfirmPassword(e.target.value)}
             />
             {error && <div role="alert">{error}</div>}
             <Button type="submit">Submit</Button>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<PasswordForm />)
+      render(<PasswordForm />);
 
       // Enter mismatched passwords
-      await user.type(screen.getByPlaceholderText('Password'), 'password123')
-      await user.type(screen.getByPlaceholderText('Confirm Password'), 'different456')
-      await user.click(screen.getByRole('button', { name: 'Submit' }))
+      await user.type(screen.getByPlaceholderText('Password'), 'password123');
+      await user.type(screen.getByPlaceholderText('Confirm Password'), 'different456');
+      await user.click(screen.getByRole('button', { name: 'Submit' }));
 
       // Should show error
-      expect(screen.getByRole('alert')).toHaveTextContent('Passwords do not match')
+      expect(screen.getByRole('alert')).toHaveTextContent('Passwords do not match');
 
       // Fix passwords
-      await user.clear(screen.getByPlaceholderText('Confirm Password'))
-      await user.type(screen.getByPlaceholderText('Confirm Password'), 'password123')
-      await user.click(screen.getByRole('button', { name: 'Submit' }))
+      await user.clear(screen.getByPlaceholderText('Confirm Password'));
+      await user.type(screen.getByPlaceholderText('Confirm Password'), 'password123');
+      await user.click(screen.getByRole('button', { name: 'Submit' }));
 
       // Error should be gone
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
 
   describe('Form Tab Navigation and Accessibility', () => {
     it.skip('should support proper tab order in complex forms', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const TabOrderForm = () => (
         <form>
@@ -330,13 +330,13 @@ describe('Form Integration Tests', () => {
           <Switch data-testid="field-7" aria-label="Toggle switch" />
           <Button data-testid="field-8">Submit</Button>
         </form>
-      )
+      );
 
-      render(<TabOrderForm />)
+      render(<TabOrderForm />);
 
       // Start with first field focused
-      const firstField = screen.getByTestId('field-1')
-      firstField.focus()
+      const firstField = screen.getByTestId('field-1');
+      firstField.focus();
 
       // Tab through all fields and verify focus moves correctly
       const focusableElements = [
@@ -348,13 +348,13 @@ describe('Form Integration Tests', () => {
         screen.getByTestId('field-6'),
         screen.getByTestId('field-7'),
         screen.getByTestId('field-8'),
-      ]
+      ];
 
       for (let i = 0; i < focusableElements.length - 1; i++) {
-        await user.tab()
-        expect(document.activeElement).toBe(focusableElements[i + 1])
+        await user.tab();
+        expect(document.activeElement).toBe(focusableElements[i + 1]);
       }
-    })
+    });
 
     it.skip('should support form field labeling and ARIA relationships', () => {
       const AccessibilityForm = () => (
@@ -385,43 +385,43 @@ describe('Form Integration Tests', () => {
             </RadioGroup>
           </Fieldset>
         </form>
-      )
+      );
 
-      render(<AccessibilityForm />)
+      render(<AccessibilityForm />);
 
       // Check labels are properly associated
-      expect(screen.getByLabelText('Full Name')).toBeInTheDocument()
-      expect(screen.getByLabelText('Email Address')).toBeInTheDocument()
+      expect(screen.getByLabelText('Full Name')).toBeInTheDocument();
+      expect(screen.getByLabelText('Email Address')).toBeInTheDocument();
 
       // Check ARIA relationships
-      const emailInput = screen.getByLabelText('Email Address')
-      expect(emailInput).toHaveAttribute('aria-describedby', 'email-help')
-      expect(emailInput).toHaveAttribute('aria-required', 'true')
+      const emailInput = screen.getByLabelText('Email Address');
+      expect(emailInput).toHaveAttribute('aria-describedby', 'email-help');
+      expect(emailInput).toHaveAttribute('aria-required', 'true');
 
       // Check fieldset structure
-      expect(screen.getByRole('group', { name: 'Preferences' })).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByRole('group', { name: 'Preferences' })).toBeInTheDocument();
+    });
+  });
 
   describe('Form State Management', () => {
     it.skip('should handle form reset functionality', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const ResettableForm = () => {
-        const [email, setEmail] = React.useState('')
-        const [bio, setBio] = React.useState('')
-        const [newsletter, setNewsletter] = React.useState(false)
+        const [email, setEmail] = React.useState('');
+        const [bio, setBio] = React.useState('');
+        const [newsletter, setNewsletter] = React.useState(false);
 
         const handleReset = () => {
-          setEmail('')
-          setBio('')
-          setNewsletter(false)
-        }
+          setEmail('');
+          setBio('');
+          setNewsletter(false);
+        };
 
         return (
           <form>
-            <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Textarea placeholder="Bio" value={bio} onChange={(e) => setBio(e.target.value)} />
+            <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+            <Textarea placeholder="Bio" value={bio} onChange={e => setBio(e.target.value)} />
             <Switch
               checked={newsletter}
               onChange={setNewsletter}
@@ -432,42 +432,42 @@ describe('Form Integration Tests', () => {
             </Button>
             <Button type="submit">Submit</Button>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<ResettableForm />)
+      render(<ResettableForm />);
 
       // Fill out form
-      await user.type(screen.getByPlaceholderText('Email'), 'test@example.com')
-      await user.type(screen.getByPlaceholderText('Bio'), 'Test bio')
-      await user.click(screen.getByRole('switch'))
+      await user.type(screen.getByPlaceholderText('Email'), 'test@example.com');
+      await user.type(screen.getByPlaceholderText('Bio'), 'Test bio');
+      await user.click(screen.getByRole('switch'));
 
       // Verify form is filled
-      expect(screen.getByPlaceholderText('Email')).toHaveValue('test@example.com')
-      expect(screen.getByPlaceholderText('Bio')).toHaveValue('Test bio')
-      expect(screen.getByRole('switch')).toBeChecked()
+      expect(screen.getByPlaceholderText('Email')).toHaveValue('test@example.com');
+      expect(screen.getByPlaceholderText('Bio')).toHaveValue('Test bio');
+      expect(screen.getByRole('switch')).toBeChecked();
 
       // Reset form
-      await user.click(screen.getByRole('button', { name: 'Reset Form' }))
+      await user.click(screen.getByRole('button', { name: 'Reset Form' }));
 
       // Verify form is cleared
-      expect(screen.getByPlaceholderText('Email')).toHaveValue('')
-      expect(screen.getByPlaceholderText('Bio')).toHaveValue('')
-      expect(screen.getByRole('switch')).not.toBeChecked()
-    })
+      expect(screen.getByPlaceholderText('Email')).toHaveValue('');
+      expect(screen.getByPlaceholderText('Bio')).toHaveValue('');
+      expect(screen.getByRole('switch')).not.toBeChecked();
+    });
 
     it.skip('should handle disabled form states correctly', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const DisabledForm = () => {
-        const [isSubmitting, setIsSubmitting] = React.useState(false)
+        const [isSubmitting, setIsSubmitting] = React.useState(false);
 
         const handleSubmit = async () => {
-          setIsSubmitting(true)
+          setIsSubmitting(true);
           // Simulate async operation
-          await new Promise((resolve) => setTimeout(resolve, 100))
-          setIsSubmitting(false)
-        }
+          await new Promise(resolve => setTimeout(resolve, 100));
+          setIsSubmitting(false);
+        };
 
         return (
           <form>
@@ -480,37 +480,37 @@ describe('Form Integration Tests', () => {
               {isSubmitting ? 'Submitting...' : 'Submit'}
             </Button>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<DisabledForm />)
+      render(<DisabledForm />);
 
       // Initially enabled
-      expect(screen.getByPlaceholderText('Name')).toBeEnabled()
-      expect(screen.getByRole('combobox')).toBeEnabled()
-      expect(screen.getByRole('checkbox')).toBeEnabled()
-      expect(screen.getByRole('button')).toBeEnabled()
+      expect(screen.getByPlaceholderText('Name')).toBeEnabled();
+      expect(screen.getByRole('combobox')).toBeEnabled();
+      expect(screen.getByRole('checkbox')).toBeEnabled();
+      expect(screen.getByRole('button')).toBeEnabled();
 
       // Click submit to disable
-      await user.click(screen.getByRole('button'))
+      await user.click(screen.getByRole('button'));
 
       // Should be disabled during submission
-      expect(screen.getByPlaceholderText('Name')).toBeDisabled()
-      expect(screen.getByRole('combobox')).toBeDisabled()
-      expect(screen.getByRole('checkbox')).toBeDisabled()
-      expect(screen.getByRole('button')).toBeDisabled()
-      expect(screen.getByText('Submitting...')).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('Name')).toBeDisabled();
+      expect(screen.getByRole('combobox')).toBeDisabled();
+      expect(screen.getByRole('checkbox')).toBeDisabled();
+      expect(screen.getByRole('button')).toBeDisabled();
+      expect(screen.getByText('Submitting...')).toBeInTheDocument();
 
       // Wait for submission to complete
       await waitFor(() => {
-        expect(screen.getByText('Submit')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Submit')).toBeInTheDocument();
+      });
 
       // Should be enabled again
-      expect(screen.getByPlaceholderText('Name')).toBeEnabled()
-      expect(screen.getByRole('combobox')).toBeEnabled()
-      expect(screen.getByRole('checkbox')).toBeEnabled()
-      expect(screen.getByRole('button')).toBeEnabled()
-    })
-  })
-})
+      expect(screen.getByPlaceholderText('Name')).toBeEnabled();
+      expect(screen.getByRole('combobox')).toBeEnabled();
+      expect(screen.getByRole('checkbox')).toBeEnabled();
+      expect(screen.getByRole('button')).toBeEnabled();
+    });
+  });
+});

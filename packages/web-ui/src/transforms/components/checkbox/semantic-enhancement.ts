@@ -3,7 +3,7 @@
  * Uses the transform factory for DRY implementation
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Checkbox semantic enhancement transform
@@ -11,7 +11,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const checkboxSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Checkbox',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('Checkbox') && content.includes('type Color = keyof typeof colors'),
   defaultColor: 'dark/zinc',
   typePattern: 'alias',
@@ -19,4 +19,4 @@ export const checkboxSemanticEnhancementTransform = createSemanticEnhancementTra
   hasColorsObject: true,
   variableName: 'resolvedColorClasses',
   useIIFE: true, // Checkbox uses IIFE pattern
-})
+});

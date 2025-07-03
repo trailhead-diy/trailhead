@@ -3,7 +3,7 @@
  * Handles focus-related patterns that main transforms might miss
  */
 
-import { createRegexTransform } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform } from '../utilities/regex-transform-factory.js';
 
 /**
  * Focus states edge case transform
@@ -30,4 +30,4 @@ export const focusStatesEdgeCaseTransform = createRegexTransform({
     },
   ],
   changeType: 'focus-state-edge-case',
-})
+});

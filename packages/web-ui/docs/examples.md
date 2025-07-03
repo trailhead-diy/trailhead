@@ -19,43 +19,43 @@ Real-world examples and patterns for Trailhead UI.
 Allow each customer to have their own branding:
 
 ```tsx
-import { ThemeProvider, useTheme, createTheme } from '@esteban-url/trailhead-web-ui'
-import { useEffect, useState } from 'react'
+import { ThemeProvider, useTheme, createTheme } from '@esteban-url/trailhead-web-ui';
+import { useEffect, useState } from 'react';
 
 // Set up with CLI: trailhead-ui install
 // This installs all 26 components with theme support
 
 function MultiTenantApp({ tenantId }: { tenantId: string }) {
-  const [themeReady, setThemeReady] = useState(false)
-  const { registerTheme } = useTheme()
+  const [themeReady, setThemeReady] = useState(false);
+  const { registerTheme } = useTheme();
 
   useEffect(() => {
     // Load tenant configuration
     async function loadTenantTheme() {
-      const config = await fetch(`/api/tenants/${tenantId}/branding`).then((r) => r.json())
+      const config = await fetch(`/api/tenants/${tenantId}/branding`).then(r => r.json());
 
       // Build custom theme
       const theme = createTheme(`tenant-${tenantId}`)
         .withPrimaryColor(config.primaryColor)
         .withSecondaryColor(config.secondaryColor)
         .withRadius(config.borderRadius)
-        .build()
+        .build();
 
       // Register theme
-      registerTheme(`tenant-${tenantId}`, theme)
-      setThemeReady(true)
+      registerTheme(`tenant-${tenantId}`, theme);
+      setThemeReady(true);
     }
 
-    loadTenantTheme()
-  }, [tenantId, registerTheme])
+    loadTenantTheme();
+  }, [tenantId, registerTheme]);
 
-  if (!themeReady) return <LoadingScreen />
+  if (!themeReady) return <LoadingScreen />;
 
   return (
     <ThemeProvider defaultTheme={`tenant-${tenantId}`}>
       <YourApplication />
     </ThemeProvider>
-  )
+  );
 }
 ```
 
@@ -64,25 +64,25 @@ function MultiTenantApp({ tenantId }: { tenantId: string }) {
 Multi-step form with progress tracking:
 
 ```tsx
-import { Button, Input, Heading } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import { Button, Input, Heading } from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 function OnboardingFlow() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
   const [data, setData] = useState({
     company: '',
     website: '',
     industry: '',
-  })
+  });
 
   const steps = [
     { id: 1, title: 'Company Info', fields: ['company', 'website'] },
     { id: 2, title: 'Industry', fields: ['industry'] },
     { id: 3, title: 'Review', fields: [] },
-  ]
+  ];
 
-  const currentStep = steps[step - 1]
-  const progress = (step / steps.length) * 100
+  const currentStep = steps[step - 1];
+  const progress = (step / steps.length) * 100;
 
   return (
     <div className="max-w-2xl mx-auto p-8 bg-card text-card-foreground border border-border rounded-lg">
@@ -102,14 +102,14 @@ function OnboardingFlow() {
           <Input
             label="Company Name"
             value={data.company}
-            onChange={(e) => setData({ ...data, company: e.target.value })}
+            onChange={e => setData({ ...data, company: e.target.value })}
             required
           />
           <Input
             label="Website"
             type="url"
             value={data.website}
-            onChange={(e) => setData({ ...data, website: e.target.value })}
+            onChange={e => setData({ ...data, website: e.target.value })}
           />
         </div>
       )}
@@ -118,7 +118,7 @@ function OnboardingFlow() {
         <Select
           label="Industry"
           value={data.industry}
-          onChange={(e) => setData({ ...data, industry: e.target.value })}
+          onChange={e => setData({ ...data, industry: e.target.value })}
         >
           <option value="">Select Industry</option>
           <option value="tech">Technology</option>
@@ -150,7 +150,7 @@ function OnboardingFlow() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -161,23 +161,23 @@ function OnboardingFlow() {
 Reusable product display component:
 
 ```tsx
-import { Badge, Button, Text, Heading } from '@esteban-url/trailhead-web-ui'
+import { Badge, Button, Text, Heading } from '@esteban-url/trailhead-web-ui';
 
 interface ProductCardProps {
   product: {
-    id: string
-    name: string
-    price: number
-    image: string
-    inStock: boolean
-    discount?: number
-  }
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    inStock: boolean;
+    discount?: number;
+  };
 }
 
 function ProductCard({ product }: ProductCardProps) {
   const discountedPrice = product.discount
     ? product.price * (1 - product.discount / 100)
-    : product.price
+    : product.price;
 
   return (
     <div className="overflow-hidden bg-card text-card-foreground border border-border rounded-lg">
@@ -207,7 +207,7 @@ function ProductCard({ product }: ProductCardProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -216,20 +216,20 @@ function ProductCard({ product }: ProductCardProps) {
 Cart with item management:
 
 ```tsx
-import { Dialog, DialogTitle, Button, Text, Divider } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import { Dialog, DialogTitle, Button, Text, Divider } from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 function ShoppingCart({ open, onClose, items, onUpdateQuantity, onRemove }) {
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const tax = subtotal * 0.08
-  const total = subtotal + tax
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const tax = subtotal * 0.08;
+  const total = subtotal + tax;
 
   return (
     <Dialog open={open} onClose={onClose} size="lg">
       <DialogTitle>Shopping Cart ({items.length})</DialogTitle>
 
       <div className="divide-y divide-border">
-        {items.map((item) => (
+        {items.map(item => (
           <div key={item.id} className="py-4 flex gap-4">
             <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded" />
 
@@ -278,7 +278,7 @@ function ShoppingCart({ open, onClose, items, onUpdateQuantity, onRemove }) {
         <Button className="flex-1">Checkout</Button>
       </div>
     </Dialog>
-  )
+  );
 }
 ```
 
@@ -301,7 +301,7 @@ import {
   DropdownButton,
   DropdownMenu,
   DropdownItem,
-} from '@esteban-url/trailhead-web-ui'
+} from '@esteban-url/trailhead-web-ui';
 
 function AdminDashboard({ children }) {
   return (
@@ -341,7 +341,7 @@ function AdminDashboard({ children }) {
         <main className="flex-1 p-6">{children}</main>
       </div>
     </SidebarLayout>
-  )
+  );
 }
 ```
 
@@ -360,37 +360,37 @@ import {
   Input,
   Select,
   Badge,
-} from '@esteban-url/trailhead-web-ui'
-import { useState, useMemo } from 'react'
+} from '@esteban-url/trailhead-web-ui';
+import { useState, useMemo } from 'react';
 
 function UserTable({ users }) {
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [sortField, setSortField] = useState('name')
-  const [sortOrder, setSortOrder] = useState('asc')
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortField, setSortField] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const filteredUsers = useMemo(() => {
     return users
-      .filter((user) => {
-        const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase())
-        const matchesStatus = statusFilter === 'all' || user.status === statusFilter
-        return matchesSearch && matchesStatus
+      .filter(user => {
+        const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase());
+        const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+        return matchesSearch && matchesStatus;
       })
       .sort((a, b) => {
-        const aVal = a[sortField]
-        const bVal = b[sortField]
-        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
-      })
-  }, [users, search, statusFilter, sortField, sortOrder])
+        const aVal = a[sortField];
+        const bVal = b[sortField];
+        return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+  }, [users, search, statusFilter, sortField, sortOrder]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field)
-      setSortOrder('asc')
+      setSortField(field);
+      setSortOrder('asc');
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -398,10 +398,10 @@ function UserTable({ users }) {
         <Input
           placeholder="Search users..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -420,7 +420,7 @@ function UserTable({ users }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredUsers.map((user) => (
+          {filteredUsers.map(user => (
             <TableRow key={user.id}>
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
@@ -437,7 +437,7 @@ function UserTable({ users }) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
 ```
 
@@ -448,20 +448,20 @@ function UserTable({ users }) {
 Form with field-level and form-level validation:
 
 ```tsx
-import { Input, Textarea, Select, Checkbox, Button, Text } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import { Input, Textarea, Select, Checkbox, Button, Text } from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 interface FormData {
-  name: string
-  email: string
-  phone: string
-  company: string
-  message: string
-  subscribe: boolean
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  message: string;
+  subscribe: boolean;
 }
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 function ContactForm() {
@@ -472,57 +472,57 @@ function ContactForm() {
     company: '',
     message: '',
     subscribe: false,
-  })
+  });
 
-  const [errors, setErrors] = useState<FormErrors>({})
-  const [submitting, setSubmitting] = useState(false)
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const validate = (): boolean => {
-    const newErrors: FormErrors = {}
+    const newErrors: FormErrors = {};
 
     if (!data.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = 'Name is required';
     }
 
     if (!data.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(data.email)) {
-      newErrors.email = 'Email is invalid'
+      newErrors.email = 'Email is invalid';
     }
 
     if (!data.message.trim()) {
-      newErrors.message = 'Message is required'
+      newErrors.message = 'Message is required';
     } else if (data.message.length < 10) {
-      newErrors.message = 'Message must be at least 10 characters'
+      newErrors.message = 'Message must be at least 10 characters';
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validate()) return
+    if (!validate()) return;
 
-    setSubmitting(true)
+    setSubmitting(true);
     try {
-      await submitForm(data)
+      await submitForm(data);
       // Success handling
     } catch (error) {
       // Error handling
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const updateField = (field: keyof FormData, value: any) => {
-    setData({ ...data, [field]: value })
+    setData({ ...data, [field]: value });
     // Clear error when user types
     if (errors[field]) {
-      setErrors({ ...errors, [field]: '' })
+      setErrors({ ...errors, [field]: '' });
     }
-  }
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-card text-card-foreground border border-border rounded-lg">
@@ -531,7 +531,7 @@ function ContactForm() {
           <Input
             label="Name"
             value={data.name}
-            onChange={(e) => updateField('name', e.target.value)}
+            onChange={e => updateField('name', e.target.value)}
             invalid={!!errors.name}
             required
           />
@@ -547,7 +547,7 @@ function ContactForm() {
             label="Email"
             type="email"
             value={data.email}
-            onChange={(e) => updateField('email', e.target.value)}
+            onChange={e => updateField('email', e.target.value)}
             invalid={!!errors.email}
             required
           />
@@ -562,13 +562,13 @@ function ContactForm() {
           label="Phone"
           type="tel"
           value={data.phone}
-          onChange={(e) => updateField('phone', e.target.value)}
+          onChange={e => updateField('phone', e.target.value)}
         />
 
         <Select
           label="Company Size"
           value={data.company}
-          onChange={(e) => updateField('company', e.target.value)}
+          onChange={e => updateField('company', e.target.value)}
         >
           <option value="">Select size</option>
           <option value="1-10">1-10 employees</option>
@@ -582,7 +582,7 @@ function ContactForm() {
             label="Message"
             rows={4}
             value={data.message}
-            onChange={(e) => updateField('message', e.target.value)}
+            onChange={e => updateField('message', e.target.value)}
             invalid={!!errors.message}
             required
           />
@@ -595,7 +595,7 @@ function ContactForm() {
 
         <Checkbox
           checked={data.subscribe}
-          onChange={(e) => updateField('subscribe', e.target.checked)}
+          onChange={e => updateField('subscribe', e.target.checked)}
         >
           Subscribe to newsletter
         </Checkbox>
@@ -605,7 +605,7 @@ function ContactForm() {
         </Button>
       </form>
     </div>
-  )
+  );
 }
 ```
 
@@ -616,27 +616,35 @@ function ContactForm() {
 Interactive theme customization interface:
 
 ```tsx
-import { Input, Select, Button, Heading, Text, useTheme, createTheme } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import {
+  Input,
+  Select,
+  Button,
+  Heading,
+  Text,
+  useTheme,
+  createTheme,
+} from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 function ThemeBuilder() {
-  const [themeName, setThemeName] = useState('')
+  const [themeName, setThemeName] = useState('');
   const [colors, setColors] = useState({
     primary: 'oklch(0.6 0.2 250)',
     secondary: 'oklch(0.95 0.02 250)',
     background: 'oklch(0.99 0 0)',
     foreground: 'oklch(0.15 0 0)',
-  })
-  const [radius, setRadius] = useState('0.5rem')
-  const [preview, setPreview] = useState(false)
-  const { registerTheme, setTheme } = useTheme()
+  });
+  const [radius, setRadius] = useState('0.5rem');
+  const [preview, setPreview] = useState(false);
+  const { registerTheme, setTheme } = useTheme();
 
   const updateColor = (name: string, value: string) => {
-    setColors({ ...colors, [name]: value })
+    setColors({ ...colors, [name]: value });
     if (preview) {
-      applyPreview()
+      applyPreview();
     }
-  }
+  };
 
   const applyPreview = () => {
     const theme = createTheme('preview')
@@ -644,27 +652,27 @@ function ThemeBuilder() {
       .withSecondaryColor(colors.secondary)
       .withBackgroundColors(colors.background, colors.foreground)
       .withRadius(radius)
-      .build()
+      .build();
 
-    registerTheme('preview', theme)
-    setTheme('preview')
-  }
+    registerTheme('preview', theme);
+    setTheme('preview');
+  };
 
   const saveTheme = () => {
-    if (!themeName) return
+    if (!themeName) return;
 
     const theme = createTheme(themeName)
       .withPrimaryColor(colors.primary)
       .withSecondaryColor(colors.secondary)
       .withBackgroundColors(colors.background, colors.foreground)
       .withRadius(radius)
-      .build()
+      .build();
 
-    registerTheme(themeName, theme)
+    registerTheme(themeName, theme);
 
     // Save to local storage for sharing
-    localStorage.setItem(`theme-${themeName}`, JSON.stringify(theme))
-  }
+    localStorage.setItem(`theme-${themeName}`, JSON.stringify(theme));
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -677,7 +685,7 @@ function ThemeBuilder() {
           <Input
             label="Theme Name"
             value={themeName}
-            onChange={(e) => setThemeName(e.target.value)}
+            onChange={e => setThemeName(e.target.value)}
             placeholder="my-theme"
           />
 
@@ -686,7 +694,7 @@ function ThemeBuilder() {
             <input
               type="color"
               value={colors.primary}
-              onChange={(e) => updateColor('primary', e.target.value)}
+              onChange={e => updateColor('primary', e.target.value)}
               className="w-full h-10 border border-border rounded"
             />
           </div>
@@ -696,12 +704,12 @@ function ThemeBuilder() {
             <input
               type="color"
               value={colors.secondary}
-              onChange={(e) => updateColor('secondary', e.target.value)}
+              onChange={e => updateColor('secondary', e.target.value)}
               className="w-full h-10 border border-border rounded"
             />
           </div>
 
-          <Select label="Border Radius" value={radius} onChange={(e) => setRadius(e.target.value)}>
+          <Select label="Border Radius" value={radius} onChange={e => setRadius(e.target.value)}>
             <option value="0">None</option>
             <option value="0.25rem">Small</option>
             <option value="0.5rem">Medium</option>
@@ -746,7 +754,7 @@ function ThemeBuilder() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -757,23 +765,23 @@ function ThemeBuilder() {
 Form with proper ARIA labels and error handling:
 
 ```tsx
-import { Input, Button, Text } from '@esteban-url/trailhead-web-ui'
-import { useState, useId } from 'react'
+import { Input, Button, Text } from '@esteban-url/trailhead-web-ui';
+import { useState, useId } from 'react';
 
 function AccessibleForm() {
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
-  const emailId = useId()
-  const errorId = useId()
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const emailId = useId();
+  const errorId = useId();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!email.includes('@')) {
-      setError('Please enter a valid email address')
+      setError('Please enter a valid email address');
       // Focus error for screen readers
-      document.getElementById(errorId)?.focus()
+      document.getElementById(errorId)?.focus();
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -789,9 +797,9 @@ function AccessibleForm() {
           id={emailId}
           type="email"
           value={email}
-          onChange={(e) => {
-            setEmail(e.target.value)
-            setError('') // Clear error on change
+          onChange={e => {
+            setEmail(e.target.value);
+            setError(''); // Clear error on change
           }}
           aria-describedby={error ? errorId : undefined}
           aria-invalid={!!error}
@@ -809,7 +817,7 @@ function AccessibleForm() {
         Subscribe
       </Button>
     </form>
-  )
+  );
 }
 ```
 
@@ -834,7 +842,7 @@ function SkipLinks() {
         Skip to navigation
       </a>
     </>
-  )
+  );
 }
 ```
 
@@ -845,11 +853,11 @@ function SkipLinks() {
 Load components only when needed:
 
 ```tsx
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react';
 
 // Lazy load heavy components
-const DataTable = lazy(() => import('./DataTable'))
-const ChartPanel = lazy(() => import('./ChartPanel'))
+const DataTable = lazy(() => import('./DataTable'));
+const ChartPanel = lazy(() => import('./ChartPanel'));
 
 function Dashboard() {
   return (
@@ -862,7 +870,7 @@ function Dashboard() {
         <ChartPanel />
       </Suspense>
     </div>
-  )
+  );
 }
 ```
 
@@ -871,18 +879,18 @@ function Dashboard() {
 Handle large lists efficiently:
 
 ```tsx
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { useRef } from 'react'
-import { Text } from '@esteban-url/trailhead-web-ui'
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { useRef } from 'react';
+import { Text } from '@esteban-url/trailhead-web-ui';
 
 function VirtualList({ items }: { items: Array<any> }) {
-  const parentRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50,
-  })
+  });
 
   return (
     <div ref={parentRef} className="h-96 overflow-auto">
@@ -893,7 +901,7 @@ function VirtualList({ items }: { items: Array<any> }) {
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualItem) => (
+        {virtualizer.getVirtualItems().map(virtualItem => (
           <div
             key={virtualItem.key}
             style={{
@@ -911,7 +919,7 @@ function VirtualList({ items }: { items: Array<any> }) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 ```
 

@@ -2,7 +2,7 @@
  * Ring color mappings - zinc to semantic tokens
  */
 
-import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js'
+import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Get ring color mappings
@@ -30,5 +30,5 @@ export function getRingMappings(): ProtectedColorMapping[] {
       replacement: 'ring-ring',
       description: 'ring-white → ring-ring (shadcn compatible)',
     },
-  ]
+  ];
 }

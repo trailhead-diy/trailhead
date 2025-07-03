@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const dividerColorMappings = makeProtected([
   // Border colors
@@ -21,7 +21,7 @@ const dividerColorMappings = makeProtected([
     description: 'Convert zinc border to semantic border',
   },
   // dark:border-border is already using semantic tokens
-])
+]);
 
 /**
  * Divider color mapping transform
@@ -34,5 +34,5 @@ export const dividerColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'divider-color-semantic',
 
   // Only apply to divider component files
-  contentFilter: (content) => content.includes('export function Divider'),
-})
+  contentFilter: content => content.includes('export function Divider'),
+});

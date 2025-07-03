@@ -32,7 +32,7 @@ export const checkboxSemanticEnhancementTransform = createSemanticEnhancementTra
   typePattern: 'alias',
   hasColorsObject: true,
   useIIFE: true,
-})
+});
 ```
 
 ## 3. **Single Responsibility**
@@ -53,7 +53,7 @@ Functions return new structures rather than mutating existing ones:
 return {
   hasChanges: changes.length > 0,
   changes: [...changes], // New array
-}
+};
 ```
 
 ## 5. **Function as First-Class Citizens**
@@ -63,9 +63,9 @@ Functions are passed as configuration, enabling flexible behavior:
 ```typescript
 interface ComponentConfig {
   // Function to detect component
-  detectPattern: (content: string) => boolean
+  detectPattern: (content: string) => boolean;
   // Optional function for custom resolution
-  applyResolution?: (root: any, j: API['jscodeshift'], variableName: string) => void
+  applyResolution?: (root: any, j: API['jscodeshift'], variableName: string) => void;
 }
 ```
 
@@ -91,10 +91,10 @@ Strong TypeScript types ensure correctness at compile time:
 
 ```typescript
 export interface ComponentConfig {
-  name: string
-  detectPattern: (content: string) => boolean
-  defaultColor: string
-  typePattern: 'alias' | 'prop' | 'none'
+  name: string;
+  detectPattern: (content: string) => boolean;
+  defaultColor: string;
+  typePattern: 'alias' | 'prop' | 'none';
   // ... fully typed configuration
 }
 ```
@@ -116,11 +116,11 @@ Each pure function can be tested in isolation:
 // Easy to test
 describe('updateColorTypeAlias', () => {
   it('should update type alias to include SemanticColorToken', () => {
-    const result = updateColorTypeAlias(mockRoot, mockJ, 'Color')
-    expect(result.hasChanges).toBe(true)
-    expect(result.changes).toHaveLength(1)
-  })
-})
+    const result = updateColorTypeAlias(mockRoot, mockJ, 'Color');
+    expect(result.hasChanges).toBe(true);
+    expect(result.changes).toHaveLength(1);
+  });
+});
 ```
 
 ## 10. **DRY (Don't Repeat Yourself)**

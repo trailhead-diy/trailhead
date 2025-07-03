@@ -26,3 +26,16 @@ export {
   testPaths,
   isWindows,
 } from './path-utils.js';
+
+// Package manager utilities
+export {
+  detectPackageManager,
+  getRunCommand,
+  execPackageManagerCommand,
+  getPackageManagerInfo,
+  clearPackageManagerCache,
+  createPackageManagerCache,
+  SemVer,
+  type PackageManager,
+  type DetectOptions,
+} from './package-manager.js';

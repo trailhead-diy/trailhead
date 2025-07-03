@@ -2,7 +2,7 @@
  * Border color mappings - zinc to semantic tokens
  */
 
-import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js'
+import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Get border color mappings
@@ -25,5 +25,5 @@ export function getBorderMappings(): ProtectedColorMapping[] {
       replacement: 'border-border',
       description: 'border-white/opacity → border-border (shadcn compatible)',
     },
-  ]
+  ];
 }

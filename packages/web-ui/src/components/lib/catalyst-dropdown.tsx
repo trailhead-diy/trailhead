@@ -1,14 +1,14 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import * as Headless from '@headlessui/react'
-import type React from 'react'
-import { CatalystButton } from './catalyst-button'
-import { CatalystLink } from './catalyst-link'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
+import { CatalystButton } from './catalyst-button';
+import { CatalystLink } from './catalyst-link';
+import { cn } from '../utils/cn';
 
 export function CatalystDropdown(props: Headless.MenuProps) {
-  return <Headless.Menu {...props} />
+  return <Headless.Menu {...props} />;
 }
 
 export function CatalystDropdownButton<T extends React.ElementType = typeof CatalystButton>({
@@ -16,7 +16,7 @@ export function CatalystDropdownButton<T extends React.ElementType = typeof Cata
   className,
   ...props
 }: { className?: string } & Omit<Headless.MenuButtonProps<T>, 'className'>) {
-  return <Headless.MenuButton as={as} className={className} {...props} />
+  return <Headless.MenuButton as={as} className={className} {...props} />;
 }
 
 export function CatalystDropdownMenu({
@@ -49,7 +49,7 @@ export function CatalystDropdownMenu({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDropdownItem({
@@ -78,20 +78,20 @@ export function CatalystDropdownItem({
     // Avatar
     '*:data-[slot=avatar]:mr-2.5 *:data-[slot=avatar]:-ml-1 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:mr-2 sm:*:data-[slot=avatar]:size-5',
     className
-  )
+  );
 
   return 'href' in props ? (
     <Headless.MenuItem as={CatalystLink} {...(props as any)} className={classes} />
   ) : (
     <Headless.MenuItem as="button" type="button" {...(props as any)} className={classes} />
-  )
+  );
 }
 
 export function CatalystDropdownHeader({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn('col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3', className)} />
+  return <div {...props} className={cn('col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3', className)} />;
 }
 
 export function CatalystDropdownSection({
@@ -107,7 +107,7 @@ export function CatalystDropdownSection({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDropdownHeading({
@@ -122,7 +122,7 @@ export function CatalystDropdownHeading({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDropdownDivider({
@@ -137,14 +137,14 @@ export function CatalystDropdownDivider({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDropdownLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div data-slot="label" {...props} className={cn('col-start-2 row-start-1', className)} />
+  return <div data-slot="label" {...props} className={cn('col-start-2 row-start-1', className)} />;
 }
 
 export function CatalystDropdownDescription({
@@ -160,7 +160,7 @@ export function CatalystDropdownDescription({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDropdownShortcut({
@@ -190,5 +190,5 @@ export function CatalystDropdownShortcut({
         </kbd>
       ))}
     </Headless.Description>
-  )
+  );
 }

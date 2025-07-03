@@ -12,10 +12,10 @@ The base interface for all transforms in the system.
 
 ```typescript
 interface Transform {
-  name: string // Unique transform identifier
-  description: string // Human-readable description
-  type: 'ast' | 'regex' | 'hybrid' // Transform implementation type
-  execute: (content: string, options?: TransformOptions) => TransformResult
+  name: string; // Unique transform identifier
+  description: string; // Human-readable description
+  type: 'ast' | 'regex' | 'hybrid'; // Transform implementation type
+  execute: (content: string, options?: TransformOptions) => TransformResult;
 }
 ```
 
@@ -25,12 +25,12 @@ Represents the result of a transform execution with detailed metadata.
 
 ```typescript
 interface TransformResult {
-  name?: string // Transform identifier for tracking
-  type?: 'ast' | 'regex' | 'hybrid' // Transform type metadata
-  phase?: string // Pipeline phase (e.g., 'color', 'structure')
-  content: string // Transformed content
-  changes: Change[] // Structured change descriptions
-  hasChanges: boolean // Quick change detection flag
+  name?: string; // Transform identifier for tracking
+  type?: 'ast' | 'regex' | 'hybrid'; // Transform type metadata
+  phase?: string; // Pipeline phase (e.g., 'color', 'structure')
+  content: string; // Transformed content
+  changes: Change[]; // Structured change descriptions
+  hasChanges: boolean; // Quick change detection flag
 }
 ```
 
@@ -40,11 +40,11 @@ Represents a single change made by a transform.
 
 ```typescript
 interface Change {
-  type: string // Change category (e.g., 'color-mapping')
-  description: string // Human-readable change description
-  line?: number // Optional line number reference
-  before?: string // Optional before value
-  after?: string // Optional after value
+  type: string; // Change category (e.g., 'color-mapping')
+  description: string; // Human-readable change description
+  line?: number; // Optional line number reference
+  before?: string; // Optional before value
+  after?: string; // Optional after value
 }
 ```
 
@@ -54,8 +54,8 @@ Optional configuration for transform execution.
 
 ```typescript
 interface TransformOptions {
-  verbose?: boolean // Enable detailed logging
-  dryRun?: boolean // Preview changes without applying
+  verbose?: boolean; // Enable detailed logging
+  dryRun?: boolean; // Preview changes without applying
 }
 ```
 
@@ -67,24 +67,24 @@ Configuration for creating regex-based transforms.
 
 ```typescript
 interface RegexTransformConfig {
-  name: string // Transform name
-  description: string // Transform description
-  mappings: ColorMapping[] // Modern color mapping interface
-  changeType?: string // Optional change type for tracking
-  contentFilter?: (content: string) => boolean // Optional content filtering
+  name: string; // Transform name
+  description: string; // Transform description
+  mappings: ColorMapping[]; // Modern color mapping interface
+  changeType?: string; // Optional change type for tracking
+  contentFilter?: (content: string) => boolean; // Optional content filtering
 }
 
 interface ColorMapping {
-  pattern: RegExp // Regular expression pattern
-  replacement: string // Replacement string (supports capture groups)
-  description: string // Human-readable description of the mapping
+  pattern: RegExp; // Regular expression pattern
+  replacement: string; // Replacement string (supports capture groups)
+  description: string; // Human-readable description of the mapping
 }
 ```
 
 **Usage:**
 
 ```typescript
-import { createRegexTransform } from './utilities/regex-transform-factory.js'
+import { createRegexTransform } from './utilities/regex-transform-factory.js';
 
 const transform = createRegexTransform({
   name: 'zinc-to-semantic',
@@ -101,7 +101,7 @@ const transform = createRegexTransform({
       description: 'zinc-50 text → semantic background',
     },
   ],
-})
+});
 ```
 
 ### ProtectedRegexTransformConfig
@@ -110,27 +110,27 @@ Configuration for creating protected regex transforms that respect component con
 
 ```typescript
 interface ProtectedRegexTransformConfig {
-  name: string // Transform name
-  description: string // Transform description
-  mappings: ProtectedColorMapping[] // Protected color mappings
-  changeType?: string // Optional change type
-  contentFilter?: (content: string) => boolean // Optional content filtering
-  globalProtection?: boolean // Enable global protection (default: true)
+  name: string; // Transform name
+  description: string; // Transform description
+  mappings: ProtectedColorMapping[]; // Protected color mappings
+  changeType?: string; // Optional change type
+  contentFilter?: (content: string) => boolean; // Optional content filtering
+  globalProtection?: boolean; // Enable global protection (default: true)
 }
 
 interface ProtectedColorMapping {
-  pattern: RegExp // Regular expression pattern
-  replacement: string // Replacement string
-  description: string // Mapping description
-  respectStyleObjects?: boolean // Protect style objects (default: true)
-  respectColorsObjects?: boolean // Protect colors objects (default: true)
+  pattern: RegExp; // Regular expression pattern
+  replacement: string; // Replacement string
+  description: string; // Mapping description
+  respectStyleObjects?: boolean; // Protect style objects (default: true)
+  respectColorsObjects?: boolean; // Protect colors objects (default: true)
 }
 ```
 
 **Usage:**
 
 ```typescript
-import { createProtectedRegexTransform } from './utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from './utilities/protected-regex-transform-factory.js';
 
 const transform = createProtectedRegexTransform({
   name: 'button-colors',
@@ -144,7 +144,7 @@ const transform = createProtectedRegexTransform({
       respectColorsObjects: true,
     },
   ],
-})
+});
 ```
 
 ### ResolutionConfig
@@ -153,18 +153,18 @@ Configuration for AST resolution builder system.
 
 ```typescript
 interface ResolutionConfig {
-  componentName: string // Component name (e.g., 'Button')
-  variableName: string // Variable name (e.g., 'resolvedColorClasses')
-  defaultColor?: string // Default color fallback
-  useIIFE: boolean // Use IIFE pattern vs conditional
-  hasColorsObject: boolean // Component has colors object
+  componentName: string; // Component name (e.g., 'Button')
+  variableName: string; // Variable name (e.g., 'resolvedColorClasses')
+  defaultColor?: string; // Default color fallback
+  useIIFE: boolean; // Use IIFE pattern vs conditional
+  hasColorsObject: boolean; // Component has colors object
 }
 ```
 
 **Usage:**
 
 ```typescript
-import { buildSemanticResolution } from './resolution-builder/ast-builders.js'
+import { buildSemanticResolution } from './resolution-builder/ast-builders.js';
 
 const resolution = buildSemanticResolution(j, {
   componentName: 'Badge',
@@ -172,7 +172,7 @@ const resolution = buildSemanticResolution(j, {
   defaultColor: 'zinc',
   useIIFE: false,
   hasColorsObject: true,
-})
+});
 ```
 
 ## Factory Functions
@@ -182,7 +182,7 @@ const resolution = buildSemanticResolution(j, {
 Creates a regex-based transform with full metadata support.
 
 ```typescript
-function createRegexTransform(config: RegexTransformConfig): Transform
+function createRegexTransform(config: RegexTransformConfig): Transform;
 ```
 
 **Features:**
@@ -198,7 +198,7 @@ function createRegexTransform(config: RegexTransformConfig): Transform
 Creates a regex transform with component-aware protection.
 
 ```typescript
-function createProtectedRegexTransform(config: ProtectedRegexTransformConfig): Transform
+function createProtectedRegexTransform(config: ProtectedRegexTransformConfig): Transform;
 ```
 
 **Features:**
@@ -214,7 +214,7 @@ function createProtectedRegexTransform(config: ProtectedRegexTransformConfig): T
 Creates a placeholder transform for components already using semantic tokens.
 
 ```typescript
-function createNoOpTransform(name: string, description: string): Transform
+function createNoOpTransform(name: string, description: string): Transform;
 ```
 
 **Features:**
@@ -231,7 +231,7 @@ function createNoOpTransform(name: string, description: string): Transform
 **withIIFEAndColors**
 
 ```typescript
-function withIIFEAndColors(j: JSCodeshift, config: Partial<ResolutionConfig>): VariableDeclaration
+function withIIFEAndColors(j: JSCodeshift, config: Partial<ResolutionConfig>): VariableDeclaration;
 ```
 
 Creates IIFE pattern for components with colors object:
@@ -239,10 +239,10 @@ Creates IIFE pattern for components with colors object:
 ```typescript
 const resolvedClasses = (() => {
   if (color && isSemanticToken(color)) {
-    return createSemanticStyles(color)
+    return createSemanticStyles(color);
   }
-  return colors[color] || colors['default']
-})()
+  return colors[color] || colors['default'];
+})();
 ```
 
 **withConditionalAndColors**
@@ -251,7 +251,7 @@ const resolvedClasses = (() => {
 function withConditionalAndColors(
   j: JSCodeshift,
   config: Partial<ResolutionConfig>
-): VariableDeclaration
+): VariableDeclaration;
 ```
 
 Creates conditional pattern for components with colors object:
@@ -260,7 +260,7 @@ Creates conditional pattern for components with colors object:
 const resolvedClasses =
   color && isSemanticToken(color)
     ? createSemanticStyles(color)
-    : colors[color ?? 'default'] || colors['default']
+    : colors[color ?? 'default'] || colors['default'];
 ```
 
 **withSimpleConditional**
@@ -269,13 +269,13 @@ const resolvedClasses =
 function withSimpleConditional(
   j: JSCodeshift,
   config: Partial<ResolutionConfig>
-): VariableDeclaration
+): VariableDeclaration;
 ```
 
 Creates simple conditional for components without colors object:
 
 ```typescript
-const resolvedClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : ''
+const resolvedClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
 ```
 
 ### Insertion Logic
@@ -287,7 +287,7 @@ function insertSemanticResolution(
   j: JSCodeshift,
   functionBody: any,
   resolution: VariableDeclaration
-): boolean
+): boolean;
 ```
 
 Inserts semantic resolution into component function body with conflict detection.
@@ -295,7 +295,7 @@ Inserts semantic resolution into component function body with conflict detection
 **checkVariableExists**
 
 ```typescript
-function checkVariableExists(j: JSCodeshift, functionBody: any, variableName: string): boolean
+function checkVariableExists(j: JSCodeshift, functionBody: any, variableName: string): boolean;
 ```
 
 Checks if a variable already exists in the given scope.
@@ -315,7 +315,7 @@ type SemanticColorToken =
   | 'accent'
   | 'card'
   | 'popover'
-  | 'border'
+  | 'border';
 ```
 
 ## Pipeline Configuration
@@ -326,10 +326,10 @@ Defines a transform phase in the execution pipeline.
 
 ```typescript
 interface TransformPhase {
-  path: string // Transform module path
-  type: 'ast' | 'regex' // Transform execution type
-  parallel?: boolean // Can run in parallel with others
-  optional?: boolean // Won't fail pipeline if missing
+  path: string; // Transform module path
+  type: 'ast' | 'regex'; // Transform execution type
+  parallel?: boolean; // Can run in parallel with others
+  optional?: boolean; // Won't fail pipeline if missing
 }
 ```
 
@@ -342,7 +342,7 @@ export const TRANSFORM_ORDER: TransformPhase[] = [
   { path: 'components/*/semantic-enhancement', type: 'ast', parallel: true },
   { path: 'components/*/color-mappings', type: 'regex', parallel: true },
   { path: 'common/formatting/post-process', type: 'ast' },
-]
+];
 ```
 
 ## Component Configuration
@@ -353,13 +353,13 @@ Configuration for semantic enhancement transforms.
 
 ```typescript
 interface ComponentConfig {
-  name: string // Component name
-  detectPattern: (content: string) => boolean // Detection function
-  defaultColor?: string // Default color value
-  typePattern: 'alias' | 'prop' // Type update pattern
-  hasColorsObject: boolean // Has colors object
-  variableName: string // Resolution variable name
-  useIIFE: boolean // Use IIFE pattern
+  name: string; // Component name
+  detectPattern: (content: string) => boolean; // Detection function
+  defaultColor?: string; // Default color value
+  typePattern: 'alias' | 'prop'; // Type update pattern
+  hasColorsObject: boolean; // Has colors object
+  variableName: string; // Resolution variable name
+  useIIFE: boolean; // Use IIFE pattern
 }
 ```
 
@@ -405,7 +405,7 @@ All factory functions include comprehensive error handling:
 const transform = createRegexTransform({
   name: 'colors',
   patterns: [{ pattern: /zinc-900/g, replacement: 'foreground' }],
-})
+});
 ```
 
 **After (Modern):**
@@ -421,7 +421,7 @@ const transform = createRegexTransform({
       description: 'zinc-900 → foreground',
     },
   ],
-})
+});
 ```
 
 ### Factory Signature Updates
@@ -430,24 +430,24 @@ const transform = createRegexTransform({
 
 ```typescript
 // Before
-createProtectedRegexTransform('component', mappings)
+createProtectedRegexTransform('component', mappings);
 
 // After
 createProtectedRegexTransform({
   name: 'component',
   description: 'Component description',
   mappings: mappings,
-})
+});
 ```
 
 **createNoOpTransform:**
 
 ```typescript
 // Before
-createNoOpTransform('component')
+createNoOpTransform('component');
 
 // After
-createNoOpTransform('component', 'Description of why no-op')
+createNoOpTransform('component', 'Description of why no-op');
 ```
 
 ## Performance Notes

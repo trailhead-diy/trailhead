@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { type ReactNode } from 'react'
-import { CatalystStackedLayout } from './lib/catalyst-stacked-layout'
+import { type ReactNode } from 'react';
+import { CatalystStackedLayout } from './lib/catalyst-stacked-layout';
 
 export type StackedLayoutProps = {
-  navbar: ReactNode
-  sidebar: ReactNode
-  children?: ReactNode
-  className?: string
-  [key: string]: unknown
-}
+  navbar: ReactNode;
+  sidebar: ReactNode;
+  children?: ReactNode;
+  className?: string;
+  [key: string]: unknown;
+};
 
 export const StackedLayout = ({
   children,
@@ -26,5 +26,5 @@ export const StackedLayout = ({
         {children}
       </CatalystStackedLayout>
     </div>
-  )
-}
+  );
+};

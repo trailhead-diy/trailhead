@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import {
   Fieldset,
   Legend,
@@ -8,7 +8,7 @@ import {
   Label,
   Description,
   ErrorMessage,
-} from '../../src/components/fieldset'
+} from '../../src/components/fieldset';
 
 describe('Fieldset Components', () => {
   it('should render accessible form structure with validation states', () => {
@@ -30,26 +30,26 @@ describe('Fieldset Components', () => {
           </Field>
         </FieldGroup>
       </Fieldset>
-    )
+    );
 
     // Test semantic structure
-    expect(screen.getByRole('group')).toBeInTheDocument()
-    expect(screen.getByText('User Information')).toBeInTheDocument()
+    expect(screen.getByRole('group')).toBeInTheDocument();
+    expect(screen.getByText('User Information')).toBeInTheDocument();
 
     // Test form fields
-    expect(screen.getByLabelText('Username')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    expect(screen.getByLabelText('Username')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
 
     // Test descriptions
-    expect(screen.getByText('Enter your preferred username')).toBeInTheDocument()
-    expect(screen.getByText("We'll use this for notifications")).toBeInTheDocument()
+    expect(screen.getByText('Enter your preferred username')).toBeInTheDocument();
+    expect(screen.getByText("We'll use this for notifications")).toBeInTheDocument();
 
     // Test error messages
-    expect(screen.getByText('Username must be at least 3 characters')).toBeInTheDocument()
-    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
+    expect(screen.getByText('Username must be at least 3 characters')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
 
     // Test accessibility
-    const emailInput = screen.getByLabelText('Email')
-    expect(emailInput).toHaveAttribute('aria-invalid', 'true')
-  })
-})
+    const emailInput = screen.getByLabelText('Email');
+    expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+  });
+});

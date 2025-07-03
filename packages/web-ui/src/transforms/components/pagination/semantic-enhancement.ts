@@ -5,7 +5,7 @@
  * Pagination components use Button internally and inherit its theming
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Pagination semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const paginationSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Pagination',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Pagination') ||
     content.includes('export function PaginationPage') ||
     content.includes('export function PaginationGap'),
@@ -30,4 +30,4 @@ export const paginationSemanticEnhancementTransform = createSemanticEnhancementT
     // Pagination components use Button internally which already has semantic support
     // The color mappings transform handles converting the hardcoded colors
   },
-})
+});

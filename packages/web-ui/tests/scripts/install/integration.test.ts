@@ -12,15 +12,19 @@
  * - Cross-module integration validation
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { join as pathJoin } from 'path'
-import type { FileSystem, Logger, InstallConfig } from '../../../src/cli/core/installation/types.js'
-import { Ok, Err } from '../../../src/cli/core/installation/types.js'
-import { testPaths, isWindows, normalizeMockPath } from '../../utils/cross-platform-paths.js'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { join as pathJoin } from 'path';
+import type {
+  FileSystem,
+  Logger,
+  InstallConfig,
+} from '../../../src/cli/core/installation/types.js';
+import { Ok, Err } from '../../../src/cli/core/installation/types.js';
+import { testPaths, isWindows, normalizeMockPath } from '../../utils/cross-platform-paths.js';
 
 // Helper to create OS-agnostic test paths
-const projectPath = (...segments: string[]) => pathJoin('project', ...segments)
-const trailheadPath = (...segments: string[]) => pathJoin('trailhead', ...segments)
+const projectPath = (...segments: string[]) => pathJoin('project', ...segments);
+const trailheadPath = (...segments: string[]) => pathJoin('trailhead', ...segments);
 
 // Mock ora spinner
 vi.mock('ora', () => ({
@@ -31,89 +35,89 @@ vi.mock('ora', () => ({
     warn: vi.fn().mockReturnThis(),
     text: '',
   })),
-}))
+}));
 
 // Mock inquirer
 vi.mock('@inquirer/prompts', () => ({
   select: vi.fn().mockResolvedValue({ action: 'overwrite' }),
   confirm: vi.fn().mockResolvedValue(true),
-}))
+}));
 
 // Mock fs existsSync to control whether src or dist paths are used
-vi.mock('fs', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('fs')>()
+vi.mock('fs', async importOriginal => {
+  const actual = await importOriginal<typeof import('fs')>();
   return {
     ...actual,
     existsSync: vi.fn((path: string) => {
       // Return true for src paths to use development paths
-      return path.includes('/src') || path.includes('\\src')
+      return path.includes('/src') || path.includes('\\src');
     }),
-  }
-})
+  };
+});
 
 // Import modules under test
-import { detectFramework } from '../../../src/cli/core/installation/framework-detection.js'
-import { performInstallation } from '../../../src/cli/core/installation/index.js'
+import { detectFramework } from '../../../src/cli/core/installation/framework-detection.js';
+import { performInstallation } from '../../../src/cli/core/installation/index.js';
 import {
   analyzeDependencies,
   installDependenciesSmart,
-} from '../../../src/cli/core/installation/dependencies.js'
+} from '../../../src/cli/core/installation/dependencies.js';
 
 // Mock FileSystem for different project scenarios
 const createMockFileSystem = (scenario: ProjectScenario): FileSystem => {
-  const { existingFiles, fileContents } = getScenarioData(scenario)
+  const { existingFiles, fileContents } = getScenarioData(scenario);
 
   // Normalize all paths in the existingFiles set for cross-platform compatibility
-  const normalizedExistingFiles = new Set(Array.from(existingFiles).map(normalizeMockPath))
+  const normalizedExistingFiles = new Set(Array.from(existingFiles).map(normalizeMockPath));
 
   return {
     remove: vi.fn().mockImplementation(async (path: string) => {
-      const normalized = normalizeMockPath(path)
+      const normalized = normalizeMockPath(path);
       if (normalizedExistingFiles.has(normalized)) {
-        normalizedExistingFiles.delete(normalized)
-        return Ok(undefined)
+        normalizedExistingFiles.delete(normalized);
+        return Ok(undefined);
       }
       return Err({
         recoverable: true,
         message: 'File not found',
         code: 'ENOENT',
         path,
-      })
+      });
     }),
     exists: vi.fn().mockImplementation(async (path: string) => {
-      const normalized = normalizeMockPath(path)
-      return Ok(normalizedExistingFiles.has(normalized))
+      const normalized = normalizeMockPath(path);
+      return Ok(normalizedExistingFiles.has(normalized));
     }),
     readDir: vi.fn().mockImplementation(async (path: string) => {
       if (path.includes('catalyst')) {
-        return Ok(['button.tsx', 'input.tsx', 'dialog.tsx', 'table.tsx', 'theme-provider.tsx'])
+        return Ok(['button.tsx', 'input.tsx', 'dialog.tsx', 'table.tsx', 'theme-provider.tsx']);
       }
-      return Ok([])
+      return Ok([]);
     }),
     readFile: vi.fn().mockImplementation(async (path: string) => {
-      const normalized = normalizeMockPath(path)
+      const normalized = normalizeMockPath(path);
       // Try both normalized and original paths for backward compatibility
       return Ok(
         (fileContents as any)[normalized] || (fileContents as any)[path] || 'mock file content'
-      )
+      );
     }),
     writeFile: vi.fn().mockImplementation(async () => Ok(undefined)),
     readJson: vi.fn().mockImplementation(async (path: string) => {
-      const normalized = normalizeMockPath(path)
+      const normalized = normalizeMockPath(path);
       if (path.endsWith('package.json')) {
         return Ok(
           (fileContents as any)[normalized] ||
             (fileContents as any)[path] || { name: 'test-project', version: '1.0.0' }
-        )
+        );
       }
-      return Err({ recoverable: true, message: 'File not found', code: 'ENOENT', path })
+      return Err({ recoverable: true, message: 'File not found', code: 'ENOENT', path });
     }),
     writeJson: vi.fn().mockImplementation(async () => Ok(undefined)),
     copy: vi.fn().mockImplementation(async () => Ok(undefined)),
     ensureDir: vi.fn().mockImplementation(async () => Ok(undefined)),
     stat: vi.fn().mockImplementation(async () => Ok({ mtime: new Date(), size: 1000 })),
-  }
-}
+  };
+};
 
 const createMockLogger = (): Logger => ({
   info: vi.fn(),
@@ -122,7 +126,7 @@ const createMockLogger = (): Logger => ({
   error: vi.fn(),
   debug: vi.fn(),
   step: vi.fn(),
-})
+});
 
 // Project scenario definitions
 type ProjectScenario =
@@ -131,7 +135,7 @@ type ProjectScenario =
   | 'vite-react'
   | 'redwood-sdk'
   | 'conflicting-files'
-  | 'missing-dependencies'
+  | 'missing-dependencies';
 
 const getScenarioData = (scenario: ProjectScenario) => {
   const scenarios = {
@@ -390,30 +394,30 @@ const getScenarioData = (scenario: ProjectScenario) => {
         },
       },
     },
-  }
+  };
 
-  return scenarios[scenario]
-}
+  return scenarios[scenario];
+};
 
 describe('Installation Integration Tests', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe('Complete Installation Workflows', () => {
     it.fails('should perform complete Next.js installation successfully', async () => {
-      const mockFs = createMockFileSystem('empty-nextjs')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('empty-nextjs');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       // Step 1: Framework Detection
-      const frameworkResult = await detectFramework(mockFs, projectRoot)
-      expect(frameworkResult.success).toBe(true)
-      if (!frameworkResult.success) return
+      const frameworkResult = await detectFramework(mockFs, projectRoot);
+      expect(frameworkResult.success).toBe(true);
+      if (!frameworkResult.success) return;
 
-      expect(frameworkResult.value.framework.type).toBe('nextjs')
-      expect(frameworkResult.value.confidence).toBe('high')
+      expect(frameworkResult.value.framework.type).toBe('nextjs');
+      expect(frameworkResult.value.confidence).toBe('high');
 
       // Step 2: Dependency Analysis
       const config: InstallConfig = {
@@ -422,14 +426,14 @@ describe('Installation Integration Tests', () => {
         componentsDir: projectPath('src', 'components'),
         libDir: projectPath('src', 'lib'),
         projectRoot,
-      }
+      };
 
-      const depsResult = await analyzeDependencies(mockFs, mockLogger, config)
-      expect(depsResult.success).toBe(true)
-      if (!depsResult.success) return
+      const depsResult = await analyzeDependencies(mockFs, mockLogger, config);
+      expect(depsResult.success).toBe(true);
+      if (!depsResult.success) return;
 
-      expect(depsResult.value.needsInstall).toBe(true)
-      expect(Object.keys(depsResult.value.added).length).toBeGreaterThan(0)
+      expect(depsResult.value.needsInstall).toBe(true);
+      expect(Object.keys(depsResult.value.added).length).toBeGreaterThan(0);
 
       // Step 3: Update Dependencies
       const updateResult = await installDependenciesSmart(
@@ -437,8 +441,8 @@ describe('Installation Integration Tests', () => {
         mockLogger,
         config,
         depsResult.value
-      )
-      expect(updateResult.success).toBe(true)
+      );
+      expect(updateResult.success).toBe(true);
 
       // Step 4: File Installation
       const installResult = await performInstallation(
@@ -447,29 +451,29 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(true)
-      if (!installResult.success) return
+      );
+      expect(installResult.success).toBe(true);
+      if (!installResult.success) return;
 
-      expect(installResult.value.filesInstalled.length).toBeGreaterThan(0)
-      expect(installResult.value.filesInstalled).toContain('theme/config.ts')
-      expect(installResult.value.filesInstalled).toContain('lib/utils.ts')
+      expect(installResult.value.filesInstalled.length).toBeGreaterThan(0);
+      expect(installResult.value.filesInstalled).toContain('theme/config.ts');
+      expect(installResult.value.filesInstalled).toContain('lib/utils.ts');
 
       // Installation complete
-    })
+    });
 
     it.fails('should handle Vite React installation', async () => {
-      const mockFs = createMockFileSystem('vite-react')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('vite-react');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       // Framework Detection
-      const frameworkResult = await detectFramework(mockFs, projectRoot)
-      expect(frameworkResult.success).toBe(true)
-      if (!frameworkResult.success) return
+      const frameworkResult = await detectFramework(mockFs, projectRoot);
+      expect(frameworkResult.success).toBe(true);
+      if (!frameworkResult.success) return;
 
-      expect(frameworkResult.value.framework.type).toBe('vite')
+      expect(frameworkResult.value.framework.type).toBe('vite');
 
       // Configuration for Vite project
       const config: InstallConfig = {
@@ -478,11 +482,11 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       // Dependency Analysis
-      const depsResult = await analyzeDependencies(mockFs, mockLogger, config)
-      expect(depsResult.success).toBe(true)
+      const depsResult = await analyzeDependencies(mockFs, mockLogger, config);
+      expect(depsResult.success).toBe(true);
 
       // Installation
       const installResult = await performInstallation(
@@ -491,24 +495,24 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(true)
+      );
+      expect(installResult.success).toBe(true);
 
       // Installation complete for Vite project
-    })
+    });
 
     it.fails('should handle RedwoodSDK installation', async () => {
-      const mockFs = createMockFileSystem('redwood-sdk')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('redwood-sdk');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       // Framework Detection
-      const frameworkResult = await detectFramework(mockFs, projectRoot)
-      expect(frameworkResult.success).toBe(true)
-      if (!frameworkResult.success) return
+      const frameworkResult = await detectFramework(mockFs, projectRoot);
+      expect(frameworkResult.success).toBe(true);
+      if (!frameworkResult.success) return;
 
-      expect(frameworkResult.value.framework.type).toBe('redwood-sdk')
+      expect(frameworkResult.value.framework.type).toBe('redwood-sdk');
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -516,11 +520,11 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       // Should handle dependencies that may already be present
-      const depsResult = await analyzeDependencies(mockFs, mockLogger, config)
-      expect(depsResult.success).toBe(true)
+      const depsResult = await analyzeDependencies(mockFs, mockLogger, config);
+      expect(depsResult.success).toBe(true);
 
       const installResult = await performInstallation(
         mockFs,
@@ -528,17 +532,17 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(true)
-    })
-  })
+      );
+      expect(installResult.success).toBe(true);
+    });
+  });
 
   describe('Error Scenarios and Recovery', () => {
     it('should fail gracefully when files exist and force is false', async () => {
-      const mockFs = createMockFileSystem('conflicting-files')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('conflicting-files');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -546,7 +550,7 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       const installResult = await performInstallation(
         mockFs,
@@ -554,21 +558,21 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(false)
+      );
+      expect(installResult.success).toBe(false);
       if (!installResult.success) {
         // Should fail due to either file conflicts or missing source files - both are valid scenarios
         expect(installResult.error.message).toMatch(
           /Installation would overwrite existing files|Source file not found/
-        )
+        );
       }
-    })
+    });
 
     it.fails('should succeed when files exist and force is true', async () => {
-      const mockFs = createMockFileSystem('conflicting-files')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('conflicting-files');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -576,7 +580,7 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       const installResult = await performInstallation(
         mockFs,
@@ -584,23 +588,23 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         true
-      )
-      expect(installResult.success).toBe(true)
-    })
+      );
+      expect(installResult.success).toBe(true);
+    });
 
     it('should handle missing source files gracefully', async () => {
-      const mockFs = createMockFileSystem('empty-nextjs')
+      const mockFs = createMockFileSystem('empty-nextjs');
       // Override to simulate missing source files
       mockFs.exists = vi.fn().mockImplementation(async (path: string) => {
         if (path.includes('/trailhead/')) {
-          return Ok(false) // Source files don't exist
+          return Ok(false); // Source files don't exist
         }
-        return Ok(path.includes('/project/'))
-      })
+        return Ok(path.includes('/project/'));
+      });
 
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -608,7 +612,7 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       const installResult = await performInstallation(
         mockFs,
@@ -616,25 +620,25 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(false)
+      );
+      expect(installResult.success).toBe(false);
       if (!installResult.success) {
         // Just verify that it failed, don't check specific message
-        expect(installResult.error).toBeDefined()
+        expect(installResult.error).toBeDefined();
       }
-    })
+    });
 
     it('should handle filesystem permission errors', async () => {
-      const mockFs = createMockFileSystem('empty-nextjs')
+      const mockFs = createMockFileSystem('empty-nextjs');
       mockFs.ensureDir = vi
         .fn()
         .mockImplementation(async () =>
           Err({ recoverable: true, message: 'Permission denied', code: 'EACCES' })
-        )
+        );
 
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -642,7 +646,7 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       const installResult = await performInstallation(
         mockFs,
@@ -650,10 +654,10 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(false)
-    })
-  })
+      );
+      expect(installResult.success).toBe(false);
+    });
+  });
 
   describe('CLI Options Integration', () => {
     it('should handle skip-deps option', async () => {
@@ -676,11 +680,11 @@ describe('Installation Integration Tests', () => {
           },
           needsInstall: true,
         },
-      })
+      });
 
-      const mockFs = createMockFileSystem('missing-dependencies')
-      const mockLogger = createMockLogger()
-      const projectRoot = '/project'
+      const mockFs = createMockFileSystem('missing-dependencies');
+      const mockLogger = createMockLogger();
+      const projectRoot = '/project';
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -688,56 +692,56 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       // When skipDeps is true, dependency analysis should still work
       // but the actual dependency installation would be skipped in the main script
-      const depsResult = await mockAnalyzeDependencies(mockFs, mockLogger, config)
-      expect(depsResult.success).toBe(true)
+      const depsResult = await mockAnalyzeDependencies(mockFs, mockLogger, config);
+      expect(depsResult.success).toBe(true);
       if (depsResult.success) {
-        expect(depsResult.value.needsInstall).toBe(true)
-        expect(Object.keys(depsResult.value.added).length).toBeGreaterThan(0)
+        expect(depsResult.value.needsInstall).toBe(true);
+        expect(Object.keys(depsResult.value.added).length).toBeGreaterThan(0);
       }
-    })
+    });
 
     it.fails('should handle framework override', async () => {
       // Framework override functionality works, confidence calculation differs slightly
-      const mockFs = createMockFileSystem('empty-nextjs')
-      const projectRoot = '/project'
+      const mockFs = createMockFileSystem('empty-nextjs');
+      const projectRoot = '/project';
 
       // Force generic-react instead of auto-detected nextjs
-      const frameworkResult = await detectFramework(mockFs, projectRoot, 'generic-react')
-      expect(frameworkResult.success).toBe(true)
+      const frameworkResult = await detectFramework(mockFs, projectRoot, 'generic-react');
+      expect(frameworkResult.success).toBe(true);
       if (frameworkResult.success) {
-        expect(frameworkResult.value.framework.type).toBe('generic-react')
+        expect(frameworkResult.value.framework.type).toBe('generic-react');
         // Should have low confidence since Next.js indicators are present
-        expect(frameworkResult.value.confidence).toBe('low')
+        expect(frameworkResult.value.confidence).toBe('low');
       }
-    })
-  })
+    });
+  });
 
   describe('Cross-Module Integration', () => {
     it.skip('should maintain data consistency across all modules', async () => {
-      const mockFs = createMockFileSystem('empty-nextjs')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('empty-nextjs');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       // Collect all operations and verify consistency
-      const operations: string[] = []
+      const operations: string[] = [];
 
       // Override filesystem methods to track operations
-      const originalWriteFile = mockFs.writeFile
+      const originalWriteFile = mockFs.writeFile;
       mockFs.writeFile = vi.fn().mockImplementation(async (path: string, content: string) => {
-        operations.push(`write:${path}`)
-        return originalWriteFile(path, content)
-      })
+        operations.push(`write:${path}`);
+        return originalWriteFile(path, content);
+      });
 
-      const originalEnsureDir = mockFs.ensureDir
+      const originalEnsureDir = mockFs.ensureDir;
       mockFs.ensureDir = vi.fn().mockImplementation(async (path: string) => {
-        operations.push(`mkdir:${path}`)
-        return originalEnsureDir(path)
-      })
+        operations.push(`mkdir:${path}`);
+        return originalEnsureDir(path);
+      });
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -745,15 +749,15 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       // Framework detection
-      const frameworkResult = await detectFramework(mockFs, projectRoot)
-      expect(frameworkResult.success).toBe(true)
+      const frameworkResult = await detectFramework(mockFs, projectRoot);
+      expect(frameworkResult.success).toBe(true);
 
       // Dependencies
-      const depsResult = await analyzeDependencies(mockFs, mockLogger, config)
-      expect(depsResult.success).toBe(true)
+      const depsResult = await analyzeDependencies(mockFs, mockLogger, config);
+      expect(depsResult.success).toBe(true);
 
       // Installation
       const installResult = await performInstallation(
@@ -762,44 +766,44 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
-      expect(installResult.success).toBe(true)
+      );
+      expect(installResult.success).toBe(true);
 
       // Verify operation sequence makes sense
-      expect(operations.some((op) => op.startsWith('mkdir:/project/src/lib'))).toBe(true)
-      expect(operations.some((op) => op.startsWith('mkdir:/project/src/components'))).toBe(true)
-      expect(operations.some((op) => op.startsWith('write:/project/src/components/theme/'))).toBe(
+      expect(operations.some(op => op.startsWith('mkdir:/project/src/lib'))).toBe(true);
+      expect(operations.some(op => op.startsWith('mkdir:/project/src/components'))).toBe(true);
+      expect(operations.some(op => op.startsWith('write:/project/src/components/theme/'))).toBe(
         true
-      )
-      expect(operations.some((op) => op.startsWith('write:/project/src/components/'))).toBe(true)
+      );
+      expect(operations.some(op => op.startsWith('write:/project/src/components/'))).toBe(true);
 
       // Directory creation should happen before file writing
-      const firstWrite = operations.findIndex((op) => op.startsWith('write:'))
+      const firstWrite = operations.findIndex(op => op.startsWith('write:'));
       const lastMkdir = operations
         .map((op, i) => (op.startsWith('mkdir:') ? i : -1))
-        .filter((i) => i >= 0)
-        .pop()
+        .filter(i => i >= 0)
+        .pop();
       // Skip this check if no mkdir operations found (they might be cached)
       if (lastMkdir !== undefined && firstWrite !== -1) {
-        expect(lastMkdir).toBeLessThan(firstWrite)
+        expect(lastMkdir).toBeLessThan(firstWrite);
       }
-    })
+    });
 
     it.skip('should handle partial failures and maintain consistent state', async () => {
-      const mockFs = createMockFileSystem('empty-nextjs')
-      const mockLogger = createMockLogger()
-      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead'
-      const projectRoot = testPaths.mockProject
+      const mockFs = createMockFileSystem('empty-nextjs');
+      const mockLogger = createMockLogger();
+      const trailheadRoot = isWindows ? 'C:\\trailhead' : '/trailhead';
+      const projectRoot = testPaths.mockProject;
 
       // Simulate failure during installation
-      let writeCount = 0
+      let writeCount = 0;
       mockFs.writeFile = vi.fn().mockImplementation(async (path: string) => {
-        writeCount++
+        writeCount++;
         if (writeCount === 3) {
-          return Err({ recoverable: true, message: 'Disk full', code: 'ENOSPC', path })
+          return Err({ recoverable: true, message: 'Disk full', code: 'ENOSPC', path });
         }
-        return Ok(undefined)
-      })
+        return Ok(undefined);
+      });
 
       const config: InstallConfig = {
         catalystDir: '/project/catalyst-ui-kit',
@@ -807,7 +811,7 @@ describe('Installation Integration Tests', () => {
         componentsDir: '/project/src/components',
         libDir: '/project/src/lib',
         projectRoot,
-      }
+      };
 
       const installResult = await performInstallation(
         mockFs,
@@ -815,13 +819,13 @@ describe('Installation Integration Tests', () => {
         config,
         trailheadRoot,
         false
-      )
+      );
 
       // Should fail cleanly without leaving system in inconsistent state
-      expect(installResult.success).toBe(false)
+      expect(installResult.success).toBe(false);
 
       // Should not have written more files after the failure
-      expect(writeCount).toBe(3)
-    })
-  })
-})
+      expect(writeCount).toBe(3);
+    });
+  });
+});

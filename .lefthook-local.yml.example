@@ -1,0 +1,27 @@
+# Example local Lefthook configuration
+# Copy to .lefthook-local.yml and customize for your workflow
+# This file is gitignored and won't be committed
+
+# Skip specific hooks during development
+# pre-commit:
+#   exclude_tags:
+#     - typecheck    # Skip type checking for faster commits
+#     - secrets      # Skip secret detection
+
+# Or skip all hooks temporarily
+# skip: true
+
+# Customize specific commands
+# pre-commit:
+#   commands:
+#     prettier:
+#       skip: true   # Skip prettier if you have auto-format on save
+#     
+#     custom-check:
+#       run: echo "Running my custom check"
+
+# Skip hooks for specific file patterns
+# pre-commit:
+#   commands:
+#     eslint:
+#       exclude: "*.test.{ts,tsx}"

@@ -26,7 +26,7 @@ Each variant defines:
 
 ```javascript
 // Current implementation
-red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20'
+red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20';
 ```
 
 ### Recommended Enhancement
@@ -48,7 +48,7 @@ const colors = {
     'bg-destructive/15 text-destructive group-data-hover:bg-destructive/25 dark:bg-destructive/10 dark:text-destructive dark:group-data-hover:bg-destructive/20',
   muted:
     'bg-muted text-muted-foreground group-data-hover:bg-muted/80 dark:bg-muted dark:text-muted-foreground dark:group-data-hover:bg-muted/80',
-}
+};
 ```
 
 ## Badge Variants

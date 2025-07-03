@@ -82,11 +82,11 @@ Scripts in the `/tests/scripts/` directory test various tooling and automation:
 
 ```typescript
 describe('CLI Installation Tests', () => {
-  it('should detect framework correctly')
-  it('should install components with proper paths')
-  it('should handle existing files gracefully')
-  it('should transform components when needed')
-})
+  it('should detect framework correctly');
+  it('should install components with proper paths');
+  it('should handle existing files gracefully');
+  it('should transform components when needed');
+});
 ```
 
 ### Transform System Tests
@@ -98,29 +98,29 @@ The transform system in `/src/transforms/` has comprehensive test coverage:
 ```typescript
 describe('Transform System Validation', () => {
   describe('Component Transform Tests', () => {
-    it('should transform component-specific color mappings')
-    it('should apply semantic enhancements correctly')
-    it('should handle edge cases for each component')
-  })
+    it('should transform component-specific color mappings');
+    it('should apply semantic enhancements correctly');
+    it('should handle edge cases for each component');
+  });
 
   describe('Pipeline Integration', () => {
-    it('should execute transforms in correct order')
-    it('should handle AST-based transformations')
-    it('should provide performance profiling')
-  })
+    it('should execute transforms in correct order');
+    it('should handle AST-based transformations');
+    it('should provide performance profiling');
+  });
 
   describe('Critical Path Coverage', () => {
-    it('should test className handling transforms')
-    it('should test color mapping transforms')
-    it('should test semantic enhancement transforms')
-  })
+    it('should test className handling transforms');
+    it('should test color mapping transforms');
+    it('should test semantic enhancement transforms');
+  });
 
   describe('Transform Utilities', () => {
-    it('should test colors object detector')
-    it('should test transform factory patterns')
-    it('should test AST manipulation utilities')
-  })
-})
+    it('should test colors object detector');
+    it('should test transform factory patterns');
+    it('should test AST manipulation utilities');
+  });
+});
 ```
 
 ## Component Testing
@@ -208,12 +208,12 @@ describe('Theme System Integration', () => {
 describe('Core Functionality Integration', () => {
   it('should integrate all components with theme system', () => {
     // Test cross-component integration
-  })
+  });
 
   it('should maintain consistent APIs across components', () => {
     // Test API consistency
-  })
-})
+  });
+});
 ```
 
 ### End-to-End Verification
@@ -222,12 +222,12 @@ describe('Core Functionality Integration', () => {
 describe('Final Verification', () => {
   it('should verify all components export correctly', () => {
     // Test exports
-  })
+  });
 
   it('should verify theme switching works across all components', () => {
     // Test theme integration
-  })
-})
+  });
+});
 ```
 
 ## Test Configuration
@@ -254,28 +254,28 @@ export default defineConfig({
     globals: true,
     css: true,
   },
-})
+});
 ```
 
 ### Test Setup (`vitest.setup.ts`)
 
 ```typescript
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, beforeAll } from 'vitest'
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import { afterEach, beforeAll } from 'vitest';
 
 // Cleanup after each test
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // PointerEvent shim for Headless UI v2 compatibility
-window.PointerEvent = MouseEvent as typeof PointerEvent
+window.PointerEvent = MouseEvent as typeof PointerEvent;
 
 // Global test configuration
 beforeAll(() => {
   // Set up global test environment
-})
+});
 ```
 
 ### Known Testing Challenges
@@ -450,7 +450,7 @@ describe('Component', () => {
 #### File System Mocking
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 // Mock fs-extra
 vi.mock('fs-extra', () => ({
@@ -459,7 +459,7 @@ vi.mock('fs-extra', () => ({
   writeFile: vi.fn(),
   ensureDir: vi.fn(),
   copy: vi.fn(),
-}))
+}));
 ```
 
 #### Component Mocking
@@ -481,7 +481,7 @@ global.fetch = vi.fn(() =>
     ok: true,
     json: () => Promise.resolve({ data: 'test' }),
   })
-)
+);
 ```
 
 ### Async Testing
@@ -489,17 +489,17 @@ global.fetch = vi.fn(() =>
 ```typescript
 describe('Async Operations', () => {
   it('should handle async operations', async () => {
-    const promise = asyncFunction()
+    const promise = asyncFunction();
 
-    await expect(promise).resolves.toBe('expected result')
-  })
+    await expect(promise).resolves.toBe('expected result');
+  });
 
   it('should handle async errors', async () => {
-    const promise = failingAsyncFunction()
+    const promise = failingAsyncFunction();
 
-    await expect(promise).rejects.toThrow('Expected error')
-  })
-})
+    await expect(promise).rejects.toThrow('Expected error');
+  });
+});
 ```
 
 ### User Interaction Testing
@@ -535,14 +535,14 @@ describe('User Interactions', () => {
 
 ```typescript
 // Enable debug logging in tests
-process.env.DEBUG = 'true'
+process.env.DEBUG = 'true';
 
 // Increase test timeout for debugging
 describe('Debug Tests', () => {
   beforeEach(() => {
-    vi.setTimeout(30000)
-  })
-})
+    vi.setTimeout(30000);
+  });
+});
 ```
 
 ### Visual Debugging
@@ -609,17 +609,17 @@ describe('Memory Leaks', () => {
 ```typescript
 describe('Performance Benchmarks', () => {
   it('should execute within time limits', () => {
-    const startTime = performance.now()
+    const startTime = performance.now();
 
     // Execute operation
-    expensiveFunction()
+    expensiveFunction();
 
-    const endTime = performance.now()
-    const executionTime = endTime - startTime
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
 
-    expect(executionTime).toBeLessThan(100) // 100ms threshold
-  })
-})
+    expect(executionTime).toBeLessThan(100); // 100ms threshold
+  });
+});
 ```
 
 ## Test Data Management
@@ -633,13 +633,13 @@ export const validDemoConfig = {
   demoDir: '/test/project/demo',
   catalystDemoDir: '/test/project/catalyst-ui-kit/demo/typescript',
   backupDir: '/test/project/backups/demo-test',
-}
+};
 
 export const invalidDemoConfig = {
   projectRoot: '',
   demoDir: null,
   catalystDemoDir: undefined,
-}
+};
 ```
 
 ### Factory Functions
@@ -651,13 +651,13 @@ export const createComponentProps = (overrides = {}) => ({
   size: 'medium',
   disabled: false,
   ...overrides,
-})
+});
 
 export const createThemeProps = (theme = 'zinc') => ({
   theme,
   className: `theme-${theme}`,
   'data-theme': theme,
-})
+});
 ```
 
 ### Mock Data
@@ -670,7 +670,7 @@ export const createFileSystemMock = () => ({
   writeFile: vi.fn().mockResolvedValue(undefined),
   ensureDir: vi.fn().mockResolvedValue(undefined),
   copy: vi.fn().mockResolvedValue(undefined),
-})
+});
 ```
 
 ## Maintenance and Updates

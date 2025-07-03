@@ -2,18 +2,18 @@
  * Pre-composed formatting pipelines
  */
 
-import { pipe } from './composition.js'
+import { pipe } from './composition.js';
 import {
   fixImportSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports,
-} from './functions/imports.js'
+} from './functions/imports.js';
 import {
   reorderClassNameArgs,
   restoreCnCallsForSemanticTokens,
   preserveMultilineCnCalls,
-} from './functions/classnames.js'
-import { fixFunctionEndingSemicolons } from './functions/semicolons.js'
+} from './functions/classnames.js';
+import { fixFunctionEndingSemicolons } from './functions/semicolons.js';
 
 /**
  * Standard AST post-processing pipeline
@@ -27,7 +27,7 @@ export const standardASTPostProcessing = pipe(
   fixFunctionEndingSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports
-)
+);
 
 /**
  * Minimal formatting pipeline
@@ -37,7 +37,7 @@ export const minimalFormatting = pipe(
   fixImportSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports
-)
+);
 
 /**
  * Class-focused formatting pipeline
@@ -47,7 +47,7 @@ export const classNameFormatting = pipe(
   reorderClassNameArgs,
   restoreCnCallsForSemanticTokens,
   preserveMultilineCnCalls
-)
+);
 
 /**
  * Import-only formatting pipeline
@@ -57,4 +57,4 @@ export const importFormatting = pipe(
   fixImportSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports
-)
+);

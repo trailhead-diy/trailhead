@@ -2,34 +2,34 @@
  * Shared file filter predicates for consistent file filtering across the codebase
  */
 
-import type { FileFilterPredicate } from '../installation/types.js'
+import type { FileFilterPredicate } from '../installation/types.js';
 
 // Basic file type filters
-export const isTsxFile: FileFilterPredicate = (file) => file.endsWith('.tsx')
-export const isTsFile: FileFilterPredicate = (file) => file.endsWith('.ts')
-export const isJsFile: FileFilterPredicate = (file) => file.endsWith('.js')
-export const isJsxFile: FileFilterPredicate = (file) => file.endsWith('.jsx')
+export const isTsxFile: FileFilterPredicate = file => file.endsWith('.tsx');
+export const isTsFile: FileFilterPredicate = file => file.endsWith('.ts');
+export const isJsFile: FileFilterPredicate = file => file.endsWith('.js');
+export const isJsxFile: FileFilterPredicate = file => file.endsWith('.jsx');
 
 // Component-specific filters
-export const isCatalystComponent: FileFilterPredicate = (file) =>
-  file.startsWith('catalyst-') && file.endsWith('.tsx')
+export const isCatalystComponent: FileFilterPredicate = file =>
+  file.startsWith('catalyst-') && file.endsWith('.tsx');
 
 // Wrapper components are TSX files that:
 // - Are not theme-related (don't start with 'theme')
 // - Are not the index file
 // - Are at the root level (no path separators)
-export const isWrapperComponent: FileFilterPredicate = (file) =>
-  file.endsWith('.tsx') && !file.startsWith('theme') && file !== 'index.tsx' && !file.includes('/')
+export const isWrapperComponent: FileFilterPredicate = file =>
+  file.endsWith('.tsx') && !file.startsWith('theme') && file !== 'index.tsx' && !file.includes('/');
 
 // Utility functions for combining filters
 export const combineFilters = <T = string>(
   ...filters: FileFilterPredicate<T>[]
 ): FileFilterPredicate<T> => {
-  return (file: T) => filters.every((filter) => filter(file))
-}
+  return (file: T) => filters.every(filter => filter(file));
+};
 
 export const anyFilter = <T = string>(
   ...filters: FileFilterPredicate<T>[]
 ): FileFilterPredicate<T> => {
-  return (file: T) => filters.some((filter) => filter(file))
-}
+  return (file: T) => filters.some(filter => filter(file));
+};

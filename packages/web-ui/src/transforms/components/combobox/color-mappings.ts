@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const comboboxColorMappings = makeProtected([
   // Icon stroke colors - primary targets
@@ -63,7 +63,7 @@ const comboboxColorMappings = makeProtected([
     replacement: 'dark:group-data-hover:stroke-foreground',
     description: 'Convert dark mode hover zinc icon strokes to semantic foreground',
   },
-])
+]);
 
 /**
  * Combobox color mapping transform
@@ -76,10 +76,10 @@ export const comboboxColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'combobox-color-semantic',
 
   // Only apply to combobox files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Combobox') ||
     content.includes('export function ComboboxInput') ||
     content.includes('export function ComboboxButton') ||
     content.includes('export function ComboboxOptions') ||
     content.includes('ComboboxOption'),
-})
+});

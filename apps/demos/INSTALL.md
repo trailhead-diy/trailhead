@@ -36,7 +36,7 @@ pnpm dev        # Start development server
 
 1. **Local Workspace Files** - Each demo has its own `pnpm-workspace.yaml` to override parent
 2. **Demo .npmrc Files** - Each demo has independent npm/pnpm configuration
-3. **Script Prevention** - Parent husky scripts no longer run in demos
+3. **Script Prevention** - Parent scripts no longer run in demos
 4. **Local Dependencies** - Each demo uses its own `node_modules`
 5. **No Flags Needed** - `pnpm install` works normally without `--ignore-workspace`
 

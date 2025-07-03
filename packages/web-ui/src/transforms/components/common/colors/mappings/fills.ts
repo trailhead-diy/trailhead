@@ -2,7 +2,7 @@
  * Fill color mappings - zinc to semantic tokens
  */
 
-import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js'
+import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Get fill color mappings
@@ -45,5 +45,5 @@ export function getFillMappings(): ProtectedColorMapping[] {
       replacement: 'fill-foreground',
       description: 'fill-white → fill-foreground (shadcn compatible)',
     },
-  ]
+  ];
 }

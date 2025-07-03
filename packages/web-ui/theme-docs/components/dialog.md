@@ -12,10 +12,10 @@ The Dialog component is **mostly correctly implemented** with semantic tokens th
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'bg-white p-(--gutter) shadow-lg ring-1 ring-zinc-950/10 ... dark:bg-card dark:ring-ring'
+'bg-white p-(--gutter) shadow-lg ring-1 ring-zinc-950/10 ... dark:bg-card dark:ring-ring';
 
 // Recommended Fix
-'bg-background p-(--gutter) shadow-lg ring-1 ring-border ... dark:bg-card dark:ring-ring'
+'bg-background p-(--gutter) shadow-lg ring-1 ring-border ... dark:bg-card dark:ring-ring';
 ```
 
 **Impact**: Dialog panels may not match theme background and border colors consistently, affecting visual cohesion in modal presentations.

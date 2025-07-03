@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import { cn } from '../utils/cn'
+import { cn } from '../utils/cn';
 
 export function CatalystDivider({
   soft = false,
@@ -17,5 +17,5 @@ export function CatalystDivider({
         className
       )}
     />
-  )
+  );
 }

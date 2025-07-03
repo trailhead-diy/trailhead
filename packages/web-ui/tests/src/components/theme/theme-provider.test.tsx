@@ -1,22 +1,22 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { ThemeProvider, useTheme } from '../../../../src/components/theme/theme-provider'
+import { ThemeProvider, useTheme } from '../../../../src/components/theme/theme-provider';
 
 describe('ThemeProvider with next-themes Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe('High-ROI User Workflow Tests', () => {
     it('should allow users to switch themes', async () => {
-      const user = userEvent.setup()
-      let _capturedTheme = ''
+      const user = userEvent.setup();
+      let _capturedTheme = '';
 
       const TestComponent = () => {
-        const { currentTheme, setTheme } = useTheme()
-        _capturedTheme = currentTheme || ''
+        const { currentTheme, setTheme } = useTheme();
+        _capturedTheme = currentTheme || '';
 
         return (
           <div>
@@ -25,31 +25,31 @@ describe('ThemeProvider with next-themes Integration', () => {
               Switch to Purple
             </button>
           </div>
-        )
-      }
+        );
+      };
 
       render(
         <ThemeProvider>
           <TestComponent />
         </ThemeProvider>
-      )
+      );
 
       // Initial theme should be set
-      expect(screen.getByTestId('current-theme')).toBeInTheDocument()
+      expect(screen.getByTestId('current-theme')).toBeInTheDocument();
 
       // User clicks to change theme
-      const switchButton = screen.getByTestId('switch-theme')
-      await user.click(switchButton)
+      const switchButton = screen.getByTestId('switch-theme');
+      await user.click(switchButton);
 
       // Verify setTheme was called (mocked behavior)
-      expect(switchButton).toBeInTheDocument()
-    })
+      expect(switchButton).toBeInTheDocument();
+    });
 
     it('should allow users to toggle dark mode', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const TestComponent = () => {
-        const { isDark, toggleDarkMode } = useTheme()
+        const { isDark, toggleDarkMode } = useTheme();
 
         return (
           <div>
@@ -58,88 +58,88 @@ describe('ThemeProvider with next-themes Integration', () => {
               Toggle Dark Mode
             </button>
           </div>
-        )
-      }
+        );
+      };
 
       render(
         <ThemeProvider>
           <TestComponent />
         </ThemeProvider>
-      )
+      );
 
       // User clicks to toggle dark mode
-      const toggleButton = screen.getByTestId('toggle-dark')
-      await user.click(toggleButton)
+      const toggleButton = screen.getByTestId('toggle-dark');
+      await user.click(toggleButton);
 
       // Verify button exists and is clickable
-      expect(toggleButton).toBeInTheDocument()
-    })
+      expect(toggleButton).toBeInTheDocument();
+    });
 
     it('should provide available themes to users', () => {
       const TestComponent = () => {
-        const { themes } = useTheme()
+        const { themes } = useTheme();
 
         return (
           <div>
             <span data-testid="theme-count">{themes.length}</span>
             <select data-testid="theme-select">
-              {themes.map((theme) => (
+              {themes.map(theme => (
                 <option key={theme} value={theme}>
                   {theme}
                 </option>
               ))}
             </select>
           </div>
-        )
-      }
+        );
+      };
 
       render(
         <ThemeProvider>
           <TestComponent />
         </ThemeProvider>
-      )
+      );
 
       // Should have themes available
-      const themeSelect = screen.getByTestId('theme-select')
-      expect(themeSelect).toBeInTheDocument()
+      const themeSelect = screen.getByTestId('theme-select');
+      expect(themeSelect).toBeInTheDocument();
 
       // Should have multiple theme options
-      const options = screen.getAllByRole('option')
-      expect(options.length).toBeGreaterThan(0)
-    })
+      const options = screen.getAllByRole('option');
+      expect(options.length).toBeGreaterThan(0);
+    });
 
     it('should render children without errors', () => {
       render(
         <ThemeProvider>
           <div data-testid="test-content">Theme Provider Works</div>
         </ThemeProvider>
-      )
+      );
 
-      expect(screen.getByTestId('test-content')).toBeInTheDocument()
-      expect(screen.getByText('Theme Provider Works')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByTestId('test-content')).toBeInTheDocument();
+      expect(screen.getByText('Theme Provider Works')).toBeInTheDocument();
+    });
+  });
 
   describe('Component Integration', () => {
     it('should work with theme-dependent components', () => {
       const ThemeAwareComponent = () => {
-        const { currentTheme } = useTheme()
+        const { currentTheme } = useTheme();
 
         return (
           <div data-testid="themed-component" className={`theme-${currentTheme}`}>
             Themed Content
           </div>
-        )
-      }
+        );
+      };
 
       render(
         <ThemeProvider defaultTheme="zinc">
           <ThemeAwareComponent />
         </ThemeProvider>
-      )
+      );
 
-      const themedComponent = screen.getByTestId('themed-component')
-      expect(themedComponent).toBeInTheDocument()
-    })
-  })
-})
+      const themedComponent = screen.getByTestId('themed-component');
+      expect(themedComponent).toBeInTheDocument();
+    });
+  });
+});

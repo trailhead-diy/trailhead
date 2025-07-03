@@ -3,7 +3,7 @@
  * Creates semantic style functions with unified patterns across all components
  */
 
-import type { SemanticColorToken } from '../types.js'
+import type { SemanticColorToken } from '../types.js';
 
 /**
  * Shared semantic token resolution utility
@@ -12,30 +12,30 @@ import type { SemanticColorToken } from '../types.js'
 function resolveSemanticToken(token: SemanticColorToken): string {
   // Handle special Tailwind colors that might map to specific color values
   // For now, all tokens map to themselves (could be extended for complex mappings)
-  return token
+  return token;
 }
 
 /**
  * Configuration for object lookup pattern (badge, input, text, link style components)
  */
 interface ObjectLookupConfig {
-  pattern: 'object-lookup'
-  styles: Record<SemanticColorToken, string>
-  defaultToken: SemanticColorToken
+  pattern: 'object-lookup';
+  styles: Record<SemanticColorToken, string>;
+  defaultToken: SemanticColorToken;
 }
 
 /**
  * Configuration for CSS variable template pattern (button, checkbox, radio, switch style components)
  */
 interface CSSVariableConfig {
-  pattern: 'css-variables'
-  template: (token: string) => string[]
+  pattern: 'css-variables';
+  template: (token: string) => string[];
 }
 
 /**
  * Union type for all semantic style configurations
  */
-type SemanticStyleConfig = ObjectLookupConfig | CSSVariableConfig
+type SemanticStyleConfig = ObjectLookupConfig | CSSVariableConfig;
 
 /**
  * Create a semantic style function based on configuration
@@ -51,20 +51,20 @@ export function createSemanticStylesFunction<T extends SemanticStyleConfig>(
     case 'object-lookup':
       // Object lookup pattern: simple dictionary lookup with fallback
       return (color: SemanticColorToken): string => {
-        return config.styles[color] || config.styles[config.defaultToken]
-      }
+        return config.styles[color] || config.styles[config.defaultToken];
+      };
 
     case 'css-variables':
       // CSS variable template pattern: resolve token and apply template
       return (color: SemanticColorToken): string => {
-        const resolvedToken = resolveSemanticToken(color)
-        return config.template(resolvedToken).join(' ')
-      }
+        const resolvedToken = resolveSemanticToken(color);
+        return config.template(resolvedToken).join(' ');
+      };
 
     default:
       // TypeScript exhaustiveness check
-      const _exhaustive: never = config
-      throw new Error(`Unknown pattern: ${JSON.stringify(_exhaustive)}`)
+      const _exhaustive: never = config;
+      throw new Error(`Unknown pattern: ${JSON.stringify(_exhaustive)}`);
   }
 }
 
@@ -85,7 +85,7 @@ export function createObjectLookupStyles(
     pattern: 'object-lookup',
     styles,
     defaultToken,
-  })
+  });
 }
 
 /**
@@ -96,5 +96,5 @@ export function createCSSVariableStyles(template: (token: string) => string[]) {
   return createSemanticStylesFunction({
     pattern: 'css-variables',
     template,
-  })
+  });
 }

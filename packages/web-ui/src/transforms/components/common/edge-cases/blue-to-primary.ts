@@ -3,7 +3,7 @@
  * Converts interactive blue colors to primary theme color
  */
 
-import { createRegexTransform } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform } from '../utilities/regex-transform-factory.js';
 
 /**
  * Blue to primary edge case transform
@@ -50,4 +50,4 @@ export const blueToPrimaryEdgeCaseTransform = createRegexTransform({
     },
   ],
   changeType: 'blue-to-primary-edge-case',
-})
+});

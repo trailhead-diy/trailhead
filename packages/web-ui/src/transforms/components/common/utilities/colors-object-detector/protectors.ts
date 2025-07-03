@@ -8,7 +8,7 @@ import {
   isWithinColorsObject,
   isWithinColorsArray,
   isWithinColorsCSSVariable,
-} from './detectors.js'
+} from './detectors.js';
 
 /**
  * Creates a protection function that excludes colors object contexts
@@ -16,27 +16,27 @@ import {
  */
 export function createColorsObjectProtection() {
   return function shouldExcludeMatch(content: string, match: RegExpMatchArray): boolean {
-    if (match.index === undefined) return false
+    if (match.index === undefined) return false;
 
-    const position = match.index
+    const position = match.index;
 
     // Exclude if within a CSS variable in colors definition
     if (isWithinColorsCSSVariable(content, position)) {
-      return true
+      return true;
     }
 
     // Exclude if within a colors object
     if (isWithinColorsObject(content, position)) {
-      return true
+      return true;
     }
 
     // Exclude if within a colors array
     if (isWithinColorsArray(content, position)) {
-      return true
+      return true;
     }
 
-    return false
-  }
+    return false;
+  };
 }
 
 /**
@@ -46,27 +46,27 @@ export function createColorsProtectedReplacer(
   pattern: RegExp,
   replacement: string | ((match: string, ...args: any[]) => string)
 ) {
-  const shouldExclude = createColorsObjectProtection()
+  const shouldExclude = createColorsObjectProtection();
 
   return function colorsProtectedReplace(content: string): string {
     return content.replace(pattern, (match, ...args) => {
-      const offset = args[args.length - 2] // offset is second to last arg
+      const offset = args[args.length - 2]; // offset is second to last arg
       if (typeof offset === 'number') {
         // Create a proper match object for protection check
-        const matchObj = Object.assign([match], { index: offset }) as RegExpMatchArray
+        const matchObj = Object.assign([match], { index: offset }) as RegExpMatchArray;
 
         if (shouldExclude(content, matchObj)) {
-          return match // Return original match unchanged
+          return match; // Return original match unchanged
         }
       }
 
       // Apply the transformation
       if (typeof replacement === 'function') {
-        return replacement(match, ...args)
+        return replacement(match, ...args);
       }
-      return replacement
-    })
-  }
+      return replacement;
+    });
+  };
 }
 
 /**
@@ -78,6 +78,6 @@ export function createCombinedProtection(
   colorsProtection = createColorsObjectProtection()
 ) {
   return function shouldExcludeMatch(content: string, match: RegExpMatchArray): boolean {
-    return styleProtection(content, match) || colorsProtection(content, match)
-  }
+    return styleProtection(content, match) || colorsProtection(content, match);
+  };
 }

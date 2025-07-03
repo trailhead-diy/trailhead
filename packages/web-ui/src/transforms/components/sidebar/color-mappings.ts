@@ -7,7 +7,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const sidebarColorMappings = makeProtected([
   // Component-specific text hierarchy - use sidebar-specific tokens
@@ -213,7 +213,7 @@ const sidebarColorMappings = makeProtected([
     replacement: 'dark:data-active:fill-foreground',
     description: 'Convert dark mode white active fill to foreground',
   },
-])
+]);
 
 /**
  * Sidebar color mapping transform
@@ -227,10 +227,10 @@ export const sidebarColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'sidebar-color-semantic',
 
   // Only apply to sidebar component files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Sidebar') ||
     content.includes('export function SidebarHeader') ||
     content.includes('export function SidebarBody') ||
     content.includes('export function SidebarItem') ||
     content.includes('export function SidebarSection'),
-})
+});

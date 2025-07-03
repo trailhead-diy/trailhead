@@ -2,14 +2,14 @@
  * Component detection utilities
  */
 
-import type { ComponentConfig } from './types.js'
+import type { ComponentConfig } from './types.js';
 
 /**
  * Check if content contains the target component
  * Pure function that performs quick pattern matching
  */
 export function shouldTransformContent(content: string, config: ComponentConfig): boolean {
-  return config.detectPattern(content)
+  return config.detectPattern(content);
 }
 
 /**
@@ -17,7 +17,7 @@ export function shouldTransformContent(content: string, config: ComponentConfig)
  * Returns the path to the component function
  */
 export function findComponentDeclaration(root: any, j: any, config: ComponentConfig): any[] {
-  const { name, isForwardRef } = config
+  const { name, isForwardRef } = config;
 
   if (isForwardRef) {
     // Find forwardRef call
@@ -27,16 +27,16 @@ export function findComponentDeclaration(root: any, j: any, config: ComponentCon
       })
       .filter((_path: any) => {
         // Additional validation could go here
-        return true
+        return true;
       })
-      .paths()
+      .paths();
   } else {
     // Find function declaration
     return root
       .find(j.FunctionDeclaration, {
         id: { name },
       })
-      .paths()
+      .paths();
   }
 }
 
@@ -46,18 +46,18 @@ export function findComponentDeclaration(root: any, j: any, config: ComponentCon
  */
 export function extractFunctionBody(path: any, config: ComponentConfig): any {
   if (config.isForwardRef) {
-    const forwardRefArg = path.node.arguments[0]
+    const forwardRefArg = path.node.arguments[0];
     if (
       forwardRefArg?.type === 'FunctionExpression' ||
       forwardRefArg?.type === 'ArrowFunctionExpression'
     ) {
-      return forwardRefArg.body
+      return forwardRefArg.body;
     }
   } else {
-    return path.node.body
+    return path.node.body;
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -66,16 +66,16 @@ export function extractFunctionBody(path: any, config: ComponentConfig): any {
  */
 export function getFunctionParams(path: any, config: ComponentConfig): any[] {
   if (config.isForwardRef) {
-    const forwardRefArg = path.node.arguments[0]
+    const forwardRefArg = path.node.arguments[0];
     if (
       forwardRefArg?.type === 'FunctionExpression' ||
       forwardRefArg?.type === 'ArrowFunctionExpression'
     ) {
-      return forwardRefArg.params
+      return forwardRefArg.params;
     }
   } else {
-    return path.node.params
+    return path.node.params;
   }
 
-  return []
+  return [];
 }

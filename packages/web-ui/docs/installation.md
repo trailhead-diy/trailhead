@@ -259,7 +259,7 @@ module.exports = {
       // Theme tokens are applied via CSS custom properties
     },
   },
-}
+};
 ```
 
 ### Tailwind v4
@@ -291,7 +291,7 @@ For Next.js projects, add to your root layout:
 
 ```tsx
 // app/layout.tsx
-import { ThemeProvider } from '@esteban-url/trailhead-web-ui'
+import { ThemeProvider } from '@esteban-url/trailhead-web-ui';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -300,7 +300,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -309,10 +309,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 Test your installation:
 
 ```tsx
-import { Button } from '@esteban-url/trailhead-web-ui'
+import { Button } from '@esteban-url/trailhead-web-ui';
 
 export function App() {
-  return <Button>Hello Trailhead UI!</Button>
+  return <Button>Hello Trailhead UI!</Button>;
 }
 ```
 

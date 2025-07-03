@@ -5,7 +5,7 @@
  * this is a no-op transform that maintains compatibility
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Dialog semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const dialogSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Dialog',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Dialog') ||
     content.includes('export function DialogTitle') ||
     content.includes('export function DialogDescription'),
@@ -22,4 +22,4 @@ export const dialogSemanticEnhancementTransform = createSemanticEnhancementTrans
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

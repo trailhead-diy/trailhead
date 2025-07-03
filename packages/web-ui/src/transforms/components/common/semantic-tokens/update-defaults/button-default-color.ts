@@ -5,12 +5,12 @@
  * and updates it to use the semantic 'primary' token instead of the hardcoded 'dark/zinc' value.
  */
 
-import { API, FileInfo } from 'jscodeshift'
-import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js'
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
-import { createRequire } from 'module'
+import { API, FileInfo } from 'jscodeshift';
+import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js';
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
+import { createRequire } from 'module';
 
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 /**
  * Update Button default color transform
@@ -21,7 +21,7 @@ export const buttonDefaultColorTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const changes: any[] = []
+    const changes: any[] = [];
 
     // Quick check if this is the Button component
     if (!content.includes('Button') || !content.includes("color ?? 'dark/zinc'")) {
@@ -29,15 +29,15 @@ export const buttonDefaultColorTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     try {
-      const jscodeshift = require('jscodeshift')
-      const j = jscodeshift.withParser('tsx')
+      const jscodeshift = require('jscodeshift');
+      const j = jscodeshift.withParser('tsx');
 
       const transformer = (fileInfo: FileInfo, _api: API) => {
-        const root = j(fileInfo.source)
+        const root = j(fileInfo.source);
 
         // Find the specific pattern: color ?? 'dark/zinc'
         root
@@ -48,31 +48,31 @@ export const buttonDefaultColorTransform: Transform = {
           })
           .forEach((path: any) => {
             // Replace 'dark/zinc' with 'primary'
-            j(path.get('right')).replaceWith(j.literal('primary'))
+            j(path.get('right')).replaceWith(j.literal('primary'));
 
             changes.push({
               type: 'default-value',
               description: 'Updated default color from dark/zinc to primary',
               oldValue: 'dark/zinc',
               newValue: 'primary',
-            })
-          })
+            });
+          });
 
-        return root.toSource(STANDARD_AST_FORMAT_OPTIONS)
-      }
+        return root.toSource(STANDARD_AST_FORMAT_OPTIONS);
+      };
 
       const result = transformer(
         { path: 'button.tsx', source: content },
         { jscodeshift: j, j, stats: () => {}, report: () => {} }
-      )
+      );
 
       return {
         content: result || content,
         changes,
         hasChanges: changes.length > 0,
-      }
+      };
     } catch (error) {
-      console.error('Error in Button default color transform:', error)
+      console.error('Error in Button default color transform:', error);
       return {
         content,
         changes: [
@@ -82,7 +82,7 @@ export const buttonDefaultColorTransform: Transform = {
           },
         ],
         hasChanges: false,
-      }
+      };
     }
   },
-}
+};

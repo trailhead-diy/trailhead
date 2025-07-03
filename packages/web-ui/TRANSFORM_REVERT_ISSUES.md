@@ -37,16 +37,16 @@ The current implementation in `transform-logger.ts`:
 
 ```typescript
 for (let i = logsWithChanges.length - 1; i >= 0; i--) {
-  const log = logsWithChanges[i]
+  const log = logsWithChanges[i];
   if (i === 0) {
     // Last revert - use the first transform's original content
-    const encodedContent = Buffer.from(log.originalContent).toString('base64')
-    scriptLines.push(`echo '${encodedContent}' | base64 -d > "${filePath}"`)
+    const encodedContent = Buffer.from(log.originalContent).toString('base64');
+    scriptLines.push(`echo '${encodedContent}' | base64 -d > "${filePath}"`);
   } else {
     // Intermediate revert - restore to this transform's original content
-    const encodedContent = Buffer.from(log.originalContent).toString('base64')
-    scriptLines.push(`echo '${encodedContent}' | base64 -d > "${filePath}.tmp${tempFileIndex}"`)
-    scriptLines.push(`mv "${filePath}.tmp${tempFileIndex}" "${filePath}"`)
+    const encodedContent = Buffer.from(log.originalContent).toString('base64');
+    scriptLines.push(`echo '${encodedContent}' | base64 -d > "${filePath}.tmp${tempFileIndex}"`);
+    scriptLines.push(`mv "${filePath}.tmp${tempFileIndex}" "${filePath}"`);
   }
 }
 ```

@@ -4,9 +4,9 @@
  * A collection of pre-built themes using the theme builder system
  */
 
-import { createTheme } from './builder'
-import { type TrailheadThemeConfig } from './config'
-import { createCatalystTheme } from './catalyst-theme'
+import { createTheme } from './builder';
+import { type TrailheadThemeConfig } from './config';
+import { createCatalystTheme } from './catalyst-theme';
 
 /**
  * Theme presets collection using the theme builder system
@@ -211,36 +211,36 @@ export const themePresets = {
 
   // Catalyst UI official theme with full 1:1 parity
   catalyst: () => createCatalystTheme(),
-} as const
+} as const;
 
 /**
  * Get a preset theme by name
  */
 export function getPresetTheme(name: keyof typeof themePresets): TrailheadThemeConfig {
-  const preset = themePresets[name]
+  const preset = themePresets[name];
   if (!preset) {
-    throw new Error(`Theme preset "${name}" not found`)
+    throw new Error(`Theme preset "${name}" not found`);
   }
 
-  return preset()
+  return preset();
 }
 
 /**
  * Get all preset theme names
  */
 export function getPresetThemeNames(): (keyof typeof themePresets)[] {
-  return Object.keys(themePresets) as (keyof typeof themePresets)[]
+  return Object.keys(themePresets) as (keyof typeof themePresets)[];
 }
 
 /**
  * Generate themes for all presets
  */
 export function generateAllPresetThemes(): Record<string, TrailheadThemeConfig> {
-  const themes: Record<string, TrailheadThemeConfig> = {}
+  const themes: Record<string, TrailheadThemeConfig> = {};
 
   for (const name of getPresetThemeNames()) {
-    themes[name] = getPresetTheme(name)
+    themes[name] = getPresetTheme(name);
   }
 
-  return themes
+  return themes;
 }

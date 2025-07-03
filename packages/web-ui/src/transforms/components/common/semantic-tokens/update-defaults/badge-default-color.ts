@@ -5,12 +5,12 @@
  * and updates it to use the semantic 'primary' token instead of the hardcoded 'zinc' value.
  */
 
-import { API, FileInfo } from 'jscodeshift'
-import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js'
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
-import { createRequire } from 'module'
+import { API, FileInfo } from 'jscodeshift';
+import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js';
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
+import { createRequire } from 'module';
 
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 /**
  * Update Badge default color transform
@@ -21,7 +21,7 @@ export const badgeDefaultColorTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const changes: any[] = []
+    const changes: any[] = [];
 
     // Quick check if this is the Badge component
     if (!content.includes('Badge') || !content.includes("color = 'zinc'")) {
@@ -29,20 +29,20 @@ export const badgeDefaultColorTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     try {
-      const jscodeshift = require('jscodeshift')
-      const j = jscodeshift.withParser('tsx')
+      const jscodeshift = require('jscodeshift');
+      const j = jscodeshift.withParser('tsx');
 
       const transformer = (fileInfo: FileInfo, _api: API) => {
-        const root = j(fileInfo.source)
+        const root = j(fileInfo.source);
 
         // Helper function to update color defaults in parameters
         const updateColorDefault = (params: any[], componentName: string) => {
           if (params && params.length > 0 && params[0].type === 'ObjectPattern') {
-            const properties = params[0].properties
+            const properties = params[0].properties;
 
             properties.forEach((prop: any) => {
               if (
@@ -52,18 +52,18 @@ export const badgeDefaultColorTransform: Transform = {
                 prop.value.right.value === 'zinc'
               ) {
                 // Update the default value
-                prop.value.right.value = 'primary'
+                prop.value.right.value = 'primary';
 
                 changes.push({
                   type: 'default-value',
                   description: `Updated ${componentName} default color from zinc to primary`,
                   oldValue: 'zinc',
                   newValue: 'primary',
-                })
+                });
               }
-            })
+            });
           }
-        }
+        };
 
         // Find the Badge function declaration
         root
@@ -71,8 +71,8 @@ export const badgeDefaultColorTransform: Transform = {
             id: { name: 'Badge' },
           })
           .forEach((path: any) => {
-            updateColorDefault(path.value.params, 'Badge')
-          })
+            updateColorDefault(path.value.params, 'Badge');
+          });
 
         // Also check for exported function expressions
         root
@@ -85,9 +85,9 @@ export const badgeDefaultColorTransform: Transform = {
               (path.value.init.type === 'FunctionExpression' ||
                 path.value.init.type === 'ArrowFunctionExpression')
             ) {
-              updateColorDefault(path.value.init.params, 'Badge')
+              updateColorDefault(path.value.init.params, 'Badge');
             }
-          })
+          });
 
         // Handle forwardRef pattern for BadgeButton
         root
@@ -95,7 +95,7 @@ export const badgeDefaultColorTransform: Transform = {
             callee: { name: 'forwardRef' },
           })
           .forEach((path: any) => {
-            const args = path.value.arguments
+            const args = path.value.arguments;
             if (
               args.length > 0 &&
               (args[0].type === 'FunctionExpression' ||
@@ -103,25 +103,25 @@ export const badgeDefaultColorTransform: Transform = {
               args[0].id &&
               args[0].id.name === 'BadgeButton'
             ) {
-              updateColorDefault(args[0].params, 'BadgeButton')
+              updateColorDefault(args[0].params, 'BadgeButton');
             }
-          })
+          });
 
-        return root.toSource(STANDARD_AST_FORMAT_OPTIONS)
-      }
+        return root.toSource(STANDARD_AST_FORMAT_OPTIONS);
+      };
 
       const result = transformer(
         { path: 'badge.tsx', source: content },
         { jscodeshift: j, j, stats: () => {}, report: () => {} }
-      )
+      );
 
       return {
         content: result || content,
         changes,
         hasChanges: changes.length > 0,
-      }
+      };
     } catch (error) {
-      console.error('Error in Badge default color transform:', error)
+      console.error('Error in Badge default color transform:', error);
       return {
         content,
         changes: [
@@ -131,7 +131,7 @@ export const badgeDefaultColorTransform: Transform = {
           },
         ],
         hasChanges: false,
-      }
+      };
     }
   },
-}
+};

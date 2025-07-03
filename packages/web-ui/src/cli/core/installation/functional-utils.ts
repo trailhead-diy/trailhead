@@ -2,8 +2,8 @@
  * Functional programming utilities for dependency management
  */
 
-import type { Result } from './types.js'
-import { Ok, Err } from './types.js'
+import type { Result } from './types.js';
+import { Ok, Err } from './types.js';
 
 // ============================================================================
 // FUNCTION COMPOSITION
@@ -15,7 +15,7 @@ import { Ok, Err } from './types.js'
 export const pipe =
   <T>(...fns: Array<(arg: T) => T>) =>
   (value: T): T =>
-    fns.reduce((acc, fn) => fn(acc), value)
+    fns.reduce((acc, fn) => fn(acc), value);
 
 /**
  * Pipe function for composing asynchronous functions
@@ -23,12 +23,12 @@ export const pipe =
 export const pipeAsync =
   <T>(...fns: Array<(arg: T) => Promise<T>>) =>
   async (value: T): Promise<T> => {
-    let result = value
+    let result = value;
     for (const fn of fns) {
-      result = await fn(result)
+      result = await fn(result);
     }
-    return result
-  }
+    return result;
+  };
 
 /**
  * Compose function (right to left)
@@ -36,7 +36,7 @@ export const pipeAsync =
 export const compose =
   <T>(...fns: Array<(arg: T) => T>) =>
   (value: T): T =>
-    fns.reduceRight((acc, fn) => fn(acc), value)
+    fns.reduceRight((acc, fn) => fn(acc), value);
 
 // ============================================================================
 // RESULT TYPE HELPERS
@@ -46,7 +46,7 @@ export const compose =
  * Map over a Result's success value
  */
 export const mapResult = <T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> =>
-  result.success ? Ok(fn(result.value)) : result
+  result.success ? Ok(fn(result.value)) : result;
 
 /**
  * FlatMap over a Result's success value
@@ -54,29 +54,29 @@ export const mapResult = <T, U, E>(result: Result<T, E>, fn: (value: T) => U): R
 export const flatMapResult = <T, U, E>(
   result: Result<T, E>,
   fn: (value: T) => Result<U, E>
-): Result<U, E> => (result.success ? fn(result.value) : result)
+): Result<U, E> => (result.success ? fn(result.value) : result);
 
 /**
  * Map over a Result's error value
  */
 export const mapError = <T, E, F>(result: Result<T, E>, fn: (error: E) => F): Result<T, F> =>
-  result.success ? result : Err(fn(result.error))
+  result.success ? result : Err(fn(result.error));
 
 /**
  * Combine multiple Results into one
  */
 export const combineResults = <T, E>(results: readonly Result<T, E>[]): Result<readonly T[], E> => {
-  const values: T[] = []
+  const values: T[] = [];
 
   for (const result of results) {
     if (!result.success) {
-      return result
+      return result;
     }
-    values.push(result.value)
+    values.push(result.value);
   }
 
-  return Ok(Object.freeze(values))
-}
+  return Ok(Object.freeze(values));
+};
 
 /**
  * Try a function and return a Result
@@ -86,12 +86,12 @@ export const tryCatch = <T, E = Error>(
   mapError?: (error: unknown) => E
 ): Result<T, E> => {
   try {
-    return Ok(fn())
+    return Ok(fn());
   } catch (error) {
-    const mappedError = mapError ? mapError(error) : (error as E)
-    return Err(mappedError)
+    const mappedError = mapError ? mapError(error) : (error as E);
+    return Err(mappedError);
   }
-}
+};
 
 /**
  * Try an async function and return a Result
@@ -101,13 +101,13 @@ export const tryCatchAsync = async <T, E = Error>(
   mapError?: (error: unknown) => E
 ): Promise<Result<T, E>> => {
   try {
-    const value = await fn()
-    return Ok(value)
+    const value = await fn();
+    return Ok(value);
   } catch (error) {
-    const mappedError = mapError ? mapError(error) : (error as E)
-    return Err(mappedError)
+    const mappedError = mapError ? mapError(error) : (error as E);
+    return Err(mappedError);
   }
-}
+};
 
 // ============================================================================
 // IMMUTABLE DATA HELPERS
@@ -122,7 +122,7 @@ export const updateRecord = <T>(
 ): Readonly<Record<string, T>> => ({
   ...record,
   ...updates,
-})
+});
 
 /**
  * Update an array immutably
@@ -133,11 +133,11 @@ export const updateArray = <T>(
   updater: (item: T) => T
 ): readonly T[] => {
   if (index < 0 || index >= array.length) {
-    return array
+    return array;
   }
 
-  return array.map((item, i) => (i === index ? updater(item) : item))
-}
+  return array.map((item, i) => (i === index ? updater(item) : item));
+};
 
 /**
  * Append to an array immutably
@@ -145,7 +145,7 @@ export const updateArray = <T>(
 export const appendToArray = <T>(array: readonly T[], ...items: readonly T[]): readonly T[] => [
   ...array,
   ...items,
-]
+];
 
 /**
  * Remove from array immutably
@@ -153,7 +153,7 @@ export const appendToArray = <T>(array: readonly T[], ...items: readonly T[]): r
 export const removeFromArray = <T>(
   array: readonly T[],
   predicate: (item: T) => boolean
-): readonly T[] => array.filter((item) => !predicate(item))
+): readonly T[] => array.filter(item => !predicate(item));
 
 // ============================================================================
 // FUNCTIONAL HELPERS
@@ -162,7 +162,7 @@ export const removeFromArray = <T>(
 /**
  * Identity function
  */
-export const identity = <T>(x: T): T => x
+export const identity = <T>(x: T): T => x;
 
 /**
  * Constant function
@@ -170,7 +170,7 @@ export const identity = <T>(x: T): T => x
 export const constant =
   <T>(x: T) =>
   (): T =>
-    x
+    x;
 
 /**
  * Partial application
@@ -178,7 +178,7 @@ export const constant =
 export const partial =
   <T extends any[], U extends any[], R>(fn: (...args: [...T, ...U]) => R, ...initialArgs: T) =>
   (...remainingArgs: U): R =>
-    fn(...initialArgs, ...remainingArgs)
+    fn(...initialArgs, ...remainingArgs);
 
 /**
  * Curry a binary function
@@ -187,7 +187,7 @@ export const curry2 =
   <A, B, R>(fn: (a: A, b: B) => R) =>
   (a: A) =>
   (b: B): R =>
-    fn(a, b)
+    fn(a, b);
 
 /**
  * Memoize a function
@@ -196,20 +196,20 @@ export const memoize = <T extends (...args: any[]) => any>(
   fn: T,
   keyFn?: (...args: Parameters<T>) => string
 ): T => {
-  const cache = new Map<string, ReturnType<T>>()
+  const cache = new Map<string, ReturnType<T>>();
 
   return ((...args: Parameters<T>): ReturnType<T> => {
-    const key = keyFn ? keyFn(...args) : JSON.stringify(args)
+    const key = keyFn ? keyFn(...args) : JSON.stringify(args);
 
     if (cache.has(key)) {
-      return cache.get(key)!
+      return cache.get(key)!;
     }
 
-    const result = fn(...args)
-    cache.set(key, result)
-    return result
-  }) as T
-}
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+};
 
 // ============================================================================
 // ASYNC HELPERS
@@ -219,22 +219,22 @@ export const memoize = <T extends (...args: any[]) => any>(
  * Run async functions in parallel
  */
 export const parallel = async <T>(fns: readonly (() => Promise<T>)[]): Promise<readonly T[]> => {
-  const results = await Promise.all(fns.map((fn) => fn()))
-  return Object.freeze(results)
-}
+  const results = await Promise.all(fns.map(fn => fn()));
+  return Object.freeze(results);
+};
 
 /**
  * Run async functions in sequence
  */
 export const sequence = async <T>(fns: readonly (() => Promise<T>)[]): Promise<readonly T[]> => {
-  const results: T[] = []
+  const results: T[] = [];
 
   for (const fn of fns) {
-    results.push(await fn())
+    results.push(await fn());
   }
 
-  return Object.freeze(results)
-}
+  return Object.freeze(results);
+};
 
 /**
  * Debounce a function
@@ -243,19 +243,19 @@ export const debounce = <T extends (...args: any[]) => any>(
   fn: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout | null = null
+  let timeoutId: NodeJS.Timeout | null = null;
 
   return (...args: Parameters<T>): void => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
 
     timeoutId = setTimeout(() => {
-      fn(...args)
-      timeoutId = null
-    }, delay)
-  }
-}
+      fn(...args);
+      timeoutId = null;
+    }, delay);
+  };
+};
 
 // ============================================================================
 // PREDICATE HELPERS
@@ -267,7 +267,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 export const not =
   <T>(predicate: (value: T) => boolean) =>
   (value: T): boolean =>
-    !predicate(value)
+    !predicate(value);
 
 /**
  * Combine predicates with AND
@@ -275,7 +275,7 @@ export const not =
 export const and =
   <T>(...predicates: Array<(value: T) => boolean>) =>
   (value: T): boolean =>
-    predicates.every((p) => p(value))
+    predicates.every(p => p(value));
 
 /**
  * Combine predicates with OR
@@ -283,4 +283,4 @@ export const and =
 export const or =
   <T>(...predicates: Array<(value: T) => boolean>) =>
   (value: T): boolean =>
-    predicates.some((p) => p(value))
+    predicates.some(p => p(value));

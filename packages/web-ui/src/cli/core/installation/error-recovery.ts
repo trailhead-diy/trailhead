@@ -2,7 +2,7 @@
  * Error recovery module with pattern matching
  */
 
-import { formatCommand, formatBulletList } from './shared-utils.js'
+import { formatCommand, formatBulletList } from './shared-utils.js';
 
 // ============================================================================
 // TYPES
@@ -19,27 +19,27 @@ export type ErrorType =
   | 'cache'
   | 'lockfile'
   | 'workspace'
-  | 'unknown'
+  | 'unknown';
 
 export interface InstallFallback {
-  readonly command: string
-  readonly instructions: readonly string[]
-  readonly troubleshooting: readonly string[]
-  readonly canRetry: boolean
-  readonly severity: 'warning' | 'error' | 'critical'
+  readonly command: string;
+  readonly instructions: readonly string[];
+  readonly troubleshooting: readonly string[];
+  readonly canRetry: boolean;
+  readonly severity: 'warning' | 'error' | 'critical';
 }
 
 export interface ErrorPattern {
-  readonly pattern: RegExp
-  readonly type: ErrorType
-  readonly keywords?: readonly string[]
+  readonly pattern: RegExp;
+  readonly type: ErrorType;
+  readonly keywords?: readonly string[];
 }
 
 export interface RecoveryAction {
-  readonly action: string
-  readonly command?: string
-  readonly description: string
-  readonly automated: boolean
+  readonly action: string;
+  readonly command?: string;
+  readonly description: string;
+  readonly automated: boolean;
 }
 
 // ============================================================================
@@ -119,27 +119,27 @@ const errorPatterns: readonly ErrorPattern[] = [
     type: 'workspace',
     keywords: ['workspace', 'monorepo'],
   },
-]
+];
 
 /**
  * Match error message to error type
  */
 export const matchErrorType = (message: string): ErrorType => {
-  const lowerMessage = message.toLowerCase()
+  const lowerMessage = message.toLowerCase();
 
   for (const { pattern, type, keywords } of errorPatterns) {
     if (pattern.test(message)) {
-      return type
+      return type;
     }
 
     // Check keywords as fallback
-    if (keywords?.some((keyword) => lowerMessage.includes(keyword))) {
-      return type
+    if (keywords?.some(keyword => lowerMessage.includes(keyword))) {
+      return type;
     }
   }
 
-  return 'unknown'
-}
+  return 'unknown';
+};
 
 // ============================================================================
 // FALLBACK STRATEGIES
@@ -150,7 +150,7 @@ export const matchErrorType = (message: string): ErrorType => {
  */
 const getFallbackStrategy = (errorType: ErrorType, packageManager: string): InstallFallback => {
   const strategies: Record<ErrorType, (pm: string) => InstallFallback> = {
-    network: (pm) => ({
+    network: pm => ({
       command: `${pm} install`,
       instructions: [
         'Network connection error detected',
@@ -167,7 +167,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'warning',
     }),
 
-    permission: (pm) => ({
+    permission: pm => ({
       command: pm === 'npm' ? 'sudo npm install' : `${pm} install`,
       instructions: [
         'Permission denied while installing packages',
@@ -185,7 +185,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'error',
     }),
 
-    'peer-dependency': (pm) => ({
+    'peer-dependency': pm => ({
       command: pm === 'npm' ? `${pm} install --legacy-peer-deps` : `${pm} install`,
       instructions: [
         'Peer dependency conflicts detected',
@@ -203,7 +203,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'warning',
     }),
 
-    'file-not-found': (pm) => ({
+    'file-not-found': pm => ({
       command: `rm -rf node_modules package-lock.json && ${pm} install`,
       instructions: ['Required files not found', 'Your node_modules may be corrupted'],
       troubleshooting: [
@@ -218,7 +218,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'error',
     }),
 
-    'disk-space': (pm) => ({
+    'disk-space': pm => ({
       command: `${pm} cache clean --force`,
       instructions: ['Insufficient disk space', 'Free up space and try again'],
       troubleshooting: [
@@ -234,7 +234,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'critical',
     }),
 
-    timeout: (pm) => ({
+    timeout: pm => ({
       command: `${pm} install --network-timeout 600000`,
       instructions: ['Installation timed out', 'This may be due to slow network or large packages'],
       troubleshooting: [
@@ -248,7 +248,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'warning',
     }),
 
-    registry: (pm) => ({
+    registry: pm => ({
       command: `${pm} login`,
       instructions: [
         'Registry authentication or access error',
@@ -265,7 +265,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'error',
     }),
 
-    cache: (pm) => ({
+    cache: pm => ({
       command: `${pm} cache clean --force && ${pm} install`,
       instructions: ['Package cache corruption detected', 'Clearing cache and retrying'],
       troubleshooting: [
@@ -279,7 +279,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'warning',
     }),
 
-    lockfile: (pm) => ({
+    lockfile: pm => ({
       command: `${pm} install --force`,
       instructions: ['Lockfile conflicts or inconsistencies', 'Your lockfile may be out of sync'],
       troubleshooting: [
@@ -294,7 +294,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'warning',
     }),
 
-    workspace: (pm) => ({
+    workspace: pm => ({
       command: pm === 'pnpm' ? 'pnpm install --workspace-root' : `${pm} install`,
       instructions: ['Workspace or monorepo configuration issue', 'Check workspace settings'],
       troubleshooting: [
@@ -310,7 +310,7 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       severity: 'error',
     }),
 
-    unknown: (pm) => ({
+    unknown: pm => ({
       command: `${pm} install --verbose`,
       instructions: [
         'An unexpected error occurred',
@@ -329,10 +329,10 @@ const getFallbackStrategy = (errorType: ErrorType, packageManager: string): Inst
       canRetry: true,
       severity: 'error',
     }),
-  }
+  };
 
-  return strategies[errorType](packageManager)
-}
+  return strategies[errorType](packageManager);
+};
 
 /**
  * Get install fallback for an error
@@ -341,9 +341,9 @@ export const getInstallFallback = (
   packageManager: string,
   error: Error | { message: string }
 ): InstallFallback => {
-  const errorType = matchErrorType(error.message)
-  return getFallbackStrategy(errorType, packageManager)
-}
+  const errorType = matchErrorType(error.message);
+  return getFallbackStrategy(errorType, packageManager);
+};
 
 // ============================================================================
 // RECOVERY ACTIONS
@@ -406,27 +406,27 @@ export const getRecoveryActions = (
     lockfile: [],
     workspace: [],
     unknown: [],
-  }
+  };
 
-  return Object.freeze(actions[errorType] || [])
-}
+  return Object.freeze(actions[errorType] || []);
+};
 
 /**
  * Check if error is retryable
  */
 export const isRetryableError = (errorType: ErrorType): boolean => {
-  const retryableTypes: readonly ErrorType[] = ['network', 'timeout', 'cache', 'registry']
+  const retryableTypes: readonly ErrorType[] = ['network', 'timeout', 'cache', 'registry'];
 
-  return retryableTypes.includes(errorType)
-}
+  return retryableTypes.includes(errorType);
+};
 
 /**
  * Get retry delay based on attempt number
  */
 export const getRetryDelay = (attempt: number): number => {
   // Exponential backoff: 1s, 2s, 4s, 8s, max 10s
-  return Math.min(Math.pow(2, attempt - 1) * 1000, 10000)
-}
+  return Math.min(Math.pow(2, attempt - 1) * 1000, 10000);
+};
 
 // ============================================================================
 // ERROR FORMATTING
@@ -439,43 +439,43 @@ export const formatErrorMessage = (
   error: Error | { message: string },
   verbose: boolean = false
 ): readonly string[] => {
-  const lines: string[] = []
+  const lines: string[] = [];
 
-  lines.push('❌ Installation failed')
-  lines.push('')
+  lines.push('❌ Installation failed');
+  lines.push('');
 
   if (verbose && error instanceof Error && error.stack) {
-    lines.push('Stack trace:')
-    lines.push(error.stack)
+    lines.push('Stack trace:');
+    lines.push(error.stack);
   } else {
-    lines.push('Error: ' + error.message)
+    lines.push('Error: ' + error.message);
   }
 
-  return Object.freeze(lines)
-}
+  return Object.freeze(lines);
+};
 
 /**
  * Format recovery instructions
  */
 export const formatRecoveryInstructions = (fallback: InstallFallback): readonly string[] => {
-  const lines: string[] = []
+  const lines: string[] = [];
 
   // Instructions
   if (fallback.instructions.length > 0) {
-    lines.push(...fallback.instructions)
-    lines.push('')
+    lines.push(...fallback.instructions);
+    lines.push('');
   }
 
   // Suggested command
-  lines.push('💡 Suggested command:')
-  lines.push(formatCommand(fallback.command))
-  lines.push('')
+  lines.push('💡 Suggested command:');
+  lines.push(formatCommand(fallback.command));
+  lines.push('');
 
   // Troubleshooting
   if (fallback.troubleshooting.length > 0) {
-    lines.push('🔧 Troubleshooting steps:')
-    formatBulletList(fallback.troubleshooting).forEach((line) => lines.push(line))
+    lines.push('🔧 Troubleshooting steps:');
+    formatBulletList(fallback.troubleshooting).forEach(line => lines.push(line));
   }
 
-  return Object.freeze(lines)
-}
+  return Object.freeze(lines);
+};

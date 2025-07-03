@@ -3,7 +3,7 @@
  * Transforms var(--color-*) to var(--*) for semantic tokens
  */
 
-import { createProtectedRegexTransform } from '../utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../utilities/protected-regex-transform-factory.js';
 
 /**
  * Remove --color- prefix transform
@@ -135,4 +135,4 @@ export const removeColorPrefixTransform = createProtectedRegexTransform({
     },
   ],
   changeType: 'color-prefix-removal',
-})
+});

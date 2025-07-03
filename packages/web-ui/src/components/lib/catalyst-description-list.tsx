@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import { cn } from '../utils/cn'
+import { cn } from '../utils/cn';
 
 export function CatalystDescriptionList({
   className,
@@ -13,7 +13,7 @@ export function CatalystDescriptionList({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDescriptionTerm({
@@ -28,7 +28,7 @@ export function CatalystDescriptionTerm({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDescriptionDetails({
@@ -43,5 +43,5 @@ export function CatalystDescriptionDetails({
         className
       )}
     />
-  )
+  );
 }

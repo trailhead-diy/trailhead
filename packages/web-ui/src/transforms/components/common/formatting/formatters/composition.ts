@@ -10,7 +10,7 @@
 export const pipe =
   <T>(...fns: Array<(arg: T) => T>) =>
   (value: T): T =>
-    fns.reduce((acc, fn) => fn(acc), value)
+    fns.reduce((acc, fn) => fn(acc), value);
 
 /**
  * Compose functions from right to left
@@ -19,7 +19,7 @@ export const pipe =
 export const compose =
   <T>(...fns: Array<(arg: T) => T>) =>
   (value: T): T =>
-    fns.reduceRight((acc, fn) => fn(acc), value)
+    fns.reduceRight((acc, fn) => fn(acc), value);
 
 /**
  * Create custom formatting pipeline
@@ -29,7 +29,7 @@ export const compose =
  * @returns Composed formatting function
  */
 export function createPostProcessor(...formatters: Array<(code: string) => string>) {
-  return pipe(...formatters)
+  return pipe(...formatters);
 }
 
 /**
@@ -41,6 +41,6 @@ export function conditionalFormatter(
   formatter: (code: string) => string
 ) {
   return (code: string): string => {
-    return condition(code) ? formatter(code) : code
-  }
+    return condition(code) ? formatter(code) : code;
+  };
 }

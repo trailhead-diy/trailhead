@@ -3,7 +3,7 @@
  * Uses the transform factory for DRY implementation
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Badge semantic enhancement transform
@@ -11,7 +11,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const badgeSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Badge',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('Badge') &&
     content.includes('colors') &&
     content.includes('export function Badge'),
@@ -20,4 +20,4 @@ export const badgeSemanticEnhancementTransform = createSemanticEnhancementTransf
   hasColorsObject: true,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

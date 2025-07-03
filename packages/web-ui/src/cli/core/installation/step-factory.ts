@@ -2,15 +2,15 @@
  * Installation step factory - creates installation steps
  */
 
-import type { FileSystem, Logger, InstallConfig } from './types.js'
-import type { InstallationStep } from './step-executor.js'
-import { installThemeSystem } from './theme-installer.js'
+import type { FileSystem, Logger, InstallConfig } from './types.js';
+import type { InstallationStep } from './step-executor.js';
+import { installThemeSystem } from './theme-installer.js';
 import {
   installCatalystComponents,
   installComponentWrappers,
   installUtilityFiles,
   installTransformedComponents,
-} from './component-installer.js'
+} from './component-installer.js';
 
 // ============================================================================
 // STEP CREATION
@@ -38,7 +38,7 @@ export const createBaseSteps = (
     execute: () => installUtilityFiles(fs, logger, trailheadRoot, config, force),
     critical: true,
   },
-]
+];
 
 /**
  * Create component installation steps based on wrapper preference
@@ -65,7 +65,7 @@ export const createComponentSteps = (
         execute: () => installComponentWrappers(fs, logger, trailheadRoot, config, force),
         critical: true,
       },
-    ]
+    ];
   } else {
     return [
       {
@@ -74,9 +74,9 @@ export const createComponentSteps = (
         execute: () => installTransformedComponents(fs, logger, trailheadRoot, config, force),
         critical: true,
       },
-    ]
+    ];
   }
-}
+};
 
 /**
  * Create all installation steps
@@ -89,8 +89,15 @@ export const createInstallationSteps = (
   force: boolean,
   useWrappers: boolean
 ): readonly InstallationStep[] => {
-  const baseSteps = createBaseSteps(fs, logger, trailheadRoot, config, force)
-  const componentSteps = createComponentSteps(fs, logger, trailheadRoot, config, force, useWrappers)
+  const baseSteps = createBaseSteps(fs, logger, trailheadRoot, config, force);
+  const componentSteps = createComponentSteps(
+    fs,
+    logger,
+    trailheadRoot,
+    config,
+    force,
+    useWrappers
+  );
 
-  return [...baseSteps, ...componentSteps]
-}
+  return [...baseSteps, ...componentSteps];
+};

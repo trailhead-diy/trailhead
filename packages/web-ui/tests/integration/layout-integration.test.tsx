@@ -8,19 +8,19 @@
  * - Layout state management and reflow
  */
 
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import '@testing-library/jest-dom'
-import React from 'react'
-import { AuthLayout } from '../../src/components/auth-layout'
-import { StackedLayout } from '../../src/components/stacked-layout'
-import { SidebarLayout } from '../../src/components/sidebar-layout'
-import { Sidebar, SidebarItem, SidebarSection, SidebarHeader } from '../../src/components/sidebar'
-import { Navbar, NavbarItem, NavbarSection } from '../../src/components/navbar'
-import { Button } from '../../src/components/button'
-import { Input } from '../../src/components/input'
-import { AvatarButton } from '../../src/components/avatar'
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import React from 'react';
+import { AuthLayout } from '../../src/components/auth-layout';
+import { StackedLayout } from '../../src/components/stacked-layout';
+import { SidebarLayout } from '../../src/components/sidebar-layout';
+import { Sidebar, SidebarItem, SidebarSection, SidebarHeader } from '../../src/components/sidebar';
+import { Navbar, NavbarItem, NavbarSection } from '../../src/components/navbar';
+import { Button } from '../../src/components/button';
+import { Input } from '../../src/components/input';
+import { AvatarButton } from '../../src/components/avatar';
 
 describe('Layout Integration Tests', () => {
   describe('Nested Layout Compositions', () => {
@@ -57,19 +57,19 @@ describe('Layout Integration Tests', () => {
             </div>
           </StackedLayout>
         </AuthLayout>
-      )
+      );
 
-      render(<ComplexAuthLayout />)
+      render(<ComplexAuthLayout />);
 
       // Verify layout structure
-      expect(screen.getByTestId('main-content')).toBeInTheDocument()
-      expect(screen.getByText('Welcome to our application')).toBeInTheDocument()
+      expect(screen.getByTestId('main-content')).toBeInTheDocument();
+      expect(screen.getByText('Welcome to our application')).toBeInTheDocument();
 
       // Verify navigation elements (multiple Home links exist - navbar and sidebar)
-      expect(screen.getAllByRole('link', { name: 'Home' })).toHaveLength(2)
-      expect(screen.getAllByRole('link', { name: 'About' })).toHaveLength(2)
-      expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument()
-    })
+      expect(screen.getAllByRole('link', { name: 'Home' })).toHaveLength(2);
+      expect(screen.getAllByRole('link', { name: 'About' })).toHaveLength(2);
+      expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
+    });
 
     it('should handle SidebarLayout with Navbar integration', () => {
       const DashboardLayout = () => (
@@ -103,19 +103,19 @@ describe('Layout Integration Tests', () => {
             <div>Main dashboard content goes here</div>
           </div>
         </SidebarLayout>
-      )
+      );
 
-      render(<DashboardLayout />)
+      render(<DashboardLayout />);
 
       // Verify all layout sections render
-      expect(screen.getByText('Dashboard')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument()
-      expect(screen.getByText('Navigation')).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Overview' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Projects' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
-      expect(screen.getByTestId('dashboard-content')).toBeInTheDocument()
-    })
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+      expect(screen.getByText('Navigation')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Overview' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Projects' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+      expect(screen.getByTestId('dashboard-content')).toBeInTheDocument();
+    });
 
     it('should handle triple-nested layout composition', () => {
       const TripleNestedLayout = () => (
@@ -164,26 +164,26 @@ describe('Layout Integration Tests', () => {
             </StackedLayout>
           </SidebarLayout>
         </AuthLayout>
-      )
+      );
 
-      render(<TripleNestedLayout />)
+      render(<TripleNestedLayout />);
 
       // Verify all nested layers render correctly
-      expect(screen.getByText('Admin Panel')).toBeInTheDocument()
-      expect(screen.getByText('User Management')).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Users' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Add User' })).toBeInTheDocument()
-      expect(screen.getByTestId('nested-content')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Admin Panel')).toBeInTheDocument();
+      expect(screen.getByText('User Management')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Users' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Add User' })).toBeInTheDocument();
+      expect(screen.getByTestId('nested-content')).toBeInTheDocument();
+    });
+  });
 
   describe('Responsive Navigation Patterns', () => {
     it('should handle mobile-responsive sidebar behavior', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const ResponsiveSidebarLayout = () => {
-        const [sidebarOpen, setSidebarOpen] = React.useState(false)
+        const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
         return (
           <SidebarLayout
@@ -212,39 +212,39 @@ describe('Layout Integration Tests', () => {
               <p>Content that should reflow when sidebar toggles</p>
             </div>
           </SidebarLayout>
-        )
-      }
+        );
+      };
 
-      render(<ResponsiveSidebarLayout />)
+      render(<ResponsiveSidebarLayout />);
 
       // Initially sidebar is hidden
-      const sidebar = screen.getByTestId('sidebar')
-      expect(sidebar).toHaveStyle({ display: 'none' })
+      const sidebar = screen.getByTestId('sidebar');
+      expect(sidebar).toHaveStyle({ display: 'none' });
 
       // Main content should be visible
-      expect(screen.getByTestId('main-content')).toBeInTheDocument()
+      expect(screen.getByTestId('main-content')).toBeInTheDocument();
 
       // Toggle sidebar open
-      await user.click(screen.getByTestId('sidebar-toggle'))
-      expect(sidebar).toHaveStyle({ display: 'block' })
+      await user.click(screen.getByTestId('sidebar-toggle'));
+      expect(sidebar).toHaveStyle({ display: 'block' });
 
       // Navigation should be accessible
-      expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument();
 
       // Toggle sidebar closed
-      await user.click(screen.getByTestId('sidebar-toggle'))
-      expect(sidebar).toHaveStyle({ display: 'none' })
-    })
+      await user.click(screen.getByTestId('sidebar-toggle'));
+      expect(sidebar).toHaveStyle({ display: 'none' });
+    });
 
     it.skip('should handle navigation state changes', async () => {
       // Skipped: HeadlessUI Input controlled components don't respond to userEvent.type()
       // This test relies on controlled input behavior that doesn't work in test environment
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const StatefulNavigation = () => {
-        const [activeItem, setActiveItem] = React.useState('home')
-        const [searchQuery, setSearchQuery] = React.useState('')
+        const [activeItem, setActiveItem] = React.useState('home');
+        const [searchQuery, setSearchQuery] = React.useState('');
 
         return (
           <StackedLayout
@@ -254,7 +254,7 @@ describe('Layout Integration Tests', () => {
                   <Input
                     placeholder="Search..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                     data-testid="search-input"
                   />
                 </NavbarSection>
@@ -293,31 +293,31 @@ describe('Layout Integration Tests', () => {
               {searchQuery && <p>Searching for: {searchQuery}</p>}
             </div>
           </StackedLayout>
-        )
-      }
+        );
+      };
 
-      render(<StatefulNavigation />)
+      render(<StatefulNavigation />);
 
       // Test search functionality
-      await user.type(screen.getByTestId('search-input'), 'test query')
+      await user.type(screen.getByTestId('search-input'), 'test query');
       expect(
-        screen.getByText((content) => content.includes('Searching for: test query'))
-      ).toBeInTheDocument()
+        screen.getByText(content => content.includes('Searching for: test query'))
+      ).toBeInTheDocument();
 
       // Test navigation state
-      expect(screen.getByText('Active: home')).toBeInTheDocument()
+      expect(screen.getByText('Active: home')).toBeInTheDocument();
 
-      await user.click(screen.getByRole('link', { name: 'Projects' }))
-      expect(screen.getByText('Active: projects')).toBeInTheDocument()
-    })
-  })
+      await user.click(screen.getByRole('link', { name: 'Projects' }));
+      expect(screen.getByText('Active: projects')).toBeInTheDocument();
+    });
+  });
 
   describe('Layout Content Reflow', () => {
     it('should handle content reflow when sidebar collapses', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const ReflowLayout = () => {
-        const [collapsed, setCollapsed] = React.useState(false)
+        const [collapsed, setCollapsed] = React.useState(false);
 
         return (
           <SidebarLayout
@@ -354,45 +354,45 @@ describe('Layout Integration Tests', () => {
               </div>
             </div>
           </SidebarLayout>
-        )
-      }
+        );
+      };
 
-      render(<ReflowLayout />)
+      render(<ReflowLayout />);
 
       // Initially expanded
-      expect(screen.getByText('Full Menu')).toBeInTheDocument()
-      expect(screen.getByText('🏠 Home')).toBeInTheDocument()
-      expect(screen.getByTestId('main-content')).toHaveAttribute('data-sidebar-collapsed', 'false')
+      expect(screen.getByText('Full Menu')).toBeInTheDocument();
+      expect(screen.getByText('🏠 Home')).toBeInTheDocument();
+      expect(screen.getByTestId('main-content')).toHaveAttribute('data-sidebar-collapsed', 'false');
 
       // Collapse sidebar
-      await user.click(screen.getByTestId('collapse-button'))
+      await user.click(screen.getByTestId('collapse-button'));
 
       // Verify collapsed state
-      expect(screen.queryByText('Full Menu')).not.toBeInTheDocument()
-      expect(screen.getByText('🏠')).toBeInTheDocument()
-      expect(screen.queryByText('🏠 Home')).not.toBeInTheDocument()
-      expect(screen.getByTestId('main-content')).toHaveAttribute('data-sidebar-collapsed', 'true')
+      expect(screen.queryByText('Full Menu')).not.toBeInTheDocument();
+      expect(screen.getByText('🏠')).toBeInTheDocument();
+      expect(screen.queryByText('🏠 Home')).not.toBeInTheDocument();
+      expect(screen.getByTestId('main-content')).toHaveAttribute('data-sidebar-collapsed', 'true');
 
       // Expand again
-      await user.click(screen.getByTestId('collapse-button'))
-      expect(screen.getByText('Full Menu')).toBeInTheDocument()
-      expect(screen.getByText('🏠 Home')).toBeInTheDocument()
-    })
+      await user.click(screen.getByTestId('collapse-button'));
+      expect(screen.getByText('Full Menu')).toBeInTheDocument();
+      expect(screen.getByText('🏠 Home')).toBeInTheDocument();
+    });
 
     it('should handle dynamic content updates in layout sections', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const DynamicContentLayout = () => {
-        const [notifications, setNotifications] = React.useState<string[]>([])
-        const [sidebarItems, setSidebarItems] = React.useState(['Dashboard', 'Profile'])
+        const [notifications, setNotifications] = React.useState<string[]>([]);
+        const [sidebarItems, setSidebarItems] = React.useState(['Dashboard', 'Profile']);
 
         const addNotification = () => {
-          setNotifications((prev) => [...prev, `Notification ${prev.length + 1}`])
-        }
+          setNotifications(prev => [...prev, `Notification ${prev.length + 1}`]);
+        };
 
         const addSidebarItem = () => {
-          setSidebarItems((prev) => [...prev, `Item ${prev.length + 1}`])
-        }
+          setSidebarItems(prev => [...prev, `Item ${prev.length + 1}`]);
+        };
 
         return (
           <SidebarLayout
@@ -419,7 +419,7 @@ describe('Layout Integration Tests', () => {
                   </Button>
                 </SidebarHeader>
                 <SidebarSection data-testid="sidebar-items">
-                  {sidebarItems.map((item) => (
+                  {sidebarItems.map(item => (
                     <SidebarItem key={item} href={`/${item.toLowerCase()}`}>
                       {item}
                     </SidebarItem>
@@ -431,40 +431,40 @@ describe('Layout Integration Tests', () => {
             <div data-testid="main-content">
               <h2>Content Area</h2>
               <div data-testid="notification-list">
-                {notifications.map((notification) => (
+                {notifications.map(notification => (
                   <div key={notification}>{notification}</div>
                 ))}
               </div>
             </div>
           </SidebarLayout>
-        )
-      }
+        );
+      };
 
-      render(<DynamicContentLayout />)
+      render(<DynamicContentLayout />);
 
       // Initial state
-      expect(screen.getByText('Dashboard')).toBeInTheDocument()
-      expect(screen.getByText('Profile')).toBeInTheDocument()
-      expect(screen.queryByText('Notifications:')).not.toBeInTheDocument()
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+      expect(screen.getByText('Profile')).toBeInTheDocument();
+      expect(screen.queryByText('Notifications:')).not.toBeInTheDocument();
 
       // Add notification
-      await user.click(screen.getByTestId('add-notification'))
-      expect(screen.getByText('Notifications: 1')).toBeInTheDocument()
-      expect(screen.getByText('Notification 1')).toBeInTheDocument()
+      await user.click(screen.getByTestId('add-notification'));
+      expect(screen.getByText('Notifications: 1')).toBeInTheDocument();
+      expect(screen.getByText('Notification 1')).toBeInTheDocument();
 
       // Add sidebar item
-      await user.click(screen.getByTestId('add-sidebar-item'))
-      expect(screen.getByText('Item 3')).toBeInTheDocument()
+      await user.click(screen.getByTestId('add-sidebar-item'));
+      expect(screen.getByText('Item 3')).toBeInTheDocument();
 
       // Add multiple items to test layout stability
-      await user.click(screen.getByTestId('add-notification'))
-      await user.click(screen.getByTestId('add-notification'))
+      await user.click(screen.getByTestId('add-notification'));
+      await user.click(screen.getByTestId('add-notification'));
 
-      expect(screen.getByText('Notifications: 3')).toBeInTheDocument()
-      expect(screen.getByText('Notification 2')).toBeInTheDocument()
-      expect(screen.getByText('Notification 3')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Notifications: 3')).toBeInTheDocument();
+      expect(screen.getByText('Notification 2')).toBeInTheDocument();
+      expect(screen.getByText('Notification 3')).toBeInTheDocument();
+    });
+  });
 
   describe('Layout Accessibility Integration', () => {
     it.skip('should maintain proper landmark structure in complex layouts', () => {
@@ -491,22 +491,22 @@ describe('Layout Integration Tests', () => {
             <p>Accessible main content area</p>
           </main>
         </SidebarLayout>
-      )
+      );
 
-      render(<AccessibleLayout />)
+      render(<AccessibleLayout />);
 
       // Verify landmark roles
-      expect(screen.getByRole('banner')).toBeInTheDocument()
-      expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument()
-      expect(screen.getByRole('main', { name: 'Main content' })).toBeInTheDocument()
+      expect(screen.getByRole('banner')).toBeInTheDocument();
+      expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument();
+      expect(screen.getByRole('main', { name: 'Main content' })).toBeInTheDocument();
 
       // Verify heading hierarchy
-      expect(screen.getByRole('heading', { level: 1, name: 'Site Title' })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { level: 2, name: 'Page Content' })).toBeInTheDocument()
-    })
+      expect(screen.getByRole('heading', { level: 1, name: 'Site Title' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: 'Page Content' })).toBeInTheDocument();
+    });
 
     it('should support skip navigation in complex layouts', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const SkipNavLayout = () => (
         <div>
@@ -537,22 +537,22 @@ describe('Layout Integration Tests', () => {
             </main>
           </SidebarLayout>
         </div>
-      )
+      );
 
-      render(<SkipNavLayout />)
+      render(<SkipNavLayout />);
 
       // Skip link should be present
-      const skipLink = screen.getByTestId('skip-link')
-      expect(skipLink).toBeInTheDocument()
+      const skipLink = screen.getByTestId('skip-link');
+      expect(skipLink).toBeInTheDocument();
 
       // Focus skip link and activate it
-      skipLink.focus()
-      await user.click(skipLink)
+      skipLink.focus();
+      await user.click(skipLink);
 
       // Main content should be reachable
-      const mainContent = screen.getByTestId('main-content')
-      expect(mainContent).toBeInTheDocument()
-      expect(mainContent).toHaveAttribute('id', 'main-content')
-    })
-  })
-})
+      const mainContent = screen.getByTestId('main-content');
+      expect(mainContent).toBeInTheDocument();
+      expect(mainContent).toHaveAttribute('id', 'main-content');
+    });
+  });
+});

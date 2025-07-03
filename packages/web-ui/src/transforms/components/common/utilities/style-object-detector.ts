@@ -20,66 +20,66 @@
  */
 export function isWithinStyleObject(content: string, position: number): boolean {
   // Get content before the position to analyze context
-  const beforeContent = content.slice(0, position)
+  const beforeContent = content.slice(0, position);
 
   // Find all opening and closing braces to determine nesting level
-  const braces = []
+  const braces = [];
   for (let i = 0; i < beforeContent.length; i++) {
     if (beforeContent[i] === '{') {
-      braces.push({ type: 'open', pos: i })
+      braces.push({ type: 'open', pos: i });
     } else if (beforeContent[i] === '}') {
-      braces.push({ type: 'close', pos: i })
+      braces.push({ type: 'close', pos: i });
     }
   }
 
   // Calculate current nesting level
-  let nestingLevel = 0
+  let nestingLevel = 0;
   for (const brace of braces) {
     if (brace.type === 'open') {
-      nestingLevel++
+      nestingLevel++;
     } else {
-      nestingLevel--
+      nestingLevel--;
     }
   }
 
   // Must be inside at least one brace to be in a style object
   if (nestingLevel === 0) {
-    return false
+    return false;
   }
 
   // Look for style object indicators going backwards
-  const lines = beforeContent.split('\n')
+  const lines = beforeContent.split('\n');
 
   for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i].trim()
+    const line = lines[i].trim();
 
     // Pattern 1: const styles = { ... }
     if (/^const\s+styles\s*=\s*\{/.test(line)) {
-      return true
+      return true;
     }
 
     // Pattern 2: colors: { ... } (within a styles object)
     if (/^colors\s*:\s*\{/.test(line)) {
-      return true
+      return true;
     }
 
     // Pattern 3: Color key like 'zinc': '...' or 'dark/zinc': [
     if (/^['"`]\w+(?:\/\w+)?['"`]\s*:\s*/.test(line)) {
-      return true
+      return true;
     }
 
     // Pattern 4: Array strings within color definitions
     if (/^\s*['"`].*['"`],?\s*$/.test(line) && nestingLevel >= 2) {
-      return true
+      return true;
     }
 
     // Stop looking if we find a function or export
     if (/^(export\s+)?(function|const\s+\w+\s*=)/.test(line) && !line.includes('styles')) {
-      break
+      break;
     }
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -88,26 +88,26 @@ export function isWithinStyleObject(content: string, position: number): boolean 
  */
 export function isWithinCSSVariable(content: string, position: number): boolean {
   // Get a reasonable window around the position
-  const start = Math.max(0, position - 100)
-  const end = Math.min(content.length, position + 100)
-  const window = content.slice(start, end)
-  const relativePos = position - start
+  const start = Math.max(0, position - 100);
+  const end = Math.min(content.length, position + 100);
+  const window = content.slice(start, end);
+  const relativePos = position - start;
 
   // Find CSS variable brackets around the position
-  const beforePos = window.slice(0, relativePos)
-  const afterPos = window.slice(relativePos)
+  const beforePos = window.slice(0, relativePos);
+  const afterPos = window.slice(relativePos);
 
-  const lastOpenBracket = beforePos.lastIndexOf('[--')
-  const nextCloseBracket = afterPos.indexOf(']')
+  const lastOpenBracket = beforePos.lastIndexOf('[--');
+  const nextCloseBracket = afterPos.indexOf(']');
 
   // Check if we're inside a CSS variable definition
   if (lastOpenBracket !== -1 && nextCloseBracket !== -1) {
     // Verify it contains var(--color-*) pattern
-    const cssVar = window.slice(lastOpenBracket, relativePos + nextCloseBracket + 1)
-    return /\[--[\w-]+:var\(--color-[\w-]+\)\]/.test(cssVar)
+    const cssVar = window.slice(lastOpenBracket, relativePos + nextCloseBracket + 1);
+    return /\[--[\w-]+:var\(--color-[\w-]+\)\]/.test(cssVar);
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -115,23 +115,23 @@ export function isWithinCSSVariable(content: string, position: number): boolean 
  * Style arrays contain className strings that should be transformed
  */
 export function isWithinStyleArray(content: string, position: number): boolean {
-  const beforeContent = content.slice(0, position)
+  const beforeContent = content.slice(0, position);
 
   // Find the nearest array bracket
-  const lastOpenArray = beforeContent.lastIndexOf('[')
-  const lastCloseArray = beforeContent.lastIndexOf(']')
+  const lastOpenArray = beforeContent.lastIndexOf('[');
+  const lastCloseArray = beforeContent.lastIndexOf(']');
 
   // Must be inside an array
   if (lastOpenArray === -1 || lastCloseArray > lastOpenArray) {
-    return false
+    return false;
   }
 
   // Check if this array is part of a style object
-  const beforeArray = beforeContent.slice(0, lastOpenArray)
+  const beforeArray = beforeContent.slice(0, lastOpenArray);
 
   // Pattern: 'colorName': [ ... ] within a colors object
-  const colorArrayPattern = /['"`]\w+(?:\/\w+)?['"`]\s*:\s*$/
-  return colorArrayPattern.test(beforeArray)
+  const colorArrayPattern = /['"`]\w+(?:\/\w+)?['"`]\s*:\s*$/;
+  return colorArrayPattern.test(beforeArray);
 }
 
 /**
@@ -140,21 +140,21 @@ export function isWithinStyleArray(content: string, position: number): boolean {
  */
 export function createStyleObjectProtection() {
   return function shouldExcludeMatch(content: string, match: RegExpMatchArray): boolean {
-    if (match.index === undefined) return false
+    if (match.index === undefined) return false;
 
-    const position = match.index
+    const position = match.index;
 
     // Exclude if within a CSS variable definition
     if (isWithinCSSVariable(content, position)) {
-      return true
+      return true;
     }
 
     // Exclude if within a style object
     if (isWithinStyleObject(content, position)) {
-      return true
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 }
 
 /**
@@ -164,27 +164,27 @@ export function createProtectedReplacer(
   pattern: RegExp,
   replacement: string | ((match: string, ...args: any[]) => string)
 ) {
-  const shouldExclude = createStyleObjectProtection()
+  const shouldExclude = createStyleObjectProtection();
 
   return function protectedReplace(content: string): string {
     return content.replace(pattern, (match, ...args) => {
-      const offset = args[args.length - 2] // offset is second to last arg
+      const offset = args[args.length - 2]; // offset is second to last arg
       if (typeof offset === 'number') {
         // Create a proper match object for protection check
-        const matchObj = Object.assign([match], { index: offset }) as RegExpMatchArray
+        const matchObj = Object.assign([match], { index: offset }) as RegExpMatchArray;
 
         if (shouldExclude(content, matchObj)) {
-          return match // Return original match unchanged
+          return match; // Return original match unchanged
         }
       }
 
       // Apply the transformation
       if (typeof replacement === 'function') {
-        return replacement(match, ...args)
+        return replacement(match, ...args);
       }
-      return replacement
-    })
-  }
+      return replacement;
+    });
+  };
 }
 
 /**
@@ -195,22 +195,22 @@ export function validateCSSVariablePreservation(
   originalContent: string,
   transformedContent: string
 ): { isValid: boolean; violations: string[] } {
-  const cssVarPattern = /\[--[\w-]+:var\(--color-[\w-]+\)\]/g
+  const cssVarPattern = /\[--[\w-]+:var\(--color-[\w-]+\)\]/g;
 
-  const originalVars = Array.from(originalContent.matchAll(cssVarPattern))
+  const originalVars = Array.from(originalContent.matchAll(cssVarPattern));
 
-  const violations: string[] = []
+  const violations: string[] = [];
 
   // Check if any CSS variables were removed or modified
   for (const originalVar of originalVars) {
-    const varString = originalVar[0]
+    const varString = originalVar[0];
     if (!transformedContent.includes(varString)) {
-      violations.push(`CSS variable removed or modified: ${varString}`)
+      violations.push(`CSS variable removed or modified: ${varString}`);
     }
   }
 
   return {
     isValid: violations.length === 0,
     violations,
-  }
+  };
 }

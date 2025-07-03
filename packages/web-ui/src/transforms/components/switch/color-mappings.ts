@@ -3,7 +3,7 @@
  * Transforms switch CSS variables to semantic tokens
  */
 
-import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Switch color mappings transform
@@ -45,4 +45,4 @@ export const switchColorMappingsTransform = createProtectedRegexTransform({
   ],
   changeType: 'color-mapping',
   globalProtection: true, // Enable protection for colors objects
-})
+});

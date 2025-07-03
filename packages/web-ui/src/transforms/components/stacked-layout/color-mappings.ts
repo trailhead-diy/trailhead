@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const stackedLayoutColorMappings = makeProtected([
   // Backdrop colors
@@ -51,7 +51,7 @@ const stackedLayoutColorMappings = makeProtected([
     replacement: 'dark:lg:ring-ring',
     description: 'Convert dark mode white ring to semantic ring',
   },
-])
+]);
 
 /**
  * StackedLayout color mapping transform
@@ -64,5 +64,5 @@ export const stackedLayoutColorMappingsTransform = createProtectedRegexTransform
   changeType: 'stacked-layout-color-semantic',
 
   // Only apply to stacked-layout component files
-  contentFilter: (content) => content.includes('export function StackedLayout'),
-})
+  contentFilter: content => content.includes('export function StackedLayout'),
+});

@@ -4,17 +4,17 @@
 
 // Standard AST formatting options - using inline type to avoid recast dependency
 type Options = {
-  quote?: 'single' | 'double'
-  reuseParsers?: boolean
-  lineTerminator?: string
-  useTabs?: boolean
-  tabWidth?: number
-  wrapColumn?: number
-  trailingComma?: boolean
-  objectCurlySpacing?: boolean
-  arrayBracketSpacing?: boolean
-  flowObjectCommas?: boolean
-}
+  quote?: 'single' | 'double';
+  reuseParsers?: boolean;
+  lineTerminator?: string;
+  useTabs?: boolean;
+  tabWidth?: number;
+  wrapColumn?: number;
+  trailingComma?: boolean;
+  objectCurlySpacing?: boolean;
+  arrayBracketSpacing?: boolean;
+  flowObjectCommas?: boolean;
+};
 
 /**
  * Standard formatting options that match traditional output patterns
@@ -31,4 +31,4 @@ export const STANDARD_AST_FORMAT_OPTIONS: Options = {
   objectCurlySpacing: true,
   arrayBracketSpacing: false,
   flowObjectCommas: true,
-}
+};

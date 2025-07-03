@@ -3,7 +3,7 @@
  * Defines the order in which transforms are applied and their dependencies
  */
 
-import type { TransformPhase } from '../shared/types.js'
+import type { TransformPhase } from '../shared/types.js';
 
 /**
  * The order in which transforms are executed is critical for correct operation.
@@ -169,7 +169,7 @@ export const TRANSFORM_ORDER: TransformPhase[] = [
     path: 'common/formatting/post-process',
     type: 'ast',
   },
-]
+];
 
 /**
  * Get transforms for a specific phase
@@ -182,26 +182,26 @@ export function getTransformsByPhase(phase: number): TransformPhase[] {
     [20, 24], // Phase 4: Edge cases
     [25, 27], // Phase 5: Cleanup
     [28, 29], // Phase 6: Formatting
-  ]
+  ];
 
   if (phase < 1 || phase > phases.length) {
-    throw new Error(`Invalid phase: ${phase}. Must be between 1 and ${phases.length}`)
+    throw new Error(`Invalid phase: ${phase}. Must be between 1 and ${phases.length}`);
   }
 
-  const [start, end] = phases[phase - 1]
-  return TRANSFORM_ORDER.slice(start, end + 1)
+  const [start, end] = phases[phase - 1];
+  return TRANSFORM_ORDER.slice(start, end + 1);
 }
 
 /**
  * Get all transforms that can run in parallel
  */
 export function getParallelTransforms(): TransformPhase[] {
-  return TRANSFORM_ORDER.filter((t) => t.parallel)
+  return TRANSFORM_ORDER.filter(t => t.parallel);
 }
 
 /**
  * Get all optional transforms
  */
 export function getOptionalTransforms(): TransformPhase[] {
-  return TRANSFORM_ORDER.filter((t) => t.optional)
+  return TRANSFORM_ORDER.filter(t => t.optional);
 }

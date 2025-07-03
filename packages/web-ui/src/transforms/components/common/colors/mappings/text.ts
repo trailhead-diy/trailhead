@@ -2,7 +2,7 @@
  * Text color mappings - zinc to semantic tokens
  */
 
-import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js'
+import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Get text color mappings
@@ -50,5 +50,5 @@ export function getTextMappings(): ProtectedColorMapping[] {
       replacement: 'text-foreground',
       description: 'text-white → text-foreground (shadcn compatible)',
     },
-  ]
+  ];
 }

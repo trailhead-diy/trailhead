@@ -8,10 +8,10 @@
  * - Loading states across multiple components
  */
 
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
 import {
   Table,
   TableHead,
@@ -19,18 +19,18 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from '../../src/components/table'
-import { Pagination } from '../../src/components/pagination'
-import { Text, Strong } from '../../src/components/text'
-import { Badge } from '../../src/components/badge'
-import { Button } from '../../src/components/button'
-import { Input } from '../../src/components/input'
-import { Select } from '../../src/components/select'
+} from '../../src/components/table';
+import { Pagination } from '../../src/components/pagination';
+import { Text, Strong } from '../../src/components/text';
+import { Badge } from '../../src/components/badge';
+import { Button } from '../../src/components/button';
+import { Input } from '../../src/components/input';
+import { Select } from '../../src/components/select';
 import {
   DescriptionList,
   DescriptionTerm,
   DescriptionDetails,
-} from '../../src/components/description-list'
+} from '../../src/components/description-list';
 
 // Mock data for testing
 const mockUsers = [
@@ -39,45 +39,45 @@ const mockUsers = [
   { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'user', status: 'inactive' },
   { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'moderator', status: 'active' },
   { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'user', status: 'pending' },
-]
+];
 
 describe('Data Display Integration Tests', () => {
   describe('Table with Pagination Integration', () => {
     it('should handle complete table pagination workflow', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const PaginatedTable = () => {
-        const [currentPage, setCurrentPage] = React.useState(1)
-        const [itemsPerPage] = React.useState(2)
-        const [sortField, setSortField] = React.useState<string | null>(null)
-        const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc')
+        const [currentPage, setCurrentPage] = React.useState(1);
+        const [itemsPerPage] = React.useState(2);
+        const [sortField, setSortField] = React.useState<string | null>(null);
+        const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
         const sortedData = React.useMemo(() => {
-          let sorted = [...mockUsers]
+          let sorted = [...mockUsers];
           if (sortField) {
             sorted.sort((a, b) => {
-              const aVal = a[sortField as keyof typeof a]
-              const bVal = b[sortField as keyof typeof b]
-              const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0
-              return sortDirection === 'asc' ? comparison : -comparison
-            })
+              const aVal = a[sortField as keyof typeof a];
+              const bVal = b[sortField as keyof typeof b];
+              const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+              return sortDirection === 'asc' ? comparison : -comparison;
+            });
           }
-          return sorted
-        }, [sortField, sortDirection])
+          return sorted;
+        }, [sortField, sortDirection]);
 
-        const totalPages = Math.ceil(sortedData.length / itemsPerPage)
-        const startIndex = (currentPage - 1) * itemsPerPage
-        const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage)
+        const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
 
         const handleSort = (field: string) => {
           if (sortField === field) {
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
           } else {
-            setSortField(field)
-            setSortDirection('asc')
+            setSortField(field);
+            setSortDirection('asc');
           }
-          setCurrentPage(1) // Reset to first page when sorting
-        }
+          setCurrentPage(1); // Reset to first page when sorting
+        };
 
         return (
           <div>
@@ -108,7 +108,7 @@ describe('Data Display Integration Tests', () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedData.map((user) => (
+                {paginatedData.map(user => (
                   <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                     <TableCell>
                       <Strong>{user.name}</Strong>
@@ -140,13 +140,13 @@ describe('Data Display Integration Tests', () => {
             <Pagination aria-label="User table pagination" data-testid="pagination">
               <Button
                 disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 data-testid="prev-page"
               >
                 Previous
               </Button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <Button
                   key={page}
                   onClick={() => setCurrentPage(page)}
@@ -159,79 +159,79 @@ describe('Data Display Integration Tests', () => {
 
               <Button
                 disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 data-testid="next-page"
               >
                 Next
               </Button>
             </Pagination>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<PaginatedTable />)
+      render(<PaginatedTable />);
 
       // Verify initial state (page 1, 2 items)
       expect(
-        screen.getByText((content) => content.includes('Showing 2 of 5 users'))
-      ).toBeInTheDocument()
-      expect(screen.getByText('Page 1 of 3')).toBeInTheDocument()
-      expect(screen.getByTestId('user-row-1')).toBeInTheDocument()
-      expect(screen.getByTestId('user-row-2')).toBeInTheDocument()
-      expect(screen.queryByTestId('user-row-3')).not.toBeInTheDocument()
+        screen.getByText(content => content.includes('Showing 2 of 5 users'))
+      ).toBeInTheDocument();
+      expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
+      expect(screen.getByTestId('user-row-1')).toBeInTheDocument();
+      expect(screen.getByTestId('user-row-2')).toBeInTheDocument();
+      expect(screen.queryByTestId('user-row-3')).not.toBeInTheDocument();
 
       // Test pagination navigation
-      await user.click(screen.getByTestId('next-page'))
-      expect(screen.getByText('Page 2 of 3')).toBeInTheDocument()
-      expect(screen.queryByTestId('user-row-1')).not.toBeInTheDocument()
-      expect(screen.getByTestId('user-row-3')).toBeInTheDocument()
-      expect(screen.getByTestId('user-row-4')).toBeInTheDocument()
+      await user.click(screen.getByTestId('next-page'));
+      expect(screen.getByText('Page 2 of 3')).toBeInTheDocument();
+      expect(screen.queryByTestId('user-row-1')).not.toBeInTheDocument();
+      expect(screen.getByTestId('user-row-3')).toBeInTheDocument();
+      expect(screen.getByTestId('user-row-4')).toBeInTheDocument();
 
       // Test page number clicking
-      await user.click(screen.getByTestId('page-3'))
-      expect(screen.getByText('Page 3 of 3')).toBeInTheDocument()
+      await user.click(screen.getByTestId('page-3'));
+      expect(screen.getByText('Page 3 of 3')).toBeInTheDocument();
       expect(
-        screen.getByText((content) => content.includes('Showing 1 of 5 users'))
-      ).toBeInTheDocument()
-      expect(screen.getByTestId('user-row-5')).toBeInTheDocument()
+        screen.getByText(content => content.includes('Showing 1 of 5 users'))
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('user-row-5')).toBeInTheDocument();
 
       // Go back to page 1 for sorting test
-      await user.click(screen.getByTestId('page-1'))
+      await user.click(screen.getByTestId('page-1'));
 
       // Test sorting by name
-      await user.click(screen.getByTestId('sort-name'))
-      expect(screen.getByText('Name ↑')).toBeInTheDocument()
+      await user.click(screen.getByTestId('sort-name'));
+      expect(screen.getByText('Name ↑')).toBeInTheDocument();
 
       // Verify sort order changed (Alice should be first now)
-      const rows = screen.getAllByTestId(/user-row-/)
-      expect(rows[0]).toHaveAttribute('data-testid', 'user-row-4') // Alice Brown
+      const rows = screen.getAllByTestId(/user-row-/);
+      expect(rows[0]).toHaveAttribute('data-testid', 'user-row-4'); // Alice Brown
 
       // Test reverse sort
-      await user.click(screen.getByTestId('sort-name'))
-      expect(screen.getByText('Name ↓')).toBeInTheDocument()
-    })
+      await user.click(screen.getByTestId('sort-name'));
+      expect(screen.getByText('Name ↓')).toBeInTheDocument();
+    });
 
     it('should handle table with search and filtering', async () => {
       // Known issue: Headless UI Input components don't always trigger onChange
       // events properly in jsdom environment. The component works correctly in browsers.
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const FilterableTable = () => {
-        const [searchTerm, setSearchTerm] = React.useState('')
-        const [statusFilter, setStatusFilter] = React.useState('all')
-        const [roleFilter, setRoleFilter] = React.useState('all')
+        const [searchTerm, setSearchTerm] = React.useState('');
+        const [statusFilter, setStatusFilter] = React.useState('all');
+        const [roleFilter, setRoleFilter] = React.useState('all');
 
         const filteredData = React.useMemo(() => {
-          return mockUsers.filter((user) => {
+          return mockUsers.filter(user => {
             const matchesSearch =
               user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              user.email.toLowerCase().includes(searchTerm.toLowerCase())
-            const matchesStatus = statusFilter === 'all' || user.status === statusFilter
-            const matchesRole = roleFilter === 'all' || user.role === roleFilter
+              user.email.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+            const matchesRole = roleFilter === 'all' || user.role === roleFilter;
 
-            return matchesSearch && matchesStatus && matchesRole
-          })
-        }, [searchTerm, statusFilter, roleFilter])
+            return matchesSearch && matchesStatus && matchesRole;
+          });
+        }, [searchTerm, statusFilter, roleFilter]);
 
         return (
           <div>
@@ -239,13 +239,13 @@ describe('Data Display Integration Tests', () => {
               <Input
                 placeholder="Search users..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 data-testid="search-input"
               />
 
               <Select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={e => setStatusFilter(e.target.value)}
                 data-testid="status-filter"
               >
                 <option value="all">All Statuses</option>
@@ -256,7 +256,7 @@ describe('Data Display Integration Tests', () => {
 
               <Select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={e => setRoleFilter(e.target.value)}
                 data-testid="role-filter"
               >
                 <option value="all">All Roles</option>
@@ -287,7 +287,7 @@ describe('Data Display Integration Tests', () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredData.map((user) => (
+                  filteredData.map(user => (
                     <TableRow key={user.id} data-testid={`filtered-user-${user.id}`}>
                       <TableCell>
                         <Strong>{user.name}</Strong>
@@ -307,85 +307,85 @@ describe('Data Display Integration Tests', () => {
               </TableBody>
             </Table>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<FilterableTable />)
+      render(<FilterableTable />);
 
       // Initial state - all users shown
       expect(
-        screen.getByText((content) => content.includes('Showing 5 of 5 users'))
-      ).toBeInTheDocument()
-      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument()
+        screen.getByText(content => content.includes('Showing 5 of 5 users'))
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument();
 
       // Test search functionality
-      const searchInput = screen.getByTestId('search-input')
-      await user.type(searchInput, 'john')
+      const searchInput = screen.getByTestId('search-input');
+      await user.type(searchInput, 'john');
 
       // Wait for input value to be set and give React time to re-render
       await waitFor(() => {
-        expect(searchInput).toHaveValue('john')
-      })
+        expect(searchInput).toHaveValue('john');
+      });
 
       // Small delay to ensure React state update completes
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Wait for the filter to be applied
       await waitFor(
         () => {
           // The results summary should show "Showing 2 of 5 users"
-          const summaryText = screen.getByTestId('results-summary').textContent
-          expect(summaryText).toBe('Showing 2 of 5 users')
+          const summaryText = screen.getByTestId('results-summary').textContent;
+          expect(summaryText).toBe('Showing 2 of 5 users');
         },
         { timeout: 3000 }
-      )
+      );
 
-      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument() // John Doe
-      expect(screen.getByTestId('filtered-user-3')).toBeInTheDocument() // Bob Johnson
-      expect(screen.queryByTestId('filtered-user-2')).not.toBeInTheDocument()
+      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument(); // John Doe
+      expect(screen.getByTestId('filtered-user-3')).toBeInTheDocument(); // Bob Johnson
+      expect(screen.queryByTestId('filtered-user-2')).not.toBeInTheDocument();
 
       // Clear search and test status filter
-      await user.clear(screen.getByTestId('search-input'))
+      await user.clear(screen.getByTestId('search-input'));
 
       // Wait for clear to take effect
       await waitFor(() => {
-        expect(searchInput).toHaveValue('')
-      })
+        expect(searchInput).toHaveValue('');
+      });
 
-      await user.selectOptions(screen.getByTestId('status-filter'), 'active')
+      await user.selectOptions(screen.getByTestId('status-filter'), 'active');
 
       await waitFor(() => {
         expect(
-          screen.getByText((content) => content.includes('Showing 3 of 5 users'))
-        ).toBeInTheDocument()
-      })
+          screen.getByText(content => content.includes('Showing 3 of 5 users'))
+        ).toBeInTheDocument();
+      });
 
-      expect(screen.queryByTestId('filtered-user-3')).not.toBeInTheDocument() // Bob is inactive
+      expect(screen.queryByTestId('filtered-user-3')).not.toBeInTheDocument(); // Bob is inactive
 
       // Test role filter
-      await user.selectOptions(screen.getByTestId('role-filter'), 'admin')
+      await user.selectOptions(screen.getByTestId('role-filter'), 'admin');
 
       await waitFor(() => {
         expect(
-          screen.getByText((content) => content.includes('Showing 1 of 5 users'))
-        ).toBeInTheDocument()
-      })
+          screen.getByText(content => content.includes('Showing 1 of 5 users'))
+        ).toBeInTheDocument();
+      });
 
-      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument() // John is admin and active
+      expect(screen.getByTestId('filtered-user-1')).toBeInTheDocument(); // John is admin and active
 
       // Test no results
-      await user.selectOptions(screen.getByTestId('role-filter'), 'moderator')
-      await user.selectOptions(screen.getByTestId('status-filter'), 'inactive')
+      await user.selectOptions(screen.getByTestId('role-filter'), 'moderator');
+      await user.selectOptions(screen.getByTestId('status-filter'), 'inactive');
 
       await waitFor(() => {
         expect(
-          screen.getByText((content) => content.includes('Showing 0 of 5 users'))
-        ).toBeInTheDocument()
-      })
+          screen.getByText(content => content.includes('Showing 0 of 5 users'))
+        ).toBeInTheDocument();
+      });
 
-      expect(screen.getByTestId('no-results')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByTestId('no-results')).toBeInTheDocument();
+    });
+  });
 
   describe('Complex Data Structures', () => {
     it('should handle nested data display with description lists', () => {
@@ -408,7 +408,7 @@ describe('Data Display Integration Tests', () => {
           contributions: 150,
           followers: 45,
         },
-      }
+      };
 
       const UserProfileDisplay = () => (
         <div data-testid="user-profile">
@@ -485,52 +485,54 @@ describe('Data Display Integration Tests', () => {
             </DescriptionDetails>
           </DescriptionList>
         </div>
-      )
+      );
 
-      render(<UserProfileDisplay />)
+      render(<UserProfileDisplay />);
 
       // Verify all nested data is displayed
-      expect(screen.getByText('John Doe')).toBeInTheDocument()
-      expect(screen.getByText('john@example.com')).toBeInTheDocument()
-      expect(screen.getByText('Software developer with 10 years of experience')).toBeInTheDocument()
-      expect(screen.getByText('San Francisco, CA')).toBeInTheDocument()
-      expect(screen.getByText('https://johndoe.dev')).toBeInTheDocument()
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('john@example.com')).toBeInTheDocument();
+      expect(
+        screen.getByText('Software developer with 10 years of experience')
+      ).toBeInTheDocument();
+      expect(screen.getByText('San Francisco, CA')).toBeInTheDocument();
+      expect(screen.getByText('https://johndoe.dev')).toBeInTheDocument();
 
       // Verify preferences display
-      expect(screen.getByText('dark')).toBeInTheDocument()
-      expect(screen.getByText('Enabled')).toBeInTheDocument()
-      expect(screen.getByText('English')).toBeInTheDocument()
+      expect(screen.getByText('dark')).toBeInTheDocument();
+      expect(screen.getByText('Enabled')).toBeInTheDocument();
+      expect(screen.getByText('English')).toBeInTheDocument();
 
       // Verify stats table
-      expect(screen.getByText('25')).toBeInTheDocument()
-      expect(screen.getByText('150')).toBeInTheDocument()
-      expect(screen.getByText('45')).toBeInTheDocument()
-    })
+      expect(screen.getByText('25')).toBeInTheDocument();
+      expect(screen.getByText('150')).toBeInTheDocument();
+      expect(screen.getByText('45')).toBeInTheDocument();
+    });
 
     it('should handle loading states across multiple data components', async () => {
       const LoadingStateDemo = () => {
-        const [usersLoading, setUsersLoading] = React.useState(true)
-        const [statsLoading, setStatsLoading] = React.useState(true)
-        const [users, setUsers] = React.useState<typeof mockUsers>([])
-        const [stats, setStats] = React.useState({ total: 0, active: 0, inactive: 0 })
+        const [usersLoading, setUsersLoading] = React.useState(true);
+        const [statsLoading, setStatsLoading] = React.useState(true);
+        const [users, setUsers] = React.useState<typeof mockUsers>([]);
+        const [stats, setStats] = React.useState({ total: 0, active: 0, inactive: 0 });
 
         React.useEffect(() => {
           // Simulate loading users
           setTimeout(() => {
-            setUsers(mockUsers)
-            setUsersLoading(false)
-          }, 100)
+            setUsers(mockUsers);
+            setUsersLoading(false);
+          }, 100);
 
           // Simulate loading stats (takes longer)
           setTimeout(() => {
             setStats({
               total: mockUsers.length,
-              active: mockUsers.filter((u) => u.status === 'active').length,
-              inactive: mockUsers.filter((u) => u.status === 'inactive').length,
-            })
-            setStatsLoading(false)
-          }, 200)
-        }, [])
+              active: mockUsers.filter(u => u.status === 'active').length,
+              inactive: mockUsers.filter(u => u.status === 'inactive').length,
+            });
+            setStatsLoading(false);
+          }, 200);
+        }, []);
 
         return (
           <div>
@@ -571,7 +573,7 @@ describe('Data Display Integration Tests', () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {users.map((user) => (
+                    {users.map(user => (
                       <TableRow key={user.id}>
                         <TableCell>{user.name}</TableCell>
                         <TableCell>
@@ -586,63 +588,63 @@ describe('Data Display Integration Tests', () => {
               )}
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<LoadingStateDemo />)
+      render(<LoadingStateDemo />);
 
       // Initially both should be loading
-      expect(screen.getByTestId('stats-loading')).toBeInTheDocument()
-      expect(screen.getByTestId('users-loading')).toBeInTheDocument()
+      expect(screen.getByTestId('stats-loading')).toBeInTheDocument();
+      expect(screen.getByTestId('users-loading')).toBeInTheDocument();
 
       // Users should load first
       await waitFor(() => {
-        expect(screen.queryByTestId('users-loading')).not.toBeInTheDocument()
-      })
-      expect(screen.getByText('John Doe')).toBeInTheDocument()
-      expect(screen.getByTestId('stats-loading')).toBeInTheDocument() // Stats still loading
+        expect(screen.queryByTestId('users-loading')).not.toBeInTheDocument();
+      });
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByTestId('stats-loading')).toBeInTheDocument(); // Stats still loading
 
       // Stats should load after
       await waitFor(() => {
-        expect(screen.queryByTestId('stats-loading')).not.toBeInTheDocument()
-      })
-      expect(screen.getByText('5')).toBeInTheDocument() // Total users
-      expect(screen.getByText('3')).toBeInTheDocument() // Active users
-    })
-  })
+        expect(screen.queryByTestId('stats-loading')).not.toBeInTheDocument();
+      });
+      expect(screen.getByText('5')).toBeInTheDocument(); // Total users
+      expect(screen.getByText('3')).toBeInTheDocument(); // Active users
+    });
+  });
 
   describe('Interactive Data Operations', () => {
     it('should handle data selection and bulk operations', async () => {
-      const user = userEvent.setup()
-      const onBulkDelete = vi.fn()
+      const user = userEvent.setup();
+      const onBulkDelete = vi.fn();
 
       const SelectableTable = () => {
-        const [selectedUsers, setSelectedUsers] = React.useState<number[]>([])
-        const [selectAll, setSelectAll] = React.useState(false)
+        const [selectedUsers, setSelectedUsers] = React.useState<number[]>([]);
+        const [selectAll, setSelectAll] = React.useState(false);
 
         const handleSelectAll = (checked: boolean) => {
-          setSelectAll(checked)
-          setSelectedUsers(checked ? mockUsers.map((u) => u.id) : [])
-        }
+          setSelectAll(checked);
+          setSelectedUsers(checked ? mockUsers.map(u => u.id) : []);
+        };
 
         const handleSelectUser = (userId: number, checked: boolean) => {
           if (checked) {
-            setSelectedUsers((prev) => [...prev, userId])
+            setSelectedUsers(prev => [...prev, userId]);
           } else {
-            setSelectedUsers((prev) => prev.filter((id) => id !== userId))
-            setSelectAll(false)
+            setSelectedUsers(prev => prev.filter(id => id !== userId));
+            setSelectAll(false);
           }
-        }
+        };
 
         const handleBulkDelete = () => {
-          onBulkDelete(selectedUsers)
-          setSelectedUsers([])
-          setSelectAll(false)
-        }
+          onBulkDelete(selectedUsers);
+          setSelectedUsers([]);
+          setSelectAll(false);
+        };
 
         React.useEffect(() => {
-          setSelectAll(selectedUsers.length === mockUsers.length && mockUsers.length > 0)
-        }, [selectedUsers])
+          setSelectAll(selectedUsers.length === mockUsers.length && mockUsers.length > 0);
+        }, [selectedUsers]);
 
         return (
           <div>
@@ -664,7 +666,7 @@ describe('Data Display Integration Tests', () => {
                     <input
                       type="checkbox"
                       checked={selectAll}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      onChange={e => handleSelectAll(e.target.checked)}
                       data-testid="select-all"
                       aria-label="Select all users"
                     />
@@ -675,13 +677,13 @@ describe('Data Display Integration Tests', () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {mockUsers.map((user) => (
+                {mockUsers.map(user => (
                   <TableRow key={user.id} data-selected={selectedUsers.includes(user.id)}>
                     <TableCell>
                       <input
                         type="checkbox"
                         checked={selectedUsers.includes(user.id)}
-                        onChange={(e) => handleSelectUser(user.id, e.target.checked)}
+                        onChange={e => handleSelectUser(user.id, e.target.checked)}
                         data-testid={`select-user-${user.id}`}
                         aria-label={`Select ${user.name}`}
                       />
@@ -702,38 +704,38 @@ describe('Data Display Integration Tests', () => {
               </TableBody>
             </Table>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<SelectableTable />)
+      render(<SelectableTable />);
 
       // Initially no users selected
-      expect(screen.queryByTestId('bulk-actions')).toBeEmptyDOMElement()
+      expect(screen.queryByTestId('bulk-actions')).toBeEmptyDOMElement();
 
       // Select individual users
-      await user.click(screen.getByTestId('select-user-1'))
-      await user.click(screen.getByTestId('select-user-3'))
+      await user.click(screen.getByTestId('select-user-1'));
+      await user.click(screen.getByTestId('select-user-3'));
 
-      expect(screen.getByText('2 users selected')).toBeInTheDocument()
-      expect(screen.getByTestId('bulk-delete')).toBeInTheDocument()
+      expect(screen.getByText('2 users selected')).toBeInTheDocument();
+      expect(screen.getByTestId('bulk-delete')).toBeInTheDocument();
 
       // Test bulk delete
-      await user.click(screen.getByTestId('bulk-delete'))
-      expect(onBulkDelete).toHaveBeenCalledWith([1, 3])
+      await user.click(screen.getByTestId('bulk-delete'));
+      expect(onBulkDelete).toHaveBeenCalledWith([1, 3]);
 
       // Selection should be cleared after bulk action
       await waitFor(() => {
-        expect(screen.queryByText('users selected')).not.toBeInTheDocument()
-      })
+        expect(screen.queryByText('users selected')).not.toBeInTheDocument();
+      });
 
       // Test select all
-      await user.click(screen.getByTestId('select-all'))
-      expect(screen.getByText('5 users selected')).toBeInTheDocument()
+      await user.click(screen.getByTestId('select-all'));
+      expect(screen.getByText('5 users selected')).toBeInTheDocument();
 
       // All checkboxes should be checked
-      expect(screen.getByTestId('select-user-1')).toBeChecked()
-      expect(screen.getByTestId('select-user-2')).toBeChecked()
-      expect(screen.getByTestId('select-user-5')).toBeChecked()
-    })
-  })
-})
+      expect(screen.getByTestId('select-user-1')).toBeChecked();
+      expect(screen.getByTestId('select-user-2')).toBeChecked();
+      expect(screen.getByTestId('select-user-5')).toBeChecked();
+    });
+  });
+});

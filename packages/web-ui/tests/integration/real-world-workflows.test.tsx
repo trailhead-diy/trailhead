@@ -23,14 +23,14 @@
  * See: https://github.com/tailwindlabs/headlessui/issues/3294
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Button } from '../../src/components/button'
-import { Input } from '../../src/components/input'
-import { Checkbox } from '../../src/components/checkbox'
-import { Badge } from '../../src/components/badge'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { Button } from '../../src/components/button';
+import { Input } from '../../src/components/input';
+import { Checkbox } from '../../src/components/checkbox';
+import { Badge } from '../../src/components/badge';
 import {
   Table,
   TableBody,
@@ -38,39 +38,39 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../src/components/table'
-import { Alert } from '../../src/components/alert'
+} from '../../src/components/table';
+import { Alert } from '../../src/components/alert';
 
 // Mock async operations
-const mockApiCall = vi.fn()
-const mockValidation = vi.fn()
+const mockApiCall = vi.fn();
+const mockValidation = vi.fn();
 
 describe('Real-World User Workflows', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockApiCall.mockResolvedValue({ success: true })
-    mockValidation.mockResolvedValue({ valid: true })
-  })
+    vi.clearAllMocks();
+    mockApiCall.mockResolvedValue({ success: true });
+    mockValidation.mockResolvedValue({ valid: true });
+  });
 
   describe('Multi-Step User Flow', () => {
     it('should handle multi-step form with state management', async () => {
       // Fixed: Headless UI components now work properly with our enhanced JSDOM config
       // The PointerEvent shim and pretendToBeVisual option resolved the issues
-      const user = userEvent.setup()
-      const onComplete = vi.fn()
+      const user = userEvent.setup();
+      const onComplete = vi.fn();
 
       const MultiStepForm = () => {
-        const [currentStep, setCurrentStep] = React.useState(1)
+        const [currentStep, setCurrentStep] = React.useState(1);
         const [formData, setFormData] = React.useState({
           name: '',
           email: '',
           preferences: false,
-        })
+        });
 
         const handleNext = () => {
-          setCurrentStep((prev) => prev + 1)
-        }
-        const handleComplete = () => onComplete(formData)
+          setCurrentStep(prev => prev + 1);
+        };
+        const handleComplete = () => onComplete(formData);
 
         return (
           <div data-testid="multi-step-form">
@@ -81,7 +81,7 @@ describe('Real-World User Workflows', () => {
                 <Input
                   placeholder="Name"
                   value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   data-testid="name-input"
                   name="name"
                 />
@@ -97,7 +97,7 @@ describe('Real-World User Workflows', () => {
                   type="email"
                   placeholder="Email"
                   value={formData.email}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   data-testid="email-input"
                 />
                 <Button onClick={handleNext} disabled={!formData.email} data-testid="next-button">
@@ -110,7 +110,7 @@ describe('Real-World User Workflows', () => {
               <div data-testid="step-3">
                 <Checkbox
                   checked={formData.preferences}
-                  onChange={(checked) => setFormData((prev) => ({ ...prev, preferences: checked }))}
+                  onChange={checked => setFormData(prev => ({ ...prev, preferences: checked }))}
                   data-testid="preferences-checkbox"
                 >
                   Enable preferences
@@ -121,49 +121,49 @@ describe('Real-World User Workflows', () => {
               </div>
             )}
           </div>
-        )
-      }
+        );
+      };
 
-      render(<MultiStepForm />)
+      render(<MultiStepForm />);
 
       // Step 1
-      expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1')
-      const nameInput = screen.getByTestId('name-input')
+      expect(screen.getByTestId('current-step')).toHaveTextContent('Step 1');
+      const nameInput = screen.getByTestId('name-input');
 
       // Type in the input - Headless UI Input may need special handling
-      await user.type(nameInput, 'John Doe')
+      await user.type(nameInput, 'John Doe');
 
       // Wait for input value to be set and state to update
       await waitFor(() => {
-        expect(nameInput).toHaveValue('John Doe')
-      })
+        expect(nameInput).toHaveValue('John Doe');
+      });
 
       // Find the button again after state update to ensure it's re-rendered
       await waitFor(() => {
-        const nextButton = screen.getByTestId('next-button')
-        expect(nextButton).not.toBeDisabled()
-      })
+        const nextButton = screen.getByTestId('next-button');
+        expect(nextButton).not.toBeDisabled();
+      });
 
       // Now click the button
-      await user.click(screen.getByTestId('next-button'))
+      await user.click(screen.getByTestId('next-button'));
 
       // Step 2 - Wait for the step transition
       await waitFor(() => {
-        expect(screen.getByTestId('current-step')).toHaveTextContent('Step 2')
-      })
+        expect(screen.getByTestId('current-step')).toHaveTextContent('Step 2');
+      });
 
-      await user.type(screen.getByTestId('email-input'), 'john@example.com')
+      await user.type(screen.getByTestId('email-input'), 'john@example.com');
 
       // Click and wait for state update
-      await user.click(screen.getByTestId('next-button'))
+      await user.click(screen.getByTestId('next-button'));
 
       // Step 3 - Wait for the step transition
       await waitFor(() => {
-        expect(screen.getByTestId('current-step')).toHaveTextContent('Step 3')
-      })
+        expect(screen.getByTestId('current-step')).toHaveTextContent('Step 3');
+      });
 
-      await user.click(screen.getByTestId('preferences-checkbox'))
-      await user.click(screen.getByTestId('complete-button'))
+      await user.click(screen.getByTestId('preferences-checkbox'));
+      await user.click(screen.getByTestId('complete-button'));
 
       // Wait for the form submission to complete
       await waitFor(() => {
@@ -171,29 +171,29 @@ describe('Real-World User Workflows', () => {
           name: 'John Doe',
           email: 'john@example.com',
           preferences: true,
-        })
-      })
-    })
-  })
+        });
+      });
+    });
+  });
 
   describe('Data Dashboard Workflow', () => {
     it('should handle complex data filtering and table interactions', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
       const mockData = [
         { id: 1, name: 'Project Alpha', status: 'active', priority: 'high', assignee: 'John' },
         { id: 2, name: 'Project Beta', status: 'pending', priority: 'medium', assignee: 'Jane' },
         { id: 3, name: 'Project Gamma', status: 'completed', priority: 'low', assignee: 'Bob' },
         { id: 4, name: 'Project Delta', status: 'active', priority: 'high', assignee: 'Alice' },
-      ]
+      ];
 
       // Working Dashboard component with proper Table structure and state management
       const Dashboard = () => {
-        const [searchTerm, setSearchTerm] = React.useState('')
-        const [data] = React.useState(mockData)
+        const [searchTerm, setSearchTerm] = React.useState('');
+        const [data] = React.useState(mockData);
 
         const filteredData = React.useMemo(() => {
-          return data.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        }, [data, searchTerm])
+          return data.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        }, [data, searchTerm]);
 
         return (
           <div data-testid="dashboard">
@@ -201,7 +201,7 @@ describe('Real-World User Workflows', () => {
               <Input
                 placeholder="Search projects..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 data-testid="search-input"
               />
             </div>
@@ -216,7 +216,7 @@ describe('Real-World User Workflows', () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData.map((item) => (
+                {filteredData.map(item => (
                   <TableRow key={item.id} data-testid={`row-${item.id}`}>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>
@@ -251,74 +251,74 @@ describe('Real-World User Workflows', () => {
               </TableBody>
             </Table>
           </div>
-        )
-      }
+        );
+      };
 
       await act(async () => {
-        render(<Dashboard />)
-      })
+        render(<Dashboard />);
+      });
 
       // Wait for table to render
       await waitFor(() => {
-        const table = screen.getByRole('table')
-        expect(table).toBeInTheDocument()
+        const table = screen.getByRole('table');
+        expect(table).toBeInTheDocument();
 
         // Verify all projects are initially visible
-        expect(screen.getByText('Project Alpha')).toBeInTheDocument()
-        expect(screen.getByText('Project Beta')).toBeInTheDocument()
-        expect(screen.getByText('Project Gamma')).toBeInTheDocument()
-        expect(screen.getByText('Project Delta')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Project Alpha')).toBeInTheDocument();
+        expect(screen.getByText('Project Beta')).toBeInTheDocument();
+        expect(screen.getByText('Project Gamma')).toBeInTheDocument();
+        expect(screen.getByText('Project Delta')).toBeInTheDocument();
+      });
 
       // Test search filtering
-      const searchInput = screen.getByTestId('search-input')
+      const searchInput = screen.getByTestId('search-input');
       await act(async () => {
-        await user.type(searchInput, 'Alpha')
-      })
+        await user.type(searchInput, 'Alpha');
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Project Alpha')).toBeInTheDocument()
-        expect(screen.queryByText('Project Beta')).not.toBeInTheDocument()
-        expect(screen.queryByText('Project Gamma')).not.toBeInTheDocument()
-        expect(screen.queryByText('Project Delta')).not.toBeInTheDocument()
-      })
+        expect(screen.getByText('Project Alpha')).toBeInTheDocument();
+        expect(screen.queryByText('Project Beta')).not.toBeInTheDocument();
+        expect(screen.queryByText('Project Gamma')).not.toBeInTheDocument();
+        expect(screen.queryByText('Project Delta')).not.toBeInTheDocument();
+      });
 
       // Clear search
       await act(async () => {
-        await user.clear(searchInput)
-      })
+        await user.clear(searchInput);
+      });
 
       await waitFor(() => {
-        expect(screen.getByText('Project Alpha')).toBeInTheDocument()
-        expect(screen.getByText('Project Beta')).toBeInTheDocument()
-        expect(screen.getByText('Project Gamma')).toBeInTheDocument()
-        expect(screen.getByText('Project Delta')).toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.getByText('Project Alpha')).toBeInTheDocument();
+        expect(screen.getByText('Project Beta')).toBeInTheDocument();
+        expect(screen.getByText('Project Gamma')).toBeInTheDocument();
+        expect(screen.getByText('Project Delta')).toBeInTheDocument();
+      });
+    });
+  });
 
   describe('Shopping Cart Workflow', () => {
     it('should handle cart operations and state management', async () => {
-      const user = userEvent.setup()
-      const onCheckout = vi.fn()
+      const user = userEvent.setup();
+      const onCheckout = vi.fn();
 
       const ShoppingCart = () => {
         const [items, setItems] = React.useState<
           Array<{ id: number; name: string; quantity: number }>
-        >([])
+        >([]);
 
         const addItem = (name: string) => {
-          const id = items.length + 1
-          setItems((prev) => [...prev, { id, name, quantity: 1 }])
-        }
+          const id = items.length + 1;
+          setItems(prev => [...prev, { id, name, quantity: 1 }]);
+        };
 
         const removeItem = (id: number) => {
-          setItems((prev) => prev.filter((item) => item.id !== id))
-        }
+          setItems(prev => prev.filter(item => item.id !== id));
+        };
 
         const updateQuantity = (id: number, quantity: number) => {
-          setItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)))
-        }
+          setItems(prev => prev.map(item => (item.id === id ? { ...item, quantity } : item)));
+        };
 
         return (
           <div data-testid="shopping-cart">
@@ -335,7 +335,7 @@ describe('Real-World User Workflows', () => {
               {items.length === 0 ? (
                 <p data-testid="empty-cart">Cart is empty</p>
               ) : (
-                items.map((item) => (
+                items.map(item => (
                   <div
                     key={item.id}
                     data-testid={`item-${item.id}`}
@@ -368,80 +368,80 @@ describe('Real-World User Workflows', () => {
               </Button>
             )}
           </div>
-        )
-      }
+        );
+      };
 
-      render(<ShoppingCart />)
+      render(<ShoppingCart />);
 
       // Initially empty
-      expect(screen.getByTestId('empty-cart')).toBeInTheDocument()
+      expect(screen.getByTestId('empty-cart')).toBeInTheDocument();
 
       // Add items
-      await user.click(screen.getByTestId('add-widget'))
-      await user.click(screen.getByTestId('add-gadget'))
+      await user.click(screen.getByTestId('add-widget'));
+      await user.click(screen.getByTestId('add-gadget'));
 
       // Check items added
-      expect(screen.queryByTestId('empty-cart')).not.toBeInTheDocument()
-      expect(screen.getByTestId('item-1')).toBeInTheDocument()
-      expect(screen.getByTestId('item-2')).toBeInTheDocument()
+      expect(screen.queryByTestId('empty-cart')).not.toBeInTheDocument();
+      expect(screen.getByTestId('item-1')).toBeInTheDocument();
+      expect(screen.getByTestId('item-2')).toBeInTheDocument();
 
       // Increase quantity
-      await user.click(screen.getByTestId('increase-1'))
-      expect(screen.getByTestId('quantity-1')).toHaveTextContent('Qty: 2')
+      await user.click(screen.getByTestId('increase-1'));
+      expect(screen.getByTestId('quantity-1')).toHaveTextContent('Qty: 2');
 
       // Remove item
-      await user.click(screen.getByTestId('remove-2'))
-      expect(screen.queryByTestId('item-2')).not.toBeInTheDocument()
+      await user.click(screen.getByTestId('remove-2'));
+      expect(screen.queryByTestId('item-2')).not.toBeInTheDocument();
 
       // Checkout
-      await user.click(screen.getByTestId('checkout'))
-      expect(onCheckout).toHaveBeenCalledWith([{ id: 1, name: 'Widget', quantity: 2 }])
-    })
-  })
+      await user.click(screen.getByTestId('checkout'));
+      expect(onCheckout).toHaveBeenCalledWith([{ id: 1, name: 'Widget', quantity: 2 }]);
+    });
+  });
 
   describe('Error Recovery Scenarios', () => {
     it('should handle network errors and allow user recovery', async () => {
       // Fixed: Enhanced JSDOM configuration now properly handles async state updates
-      const user = userEvent.setup()
-      let shouldFail = true
+      const user = userEvent.setup();
+      let shouldFail = true;
 
       mockApiCall.mockImplementation(() => {
         if (shouldFail) {
-          return Promise.reject(new Error('Network error'))
+          return Promise.reject(new Error('Network error'));
         }
-        return Promise.resolve({ success: true, data: 'Form submitted successfully' })
-      })
+        return Promise.resolve({ success: true, data: 'Form submitted successfully' });
+      });
 
       const FormWithErrorHandling = () => {
-        const [loading, setLoading] = React.useState(false)
-        const [error, setError] = React.useState<string | null>(null)
-        const [success, setSuccess] = React.useState(false)
-        const [formData, setFormData] = React.useState({ message: '' })
+        const [loading, setLoading] = React.useState(false);
+        const [error, setError] = React.useState<string | null>(null);
+        const [success, setSuccess] = React.useState(false);
+        const [formData, setFormData] = React.useState({ message: '' });
 
         const handleSubmit = async () => {
-          setLoading(true)
-          setError(null)
+          setLoading(true);
+          setError(null);
 
           try {
-            await mockApiCall(formData)
-            setSuccess(true)
+            await mockApiCall(formData);
+            setSuccess(true);
           } catch (err) {
-            setError(err instanceof Error ? err.message : 'Something went wrong')
+            setError(err instanceof Error ? err.message : 'Something went wrong');
           } finally {
-            setLoading(false)
+            setLoading(false);
           }
-        }
+        };
 
         const retry = () => {
-          shouldFail = false // Simulate fixing the network issue
-          handleSubmit()
-        }
+          shouldFail = false; // Simulate fixing the network issue
+          handleSubmit();
+        };
 
         return (
           <div data-testid="form-with-error-handling">
             <Input
               value={formData.message}
-              onChange={(e) => setFormData({ message: e.target.value })}
+              onChange={e => setFormData({ message: e.target.value })}
               placeholder="Enter your message"
               data-testid="message-input"
             />
@@ -479,64 +479,64 @@ describe('Real-World User Workflows', () => {
               {loading ? 'Submitting...' : 'Submit'}
             </Button>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<FormWithErrorHandling />)
+      render(<FormWithErrorHandling />);
 
       // Fill form and submit
-      await user.type(screen.getByTestId('message-input'), 'Test message')
-      await user.click(screen.getByTestId('submit-button'))
+      await user.type(screen.getByTestId('message-input'), 'Test message');
+      await user.click(screen.getByTestId('submit-button'));
 
       // Wait for the async operation to complete and error to be shown
       await waitFor(
         () => {
-          expect(screen.getByTestId('error-alert')).toBeInTheDocument()
+          expect(screen.getByTestId('error-alert')).toBeInTheDocument();
         },
         { timeout: 3000 }
-      )
+      );
 
-      expect(screen.getByText('Network error')).toBeInTheDocument()
+      expect(screen.getByText('Network error')).toBeInTheDocument();
 
       // Retry should succeed
-      await user.click(screen.getByTestId('retry-button'))
+      await user.click(screen.getByTestId('retry-button'));
 
       // Wait for success state
       await waitFor(
         () => {
-          expect(screen.getByTestId('success-alert')).toBeInTheDocument()
-          expect(screen.queryByTestId('error-alert')).not.toBeInTheDocument()
+          expect(screen.getByTestId('success-alert')).toBeInTheDocument();
+          expect(screen.queryByTestId('error-alert')).not.toBeInTheDocument();
         },
         { timeout: 3000 }
-      )
-    })
-  })
+      );
+    });
+  });
 
   describe('Performance-Critical Interactions', () => {
     it('should handle rapid user interactions without performance degradation', async () => {
-      const user = userEvent.setup()
-      const onUpdate = vi.fn()
+      const user = userEvent.setup();
+      const onUpdate = vi.fn();
 
       const PerformanceTestComponent = () => {
-        const [count, setCount] = React.useState(0)
-        const [items, setItems] = React.useState<number[]>([])
+        const [count, setCount] = React.useState(0);
+        const [items, setItems] = React.useState<number[]>([]);
 
         React.useEffect(() => {
-          onUpdate(count, items.length)
-        }, [count, items.length])
+          onUpdate(count, items.length);
+        }, [count, items.length]);
 
         const addItem = () => {
-          setItems((prev) => [...prev, Date.now()])
-        }
+          setItems(prev => [...prev, Date.now()]);
+        };
 
         const removeItem = (index: number) => {
-          setItems((prev) => prev.filter((_, i) => i !== index))
-        }
+          setItems(prev => prev.filter((_, i) => i !== index));
+        };
 
         return (
           <div data-testid="performance-test">
             <div className="flex gap-2 mb-4">
-              <Button onClick={() => setCount((c) => c + 1)} data-testid="increment-button">
+              <Button onClick={() => setCount(c => c + 1)} data-testid="increment-button">
                 Count: {count}
               </Button>
               <Button onClick={addItem} data-testid="add-item-button">
@@ -561,41 +561,41 @@ describe('Real-World User Workflows', () => {
               ))}
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<PerformanceTestComponent />)
+      render(<PerformanceTestComponent />);
 
       // Rapid clicks should all be handled
-      const incrementButton = screen.getByTestId('increment-button')
-      const addItemButton = screen.getByTestId('add-item-button')
+      const incrementButton = screen.getByTestId('increment-button');
+      const addItemButton = screen.getByTestId('add-item-button');
 
       // Rapid increment clicks
       for (let i = 0; i < 10; i++) {
-        await user.click(incrementButton)
+        await user.click(incrementButton);
       }
 
       // Rapid item additions
       for (let i = 0; i < 5; i++) {
-        await user.click(addItemButton)
+        await user.click(addItemButton);
       }
 
       await waitFor(() => {
-        expect(screen.getByTestId('increment-button')).toHaveTextContent('Count: 10')
-        expect(screen.getByTestId('add-item-button')).toHaveTextContent('Add Item (5)')
-      })
+        expect(screen.getByTestId('increment-button')).toHaveTextContent('Count: 10');
+        expect(screen.getByTestId('add-item-button')).toHaveTextContent('Add Item (5)');
+      });
 
       // Remove items rapidly
       for (let i = 0; i < 3; i++) {
-        const removeButton = screen.getByTestId(`remove-item-${i}`)
-        await user.click(removeButton)
+        const removeButton = screen.getByTestId(`remove-item-${i}`);
+        await user.click(removeButton);
       }
 
       await waitFor(() => {
-        expect(screen.getByTestId('add-item-button')).toHaveTextContent('Add Item (2)')
-      })
+        expect(screen.getByTestId('add-item-button')).toHaveTextContent('Add Item (2)');
+      });
 
-      expect(onUpdate).toHaveBeenCalledWith(10, 2)
-    })
-  })
-})
+      expect(onUpdate).toHaveBeenCalledWith(10, 2);
+    });
+  });
+});

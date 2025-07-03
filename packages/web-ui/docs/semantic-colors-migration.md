@@ -104,7 +104,7 @@ const colors = {
   primary: '[--btn-bg:var(--color-primary)] [--btn-border:var(--color-primary)] ...',
   secondary: '[--btn-bg:var(--color-secondary)] [--btn-border:var(--color-secondary)] ...',
   // etc.
-}
+};
 ```
 
 This approach:
@@ -223,10 +223,10 @@ This transformation is comprehensive and affects all color references, including
 
 ```tsx
 // Original
-red: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-red-600)]'
+red: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-red-600)]';
 
 // After transformation
-red: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-red-600)]'
+red: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-red-600)]';
 ```
 
 If you need the exact original colors, use `--skip-transforms`.

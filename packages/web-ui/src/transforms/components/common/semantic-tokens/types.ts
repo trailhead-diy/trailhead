@@ -10,7 +10,7 @@ export type SemanticColorToken =
   | 'accent'
   | 'card'
   | 'popover'
-  | 'border'
+  | 'border';
 
 export const SEMANTIC_TOKENS: readonly SemanticColorToken[] = [
   'primary',
@@ -21,4 +21,4 @@ export const SEMANTIC_TOKENS: readonly SemanticColorToken[] = [
   'card',
   'popover',
   'border',
-] as const
+] as const;

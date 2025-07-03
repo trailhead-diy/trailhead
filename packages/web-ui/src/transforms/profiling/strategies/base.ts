@@ -2,15 +2,15 @@
  * Base strategy interface for profiling approaches
  */
 
-import type { ProfileResult, ProfileOptions } from '../types.js'
-import type { ProfileProgressManager } from '../progress.js'
+import type { ProfileResult, ProfileOptions } from '../types.js';
+import type { ProfileProgressManager } from '../progress.js';
 
 /**
  * Abstract base class for profiling strategies
  */
 export abstract class ProfileStrategy {
-  abstract readonly name: string
-  abstract readonly description: string
+  abstract readonly name: string;
+  abstract readonly description: string;
 
   /**
    * Execute profiling strategy
@@ -18,22 +18,22 @@ export abstract class ProfileStrategy {
   abstract profile(
     options: ProfileOptions,
     progressManager: ProfileProgressManager
-  ): Promise<ProfileResult>
+  ): Promise<ProfileResult>;
 
   /**
    * Validate strategy can run with given options
    */
-  abstract validate(options: ProfileOptions): { isValid: boolean; errors: string[] }
+  abstract validate(options: ProfileOptions): { isValid: boolean; errors: string[] };
 
   /**
    * Get estimated duration for this strategy
    */
-  abstract getEstimatedDuration(options: ProfileOptions): number // milliseconds
+  abstract getEstimatedDuration(options: ProfileOptions): number; // milliseconds
 
   /**
    * Get list of transforms this strategy will use
    */
-  abstract getTransforms(): string[]
+  abstract getTransforms(): string[];
 
   /**
    * Setup any strategy-specific environment
@@ -58,7 +58,7 @@ export abstract class ProfileStrategy {
       description: this.description,
       transforms: this.getTransforms(),
       estimatedDuration: this.getEstimatedDuration(options),
-    }
+    };
   }
 }
 
@@ -66,31 +66,31 @@ export abstract class ProfileStrategy {
  * Strategy factory interface
  */
 export interface StrategyFactory {
-  createStrategy(mode: string): ProfileStrategy | null
-  getAvailableStrategies(): string[]
-  getStrategyDescription(mode: string): string | null
+  createStrategy(mode: string): ProfileStrategy | null;
+  getAvailableStrategies(): string[];
+  getStrategyDescription(mode: string): string | null;
 }
 
 /**
  * Base profiling context
  */
 export interface ProfilingContext {
-  options: ProfileOptions
-  progressManager: ProfileProgressManager
-  startTime: number
-  memoryBaseline: number
+  options: ProfileOptions;
+  progressManager: ProfileProgressManager;
+  startTime: number;
+  memoryBaseline: number;
 }
 
 /**
  * Profiling measurement utilities
  */
 export interface ProfilingMeasurement {
-  startTime: number
-  endTime: number
-  executionTime: number
-  memoryBefore: number
-  memoryAfter: number
-  memoryUsed: number
+  startTime: number;
+  endTime: number;
+  executionTime: number;
+  memoryBefore: number;
+  memoryAfter: number;
+  memoryUsed: number;
 }
 
 /**
@@ -109,7 +109,7 @@ export function createMeasurement(
     memoryBefore,
     memoryAfter,
     memoryUsed: memoryAfter - memoryBefore,
-  }
+  };
 }
 
 /**
@@ -120,16 +120,16 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
    * Common validation logic
    */
   protected validateCommon(options: ProfileOptions): { isValid: boolean; errors: string[] } {
-    const errors: string[] = []
+    const errors: string[] = [];
 
     if (options.iterations < 1 || options.iterations > 10) {
-      errors.push('Iterations must be between 1 and 10')
+      errors.push('Iterations must be between 1 and 10');
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-    }
+    };
   }
 
   /**
@@ -138,7 +138,7 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
   async setup(options: ProfileOptions): Promise<void> {
     // Force garbage collection if requested
     if (options.forceGc && global.gc) {
-      global.gc()
+      global.gc();
     }
   }
 
@@ -151,11 +151,11 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
   ): Promise<void> {
     if (options.warmupIterations && options.warmupIterations > 0) {
       for (let i = 0; i < options.warmupIterations; i++) {
-        await profileFn()
+        await profileFn();
 
         // Force GC between warmup iterations
         if (options.forceGc && global.gc) {
-          global.gc()
+          global.gc();
         }
       }
     }
@@ -169,24 +169,24 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
     progressManager: ProfileProgressManager,
     profileFn: (iteration: number) => Promise<ProfilingMeasurement>
   ): Promise<ProfilingMeasurement[]> {
-    const measurements: ProfilingMeasurement[] = []
+    const measurements: ProfilingMeasurement[] = [];
 
     for (let i = 0; i < options.iterations; i++) {
-      progressManager.updateProfiling(this.name, i + 1, `Iteration ${i + 1}/${options.iterations}`)
+      progressManager.updateProfiling(this.name, i + 1, `Iteration ${i + 1}/${options.iterations}`);
 
-      const measurement = await profileFn(i)
-      measurements.push(measurement)
+      const measurement = await profileFn(i);
+      measurements.push(measurement);
 
       // Force garbage collection between iterations if requested
       if (options.forceGc && global.gc) {
-        global.gc()
+        global.gc();
       }
 
       // Small delay to allow system to stabilize
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    return measurements
+    return measurements;
   }
 
   /**
@@ -196,16 +196,16 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
     measurements: ProfilingMeasurement[],
     options: ProfileOptions
   ): ProfileResult {
-    const times = measurements.map((m) => m.executionTime)
-    const memories = measurements.map((m) => m.memoryUsed)
+    const times = measurements.map(m => m.executionTime);
+    const memories = measurements.map(m => m.memoryUsed);
 
-    const timesSorted = [...times].sort((a, b) => a - b)
-    const totalTime = times.reduce((sum, t) => sum + t, 0)
-    const averageTime = totalTime / times.length
-    const medianTime = timesSorted[Math.floor(timesSorted.length / 2)]
+    const timesSorted = [...times].sort((a, b) => a - b);
+    const totalTime = times.reduce((sum, t) => sum + t, 0);
+    const averageTime = totalTime / times.length;
+    const medianTime = timesSorted[Math.floor(timesSorted.length / 2)];
 
-    const memoryPeak = Math.max(...memories)
-    const memoryAverage = memories.reduce((sum, m) => sum + m, 0) / memories.length
+    const memoryPeak = Math.max(...memories);
+    const memoryAverage = memories.reduce((sum, m) => sum + m, 0) / memories.length;
 
     return {
       approach: this.name,
@@ -220,6 +220,6 @@ export abstract class BaseProfileStrategy extends ProfileStrategy {
       componentsPerSecond: (27 * 1000) / averageTime,
       componentProfiles: [], // Can be filled by specific strategies
       iterations: options.iterations,
-    }
+    };
   }
 }

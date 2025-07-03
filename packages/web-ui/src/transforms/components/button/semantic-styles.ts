@@ -3,7 +3,7 @@
  * Creates button-specific semantic token classes with CSS variables
  */
 
-import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Creates button-style semantic token classes with CSS variables
@@ -17,4 +17,4 @@ export const createSemanticButtonStyles = createCSSVariableStyles((token: string
   `[--btn-icon:var(--color-white)]/60`,
   `data-active:[--btn-icon:var(--color-white)]/80`,
   `data-hover:[--btn-icon:var(--color-white)]/80`,
-])
+]);

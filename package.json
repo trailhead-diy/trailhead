@@ -27,7 +27,10 @@
     "version-packages": "changeset version",
     "release": "turbo build --filter=./packages/* && changeset publish",
     "release:dry-run": "changeset publish --dry-run",
-    "prepare": "husky"
+    "prepare": "lefthook install",
+    "lefthook": "lefthook",
+    "lefthook:install": "lefthook install",
+    "lefthook:uninstall": "lefthook uninstall"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
@@ -36,9 +39,10 @@
     "@types/node": "^24.0.10",
     "chalk": "^5.3.0",
     "gray-matter": "^4.0.3",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
+    "lefthook": "^1.8.4",
+    "oxlint": "^1.1.0",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "tsx": "^4.20.3",
     "turbo": "^1.12.0",
     "typescript": "^5.3.0"

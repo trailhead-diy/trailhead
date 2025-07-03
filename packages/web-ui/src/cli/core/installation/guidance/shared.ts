@@ -62,7 +62,7 @@ export const generateCSSCustomProperties = (): string => `/* Trailhead UI CSS Cu
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 212.7 26.8% 83.9%;
-}`
+}`;
 
 /**
  * Pure function: Generate basic ThemeProvider usage
@@ -73,7 +73,7 @@ export const generateThemeProviderUsage =
 // Wrap your app with ThemeProvider
 <ThemeProvider>
   <YourApp />
-</ThemeProvider>`
+</ThemeProvider>`;
 
 // ============================================================================
 // SHARED TAILWIND CONFIG
@@ -116,7 +116,7 @@ export const generateTailwindColors = () => ({
     DEFAULT: 'hsl(var(--card))',
     foreground: 'hsl(var(--card-foreground))',
   },
-})
+});
 
 /**
  * Generate Tailwind border radius configuration
@@ -125,4 +125,4 @@ export const generateTailwindBorderRadius = () => ({
   lg: 'var(--radius)',
   md: 'calc(var(--radius) - 2px)',
   sm: 'calc(var(--radius) - 4px)',
-})
+});

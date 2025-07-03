@@ -13,12 +13,12 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../utilities/protected-regex-transform-factory.js'
-import { getBackgroundMappings } from './mappings/backgrounds.js'
-import { getBorderMappings } from './mappings/borders.js'
-import { getFillMappings } from './mappings/fills.js'
-import { getRingMappings } from './mappings/rings.js'
-import { getTextMappings } from './mappings/text.js'
+} from '../utilities/protected-regex-transform-factory.js';
+import { getBackgroundMappings } from './mappings/backgrounds.js';
+import { getBorderMappings } from './mappings/borders.js';
+import { getFillMappings } from './mappings/fills.js';
+import { getRingMappings } from './mappings/rings.js';
+import { getTextMappings } from './mappings/text.js';
 
 /**
  * Get all color mappings by combining individual mapping functions
@@ -31,7 +31,7 @@ function getAllColorMappings() {
     ...getFillMappings(),
     ...getRingMappings(),
     ...getTextMappings(),
-  ]
+  ];
 }
 
 /**
@@ -47,4 +47,4 @@ export const baseMappingsTransform = createProtectedRegexTransform({
   mappings: makeProtected(getAllColorMappings()),
   changeType: 'protected-color-mapping',
   globalProtection: true, // Enable style object protection
-})
+});

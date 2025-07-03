@@ -5,7 +5,7 @@
  * Avatars don't have explicit color props but we enhance for focus states
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Avatar semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const avatarSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Avatar',
-  detectPattern: (content) =>
+  detectPattern: content =>
     (content.includes('export function Avatar') || content.includes('export const AvatarButton')) &&
     content.includes('data-slot="avatar"'),
 
@@ -29,4 +29,4 @@ export const avatarSemanticEnhancementTransform = createSemanticEnhancementTrans
     // Avatar doesn't need resolution logic since it doesn't have color variations
     // The color mappings transform handles converting the hardcoded colors
   },
-})
+});

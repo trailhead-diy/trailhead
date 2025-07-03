@@ -2,8 +2,8 @@
  * Shared utilities for installation modules
  */
 
-import type { Result, InstallError } from './types.js'
-import { Ok, Err } from './types.js'
+import type { Result, InstallError } from './types.js';
+import { Ok, Err } from './types.js';
 
 // ============================================================================
 // ERROR HANDLING UTILITIES
@@ -20,7 +20,7 @@ export const createSimpleError = (
   type,
   message: `${baseMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
   cause: error instanceof Error ? error : undefined,
-})
+});
 
 /**
  * Generic async error handler with type-safe error creation
@@ -31,8 +31,8 @@ export const handleAsync = <T>(
   errorMessage: string
 ): Promise<Result<T, InstallError>> =>
   fn()
-    .then((value) => Ok(value))
-    .catch((error) => Err(createSimpleError(errorType, errorMessage, error)))
+    .then(value => Ok(value))
+    .catch(error => Err(createSimpleError(errorType, errorMessage, error)));
 
 /**
  * Wrap async function with consistent error handling
@@ -44,7 +44,7 @@ export const wrapAsync =
     errorMessage: string
   ) =>
   async (...args: TArgs): Promise<Result<TResult, InstallError>> =>
-    handleAsync(() => fn(...args), errorType, errorMessage)
+    handleAsync(() => fn(...args), errorType, errorMessage);
 
 // ============================================================================
 // FILE PATTERN UTILITIES
@@ -54,7 +54,7 @@ export const wrapAsync =
  * Count files matching a pattern
  */
 export const countFilesByPattern = (files: readonly string[], pattern: string): number =>
-  files.filter((file) => file.includes(pattern)).length
+  files.filter(file => file.includes(pattern)).length;
 
 /**
  * Group files by pattern
@@ -63,26 +63,26 @@ export const groupFilesByPattern = (
   files: readonly string[],
   patterns: readonly { name: string; pattern: string | RegExp }[]
 ): Record<string, readonly string[]> => {
-  const groups: Record<string, string[]> = {}
+  const groups: Record<string, string[]> = {};
 
   patterns.forEach(({ name }) => {
-    groups[name] = []
-  })
+    groups[name] = [];
+  });
 
-  files.forEach((file) => {
+  files.forEach(file => {
     patterns.forEach(({ name, pattern }) => {
-      const matches = typeof pattern === 'string' ? file.includes(pattern) : pattern.test(file)
+      const matches = typeof pattern === 'string' ? file.includes(pattern) : pattern.test(file);
 
       if (matches) {
-        groups[name].push(file)
+        groups[name].push(file);
       }
-    })
-  })
+    });
+  });
 
   return Object.fromEntries(
     Object.entries(groups).map(([key, value]) => [key, Object.freeze(value)])
-  )
-}
+  );
+};
 
 // ============================================================================
 // STATE UPDATE UTILITIES
@@ -92,7 +92,7 @@ export const groupFilesByPattern = (
  * Generic immutable state updater
  */
 export const updateState = <T extends object>(state: T, updates: Partial<T>): T =>
-  Object.freeze({ ...state, ...updates })
+  Object.freeze({ ...state, ...updates });
 
 /**
  * Update nested state immutably
@@ -104,7 +104,7 @@ export const updateNestedState = <T extends object, K extends keyof T>(
 ): T =>
   updateState(state, {
     [key]: updateState(state[key] as object, updates),
-  } as Partial<T>)
+  } as Partial<T>);
 
 /**
  * Append to array in state immutably
@@ -114,11 +114,11 @@ export const appendToState = <T extends object, K extends keyof T>(
   key: K,
   items: T[K] extends readonly unknown[] ? T[K][number][] : never
 ): T => {
-  const currentArray = state[key] as readonly unknown[]
+  const currentArray = state[key] as readonly unknown[];
   return updateState(state, {
     [key]: Object.freeze([...currentArray, ...items]),
-  } as Partial<T>)
-}
+  } as Partial<T>);
+};
 
 // ============================================================================
 // VALIDATION UTILITIES
@@ -131,11 +131,11 @@ export const composeValidators =
   <T>(...validators: Array<(value: T) => Result<T, InstallError>>) =>
   (value: T): Result<T, InstallError> => {
     for (const validator of validators) {
-      const result = validator(value)
-      if (!result.success) return result
+      const result = validator(value);
+      if (!result.success) return result;
     }
-    return Ok(value)
-  }
+    return Ok(value);
+  };
 
 /**
  * Create a required field validator
@@ -147,10 +147,10 @@ export const requiredField =
       return Err({
         type: 'ValidationError',
         message: message || `Required field '${String(field)}' is missing`,
-      })
+      });
     }
-    return Ok(obj)
-  }
+    return Ok(obj);
+  };
 
 /**
  * Create a type validator
@@ -162,10 +162,10 @@ export const typeValidator =
       return Err({
         type: 'ValidationError',
         message: `Expected ${expectedType}, got ${typeof value}`,
-      })
+      });
     }
-    return Ok(value)
-  }
+    return Ok(value);
+  };
 
 // ============================================================================
 // FORMATTING UTILITIES
@@ -175,7 +175,7 @@ export const typeValidator =
  * Format dependency for display
  */
 export const formatDependency = (name: string, version: string, current?: string): string =>
-  current ? `${name} (${current} → ${version})` : `${name}@${version}`
+  current ? `${name} (${current} → ${version})` : `${name}@${version}`;
 
 /**
  * Format file count summary
@@ -184,19 +184,21 @@ export const formatFileSummary = (
   files: readonly string[],
   categories: readonly { name: string; pattern: string }[]
 ): readonly string[] =>
-  categories.map(({ name, pattern }) => `  • ${name}: ${countFilesByPattern(files, pattern)} files`)
+  categories.map(
+    ({ name, pattern }) => `  • ${name}: ${countFilesByPattern(files, pattern)} files`
+  );
 
 /**
  * Format list with bullet points
  */
 export const formatBulletList = (items: readonly string[], indent: number = 2): readonly string[] =>
-  items.map((item) => `${' '.repeat(indent)}• ${item}`)
+  items.map(item => `${' '.repeat(indent)}• ${item}`);
 
 /**
  * Format command for display
  */
 export const formatCommand = (command: string, indent: number = 2): string =>
-  `${' '.repeat(indent)}${command}`
+  `${' '.repeat(indent)}${command}`;
 
 // ============================================================================
 // COMPARISON UTILITIES
@@ -206,15 +208,15 @@ export const formatCommand = (command: string, indent: number = 2): string =>
  * Check if two arrays have the same elements (order-independent)
  */
 export const arraysEqual = <T>(a: readonly T[], b: readonly T[]): boolean => {
-  if (a.length !== b.length) return false
-  const bSet = new Set(b)
-  return a.every((item) => bSet.has(item))
-}
+  if (a.length !== b.length) return false;
+  const bSet = new Set(b);
+  return a.every(item => bSet.has(item));
+};
 
 /**
  * Get unique items from array
  */
-export const unique = <T>(items: readonly T[]): readonly T[] => Array.from(new Set(items))
+export const unique = <T>(items: readonly T[]): readonly T[] => Array.from(new Set(items));
 
 /**
  * Partition array based on predicate
@@ -223,19 +225,19 @@ export const partition = <T>(
   items: readonly T[],
   predicate: (item: T) => boolean
 ): [readonly T[], readonly T[]] => {
-  const pass: T[] = []
-  const fail: T[] = []
+  const pass: T[] = [];
+  const fail: T[] = [];
 
-  items.forEach((item) => {
+  items.forEach(item => {
     if (predicate(item)) {
-      pass.push(item)
+      pass.push(item);
     } else {
-      fail.push(item)
+      fail.push(item);
     }
-  })
+  });
 
-  return [Object.freeze(pass), Object.freeze(fail)]
-}
+  return [Object.freeze(pass), Object.freeze(fail)];
+};
 
 // ============================================================================
 // TIMING UTILITIES
@@ -249,18 +251,18 @@ export const retryWithBackoff = async <T>(
   maxAttempts: number = 3,
   baseDelay: number = 1000
 ): Promise<Result<T, InstallError>> => {
-  let lastError: unknown
+  let lastError: unknown;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const result = await fn()
-      return Ok(result)
+      const result = await fn();
+      return Ok(result);
     } catch (error) {
-      lastError = error
+      lastError = error;
 
       if (attempt < maxAttempts) {
-        const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), 10000)
-        await new Promise((resolve) => setTimeout(resolve, delay))
+        const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), 10000);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
   }
@@ -269,8 +271,8 @@ export const retryWithBackoff = async <T>(
     type: 'DependencyError',
     message: `Failed after ${maxAttempts} attempts`,
     cause: lastError instanceof Error ? lastError : undefined,
-  })
-}
+  });
+};
 
 /**
  * Add timeout to promise
@@ -282,15 +284,15 @@ export const withTimeout = <T>(
 ): Promise<Result<T, InstallError>> => {
   const timeoutPromise = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
-  )
+  );
 
   return Promise.race([promise, timeoutPromise])
-    .then((result) => Ok(result))
-    .catch((error) =>
+    .then(result => Ok(result))
+    .catch(error =>
       Err({
         type: 'DependencyError',
         message: error instanceof Error ? error.message : timeoutMessage,
         cause: error instanceof Error ? error : undefined,
       })
-    )
-}
+    );
+};

@@ -97,45 +97,74 @@ echo ""
 echo "📋 Checking Example Files"
 echo "========================"
 
+# Determine the examples directory based on where the script is run from
+if [ -f "test-examples.sh" ]; then
+    # We're already in the examples directory
+    EXAMPLES_DIR="."
+elif [ -f "examples/test-examples.sh" ]; then
+    # We're in the parent directory (packages/cli)
+    EXAMPLES_DIR="examples"
+else
+    echo -e "${RED}Error: Cannot find examples directory${NC}"
+    exit 1
+fi
+
 # Check that all example files exist
-check_file "basic-cli.ts" "Basic CLI Example"
-check_file "advanced-cli.ts" "Advanced CLI Example"  
-check_file "interactive-cli.ts" "Interactive CLI Example"
-check_file "__tests__/basic-cli.test.ts" "Basic CLI Tests"
-check_file "__tests__/advanced-cli.test.ts" "Advanced CLI Tests"
-check_file "__tests__/interactive-cli.test.ts" "Interactive CLI Tests"
-check_file "__tests__/project-examples-smoke.test.ts" "Project Examples Smoke Tests"
+check_file "$EXAMPLES_DIR/basic-cli.ts" "Basic CLI Example"
+check_file "$EXAMPLES_DIR/advanced-cli.ts" "Advanced CLI Example"  
+check_file "$EXAMPLES_DIR/interactive-cli.ts" "Interactive CLI Example"
+check_file "$EXAMPLES_DIR/__tests__/basic-cli.test.ts" "Basic CLI Tests"
+check_file "$EXAMPLES_DIR/__tests__/advanced-cli.test.ts" "Advanced CLI Tests"
+check_file "$EXAMPLES_DIR/__tests__/interactive-cli.test.ts" "Interactive CLI Tests"
+check_file "$EXAMPLES_DIR/__tests__/project-examples-smoke.test.ts" "Project Examples Smoke Tests"
 
 echo ""
 echo "🔧 Quick Syntax Check"
 echo "===================="
 
 # Check TypeScript compilation
-run_test "Basic CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck basic-cli.ts"
-run_test "Advanced CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck advanced-cli.ts"
-run_test "Interactive CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck interactive-cli.ts"
+run_test "Basic CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/basic-cli.ts"
+run_test "Advanced CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/advanced-cli.ts"
+run_test "Interactive CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/interactive-cli.ts"
 
 echo ""
 echo "🚀 Basic Execution Tests"
 echo "========================"
 
 # Test help commands (quick smoke tests)
-run_test "Basic CLI Help" "timeout 10s npx tsx basic-cli.ts --help"
-run_test "Advanced CLI Help" "timeout 10s npx tsx advanced-cli.ts --help"
-run_test "Interactive CLI Help" "timeout 10s npx tsx interactive-cli.ts --help"
+# Use timeout if available, otherwise just run directly
+if command -v timeout >/dev/null 2>&1; then
+    run_test "Basic CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts --help"
+    run_test "Advanced CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/advanced-cli.ts --help"
+    run_test "Interactive CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/interactive-cli.ts --help"
+else
+    run_test "Basic CLI Help" "npx tsx $EXAMPLES_DIR/basic-cli.ts --help"
+    run_test "Advanced CLI Help" "npx tsx $EXAMPLES_DIR/advanced-cli.ts --help"
+    run_test "Interactive CLI Help" "npx tsx $EXAMPLES_DIR/interactive-cli.ts --help"
+fi
 
 echo ""
 echo "⚡ Quick Functional Tests"
 echo "========================"
 
 # Test basic functionality
-run_test "Basic CLI Greet" "timeout 10s npx tsx basic-cli.ts greet TestUser"
-run_test "Basic CLI Calculate" "timeout 10s npx tsx basic-cli.ts calculate add 2 3"
-run_test "Interactive CLI Non-Interactive" "timeout 10s npx tsx interactive-cli.ts config"
-
-# Test dry-run mode for advanced CLI (create a temp file first)
-echo "test content" > /tmp/test-input.txt
-run_test "Advanced CLI Dry Run" "timeout 10s npx tsx advanced-cli.ts process /tmp/test-input.txt --dry-run"
+if command -v timeout >/dev/null 2>&1; then
+    run_test "Basic CLI Greet" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts greet TestUser"
+    run_test "Basic CLI Calculate" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts calculate add 2 3"
+    run_test "Interactive CLI Non-Interactive" "timeout 10s npx tsx $EXAMPLES_DIR/interactive-cli.ts config"
+    
+    # Test dry-run mode for advanced CLI (create a temp file first)
+    echo "test content" > /tmp/test-input.txt
+    run_test "Advanced CLI Dry Run" "timeout 10s npx tsx $EXAMPLES_DIR/advanced-cli.ts process /tmp/test-input.txt --dry-run"
+else
+    run_test "Basic CLI Greet" "npx tsx $EXAMPLES_DIR/basic-cli.ts greet TestUser"
+    run_test "Basic CLI Calculate" "npx tsx $EXAMPLES_DIR/basic-cli.ts calculate add 2 3"
+    run_test "Interactive CLI Non-Interactive" "npx tsx $EXAMPLES_DIR/interactive-cli.ts config"
+    
+    # Test dry-run mode for advanced CLI (create a temp file first)
+    echo "test content" > /tmp/test-input.txt
+    run_test "Advanced CLI Dry Run" "npx tsx $EXAMPLES_DIR/advanced-cli.ts process /tmp/test-input.txt --dry-run"
+fi
 rm -f /tmp/test-input.txt
 
 echo ""
@@ -146,13 +175,13 @@ echo "=========================="
 if command -v vitest >/dev/null 2>&1; then
     if [ "$FAST_MODE" = true ]; then
         echo -e "${BLUE}Running in fast mode - essential tests only${NC}"
-        run_test "Essential Example Tests" "npx vitest run __tests__/basic-cli.test.ts __tests__/advanced-cli.test.ts --reporter=basic"
+        run_test "Essential Example Tests" "cd $EXAMPLES_DIR && npx vitest run __tests__/basic-cli.test.ts __tests__/advanced-cli.test.ts --reporter=basic"
         
         # Skip deep integration tests in fast mode
         echo -e "${YELLOW}⚡ Skipping deep integration tests in fast mode${NC}"
     else
         echo -e "${BLUE}Running complete test suite${NC}"
-        run_test "All Example Integration Tests" "npx vitest run __tests__ --reporter=basic"
+        run_test "All Example Integration Tests" "cd $EXAMPLES_DIR && npx vitest run __tests__ --reporter=basic"
         
         # Add performance warning for full suite
         echo -e "${YELLOW}📊 Note: Full test suite may take several minutes due to network and file operations${NC}"
@@ -169,7 +198,7 @@ echo -e "${GREEN}Passed: ${PASSED_TESTS}${NC}"
 echo -e "${RED}Failed: ${FAILED_TESTS}${NC}"
 
 # Check if performance results exist and display summary
-if [ -f "performance-results.json" ]; then
+if [ -f "$EXAMPLES_DIR/performance-results.json" ]; then
     echo ""
     echo "⚡ Performance Results:"
     echo "======================"

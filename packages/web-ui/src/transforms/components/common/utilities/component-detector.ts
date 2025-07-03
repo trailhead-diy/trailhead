@@ -16,9 +16,9 @@ export function detectComponent(content: string, componentName: string): boolean
     `export default function ${componentName}`,
     `export { ${componentName} }`,
     `export const ${componentName} =`,
-  ]
+  ];
 
-  return patterns.some((pattern) => content.includes(pattern))
+  return patterns.some(pattern => content.includes(pattern));
 }
 
 /**
@@ -31,18 +31,18 @@ export function detectComponentWithProps(
   requiredProps: string[]
 ): boolean {
   // First check if component exists
-  if (!detectComponent(content, componentName)) return false
+  if (!detectComponent(content, componentName)) return false;
 
   // Check if all required props are present in the component's type definition
-  return requiredProps.every((prop) => {
+  return requiredProps.every(prop => {
     // Match prop in interface/type definitions
     const propPatterns = [
       new RegExp(`${prop}[?]?:\\s*\\w+`, 'g'), // prop: Type or prop?: Type
       new RegExp(`${prop}[?]?:\\s*['"]\\w+['"]`, 'g'), // prop: 'literal' or prop?: 'literal'
-    ]
+    ];
 
-    return propPatterns.some((pattern) => pattern.test(content))
-  })
+    return propPatterns.some(pattern => pattern.test(content));
+  });
 }
 
 /**
@@ -55,7 +55,7 @@ export function isComponentFile(content: string): boolean {
     /return\s*\(/, // return statements with JSX
     /React\.createElement/, // React.createElement calls
     /@headlessui\/react/, // Headless UI imports (common in Catalyst)
-  ]
+  ];
 
-  return jsxPatterns.some((pattern) => pattern.test(content))
+  return jsxPatterns.some(pattern => pattern.test(content));
 }

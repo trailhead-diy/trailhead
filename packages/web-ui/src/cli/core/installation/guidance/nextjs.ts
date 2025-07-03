@@ -2,13 +2,13 @@
  * Next.js-specific guidance
  */
 
-import type { FrameworkInfo } from '../framework-detection.js'
-import type { FrameworkGuidance, ConfigTemplate } from './types.js'
+import type { FrameworkInfo } from '../framework-detection.js';
+import type { FrameworkGuidance, ConfigTemplate } from './types.js';
 import {
   generateCSSCustomProperties,
   generateTailwindColors,
   generateTailwindBorderRadius,
-} from './shared.js'
+} from './shared.js';
 
 // ============================================================================
 // NEXT.JS GUIDANCE
@@ -207,7 +207,7 @@ export default function App({ Component, pageProps }: AppProps) {
     'If using Pages Router, make sure to import globals.css in pages/_app.tsx',
     'Check that tailwindcss-animate is installed if using animation classes',
   ],
-})
+});
 
 // ============================================================================
 // NEXT.JS CONFIG TEMPLATES
@@ -243,7 +243,7 @@ module.exports = {
   },
   plugins: [],
 }`,
-})
+});
 
 /**
  * Generate Next.js CSS template
@@ -258,4 +258,4 @@ export const generateNextJSCSSTemplate = (): ConfigTemplate => ({
 @layer base {
 ${generateCSSCustomProperties()}
 }`,
-})
+});

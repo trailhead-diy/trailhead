@@ -1,15 +1,15 @@
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 export const headingSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Heading',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('Heading') && content.includes('export function Heading'),
   defaultColor: 'zinc',
   typePattern: 'prop',
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});
 
 // Legacy export for compatibility
 export const headingSemanticEnhancement = {
@@ -21,7 +21,7 @@ export const headingSemanticEnhancement = {
         colorClass.includes('text-') &&
         (colorClass.includes('900') || colorClass.includes('950'))
       ) {
-        return 'text-foreground'
+        return 'text-foreground';
       }
     }
 
@@ -31,25 +31,25 @@ export const headingSemanticEnhancement = {
         colorClass.includes('text-') &&
         (colorClass.includes('600') || colorClass.includes('700'))
       ) {
-        return 'text-foreground/90'
+        return 'text-foreground/90';
       }
       if (
         colorClass.includes('text-') &&
         (colorClass.includes('500') || colorClass.includes('400'))
       ) {
-        return 'text-muted-foreground'
+        return 'text-muted-foreground';
       }
     }
 
     // Gradient text enhancements (if any)
     if (colorClass.includes('from-') || colorClass.includes('to-')) {
       if (colorClass.includes('zinc')) {
-        return colorClass.replace(/zinc-\d+/g, 'foreground')
+        return colorClass.replace(/zinc-\d+/g, 'foreground');
       }
     }
 
-    return null
+    return null;
   },
   attributesToAdd: [],
   transformImports: true,
-}
+};

@@ -2,14 +2,14 @@
  * Semantic enhancement transform for Listbox component
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 export const listboxSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Listbox',
 
   // Detection pattern - check for Listbox function declaration
   detectPattern: (content: string) => {
-    return content.includes('export function Listbox') && content.includes('Headless.Listbox')
+    return content.includes('export function Listbox') && content.includes('Headless.Listbox');
   },
 
   // Default color fallback
@@ -34,7 +34,7 @@ export const listboxSemanticEnhancementTransform = createSemanticEnhancementTran
   applyResolution: (root, j, variableName) => {
     // Add resolved color classes to the main Listbox element
     root.find(j.JSXOpeningElement, { name: { name: 'Headless.Listbox' } }).forEach((path: any) => {
-      const parent = path.parent
+      const parent = path.parent;
       if (parent && parent.node.type === 'JSXElement') {
         // Find the span element that wraps the button and options
         j(parent)
@@ -47,7 +47,7 @@ export const listboxSemanticEnhancementTransform = createSemanticEnhancementTran
           .forEach((spanPath: any) => {
             const className = spanPath.node.openingElement.attributes?.find(
               (attr: any) => attr.type === 'JSXAttribute' && attr.name?.name === 'className'
-            )
+            );
 
             if (
               className &&
@@ -57,10 +57,10 @@ export const listboxSemanticEnhancementTransform = createSemanticEnhancementTran
               className.value.expression.callee?.name === 'cn'
             ) {
               // Add resolvedColorClasses to the cn() call
-              className.value.expression.arguments.push(j.identifier(variableName))
+              className.value.expression.arguments.push(j.identifier(variableName));
             }
-          })
+          });
       }
-    })
+    });
   },
-})
+});

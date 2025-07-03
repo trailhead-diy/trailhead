@@ -1,12 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import { cn } from '../utils/cn'
+import { cn } from '../utils/cn';
 
 type HeadingProps = { level?: 1 | 2 | 3 | 4 | 5 | 6 } & React.ComponentPropsWithoutRef<
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
->
+>;
 
 export function CatalystHeading({ className, level = 1, ...props }: HeadingProps) {
-  let Element: `h${typeof level}` = `h${level}`
+  let Element: `h${typeof level}` = `h${level}`;
 
   return (
     <Element
@@ -16,11 +16,11 @@ export function CatalystHeading({ className, level = 1, ...props }: HeadingProps
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystSubheading({ className, level = 2, ...props }: HeadingProps) {
-  let Element: `h${typeof level}` = `h${level}`
+  let Element: `h${typeof level}` = `h${level}`;
 
   return (
     <Element
@@ -30,5 +30,5 @@ export function CatalystSubheading({ className, level = 2, ...props }: HeadingPr
         className
       )}
     />
-  )
+  );
 }

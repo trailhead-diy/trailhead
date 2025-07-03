@@ -75,7 +75,7 @@ yarn.lock binary
 *.ts diff=ts
 
 # Exclude files from archive exports
-.husky export-ignore
+.lefthook export-ignore
 .github export-ignore
 docs export-ignore
 tests export-ignore

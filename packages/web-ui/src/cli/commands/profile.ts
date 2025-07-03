@@ -2,20 +2,20 @@
  * Refactored Profile Command using command patterns
  */
 
-import { Ok } from '@esteban-url/trailhead-cli'
+import { Ok } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeSubprocess,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command'
-import { type StrictProfileOptions } from '../core/types/command-options.js'
+} from '@esteban-url/trailhead-cli/command';
+import { type StrictProfileOptions } from '../core/types/command-options.js';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 // Use strict typing for better type safety
-type ProfileOptions = StrictProfileOptions
+type ProfileOptions = StrictProfileOptions;
 
 // ============================================================================
 // COMMAND CONFIGURATION
@@ -65,43 +65,43 @@ export const createProfileCommand = () => {
               'Choose either --pipeline for full pipeline profiling or --simple for color-only transforms',
             recoverable: true,
           },
-        }
+        };
       }
-      return { success: true, value: options }
+      return { success: true, value: options };
     },
 
     action: async (options: ProfileOptions, cmdContext: CommandContext) => {
       // Set up environment based on options
-      const env: Record<string, string> = {}
+      const env: Record<string, string> = {};
 
       if (options.pipeline) {
-        env.PROFILE_MODE = 'pipeline'
+        env.PROFILE_MODE = 'pipeline';
       } else if (options.simple) {
-        env.PROFILE_MODE = 'simple'
+        env.PROFILE_MODE = 'simple';
       }
 
       if (options.verbose) {
-        env.PROFILE_VERBOSE = 'true'
+        env.PROFILE_VERBOSE = 'true';
       }
 
       if (options.memory) {
-        env.PROFILE_MEMORY = 'true'
+        env.PROFILE_MEMORY = 'true';
 
         // Check if --expose-gc is available
         if (!global.gc) {
           cmdContext.logger.warning(
             'Memory profiling requested but --expose-gc flag not detected. ' +
               'For accurate memory measurements, run with: node --expose-gc trailhead-ui profile --memory'
-          )
+          );
         }
       }
 
       // Delegate to the profiling system using subprocess pattern
-      const profilingModule = `${cmdContext.projectRoot}/dist/src/transforms/profiling/main.js`
+      const profilingModule = `${cmdContext.projectRoot}/dist/src/transforms/profiling/main.js`;
 
       // Build args based on whether memory profiling is enabled
       const args =
-        options.memory && global.gc ? ['--expose-gc', profilingModule] : [profilingModule]
+        options.memory && global.gc ? ['--expose-gc', profilingModule] : [profilingModule];
 
       const result = await executeSubprocess(
         {
@@ -111,14 +111,14 @@ export const createProfileCommand = () => {
           cwd: cmdContext.projectRoot,
         },
         cmdContext
-      )
+      );
 
       if (!result.success) {
-        return result
+        return result;
       }
 
-      cmdContext.logger.success('Profiling completed successfully')
-      return Ok(undefined)
+      cmdContext.logger.success('Profiling completed successfully');
+      return Ok(undefined);
     },
-  })
-}
+  });
+};

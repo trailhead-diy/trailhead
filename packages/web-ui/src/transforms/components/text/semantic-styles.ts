@@ -3,7 +3,7 @@
  * Creates text color classes for semantic tokens
  */
 
-import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Create semantic text styles
@@ -21,4 +21,4 @@ export const createSemanticTextStyles = createObjectLookupStyles(
     border: 'text-border dark:text-border',
   },
   'primary'
-)
+);

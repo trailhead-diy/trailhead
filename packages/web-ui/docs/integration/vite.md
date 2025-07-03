@@ -146,7 +146,7 @@ export default {
     },
   },
   plugins: [],
-}
+};
 ```
 
 ## Step 3: Add ThemeProvider
@@ -154,11 +154,11 @@ export default {
 Wrap your app with ThemeProvider in `src/main.tsx`:
 
 ```tsx
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { ThemeProvider } from 'trailhead-ui'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { ThemeProvider } from 'trailhead-ui';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -166,7 +166,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <App />
     </ThemeProvider>
   </React.StrictMode>
-)
+);
 ```
 
 ## Step 4: Configure Path Aliases
@@ -174,9 +174,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 Update your `vite.config.ts` to support path aliases:
 
 ```ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -187,7 +187,7 @@ export default defineConfig({
       '@/lib': path.resolve(__dirname, './src/lib'),
     },
   },
-})
+});
 ```
 
 Also update your `tsconfig.json`:
@@ -211,8 +211,8 @@ Now you can use Trailhead UI components in your app:
 
 ```tsx
 // src/App.tsx
-import { Button, Input, Card } from 'trailhead-ui'
-import { ThemeSwitcher } from 'trailhead-ui'
+import { Button, Input, Card } from 'trailhead-ui';
+import { ThemeSwitcher } from 'trailhead-ui';
 
 function App() {
   return (
@@ -234,10 +234,10 @@ function App() {
         </Card>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
 ```
 
 ## Development Tips
@@ -252,10 +252,10 @@ Vite automatically tree-shakes unused components. Only import what you need:
 
 ```tsx
 // Good - specific imports
-import { Button, Input } from 'trailhead-ui'
+import { Button, Input } from 'trailhead-ui';
 
 // Avoid - imports everything
-import * as UI from 'trailhead-ui'
+import * as UI from 'trailhead-ui';
 ```
 
 ### Environment Variables
@@ -270,13 +270,13 @@ export const themeConfig = {
   defaultTheme: 'zinc',
   availableThemes: ['zinc', 'purple', 'green', 'orange'],
   enableDebug: import.meta.env.DEV, // Use Vite's built-in DEV flag
-}
+};
 
 // src/main.tsx
-import { themeConfig } from './config/theme.config'
-;<ThemeProvider defaultTheme={themeConfig.defaultTheme}>
+import { themeConfig } from './config/theme.config';
+<ThemeProvider defaultTheme={themeConfig.defaultTheme}>
   <App />
-</ThemeProvider>
+</ThemeProvider>;
 ```
 
 **Alternative: Vite Environment Variables**
@@ -341,7 +341,7 @@ export default {
     autoprefixer: {},
     // Add more plugins here
   },
-}
+};
 ```
 
 ### Multiple Themes
@@ -375,7 +375,7 @@ export default defineConfig({
       },
     },
   },
-})
+});
 ```
 
 ## Example Project Structure

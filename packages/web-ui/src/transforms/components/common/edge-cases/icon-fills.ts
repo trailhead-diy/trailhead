@@ -3,7 +3,7 @@
  * Handles icon fill patterns that the main transforms might miss
  */
 
-import { createRegexTransform } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform } from '../utilities/regex-transform-factory.js';
 
 /**
  * Icon fills edge case transform
@@ -58,4 +58,4 @@ export const iconFillsEdgeCaseTransform = createRegexTransform({
     },
   ],
   changeType: 'icon-fill-edge-case',
-})
+});

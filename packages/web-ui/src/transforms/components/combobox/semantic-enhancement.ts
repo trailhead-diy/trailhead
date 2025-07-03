@@ -5,7 +5,7 @@
  * this is a no-op transform that maintains compatibility
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Combobox semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const comboboxSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Combobox',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Combobox') ||
     content.includes('export function ComboboxOption') ||
     content.includes('export function ComboboxInput'),
@@ -22,4 +22,4 @@ export const comboboxSemanticEnhancementTransform = createSemanticEnhancementTra
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

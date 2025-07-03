@@ -1,0 +1,144 @@
+# Lefthook configuration for high-performance git hooks
+# https://github.com/evilmartians/lefthook
+
+# Skip hooks with SKIP_HOOKS=1 or LEFTHOOK=0
+skip_output:
+  - meta
+
+# Show execution time for performance monitoring
+output:
+  - summary
+  - success
+  - failure
+  - execution
+  - execution_out
+  - execution_info
+
+colors: true
+
+pre-commit:
+  parallel: true
+  commands:
+    # 1. Format code (fastest, runs first)
+    prettier:
+      priority: 1
+      glob: "**/*.{ts,tsx,js,jsx,json,md}"
+      run: pnpm prettier --write {staged_files} --cache --cache-location .turbo/.prettiercache
+      stage_fixed: true
+      
+    # 2. Validate documentation structure
+    docs-validate:
+      priority: 2
+      glob: "{docs,packages/**/docs}/**/*.md"
+      run: |
+        for file in {staged_files}; do
+          pnpm docs:validate "$file"
+        done
+        
+    # 3. Lint TypeScript/JavaScript with oxlint (50-100x faster than ESLint)
+    oxlint:
+      priority: 3
+      glob: "packages/**/*.{ts,tsx,js,jsx}"
+      run: pnpm oxlint {staged_files} --fix
+      stage_fixed: true
+      
+    # 4. Type check changed packages
+    typecheck:
+      priority: 4
+      glob: "packages/**/*.{ts,tsx}"
+      run: |
+        # Only run if TypeScript files changed
+        if [ -n "{staged_files}" ]; then
+          packages=$(echo {staged_files} | tr ' ' '\n' | grep -E '^packages/[^/]+/' | cut -d'/' -f1-2 | sort -u)
+          for pkg in $packages; do
+            pnpm types --filter="./$pkg" -- --incremental
+          done
+        fi
+
+    # 5. Check for secrets
+    secrets:
+      priority: 5
+      run: |
+        # Basic secret detection (cross-platform)
+        files=$(git diff --cached --name-only)
+        if [ -n "$files" ]; then
+          echo "$files" | xargs grep -E -i '(api[_-]?key|secret|token|password|private[_-]?key).*=.*["'"'"'][^"'"'"']+["'"'"']' 2>/dev/null || true
+        fi
+        
+    # 6. Check file sizes
+    filesize:
+      priority: 6
+      run: |
+        # Warn about large files (>1MB) - cross-platform
+        for file in $(git diff --cached --name-only); do
+          if [ -f "$file" ]; then
+            # Cross-platform file size check
+            if command -v stat >/dev/null 2>&1; then
+              # Try BSD stat first (macOS), then GNU stat (Linux)
+              size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+            else
+              # Fallback to wc -c
+              size=$(wc -c < "$file" | tr -d ' ')
+            fi
+            if [ "$size" -gt 1048576 ]; then
+              echo "⚠️  Warning: $file is larger than 1MB ($((size / 1024 / 1024))MB)"
+            fi
+          fi
+        done
+
+prepare-commit-msg:
+  commands:
+    changeset-reminder:
+      run: |
+        # Check if this is a merge commit or a commit with --no-verify
+        if [ -z "$2" ] || [ "$2" = "message" ]; then
+          # Check if there are changes to packages
+          if git diff --cached --name-only | grep -E "^packages/.*\.(ts|tsx|js|jsx)$" > /dev/null; then
+            echo ""
+            echo "📝 Reminder: If this change should be released, don't forget to add a changeset!"
+            echo "   Run: pnpm changeset:add"
+            echo ""
+          fi
+        fi
+      skip:
+        - merge
+        - rebase
+
+commit-msg:
+  commands:
+    commitlint:
+      run: |
+        # Simple conventional commit check
+        # Read first line of commit message
+        first_line=$(head -n1 "$1")
+        commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}$'
+        if ! echo "$first_line" | grep -qE "$commit_regex"; then
+          echo "❌ Commit message must follow conventional format:"
+          echo "   type(scope?): description"
+          echo ""
+          echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+          echo "   Example: feat(web-ui): add dark mode support"
+          exit 1
+        fi
+
+pre-push:
+  parallel: true
+  commands:
+    # Validate lockfile is up to date
+    lockfile-check:
+      priority: 1
+      run: |
+        echo "🔒 Checking if pnpm-lock.yaml is up to date..."
+        
+        # Use git to check if lockfile would change
+        if ! pnpm install --lockfile-only --frozen-lockfile 2>/dev/null; then
+          echo "❌ pnpm-lock.yaml is out of date!"
+          echo "   Run 'pnpm install' to update the lockfile"
+          echo "   Then commit the updated lockfile"
+          exit 1
+        fi
+        
+        echo "✅ Lockfile is up to date"
+
+# Personal overrides (not committed)
+# Create .lefthook-local.yml to customize

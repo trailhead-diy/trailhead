@@ -153,7 +153,7 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};
 ```
 
 ## Step 3: Add ThemeProvider
@@ -162,17 +162,17 @@ module.exports = {
 
 ```tsx
 // app/layout.tsx
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { ThemeProvider } from 'trailhead-ui'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from 'trailhead-ui';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Your App',
   description: 'Your app description',
-}
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -181,7 +181,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -189,16 +189,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ```tsx
 // pages/_app.tsx
-import type { AppProps } from 'next/app'
-import '@/styles/globals.css'
-import { ThemeProvider } from 'trailhead-ui'
+import type { AppProps } from 'next/app';
+import '@/styles/globals.css';
+import { ThemeProvider } from 'trailhead-ui';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider>
       <Component {...pageProps} />
     </ThemeProvider>
-  )
+  );
 }
 ```
 
@@ -208,7 +208,7 @@ Now you can use Trailhead UI components in your pages:
 
 ```tsx
 // app/page.tsx or pages/index.tsx
-import { Button, Input, Card } from 'trailhead-ui'
+import { Button, Input, Card } from 'trailhead-ui';
 
 export default function Home() {
   return (
@@ -221,7 +221,7 @@ export default function Home() {
         </div>
       </Card>
     </main>
-  )
+  );
 }
 ```
 
@@ -231,19 +231,19 @@ Create a client component for theme switching:
 
 ```tsx
 // components/theme-toggle.tsx
-'use client'
+'use client';
 
-import { useTheme } from 'trailhead-ui'
-import { Button } from 'trailhead-ui'
+import { useTheme } from 'trailhead-ui';
+import { Button } from 'trailhead-ui';
 
 export function ThemeToggle() {
-  const { isDark, toggleDarkMode } = useTheme()
+  const { isDark, toggleDarkMode } = useTheme();
 
   return (
     <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
       {isDark ? '☀️' : '🌙'}
     </Button>
-  )
+  );
 }
 ```
 
@@ -315,16 +315,16 @@ When using Server Components, create a client wrapper:
 
 ```tsx
 // app/providers.tsx
-'use client'
+'use client';
 
-import { ThemeProvider } from 'trailhead-ui'
+import { ThemeProvider } from 'trailhead-ui';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       {children}
     </ThemeProvider>
-  )
+  );
 }
 ```
 
@@ -334,13 +334,13 @@ You can read theme preferences in middleware:
 
 ```ts
 // middleware.ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const theme = request.cookies.get('theme')
+  const theme = request.cookies.get('theme');
   // Use theme value for server-side logic if needed
-  return NextResponse.next()
+  return NextResponse.next();
 }
 ```
 

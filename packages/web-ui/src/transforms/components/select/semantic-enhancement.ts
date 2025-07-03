@@ -2,7 +2,7 @@
  * Semantic enhancement transform for Select component
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 export const selectSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Select',
@@ -11,7 +11,7 @@ export const selectSemanticEnhancementTransform = createSemanticEnhancementTrans
   detectPattern: (content: string) => {
     return (
       content.includes('export const Select = forwardRef') && content.includes('function Select')
-    )
+    );
   },
 
   // Default color fallback
@@ -31,6 +31,6 @@ export const selectSemanticEnhancementTransform = createSemanticEnhancementTrans
 
   // Don't use IIFE pattern
   useIIFE: false,
-})
+});
 
-export default selectSemanticEnhancementTransform
+export default selectSemanticEnhancementTransform;

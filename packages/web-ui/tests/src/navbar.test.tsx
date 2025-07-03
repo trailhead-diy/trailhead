@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import {
   Navbar,
   NavbarDivider,
@@ -7,7 +7,7 @@ import {
   NavbarSpacer,
   NavbarItem,
   NavbarLabel,
-} from '../../src/components/navbar'
+} from '../../src/components/navbar';
 
 describe('Navbar Components', () => {
   it('should render complete navigation structure with proper composition', () => {
@@ -26,15 +26,15 @@ describe('Navbar Components', () => {
           <NavbarItem href="/signup">Sign Up</NavbarItem>
         </NavbarSection>
       </Navbar>
-    )
+    );
 
     // Test navigation structure
-    expect(screen.getByText('Brand')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/home')
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about')
-    expect(screen.getByRole('link', { name: 'Login' })).toHaveAttribute('href', '/login')
-    expect(screen.getByRole('link', { name: 'Sign Up' })).toHaveAttribute('href', '/signup')
-  })
+    expect(screen.getByText('Brand')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/home');
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+    expect(screen.getByRole('link', { name: 'Login' })).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('link', { name: 'Sign Up' })).toHaveAttribute('href', '/signup');
+  });
 
   it('should handle navigation items and accessibility', () => {
     render(
@@ -44,15 +44,15 @@ describe('Navbar Components', () => {
           <NavbarItem href="/settings">Settings</NavbarItem>
         </NavbarSection>
       </Navbar>
-    )
+    );
 
-    const nav = screen.getByLabelText('Main navigation')
-    expect(nav).toBeInTheDocument()
+    const nav = screen.getByLabelText('Main navigation');
+    expect(nav).toBeInTheDocument();
 
-    const currentPage = screen.getByText('Dashboard')
-    expect(currentPage).toHaveAttribute('aria-current', 'page')
+    const currentPage = screen.getByText('Dashboard');
+    expect(currentPage).toHaveAttribute('aria-current', 'page');
 
-    const settingsLink = screen.getByRole('link', { name: 'Settings' })
-    expect(settingsLink).toHaveAttribute('href', '/settings')
-  })
-})
+    const settingsLink = screen.getByRole('link', { name: 'Settings' });
+    expect(settingsLink).toHaveAttribute('href', '/settings');
+  });
+});

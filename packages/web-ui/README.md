@@ -69,7 +69,7 @@ pnpm trailhead-ui install
 ### Manual Setup
 
 ```tsx
-import { ThemeProvider, Button, Card } from '@esteban-url/trailhead-web-ui'
+import { ThemeProvider, Button, Card } from '@esteban-url/trailhead-web-ui';
 
 function App() {
   return (
@@ -79,7 +79,7 @@ function App() {
         <Button>Get Started</Button>
       </Card>
     </ThemeProvider>
-  )
+  );
 }
 ```
 
@@ -110,16 +110,16 @@ Trailhead UI includes 21 professionally designed themes:
 Create custom themes programmatically:
 
 ```tsx
-import { themeRegistry, buildTheme } from '@esteban-url/trailhead-web-ui'
+import { themeRegistry, buildTheme } from '@esteban-url/trailhead-web-ui';
 
 // Build a custom theme
 const customTheme = buildTheme('my-brand')
   .withPrimaryColor('oklch(0.7 0.15 250)')
   .withRadius('0.75rem')
-  .build()
+  .build();
 
 // Register and use it
-themeRegistry.register('my-brand', customTheme)
+themeRegistry.register('my-brand', customTheme);
 ```
 
 Perfect for:

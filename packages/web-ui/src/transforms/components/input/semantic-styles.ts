@@ -3,7 +3,7 @@
  * Creates border and focus ring colors for validation states
  */
 
-import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Create semantic input styles
@@ -21,4 +21,4 @@ export const createSemanticInputStyles = createObjectLookupStyles(
     border: 'border-border focus:ring-border/20',
   },
   'border'
-)
+);

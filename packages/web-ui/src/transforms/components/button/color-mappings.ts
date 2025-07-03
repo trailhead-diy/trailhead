@@ -3,7 +3,7 @@
  * Transforms button CSS variables from zinc colors to semantic tokens
  */
 
-import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Button color mappings transform
@@ -132,4 +132,4 @@ export const buttonColorMappingsTransform = createProtectedRegexTransform({
     },
   ],
   changeType: 'button-color-mapping',
-})
+});

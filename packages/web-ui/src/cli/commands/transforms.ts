@@ -1,4 +1,4 @@
-import { Ok, Err } from '@esteban-url/trailhead-cli'
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeWithPhases,
@@ -7,20 +7,20 @@ import {
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command'
-import type { TrailheadConfig } from '../core/config/index.js'
+} from '@esteban-url/trailhead-cli/command';
+import type { TrailheadConfig } from '../core/config/index.js';
 import {
   executeTransforms as coreExecuteTransforms,
   validateTransformConfig,
   type TransformConfig,
-} from '../core/shared/transform-core.js'
-import { runTransformPrompts } from '../prompts/transforms.js'
-import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js'
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js'
-import { type StrictTransformsOptions } from '../core/types/command-options.js'
+} from '../core/shared/transform-core.js';
+import { runTransformPrompts } from '../prompts/transforms.js';
+import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js';
+import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { type StrictTransformsOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
-type TransformsOptions = StrictTransformsOptions
+type TransformsOptions = StrictTransformsOptions;
 
 // ============================================================================
 // COMMAND PHASES
@@ -30,16 +30,16 @@ const createTransformPhases = (_options: TransformsOptions): CommandPhase<Transf
   {
     name: 'Validating configuration',
     execute: async (config: TransformConfig) => {
-      const validationResult = validateTransformConfig(config)
+      const validationResult = validateTransformConfig(config);
       if (!validationResult.success) {
         return Err({
           code: 'VALIDATION_ERROR',
           message: 'Invalid transform configuration',
           details: validationResult.error,
           recoverable: true,
-        })
+        });
       }
-      return Ok(config)
+      return Ok(config);
     },
   },
   {
@@ -47,10 +47,10 @@ const createTransformPhases = (_options: TransformsOptions): CommandPhase<Transf
     execute: async (config: TransformConfig) => {
       // Just validate that we're ready to transform
       // The actual transformation will happen after phases complete
-      return Ok(config)
+      return Ok(config);
     },
   },
-]
+];
 
 // ============================================================================
 // COMMAND CONFIGURATION
@@ -92,22 +92,22 @@ export const createTransformsCommand = () => {
 
     action: async (options: TransformsOptions, cmdContext: CommandContext) => {
       // Load configuration
-      const configResult = loadConfigSync(cmdContext.projectRoot)
-      let loadedConfig: TrailheadConfig | null = null
-      let configPath: string | null = null
+      const configResult = loadConfigSync(cmdContext.projectRoot);
+      let loadedConfig: TrailheadConfig | null = null;
+      let configPath: string | null = null;
 
       if (configResult.success) {
-        loadedConfig = configResult.value.config
-        configPath = configResult.value.filepath
+        loadedConfig = configResult.value.config;
+        configPath = configResult.value.filepath;
 
         // Always show when config is found
         if (configPath) {
-          cmdContext.logger.info(`Found configuration at: ${configPath}`)
+          cmdContext.logger.info(`Found configuration at: ${configPath}`);
         }
 
         // Log detailed config in verbose mode (check both CLI option and config setting)
         if (loadedConfig && (options.interactive || options.verbose || loadedConfig.verbose)) {
-          logConfigDiscovery(configPath, loadedConfig, true)
+          logConfigDiscovery(configPath, loadedConfig, true);
         }
       }
 
@@ -119,20 +119,20 @@ export const createTransformsCommand = () => {
         async () => {
           // Show config notice in interactive mode
           if (configPath && options.interactive) {
-            cmdContext.logger.info(`Using configuration from: ${configPath}`)
-            cmdContext.logger.info('')
+            cmdContext.logger.info(`Using configuration from: ${configPath}`);
+            cmdContext.logger.info('');
           }
 
           const promptResults = await runTransformPrompts({
             currentSrcDir: options.src || loadedConfig?.transforms?.srcDir,
-          })
-          return promptResults
+          });
+          return promptResults;
         },
 
         // Execute function
         async (finalOptions: TransformsOptions) => {
           // Build configuration merging: CLI options > config file > defaults
-          const transformsConfig = loadedConfig?.transforms
+          const transformsConfig = loadedConfig?.transforms;
           const config: TransformConfig = {
             srcDir: finalOptions.src || transformsConfig?.srcDir || 'src/components/lib',
             verbose: finalOptions.verbose ?? loadedConfig?.verbose ?? false,
@@ -140,7 +140,7 @@ export const createTransformsCommand = () => {
             skipTransforms: finalOptions.skipTransforms ?? false,
             enabledTransforms: transformsConfig?.enabledTransforms,
             disabledTransforms: transformsConfig?.disabledTransforms,
-          }
+          };
 
           // Display configuration
           displaySummary(
@@ -151,7 +151,7 @@ export const createTransformsCommand = () => {
               { label: 'Verbose', value: config.verbose ? 'yes' : 'no' },
             ],
             cmdContext
-          )
+          );
 
           // Execute with dry run support
           return executeWithDryRun(
@@ -159,15 +159,15 @@ export const createTransformsCommand = () => {
             async (options: TransformsOptions) => {
               if (options.dryRun) {
                 // Dry run execution
-                cmdContext.logger.info('Analyzing files that would be transformed...')
+                cmdContext.logger.info('Analyzing files that would be transformed...');
 
                 // Run the transform in dry-run mode to get actual analysis
                 const dryRunConfig: TransformConfig = {
                   ...config,
                   dryRun: true,
-                }
+                };
 
-                const analysisResult = await coreExecuteTransforms(dryRunConfig)
+                const analysisResult = await coreExecuteTransforms(dryRunConfig);
 
                 if (!analysisResult.success) {
                   return Err(
@@ -176,10 +176,10 @@ export const createTransformsCommand = () => {
                       'Dry run analysis failed: ' + analysisResult.error,
                       { recoverable: false }
                     )
-                  )
+                  );
                 }
 
-                const { filesProcessed, conversionsApplied } = analysisResult.value
+                const { filesProcessed, conversionsApplied } = analysisResult.value;
 
                 displaySummary(
                   'Dry Run Analysis',
@@ -189,45 +189,45 @@ export const createTransformsCommand = () => {
                     { label: 'Source directory', value: config.srcDir },
                   ],
                   cmdContext
-                )
+                );
 
                 if (filesProcessed > 0) {
-                  cmdContext.logger.info('')
-                  cmdContext.logger.info('Run without --dry-run to apply these transformations.')
+                  cmdContext.logger.info('');
+                  cmdContext.logger.info('Run without --dry-run to apply these transformations.');
                 } else {
-                  cmdContext.logger.info('')
-                  cmdContext.logger.info('No files found to transform.')
+                  cmdContext.logger.info('');
+                  cmdContext.logger.info('No files found to transform.');
                 }
 
-                return Ok(undefined)
+                return Ok(undefined);
               } else {
                 // Normal execution
-                const phases = createTransformPhases(options)
-                const result = await executeWithPhases(phases, config, cmdContext)
+                const phases = createTransformPhases(options);
+                const result = await executeWithPhases(phases, config, cmdContext);
 
                 if (result.success) {
                   // Get the transform result from the last phase
-                  const transformConfig = result.value
-                  const transformResult = await coreExecuteTransforms(transformConfig)
+                  const transformConfig = result.value;
+                  const transformResult = await coreExecuteTransforms(transformConfig);
 
                   if (transformResult.success && transformResult.value.filesModified > 0) {
                     cmdContext.logger.success(
                       `✅ Transformed ${transformResult.value.filesModified} files successfully!`
-                    )
+                    );
 
                     if (cmdContext.verbose) {
-                      cmdContext.logger.info('')
-                      cmdContext.logger.info('Modified files:')
+                      cmdContext.logger.info('');
+                      cmdContext.logger.info('Modified files:');
                       // List files in the source directory
-                      const fs = await import('fs/promises')
-                      const files = await fs.readdir(transformConfig.srcDir)
-                      const tsxFiles = files.filter((f) => f.endsWith('.tsx')).sort()
-                      tsxFiles.forEach((file) => {
-                        console.log(`  ✓ ${file}`)
-                      })
+                      const fs = await import('fs/promises');
+                      const files = await fs.readdir(transformConfig.srcDir);
+                      const tsxFiles = files.filter(f => f.endsWith('.tsx')).sort();
+                      tsxFiles.forEach(file => {
+                        console.log(`  ✓ ${file}`);
+                      });
                     }
                   } else if (transformResult.success) {
-                    cmdContext.logger.info('No files needed transformation.')
+                    cmdContext.logger.info('No files needed transformation.');
                   } else {
                     return Err(
                       createCLIError(
@@ -235,19 +235,19 @@ export const createTransformsCommand = () => {
                         'Transform failed: ' + transformResult.error,
                         { recoverable: false }
                       )
-                    )
+                    );
                   }
                 }
 
-                return result.success ? Ok(undefined) : Err(result.error)
+                return result.success ? Ok(undefined) : Err(result.error);
               }
             },
             cmdContext
-          )
+          );
         },
 
         cmdContext
-      )
+      );
     },
-  })
-}
+  });
+};

@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const fieldsetColorMappings = makeProtected([
   // Error text colors - primary target
@@ -46,7 +46,7 @@ const fieldsetColorMappings = makeProtected([
     replacement: 'dark:bg-destructive/10',
     description: 'Convert dark mode red backgrounds to semantic destructive with opacity',
   },
-])
+]);
 
 /**
  * Fieldset color mapping transform
@@ -59,9 +59,9 @@ export const fieldsetColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'fieldset-color-semantic',
 
   // Only apply to fieldset files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Fieldset') ||
     content.includes('export function ErrorMessage') ||
     content.includes('export function Legend') ||
     content.includes('export function Field'),
-})
+});

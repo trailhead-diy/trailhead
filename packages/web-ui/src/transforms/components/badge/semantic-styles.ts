@@ -3,7 +3,7 @@
  * Creates Tailwind classes for semantic badge colors
  */
 
-import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Create semantic badge styles
@@ -21,4 +21,4 @@ export const createSemanticBadgeStyles = createObjectLookupStyles(
     border: 'border-border',
   },
   'primary'
-)
+);

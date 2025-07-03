@@ -3,7 +3,7 @@
  * Uses the transform factory for DRY implementation
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Input semantic enhancement transform
@@ -11,7 +11,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const inputSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Input',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('Input') &&
     content.includes('forwardRef') &&
     content.includes('export const Input ='),
@@ -22,4 +22,4 @@ export const inputSemanticEnhancementTransform = createSemanticEnhancementTransf
   hasColorsObject: false, // Input doesn't use colors object
   variableName: 'resolvedStyles',
   useIIFE: false,
-})
+});

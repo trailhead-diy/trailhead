@@ -5,7 +5,7 @@
  * this is a no-op transform that maintains compatibility
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Alert semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const alertSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Alert',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Alert') ||
     content.includes('export function AlertTitle') ||
     content.includes('export function AlertDescription'),
@@ -22,4 +22,4 @@ export const alertSemanticEnhancementTransform = createSemanticEnhancementTransf
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

@@ -2,49 +2,49 @@
  * Centralized package manager configurations and operations
  */
 
-import type { DependencyStrategy } from './dependency-strategies.js'
+import type { DependencyStrategy } from './dependency-strategies.js';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type PackageManagerName = 'npm' | 'yarn' | 'pnpm' | 'bun'
+export type PackageManagerName = 'npm' | 'yarn' | 'pnpm' | 'bun';
 
 export interface PackageManagerConfig {
-  readonly name: PackageManagerName
-  readonly lockfile: string
+  readonly name: PackageManagerName;
+  readonly lockfile: string;
   readonly commands: {
-    readonly install: string
-    readonly add: string
-    readonly addDev: string
-    readonly ci: string
-    readonly update: string
-    readonly outdated: string
+    readonly install: string;
+    readonly add: string;
+    readonly addDev: string;
+    readonly ci: string;
+    readonly update: string;
+    readonly outdated: string;
     readonly cache: {
-      readonly clean: string
-      readonly verify?: string
-    }
-  }
+      readonly clean: string;
+      readonly verify?: string;
+    };
+  };
   readonly flags: {
-    readonly force: string
-    readonly frozen?: string
-    readonly offline?: string
-    readonly verbose: string
-    readonly silent: string
-    readonly timeout?: string
-    readonly workspace?: string
-  }
+    readonly force: string;
+    readonly frozen?: string;
+    readonly offline?: string;
+    readonly verbose: string;
+    readonly silent: string;
+    readonly timeout?: string;
+    readonly workspace?: string;
+  };
   readonly env: {
-    readonly colorFlag?: string
-    readonly ciFlag?: string
-  }
-  readonly progressPatterns: readonly RegExp[]
+    readonly colorFlag?: string;
+    readonly ciFlag?: string;
+  };
+  readonly progressPatterns: readonly RegExp[];
   readonly errorPatterns: {
-    readonly network: RegExp
-    readonly permission: RegExp
-    readonly notFound: RegExp
-    readonly conflict: RegExp
-  }
+    readonly network: RegExp;
+    readonly permission: RegExp;
+    readonly notFound: RegExp;
+    readonly conflict: RegExp;
+  };
 }
 
 // ============================================================================
@@ -91,7 +91,7 @@ const npmConfig: PackageManagerConfig = {
     notFound: /E404|404 Not Found/i,
     conflict: /ERESOLVE|peer dep/i,
   },
-}
+};
 
 const yarnConfig: PackageManagerConfig = {
   name: 'yarn',
@@ -131,7 +131,7 @@ const yarnConfig: PackageManagerConfig = {
     notFound: /Couldn't find package/i,
     conflict: /Couldn't find any versions/i,
   },
-}
+};
 
 const pnpmConfig: PackageManagerConfig = {
   name: 'pnpm',
@@ -170,7 +170,7 @@ const pnpmConfig: PackageManagerConfig = {
     notFound: /No matching version/i,
     conflict: /WARN.*peer/i,
   },
-}
+};
 
 const bunConfig: PackageManagerConfig = {
   name: 'bun',
@@ -203,7 +203,7 @@ const bunConfig: PackageManagerConfig = {
     notFound: /PackageNotFound/i,
     conflict: /version conflict/i,
   },
-}
+};
 
 // ============================================================================
 // REGISTRY
@@ -214,19 +214,19 @@ const packageManagerRegistry: Record<PackageManagerName, PackageManagerConfig> =
   yarn: yarnConfig,
   pnpm: pnpmConfig,
   bun: bunConfig,
-}
+};
 
 /**
  * Get package manager configuration
  */
 export const getPackageManagerConfig = (name: PackageManagerName): PackageManagerConfig =>
-  packageManagerRegistry[name]
+  packageManagerRegistry[name];
 
 /**
  * Get all package manager names
  */
 export const getAllPackageManagers = (): readonly PackageManagerName[] =>
-  Object.keys(packageManagerRegistry) as PackageManagerName[]
+  Object.keys(packageManagerRegistry) as PackageManagerName[];
 
 // ============================================================================
 // COMMAND BUILDERS
@@ -238,36 +238,36 @@ export const getAllPackageManagers = (): readonly PackageManagerName[] =>
 export const buildInstallCommand = (
   pm: PackageManagerName,
   options: {
-    ci?: boolean
-    force?: boolean
-    frozen?: boolean
-    offline?: boolean
-    verbose?: boolean
-    timeout?: number
-    workspace?: string
-    legacyPeerDeps?: boolean // Only for npm
+    ci?: boolean;
+    force?: boolean;
+    frozen?: boolean;
+    offline?: boolean;
+    verbose?: boolean;
+    timeout?: number;
+    workspace?: string;
+    legacyPeerDeps?: boolean; // Only for npm
   } = {}
 ): string => {
-  const config = getPackageManagerConfig(pm)
-  const parts: string[] = []
+  const config = getPackageManagerConfig(pm);
+  const parts: string[] = [];
 
   // Base command
-  parts.push(options.ci ? config.commands.ci : config.commands.install)
+  parts.push(options.ci ? config.commands.ci : config.commands.install);
 
   // Add flags
-  if (options.force) parts.push(config.flags.force)
-  if (options.frozen && config.flags.frozen) parts.push(config.flags.frozen)
-  if (options.offline && config.flags.offline) parts.push(config.flags.offline)
-  if (options.verbose) parts.push(config.flags.verbose)
+  if (options.force) parts.push(config.flags.force);
+  if (options.frozen && config.flags.frozen) parts.push(config.flags.frozen);
+  if (options.offline && config.flags.offline) parts.push(config.flags.offline);
+  if (options.verbose) parts.push(config.flags.verbose);
   if (options.timeout && config.flags.timeout) {
-    parts.push(`${config.flags.timeout} ${options.timeout}`)
+    parts.push(`${config.flags.timeout} ${options.timeout}`);
   }
   if (options.workspace && config.flags.workspace) {
-    parts.push(`${config.flags.workspace} ${options.workspace}`)
+    parts.push(`${config.flags.workspace} ${options.workspace}`);
   }
 
-  return parts.join(' ')
-}
+  return parts.join(' ');
+};
 
 /**
  * Build add packages command
@@ -276,22 +276,22 @@ export const buildAddCommand = (
   pm: PackageManagerName,
   packages: readonly string[],
   options: {
-    dev?: boolean
-    exact?: boolean
-    global?: boolean
+    dev?: boolean;
+    exact?: boolean;
+    global?: boolean;
   } = {}
 ): string => {
-  const config = getPackageManagerConfig(pm)
-  const parts: string[] = []
+  const config = getPackageManagerConfig(pm);
+  const parts: string[] = [];
 
   // Base command
-  parts.push(options.dev ? config.commands.addDev : config.commands.add)
+  parts.push(options.dev ? config.commands.addDev : config.commands.add);
 
   // Add packages
-  parts.push(...packages)
+  parts.push(...packages);
 
-  return parts.join(' ')
-}
+  return parts.join(' ');
+};
 
 // ============================================================================
 // STRATEGY TO OPTIONS MAPPING
@@ -308,7 +308,7 @@ export const getStrategyOptions = (
   const baseOptions = {
     verbose: false,
     timeout: 600000, // 10 minutes
-  }
+  };
 
   switch (strategy.type) {
     case 'auto':
@@ -316,28 +316,28 @@ export const getStrategyOptions = (
         ...baseOptions,
         ci: hasLockfile && pm === 'npm',
         frozen: hasLockfile && pm !== 'npm',
-      }
+      };
 
     case 'smart':
       return {
         ...baseOptions,
         legacyPeerDeps: pm === 'npm',
         force: false,
-      }
+      };
 
     case 'force':
       return {
         ...baseOptions,
         force: true,
         legacyPeerDeps: pm === 'npm',
-      }
+      };
 
     case 'manual':
     case 'selective':
     case 'skip':
-      return baseOptions
+      return baseOptions;
   }
-}
+};
 
 // ============================================================================
 // PROGRESS PARSING
@@ -350,38 +350,38 @@ export const parseProgress = (
   output: string,
   pm: PackageManagerName
 ): {
-  phase?: string
-  current?: number
-  total?: number
-  packages?: number
+  phase?: string;
+  current?: number;
+  total?: number;
+  packages?: number;
 } => {
-  const config = getPackageManagerConfig(pm)
-  const result: ReturnType<typeof parseProgress> = {}
+  const config = getPackageManagerConfig(pm);
+  const result: ReturnType<typeof parseProgress> = {};
 
   // Try to match progress patterns
   for (const pattern of config.progressPatterns) {
-    const match = output.match(pattern)
+    const match = output.match(pattern);
     if (match) {
       if (match[1] && match[2]) {
-        result.current = parseInt(match[1], 10)
-        result.total = parseInt(match[2], 10)
+        result.current = parseInt(match[1], 10);
+        result.total = parseInt(match[2], 10);
       } else if (match[1]) {
-        result.packages = parseInt(match[1], 10)
+        result.packages = parseInt(match[1], 10);
       }
 
       // Determine phase from output
-      if (output.includes('resolv')) result.phase = 'resolving'
-      else if (output.includes('fetch')) result.phase = 'fetching'
-      else if (output.includes('link')) result.phase = 'linking'
-      else if (output.includes('build')) result.phase = 'building'
-      else if (output.includes('install')) result.phase = 'installing'
+      if (output.includes('resolv')) result.phase = 'resolving';
+      else if (output.includes('fetch')) result.phase = 'fetching';
+      else if (output.includes('link')) result.phase = 'linking';
+      else if (output.includes('build')) result.phase = 'building';
+      else if (output.includes('install')) result.phase = 'installing';
 
-      break
+      break;
     }
   }
 
-  return result
-}
+  return result;
+};
 
 // ============================================================================
 // ERROR DETECTION
@@ -394,15 +394,15 @@ export const detectErrorType = (
   output: string,
   pm: PackageManagerName
 ): 'network' | 'permission' | 'notFound' | 'conflict' | 'unknown' => {
-  const config = getPackageManagerConfig(pm)
+  const config = getPackageManagerConfig(pm);
 
-  if (config.errorPatterns.network.test(output)) return 'network'
-  if (config.errorPatterns.permission.test(output)) return 'permission'
-  if (config.errorPatterns.notFound.test(output)) return 'notFound'
-  if (config.errorPatterns.conflict.test(output)) return 'conflict'
+  if (config.errorPatterns.network.test(output)) return 'network';
+  if (config.errorPatterns.permission.test(output)) return 'permission';
+  if (config.errorPatterns.notFound.test(output)) return 'notFound';
+  if (config.errorPatterns.conflict.test(output)) return 'conflict';
 
-  return 'unknown'
-}
+  return 'unknown';
+};
 
 /**
  * Get environment variables for package manager
@@ -410,27 +410,27 @@ export const detectErrorType = (
 export const getPackageManagerEnv = (
   pm: PackageManagerName,
   options: {
-    color?: boolean
-    ci?: boolean
+    color?: boolean;
+    ci?: boolean;
   } = {}
 ): Record<string, string> => {
-  const config = getPackageManagerConfig(pm)
-  const env: Record<string, string> = {}
+  const config = getPackageManagerConfig(pm);
+  const env: Record<string, string> = {};
 
   // Copy process.env but filter out undefined values
   for (const [key, value] of Object.entries(process.env)) {
     if (value !== undefined) {
-      env[key] = value
+      env[key] = value;
     }
   }
 
   if (options.color && config.env.colorFlag) {
-    env[config.env.colorFlag] = '1'
+    env[config.env.colorFlag] = '1';
   }
 
   if (options.ci && config.env.ciFlag) {
-    env[config.env.ciFlag] = 'true'
+    env[config.env.ciFlag] = 'true';
   }
 
-  return env
-}
+  return env;
+};

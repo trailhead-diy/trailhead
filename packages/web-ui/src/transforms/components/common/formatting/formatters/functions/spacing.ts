@@ -7,8 +7,8 @@
  * Removes excessive blank lines while preserving structure
  */
 export const normalizeBlankLines = (code: string): string => {
-  return code.replace(/\n{3,}/g, '\n\n')
-}
+  return code.replace(/\n{3,}/g, '\n\n');
+};
 
 /**
  * Add spacing around functions
@@ -21,13 +21,13 @@ export const addFunctionSpacing = (code: string): string => {
       .replace(/([^\n])\n(export\s+)?function/g, '$1\n\n$2function')
       // Add blank line before arrow functions
       .replace(/([^\n])\n(export\s+)?const\s+\w+\s*=\s*\(/g, '$1\n\n$2const $3 = (')
-  )
-}
+  );
+};
 
 /**
  * Clean up trailing whitespace
  * Removes unnecessary whitespace at line ends
  */
 export const removeTrailingWhitespace = (code: string): string => {
-  return code.replace(/[ \t]+$/gm, '')
-}
+  return code.replace(/[ \t]+$/gm, '');
+};

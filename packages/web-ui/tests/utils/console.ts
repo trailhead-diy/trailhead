@@ -5,7 +5,7 @@
  * Use these utilities when tests need to verify console behavior or output.
  */
 
-import { expect } from 'vitest'
+import { expect } from 'vitest';
 
 /**
  * Wrapper function for tests that need console access
@@ -26,16 +26,16 @@ import { expect } from 'vitest'
 export const withConsole = (testFn: () => void | Promise<void>) => {
   return async () => {
     // Restore console methods
-    globalThis.__restoreConsole()
+    globalThis.__restoreConsole();
 
     try {
-      await testFn()
+      await testFn();
     } finally {
       // Re-mock console methods to keep other tests clean
-      globalThis.__mockConsole()
+      globalThis.__mockConsole();
     }
-  }
-}
+  };
+};
 
 /**
  * Wrapper function for tests that need to spy on console methods
@@ -54,7 +54,7 @@ export const withConsole = (testFn: () => void | Promise<void>) => {
  */
 export const withConsoleSpy = (testFn: () => void | Promise<void>) => {
   return async () => {
-    const { vi } = await import('vitest')
+    const { vi } = await import('vitest');
 
     // Create fresh spies for console methods
     const consoleSpy = {
@@ -62,22 +62,22 @@ export const withConsoleSpy = (testFn: () => void | Promise<void>) => {
       warn: vi.spyOn(console, 'warn').mockImplementation(() => {}),
       error: vi.spyOn(console, 'error').mockImplementation(() => {}),
       info: vi.spyOn(console, 'info').mockImplementation(() => {}),
-    }
+    };
 
     try {
-      await testFn()
+      await testFn();
     } finally {
       // Restore spies
-      consoleSpy.log.mockRestore()
-      consoleSpy.warn.mockRestore()
-      consoleSpy.error.mockRestore()
-      consoleSpy.info.mockRestore()
+      consoleSpy.log.mockRestore();
+      consoleSpy.warn.mockRestore();
+      consoleSpy.error.mockRestore();
+      consoleSpy.info.mockRestore();
 
       // Re-mock console methods for global setup
-      globalThis.__mockConsole()
+      globalThis.__mockConsole();
     }
-  }
-}
+  };
+};
 
 /**
  * Asserts that console.log was called with a message matching the given pattern
@@ -91,29 +91,29 @@ export const withConsoleSpy = (testFn: () => void | Promise<void>) => {
  * ```
  */
 export const expectConsoleLog = (message: string | RegExp) => {
-  return expect(console.log).toHaveBeenCalledWith(expect.stringMatching(message))
-}
+  return expect(console.log).toHaveBeenCalledWith(expect.stringMatching(message));
+};
 
 /**
  * Asserts that console.warn was called with a message matching the given pattern
  */
 export const expectConsoleWarn = (message: string | RegExp) => {
-  return expect(console.warn).toHaveBeenCalledWith(expect.stringMatching(message))
-}
+  return expect(console.warn).toHaveBeenCalledWith(expect.stringMatching(message));
+};
 
 /**
  * Asserts that console.error was called with a message matching the given pattern
  */
 export const expectConsoleError = (message: string | RegExp) => {
-  return expect(console.error).toHaveBeenCalledWith(expect.stringMatching(message))
-}
+  return expect(console.error).toHaveBeenCalledWith(expect.stringMatching(message));
+};
 
 /**
  * Asserts that console.info was called with a message matching the given pattern
  */
 export const expectConsoleInfo = (message: string | RegExp) => {
-  return expect(console.info).toHaveBeenCalledWith(expect.stringMatching(message))
-}
+  return expect(console.info).toHaveBeenCalledWith(expect.stringMatching(message));
+};
 
 /**
  * Temporarily enables console output for debugging purposes
@@ -129,21 +129,21 @@ export const expectConsoleInfo = (message: string | RegExp) => {
  * ```
  */
 export const withDebugConsole = (fn: () => void | Promise<void>) => {
-  return withConsole(fn)
-}
+  return withConsole(fn);
+};
 
 /**
  * Gets the original console methods (before mocking)
  * Useful for manual console restoration in complex scenarios
  */
 export const getOriginalConsole = () => {
-  return globalThis.__originalConsole
-}
+  return globalThis.__originalConsole;
+};
 
 /**
  * Checks if console methods are currently mocked
  * Useful for conditional logic in tests
  */
 export const isConsoleMocked = () => {
-  return typeof console.log === 'function' && 'mock' in console.log
-}
+  return typeof console.log === 'function' && 'mock' in console.log;
+};

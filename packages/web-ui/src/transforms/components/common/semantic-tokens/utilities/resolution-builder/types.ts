@@ -7,15 +7,15 @@
  */
 export interface ResolutionConfig {
   /** Component name (e.g., 'Button', 'Badge') */
-  componentName: string
+  componentName: string;
   /** Variable name for resolved classes/styles */
-  variableName: string
+  variableName: string;
   /** Default color if none provided */
-  defaultColor: string
+  defaultColor: string;
   /** Whether to use IIFE pattern */
-  useIIFE?: boolean
+  useIIFE?: boolean;
   /** Whether component uses colors object */
-  hasColorsObject?: boolean
+  hasColorsObject?: boolean;
 }
 
 /**
@@ -23,9 +23,9 @@ export interface ResolutionConfig {
  */
 export interface ResolutionResult {
   /** The AST node representing the resolution */
-  declaration: any
+  declaration: any;
   /** The variable name used */
-  variableName: string
+  variableName: string;
 }
 
 /**
@@ -34,14 +34,14 @@ export interface ResolutionResult {
 export type ResolutionPattern =
   | 'iife-with-colors'
   | 'conditional-with-colors'
-  | 'simple-conditional'
+  | 'simple-conditional';
 
 /**
  * Context for AST building operations
  */
 export interface ASTBuildContext {
   /** JSCodeshift API instance */
-  j: any
+  j: any;
   /** Configuration for the resolution */
-  config: ResolutionConfig
+  config: ResolutionConfig;
 }

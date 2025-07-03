@@ -63,7 +63,7 @@ const colors = {
     '[--checkbox-check:var(--color-accent-foreground)] [--checkbox-checked-bg:var(--accent)] [--checkbox-checked-border:var(--accent)]/90',
   destructive:
     '[--checkbox-check:var(--color-destructive-foreground)] [--checkbox-checked-bg:var(--destructive)] [--checkbox-checked-border:var(--destructive)]/90',
-}
+};
 ```
 
 ## Complete Color Mappings

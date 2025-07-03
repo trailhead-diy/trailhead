@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { cn } from '../utils/cn'
-import { Button, Select } from '../'
-import { useTheme } from './theme-provider'
-import { themePresets } from './presets'
+import { useState, useEffect } from 'react';
+import { cn } from '../utils/cn';
+import { Button, Select } from '../';
+import { useTheme } from './theme-provider';
+import { themePresets } from './presets';
 
 interface ThemeSwitcherProps {
-  className?: string
-  showDarkModeToggle?: boolean
-  showQuickSelect?: boolean
-  maxQuickSelectThemes?: number
+  className?: string;
+  showDarkModeToggle?: boolean;
+  showQuickSelect?: boolean;
+  maxQuickSelectThemes?: number;
 }
 
 /**
@@ -25,28 +25,28 @@ export const ThemeSwitcher = ({
   showQuickSelect = true,
   maxQuickSelectThemes = 5,
 }: ThemeSwitcherProps) => {
-  const { currentTheme, isDark, themes, setTheme, toggleDarkMode } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { currentTheme, isDark, themes, setTheme, toggleDarkMode } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   // Get theme display names from presets
   const getThemeDisplayName = (themeName: string): string => {
     // Check if it's a preset theme
-    const presetName = Object.keys(themePresets).find((key) => key === themeName)
+    const presetName = Object.keys(themePresets).find(key => key === themeName);
     if (presetName) {
-      return presetName.charAt(0).toUpperCase() + presetName.slice(1)
+      return presetName.charAt(0).toUpperCase() + presetName.slice(1);
     }
     // For custom themes, just capitalize the name
-    return themeName.charAt(0).toUpperCase() + themeName.slice(1)
-  }
+    return themeName.charAt(0).toUpperCase() + themeName.slice(1);
+  };
 
-  const themeOptions = themes.map((theme) => ({
+  const themeOptions = themes.map(theme => ({
     value: theme,
     label: getThemeDisplayName(theme),
-  }))
+  }));
 
   // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
@@ -55,7 +55,7 @@ export const ThemeSwitcher = ({
         <div className="h-9 w-32 bg-muted animate-pulse rounded-md" />
         {showDarkModeToggle && <div className="h-9 w-20 bg-muted animate-pulse rounded-md" />}
       </div>
-    )
+    );
   }
 
   return (
@@ -65,10 +65,10 @@ export const ThemeSwitcher = ({
 
         <Select
           value={currentTheme || 'zinc'}
-          onChange={(e) => setTheme(e.target.value)}
+          onChange={e => setTheme(e.target.value)}
           className="min-w-[120px]"
         >
-          {themeOptions.map((option) => (
+          {themeOptions.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -86,7 +86,7 @@ export const ThemeSwitcher = ({
       {/* Quick theme selection buttons */}
       {showQuickSelect && (
         <div className="hidden sm:flex gap-2 border-l border-border pl-4">
-          {themes.slice(0, maxQuickSelectThemes).map((theme) => (
+          {themes.slice(0, maxQuickSelectThemes).map(theme => (
             <Button
               key={theme}
               {...(currentTheme === theme
@@ -102,8 +102,8 @@ export const ThemeSwitcher = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 /**
  * Theme Preview Component
@@ -111,7 +111,7 @@ export const ThemeSwitcher = ({
  * Shows how different components look with the current theme
  */
 export const ThemePreview = () => {
-  const { currentTheme, isDark } = useTheme()
+  const { currentTheme, isDark } = useTheme();
 
   return (
     <div className="space-y-6 p-6 border border-border rounded-lg bg-card">
@@ -207,5 +207,5 @@ export const ThemePreview = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
