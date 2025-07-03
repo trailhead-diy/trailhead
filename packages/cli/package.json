@@ -49,8 +49,9 @@
     "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
-    "test": "pnpm build && vitest run",
-    "test:coverage": "pnpm build && vitest run --coverage",
+    "pretest": "pnpm build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:examples": "./examples/test-examples.sh",
     "test:examples:fast": "./examples/test-examples.sh --fast",
@@ -59,7 +60,6 @@
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "pretest": "pnpm build",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test:all"
   },
@@ -80,12 +80,12 @@
     "@repo/vitest-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.11.0",
-    "@vitest/coverage-v8": "^1.2.0",
-    "oxlint": "^0.2.0",
+    "@types/node": "^22.14.0",
+    "@vitest/coverage-v8": "^3.1.4",
+    "oxlint": "^1.1.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.2.0"
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
   },
   "engines": {
     "node": ">=18.0.0",
