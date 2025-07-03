@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Check if this is a merge commit or a commit with --no-verify
 if [ -z "$2" ] || [ "$2" = "message" ]; then
   # Check if there are changes to packages
