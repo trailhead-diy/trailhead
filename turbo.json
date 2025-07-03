@@ -77,7 +77,7 @@
       "outputs": [],
       "inputs": [
         "src/**",
-        "tests/**", 
+        "tests/**",
         "oxlintrc.*",
         ".oxlintrc.*",
         "package.json"
