@@ -214,6 +214,8 @@ jobs:
       - name: Test CLI installation
         run: |
           cd packages/web-ui
+          # Need to install dependencies first
+          pnpm install --frozen-lockfile
           pnpm pack
           node dist/src/cli.js --help
 
