@@ -24,10 +24,6 @@ function convertToCommanderJS<T>(cliCommand: CLICommand<T>): Command {
     }
   }
 
-  // Add base CLI options that are automatically added by @esteban-url/trailhead-cli
-  cmd.option('-v, --verbose', 'show detailed output', false);
-  cmd.option('--dry-run', 'preview mode - show what would be done without executing', false);
-
   return cmd;
 }
 
