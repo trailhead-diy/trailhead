@@ -17,7 +17,7 @@ on:
         description: 'pnpm version to use'
         required: false
         type: string
-        default: '10.12.1'
+        default: '10.12.4'
 
 env:
   FORCE_COLOR: 3
@@ -72,6 +72,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: changes
     if: needs.changes.outputs.code == 'true'
     steps:
@@ -106,7 +107,8 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    needs: [changes, build]
+    timeout-minutes: 5
+    needs: changes
     if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v4
@@ -115,17 +117,13 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
       
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-      
       - name: Run linting
         run: pnpm lint
 
   format:
     name: Format Check
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     needs: changes
     if: needs.changes.outputs.code == 'true'
     steps:
@@ -141,6 +139,7 @@ jobs:
   types:
     name: Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     needs: [changes, build]
     if: needs.changes.outputs.code == 'true'
     steps:
@@ -162,6 +161,7 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     needs: [changes, build]
     if: needs.changes.outputs.code == 'true'
     strategy:
@@ -197,6 +197,7 @@ jobs:
   test-cli:
     name: Test CLI Package
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [changes, build]
     if: needs.changes.outputs.cli == 'true' || needs.changes.outputs.web-ui == 'true'
     steps:
@@ -223,6 +224,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     needs: changes
     if: needs.changes.outputs.code == 'true'
     steps:
@@ -239,6 +241,7 @@ jobs:
   status:
     name: CI Status
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     needs: [lint, format, types, test, security]
     if: always()
     steps:
