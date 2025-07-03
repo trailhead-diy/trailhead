@@ -201,8 +201,15 @@ export function createCLI(config: CLIConfig): CLI {
           }
         }
 
-        // Add verbose flag to all commands
-        cmd.option('-v, --verbose', 'show detailed output', false);
+        // Add verbose flag to all commands (only if not already defined)
+        const hasVerboseOption = command.options?.some(
+          (option) =>
+            option.flags?.includes('--verbose') || option.flags?.includes('-v'),
+        );
+
+        if (!hasVerboseOption) {
+          cmd.option('-v, --verbose', 'show detailed output', false);
+        }
 
         // Set up action handler
         cmd.action(async (...args: any[]) => {
