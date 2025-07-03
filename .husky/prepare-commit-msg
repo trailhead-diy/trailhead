@@ -1,0 +1,10 @@
+# Check if this is a merge commit or a commit with --no-verify
+if [ -z "$2" ] || [ "$2" = "message" ]; then
+  # Check if there are changes to packages
+  if git diff --cached --name-only | grep -E "^packages/.*\.(ts|tsx|js|jsx)$" > /dev/null; then
+    echo ""
+    echo "📝 Reminder: If this change should be released, don't forget to add a changeset!"
+    echo "   Run: pnpm changeset:add"
+    echo ""
+  fi
+fi
