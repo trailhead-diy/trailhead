@@ -226,7 +226,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@trailhead/_or @repo/_)
+2. Add proper package.json with correct namespace (@esteban-url/*_or @repo/*_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 

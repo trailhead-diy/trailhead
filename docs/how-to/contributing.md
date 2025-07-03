@@ -86,7 +86,7 @@ Use conventional commits:
 
 ## Package Structure
 
-- **packages/**: Public packages (@trailhead/\*)
+- **packages/**: Public packages (@esteban-url/\*)
 - **apps/**: Applications and demos
 - **tooling/**: Internal configurations (@repo/\*)
 
