@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
+import { getRunCommand } from '@esteban-url/trailhead-cli/testing';
 
 // Skip project subdirectory tests - they require @esteban-url/trailhead-cli to be published
 // These tests work with standalone project examples that depend on the published package
@@ -43,7 +44,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev --help', {
+        const runCommand = getRunCommand('dev', ['--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: apiClientPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -63,7 +68,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev get --help', {
+        const runCommand = getRunCommand('dev', ['get', '--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: apiClientPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -94,7 +103,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev --help', {
+        const runCommand = getRunCommand('dev', ['--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: crossPlatformPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -113,7 +126,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev info', {
+        const runCommand = getRunCommand('dev', ['info']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: crossPlatformPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -144,7 +161,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev --help', {
+        const runCommand = getRunCommand('dev', ['--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: fileProcessorPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -174,7 +195,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev --help', {
+        const runCommand = getRunCommand('dev', ['--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: projectGeneratorPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -193,7 +218,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev generate --help', {
+        const runCommand = getRunCommand('dev', ['generate', '--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: projectGeneratorPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -222,7 +251,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev --help', {
+        const runCommand = getRunCommand('dev', ['--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: todoCliPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -242,7 +275,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev list', {
+        const runCommand = getRunCommand('dev', ['list']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: todoCliPath,
           encoding: 'utf8',
           timeout: 10000,
@@ -262,7 +299,11 @@ describe.skip('Project Examples Smoke Tests', () => {
       }
 
       try {
-        const result = execSync('pnpm run dev add --help', {
+        const runCommand = getRunCommand('dev', ['add', '--help']);
+        if (!runCommand.success) {
+          throw new Error(runCommand.error.message);
+        }
+        const result = execSync(runCommand.value, {
           cwd: todoCliPath,
           encoding: 'utf8',
           timeout: 10000,

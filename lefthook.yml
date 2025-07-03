@@ -121,5 +121,24 @@ commit-msg:
           exit 1
         fi
 
+pre-push:
+  parallel: true
+  commands:
+    # Validate lockfile is up to date
+    lockfile-check:
+      priority: 1
+      run: |
+        echo "🔒 Checking if pnpm-lock.yaml is up to date..."
+        
+        # Use git to check if lockfile would change
+        if ! pnpm install --lockfile-only --frozen-lockfile 2>/dev/null; then
+          echo "❌ pnpm-lock.yaml is out of date!"
+          echo "   Run 'pnpm install' to update the lockfile"
+          echo "   Then commit the updated lockfile"
+          exit 1
+        fi
+        
+        echo "✅ Lockfile is up to date"
+
 # Personal overrides (not committed)
 # Create .lefthook-local.yml to customize

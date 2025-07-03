@@ -64,6 +64,39 @@ Focus on high-ROI (Return on Investment) tests:
 - **Major Updates**: Require manual approval via Dependency Dashboard
 - **Schedule**: Monday mornings (4am EST) to minimize disruption
 
+### Lockfile Management
+
+**IMPORTANT**: Always keep `pnpm-lock.yaml` in sync with `package.json` to avoid CI failures.
+
+#### When to Update Lockfile
+
+1. **After modifying package.json**: Any changes to dependencies, devDependencies, or scripts
+2. **After merging PRs**: If conflicts occurred in package.json
+3. **When CI fails**: With "ERR_PNPM_OUTDATED_LOCKFILE" error
+
+#### How to Update Lockfile
+
+```bash
+# Update lockfile without installing packages
+pnpm install --lockfile-only
+
+# Verify and commit
+git add pnpm-lock.yaml
+git commit -m "fix: update pnpm-lock.yaml to match package.json"
+```
+
+#### Automated Safeguards
+
+1. **Pre-push hook**: Validates lockfile before pushing (via Lefthook)
+2. **CI validation**: All workflows use `--frozen-lockfile` to catch issues
+3. **Dependency check**: `pnpm audit` runs in dependency-review workflow
+
+#### Common Issues
+
+- **Merge conflicts in lockfile**: Delete lockfile, run `pnpm install`, commit new lockfile
+- **Renovate conflicts**: Let Renovate recreate its lockfile updates after merging
+- **Version drift**: Ensure all environments use pnpm v10.12.1
+
 ### Documentation Standards - STRICTLY ENFORCED
 
 **CRITICAL**: All documentation MUST follow Diátaxis framework. Non-compliance blocks PRs.
