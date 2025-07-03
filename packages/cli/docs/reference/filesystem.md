@@ -16,22 +16,22 @@ Abstraction layer for file system operations with consistent error handling and 
 
 | Property | Value |
 |----------|-------|
-| **Package** | `@trailhead/cli` |
-| **Module** | `@trailhead/cli/filesystem` |
+| **Package** | `@esteban-url/trailhead-cli` |
+| **Module** | `@esteban-url/trailhead-cli/filesystem` |
 | **Since** | `v1.0.0` |
 
 ## Import
 
 ```typescript
-import { createFileSystem } from "@trailhead/cli/filesystem";
-import type { FileSystem } from "@trailhead/cli/filesystem";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { createFileSystem } from "@trailhead/cli/filesystem";
-import type { FileSystem } from "@trailhead/cli/filesystem";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 const fs = createFileSystem();
 ```
@@ -106,7 +106,7 @@ interface JsonOptions {
 ### Real FileSystem (Default)
 
 ```typescript
-import { createFileSystem, createNodeFileSystem } from "@trailhead/cli/filesystem";
+import { createFileSystem, createNodeFileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 // Using factory (recommended)
 const fs = createFileSystem();
@@ -118,7 +118,7 @@ const nodeFs = createNodeFileSystem();
 ### Memory FileSystem (Testing)
 
 ```typescript
-import { createMemoryFileSystem } from "@trailhead/cli/filesystem";
+import { createMemoryFileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 // Empty memory filesystem
 const fs = createMemoryFileSystem();
@@ -306,8 +306,8 @@ if (!result.success) {
 ## Testing with Memory FileSystem
 
 ```typescript
-import { createMemoryFileSystem } from "@trailhead/cli/filesystem";
-import { createTestContext } from "@trailhead/cli/testing";
+import { createMemoryFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import { createTestContext } from "@esteban-url/trailhead-cli/testing";
 
 test("file processing", async () => {
   // Create memory filesystem with test data
@@ -358,7 +358,7 @@ import {
   readFile,
   writeFile,
   ensureDirectory 
-} from "@trailhead/cli/filesystem";
+} from "@esteban-url/trailhead-cli/filesystem";
 
 // Find files matching pattern
 const tsFiles = await findFiles("/src", "**/*.ts");
@@ -376,7 +376,7 @@ await writeFile(fs, "/data.json", content, { backup: true });
 ### Path Utilities
 
 ```typescript
-import { getRelativePath, compareFiles } from "@trailhead/cli/filesystem";
+import { getRelativePath, compareFiles } from "@esteban-url/trailhead-cli/filesystem";
 
 // Get relative path
 const relative = getRelativePath("/home/user", "/home/user/project/src");

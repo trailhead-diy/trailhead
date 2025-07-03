@@ -94,20 +94,20 @@ Use the targeted CI workflow:
 
 ```bash
 # Via GitHub UI: Actions → Targeted CI → Run workflow
-# Select package: @trailhead/cli or @trailhead/web-ui
+# Select package: @esteban-url/trailhead-cli or @esteban-url/trailhead-web-ui
 ```
 
 ### Local Testing with Turbo
 
 ```bash
 # Test specific package
-pnpm test --filter=@trailhead/cli
+pnpm test --filter=@esteban-url/trailhead-cli
 
 # Build only affected packages
-pnpm build --filter=...@trailhead/cli
+pnpm build --filter=...@esteban-url/trailhead-cli
 
 # Run all checks for a package
-pnpm lint types test --filter=@trailhead/web-ui
+pnpm lint types test --filter=@esteban-url/trailhead-web-ui
 ```
 
 ### Monitoring CI Performance

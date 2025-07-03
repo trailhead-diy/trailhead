@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: Understanding the CLI Framework Architecture
-description: Deep dive into the architectural principles and design patterns that make @trailhead/cli lightweight, testable, and maintainable
+description: Deep dive into the architectural principles and design patterns that make @esteban-url/trailhead-cli lightweight, testable, and maintainable
 related:
   - /docs/explanation/design-decisions
   - /docs/how-to/import-patterns
@@ -10,11 +10,11 @@ related:
 
 # Understanding the CLI Framework Architecture
 
-The architecture of @trailhead/cli is built on fundamental principles that prioritize developer experience, performance, and maintainability. This explanation explores the conceptual foundations and design patterns that shape how the framework operates.
+The architecture of @esteban-url/trailhead-cli is built on fundamental principles that prioritize developer experience, performance, and maintainability. This explanation explores the conceptual foundations and design patterns that shape how the framework operates.
 
 ## Overview
 
-The @trailhead/cli architecture represents a modern approach to CLI framework design, emphasizing functional programming patterns, explicit error handling, and modular organization. Rather than following traditional object-oriented patterns, the framework adopts a composition-based architecture that enables superior tree-shaking, testing, and maintainability.
+The @esteban-url/trailhead-cli architecture represents a modern approach to CLI framework design, emphasizing functional programming patterns, explicit error handling, and modular organization. Rather than following traditional object-oriented patterns, the framework adopts a composition-based architecture that enables superior tree-shaking, testing, and maintainability.
 
 ## Background
 
@@ -38,7 +38,7 @@ This approach has significant drawbacks:
 
 ### Why This Architecture?
 
-@trailhead/cli addresses these problems through **subpath exports** that create clear module boundaries:
+@esteban-url/trailhead-cli addresses these problems through **subpath exports** that create clear module boundaries:
 
 ```json
 {
@@ -188,8 +188,8 @@ The architecture is like a **well-organized toolbox** where:
 When building a CLI that processes files, you only import what you need:
 
 ```typescript
-import { createCommand } from '@trailhead/cli/command';
-import { readFile, writeFile } from '@trailhead/cli/filesystem';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem';
 
 // Only file and command modules are bundled
 ```
@@ -213,36 +213,36 @@ The Result type system enables clean error propagation without losing context or
 ## Module Dependency Graph
 
 ```
-@trailhead/cli (main)
+@esteban-url/trailhead-cli (main)
 ├── Only exports: Ok, Err, isOk, isErr, createCLI
 └── No dependencies on other modules
 
-@trailhead/cli/core
+@esteban-url/trailhead-cli/core
 ├── Exports: Error handling, validation, logging
 └── No dependencies on other modules
 
-@trailhead/cli/command
+@esteban-url/trailhead-cli/command
 ├── Exports: Command creation and execution
 └── Depends on: Result types from main
 
-@trailhead/cli/filesystem
+@esteban-url/trailhead-cli/filesystem
 ├── Exports: File operations
 └── Depends on: Result types from main
 
-@trailhead/cli/config
+@esteban-url/trailhead-cli/config
 ├── Exports: Configuration management
 ├── Depends on: Result types from main
 └── Re-exports: zod
 
-@trailhead/cli/prompts
+@esteban-url/trailhead-cli/prompts
 ├── Exports: User interaction
 └── Re-exports: @inquirer/prompts
 
-@trailhead/cli/testing
+@esteban-url/trailhead-cli/testing
 ├── Exports: Test utilities
 └── Can mock any module
 
-@trailhead/cli/utils
+@esteban-url/trailhead-cli/utils
 ├── Exports: Styling, spinners, stats
 └── Standalone utilities
 ```

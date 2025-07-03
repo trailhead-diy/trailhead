@@ -1,6 +1,6 @@
 ---
 type: explanation
-title: "@trailhead/cli Documentation Overview"
+title: "@esteban-url/trailhead-cli Documentation Overview"
 description: "Complete documentation hub for the functional CLI framework"
 related:
   - /docs/tutorials/first-cli-app
@@ -8,13 +8,13 @@ related:
   - /docs/explanation/architecture
 ---
 
-# @trailhead/cli Documentation
+# @esteban-url/trailhead-cli Documentation
 
 This framework provides a robust foundation for building command-line applications using functional programming principles.
 
 ## Framework Philosophy
 
-@trailhead/cli is built around four core principles:
+@esteban-url/trailhead-cli is built around four core principles:
 
 - **Functional programming** - Pure functions, immutability, and composition
 - **Explicit error handling** - Result types instead of exceptions  
@@ -67,7 +67,7 @@ See [examples directory](../examples/README.md) for complete list and usage inst
 ### 1. Result-Based Error Handling
 
 ```typescript
-import { ok, err } from "@trailhead/cli/core";
+import { ok, err } from "@esteban-url/trailhead-cli/core";
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
@@ -80,7 +80,7 @@ function divide(a: number, b: number): Result<number> {
 ### 2. Functional Command Creation
 
 ```typescript
-import { createCommand } from "@trailhead/cli/command";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
 
 const greetCommand = createCommand({
   name: "greet",
@@ -96,7 +96,7 @@ const greetCommand = createCommand({
 ### 3. Type-Safe Configuration
 
 ```typescript
-import { defineConfig } from "@trailhead/cli/config";
+import { defineConfig } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 
 const schema = z.object({
@@ -112,7 +112,7 @@ const config = defineConfig(schema);
 ### 4. Composable Validation
 
 ```typescript
-import { createValidationPipeline, createRule } from "@trailhead/cli/core";
+import { createValidationPipeline, createRule } from "@esteban-url/trailhead-cli/core";
 
 const pipeline = createValidationPipeline([
   createRule(
@@ -155,7 +155,7 @@ const pipeline = createValidationPipeline([
 ### Basic CLI Application
 
 ```typescript
-import { createCLI } from "@trailhead/cli";
+import { createCLI } from "@esteban-url/trailhead-cli";
 import { greetCommand } from "./commands/greet";
 import { configCommand } from "./commands/config";
 
@@ -184,7 +184,7 @@ const config = JSON.parse(result.value);
 ### Testing Pattern
 
 ```typescript
-import { createTestContext, mockFileSystem } from "@trailhead/cli/testing";
+import { createTestContext, mockFileSystem } from "@esteban-url/trailhead-cli/testing";
 
 it("should read configuration", async () => {
   const fs = mockFileSystem({

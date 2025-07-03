@@ -1,4 +1,4 @@
-# @trailhead/web-ui
+# @esteban-url/trailhead-web-ui
 
 Enhanced Catalyst UI components with advanced theming, TypeScript support, and professional CLI tooling.
 
@@ -69,7 +69,7 @@ pnpm trailhead-ui install
 ### Manual Setup
 
 ```tsx
-import { ThemeProvider, Button, Card } from '@trailhead/web-ui'
+import { ThemeProvider, Button, Card } from '@esteban-url/trailhead-web-ui'
 
 function App() {
   return (
@@ -110,7 +110,7 @@ Trailhead UI includes 21 professionally designed themes:
 Create custom themes programmatically:
 
 ```tsx
-import { themeRegistry, buildTheme } from '@trailhead/web-ui'
+import { themeRegistry, buildTheme } from '@esteban-url/trailhead-web-ui'
 
 // Build a custom theme
 const customTheme = buildTheme('my-brand')

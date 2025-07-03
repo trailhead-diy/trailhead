@@ -1,4 +1,4 @@
-import { Ok, Err } from '@trailhead/cli'
+import { Ok, Err } from '@esteban-url/trailhead-cli'
 import {
   createCommand,
   executeWithPhases,
@@ -6,7 +6,7 @@ import {
   executeInteractive,
   displaySummary,
   type CommandPhase,
-} from '@trailhead/cli/command'
+} from '@esteban-url/trailhead-cli/command'
 import type { TrailheadConfig } from '../core/config/index.js'
 import {
   executeTransforms as coreExecuteTransforms,

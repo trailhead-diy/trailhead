@@ -1,6 +1,6 @@
-import { Ok, Err } from '@trailhead/cli';
-import { createCommand } from '@trailhead/cli/command';
-import type { CommandContext } from '@trailhead/cli/command';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { CommandContext } from '@esteban-url/trailhead-cli/command';
 import { HttpClient } from '../http/client.js';
 
 interface GetOptions {

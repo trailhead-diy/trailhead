@@ -7,7 +7,7 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
   throw new Error('process.exit called');
 });
 
-// Skip example CLI tests - they require @trailhead/cli to be published or dist files built
+// Skip example CLI tests - they require @esteban-url/trailhead-cli to be published or dist files built
 // These tests execute actual CLI files that import from dist/index.js
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('Basic CLI Example Integration Tests', () => {
@@ -172,7 +172,7 @@ describe.skip('Basic CLI Example Integration Tests', () => {
       });
 
       expect(result).toContain('example-cli');
-      expect(result).toContain('Example CLI demonstrating @trailhead/cli features');
+      expect(result).toContain('Example CLI demonstrating @esteban-url/trailhead-cli features');
       expect(result).toContain('greet');
       expect(result).toContain('calculate');
     });

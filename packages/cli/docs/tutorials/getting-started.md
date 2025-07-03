@@ -14,7 +14,7 @@ related:
 
 # Build Your First CLI Application
 
-In this tutorial, you'll build a simple greeting CLI application using @trailhead/cli. By the end, you'll have a working CLI tool that greets users and understand the framework's core concepts.
+In this tutorial, you'll build a simple greeting CLI application using @esteban-url/trailhead-cli. By the end, you'll have a working CLI tool that greets users and understand the framework's core concepts.
 
 ## What You'll Build
 
@@ -50,14 +50,14 @@ npm install github:esteban-url/trailhead#packages/cli
 ### For Monorepo Development
 
 ```bash
-pnpm add @trailhead/cli --workspace
+pnpm add @esteban-url/trailhead-cli --workspace
 ```
 
 ## Important: Import Strategy
 
-@trailhead/cli uses **subpath exports** for optimal tree-shaking. This means:
+@esteban-url/trailhead-cli uses **subpath exports** for optimal tree-shaking. This means:
 
-- The main export (`@trailhead/cli`) contains only Result types and `createCLI`
+- The main export (`@esteban-url/trailhead-cli`) contains only Result types and `createCLI`
 - All other functionality must be imported from specific subpaths
 - This keeps your bundle size minimal
 
@@ -72,9 +72,9 @@ Let's build a simple greeting CLI that demonstrates core concepts.
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { Ok } from "@trailhead/cli";
-import { createCommand } from "@trailhead/cli/command";
-import type { CommandContext } from "@trailhead/cli/command";
+import { Ok } from "@esteban-url/trailhead-cli";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import type { CommandContext } from "@esteban-url/trailhead-cli/command";
 
 export const greetCommand = createCommand({
   name: "greet",
@@ -101,7 +101,7 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from "@trailhead/cli";
+import { createCLI } from "@esteban-url/trailhead-cli";
 import { greetCommand } from "./commands/greet";
 
 const cli = createCLI({
@@ -129,10 +129,10 @@ node dist/index.js greet --name World
 
 ### Result Types
 
-@trailhead/cli uses Result types for explicit error handling:
+@esteban-url/trailhead-cli uses Result types for explicit error handling:
 
 ```typescript
-import { Ok, Err } from "@trailhead/cli";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
 // Success
 return Ok(data);
@@ -146,7 +146,7 @@ return Err(new Error("Something went wrong"));
 Every command receives a context with useful utilities:
 
 ```typescript
-import type { CommandContext } from "@trailhead/cli/command";
+import type { CommandContext } from "@esteban-url/trailhead-cli/command";
 
 async function myAction(options: any, context: CommandContext) {
   // Logger for output
@@ -167,9 +167,9 @@ async function myAction(options: any, context: CommandContext) {
 ### Add File Operations
 
 ```typescript
-import { Ok, Err } from "@trailhead/cli";
-import { createCommand } from "@trailhead/cli/command";
-import { createFileSystem } from "@trailhead/cli/filesystem";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 const readCommand = createCommand({
   name: "read",
@@ -194,9 +194,9 @@ const readCommand = createCommand({
 ### Add Interactive Prompts
 
 ```typescript
-import { Ok } from "@trailhead/cli";
-import { createCommand } from "@trailhead/cli/command";
-import { prompt, select } from "@trailhead/cli/prompts";
+import { Ok } from "@esteban-url/trailhead-cli";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { prompt, select } from "@esteban-url/trailhead-cli/prompts";
 
 const initCommand = createCommand({
   name: "init",
@@ -221,7 +221,7 @@ const initCommand = createCommand({
 ### Add Configuration
 
 ```typescript
-import { defineConfig } from "@trailhead/cli/config";
+import { defineConfig } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 
 const configSchema = z.object({
@@ -248,10 +248,10 @@ Here's a minimal but complete CLI application:
 
 ```typescript
 #!/usr/bin/env node
-import { Ok, Err, createCLI } from "@trailhead/cli";
-import { createCommand } from "@trailhead/cli/command";
-import { createFileSystem } from "@trailhead/cli/filesystem";
-import { prompt } from "@trailhead/cli/prompts";
+import { Ok, Err, createCLI } from "@esteban-url/trailhead-cli";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import { prompt } from "@esteban-url/trailhead-cli/prompts";
 
 const mainCommand = createCommand({
   name: "process",

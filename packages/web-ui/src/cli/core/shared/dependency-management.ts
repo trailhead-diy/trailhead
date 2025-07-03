@@ -4,7 +4,7 @@
  */
 
 import type { Result } from '../installation/types.js'
-import type { FileSystem } from '@trailhead/cli/filesystem'
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
 
 // ============================================================================
 // DOMAIN TYPES

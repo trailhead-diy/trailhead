@@ -24,14 +24,14 @@
     {
       "description": "CLI package dependencies",
       "matchFileNames": ["packages/cli/**"],
-      "groupName": "@trailhead/cli dependencies",
+      "groupName": "@esteban-url/trailhead-cli dependencies",
       "labels": ["cli", "dependencies"],
       "semanticCommitScope": "cli"
     },
     {
       "description": "Web UI package dependencies",
       "matchFileNames": ["packages/web-ui/**"],
-      "groupName": "@trailhead/web-ui dependencies",
+      "groupName": "@esteban-url/trailhead-web-ui dependencies",
       "labels": ["web-ui", "dependencies"],
       "semanticCommitScope": "web-ui"
     },

@@ -16,8 +16,8 @@ export default defineConfig({
   format: ['esm'],
   // Generate TypeScript declarations using tsc
   dts: false, // We'll use tsc separately for declarations
-  // Clean output directory before build
-  clean: true,
+  // Don't clean output directory - let tsc handle declarations
+  clean: false,
   // Enable minification in production
   minify: process.env.NODE_ENV === 'production',
   // Generate source maps for debugging

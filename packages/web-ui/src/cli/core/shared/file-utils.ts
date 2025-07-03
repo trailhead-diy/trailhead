@@ -17,8 +17,8 @@ import {
   writeFile as frameworkWriteFile,
   compareFiles as frameworkCompareFiles,
   type FileComparison,
-} from '@trailhead/cli/filesystem'
-import { createStats, updateStats as frameworkUpdateStats, type StatsTracker } from '@trailhead/cli/utils'
+} from '@esteban-url/trailhead-cli/filesystem'
+import { createStats, updateStats as frameworkUpdateStats, type StatsTracker } from '@esteban-url/trailhead-cli/utils'
 import type {
   ConversionStats,
   FileProcessingResult,

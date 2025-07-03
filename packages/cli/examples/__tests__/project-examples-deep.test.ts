@@ -5,7 +5,7 @@ import { promises as fs } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 
-// Skip project subdirectory tests - they require @trailhead/cli to be published
+// Skip project subdirectory tests - they require @esteban-url/trailhead-cli to be published
 // These tests work with standalone project examples that depend on the published package
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('Project Examples Deep Integration Tests', () => {

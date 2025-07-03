@@ -1,6 +1,6 @@
 # Project Generator CLI Example
 
-Demonstrates project scaffolding and template generation using @trailhead/cli.
+Demonstrates project scaffolding and template generation using @esteban-url/trailhead-cli.
 
 ## Features
 

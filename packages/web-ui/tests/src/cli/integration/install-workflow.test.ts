@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { join as pathJoin, dirname as pathDirname, resolve as pathResolve } from 'path'
 import type { FileSystem } from '../../../../src/cli/core/filesystem/index.js'
-import type { Logger } from '@trailhead/cli/core'
+import type { Logger } from '@esteban-url/trailhead-cli/core'
 import { performInstallation } from '../../../../src/cli/core/installation/index.js'
 import { detectFramework } from '../../../../src/cli/core/installation/framework-detection.js'
 import { resolveConfiguration } from '../../../../src/cli/core/installation/config.js'

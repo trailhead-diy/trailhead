@@ -2,5 +2,5 @@
 # This file contains GitHub-specific npm configuration
 # It requires GITHUB_TOKEN to be set in the environment
 
-@trailhead:registry=https://npm.pkg.github.com
+@esteban-url:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}

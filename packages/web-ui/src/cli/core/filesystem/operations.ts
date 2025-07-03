@@ -5,7 +5,7 @@
 import * as path from 'path'
 import type { FileSystem, Result, InstallError } from '../installation/types.js'
 import { Ok, Err } from '../installation/types.js'
-import type { Logger } from '@trailhead/cli/core'
+import type { Logger } from '@esteban-url/trailhead-cli/core'
 
 // ============================================================================
 // FILE EXISTENCE CHECKING

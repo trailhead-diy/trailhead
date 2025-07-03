@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@trailhead/cli';
-import { createCommand } from '@trailhead/cli/command';
-import { Ok } from '@trailhead/cli';
+import { createCLI } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { Ok } from '@esteban-url/trailhead-cli';
 import { platform, homedir, tmpdir } from 'os';
 import { join } from 'path';
 

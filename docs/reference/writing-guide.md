@@ -105,7 +105,7 @@ type: how-to
 title: How to Add Custom Validation Rules
 description: Add custom validation logic to CLI commands
 prerequisites:
-  - @trailhead/cli installed
+  - @esteban-url/trailhead-cli installed
   - Familiarity with Result types
 ---
 ```

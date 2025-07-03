@@ -2,8 +2,7 @@
  * Error conversion utilities
  */
 
-import type { Result as CLIResult, CLIError } from '@trailhead/cli/core'
-import { CLI_ERROR_CODES, createCLIError } from '../../core/errors/codes.js'
+import type { Result as CLIResult, CLIError } from '@esteban-url/trailhead-cli/core'
 
 // Import local installation types
 import type { InstallError, Result as InstallResult } from '../../core/installation/types.js'

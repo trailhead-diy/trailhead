@@ -8,7 +8,7 @@ import path from 'node:path'
 import { z } from 'zod'
 import { trailheadConfigSchema, defaultConfig, type TrailheadConfig } from './schema.js'
 // Import types from framework
-import { Ok, Err, type Result } from '@trailhead/cli'
+import { Ok, Err, type Result } from '@esteban-url/trailhead-cli'
 
 // Define local error type
 type ConfigurationError = {
@@ -32,7 +32,7 @@ const _invalidConfigFieldError = (field: string, message: string): Configuration
   details: `Field: ${field}`,
   recoverable: true,
 })
-import { createSilentLogger } from '@trailhead/cli/core'
+import { createSilentLogger } from '@esteban-url/trailhead-cli/core'
 
 const logger = createSilentLogger()
 

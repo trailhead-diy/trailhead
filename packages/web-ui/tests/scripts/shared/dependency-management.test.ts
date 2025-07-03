@@ -27,7 +27,7 @@ import {
   Ok,
   Err,
 } from '../../../src/cli/core/shared/dependency-management'
-import type { FileSystem, FileSystemError } from '@trailhead/cli/filesystem'
+import type { FileSystem, FileSystemError } from '@esteban-url/trailhead-cli/filesystem'
 
 describe('Dependency Management - High ROI Tests', () => {
   describe('Dependency Configuration (Source of Truth)', () => {

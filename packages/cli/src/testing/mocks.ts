@@ -473,10 +473,10 @@ export function createCLIMockFileSystem(): EnhancedMockFileSystem {
         name: 'test-cli',
         version: '1.0.0',
         bin: { 'test-cli': './dist/index.js' },
-        dependencies: { '@trailhead/cli': 'workspace:*' },
+        dependencies: { '@esteban-url/trailhead-cli': 'workspace:*' },
       }),
       'cli-project/src/index.ts':
-        'import { createCommand } from "@trailhead/cli";',
+        'import { createCommand } from "@esteban-url/trailhead-cli";',
       'cli-project/src/commands/build.ts':
         'export const buildCommand = createCommand();',
       'cli-project/tsconfig.json': JSON.stringify({

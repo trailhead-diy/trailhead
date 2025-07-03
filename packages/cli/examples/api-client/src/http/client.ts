@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
-import { Ok, Err } from '@trailhead/cli';
-import type { Result } from '@trailhead/cli';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { Result } from '@esteban-url/trailhead-cli';
 import type { RequestOptions, ResponseData, RetryOptions } from './types.js';
 
 export class HttpClient {

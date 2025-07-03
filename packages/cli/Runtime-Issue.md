@@ -26,8 +26,8 @@ TypeError: nameAndArgs.match is not a function or its return value is not iterab
 ### Minimal Test Case
 
 ```typescript
-import { createCLI } from '@trailhead/cli'
-import { createCommand } from '@trailhead/cli/command'
+import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 
 const testCommand = createCommand({
   name: 'test',

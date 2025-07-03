@@ -4,7 +4,7 @@ title: # Problem-solving title (e.g., "How to Add Custom Validation Rules")
 description: # One-line summary of the task/problem being solved
 prerequisites:
   # Assume basic knowledge, list specific requirements
-  # - @trailhead/cli installed
+  # - @esteban-url/trailhead-cli installed
   # - Familiarity with Result types
 related:
   # Links to reference docs and related guides

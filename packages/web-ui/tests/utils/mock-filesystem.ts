@@ -8,7 +8,7 @@
 import { vi } from 'vitest'
 import { normalize, join, dirname, basename } from 'path'
 import type { FileSystem } from '../../src/cli/core/installation/types.js'
-import { Ok, Err } from '@trailhead/cli'
+import { Ok, Err } from '@esteban-url/trailhead-cli'
 import { normalizeMockPath, isWindows } from './cross-platform-paths.js'
 
 export interface MockFileSystemOptions {

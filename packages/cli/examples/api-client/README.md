@@ -1,6 +1,6 @@
 # API Client CLI Example
 
-A comprehensive example of building an HTTP client CLI with @trailhead/cli featuring retry logic, authentication, and proper error handling.
+A comprehensive example of building an HTTP client CLI with @esteban-url/trailhead-cli featuring retry logic, authentication, and proper error handling.
 
 ## Features
 

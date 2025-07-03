@@ -1,6 +1,6 @@
 # Todo CLI Example
 
-A complete todo application demonstrating state management, persistence, and CRUD operations with @trailhead/cli.
+A complete todo application demonstrating state management, persistence, and CRUD operations with @esteban-url/trailhead-cli.
 
 ## Features
 
@@ -14,7 +14,7 @@ A complete todo application demonstrating state management, persistence, and CRU
 
 ```bash
 npm install
-npm run dev add "Learn @trailhead/cli"
+npm run dev add "Learn @esteban-url/trailhead-cli"
 npm run dev list
 npm run dev complete 1
 ```

@@ -1,4 +1,4 @@
-# @trailhead/cli
+# @esteban-url/trailhead-cli
 
 A functional CLI framework for building robust, testable command-line applications with TypeScript.
 
@@ -8,7 +8,7 @@ A functional CLI framework for building robust, testable command-line applicatio
 
 ## Overview
 
-@trailhead/cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
+@esteban-url/trailhead-cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
 
 ## 📚 Documentation
 
@@ -36,12 +36,12 @@ When working within the Trailhead monorepo:
 
 ```bash
 # From within the monorepo
-pnpm add @trailhead/cli --workspace
+pnpm add @esteban-url/trailhead-cli --workspace
 
 # Or in package.json
 {
   "dependencies": {
-    "@trailhead/cli": "workspace:*"
+    "@esteban-url/trailhead-cli": "workspace:*"
   }
 }
 ```
@@ -60,7 +60,7 @@ npm install github:esteban-url/trailhead#packages/cli
 # In package.json
 {
   "dependencies": {
-    "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"
+    "@esteban-url/trailhead-cli": "github:esteban-url/trailhead#packages/cli"
   }
 }
 ```
@@ -71,11 +71,11 @@ npm install github:esteban-url/trailhead#packages/cli
 
 ```typescript
 // Import core utilities from the main export
-import { createCLI, Ok, Err } from "@trailhead/cli";
+import { createCLI, Ok, Err } from "@esteban-url/trailhead-cli";
 
 // Import specific modules using subpath exports
-import { createCommand } from "@trailhead/cli/command";
-import { createDefaultLogger } from "@trailhead/cli/core";
+import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { createDefaultLogger } from "@esteban-url/trailhead-cli/core";
 
 // Create a command
 const greetCommand = createCommand({
@@ -102,25 +102,25 @@ cli.run(process.argv);
 
 ## Module Exports
 
-> **Important**: @trailhead/cli uses subpath exports for optimal tree-shaking. The main export contains only essential utilities (`Ok`, `Err`, `isOk`, `isErr`, `createCLI`). Import all other functionality from specific modules.
+> **Important**: @esteban-url/trailhead-cli uses subpath exports for optimal tree-shaking. The main export contains only essential utilities (`Ok`, `Err`, `isOk`, `isErr`, `createCLI`). Import all other functionality from specific modules.
 
-### Main Export (`@trailhead/cli`)
+### Main Export (`@esteban-url/trailhead-cli`)
 
 ```typescript
-import { Ok, Err, isOk, isErr, createCLI } from "@trailhead/cli";
-import type { Result, CLI, CLIConfig } from "@trailhead/cli";
+import { Ok, Err, isOk, isErr, createCLI } from "@esteban-url/trailhead-cli";
+import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
 ```
 
 - **Result utilities**: `Ok`, `Err`, `isOk`, `isErr` - Core error handling
 - **CLI creation**: `createCLI` - Main CLI factory function
 
-### Core (`@trailhead/cli/core`)
+### Core (`@esteban-url/trailhead-cli/core`)
 
 Result types, error handling utilities, and advanced retry patterns:
 
 ```typescript
-import { Ok, Err, isOk, isErr } from "@trailhead/cli";
-import type { Result } from "@trailhead/cli";
+import { Ok, Err, isOk, isErr } from "@esteban-url/trailhead-cli";
+import type { Result } from "@esteban-url/trailhead-cli";
 
 // Create results
 const success = Ok(42);
@@ -143,7 +143,7 @@ import {
   RetryStrategies,
   createCircuitBreaker,
   retryWithTimeout 
-} from "@trailhead/cli/core";
+} from "@esteban-url/trailhead-cli/core";
 
 // Basic retry with exponential backoff
 const result = await retryWithBackoff(
@@ -198,13 +198,13 @@ Available retry strategies:
 - `RetryStrategies.filesystem()` - 2 retries, minimal delays
 - `RetryStrategies.infinite()` - Unlimited retries (use with caution)
 
-### Command (`@trailhead/cli/command`)
+### Command (`@esteban-url/trailhead-cli/command`)
 
 Command creation and execution patterns:
 
 ```typescript
-import { createCommand, executeWithPhases } from "@trailhead/cli/command";
-import type { Command, CommandContext } from "@trailhead/cli/command";
+import { createCommand, executeWithPhases } from "@esteban-url/trailhead-cli/command";
+import type { Command, CommandContext } from "@esteban-url/trailhead-cli/command";
 
 // Phased execution
 const phases = [
@@ -216,13 +216,13 @@ const phases = [
 const result = await executeWithPhases(phases, data, context);
 ```
 
-### FileSystem (`@trailhead/cli/filesystem`)
+### FileSystem (`@esteban-url/trailhead-cli/filesystem`)
 
 Powerful filesystem operations built on fs-extra with Result type safety:
 
 ```typescript
-import { createFileSystem } from "@trailhead/cli/filesystem";
-import type { FileSystem } from "@trailhead/cli/filesystem";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 const fs = createFileSystem();
 
@@ -243,12 +243,12 @@ const data = await fs.readJson("package.json");
 const writeJsonResult = await fs.writeJson("output.json", { name: "test" });
 ```
 
-### Configuration (`@trailhead/cli/config`)
+### Configuration (`@esteban-url/trailhead-cli/config`)
 
 Type-safe configuration management:
 
 ```typescript
-import { defineConfig, loadConfig } from "@trailhead/cli/config";
+import { defineConfig, loadConfig } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 
 const configSchema = z.object({
@@ -262,12 +262,12 @@ const config = defineConfig(configSchema);
 const result = await config.load();
 ```
 
-### Prompts (`@trailhead/cli/prompts`)
+### Prompts (`@esteban-url/trailhead-cli/prompts`)
 
 Interactive user prompts:
 
 ```typescript
-import { prompt, select, confirm } from "@trailhead/cli/prompts";
+import { prompt, select, confirm } from "@esteban-url/trailhead-cli/prompts";
 
 const name = await prompt({
   message: "What is your name?",
@@ -280,12 +280,12 @@ const framework = await select({
 });
 ```
 
-### Testing (`@trailhead/cli/testing`)
+### Testing (`@esteban-url/trailhead-cli/testing`)
 
 Comprehensive testing utilities:
 
 ```typescript
-import { createTestContext, mockFileSystem } from "@trailhead/cli/testing";
+import { createTestContext, mockFileSystem } from "@esteban-url/trailhead-cli/testing";
 
 describe("MyCommand", () => {
   it("should execute successfully", async () => {
@@ -347,7 +347,7 @@ import {
   Err,
   createCommand,
   createFileSystem,
-} from "@trailhead/cli";
+} from "@esteban-url/trailhead-cli";
 
 // Example: Config command
 const configCommand = createCommand({

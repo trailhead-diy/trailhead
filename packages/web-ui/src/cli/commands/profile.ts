@@ -2,8 +2,8 @@
  * Refactored Profile Command using command patterns
  */
 
-import { Ok } from '@trailhead/cli'
-import { createCommand, executeSubprocess } from '@trailhead/cli/command'
+import { Ok } from '@esteban-url/trailhead-cli'
+import { createCommand, executeSubprocess } from '@esteban-url/trailhead-cli/command'
 import { type StrictProfileOptions } from '../core/types/command-options.js'
 
 // ============================================================================

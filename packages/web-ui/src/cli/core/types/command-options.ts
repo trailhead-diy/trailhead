@@ -5,7 +5,7 @@
  * and better IntelliSense support.
  */
 
-import type { CommandOptions } from '@trailhead/cli/command'
+import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Valid framework types supported by Trailhead UI

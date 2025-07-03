@@ -2,13 +2,13 @@
  * Dev Refresh Command - Copy fresh Catalyst components for development
  */
 
-import { Ok, Err } from '@trailhead/cli'
+import { Ok, Err } from '@esteban-url/trailhead-cli'
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
-} from '@trailhead/cli/command'
+} from '@esteban-url/trailhead-cli/command'
 import type { TrailheadConfig } from '../core/config/index.js'
 import { existsSync } from 'fs'
 import { rm } from 'fs/promises'

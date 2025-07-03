@@ -1,6 +1,6 @@
 # Next.js Demo - Trailhead UI
 
-A Next.js application demonstrating @trailhead/web-ui components and theming system.
+A Next.js application demonstrating @esteban-url/trailhead-web-ui components and theming system.
 
 **Part of the [Trailhead Monorepo](../../../README.md)** - This demo showcases the UI library in action.
 
@@ -10,7 +10,7 @@ A Next.js application demonstrating @trailhead/web-ui components and theming sys
 - **React 19** - Latest React with Server Components
 - **TypeScript** - Full type safety with strict configuration
 - **Tailwind CSS 4** - Modern utility-first CSS framework
-- **@trailhead/web-ui** - All 26 components with theme system
+- **@esteban-url/trailhead-web-ui** - All 26 components with theme system
 - **21 Built-in Themes** - Professional themes with dark mode support
 - **ESLint** - Code quality and consistency
 
@@ -120,7 +120,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000) with
 
 ## 🎨 Styling & Theming
 
-The app uses @trailhead/web-ui's comprehensive theming system:
+The app uses @esteban-url/trailhead-web-ui's comprehensive theming system:
 
 - **Semantic color tokens** - Consistent colors across all components
 - **21 Built-in themes** - Professional themes using OKLCH color space

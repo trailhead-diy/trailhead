@@ -5,7 +5,7 @@ import {
   Err,
   isOk,
   type CLIError,
-} from '@trailhead/cli';
+} from '@esteban-url/trailhead-cli';
 import {
   retryAdvanced,
   RetryStrategies,
@@ -14,8 +14,8 @@ import {
   retryWithTimeout,
   retryParallel,
   createProgressiveRetry,
-} from '@trailhead/cli/core';
-import { createCommand } from '@trailhead/cli/command';
+} from '@esteban-url/trailhead-cli/core';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 
 // Example: Advanced retry patterns
 

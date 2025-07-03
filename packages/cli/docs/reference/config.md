@@ -16,23 +16,23 @@ Type-safe configuration management with schema validation using Zod and flexible
 
 | Property | Value |
 |----------|-------|
-| **Package** | `@trailhead/cli` |
-| **Module** | `@trailhead/cli/config` |
+| **Package** | `@esteban-url/trailhead-cli` |
+| **Module** | `@esteban-url/trailhead-cli/config` |
 | **Since** | `v1.0.0` |
 
 ## Import
 
 ```typescript
-import { defineConfig, loadConfig } from "@trailhead/cli/config";
-import type { ConfigSchema } from "@trailhead/cli/config";
+import { defineConfig, loadConfig } from "@esteban-url/trailhead-cli/config";
+import type { ConfigSchema } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { defineConfig, loadConfig } from "@trailhead/cli/config";
-import type { ConfigSchema } from "@trailhead/cli/config";
+import { defineConfig, loadConfig } from "@esteban-url/trailhead-cli/config";
+import type { ConfigSchema } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 ```
 
@@ -43,7 +43,7 @@ import { z } from "zod";
 Creates a type-safe configuration definition.
 
 ```typescript
-import { defineConfig } from "@trailhead/cli/config";
+import { defineConfig } from "@esteban-url/trailhead-cli/config";
 import { z } from "zod";
 
 // Define schema
@@ -306,8 +306,8 @@ module.exports = {
 ## Testing Configuration
 
 ```typescript
-import { defineConfig } from "@trailhead/cli/config";
-import { createMemoryFileSystem } from "@trailhead/cli/filesystem";
+import { defineConfig } from "@esteban-url/trailhead-cli/config";
+import { createMemoryFileSystem } from "@esteban-url/trailhead-cli/filesystem";
 import { z } from "zod";
 
 test("config loading", async () => {

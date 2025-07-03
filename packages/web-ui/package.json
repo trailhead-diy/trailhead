@@ -1,11 +1,11 @@
 {
-  "name": "@trailhead/web-ui",
+  "name": "@esteban-url/trailhead-web-ui",
   "version": "1.0.1",
   "private": false,
   "description": "Enhanced Catalyst UI components with advanced theming system, semantic tokens, and professional CLI",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -82,7 +82,7 @@
     "@headlessui/react": "^2.2.4",
     "@inquirer/prompts": "^7.5.3",
     "@npmcli/package-json": "^6.2.0",
-    "@trailhead/cli": "workspace:*",
+    "@esteban-url/trailhead-cli": "workspace:*",
     "chalk": "^5.3.0",
     "clsx": "^2.1.1",
     "commander": "^14.0.0",

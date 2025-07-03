@@ -1,15 +1,15 @@
-import { Ok as CliOk, Err as CliErr, type Result } from '@trailhead/cli'
+import { Ok as CliOk, Err as CliErr, type Result } from '@esteban-url/trailhead-cli'
 import {
   createCommand,
   type CommandContext,
-} from '@trailhead/cli/command'
+} from '@esteban-url/trailhead-cli/command'
 import {
   createValidationPipeline,
   createRule,
   ValidationOk,
   ValidationErr,
-} from '@trailhead/cli/core'
-import { createNodeFileSystem } from '@trailhead/cli/filesystem'
+} from '@esteban-url/trailhead-cli/core'
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 import { runInstallationPrompts } from '../prompts/installation.js'
 import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js'
 import {
@@ -18,7 +18,7 @@ import {
   type InstallOptions as CoreInstallOptions,
 } from '../core/installation/index.js'
 import { resolveConfiguration } from '../core/installation/config.js'
-import { detectFramework, VALID_FRAMEWORKS } from '../core/installation/framework-detection.js'
+import { detectFramework } from '../core/installation/framework-detection.js'
 import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js'
 import { convertInstallResult } from './utils/error-conversion.js'
 import { getTrailheadPackageRoot } from '../utils/context.js'
@@ -273,7 +273,7 @@ async function executeInstallation(
  * Display installation summary
  */
 function displayInstallationSummary(
-  logger: import('@trailhead/cli/core').Logger,
+  logger: import('@esteban-url/trailhead-cli/core').Logger,
   summary: {
     framework: string
     filesInstalled: number

@@ -4,7 +4,7 @@ Learn how to use Trailhead UI components and theming in your application.
 
 ## Prerequisites
 
-Before you begin, install @trailhead/web-ui in your project:
+Before you begin, install @esteban-url/trailhead-web-ui in your project:
 
 ```bash
 # Option 1: Install CLI globally
@@ -53,7 +53,7 @@ After CLI installation, you can immediately start using components!
 If you used the CLI, this is already set up. For manual setup:
 
 ```tsx
-import { ThemeProvider } from '@trailhead/web-ui'
+import { ThemeProvider } from '@esteban-url/trailhead-web-ui'
 
 function App() {
   return (
@@ -67,7 +67,7 @@ function App() {
 ### 2. Use Components (Available after CLI installation)
 
 ```tsx
-import { Button, Input, Badge } from '@trailhead/web-ui'
+import { Button, Input, Badge } from '@esteban-url/trailhead-web-ui'
 
 function Example() {
   return (
@@ -100,7 +100,7 @@ function Example() {
 ### Simple Theme Switcher
 
 ```tsx
-import { useTheme } from '@trailhead/web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui'
 
 function ThemeToggle() {
   const { currentTheme, setTheme, themes } = useTheme()
@@ -124,7 +124,7 @@ function ThemeToggle() {
 ### Dark Mode Toggle
 
 ```tsx
-import { useTheme, Button } from '@trailhead/web-ui'
+import { useTheme, Button } from '@esteban-url/trailhead-web-ui'
 
 function DarkModeToggle() {
   const { isDark, toggleDarkMode } = useTheme()
@@ -175,7 +175,7 @@ Trailhead UI includes multiple built-in themes:
 ### Form with Validation
 
 ```tsx
-import { Input, Button, cn } from '@trailhead/web-ui'
+import { Input, Button, cn } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function LoginForm() {
@@ -212,7 +212,7 @@ function LoginForm() {
 ### Loading States
 
 ```tsx
-import { Button } from '@trailhead/web-ui'
+import { Button } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function LoadingExample() {
@@ -238,7 +238,7 @@ Trailhead UI works with SSR frameworks like Next.js:
 
 ```tsx
 // app/page.tsx (Next.js App Router)
-import { Button, Card } from '@trailhead/web-ui'
+import { Button, Card } from '@esteban-url/trailhead-web-ui'
 
 export default function Page() {
   return (

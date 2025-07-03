@@ -1,6 +1,6 @@
 ---
 type: tutorial
-title: "Migrate to @trailhead/cli from Other Frameworks"
+title: "Migrate to @esteban-url/trailhead-cli from Other Frameworks"
 description: "Step-by-step migration from class-based CLI frameworks to functional approach"
 prerequisites:
   - Existing CLI application to migrate
@@ -12,9 +12,9 @@ related:
   - /docs/how-to/functional-patterns
 ---
 
-# Migrate to @trailhead/cli from Other Frameworks
+# Migrate to @esteban-url/trailhead-cli from Other Frameworks
 
-In this tutorial, you'll migrate an existing CLI application from a class-based framework to @trailhead/cli's functional approach. By the end, you'll have a fully functional CLI using Result types and functional patterns.
+In this tutorial, you'll migrate an existing CLI application from a class-based framework to @esteban-url/trailhead-cli's functional approach. By the end, you'll have a fully functional CLI using Result types and functional patterns.
 
 ## What You'll Accomplish
 
@@ -67,10 +67,10 @@ class BuildCommand extends Command {
 ### After: Functional Commands
 
 ```typescript
-// ✅ @trailhead/cli functional command
-import type { Command } from '@trailhead/cli/command';
-import type { Result } from '@trailhead/cli';
-import { Ok, Err } from '@trailhead/cli';
+// ✅ @esteban-url/trailhead-cli functional command
+import type { Command } from '@esteban-url/trailhead-cli/command';
+import type { Result } from '@esteban-url/trailhead-cli';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 const buildCommand: Command = {
   name: 'build',
@@ -128,13 +128,13 @@ program
 program.parse();
 ```
 
-### After: @trailhead/cli Style
+### After: @esteban-url/trailhead-cli Style
 
 ```typescript
-// ✅ @trailhead/cli
-import { createCLI } from '@trailhead/cli';
-import type { Command } from '@trailhead/cli/command';
-import { Ok, Err } from '@trailhead/cli';
+// ✅ @esteban-url/trailhead-cli
+import { createCLI } from '@esteban-url/trailhead-cli';
+import type { Command } from '@esteban-url/trailhead-cli/command';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 const initCommand: Command<{ template?: string }> = {
   name: 'init',
@@ -200,12 +200,12 @@ export default class Deploy extends Command {
 }
 ```
 
-### After: @trailhead/cli Style
+### After: @esteban-url/trailhead-cli Style
 
 ```typescript
-// ✅ @trailhead/cli
-import type { Command } from '@trailhead/cli/command';
-import { Ok, Err } from '@trailhead/cli';
+// ✅ @esteban-url/trailhead-cli
+import type { Command } from '@esteban-url/trailhead-cli/command';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 interface DeployOptions {
   environment: string;
@@ -283,12 +283,12 @@ yargs
   .parse();
 ```
 
-### After: @trailhead/cli Style
+### After: @esteban-url/trailhead-cli Style
 
 ```typescript
-// ✅ @trailhead/cli
-import type { Command } from '@trailhead/cli/command';
-import { Ok, Err } from '@trailhead/cli';
+// ✅ @esteban-url/trailhead-cli
+import type { Command } from '@esteban-url/trailhead-cli/command';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 interface GenerateOptions {
   type: string;
@@ -356,9 +356,9 @@ try {
 
 ```typescript
 // ✅ Returns Results
-import { Ok, Err } from '@trailhead/cli';
-import type { Result } from '@trailhead/cli';
-import type { FileSystem } from '@trailhead/cli/filesystem';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { Result } from '@esteban-url/trailhead-cli';
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 async function readConfig(path: string, fs: FileSystem): Promise<Result<Config>> {
   const existsResult = await fs.exists(path);
@@ -420,9 +420,9 @@ async function createProject(name: string) {
 
 ```typescript
 // ✅ FileSystem abstraction
-import type { FileSystem } from '@trailhead/cli/filesystem';
-import type { Result } from '@trailhead/cli';
-import { Ok, Err } from '@trailhead/cli';
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import type { Result } from '@esteban-url/trailhead-cli';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 async function createProject(name: string, fs: FileSystem): Promise<Result<void>> {
   const projectDir = await fs.join(await fs.cwd(), name);
@@ -482,7 +482,7 @@ test('creates project', async () => {
 
 ```typescript
 // ✅ Easy to test
-import { createTestContext, mockFileSystem, expectResult } from '@trailhead/cli/testing';
+import { createTestContext, mockFileSystem, expectResult } from '@esteban-url/trailhead-cli/testing';
 
 test('creates project', async () => {
   const fs = mockFileSystem();
@@ -535,7 +535,7 @@ function loadConfig(data: any): Config {
 
 ```typescript
 // ✅ Schema validation
-import { defineConfig } from '@trailhead/cli/config';
+import { defineConfig } from '@esteban-url/trailhead-cli/config';
 import { z } from 'zod';
 
 const ConfigSchema = z.object({
@@ -560,14 +560,14 @@ const { port, host, debug } = result.value;
 
 ## Step-by-Step Migration
 
-### 1. Install @trailhead/cli
+### 1. Install @esteban-url/trailhead-cli
 
 ```bash
-npm install @trailhead/cli
+npm install @esteban-url/trailhead-cli
 # or
-pnpm add @trailhead/cli
+pnpm add @esteban-url/trailhead-cli
 # or
-yarn add @trailhead/cli
+yarn add @esteban-url/trailhead-cli
 ```
 
 ### 2. Convert Commands One by One
@@ -576,8 +576,8 @@ Start with your simplest command:
 
 ```typescript
 // Create new command file
-import type { Command } from '@trailhead/cli/command';
-import { Ok } from '@trailhead/cli';
+import type { Command } from '@esteban-url/trailhead-cli/command';
+import { Ok } from '@esteban-url/trailhead-cli';
 
 const myCommand: Command = {
   name: 'my-command',
@@ -647,7 +647,7 @@ const myCommand: Command<MyCommandOptions> = {
 Add tests using the testing utilities:
 
 ```typescript
-import { createTestContext, expectResult } from '@trailhead/cli/testing';
+import { createTestContext, expectResult } from '@esteban-url/trailhead-cli/testing';
 
 test('my command works', async () => {
   const context = createTestContext();
@@ -659,7 +659,7 @@ test('my command works', async () => {
 ### 7. Update Main CLI File
 
 ```typescript
-import { createCLI } from '@trailhead/cli';
+import { createCLI } from '@esteban-url/trailhead-cli';
 import { myCommand } from './commands/my-command.js';
 
 const cli = createCLI({
