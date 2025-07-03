@@ -4,7 +4,6 @@ import {
   detectPackageManager,
   getRunCommand,
   execPackageManagerCommand,
-  getPackageManagerInfo,
   clearPackageManagerCache,
   createPackageManagerCache,
   SemVer,
@@ -65,9 +64,9 @@ describe('Package Manager Detection', () => {
       const customCache = createPackageManagerCache();
       mockExecSync.mockImplementation(() => '9.1.4\n');
 
-      const result1 = detectPackageManager({ cache: customCache });
-      const result2 = detectPackageManager({ cache: customCache });
-      const result3 = detectPackageManager(); // Uses default cache
+      const _result1 = detectPackageManager({ cache: customCache });
+      const _result2 = detectPackageManager({ cache: customCache });
+      const _result3 = detectPackageManager(); // Uses default cache
 
       expect(mockExecSync).toHaveBeenCalledTimes(2); // Custom cache hit + default cache miss
     });
@@ -247,7 +246,7 @@ describe('Package Manager Detection', () => {
         .mockImplementationOnce(() => '9.1.4\n')
         .mockImplementationOnce(() => 'output');
 
-      const result = execPackageManagerCommand('test', { timeout: 1000 });
+      const _result = execPackageManagerCommand('test', { timeout: 1000 });
 
       expect(mockExecSync).toHaveBeenNthCalledWith(
         2,
