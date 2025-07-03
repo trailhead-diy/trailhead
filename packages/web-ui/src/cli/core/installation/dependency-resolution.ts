@@ -2,45 +2,45 @@
  * Dependency resolution module with functional composition
  */
 
-import semver from 'semver'
-import type { PackageJsonDeps } from './types.js'
-import { updateRecord } from './functional-utils.js'
+import semver from 'semver';
+import type { PackageJsonDeps } from './types.js';
+import { updateRecord } from './functional-utils.js';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 export interface DependencyConflict {
-  readonly name: string
-  readonly current: string
-  readonly required: string
+  readonly name: string;
+  readonly current: string;
+  readonly required: string;
 }
 
 export interface DependencyAnalysis {
-  readonly missing: Readonly<Record<string, string>>
-  readonly conflicts: readonly DependencyConflict[]
-  readonly existing: Readonly<Record<string, string>>
-  readonly hasConflicts: boolean
+  readonly missing: Readonly<Record<string, string>>;
+  readonly conflicts: readonly DependencyConflict[];
+  readonly existing: Readonly<Record<string, string>>;
+  readonly hasConflicts: boolean;
 }
 
 export interface ResolutionResult {
-  readonly dependencies: Readonly<Record<string, string>>
-  readonly overrides: Readonly<Record<string, string>>
-  readonly warnings: readonly string[]
-  readonly suggestions: readonly string[]
+  readonly dependencies: Readonly<Record<string, string>>;
+  readonly overrides: Readonly<Record<string, string>>;
+  readonly warnings: readonly string[];
+  readonly suggestions: readonly string[];
 }
 
-export type ResolutionStrategy = 'smart' | 'strict' | 'force' | 'legacy'
+export type ResolutionStrategy = 'smart' | 'strict' | 'force' | 'legacy';
 
 interface ConflictResolution {
-  readonly type: 'incompatible' | 'override' | 'satisfied'
-  readonly dependency?: Readonly<Record<string, string>>
-  readonly override?: Readonly<Record<string, string>>
-  readonly warning?: string
-  readonly suggestion?: string
+  readonly type: 'incompatible' | 'override' | 'satisfied';
+  readonly dependency?: Readonly<Record<string, string>>;
+  readonly override?: Readonly<Record<string, string>>;
+  readonly warning?: string;
+  readonly suggestion?: string;
 }
 
-export type ConflictSeverity = 'minor' | 'major' | 'breaking'
+export type ConflictSeverity = 'minor' | 'major' | 'breaking';
 
 // ============================================================================
 // DEPENDENCY ANALYSIS
@@ -56,25 +56,25 @@ export const analyzeDependencies = (
   const allCurrentDeps = {
     ...currentDeps.dependencies,
     ...currentDeps.devDependencies,
-  }
+  };
 
-  const missing: Record<string, string> = {}
-  const conflicts: DependencyConflict[] = []
-  const existing: Record<string, string> = {}
+  const missing: Record<string, string> = {};
+  const conflicts: DependencyConflict[] = [];
+  const existing: Record<string, string> = {};
 
   for (const [name, requiredVersion] of Object.entries(requiredDeps)) {
-    const currentVersion = allCurrentDeps[name]
+    const currentVersion = allCurrentDeps[name];
 
     if (!currentVersion) {
-      missing[name] = requiredVersion
+      missing[name] = requiredVersion;
     } else if (!semver.satisfies(currentVersion, requiredVersion)) {
       conflicts.push({
         name,
         current: currentVersion,
         required: requiredVersion,
-      })
+      });
     } else {
-      existing[name] = currentVersion
+      existing[name] = currentVersion;
     }
   }
 
@@ -83,8 +83,8 @@ export const analyzeDependencies = (
     conflicts: Object.freeze(conflicts),
     existing: Object.freeze(existing),
     hasConflicts: conflicts.length > 0,
-  }
-}
+  };
+};
 
 // ============================================================================
 // VERSION COMPATIBILITY
@@ -99,26 +99,26 @@ const findCompatibleVersion = (
 ): { version: string; strategy: 'current' | 'required' | 'intersection' } | null => {
   // Current satisfies required
   if (semver.satisfies(current, required)) {
-    return { version: current, strategy: 'current' }
+    return { version: current, strategy: 'current' };
   }
 
   // No intersection possible
   if (!semver.intersects(current, required)) {
-    return null
+    return null;
   }
 
   // Find intersection
-  const minRequired = semver.minVersion(required)
-  const minCurrent = semver.minVersion(current)
+  const minRequired = semver.minVersion(required);
+  const minCurrent = semver.minVersion(current);
 
   if (!minRequired || !minCurrent) {
-    return null
+    return null;
   }
 
   // Use the higher minimum version
-  const version = semver.gte(minRequired, minCurrent) ? required : current
-  return { version, strategy: 'intersection' }
-}
+  const version = semver.gte(minRequired, minCurrent) ? required : current;
+  return { version, strategy: 'intersection' };
+};
 
 /**
  * Analyze the severity of a version conflict
@@ -126,27 +126,27 @@ const findCompatibleVersion = (
 export const analyzeConflictSeverity = (
   conflicts: readonly DependencyConflict[]
 ): ConflictSeverity => {
-  if (conflicts.length === 0) return 'minor'
+  if (conflicts.length === 0) return 'minor';
 
-  const severities = conflicts.map((conflict) => {
-    const currentMajor = semver.major(conflict.current)
-    const requiredMajor = semver.major(conflict.required)
+  const severities = conflicts.map(conflict => {
+    const currentMajor = semver.major(conflict.current);
+    const requiredMajor = semver.major(conflict.required);
 
-    if (currentMajor !== requiredMajor) return 'breaking'
+    if (currentMajor !== requiredMajor) return 'breaking';
 
-    const currentMinor = semver.minor(conflict.current)
-    const requiredMinor = semver.minor(conflict.required)
+    const currentMinor = semver.minor(conflict.current);
+    const requiredMinor = semver.minor(conflict.required);
 
-    if (currentMinor !== requiredMinor) return 'major'
+    if (currentMinor !== requiredMinor) return 'major';
 
-    return 'minor'
-  })
+    return 'minor';
+  });
 
   // Return highest severity
-  if (severities.includes('breaking')) return 'breaking'
-  if (severities.includes('major')) return 'major'
-  return 'minor'
-}
+  if (severities.includes('breaking')) return 'breaking';
+  if (severities.includes('major')) return 'major';
+  return 'minor';
+};
 
 // ============================================================================
 // CONFLICT RESOLUTION
@@ -156,29 +156,29 @@ export const analyzeConflictSeverity = (
  * Resolve a single dependency conflict
  */
 const resolveConflict = (conflict: DependencyConflict): ConflictResolution => {
-  const compatible = findCompatibleVersion(conflict.current, conflict.required)
+  const compatible = findCompatibleVersion(conflict.current, conflict.required);
 
   if (!compatible) {
     return {
       type: 'incompatible',
       dependency: { [conflict.name]: conflict.required },
       warning: `${conflict.name}: Breaking change from ${conflict.current} to ${conflict.required}`,
-    }
+    };
   }
 
   if (compatible.strategy === 'current') {
     return {
       type: 'satisfied',
       warning: `${conflict.name}: Current version ${conflict.current} satisfies ${conflict.required}`,
-    }
+    };
   }
 
   return {
     type: 'override',
     override: { [conflict.name]: compatible.version },
     suggestion: `Using ${conflict.name}@${compatible.version} to satisfy both requirements`,
-  }
-}
+  };
+};
 
 /**
  * Resolve all dependency conflicts using a specific strategy
@@ -193,10 +193,10 @@ export const resolveDependencies = (
       dependencies: analysis.missing,
       overrides: {},
       warnings: analysis.conflicts.map(
-        (c) => `Conflict: ${c.name} requires ${c.required} but found ${c.current}`
+        c => `Conflict: ${c.name} requires ${c.required} but found ${c.current}`
       ),
       suggestions: [],
-    }
+    };
   }
 
   // Force mode - just use required versions
@@ -204,14 +204,14 @@ export const resolveDependencies = (
     const forcedDeps = analysis.conflicts.reduce(
       (acc, conflict) => updateRecord(acc, { [conflict.name]: conflict.required }),
       analysis.missing
-    )
+    );
 
     return {
       dependencies: forcedDeps,
       overrides: {},
       warnings: ['Using --force strategy, overriding all conflicts'],
       suggestions: [],
-    }
+    };
   }
 
   // Legacy mode - ignore peer dependencies
@@ -220,12 +220,12 @@ export const resolveDependencies = (
       dependencies: analysis.missing,
       overrides: {},
       warnings: ['Using --legacy-peer-deps strategy, conflicts may remain'],
-      suggestions: analysis.conflicts.map((c) => `Review ${c.name}: ${c.current} vs ${c.required}`),
-    }
+      suggestions: analysis.conflicts.map(c => `Review ${c.name}: ${c.current} vs ${c.required}`),
+    };
   }
 
   // Smart resolution
-  const resolutions = analysis.conflicts.map(resolveConflict)
+  const resolutions = analysis.conflicts.map(resolveConflict);
 
   return resolutions.reduce<ResolutionResult>(
     (acc, resolution) => {
@@ -235,20 +235,20 @@ export const resolveDependencies = (
             ...acc,
             dependencies: updateRecord(acc.dependencies, resolution.dependency || {}),
             warnings: [...acc.warnings, resolution.warning || ''],
-          }
+          };
 
         case 'override':
           return {
             ...acc,
             overrides: updateRecord(acc.overrides, resolution.override || {}),
             suggestions: [...acc.suggestions, resolution.suggestion || ''],
-          }
+          };
 
         case 'satisfied':
           return {
             ...acc,
             warnings: [...acc.warnings, resolution.warning || ''],
-          }
+          };
       }
     },
     {
@@ -257,8 +257,8 @@ export const resolveDependencies = (
       warnings: [],
       suggestions: [],
     }
-  )
-}
+  );
+};
 
 // ============================================================================
 // DEPENDENCY HELPERS
@@ -276,10 +276,10 @@ export const isSharedDependency = (name: string): boolean => {
     /^vitest/,
     /^jest/,
     /^@testing-library/,
-  ]
+  ];
 
-  return sharedPatterns.some((pattern) => pattern.test(name))
-}
+  return sharedPatterns.some(pattern => pattern.test(name));
+};
 
 /**
  * Filter dependencies by type
@@ -288,16 +288,16 @@ export const filterDependencies = (
   deps: Readonly<Record<string, string>>,
   predicate: (name: string, version: string) => boolean
 ): Readonly<Record<string, string>> => {
-  const filtered: Record<string, string> = {}
+  const filtered: Record<string, string> = {};
 
   for (const [name, version] of Object.entries(deps)) {
     if (predicate(name, version)) {
-      filtered[name] = version
+      filtered[name] = version;
     }
   }
 
-  return Object.freeze(filtered)
-}
+  return Object.freeze(filtered);
+};
 
 /**
  * Merge dependency records
@@ -305,8 +305,8 @@ export const filterDependencies = (
 export const mergeDependencies = (
   ...deps: Array<Readonly<Record<string, string>>>
 ): Readonly<Record<string, string>> => {
-  return Object.freeze(Object.assign({}, ...deps))
-}
+  return Object.freeze(Object.assign({}, ...deps));
+};
 
 /**
  * Get dependency install order (topological sort)
@@ -316,20 +316,22 @@ export const getDependencyInstallOrder = (
   deps: Readonly<Record<string, string>>
 ): readonly string[] => {
   // Simple heuristic: install types and build tools first
-  const entries = Object.entries(deps)
+  const entries = Object.entries(deps);
 
-  const types = entries.filter(([name]) => name.startsWith('@types/'))
-  const buildTools = entries.filter(([name]) => /typescript|vite|webpack|rollup|esbuild/.test(name))
+  const types = entries.filter(([name]) => name.startsWith('@types/'));
+  const buildTools = entries.filter(([name]) =>
+    /typescript|vite|webpack|rollup|esbuild/.test(name)
+  );
   const others = entries.filter(
     ([name]) => !name.startsWith('@types/') && !/typescript|vite|webpack|rollup|esbuild/.test(name)
-  )
+  );
 
   return Object.freeze([
     ...types.map(([name]) => name),
     ...buildTools.map(([name]) => name),
     ...others.map(([name]) => name),
-  ])
-}
+  ]);
+};
 
 // ============================================================================
 // PEER DEPENDENCY HANDLING
@@ -340,12 +342,12 @@ export const getDependencyInstallOrder = (
  */
 export const isPeerDependencyConflict = (conflict: DependencyConflict): boolean => {
   // If versions are very different, likely a peer dep issue
-  const currentMajor = semver.major(conflict.current)
-  const requiredMajor = semver.major(conflict.required)
+  const currentMajor = semver.major(conflict.current);
+  const requiredMajor = semver.major(conflict.required);
 
   // Major version differences often indicate peer dep conflicts
-  return currentMajor !== requiredMajor
-}
+  return currentMajor !== requiredMajor;
+};
 
 /**
  * Get peer dependency resolution strategy
@@ -353,19 +355,19 @@ export const isPeerDependencyConflict = (conflict: DependencyConflict): boolean 
 export const getPeerDependencyStrategy = (
   conflicts: readonly DependencyConflict[]
 ): 'strict' | 'legacy' | 'smart' => {
-  const peerConflicts = conflicts.filter(isPeerDependencyConflict)
+  const peerConflicts = conflicts.filter(isPeerDependencyConflict);
 
   if (peerConflicts.length === 0) {
-    return 'strict'
+    return 'strict';
   }
 
   // If all peer conflicts are for React ecosystem, use smart
-  const allReactRelated = peerConflicts.every((c) => /react|react-dom|@types\/react/.test(c.name))
+  const allReactRelated = peerConflicts.every(c => /react|react-dom|@types\/react/.test(c.name));
 
   if (allReactRelated) {
-    return 'smart'
+    return 'smart';
   }
 
   // Default to legacy for safety
-  return 'legacy'
-}
+  return 'legacy';
+};

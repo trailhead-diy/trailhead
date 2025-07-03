@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const linkColorMappings = makeProtected([
   // Link doesn't have many hardcoded colors since it's a simple wrapper
@@ -79,7 +79,7 @@ const linkColorMappings = makeProtected([
     replacement: 'dark:data-focus:outline-primary',
     description: 'Convert dark mode white data-focus outline to primary',
   },
-])
+]);
 
 /**
  * Link color mapping transform
@@ -92,5 +92,5 @@ export const linkColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'link-color-semantic',
 
   // Only apply to link component files
-  contentFilter: (content) => content.includes('export const Link = forwardRef'),
-})
+  contentFilter: content => content.includes('export const Link = forwardRef'),
+});

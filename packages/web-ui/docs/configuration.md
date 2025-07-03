@@ -12,10 +12,10 @@ The `ThemeProvider` component wraps your app and provides theme management capab
 
 ```tsx
 interface ThemeProviderProps {
-  children: ReactNode
-  defaultTheme?: string // Default: 'zinc'
-  storageKey?: string // Default: 'theme' (localStorage key)
-  enableSystem?: boolean // Default: true (detect system preference)
+  children: ReactNode;
+  defaultTheme?: string; // Default: 'zinc'
+  storageKey?: string; // Default: 'theme' (localStorage key)
+  enableSystem?: boolean; // Default: true (detect system preference)
 }
 ```
 
@@ -33,41 +33,41 @@ The `useTheme` hook provides access to theme state and controls:
 
 ```tsx
 interface ThemeContextValue {
-  currentTheme: string | null // Current theme name ('zinc', 'purple', etc.)
-  isDark: boolean // Current dark mode state
-  themes: string[] // All available theme names
-  setTheme: (name: string) => void // Switch to a theme
-  toggleDarkMode: () => void // Toggle dark/light mode
-  registerTheme: (name: string, config: TrailheadThemeConfig) => void // Add new theme
+  currentTheme: string | null; // Current theme name ('zinc', 'purple', etc.)
+  isDark: boolean; // Current dark mode state
+  themes: string[]; // All available theme names
+  setTheme: (name: string) => void; // Switch to a theme
+  toggleDarkMode: () => void; // Toggle dark/light mode
+  registerTheme: (name: string, config: TrailheadThemeConfig) => void; // Add new theme
 }
 ```
 
 ### Usage Examples
 
 ```tsx
-import { useTheme } from '@esteban-url/trailhead-web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui';
 
 function ThemeControls() {
-  const { currentTheme, isDark, themes, setTheme, toggleDarkMode, registerTheme } = useTheme()
+  const { currentTheme, isDark, themes, setTheme, toggleDarkMode, registerTheme } = useTheme();
 
   // Display current theme
-  console.log(`Current theme: ${currentTheme}${isDark ? ' (dark)' : ''}`)
+  console.log(`Current theme: ${currentTheme}${isDark ? ' (dark)' : ''}`);
 
   // List available themes
-  console.log('Available themes:', themes)
+  console.log('Available themes:', themes);
   // ['red', 'rose', 'orange', 'green', 'blue', 'yellow', 'violet', 'catalyst']
 
   // Switch theme
-  const switchToGreen = () => setTheme('green')
+  const switchToGreen = () => setTheme('green');
 
   // Toggle dark mode
-  const toggleDark = () => toggleDarkMode()
+  const toggleDark = () => toggleDarkMode();
 
   // Register custom theme
   const addCustomTheme = () => {
-    const customTheme = createTheme('custom').withPrimaryColor('oklch(0.7 0.2 180)').build()
-    registerTheme('custom', customTheme)
-  }
+    const customTheme = createTheme('custom').withPrimaryColor('oklch(0.7 0.2 180)').build();
+    registerTheme('custom', customTheme);
+  };
 }
 ```
 
@@ -114,7 +114,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -257,7 +257,7 @@ module.exports = {
       },
     },
   },
-}
+};
 ```
 
 Note: The `<alpha-value>` placeholder enables opacity modifiers like `bg-primary/50`.
@@ -289,7 +289,7 @@ Define a custom theme using CSS:
 Create themes programmatically using the functional theme builder (located in `/src/components/theme/builder.ts`):
 
 ```tsx
-import { createTheme } from '@esteban-url/trailhead-web-ui'
+import { createTheme } from '@esteban-url/trailhead-web-ui';
 
 // Build a custom theme using the fluent API
 const customTheme = createTheme('custom')
@@ -299,11 +299,11 @@ const customTheme = createTheme('custom')
   .withMutedColor('oklch(0.95 0.01 250)', 'oklch(0.25 0.01 250)')
   .withAccentColor('oklch(0.94 0.02 250)', 'oklch(0.26 0.02 250)')
   .withDestructiveColor('oklch(0.6 0.25 25)')
-  .build()
+  .build();
 
 // Register the theme using useTheme hook
-const { registerTheme } = useTheme()
-registerTheme('custom', customTheme)
+const { registerTheme } = useTheme();
+registerTheme('custom', customTheme);
 ```
 
 ### Option 3: CLI Installation
@@ -329,26 +329,26 @@ pnpm exec trailhead-ui install
 For runtime theme management, use the `useTheme` hook:
 
 ```tsx
-import { useTheme } from '@esteban-url/trailhead-web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui';
 
 function ThemeManager() {
-  const { themes, currentTheme, setTheme, registerTheme } = useTheme()
+  const { themes, currentTheme, setTheme, registerTheme } = useTheme();
 
   // Get available themes
-  console.log(themes) // ['zinc', 'purple', 'green', 'orange', ...]
+  console.log(themes); // ['zinc', 'purple', 'green', 'orange', ...]
 
   // Switch to a different theme
   const handleThemeChange = (themeName: string) => {
-    setTheme(themeName)
-  }
+    setTheme(themeName);
+  };
 
   // Register a new theme dynamically
   const addCustomTheme = () => {
-    const customTheme = createTheme('my-theme').withPrimaryColor('oklch(0.7 0.15 180)').build()
+    const customTheme = createTheme('my-theme').withPrimaryColor('oklch(0.7 0.15 180)').build();
 
-    registerTheme('my-theme', customTheme)
-    setTheme('my-theme')
-  }
+    registerTheme('my-theme', customTheme);
+    setTheme('my-theme');
+  };
 }
 ```
 
@@ -399,15 +399,15 @@ This approach provides:
 function App() {
   const [userTheme, setUserTheme] = useState(() => {
     // Load from user profile/database
-    return getUserPreference() || 'zinc'
-  })
+    return getUserPreference() || 'zinc';
+  });
 
   return (
     <ThemeProvider defaultTheme={userTheme}>
       <ThemeSettings onThemeChange={setUserTheme} />
       {children}
     </ThemeProvider>
-  )
+  );
 }
 ```
 
@@ -419,8 +419,8 @@ Themes are applied using CSS custom properties, enabling instant theme switching
 
 ```tsx
 // Themes are applied immediately via CSS variables
-const { setTheme } = useTheme()
-setTheme('purple') // Instant theme change
+const { setTheme } = useTheme();
+setTheme('purple'); // Instant theme change
 ```
 
 ### SSR Optimization
@@ -481,15 +481,15 @@ Trailhead UI extends next-themes' theme naming to support color + mode combinati
 While Trailhead UI provides its own `useTheme` hook, you can also access next-themes directly if needed:
 
 ```tsx
-import { useTheme as useNextTheme } from 'next-themes'
+import { useTheme as useNextTheme } from 'next-themes';
 
 function AdvancedThemeControl() {
-  const { theme, setTheme, resolvedTheme, systemTheme, themes } = useNextTheme()
+  const { theme, setTheme, resolvedTheme, systemTheme, themes } = useNextTheme();
 
   // Access raw next-themes state
-  console.log('Raw theme:', theme) // e.g., 'purple-dark', 'system'
-  console.log('Resolved:', resolvedTheme) // Actual theme after system resolution
-  console.log('System:', systemTheme) // 'light' or 'dark'
+  console.log('Raw theme:', theme); // e.g., 'purple-dark', 'system'
+  console.log('Resolved:', resolvedTheme); // Actual theme after system resolution
+  console.log('System:', systemTheme); // 'light' or 'dark'
 }
 ```
 
@@ -567,14 +567,14 @@ When adapting components to use semantic tokens:
 
    ```tsx
    // Before
-   className = 'bg-gray-100 text-gray-900 focus:ring-gray-500'
+   className = 'bg-gray-100 text-gray-900 focus:ring-gray-500';
    ```
 
 2. **Map to semantic tokens**:
 
    ```tsx
    // After
-   className = 'bg-muted text-foreground focus:ring-primary'
+   className = 'bg-muted text-foreground focus:ring-primary';
    ```
 
 3. **Use the CLI**:

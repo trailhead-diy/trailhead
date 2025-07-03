@@ -2,8 +2,8 @@
  * AST pattern builders for semantic token resolution
  */
 
-import type { ResolutionConfig } from './types.js'
-import type { API } from 'jscodeshift'
+import type { ResolutionConfig } from './types.js';
+import type { API } from 'jscodeshift';
 
 /**
  * Build IIFE pattern with colors object
@@ -20,8 +20,8 @@ import type { API } from 'jscodeshift'
  * ```
  */
 export function buildIIFEWithColorsPattern(j: API['jscodeshift'], config: ResolutionConfig): any {
-  const { componentName, defaultColor } = config
-  const styleFunction = `createSemantic${componentName}Styles`
+  const { componentName, defaultColor } = config;
+  const styleFunction = `createSemantic${componentName}Styles`;
 
   const arrowFunc = j.arrowFunctionExpression(
     [],
@@ -45,9 +45,9 @@ export function buildIIFEWithColorsPattern(j: API['jscodeshift'], config: Resolu
       ),
     ]),
     false
-  )
+  );
 
-  return j.callExpression(arrowFunc, [])
+  return j.callExpression(arrowFunc, []);
 }
 
 /**
@@ -65,8 +65,8 @@ export function buildConditionalWithColorsPattern(
   j: API['jscodeshift'],
   config: ResolutionConfig
 ): any {
-  const { componentName, defaultColor } = config
-  const styleFunction = `createSemantic${componentName}Styles`
+  const { componentName, defaultColor } = config;
+  const styleFunction = `createSemantic${componentName}Styles`;
 
   return j.conditionalExpression(
     j.logicalExpression(
@@ -84,7 +84,7 @@ export function buildConditionalWithColorsPattern(
       ),
       j.memberExpression(j.identifier('colors'), j.stringLiteral(defaultColor), true)
     )
-  )
+  );
 }
 
 /**
@@ -102,8 +102,8 @@ export function buildSimpleConditionalPattern(
   j: API['jscodeshift'],
   config: ResolutionConfig
 ): any {
-  const { componentName } = config
-  const styleFunction = `createSemantic${componentName}Styles`
+  const { componentName } = config;
+  const styleFunction = `createSemantic${componentName}Styles`;
 
   return j.conditionalExpression(
     j.logicalExpression(
@@ -113,7 +113,7 @@ export function buildSimpleConditionalPattern(
     ),
     j.callExpression(j.identifier(styleFunction), [j.identifier('color')]),
     j.stringLiteral('')
-  )
+  );
 }
 
 /**
@@ -123,13 +123,13 @@ export function buildSimpleConditionalPattern(
 export function determinePattern(
   config: ResolutionConfig
 ): 'iife-with-colors' | 'conditional-with-colors' | 'simple-conditional' {
-  const { useIIFE, hasColorsObject } = config
+  const { useIIFE, hasColorsObject } = config;
 
   if (useIIFE && hasColorsObject) {
-    return 'iife-with-colors'
+    return 'iife-with-colors';
   } else if (hasColorsObject) {
-    return 'conditional-with-colors'
+    return 'conditional-with-colors';
   } else {
-    return 'simple-conditional'
+    return 'simple-conditional';
   }
 }

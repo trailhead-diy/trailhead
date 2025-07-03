@@ -53,21 +53,21 @@ After CLI installation, you can immediately start using components!
 If you used the CLI, this is already set up. For manual setup:
 
 ```tsx
-import { ThemeProvider } from '@esteban-url/trailhead-web-ui'
+import { ThemeProvider } from '@esteban-url/trailhead-web-ui';
 
 function App() {
   return (
     <ThemeProvider defaultTheme="zinc" enableSystem>
       <YourApplication />
     </ThemeProvider>
-  )
+  );
 }
 ```
 
 ### 2. Use Components (Available after CLI installation)
 
 ```tsx
-import { Button, Input, Badge } from '@esteban-url/trailhead-web-ui'
+import { Button, Input, Badge } from '@esteban-url/trailhead-web-ui';
 
 function Example() {
   return (
@@ -79,7 +79,7 @@ function Example() {
         <Badge color="primary">New</Badge>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -100,40 +100,40 @@ function Example() {
 ### Simple Theme Switcher
 
 ```tsx
-import { useTheme } from '@esteban-url/trailhead-web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui';
 
 function ThemeToggle() {
-  const { currentTheme, setTheme, themes } = useTheme()
+  const { currentTheme, setTheme, themes } = useTheme();
 
   return (
     <select
       value={currentTheme || 'zinc'}
-      onChange={(e) => setTheme(e.target.value)}
+      onChange={e => setTheme(e.target.value)}
       className="rounded-md border border-input"
     >
-      {themes.map((theme) => (
+      {themes.map(theme => (
         <option key={theme} value={theme}>
           {theme}
         </option>
       ))}
     </select>
-  )
+  );
 }
 ```
 
 ### Dark Mode Toggle
 
 ```tsx
-import { useTheme, Button } from '@esteban-url/trailhead-web-ui'
+import { useTheme, Button } from '@esteban-url/trailhead-web-ui';
 
 function DarkModeToggle() {
-  const { isDark, toggleDarkMode } = useTheme()
+  const { isDark, toggleDarkMode } = useTheme();
 
   return (
     <Button onClick={toggleDarkMode} outline>
       {isDark ? '☀️ Light' : '🌙 Dark'}
     </Button>
-  )
+  );
 }
 ```
 
@@ -175,21 +175,21 @@ Trailhead UI includes multiple built-in themes:
 ### Form with Validation
 
 ```tsx
-import { Input, Button, cn } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import { Input, Button, cn } from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!email.includes('@')) {
-      setError('Invalid email')
-      return
+      setError('Invalid email');
+      return;
     }
     // Handle submission
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -197,7 +197,7 @@ function LoginForm() {
         <Input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           className={cn(error && 'border-destructive')}
         />
@@ -205,30 +205,30 @@ function LoginForm() {
       </div>
       <Button type="submit">Sign In</Button>
     </form>
-  )
+  );
 }
 ```
 
 ### Loading States
 
 ```tsx
-import { Button } from '@esteban-url/trailhead-web-ui'
-import { useState } from 'react'
+import { Button } from '@esteban-url/trailhead-web-ui';
+import { useState } from 'react';
 
 function LoadingExample() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
-    setLoading(true)
-    await doSomething()
-    setLoading(false)
-  }
+    setLoading(true);
+    await doSomething();
+    setLoading(false);
+  };
 
   return (
     <Button onClick={handleClick} disabled={loading}>
       {loading ? 'Loading...' : 'Click Me'}
     </Button>
-  )
+  );
 }
 ```
 
@@ -238,7 +238,7 @@ Trailhead UI works with SSR frameworks like Next.js:
 
 ```tsx
 // app/page.tsx (Next.js App Router)
-import { Button, Card } from '@esteban-url/trailhead-web-ui'
+import { Button, Card } from '@esteban-url/trailhead-web-ui';
 
 export default function Page() {
   return (
@@ -246,7 +246,7 @@ export default function Page() {
       <h1>Server Rendered</h1>
       <Button>Interactive on Client</Button>
     </Card>
-  )
+  );
 }
 ```
 

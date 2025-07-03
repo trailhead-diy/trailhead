@@ -2,6 +2,7 @@ node_modules
 .vscode
 dist
 catalyst-ui-kit/
+**/catalyst-ui-kit/**
 coverage/
 scripts/prepare-demo-files/
 demo/

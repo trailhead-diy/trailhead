@@ -2,7 +2,7 @@
  * AST insertion logic for semantic token resolution
  */
 
-import type { API, VariableDeclaration } from 'jscodeshift'
+import type { API, VariableDeclaration } from 'jscodeshift';
 
 /**
  * Check if a variable already exists in the given scope
@@ -15,9 +15,9 @@ export function checkVariableExists(
 ): boolean {
   const existingVariable = j(functionBody).find(j.VariableDeclarator, {
     id: { name: variableName },
-  })
+  });
 
-  return existingVariable.length > 0
+  return existingVariable.length > 0;
 }
 
 /**
@@ -25,13 +25,13 @@ export function checkVariableExists(
  * Pure function that safely extracts the variable name
  */
 export function extractVariableName(resolution: VariableDeclaration): string | null {
-  const firstDeclarator = resolution.declarations[0] as any
+  const firstDeclarator = resolution.declarations[0] as any;
 
   if (!firstDeclarator || !firstDeclarator.id || firstDeclarator.id.type !== 'Identifier') {
-    return null
+    return null;
   }
 
-  return firstDeclarator.id.name as string
+  return firstDeclarator.id.name as string;
 }
 
 /**
@@ -39,9 +39,9 @@ export function extractVariableName(resolution: VariableDeclaration): string | n
  * Returns the return statement collection or null
  */
 export function findInsertionPoint(j: API['jscodeshift'], functionBody: any): any {
-  const returnStatement = j(functionBody).find(j.ReturnStatement).at(0)
+  const returnStatement = j(functionBody).find(j.ReturnStatement).at(0);
 
-  return returnStatement.length > 0 ? returnStatement : null
+  return returnStatement.length > 0 ? returnStatement : null;
 }
 
 /**
@@ -54,25 +54,25 @@ export function insertSemanticResolution(
   resolution: VariableDeclaration
 ): boolean {
   // Extract variable name
-  const variableName = extractVariableName(resolution)
+  const variableName = extractVariableName(resolution);
   if (!variableName) {
-    return false
+    return false;
   }
 
   // Check if variable already exists
   if (checkVariableExists(j, functionBody, variableName)) {
-    return false
+    return false;
   }
 
   // Find insertion point
-  const insertionPoint = findInsertionPoint(j, functionBody)
+  const insertionPoint = findInsertionPoint(j, functionBody);
   if (!insertionPoint) {
-    return false
+    return false;
   }
 
   // Insert the resolution
-  insertionPoint.insertBefore(resolution)
-  return true
+  insertionPoint.insertBefore(resolution);
+  return true;
 }
 
 /**
@@ -85,21 +85,21 @@ export function insertAtBeginning(
   resolution: VariableDeclaration
 ): boolean {
   // Extract variable name
-  const variableName = extractVariableName(resolution)
+  const variableName = extractVariableName(resolution);
   if (!variableName) {
-    return false
+    return false;
   }
 
   // Check if variable already exists
   if (checkVariableExists(j, functionBody, variableName)) {
-    return false
+    return false;
   }
 
   // Insert at the beginning of the function body
   if (functionBody.body && Array.isArray(functionBody.body)) {
-    functionBody.body.unshift(resolution)
-    return true
+    functionBody.body.unshift(resolution);
+    return true;
   }
 
-  return false
+  return false;
 }

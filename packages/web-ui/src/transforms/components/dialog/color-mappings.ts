@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const dialogColorMappings = makeProtected([
   // Background colors
@@ -66,7 +66,7 @@ const dialogColorMappings = makeProtected([
     replacement: 'dark:text-muted-foreground',
     description: 'Convert dark mode zinc-400 text to muted-foreground',
   },
-])
+]);
 
 /**
  * Dialog color mapping transform
@@ -80,10 +80,10 @@ export const dialogColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'dialog-color-semantic',
 
   // Only apply to dialog component files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Dialog') ||
     content.includes('export function DialogTitle') ||
     content.includes('export function DialogDescription') ||
     content.includes('export function DialogBody') ||
     content.includes('export function DialogActions'),
-})
+});

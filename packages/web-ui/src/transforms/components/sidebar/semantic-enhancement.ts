@@ -2,7 +2,7 @@
  * Semantic enhancement transform for Sidebar component
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 export const sidebarSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Sidebar',
@@ -13,7 +13,7 @@ export const sidebarSemanticEnhancementTransform = createSemanticEnhancementTran
       content.includes('export function Sidebar') &&
       content.includes('SidebarHeader') &&
       content.includes('SidebarBody')
-    )
+    );
   },
 
   // Default color fallback
@@ -33,4 +33,4 @@ export const sidebarSemanticEnhancementTransform = createSemanticEnhancementTran
 
   // Don't use IIFE pattern
   useIIFE: false,
-})
+});

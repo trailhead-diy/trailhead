@@ -2,8 +2,8 @@
  * Component detection logic for AST transformations
  */
 
-import type { JSCodeshift, Collection } from 'jscodeshift'
-import type { ComponentInfo } from '@/transforms/shared/types.js'
+import type { JSCodeshift, Collection } from 'jscodeshift';
+import type { ComponentInfo } from '@/transforms/shared/types.js';
 
 // Component configurations
 export const COMPONENT_CONFIGS: ComponentInfo[] = [
@@ -59,7 +59,7 @@ export const COMPONENT_CONFIGS: ComponentInfo[] = [
     colorPropHandling: 'direct',
     semanticStyleFunction: 'createSemanticInputStyles',
   },
-]
+];
 
 /**
  * Detect which component we're processing based on AST content
@@ -73,11 +73,11 @@ export function detectComponent(root: Collection<any>, j: JSCodeshift): Componen
       }).length > 0 ||
       root.find(j.FunctionDeclaration, {
         id: { type: 'Identifier', name: config.name },
-      }).length > 0
+      }).length > 0;
 
     if (hasComponent) {
-      return config
+      return config;
     }
   }
-  return null
+  return null;
 }

@@ -2,14 +2,14 @@
  * Main AST builder for semantic token resolution
  */
 
-import type { API, VariableDeclaration } from 'jscodeshift'
-import type { ResolutionConfig } from './types.js'
+import type { API, VariableDeclaration } from 'jscodeshift';
+import type { ResolutionConfig } from './types.js';
 import {
   determinePattern,
   buildIIFEWithColorsPattern,
   buildConditionalWithColorsPattern,
   buildSimpleConditionalPattern,
-} from './ast-patterns.js'
+} from './ast-patterns.js';
 
 /**
  * Build semantic token resolution variable declaration
@@ -19,18 +19,18 @@ export function buildSemanticResolution(
   j: API['jscodeshift'],
   config: ResolutionConfig
 ): VariableDeclaration {
-  const { variableName } = config
+  const { variableName } = config;
 
   // Determine which pattern to use
-  const pattern = determinePattern(config)
+  const pattern = determinePattern(config);
 
   // Build the appropriate expression based on pattern
-  const expression = buildResolutionExpression(j, config, pattern)
+  const expression = buildResolutionExpression(j, config, pattern);
 
   // Create the variable declaration
   return j.variableDeclaration('const', [
     j.variableDeclarator(j.identifier(variableName), expression),
-  ])
+  ]);
 }
 
 /**
@@ -44,18 +44,18 @@ function buildResolutionExpression(
 ): any {
   switch (pattern) {
     case 'iife-with-colors':
-      return buildIIFEWithColorsPattern(j, config)
+      return buildIIFEWithColorsPattern(j, config);
 
     case 'conditional-with-colors':
-      return buildConditionalWithColorsPattern(j, config)
+      return buildConditionalWithColorsPattern(j, config);
 
     case 'simple-conditional':
-      return buildSimpleConditionalPattern(j, config)
+      return buildSimpleConditionalPattern(j, config);
 
     default:
       // Type-safe exhaustive check
-      const _exhaustive: never = pattern
-      throw new Error(`Unknown pattern: ${pattern}`)
+      const _exhaustive: never = pattern;
+      throw new Error(`Unknown pattern: ${pattern}`);
   }
 }
 
@@ -73,10 +73,10 @@ export function createResolutionBuilder(defaultConfig: Partial<ResolutionConfig>
       hasColorsObject: true,
       ...defaultConfig,
       ...overrides,
-    }
+    };
 
-    return buildSemanticResolution(j, config)
-  }
+    return buildSemanticResolution(j, config);
+  };
 }
 
 /**
@@ -100,9 +100,9 @@ export const builders = {
     useIIFE: false,
     hasColorsObject: false,
   }),
-}
+};
 
 // Export individual builders for convenience
-export const withIIFEAndColors = builders.withIIFEAndColors
-export const withConditionalAndColors = builders.withConditionalAndColors
-export const withSimpleConditional = builders.withSimpleConditional
+export const withIIFEAndColors = builders.withIIFEAndColors;
+export const withConditionalAndColors = builders.withConditionalAndColors;
+export const withSimpleConditional = builders.withSimpleConditional;

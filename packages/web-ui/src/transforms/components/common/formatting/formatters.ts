@@ -13,28 +13,28 @@ export {
   compose,
   createPostProcessor,
   conditionalFormatter,
-} from './formatters/composition.js'
+} from './formatters/composition.js';
 
 // Export individual formatting functions
 export {
   fixImportSemicolons,
   normalizeImportSpacing,
   ensureBlankLineAfterImports,
-} from './formatters/functions/imports.js'
+} from './formatters/functions/imports.js';
 
 export {
   reorderClassNameArgs,
   restoreCnCallsForSemanticTokens,
   preserveMultilineCnCalls,
-} from './formatters/functions/classnames.js'
+} from './formatters/functions/classnames.js';
 
-export { fixFunctionEndingSemicolons } from './formatters/functions/semicolons.js'
+export { fixFunctionEndingSemicolons } from './formatters/functions/semicolons.js';
 
 export {
   normalizeBlankLines,
   addFunctionSpacing,
   removeTrailingWhitespace,
-} from './formatters/functions/spacing.js'
+} from './formatters/functions/spacing.js';
 
 // Export pre-composed pipelines
 export {
@@ -42,4 +42,4 @@ export {
   minimalFormatting,
   classNameFormatting,
   importFormatting,
-} from './formatters/pipelines.js'
+} from './formatters/pipelines.js';

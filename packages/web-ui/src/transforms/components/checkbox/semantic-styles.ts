@@ -3,7 +3,7 @@
  * Creates CSS variables for semantic checkbox colors
  */
 
-import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createCSSVariableStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Create semantic checkbox styles
@@ -13,4 +13,4 @@ export const createSemanticCheckboxStyles = createCSSVariableStyles((token: stri
   `[--checkbox-check:var(--color-white)]`,
   `[--checkbox-checked-bg:var(--color-${token})]`,
   `[--checkbox-checked-border:var(--color-${token})]/90`,
-])
+]);

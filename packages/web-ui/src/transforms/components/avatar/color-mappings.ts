@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const avatarColorMappings = makeProtected([
   // Outline colors
@@ -20,7 +20,7 @@ const avatarColorMappings = makeProtected([
     replacement: 'dark:outline-border',
     description: 'Convert dark mode white outline to semantic border',
   },
-])
+]);
 
 /**
  * Avatar color mapping transform
@@ -33,6 +33,6 @@ export const avatarColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'avatar-color-semantic',
 
   // Only apply to avatar component files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Avatar') || content.includes('export const AvatarButton'),
-})
+});

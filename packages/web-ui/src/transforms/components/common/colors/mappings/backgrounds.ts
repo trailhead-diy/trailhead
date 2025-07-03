@@ -2,7 +2,7 @@
  * Background color mappings - zinc to semantic tokens
  */
 
-import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js'
+import type { ProtectedColorMapping } from '@/transforms/components/common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Get background color mappings
@@ -56,5 +56,5 @@ export function getBackgroundMappings(): ProtectedColorMapping[] {
       replacement: 'bg-background/$1',
       description: 'bg-white/opacity → bg-background/opacity (preserve opacity)',
     },
-  ]
+  ];
 }

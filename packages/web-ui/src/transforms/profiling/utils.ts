@@ -2,32 +2,32 @@
  * Shared utility functions for profiling system
  */
 
-import { mkdir, rm, copyFile } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
-import type { ProfileResult, ProfileOptions } from './types.js'
-import { CATALYST_COMPONENTS, PROFILER_CONFIG } from './constants.js'
+import { mkdir, rm, copyFile } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import type { ProfileResult, ProfileOptions } from './types.js';
+import { CATALYST_COMPONENTS, PROFILER_CONFIG } from './constants.js';
 
 /**
  * Pure function to measure memory usage
  */
 export function measureMemory(): number {
-  const usage = process.memoryUsage()
-  return Math.round(usage.heapUsed / 1024 / 1024) // MB
+  const usage = process.memoryUsage();
+  return Math.round(usage.heapUsed / 1024 / 1024); // MB
 }
 
 /**
  * Pure function to calculate statistics from timing array
  */
 export function calculateStatistics(times: number[]): {
-  total: number
-  average: number
-  median: number
-  min: number
-  max: number
+  total: number;
+  average: number;
+  median: number;
+  min: number;
+  max: number;
 } {
-  const sorted = [...times].sort((a, b) => a - b)
-  const total = sorted.reduce((sum, t) => sum + t, 0)
+  const sorted = [...times].sort((a, b) => a - b);
+  const total = sorted.reduce((sum, t) => sum + t, 0);
 
   return {
     total,
@@ -35,20 +35,20 @@ export function calculateStatistics(times: number[]): {
     median: sorted[Math.floor(sorted.length / 2)],
     min: sorted[0],
     max: sorted[sorted.length - 1],
-  }
+  };
 }
 
 /**
  * Pure function to calculate memory statistics
  */
 export function calculateMemoryStats(memories: number[]): {
-  peak: number
-  average: number
+  peak: number;
+  average: number;
 } {
   return {
     peak: Math.max(...memories),
     average: memories.reduce((sum, m) => sum + m, 0) / memories.length,
-  }
+  };
 }
 
 /**
@@ -61,8 +61,8 @@ export function createProfileResult(
   iterations: number,
   componentProfiles: any[] = []
 ): ProfileResult {
-  const timeStats = calculateStatistics(times)
-  const memoryStats = calculateMemoryStats(memories)
+  const timeStats = calculateStatistics(times);
+  const memoryStats = calculateMemoryStats(memories);
 
   return {
     approach,
@@ -77,7 +77,7 @@ export function createProfileResult(
     componentsPerSecond: (CATALYST_COMPONENTS.length * 1000) / timeStats.average,
     componentProfiles,
     iterations,
-  }
+  };
 }
 
 /**
@@ -91,7 +91,7 @@ export function calculateComparison(
     speedupFactor: traditional.averageTime / transforms2.averageTime,
     memoryEfficiency:
       ((traditional.memoryAverage - transforms2.memoryAverage) / traditional.memoryAverage) * 100,
-  }
+  };
 }
 
 /**
@@ -99,20 +99,20 @@ export function calculateComparison(
  */
 export function parseOptions(args: string[]): ProfileOptions {
   // This will be enhanced when we implement commander
-  const hasCompare = args.includes('--compare') || args.includes('-c')
-  const hasVerbose = args.includes('--verbose') || args.includes('-v')
-  const iterationsIndex = args.findIndex((arg) => arg === '--iterations' || arg === '-i')
+  const hasCompare = args.includes('--compare') || args.includes('-c');
+  const hasVerbose = args.includes('--verbose') || args.includes('-v');
+  const iterationsIndex = args.findIndex(arg => arg === '--iterations' || arg === '-i');
   const iterations =
     iterationsIndex >= 0 && args[iterationsIndex + 1]
       ? parseInt(args[iterationsIndex + 1], 10) || 3
-      : 3
+      : 3;
 
   return {
     compare: hasCompare,
     verbose: hasVerbose,
     iterations,
     mode: 'full',
-  }
+  };
 }
 
 /**
@@ -121,16 +121,16 @@ export function parseOptions(args: string[]): ProfileOptions {
  */
 export async function setupEnvironment(targetDir: string): Promise<void> {
   if (existsSync(targetDir)) {
-    await rm(targetDir, { recursive: true })
+    await rm(targetDir, { recursive: true });
   }
-  await mkdir(targetDir, { recursive: true })
+  await mkdir(targetDir, { recursive: true });
 
   // Copy all Catalyst components
   for (const component of CATALYST_COMPONENTS) {
-    const source = join(PROFILER_CONFIG.catalystSource, component)
-    const dest = join(targetDir, component)
+    const source = join(PROFILER_CONFIG.catalystSource, component);
+    const dest = join(targetDir, component);
     if (existsSync(source)) {
-      await copyFile(source, dest)
+      await copyFile(source, dest);
     }
   }
 }
@@ -141,7 +141,7 @@ export async function setupEnvironment(targetDir: string): Promise<void> {
  */
 export async function cleanupEnvironment(): Promise<void> {
   if (existsSync(PROFILER_CONFIG.tempBase)) {
-    await rm(PROFILER_CONFIG.tempBase, { recursive: true })
+    await rm(PROFILER_CONFIG.tempBase, { recursive: true });
   }
 }
 
@@ -151,7 +151,7 @@ export async function cleanupEnvironment(): Promise<void> {
  */
 export function forceGarbageCollection(): void {
   if (global.gc) {
-    global.gc()
+    global.gc();
   }
 }
 
@@ -159,14 +159,14 @@ export function forceGarbageCollection(): void {
  * Pure function to validate file exists
  */
 export function validateFile(path: string): boolean {
-  return existsSync(path)
+  return existsSync(path);
 }
 
 /**
  * Pure function to generate timestamp
  */
 export function generateTimestamp(): string {
-  return new Date().toISOString()
+  return new Date().toISOString();
 }
 
 /**
@@ -174,9 +174,9 @@ export function generateTimestamp(): string {
  */
 export function formatDuration(ms: number): string {
   if (ms < 1000) {
-    return `${Math.round(ms)}ms`
+    return `${Math.round(ms)}ms`;
   }
-  return `${(ms / 1000).toFixed(1)}s`
+  return `${(ms / 1000).toFixed(1)}s`;
 }
 
 /**
@@ -184,36 +184,36 @@ export function formatDuration(ms: number): string {
  */
 export function formatMemory(mb: number): string {
   if (mb < 1) {
-    return `${(mb * 1024).toFixed(0)}KB`
+    return `${(mb * 1024).toFixed(0)}KB`;
   }
-  return `${mb.toFixed(1)}MB`
+  return `${mb.toFixed(1)}MB`;
 }
 
 /**
  * Pure function to create progress bar visualization
  */
 export function createProgressBar(current: number, total: number, width: number = 20): string {
-  const progress = Math.round((current / total) * width)
-  const bar = '█'.repeat(progress) + '░'.repeat(width - progress)
-  const percentage = Math.round((current / total) * 100)
-  return `${bar} ${percentage}%`
+  const progress = Math.round((current / total) * width);
+  const bar = '█'.repeat(progress) + '░'.repeat(width - progress);
+  const percentage = Math.round((current / total) * 100);
+  return `${bar} ${percentage}%`;
 }
 
 /**
  * Pure function to validate options
  */
 export function validateOptions(options: ProfileOptions): string[] {
-  const errors: string[] = []
+  const errors: string[] = [];
 
   if (options.iterations < 1 || options.iterations > 10) {
-    errors.push('Iterations must be between 1 and 10')
+    errors.push('Iterations must be between 1 and 10');
   }
 
   if (!['full', 'simple', 'custom'].includes(options.mode)) {
-    errors.push('Mode must be full, simple, or custom')
+    errors.push('Mode must be full, simple, or custom');
   }
 
-  return errors
+  return errors;
 }
 
 /**
@@ -221,6 +221,6 @@ export function validateOptions(options: ProfileOptions): string[] {
  */
 export async function ensureDirectory(path: string): Promise<void> {
   if (!existsSync(path)) {
-    await mkdir(path, { recursive: true })
+    await mkdir(path, { recursive: true });
   }
 }

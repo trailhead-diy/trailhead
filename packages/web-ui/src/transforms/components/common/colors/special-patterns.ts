@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   type ProtectedColorMapping,
-} from '../utilities/protected-regex-transform-factory.js'
+} from '../utilities/protected-regex-transform-factory.js';
 
 // Special combination patterns that need specific handling
 const SPECIAL_PATTERNS: ProtectedColorMapping[] = [
@@ -73,7 +73,7 @@ const SPECIAL_PATTERNS: ProtectedColorMapping[] = [
     replacement: 'scrollbar-track-muted',
     description: 'scrollbar-track-zinc-800 → scrollbar-track-muted',
   },
-]
+];
 
 /**
  * Special patterns color transform
@@ -86,4 +86,4 @@ export const specialPatternsTransform = createProtectedRegexTransform({
   mappings: SPECIAL_PATTERNS,
   changeType: 'special-pattern',
   globalProtection: true, // Enable protection for style and colors objects
-})
+});

@@ -7,7 +7,7 @@
  * This registry tracks component enhancements.
  */
 
-import type { SemanticColorToken } from './semantic-tokens'
+import type { SemanticColorToken } from './semantic-tokens';
 
 /**
  * Components that have been enhanced with semantic token support
@@ -83,12 +83,12 @@ export const SEMANTIC_ENHANCED_COMPONENTS = {
     description: 'Enhanced Combobox component with semantic focus states for options',
     implementation: 'createSemanticComboboxStyles()',
   },
-} as const
+} as const;
 
 /**
  * Total count of enhanced components
  */
-export const ENHANCED_COMPONENT_COUNT = Object.keys(SEMANTIC_ENHANCED_COMPONENTS).length
+export const ENHANCED_COMPONENT_COUNT = Object.keys(SEMANTIC_ENHANCED_COMPONENTS).length;
 
 /**
  * Check if a component has semantic token support
@@ -96,21 +96,21 @@ export const ENHANCED_COMPONENT_COUNT = Object.keys(SEMANTIC_ENHANCED_COMPONENTS
 export function hasSemanticSupport(
   componentName: keyof typeof SEMANTIC_ENHANCED_COMPONENTS
 ): boolean {
-  return componentName in SEMANTIC_ENHANCED_COMPONENTS
+  return componentName in SEMANTIC_ENHANCED_COMPONENTS;
 }
 
 /**
  * Get semantic token information for a component
  */
 export function getSemanticInfo(componentName: keyof typeof SEMANTIC_ENHANCED_COMPONENTS) {
-  return SEMANTIC_ENHANCED_COMPONENTS[componentName] || null
+  return SEMANTIC_ENHANCED_COMPONENTS[componentName] || null;
 }
 
 /**
  * List all components with semantic enhancements
  */
 export function listEnhancedComponents(): string[] {
-  return Object.keys(SEMANTIC_ENHANCED_COMPONENTS)
+  return Object.keys(SEMANTIC_ENHANCED_COMPONENTS);
 }
 
 /**
@@ -123,7 +123,7 @@ export const ACCESSIBILITY_IMPROVEMENTS = {
   dropdown: 'Uses -foreground colors for proper contrast on focus',
   listbox: 'Uses -foreground colors for proper contrast on focus',
   combobox: 'Uses -foreground colors for proper contrast on focus',
-} as const
+} as const;
 
 /**
  * Color mapping strategy
@@ -139,4 +139,4 @@ export const COLOR_MAPPING_STRATEGY = {
     pattern: 'Maps to Tailwind utilities with proper contrast colors',
     example: 'bg-green-600 text-white or text-green-700 dark:text-green-400',
   },
-} as const
+} as const;

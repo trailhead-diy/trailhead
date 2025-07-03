@@ -3,7 +3,7 @@
  * Handles remaining text color patterns that main transforms might miss
  */
 
-import { createRegexTransform } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform } from '../utilities/regex-transform-factory.js';
 
 /**
  * Text colors edge case transform
@@ -20,4 +20,4 @@ export const textColorsEdgeCaseTransform = createRegexTransform({
     },
   ],
   changeType: 'text-color-edge-case',
-})
+});

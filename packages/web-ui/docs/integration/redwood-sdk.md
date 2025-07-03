@@ -29,16 +29,16 @@ pnpm add github:esteban-url/trailhead#packages/web-ui next-themes
 Update your `vite.config.mts` to include the Tailwind CSS Vite plugin:
 
 ```typescript
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
-import { redwood } from 'rwsdk/vite'
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
+import { redwood } from 'rwsdk/vite';
 
 export default defineConfig({
   environments: {
     ssr: {},
   },
   plugins: [redwood(), tailwindcss()],
-})
+});
 ```
 
 ## Step 3: Create Styles File
@@ -116,7 +116,7 @@ Create `src/app/styles.css` and import Tailwind CSS:
 Update your `src/app/Document.tsx` to include the stylesheet:
 
 ```tsx
-import styles from './styles.css?url'
+import styles from './styles.css?url';
 
 export default function Document({ children }: { children: React.ReactNode }) {
   return (
@@ -128,7 +128,7 @@ export default function Document({ children }: { children: React.ReactNode }) {
       </head>
       <body>{children}</body>
     </html>
-  )
+  );
 }
 ```
 
@@ -137,10 +137,10 @@ export default function Document({ children }: { children: React.ReactNode }) {
 Create a theme provider component in `src/app/components/theme-provider.tsx`:
 
 ```tsx
-'use client'
+'use client';
 
-import * as React from 'react'
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 export function ThemeProvider({
   children,
@@ -156,7 +156,7 @@ export function ThemeProvider({
     >
       {children}
     </NextThemesProvider>
-  )
+  );
 }
 ```
 
@@ -168,10 +168,10 @@ Wrap your app with the ThemeProvider. The exact location depends on your app str
 
 ```tsx
 // src/app/layout.tsx or equivalent
-import { ThemeProvider } from 'trailhead-ui'
+import { ThemeProvider } from 'trailhead-ui';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <ThemeProvider>{children}</ThemeProvider>
+  return <ThemeProvider>{children}</ThemeProvider>;
 }
 ```
 
@@ -179,10 +179,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ```tsx
 // src/app/App.tsx
-import { ThemeProvider } from 'trailhead-ui'
+import { ThemeProvider } from 'trailhead-ui';
 
 export default function App() {
-  return <ThemeProvider>{/* Your app content */}</ThemeProvider>
+  return <ThemeProvider>{/* Your app content */}</ThemeProvider>;
 }
 ```
 
@@ -191,7 +191,7 @@ export default function App() {
 Now you can import and use Trailhead UI components:
 
 ```tsx
-import { Button, Input, Card, Badge } from 'trailhead-ui'
+import { Button, Input, Card, Badge } from 'trailhead-ui';
 
 export default function MyPage() {
   return (
@@ -206,7 +206,7 @@ export default function MyPage() {
         </div>
       </Card>
     </div>
-  )
+  );
 }
 ```
 
@@ -215,22 +215,22 @@ export default function MyPage() {
 Create a theme switcher component in `src/app/components/theme-switcher.tsx`:
 
 ```tsx
-'use client'
+'use client';
 
-import { useTheme } from 'next-themes'
-import { Button } from 'trailhead-ui'
-import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes';
+import { Button } from 'trailhead-ui';
+import { useEffect, useState } from 'react';
 
 export function ThemeSwitcher() {
-  const [mounted, setMounted] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
@@ -241,14 +241,14 @@ export function ThemeSwitcher() {
     >
       {theme === 'dark' ? '☀️' : '🌙'}
     </Button>
-  )
+  );
 }
 ```
 
 Then use it in your components:
 
 ```tsx
-import { ThemeSwitcher } from 'trailhead-ui'
+import { ThemeSwitcher } from 'trailhead-ui';
 
 export function Header() {
   return (
@@ -256,7 +256,7 @@ export function Header() {
       <h1>My RedwoodSDK App</h1>
       <ThemeSwitcher />
     </header>
-  )
+  );
 }
 ```
 

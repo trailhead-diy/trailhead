@@ -3,7 +3,7 @@
  * Uses the transform factory for DRY implementation
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Switch semantic enhancement transform
@@ -11,7 +11,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const switchSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Switch',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('Switch') &&
     content.includes('type Color = keyof typeof colors') &&
     content.includes('export function Switch'),
@@ -21,4 +21,4 @@ export const switchSemanticEnhancementTransform = createSemanticEnhancementTrans
   hasColorsObject: true,
   variableName: 'resolvedColorClasses',
   useIIFE: true, // Switch uses IIFE pattern
-})
+});

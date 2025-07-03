@@ -12,10 +12,10 @@ The Alert component is **mostly correctly implemented** with semantic tokens. On
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'bg-white p-8 shadow-lg ring-1 ring-zinc-950/10 ... dark:bg-card dark:ring-ring'
+'bg-white p-8 shadow-lg ring-1 ring-zinc-950/10 ... dark:bg-card dark:ring-ring';
 
 // Recommended Fix
-'bg-background p-8 shadow-lg ring-1 ring-border ... dark:bg-card dark:ring-ring'
+'bg-background p-8 shadow-lg ring-1 ring-border ... dark:bg-card dark:ring-ring';
 ```
 
 **Impact**: Alert panels may not match theme background colors consistently, affecting visual cohesion across themed environments.

@@ -1,7 +1,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const descriptionListColorMappings = makeProtected([
   // Background colors
@@ -138,11 +138,11 @@ const descriptionListColorMappings = makeProtected([
     replacement: 'dark:divide-border/50',
     description: 'Convert dark mode light divide to border',
   },
-])
+]);
 
 export const descriptionListColorMappingsTransform = createProtectedRegexTransform({
   name: 'description-list-color-mappings',
   description: 'Convert description list hardcoded colors to semantic tokens',
   mappings: descriptionListColorMappings,
   changeType: 'description-list-color-semantic',
-})
+});

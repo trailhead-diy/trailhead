@@ -2,14 +2,14 @@
  * Generic React guidance
  */
 
-import type { FrameworkInfo } from '../framework-detection.js'
-import type { FrameworkGuidance, ConfigTemplate } from './types.js'
+import type { FrameworkInfo } from '../framework-detection.js';
+import type { FrameworkGuidance, ConfigTemplate } from './types.js';
 import {
   generateCSSCustomProperties,
   generateThemeProviderUsage,
   generateTailwindColors,
   generateTailwindBorderRadius,
-} from './shared.js'
+} from './shared.js';
 
 // ============================================================================
 // GENERIC REACT GUIDANCE
@@ -78,7 +78,7 @@ module.exports = {
     'Make sure Tailwind CSS is configured to scan your component files',
     'Verify that the ThemeProvider is wrapping your entire app',
   ],
-})
+});
 
 // ============================================================================
 // GENERIC REACT CONFIG TEMPLATES
@@ -109,7 +109,7 @@ module.exports = {
   },
   plugins: [],
 }`,
-})
+});
 
 /**
  * Generate generic React CSS template
@@ -124,4 +124,4 @@ export const generateGenericReactCSSTemplate = (): ConfigTemplate => ({
 @layer base {
 ${generateCSSCustomProperties()}
 }`,
-})
+});

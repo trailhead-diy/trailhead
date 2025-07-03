@@ -5,7 +5,7 @@
  * this is a no-op transform that maintains compatibility
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Dropdown semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const dropdownSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Dropdown',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Dropdown') ||
     content.includes('export function DropdownItem') ||
     content.includes('export function DropdownMenu'),
@@ -22,4 +22,4 @@ export const dropdownSemanticEnhancementTransform = createSemanticEnhancementTra
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

@@ -2,32 +2,32 @@
  * Guidance module exports
  */
 
-import type { FrameworkType, FrameworkInfo } from '../framework-detection.js'
-import type { FrameworkGuidance, ConfigTemplate } from './types.js'
+import type { FrameworkType, FrameworkInfo } from '../framework-detection.js';
+import type { FrameworkGuidance, ConfigTemplate } from './types.js';
 
 // Re-export types
-export * from './types.js'
+export * from './types.js';
 
 // Import framework-specific guidance
-import { generateRedwoodSDKGuidance, generateRedwoodSDKCSSTemplate } from './redwood-sdk.js'
+import { generateRedwoodSDKGuidance, generateRedwoodSDKCSSTemplate } from './redwood-sdk.js';
 import {
   generateNextJSGuidance,
   generateNextJSTailwindConfig,
   generateNextJSCSSTemplate,
-} from './nextjs.js'
+} from './nextjs.js';
 import {
   generateViteGuidance,
   generateViteTailwindConfig,
   generateViteCSSTemplate,
-} from './vite.js'
+} from './vite.js';
 import {
   generateGenericReactGuidance,
   generateGenericReactTailwindConfig,
   generateGenericReactCSSTemplate,
-} from './generic-react.js'
+} from './generic-react.js';
 
 // Re-export shared utilities
-export { generateCSSCustomProperties, generateThemeProviderUsage } from './shared.js'
+export { generateCSSCustomProperties, generateThemeProviderUsage } from './shared.js';
 
 // ============================================================================
 // MAIN GUIDANCE GENERATOR
@@ -42,16 +42,16 @@ export const generateFrameworkGuidance = (
 ): FrameworkGuidance => {
   switch (frameworkType) {
     case 'redwood-sdk':
-      return generateRedwoodSDKGuidance(framework)
+      return generateRedwoodSDKGuidance(framework);
     case 'nextjs':
-      return generateNextJSGuidance(framework)
+      return generateNextJSGuidance(framework);
     case 'vite':
-      return generateViteGuidance(framework)
+      return generateViteGuidance(framework);
     case 'generic-react':
     default:
-      return generateGenericReactGuidance(framework)
+      return generateGenericReactGuidance(framework);
   }
-}
+};
 
 // ============================================================================
 // CONFIG TEMPLATE GENERATORS
@@ -63,16 +63,16 @@ export const generateFrameworkGuidance = (
 export const generateTailwindConfigTemplate = (frameworkType: FrameworkType): ConfigTemplate => {
   switch (frameworkType) {
     case 'nextjs':
-      return generateNextJSTailwindConfig()
+      return generateNextJSTailwindConfig();
     case 'vite':
-      return generateViteTailwindConfig()
+      return generateViteTailwindConfig();
     case 'generic-react':
-      return generateGenericReactTailwindConfig()
+      return generateGenericReactTailwindConfig();
     default:
       // RedwoodSDK doesn't need a separate Tailwind config
-      return generateGenericReactTailwindConfig()
+      return generateGenericReactTailwindConfig();
   }
-}
+};
 
 /**
  * Generate CSS template
@@ -80,13 +80,13 @@ export const generateTailwindConfigTemplate = (frameworkType: FrameworkType): Co
 export const generateCSSTemplate = (frameworkType: FrameworkType): ConfigTemplate => {
   switch (frameworkType) {
     case 'redwood-sdk':
-      return generateRedwoodSDKCSSTemplate()
+      return generateRedwoodSDKCSSTemplate();
     case 'nextjs':
-      return generateNextJSCSSTemplate()
+      return generateNextJSCSSTemplate();
     case 'vite':
-      return generateViteCSSTemplate()
+      return generateViteCSSTemplate();
     case 'generic-react':
     default:
-      return generateGenericReactCSSTemplate()
+      return generateGenericReactCSSTemplate();
   }
-}
+};

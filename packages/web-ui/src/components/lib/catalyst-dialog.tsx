@@ -1,9 +1,9 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
-import { CatalystText } from './catalyst-text'
-import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
+import { CatalystText } from './catalyst-text';
+import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 const sizes = {
   xs: 'sm:max-w-xs',
@@ -15,7 +15,7 @@ const sizes = {
   '3xl': 'sm:max-w-3xl',
   '4xl': 'sm:max-w-4xl',
   '5xl': 'sm:max-w-5xl',
-}
+};
 
 export function CatalystDialog({
   size = 'lg',
@@ -24,12 +24,12 @@ export function CatalystDialog({
   color,
   ...props
 }: {
-  size?: keyof typeof sizes
-  className?: string
-  children: React.ReactNode
-  color?: SemanticColorToken
+  size?: keyof typeof sizes;
+  className?: string;
+  children: React.ReactNode;
+  color?: SemanticColorToken;
 } & Omit<Headless.DialogProps, 'as' | 'className'>) {
-  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : ''
+  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
   return (
     <Headless.Dialog {...props}>
       <Headless.DialogBackdrop
@@ -63,7 +63,7 @@ export function CatalystDialog({
         </div>
       </div>
     </Headless.Dialog>
-  )
+  );
 }
 
 export function CatalystDialogTitle({
@@ -78,7 +78,7 @@ export function CatalystDialogTitle({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystDialogDescription({
@@ -94,11 +94,11 @@ export function CatalystDialogDescription({
       {...props}
       className={cn('mt-2 text-pretty', className)}
     />
-  )
+  );
 }
 
 export function CatalystDialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn('mt-6', className)} />
+  return <div {...props} className={cn('mt-6', className)} />;
 }
 
 export function CatalystDialogActions({
@@ -113,5 +113,5 @@ export function CatalystDialogActions({
         className
       )}
     />
-  )
+  );
 }

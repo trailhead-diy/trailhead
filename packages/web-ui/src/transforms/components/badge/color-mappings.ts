@@ -7,7 +7,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const badgeColorMappings = makeProtected([
   // Background colors with opacity
@@ -138,7 +138,7 @@ const badgeColorMappings = makeProtected([
     replacement: 'data-focus:outline-primary',
     description: 'Keep semantic primary outline as-is',
   },
-])
+]);
 
 /**
  * Badge color mapping transform
@@ -151,8 +151,8 @@ export const badgeColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'badge-color-semantic',
 
   // Only apply to badge files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Badge') ||
     content.includes('export const BadgeButton') ||
     content.includes('badge.tsx'),
-})
+});

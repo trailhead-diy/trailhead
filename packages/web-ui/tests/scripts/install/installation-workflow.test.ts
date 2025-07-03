@@ -9,69 +9,69 @@
  * - CLI interactions that users perform
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { join } from 'path'
-import type { FileSystem, Logger } from '../../../src/cli/core/installation/types.js'
-import { Ok, Err } from '../../../src/cli/core/installation/types.js'
-import { resolveConfiguration } from '../../../src/cli/core/installation/config.js'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { join } from 'path';
+import type { FileSystem, Logger } from '../../../src/cli/core/installation/types.js';
+import { Ok, Err } from '../../../src/cli/core/installation/types.js';
+import { resolveConfiguration } from '../../../src/cli/core/installation/config.js';
 
 // Create realistic file system mocks
 const createMockFileSystem = (): FileSystem => {
-  const files = new Map<string, string>()
-  const directories = new Set<string>()
+  const files = new Map<string, string>();
+  const directories = new Set<string>();
 
   return {
     remove: vi.fn().mockImplementation(async (path: string) => {
       if (files.has(path)) {
-        files.delete(path)
+        files.delete(path);
       } else if (directories.has(path)) {
-        directories.delete(path)
+        directories.delete(path);
       }
-      return Ok(undefined)
+      return Ok(undefined);
     }),
     exists: vi.fn().mockImplementation(async (path: string) => {
-      return Ok(files.has(path) || directories.has(path))
+      return Ok(files.has(path) || directories.has(path));
     }),
     readDir: vi.fn().mockImplementation(async (path: string) => {
       if (path.includes('catalyst-ui-kit/typescript')) {
-        return Ok(['button.tsx', 'input.tsx', 'alert.tsx', 'dialog.tsx', 'table.tsx'])
+        return Ok(['button.tsx', 'input.tsx', 'alert.tsx', 'dialog.tsx', 'table.tsx']);
       }
-      return Ok([])
+      return Ok([]);
     }),
     readFile: vi.fn().mockImplementation(async (path: string) => {
-      return Ok(files.get(path) || '')
+      return Ok(files.get(path) || '');
     }),
     writeFile: vi.fn().mockImplementation(async (path: string, content: string) => {
-      files.set(path, content)
-      return Ok(undefined)
+      files.set(path, content);
+      return Ok(undefined);
     }),
     readJson: vi.fn().mockImplementation(async (path: string) => {
       if (path.endsWith('package.json')) {
         return Ok({
           name: 'test-project',
           dependencies: { react: '^18.0.0' },
-        })
+        });
       }
-      return Ok({})
+      return Ok({});
     }),
     writeJson: vi.fn().mockImplementation(async (path: string, data: any) => {
-      files.set(path, JSON.stringify(data, null, 2))
-      return Ok(undefined)
+      files.set(path, JSON.stringify(data, null, 2));
+      return Ok(undefined);
     }),
     copy: vi.fn().mockImplementation(async (src: string, dest: string) => {
-      const content = files.get(src) || `// Component: ${src}`
-      files.set(dest, content)
-      return Ok(undefined)
+      const content = files.get(src) || `// Component: ${src}`;
+      files.set(dest, content);
+      return Ok(undefined);
     }),
     ensureDir: vi.fn().mockImplementation(async (path: string) => {
-      directories.add(path)
-      return Ok(undefined)
+      directories.add(path);
+      return Ok(undefined);
     }),
     stat: vi.fn().mockImplementation(async (_path: string) => {
-      return Ok({ mtime: new Date(), size: 1000 })
+      return Ok({ mtime: new Date(), size: 1000 });
     }),
-  }
-}
+  };
+};
 
 const createMockLogger = (): Logger => ({
   info: vi.fn(),
@@ -80,169 +80,169 @@ const createMockLogger = (): Logger => ({
   error: vi.fn(),
   debug: vi.fn(),
   step: vi.fn(),
-})
+});
 
 describe('Install Workflow - Critical User Journeys', () => {
-  let mockFs: FileSystem
-  let mockLogger: Logger
+  let mockFs: FileSystem;
+  let mockLogger: Logger;
 
   beforeEach(() => {
-    mockFs = createMockFileSystem()
-    mockLogger = createMockLogger()
-    vi.clearAllMocks()
-  })
+    mockFs = createMockFileSystem();
+    mockLogger = createMockLogger();
+    vi.clearAllMocks();
+  });
 
   describe('Configuration Resolution', () => {
     it('should resolve configuration with single destination directory', async () => {
-      const projectRoot = '/project'
-      const catalystDir = '/project/catalyst-ui-kit/typescript'
+      const projectRoot = '/project';
+      const catalystDir = '/project/catalyst-ui-kit/typescript';
 
       const options = {
         destinationDir: 'components/th',
         catalystDir,
-      }
+      };
 
       // Mock Catalyst directory exists with components
       vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
         if (path === catalystDir) {
-          return Ok(true)
+          return Ok(true);
         }
-        return Ok(false)
-      })
+        return Ok(false);
+      });
 
       vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
         if (path === catalystDir) {
-          return Ok(['button.tsx', 'input.tsx', 'alert.tsx'])
+          return Ok(['button.tsx', 'input.tsx', 'alert.tsx']);
         }
-        return Ok([])
-      })
+        return Ok([]);
+      });
 
-      const configResult = await resolveConfiguration(mockFs, mockLogger, options, projectRoot)
-      expect(configResult.success).toBe(true)
+      const configResult = await resolveConfiguration(mockFs, mockLogger, options, projectRoot);
+      expect(configResult.success).toBe(true);
 
-      if (!configResult.success) return
+      if (!configResult.success) return;
 
-      const config = configResult.value
-      expect(config.destinationDir).toBe('components/th')
+      const config = configResult.value;
+      expect(config.destinationDir).toBe('components/th');
       // Check that the paths end with the expected relative parts (cross-platform compatible)
       expect(
         config.componentsDir.endsWith('components/th') ||
           config.componentsDir.endsWith('components\\th')
-      ).toBe(true)
+      ).toBe(true);
       expect(
         config.libDir.endsWith('components/th/lib') || config.libDir.endsWith('components\\th\\lib')
-      ).toBe(true)
-      expect(config.catalystDir).toBe(catalystDir)
-    })
+      ).toBe(true);
+      expect(config.catalystDir).toBe(catalystDir);
+    });
 
     it('should handle missing Catalyst directory when no explicit path provided', async () => {
       const options = {
         destinationDir: 'components/th',
         // No catalystDir provided - will trigger auto-detection
-      }
+      };
 
       vi.mocked(mockFs.exists).mockImplementation(async (_path: string) => {
-        return Ok(false) // No catalyst directory found
-      })
+        return Ok(false); // No catalyst directory found
+      });
 
-      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project')
+      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project');
 
       // Should fail with helpful error message
-      expect(configResult.success).toBe(false)
-      if (configResult.success) return
+      expect(configResult.success).toBe(false);
+      if (configResult.success) return;
 
-      expect(configResult.error.type).toBe('ConfigurationError')
-      expect(configResult.error.message).toContain('Could not find catalyst-ui-kit directory')
-    })
+      expect(configResult.error.type).toBe('ConfigurationError');
+      expect(configResult.error.message).toContain('Could not find catalyst-ui-kit directory');
+    });
 
     it('should use existing config file when available', async () => {
-      const projectRoot = '/project'
+      const projectRoot = '/project';
       const existingConfig = {
         catalystDir: '/custom/catalyst-ui-kit/typescript',
         destinationDir: 'src/components/ui',
         componentsDir: '/project/src/components/ui',
         libDir: '/project/src/components/ui/lib',
-      }
+      };
 
       // Mock existing config file
       vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
         if (path === join(projectRoot, 'trailhead.config.json')) {
-          return Ok(true)
+          return Ok(true);
         }
         if (path === existingConfig.catalystDir) {
-          return Ok(true)
+          return Ok(true);
         }
-        return Ok(false)
-      })
+        return Ok(false);
+      });
 
       vi.mocked(mockFs.readJson).mockImplementation(async (path: string) => {
         if (path === join(projectRoot, 'trailhead.config.json')) {
-          return Ok(existingConfig)
+          return Ok(existingConfig);
         }
-        return Ok({})
-      })
+        return Ok({});
+      });
 
       vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
         if (path === existingConfig.catalystDir) {
-          return Ok(['button.tsx'])
+          return Ok(['button.tsx']);
         }
-        return Ok([])
-      })
+        return Ok([]);
+      });
 
-      const options = {} // No CLI options provided
+      const options = {}; // No CLI options provided
 
-      const configResult = await resolveConfiguration(mockFs, mockLogger, options, projectRoot)
-      expect(configResult.success).toBe(true)
+      const configResult = await resolveConfiguration(mockFs, mockLogger, options, projectRoot);
+      expect(configResult.success).toBe(true);
 
-      if (!configResult.success) return
+      if (!configResult.success) return;
 
-      const config = configResult.value
-      expect(config.destinationDir).toBe('src/components/ui')
-      expect(config.catalystDir).toBe(existingConfig.catalystDir)
-    })
-  })
+      const config = configResult.value;
+      expect(config.destinationDir).toBe('src/components/ui');
+      expect(config.catalystDir).toBe(existingConfig.catalystDir);
+    });
+  });
 
   describe('Error Recovery Scenarios', () => {
     it('should validate Catalyst directory contains TypeScript files', async () => {
       const options = {
         destinationDir: 'components/th',
         catalystDir: '/project/empty-catalyst',
-      }
+      };
 
       // Mock directory exists but is empty
       vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
         if (path === '/project/empty-catalyst') {
-          return Ok(true)
+          return Ok(true);
         }
-        return Ok(false)
-      })
+        return Ok(false);
+      });
 
       vi.mocked(mockFs.readDir).mockImplementation(async (_path: string) => {
-        return Ok([]) // No .tsx files
-      })
+        return Ok([]); // No .tsx files
+      });
 
       // Config resolution succeeds but should fail during verification
-      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project')
-      expect(configResult.success).toBe(true)
+      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project');
+      expect(configResult.success).toBe(true);
 
-      if (!configResult.success) return
+      if (!configResult.success) return;
 
       // Import verifyConfiguration to test it directly
-      const { verifyConfiguration } = await import('../../../src/cli/core/installation/config.js')
-      const verifyResult = await verifyConfiguration(mockFs, configResult.value)
+      const { verifyConfiguration } = await import('../../../src/cli/core/installation/config.js');
+      const verifyResult = await verifyConfiguration(mockFs, configResult.value);
 
-      expect(verifyResult.success).toBe(false)
-      if (verifyResult.success) return
+      expect(verifyResult.success).toBe(false);
+      if (verifyResult.success) return;
 
-      expect(verifyResult.error.type).toBe('ConfigurationError')
-      expect(verifyResult.error.message).toContain('No TypeScript component files found')
-    })
+      expect(verifyResult.error.type).toBe('ConfigurationError');
+      expect(verifyResult.error.message).toContain('No TypeScript component files found');
+    });
 
     it('should handle file system errors gracefully', async () => {
       const options = {
         destinationDir: 'components/th',
         catalystDir: '/project/catalyst-ui-kit/typescript',
-      }
+      };
 
       // Mock file system error
       vi.mocked(mockFs.exists).mockImplementation(async () => {
@@ -250,18 +250,18 @@ describe('Install Workflow - Critical User Journeys', () => {
           type: 'FileSystemError',
           message: 'Permission denied',
           path: '/project',
-        })
-      })
+        });
+      });
 
-      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project')
+      const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project');
 
-      expect(configResult.success).toBe(false)
-      if (configResult.success) return
+      expect(configResult.success).toBe(false);
+      if (configResult.success) return;
 
-      expect(configResult.error.type).toBe('FileSystemError')
-      expect(configResult.error.message).toContain('Permission denied')
-    })
-  })
+      expect(configResult.error.type).toBe('FileSystemError');
+      expect(configResult.error.message).toContain('Permission denied');
+    });
+  });
 
   describe('Package.json Dependency Updates', () => {
     it('should analyze missing dependencies correctly', async () => {
@@ -281,7 +281,7 @@ describe('Install Workflow - Critical User Journeys', () => {
           },
           needsInstall: true,
         },
-      })
+      });
 
       const config = {
         projectRoot: '/project',
@@ -289,23 +289,23 @@ describe('Install Workflow - Critical User Journeys', () => {
         destinationDir: 'components/th',
         componentsDir: '/project/components/th',
         libDir: '/project/components/th/lib',
-      }
+      };
 
-      const result = await mockAnalyzeDependencies(mockFs, mockLogger, config)
-      expect(result.success).toBe(true)
+      const result = await mockAnalyzeDependencies(mockFs, mockLogger, config);
+      expect(result.success).toBe(true);
 
-      if (!result.success) return
+      if (!result.success) return;
 
-      const { added, needsInstall } = result.value
+      const { added, needsInstall } = result.value;
 
       // Should identify all missing dependencies
-      expect(needsInstall).toBe(true)
-      expect(added).toHaveProperty('@headlessui/react')
-      expect(added).toHaveProperty('framer-motion')
-      expect(added).toHaveProperty('clsx')
-      expect(added).toHaveProperty('culori')
-      expect(added).toHaveProperty('tailwind-merge')
-    })
+      expect(needsInstall).toBe(true);
+      expect(added).toHaveProperty('@headlessui/react');
+      expect(added).toHaveProperty('framer-motion');
+      expect(added).toHaveProperty('clsx');
+      expect(added).toHaveProperty('culori');
+      expect(added).toHaveProperty('tailwind-merge');
+    });
 
     it('should not add dependencies that already exist', async () => {
       // Mock the analyzeDependencies function to simulate partial dependencies
@@ -324,7 +324,7 @@ describe('Install Workflow - Critical User Journeys', () => {
           },
           needsInstall: true,
         },
-      })
+      });
 
       const config = {
         projectRoot: '/project',
@@ -332,29 +332,29 @@ describe('Install Workflow - Critical User Journeys', () => {
         destinationDir: 'components/th',
         componentsDir: '/project/components/th',
         libDir: '/project/components/th/lib',
-      }
+      };
 
-      const result = await mockAnalyzeDependencies(mockFs, mockLogger, config)
-      expect(result.success).toBe(true)
+      const result = await mockAnalyzeDependencies(mockFs, mockLogger, config);
+      expect(result.success).toBe(true);
 
-      if (!result.success) return
+      if (!result.success) return;
 
-      const { added, existing } = result.value
+      const { added, existing } = result.value;
 
       // Should not include already installed dependencies
-      expect(added).not.toHaveProperty('clsx')
-      expect(added).not.toHaveProperty('tailwind-merge')
+      expect(added).not.toHaveProperty('clsx');
+      expect(added).not.toHaveProperty('tailwind-merge');
 
       // Should include missing ones
-      expect(added).toHaveProperty('@headlessui/react')
-      expect(added).toHaveProperty('framer-motion')
-      expect(added).toHaveProperty('culori')
+      expect(added).toHaveProperty('@headlessui/react');
+      expect(added).toHaveProperty('framer-motion');
+      expect(added).toHaveProperty('culori');
 
       // Should track existing ones
-      expect(existing).toHaveProperty('clsx')
-      expect(existing).toHaveProperty('tailwind-merge')
-    })
-  })
+      expect(existing).toHaveProperty('clsx');
+      expect(existing).toHaveProperty('tailwind-merge');
+    });
+  });
 
   describe('Progress Reporting', () => {
     it('should log appropriate progress messages during configuration', async () => {
@@ -362,31 +362,31 @@ describe('Install Workflow - Critical User Journeys', () => {
         destinationDir: 'components/th',
         catalystDir: '/project/catalyst-ui-kit/typescript',
         verbose: true,
-      }
+      };
 
       vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
         if (path === options.catalystDir) {
-          return Ok(true)
+          return Ok(true);
         }
-        return Ok(false)
-      })
+        return Ok(false);
+      });
 
       vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
         if (path.includes('catalyst')) {
-          return Ok(['button.tsx'])
+          return Ok(['button.tsx']);
         }
-        return Ok([])
-      })
+        return Ok([]);
+      });
 
-      await resolveConfiguration(mockFs, mockLogger, options, '/project')
+      await resolveConfiguration(mockFs, mockLogger, options, '/project');
 
       // Should log configuration resolution
-      expect(mockLogger.step).toHaveBeenCalledWith('Resolving configuration...')
+      expect(mockLogger.step).toHaveBeenCalledWith('Resolving configuration...');
 
       // Verbose mode should show debug info
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringContaining('Resolved configuration:')
-      )
-    })
-  })
-})
+      );
+    });
+  });
+});

@@ -1,34 +1,34 @@
-import { Ok as CliOk, Err as CliErr, type Result } from '@esteban-url/trailhead-cli'
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
+import { Ok as CliOk, Err as CliErr, type Result } from '@esteban-url/trailhead-cli';
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
 import {
   createValidationPipeline,
   createRule,
   ValidationOk,
   ValidationErr,
   type ValidationResult,
-} from '@esteban-url/trailhead-cli/core'
-import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import { runInstallationPrompts } from '../prompts/installation.js'
-import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js'
+} from '@esteban-url/trailhead-cli/core';
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { runInstallationPrompts } from '../prompts/installation.js';
+import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js';
 import {
   performInstallation,
   performDryRunInstallation,
   type InstallOptions as CoreInstallOptions,
-} from '../core/installation/index.js'
-import { resolveConfiguration } from '../core/installation/config.js'
-import { detectFramework } from '../core/installation/framework-detection.js'
-import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js'
-import { convertInstallResult } from './utils/error-conversion.js'
-import { getTrailheadPackageRoot } from '../utils/context.js'
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js'
+} from '../core/installation/index.js';
+import { resolveConfiguration } from '../core/installation/config.js';
+import { detectFramework } from '../core/installation/framework-detection.js';
+import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js';
+import { convertInstallResult } from './utils/error-conversion.js';
+import { getTrailheadPackageRoot } from '../utils/context.js';
+import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
 import {
   type StrictInstallOptions,
   isValidFramework,
   isValidDependencyStrategy,
-} from '../core/types/command-options.js'
+} from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
-type InstallOptions = StrictInstallOptions
+type InstallOptions = StrictInstallOptions;
 
 // ============================================================================
 // VALIDATION
@@ -44,7 +44,7 @@ const createInstallValidation = () => {
         'framework',
         'Framework must be valid if specified',
         (value: unknown) => {
-          const options = value as InstallOptions
+          const options = value as InstallOptions;
 
           // Only validate if framework is explicitly provided
           if (options.framework) {
@@ -52,7 +52,7 @@ const createInstallValidation = () => {
               return ValidationErr(
                 `Invalid framework. Must be one of: nextjs, vite, redwood-sdk, generic-react`,
                 'framework'
-              )
+              );
             }
           }
 
@@ -62,11 +62,11 @@ const createInstallValidation = () => {
               return ValidationErr(
                 `Invalid dependency strategy. Must be one of: auto, smart, selective, manual, skip, force`,
                 'dependencyStrategy'
-              )
+              );
             }
           }
 
-          return ValidationOk(options)
+          return ValidationOk(options);
         },
         false // Not required, but validated when provided
       )
@@ -76,14 +76,14 @@ const createInstallValidation = () => {
         'dest',
         'Destination directory must be valid',
         (value: unknown) => {
-          const options = value as InstallOptions
-          if (!options.dest) return ValidationOk(options)
+          const options = value as InstallOptions;
+          if (!options.dest) return ValidationOk(options);
 
           if (typeof options.dest !== 'string' || options.dest.trim().length === 0) {
-            return ValidationErr('Destination directory must be a non-empty string', 'dest')
+            return ValidationErr('Destination directory must be a non-empty string', 'dest');
           }
 
-          return ValidationOk(options)
+          return ValidationOk(options);
         },
         false
       )
@@ -93,14 +93,14 @@ const createInstallValidation = () => {
         'catalystDir',
         'Catalyst directory must be valid',
         (value: unknown) => {
-          const options = value as InstallOptions
-          if (!options.catalystDir) return ValidationOk(options)
+          const options = value as InstallOptions;
+          if (!options.catalystDir) return ValidationOk(options);
 
           if (typeof options.catalystDir !== 'string' || options.catalystDir.trim().length === 0) {
-            return ValidationErr('Catalyst directory must be a non-empty string', 'catalystDir')
+            return ValidationErr('Catalyst directory must be a non-empty string', 'catalystDir');
           }
 
-          return ValidationOk(options)
+          return ValidationOk(options);
         },
         false
       )
@@ -110,23 +110,23 @@ const createInstallValidation = () => {
         'dependencyStrategy',
         'Dependency strategy must be valid',
         (value: unknown) => {
-          const options = value as InstallOptions
-          if (!options.dependencyStrategy) return ValidationOk(options)
+          const options = value as InstallOptions;
+          if (!options.dependencyStrategy) return ValidationOk(options);
 
-          const validStrategies = ['auto', 'smart', 'selective', 'manual', 'skip', 'force']
+          const validStrategies = ['auto', 'smart', 'selective', 'manual', 'skip', 'force'];
           if (!validStrategies.includes(options.dependencyStrategy)) {
             return ValidationErr(
               `Invalid dependency strategy. Must be one of: ${validStrategies.join(', ')}`,
               'dependencyStrategy'
-            )
+            );
           }
 
-          return ValidationOk(options)
+          return ValidationOk(options);
         },
         false
       )
-    )
-}
+    );
+};
 
 // ============================================================================
 // INSTALLATION WORKFLOW
@@ -141,37 +141,37 @@ async function executeInstallation(
   finalOptions?: InstallOptions
 ): Promise<Result<void>> {
   // Create dependencies
-  const nodeFS = createNodeFileSystem()
-  const fs = adaptSharedToInstallFS(nodeFS)
-  const logger = context.logger
+  const nodeFS = createNodeFileSystem();
+  const fs = adaptSharedToInstallFS(nodeFS);
+  const logger = context.logger;
 
   try {
     // Load new config system
-    const configResult = loadConfigSync(context.projectRoot)
-    let loadedConfig: TrailheadConfig | null = null
-    let configPath: string | null = null
+    const configResult = loadConfigSync(context.projectRoot);
+    let loadedConfig: TrailheadConfig | null = null;
+    let configPath: string | null = null;
 
     if (configResult.success) {
-      loadedConfig = configResult.value.config
-      configPath = configResult.value.filepath
+      loadedConfig = configResult.value.config;
+      configPath = configResult.value.filepath;
 
       // Always show when config is found
       if (configPath) {
-        logger.info(`Found configuration at: ${configPath}`)
+        logger.info(`Found configuration at: ${configPath}`);
       }
 
       // Log detailed config in verbose mode (check both CLI option and config setting)
       if (loadedConfig && (options.verbose || loadedConfig.verbose)) {
-        logConfigDiscovery(configPath, loadedConfig, true)
+        logConfigDiscovery(configPath, loadedConfig, true);
       }
     }
 
     // Step 1: Resolve configuration
-    logger.step('Resolving configuration...')
+    logger.step('Resolving configuration...');
 
     // Merge configuration: CLI options > config file > defaults
-    const installConfig = loadedConfig?.install
-    const destinationDir = options.dest || installConfig?.destDir
+    const installConfig = loadedConfig?.install;
+    const destinationDir = options.dest || installConfig?.destDir;
 
     const resolveResult = await resolveConfiguration(
       fs,
@@ -182,28 +182,28 @@ async function executeInstallation(
         verbose: options.verbose,
       },
       context.projectRoot
-    )
+    );
 
     if (!resolveResult.success) {
-      return convertInstallResult(resolveResult)
+      return convertInstallResult(resolveResult);
     }
 
-    const config = resolveResult.value
+    const config = resolveResult.value;
 
     // Step 2: Detect framework
-    logger.step('Detecting framework...')
+    logger.step('Detecting framework...');
     const frameworkResult = await detectFramework(
       fs,
       config.projectRoot,
       options.framework as any // Cast since we've validated it
-    )
+    );
 
     if (!frameworkResult.success) {
-      return convertInstallResult(frameworkResult)
+      return convertInstallResult(frameworkResult);
     }
 
-    const framework = frameworkResult.value
-    logger.success(`Detected ${framework.framework.name}`)
+    const framework = frameworkResult.value;
+    logger.success(`Detected ${framework.framework.name}`);
 
     // Step 3: Perform installation or dry run
     if (options.dryRun) {
@@ -214,23 +214,23 @@ async function executeInstallation(
         getTrailheadPackageRoot(),
         framework.framework.type,
         options.wrappers ?? true
-      )
+      );
 
       if (!dryRunResult.success) {
-        return convertInstallResult(dryRunResult)
+        return convertInstallResult(dryRunResult);
       }
 
-      logger.info('\nDry run complete. No files were installed.')
-      return CliOk(undefined)
+      logger.info('\nDry run complete. No files were installed.');
+      return CliOk(undefined);
     }
 
     // Build installation options
-    const effectiveOptions = finalOptions || options
+    const effectiveOptions = finalOptions || options;
     const coreOptions: CoreInstallOptions = {
       interactive: effectiveOptions.interactive,
       skipDependencyPrompts: false,
       dependencyStrategy: effectiveOptions.dependencyStrategy as any,
-    }
+    };
 
     const installResult = await performInstallation(
       fs,
@@ -241,29 +241,29 @@ async function executeInstallation(
       framework.framework.type,
       options.wrappers ?? true,
       coreOptions
-    )
+    );
 
     if (!installResult.success) {
-      return convertInstallResult(installResult)
+      return convertInstallResult(installResult);
     }
 
-    const summary = installResult.value
+    const summary = installResult.value;
 
     // Step 4: Display summary
     displayInstallationSummary(logger, {
       framework: framework.framework.name,
       filesInstalled: summary.filesInstalled.length,
       themes: ['red', 'rose', 'orange', 'yellow', 'green', 'blue', 'violet', 'catalyst'],
-    })
+    });
 
-    return CliOk(undefined)
+    return CliOk(undefined);
   } catch (error) {
     return CliErr({
       code: 'INSTALL_ERROR',
       message: error instanceof Error ? error.message : 'Installation failed',
       recoverable: false,
       cause: error,
-    })
+    });
   }
 }
 
@@ -277,28 +277,28 @@ async function executeInstallation(
 function displayInstallationSummary(
   logger: import('@esteban-url/trailhead-cli/core').Logger,
   summary: {
-    framework: string
-    filesInstalled: number
-    themes: string[]
+    framework: string;
+    filesInstalled: number;
+    themes: string[];
   }
 ): void {
-  logger.info('')
-  logger.success('✅ Trailhead UI installed successfully!')
-  logger.info('')
+  logger.info('');
+  logger.success('✅ Trailhead UI installed successfully!');
+  logger.info('');
 
-  logger.info('📦 Installed:')
-  logger.info(`   • ${summary.filesInstalled} files`)
-  logger.info(`   • ${summary.themes.length} themes available`)
-  logger.info('')
+  logger.info('📦 Installed:');
+  logger.info(`   • ${summary.filesInstalled} files`);
+  logger.info(`   • ${summary.themes.length} themes available`);
+  logger.info('');
 
-  logger.info('🚀 Next Steps:')
-  const steps = getFrameworkSteps(summary.framework)
+  logger.info('🚀 Next Steps:');
+  const steps = getFrameworkSteps(summary.framework);
   steps.forEach((step, index) => {
-    logger.info(`   ${index + 1}. ${step}`)
-  })
-  logger.info('')
+    logger.info(`   ${index + 1}. ${step}`);
+  });
+  logger.info('');
 
-  logger.info('📚 Docs: https://github.com/esteban-url/trailhead-ui#readme')
+  logger.info('📚 Docs: https://github.com/esteban-url/trailhead-ui#readme');
 }
 
 /**
@@ -311,25 +311,25 @@ function getFrameworkSteps(framework: string): string[] {
         'Add ThemeProvider to web/src/App.tsx',
         "Import components: import { Button } from '@/components/th/button'",
         'Run: yarn rw dev',
-      ]
+      ];
     case 'Next.js':
       return [
         'Add ThemeProvider to app/layout.tsx or pages/_app.tsx',
         "Import components: import { Button } from '@/components/th/button'",
         'Run: npm run dev',
-      ]
+      ];
     case 'Vite':
       return [
         'Add ThemeProvider to src/main.tsx',
         "Import components: import { Button } from '@/components/th/button'",
         'Run: npm run dev',
-      ]
+      ];
     default:
       return [
         'Wrap your app with ThemeProvider',
         "Import components: import { Button } from '@/components/th/button'",
         'Start your development server',
-      ]
+      ];
   }
 }
 
@@ -345,34 +345,34 @@ async function handleInstall(
   context: CommandContext
 ): Promise<Result<void>> {
   // Validate options
-  const validation = createInstallValidation()
-  const validationResult = validation.validateSync(options)
+  const validation = createInstallValidation();
+  const validationResult = validation.validateSync(options);
 
   if (validationResult.overall === 'fail') {
-    context.logger.error('❌ Invalid options:')
+    context.logger.error('❌ Invalid options:');
     // Simple error display until formatValidationSummary is available
     validationResult.failed.forEach((result: ValidationResult) => {
-      context.logger.error(`  • ${result.message}`)
-    })
+      context.logger.error(`  • ${result.message}`);
+    });
     return CliErr(
       createCLIError(CLI_ERROR_CODES.VALIDATION_ERROR, 'Invalid installation options', {
         recoverable: true,
       })
-    )
+    );
   }
 
   // Show warnings if any
   if (validationResult.overall === 'warning') {
     validationResult.warnings.forEach((result: ValidationResult) => {
-      context.logger.info(`⚠ ${result.message}`)
-    })
+      context.logger.info(`⚠ ${result.message}`);
+    });
   }
 
   // Run interactive prompts if needed
-  let finalOptions = options
+  let finalOptions = options;
   if (options.interactive || (!options.framework && !options.dryRun)) {
-    context.logger.info('🚀 Interactive Installation Mode\n')
-    const promptResults = await runInstallationPrompts()
+    context.logger.info('🚀 Interactive Installation Mode\n');
+    const promptResults = await runInstallationPrompts();
 
     // Merge with CLI options (only override if explicitly provided)
     finalOptions = {
@@ -388,22 +388,22 @@ async function handleInstall(
       ...(options.interactive !== undefined ? { interactive: options.interactive } : {}),
       ...(options.verbose !== undefined ? { verbose: options.verbose } : {}),
       ...(options.wrappers !== undefined ? { wrappers: options.wrappers } : {}),
-    }
+    };
   }
 
   // Execute installation
-  const result = await executeInstallation(finalOptions, context, finalOptions)
+  const result = await executeInstallation(finalOptions, context, finalOptions);
 
   if (!result.success) {
-    context.logger.error('❌ Installation failed:')
-    context.logger.error(result.error.message)
+    context.logger.error('❌ Installation failed:');
+    context.logger.error(result.error.message);
     if (options.verbose && result.error.details) {
-      context.logger.error('Details:' + result.error.details)
+      context.logger.error('Details:' + result.error.details);
     }
-    return result
+    return result;
   }
 
-  return CliOk(undefined)
+  return CliOk(undefined);
 }
 
 // ============================================================================
@@ -482,7 +482,7 @@ export const createInstallCommand = () => {
     ],
 
     action: async (options: InstallOptions, cmdContext: CommandContext) => {
-      return await handleInstall(options, cmdContext)
+      return await handleInstall(options, cmdContext);
     },
-  })
-}
+  });
+};

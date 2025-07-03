@@ -2,13 +2,13 @@
  * Vite-specific guidance
  */
 
-import type { FrameworkInfo } from '../framework-detection.js'
-import type { FrameworkGuidance, ConfigTemplate } from './types.js'
+import type { FrameworkInfo } from '../framework-detection.js';
+import type { FrameworkGuidance, ConfigTemplate } from './types.js';
 import {
   generateCSSCustomProperties,
   generateTailwindColors,
   generateTailwindBorderRadius,
-} from './shared.js'
+} from './shared.js';
 
 // ============================================================================
 // VITE GUIDANCE
@@ -174,7 +174,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     'Make sure tailwindcss and autoprefixer are installed as dev dependencies',
     'Check that your CSS file is properly imported in main.tsx',
   ],
-})
+});
 
 // ============================================================================
 // VITE CONFIG TEMPLATES
@@ -208,7 +208,7 @@ export default {
   },
   plugins: [],
 }`,
-})
+});
 
 /**
  * Generate Vite CSS template
@@ -231,4 +231,4 @@ ${generateCSSCustomProperties()}
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }`,
-})
+});

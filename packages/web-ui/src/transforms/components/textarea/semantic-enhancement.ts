@@ -2,7 +2,7 @@
  * Semantic enhancement transform for Textarea component
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 export const textareaSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Textarea',
@@ -12,7 +12,7 @@ export const textareaSemanticEnhancementTransform = createSemanticEnhancementTra
     return (
       content.includes('export const Textarea = forwardRef') &&
       content.includes('function Textarea')
-    )
+    );
   },
 
   // Default color fallback
@@ -32,4 +32,4 @@ export const textareaSemanticEnhancementTransform = createSemanticEnhancementTra
 
   // Don't use IIFE pattern
   useIIFE: false,
-})
+});

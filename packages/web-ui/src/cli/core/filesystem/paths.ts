@@ -2,9 +2,9 @@
  * Path generation utilities for installation
  */
 
-import * as path from 'path'
-import { existsSync } from 'fs'
-import type { InstallConfig } from '../installation/types.js'
+import * as path from 'path';
+import { existsSync } from 'fs';
+import type { InstallConfig } from '../installation/types.js';
 
 // ============================================================================
 // SOURCE PATH GENERATION
@@ -16,13 +16,13 @@ import type { InstallConfig } from '../installation/types.js'
  */
 export const generateSourcePaths = (trailheadRoot: string) => {
   // Check if we're in development (src exists) or production (only dist exists)
-  const srcPath = path.join(trailheadRoot, 'src')
-  const isDevEnvironment = existsSync(srcPath)
+  const srcPath = path.join(trailheadRoot, 'src');
+  const isDevEnvironment = existsSync(srcPath);
 
   // Use src for development, dist/src for production
-  const basePath = isDevEnvironment ? 'src' : path.join('dist', 'src')
-  const ext = isDevEnvironment ? '.ts' : '.js'
-  const componentExt = isDevEnvironment ? '.tsx' : '.js'
+  const basePath = isDevEnvironment ? 'src' : path.join('dist', 'src');
+  const ext = isDevEnvironment ? '.ts' : '.js';
+  const componentExt = isDevEnvironment ? '.tsx' : '.js';
 
   return {
     // Theme system files
@@ -80,8 +80,8 @@ export const generateSourcePaths = (trailheadRoot: string) => {
     // Index files
     componentsIndex: path.join(trailheadRoot, basePath, 'components', `index${ext}`),
     libIndex: path.join(trailheadRoot, basePath, 'components', 'lib', `index${ext}`),
-  }
-}
+  };
+};
 
 // ============================================================================
 // DESTINATION PATH GENERATION
@@ -117,7 +117,7 @@ export const generateDestinationPaths = (config: InstallConfig) => ({
   // Index files
   componentsIndex: path.join(config.componentsDir, 'index.ts'),
   libIndex: path.join(config.componentsDir, 'lib', 'index.ts'),
-})
+});
 
 // ============================================================================
 // PATH UTILITIES
@@ -127,33 +127,33 @@ export const generateDestinationPaths = (config: InstallConfig) => ({
  * Get relative path from project root
  */
 export const getRelativePath = (projectRoot: string, absolutePath: string): string => {
-  return path.relative(projectRoot, absolutePath)
-}
+  return path.relative(projectRoot, absolutePath);
+};
 
 /**
  * Ensure path is within project bounds
  */
 export const isPathWithinProject = (projectRoot: string, targetPath: string): boolean => {
-  const relative = path.relative(projectRoot, targetPath)
-  return !relative.startsWith('..') && !path.isAbsolute(relative)
-}
+  const relative = path.relative(projectRoot, targetPath);
+  return !relative.startsWith('..') && !path.isAbsolute(relative);
+};
 
 /**
  * Get component name from file path
  */
 export const getComponentName = (filePath: string): string => {
-  return path.basename(filePath, path.extname(filePath))
-}
+  return path.basename(filePath, path.extname(filePath));
+};
 
 /**
  * Create path mappings for TypeScript
  */
 export const createPathMappings = (config: InstallConfig): Record<string, string[]> => {
-  const componentsPath = getRelativePath(config.projectRoot, config.componentsDir)
+  const componentsPath = getRelativePath(config.projectRoot, config.componentsDir);
 
   return {
     '@/components/*': [`./${componentsPath}/*`],
     '@/lib/*': [`./${componentsPath}/lib/*`],
     '@/theme/*': [`./${componentsPath}/theme/*`],
-  }
-}
+  };
+};

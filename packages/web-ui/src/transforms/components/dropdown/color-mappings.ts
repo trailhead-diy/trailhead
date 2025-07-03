@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const dropdownColorMappings = makeProtected([
   // Hierarchical text colors - preserve visual hierarchy in dropdown items
@@ -228,7 +228,7 @@ const dropdownColorMappings = makeProtected([
     replacement: 'dark:hover:bg-accent',
     description: 'Convert dark mode hover zinc-800 backgrounds to semantic accent',
   },
-])
+]);
 
 /**
  * Dropdown color mapping transform
@@ -241,10 +241,10 @@ export const dropdownColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'dropdown-color-semantic',
 
   // Only apply to dropdown files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Dropdown') ||
     content.includes('export function DropdownItem') ||
     content.includes('export function DropdownMenu') ||
     content.includes('DropdownHeading') ||
     content.includes('DropdownDivider'),
-})
+});

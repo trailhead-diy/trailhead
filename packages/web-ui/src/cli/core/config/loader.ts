@@ -3,20 +3,20 @@ import {
   cosmiconfigSync,
   defaultLoadersSync,
   type CosmiconfigResult,
-} from 'cosmiconfig'
-import path from 'node:path'
-import { z } from 'zod'
-import { trailheadConfigSchema, defaultConfig, type TrailheadConfig } from './schema.js'
+} from 'cosmiconfig';
+import path from 'node:path';
+import { z } from 'zod';
+import { trailheadConfigSchema, defaultConfig, type TrailheadConfig } from './schema.js';
 // Import types from framework
-import { Ok, Err, type Result } from '@esteban-url/trailhead-cli'
+import { Ok, Err, type Result } from '@esteban-url/trailhead-cli';
 
 // Define local error type
 type ConfigurationError = {
-  code: string
-  message: string
-  details?: string
-  recoverable: boolean
-}
+  code: string;
+  message: string;
+  details?: string;
+  recoverable: boolean;
+};
 
 // Define local error helpers
 const configurationError = (message: string, details?: string): ConfigurationError => ({
@@ -24,22 +24,22 @@ const configurationError = (message: string, details?: string): ConfigurationErr
   message,
   details,
   recoverable: true,
-})
+});
 
 const _invalidConfigFieldError = (field: string, message: string): ConfigurationError => ({
   code: 'VALIDATION_ERROR',
   message,
   details: `Field: ${field}`,
   recoverable: true,
-})
-import { createSilentLogger } from '@esteban-url/trailhead-cli/core'
+});
+import { createSilentLogger } from '@esteban-url/trailhead-cli/core';
 
-const logger = createSilentLogger()
+const logger = createSilentLogger();
 
 /**
  * Module name for cosmiconfig
  */
-const MODULE_NAME = 'trailhead'
+const MODULE_NAME = 'trailhead';
 
 /**
  * Configuration file search places
@@ -59,75 +59,75 @@ const SEARCH_PLACES = [
   `${MODULE_NAME}.config.cjs`,
   `${MODULE_NAME}.config.json`,
   'package.json',
-]
+];
 
 /**
  * Cached configuration result
  */
-let cachedConfig: TrailheadConfig | null = null
-let cachedFilePath: string | null = null
+let cachedConfig: TrailheadConfig | null = null;
+let cachedFilePath: string | null = null;
 
 /**
  * Format Zod validation errors into detailed error messages
  */
 function formatZodError(error: z.ZodError, configFile?: string): ConfigurationError {
-  const firstError = error.errors[0]
+  const firstError = error.errors[0];
 
   if (!firstError) {
     return configurationError(
       'Invalid configuration',
       `Config file: ${configFile || 'unknown'}. Check your configuration file for errors.`
-    )
+    );
   }
 
   // Build the field path
-  const fieldPath = firstError.path.join('.')
+  const fieldPath = firstError.path.join('.');
 
   // Get expected type from the error
-  let expectedType = 'unknown'
-  let exampleValue: unknown
+  let expectedType = 'unknown';
+  let exampleValue: unknown;
 
   if (firstError.code === 'invalid_type') {
-    expectedType = firstError.expected
+    expectedType = firstError.expected;
 
     // Provide examples based on type
     switch (firstError.expected) {
       case 'string':
         if (fieldPath.includes('Dir')) {
-          exampleValue = 'src/components/lib'
+          exampleValue = 'src/components/lib';
         } else if (fieldPath.includes('framework')) {
-          exampleValue = 'nextjs'
+          exampleValue = 'nextjs';
         } else {
-          exampleValue = 'example-string'
+          exampleValue = 'example-string';
         }
-        break
+        break;
       case 'boolean':
-        exampleValue = true
-        break
+        exampleValue = true;
+        break;
       case 'array':
         if (fieldPath.includes('Transforms')) {
-          exampleValue = ['button', 'badge', 'alert']
+          exampleValue = ['button', 'badge', 'alert'];
         } else if (fieldPath.includes('Pattern')) {
-          exampleValue = ['**/*.test.tsx', '**/*.spec.tsx']
+          exampleValue = ['**/*.test.tsx', '**/*.spec.tsx'];
         } else {
-          exampleValue = []
+          exampleValue = [];
         }
-        break
+        break;
       case 'object':
-        exampleValue = {}
-        break
+        exampleValue = {};
+        break;
     }
   } else if (firstError.code === 'invalid_enum_value') {
-    expectedType = `one of: ${firstError.options.join(', ')}`
-    exampleValue = firstError.options[0]
+    expectedType = `one of: ${firstError.options.join(', ')}`;
+    exampleValue = firstError.options[0];
   }
 
   // Get the actual value that was provided
-  const actualValue = firstError.code === 'invalid_type' ? firstError.received : undefined
+  const actualValue = firstError.code === 'invalid_type' ? firstError.received : undefined;
 
   return configurationError(
     `Configuration error in field '${fieldPath || 'unknown'}': Expected ${expectedType}, got ${JSON.stringify(actualValue)}. Example: ${exampleValue}`
-  )
+  );
 }
 
 /**
@@ -139,42 +139,42 @@ export async function loadConfig(
   try {
     // Return cached config if available
     if (cachedConfig) {
-      return Ok({ config: cachedConfig, filepath: cachedFilePath })
+      return Ok({ config: cachedConfig, filepath: cachedFilePath });
     }
 
     const explorer = cosmiconfig(MODULE_NAME, {
       searchPlaces: SEARCH_PLACES,
-    })
+    });
 
-    const result: CosmiconfigResult = await explorer.search(startPath)
+    const result: CosmiconfigResult = await explorer.search(startPath);
 
     if (!result || result.isEmpty) {
       // No config found, use defaults
-      cachedConfig = defaultConfig
-      cachedFilePath = null
-      return Ok({ config: defaultConfig, filepath: null })
+      cachedConfig = defaultConfig;
+      cachedFilePath = null;
+      return Ok({ config: defaultConfig, filepath: null });
     }
 
     // Validate config with Zod
-    const parseResult = trailheadConfigSchema.safeParse(result.config)
+    const parseResult = trailheadConfigSchema.safeParse(result.config);
     if (!parseResult.success) {
-      return Err(formatZodError(parseResult.error, result.filepath))
+      return Err(formatZodError(parseResult.error, result.filepath));
     }
 
     // Merge with defaults to ensure all fields are present
-    const mergedConfig = mergeWithDefaults(parseResult.data)
+    const mergedConfig = mergeWithDefaults(parseResult.data);
 
     // Cache the result
-    cachedConfig = mergedConfig
-    cachedFilePath = result.filepath
+    cachedConfig = mergedConfig;
+    cachedFilePath = result.filepath;
 
-    return Ok({ config: mergedConfig, filepath: result.filepath })
+    return Ok({ config: mergedConfig, filepath: result.filepath });
   } catch (error) {
     return Err(
       configurationError(
         `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
-    )
+    );
   }
 }
 
@@ -187,11 +187,11 @@ export function loadConfigSync(
   try {
     // Debug logging
     if (startPath) {
-      logger.debug(`LoadConfigSync called with startPath: ${startPath}`)
+      logger.debug(`LoadConfigSync called with startPath: ${startPath}`);
     }
     // Return cached config if available
     if (cachedConfig) {
-      return Ok({ config: cachedConfig, filepath: cachedFilePath })
+      return Ok({ config: cachedConfig, filepath: cachedFilePath });
     }
 
     const explorer = cosmiconfigSync(MODULE_NAME, {
@@ -201,37 +201,37 @@ export function loadConfigSync(
         '.ts': defaultLoadersSync['.js'],
         '.mjs': defaultLoadersSync['.js'],
       },
-    })
+    });
 
-    const result: CosmiconfigResult = explorer.search(startPath)
+    const result: CosmiconfigResult = explorer.search(startPath);
 
     if (!result || result.isEmpty) {
       // No config found, use defaults
-      cachedConfig = defaultConfig
-      cachedFilePath = null
-      return Ok({ config: defaultConfig, filepath: null })
+      cachedConfig = defaultConfig;
+      cachedFilePath = null;
+      return Ok({ config: defaultConfig, filepath: null });
     }
 
     // Validate config with Zod
-    const parseResult = trailheadConfigSchema.safeParse(result.config)
+    const parseResult = trailheadConfigSchema.safeParse(result.config);
     if (!parseResult.success) {
-      return Err(formatZodError(parseResult.error, result.filepath))
+      return Err(formatZodError(parseResult.error, result.filepath));
     }
 
     // Merge with defaults to ensure all fields are present
-    const mergedConfig = mergeWithDefaults(parseResult.data)
+    const mergedConfig = mergeWithDefaults(parseResult.data);
 
     // Cache the result
-    cachedConfig = mergedConfig
-    cachedFilePath = result.filepath
+    cachedConfig = mergedConfig;
+    cachedFilePath = result.filepath;
 
-    return Ok({ config: mergedConfig, filepath: result.filepath })
+    return Ok({ config: mergedConfig, filepath: result.filepath });
   } catch (error) {
     return Err(
       configurationError(
         `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
-    )
+    );
   }
 }
 
@@ -239,8 +239,8 @@ export function loadConfigSync(
  * Clear cached configuration
  */
 export function clearConfigCache(): void {
-  cachedConfig = null
-  cachedFilePath = null
+  cachedConfig = null;
+  cachedFilePath = null;
 }
 
 /**
@@ -268,7 +268,7 @@ function mergeWithDefaults(config: Partial<TrailheadConfig>): TrailheadConfig {
       : defaultConfig.devRefresh,
     verbose: config.verbose ?? defaultConfig.verbose,
     dryRun: config.dryRun ?? defaultConfig.dryRun,
-  }
+  };
 }
 
 /**
@@ -279,13 +279,13 @@ export function logConfigDiscovery(
   config: TrailheadConfig,
   verbose: boolean = false
 ): void {
-  if (!verbose) return
+  if (!verbose) return;
 
   if (filepath) {
-    logger.info(`Found configuration at: ${path.relative(process.cwd(), filepath)}`)
+    logger.info(`Found configuration at: ${path.relative(process.cwd(), filepath)}`);
   } else {
-    logger.info('No configuration file found, using defaults')
+    logger.info('No configuration file found, using defaults');
   }
 
-  logger.debug(`Loaded configuration: ${JSON.stringify(config, null, 2)}`)
+  logger.debug(`Loaded configuration: ${JSON.stringify(config, null, 2)}`);
 }

@@ -1,14 +1,14 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import { CatalystLink } from './catalyst-link'
-import { SemanticColorToken, isSemanticToken, createSemanticTextStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import { CatalystLink } from './catalyst-link';
+import { SemanticColorToken, isSemanticToken, createSemanticTextStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystText({
   className,
   color,
   ...props
 }: React.ComponentPropsWithoutRef<'p'> & { color?: SemanticColorToken }) {
-  const resolvedStyles = color && isSemanticToken(color) ? createSemanticTextStyles(color) : ''
+  const resolvedStyles = color && isSemanticToken(color) ? createSemanticTextStyles(color) : '';
   return (
     <p
       data-slot="text"
@@ -19,7 +19,7 @@ export function CatalystText({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystTextLink({
@@ -34,7 +34,7 @@ export function CatalystTextLink({
         className
       )}
     />
-  )
+  );
 }
 
 export function CatalystStrong({ className, ...props }: React.ComponentPropsWithoutRef<'strong'>) {
@@ -43,7 +43,7 @@ export function CatalystStrong({ className, ...props }: React.ComponentPropsWith
       {...props}
       className={cn('font-medium text-foreground dark:text-foreground', className)}
     />
-  )
+  );
 }
 
 export function CatalystCode({ className, ...props }: React.ComponentPropsWithoutRef<'code'>) {
@@ -55,5 +55,5 @@ export function CatalystCode({ className, ...props }: React.ComponentPropsWithou
         className
       )}
     />
-  )
+  );
 }

@@ -1,18 +1,23 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Button } from '../../src/components/button'
-import { Link } from '../../src/components/link'
-import { Input } from '../../src/components/input'
-import { Select } from '../../src/components/select'
-import { Textarea } from '../../src/components/textarea'
-import { Checkbox } from '../../src/components/checkbox'
-import { Text, Strong, Code } from '../../src/components/text'
-import { Badge } from '../../src/components/badge'
-import { Alert } from '../../src/components/alert'
-import { Dialog, DialogTitle, DialogBody, DialogActions } from '../../src/components/dialog'
-import { Dropdown, DropdownButton, DropdownMenu, DropdownItem } from '../../src/components/dropdown'
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { Button } from '../../src/components/button';
+import { Link } from '../../src/components/link';
+import { Input } from '../../src/components/input';
+import { Select } from '../../src/components/select';
+import { Textarea } from '../../src/components/textarea';
+import { Checkbox } from '../../src/components/checkbox';
+import { Text, Strong, Code } from '../../src/components/text';
+import { Badge } from '../../src/components/badge';
+import { Alert } from '../../src/components/alert';
+import { Dialog, DialogTitle, DialogBody, DialogActions } from '../../src/components/dialog';
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownMenu,
+  DropdownItem,
+} from '../../src/components/dropdown';
 import {
   Table,
   TableHead,
@@ -20,19 +25,19 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from '../../src/components/table'
-import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset'
+} from '../../src/components/table';
+import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset';
 import {
   DescriptionList,
   DescriptionTerm,
   DescriptionDetails,
-} from '../../src/components/description-list'
+} from '../../src/components/description-list';
 
 describe('Component Composition Integration Tests', () => {
   describe('Interactive Element Nesting', () => {
     it('should handle buttons with complex content composition', async () => {
-      const user = userEvent.setup()
-      const onAction = vi.fn()
+      const user = userEvent.setup();
+      const onAction = vi.fn();
 
       const ComplexButtons = () => (
         <div>
@@ -62,36 +67,36 @@ describe('Component Composition Integration Tests', () => {
             </div>
           </Button>
         </div>
-      )
+      );
 
-      render(<ComplexButtons />)
+      render(<ComplexButtons />);
 
       // Verify complex content renders correctly
-      expect(screen.getByTestId('download-icon')).toBeInTheDocument()
-      expect(screen.getByText('Download File')).toBeInTheDocument()
-      expect(screen.getByText('New')).toBeInTheDocument()
+      expect(screen.getByTestId('download-icon')).toBeInTheDocument();
+      expect(screen.getByText('Download File')).toBeInTheDocument();
+      expect(screen.getByText('New')).toBeInTheDocument();
 
-      expect(screen.getByText('Save Changes')).toBeInTheDocument()
-      expect(screen.getByText('Ctrl+S')).toBeInTheDocument()
+      expect(screen.getByText('Save Changes')).toBeInTheDocument();
+      expect(screen.getByText('Ctrl+S')).toBeInTheDocument();
 
-      expect(screen.getByText('Sync Data')).toBeInTheDocument()
-      expect(screen.getByText('Online')).toBeInTheDocument()
+      expect(screen.getByText('Sync Data')).toBeInTheDocument();
+      expect(screen.getByText('Online')).toBeInTheDocument();
 
       // Test interactions work despite complex content
-      await user.click(screen.getByTestId('download-button'))
-      expect(onAction).toHaveBeenCalledWith('download')
+      await user.click(screen.getByTestId('download-button'));
+      expect(onAction).toHaveBeenCalledWith('download');
 
-      await user.click(screen.getByTestId('save-button'))
-      expect(onAction).toHaveBeenCalledWith('save')
+      await user.click(screen.getByTestId('save-button'));
+      expect(onAction).toHaveBeenCalledWith('save');
 
-      await user.click(screen.getByTestId('sync-button'))
-      expect(onAction).toHaveBeenCalledWith('sync')
-    })
+      await user.click(screen.getByTestId('sync-button'));
+      expect(onAction).toHaveBeenCalledWith('sync');
+    });
 
     it('should handle interactive elements in navigation compositions', async () => {
-      const user = userEvent.setup()
-      const onNavigate = vi.fn()
-      const onAction = vi.fn()
+      const user = userEvent.setup();
+      const onNavigate = vi.fn();
+      const onAction = vi.fn();
 
       const NavigationComposition = () => (
         <div>
@@ -141,37 +146,37 @@ describe('Component Composition Integration Tests', () => {
             </DropdownMenu>
           </Dropdown>
         </div>
-      )
+      );
 
-      render(<NavigationComposition />)
+      render(<NavigationComposition />);
 
       // Test link composition
-      expect(screen.getByText('Dashboard')).toBeInTheDocument()
-      expect(screen.getByText('View analytics')).toBeInTheDocument()
-      expect(screen.getByText('3')).toBeInTheDocument()
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
+      expect(screen.getByText('View analytics')).toBeInTheDocument();
+      expect(screen.getByText('3')).toBeInTheDocument();
 
-      await user.click(screen.getByTestId('dashboard-link'))
-      expect(onNavigate).toHaveBeenCalledWith('dashboard')
+      await user.click(screen.getByTestId('dashboard-link'));
+      expect(onNavigate).toHaveBeenCalledWith('dashboard');
 
       // Test dropdown composition
-      expect(screen.getByText('John Doe')).toBeInTheDocument()
-      expect(screen.getByText('Admin')).toBeInTheDocument()
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Admin')).toBeInTheDocument();
 
-      await user.click(screen.getByTestId('user-menu'))
+      await user.click(screen.getByTestId('user-menu'));
 
       // Menu items should be visible
-      expect(screen.getByText('Profile Settings')).toBeInTheDocument()
-      expect(screen.getByText('Manage your account')).toBeInTheDocument()
+      expect(screen.getByText('Profile Settings')).toBeInTheDocument();
+      expect(screen.getByText('Manage your account')).toBeInTheDocument();
 
-      await user.click(screen.getByText('Profile Settings'))
-      expect(onAction).toHaveBeenCalledWith('profile')
-    })
-  })
+      await user.click(screen.getByText('Profile Settings'));
+      expect(onAction).toHaveBeenCalledWith('profile');
+    });
+  });
 
   describe('Form Control Compositions', () => {
     it('should handle complex form field compositions', async () => {
-      const user = userEvent.setup()
-      const onSubmit = vi.fn()
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
 
       const CompositeForm = () => {
         const [formData, setFormData] = React.useState({
@@ -189,22 +194,22 @@ describe('Component Composition Integration Tests', () => {
             privacy: 'public',
             newsletter: true,
           },
-        })
+        });
 
         const handleSubmit = (e: React.FormEvent) => {
-          e.preventDefault()
-          onSubmit(formData)
-        }
+          e.preventDefault();
+          onSubmit(formData);
+        };
 
         const updateNestedField = (section: string, field: string, value: any) => {
-          setFormData((prev) => ({
+          setFormData(prev => ({
             ...prev,
             [section]: {
               ...prev[section as keyof typeof prev],
               [field]: value,
             },
-          }))
-        }
+          }));
+        };
 
         return (
           <form onSubmit={handleSubmit} data-testid="composite-form">
@@ -263,9 +268,7 @@ describe('Component Composition Integration Tests', () => {
                 <div>
                   <Checkbox
                     checked={formData.preferences.notifications}
-                    onChange={(checked) =>
-                      updateNestedField('preferences', 'notifications', checked)
-                    }
+                    onChange={checked => updateNestedField('preferences', 'notifications', checked)}
                     data-testid="notifications-checkbox"
                   >
                     <div>
@@ -281,7 +284,7 @@ describe('Component Composition Integration Tests', () => {
                   </Text>
                   <Select
                     value={formData.preferences.theme}
-                    onChange={(e) => updateNestedField('preferences', 'theme', e.target.value)}
+                    onChange={e => updateNestedField('preferences', 'theme', e.target.value)}
                     data-testid="theme-select"
                   >
                     <option value="">Choose theme...</option>
@@ -298,7 +301,7 @@ describe('Component Composition Integration Tests', () => {
                   </Text>
                   <Select
                     value={formData.preferences.language}
-                    onChange={(e) => updateNestedField('preferences', 'language', e.target.value)}
+                    onChange={e => updateNestedField('preferences', 'language', e.target.value)}
                     data-testid="language-select"
                   >
                     <option value="">Select language...</option>
@@ -323,7 +326,7 @@ describe('Component Composition Integration Tests', () => {
                 <DescriptionDetails>
                   <Select
                     value={formData.settings.privacy}
-                    onChange={(e) => updateNestedField('settings', 'privacy', e.target.value)}
+                    onChange={e => updateNestedField('settings', 'privacy', e.target.value)}
                     data-testid="privacy-select"
                   >
                     <option value="public">🌍 Public</option>
@@ -341,7 +344,7 @@ describe('Component Composition Integration Tests', () => {
                 <DescriptionDetails>
                   <Checkbox
                     checked={formData.settings.newsletter}
-                    onChange={(checked) => updateNestedField('settings', 'newsletter', checked)}
+                    onChange={checked => updateNestedField('settings', 'newsletter', checked)}
                     data-testid="newsletter-checkbox"
                   >
                     <div>
@@ -365,52 +368,52 @@ describe('Component Composition Integration Tests', () => {
               </Button>
             </div>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<CompositeForm />)
+      render(<CompositeForm />);
 
       // Verify complex nested structure renders
-      expect(screen.getByText('Profile Information')).toBeInTheDocument()
-      expect(screen.getByText('Required')).toBeInTheDocument()
-      expect(screen.getByText('Primary contact')).toBeInTheDocument()
-      expect(screen.getByText('(Optional)')).toBeInTheDocument()
+      expect(screen.getByText('Profile Information')).toBeInTheDocument();
+      expect(screen.getByText('Required')).toBeInTheDocument();
+      expect(screen.getByText('Primary contact')).toBeInTheDocument();
+      expect(screen.getByText('(Optional)')).toBeInTheDocument();
 
       // Fill out form with nested data
-      await user.clear(screen.getByTestId('name-input'))
-      await user.type(screen.getByTestId('name-input'), 'John Doe')
-      await user.clear(screen.getByTestId('email-input'))
-      await user.type(screen.getByTestId('email-input'), 'john@example.com')
-      await user.clear(screen.getByTestId('bio-textarea'))
-      await user.type(screen.getByTestId('bio-textarea'), 'Software developer')
+      await user.clear(screen.getByTestId('name-input'));
+      await user.type(screen.getByTestId('name-input'), 'John Doe');
+      await user.clear(screen.getByTestId('email-input'));
+      await user.type(screen.getByTestId('email-input'), 'john@example.com');
+      await user.clear(screen.getByTestId('bio-textarea'));
+      await user.type(screen.getByTestId('bio-textarea'), 'Software developer');
 
-      await user.click(screen.getByTestId('notifications-checkbox'))
-      await user.selectOptions(screen.getByTestId('theme-select'), 'dark')
-      await user.selectOptions(screen.getByTestId('language-select'), 'en')
+      await user.click(screen.getByTestId('notifications-checkbox'));
+      await user.selectOptions(screen.getByTestId('theme-select'), 'dark');
+      await user.selectOptions(screen.getByTestId('language-select'), 'en');
 
-      await user.selectOptions(screen.getByTestId('privacy-select'), 'friends')
+      await user.selectOptions(screen.getByTestId('privacy-select'), 'friends');
 
       // Verify form fields have the typed values
-      expect(screen.getByTestId('name-input')).toHaveValue('John Doe')
-      expect(screen.getByTestId('email-input')).toHaveValue('john@example.com')
-      expect(screen.getByTestId('bio-textarea')).toHaveValue('Software developer')
+      expect(screen.getByTestId('name-input')).toHaveValue('John Doe');
+      expect(screen.getByTestId('email-input')).toHaveValue('john@example.com');
+      expect(screen.getByTestId('bio-textarea')).toHaveValue('Software developer');
 
       // Verify other form controls
-      expect(screen.getByTestId('notifications-checkbox')).toBeChecked()
-      expect(screen.getByTestId('theme-select')).toHaveValue('dark')
-      expect(screen.getByTestId('language-select')).toHaveValue('en')
-      expect(screen.getByTestId('privacy-select')).toHaveValue('friends')
+      expect(screen.getByTestId('notifications-checkbox')).toBeChecked();
+      expect(screen.getByTestId('theme-select')).toHaveValue('dark');
+      expect(screen.getByTestId('language-select')).toHaveValue('en');
+      expect(screen.getByTestId('privacy-select')).toHaveValue('friends');
 
       // Test form submission workflow
-      await user.click(screen.getByTestId('save-button'))
-      expect(onSubmit).toHaveBeenCalled()
-    })
-  })
+      await user.click(screen.getByTestId('save-button'));
+      expect(onSubmit).toHaveBeenCalled();
+    });
+  });
 
   describe('Data Display Compositions', () => {
     it('should handle complex table compositions with interactive elements', async () => {
-      const user = userEvent.setup()
-      const onUserAction = vi.fn()
+      const user = userEvent.setup();
+      const onUserAction = vi.fn();
 
       const users = [
         {
@@ -437,7 +440,7 @@ describe('Component Composition Integration Tests', () => {
           status: 'active',
           lastLogin: '2023-12-03',
         },
-      ]
+      ];
 
       const InteractiveTable = () => (
         <Table data-testid="users-table">
@@ -458,7 +461,7 @@ describe('Component Composition Integration Tests', () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {users.map(user => (
               <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                 <TableCell>
                   <div>
@@ -533,56 +536,56 @@ describe('Component Composition Integration Tests', () => {
             ))}
           </TableBody>
         </Table>
-      )
+      );
 
-      render(<InteractiveTable />)
+      render(<InteractiveTable />);
 
       // Verify complex table structure
-      expect(screen.getByText('John Doe')).toBeInTheDocument()
-      expect(screen.getByText('john@example.com')).toBeInTheDocument()
-      expect(screen.getByText('admin')).toBeInTheDocument()
-      expect(screen.getAllByText('active')).toHaveLength(2) // John and Bob are both active
-      expect(screen.getByText('2023-12-01')).toBeInTheDocument()
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('john@example.com')).toBeInTheDocument();
+      expect(screen.getByText('admin')).toBeInTheDocument();
+      expect(screen.getAllByText('active')).toHaveLength(2); // John and Bob are both active
+      expect(screen.getByText('2023-12-01')).toBeInTheDocument();
 
       // Test dropdown actions
-      await user.click(screen.getByTestId('actions-1'))
-      expect(screen.getByText('Edit User')).toBeInTheDocument()
-      expect(screen.getByText('Modify user details')).toBeInTheDocument()
+      await user.click(screen.getByTestId('actions-1'));
+      expect(screen.getByText('Edit User')).toBeInTheDocument();
+      expect(screen.getByText('Modify user details')).toBeInTheDocument();
 
-      await user.click(screen.getByText('Edit User'))
-      expect(onUserAction).toHaveBeenCalledWith('edit', 1)
+      await user.click(screen.getByText('Edit User'));
+      expect(onUserAction).toHaveBeenCalledWith('edit', 1);
 
       // Test direct button action
-      await user.click(screen.getByTestId('message-2'))
-      expect(onUserAction).toHaveBeenCalledWith('message', 2)
-    })
+      await user.click(screen.getByTestId('message-2'));
+      expect(onUserAction).toHaveBeenCalledWith('message', 2);
+    });
 
     it.skip('should handle modal compositions with complex content', async () => {
-      const user = userEvent.setup()
-      const onConfirm = vi.fn()
+      const user = userEvent.setup();
+      const onConfirm = vi.fn();
 
       const ComplexModal = () => {
-        const [isOpen, setIsOpen] = React.useState(false)
-        const [selectedItems, setSelectedItems] = React.useState<string[]>([])
+        const [isOpen, setIsOpen] = React.useState(false);
+        const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
         const items = [
           { id: 'item1', name: 'Document.pdf', size: '2.3 MB', type: 'PDF' },
           { id: 'item2', name: 'Image.jpg', size: '1.8 MB', type: 'Image' },
           { id: 'item3', name: 'Spreadsheet.xlsx', size: '4.1 MB', type: 'Excel' },
-        ]
+        ];
 
         const handleItemToggle = (itemId: string, checked: boolean) => {
           if (checked) {
-            setSelectedItems((prev) => [...prev, itemId])
+            setSelectedItems(prev => [...prev, itemId]);
           } else {
-            setSelectedItems((prev) => prev.filter((id) => id !== itemId))
+            setSelectedItems(prev => prev.filter(id => id !== itemId));
           }
-        }
+        };
 
         const handleConfirm = () => {
-          onConfirm(selectedItems)
-          setIsOpen(false)
-        }
+          onConfirm(selectedItems);
+          setIsOpen(false);
+        };
 
         return (
           <div>
@@ -614,14 +617,14 @@ describe('Component Composition Integration Tests', () => {
                 </Text>
 
                 <div data-testid="file-list">
-                  {items.map((item) => (
+                  {items.map(item => (
                     <div
                       key={item.id}
                       style={{ padding: '8px', border: '1px solid #ddd', marginTop: '8px' }}
                     >
                       <Checkbox
                         checked={selectedItems.includes(item.id)}
-                        onChange={(checked) => handleItemToggle(item.id, checked)}
+                        onChange={checked => handleItemToggle(item.id, checked)}
                         data-testid={`select-${item.id}`}
                       >
                         <div
@@ -652,7 +655,7 @@ describe('Component Composition Integration Tests', () => {
                       <DescriptionDetails>
                         <Code>
                           {selectedItems
-                            .map((id) => items.find((item) => item.id === id)?.size)
+                            .map(id => items.find(item => item.id === id)?.size)
                             .join(', ')}
                         </Code>
                       </DescriptionDetails>
@@ -679,71 +682,71 @@ describe('Component Composition Integration Tests', () => {
               </DialogActions>
             </Dialog>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<ComplexModal />)
+      render(<ComplexModal />);
 
       // Open modal
-      await user.click(screen.getByTestId('open-modal'))
+      await user.click(screen.getByTestId('open-modal'));
 
       // Wait for modal to be fully rendered
       await waitFor(() => {
-        expect(screen.getByRole('dialog')).toBeInTheDocument()
-      })
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
 
       // Verify complex modal content
-      expect(screen.getByText('Destructive')).toBeInTheDocument()
-      expect(screen.getByText('Warning!')).toBeInTheDocument()
+      expect(screen.getByText('Destructive')).toBeInTheDocument();
+      expect(screen.getByText('Warning!')).toBeInTheDocument();
 
       // Wait for file content to load
       await waitFor(() => {
-        expect(screen.getByText('Document.pdf')).toBeInTheDocument()
-      })
-      expect(screen.getByText('2.3 MB')).toBeInTheDocument()
-      expect(screen.getByText('PDF')).toBeInTheDocument()
+        expect(screen.getByText('Document.pdf')).toBeInTheDocument();
+      });
+      expect(screen.getByText('2.3 MB')).toBeInTheDocument();
+      expect(screen.getByText('PDF')).toBeInTheDocument();
 
       // Initially delete button should be disabled
-      expect(screen.getByTestId('confirm-delete')).toBeDisabled()
+      expect(screen.getByTestId('confirm-delete')).toBeDisabled();
 
       // Select files
-      await user.click(screen.getByTestId('select-item1'))
-      await user.click(screen.getByTestId('select-item3'))
+      await user.click(screen.getByTestId('select-item1'));
+      await user.click(screen.getByTestId('select-item3'));
 
       // Selection summary should appear
-      expect(screen.getByTestId('selection-summary')).toBeInTheDocument()
-      expect(screen.getByText('2 file(s) selected for deletion')).toBeInTheDocument()
+      expect(screen.getByTestId('selection-summary')).toBeInTheDocument();
+      expect(screen.getByText('2 file(s) selected for deletion')).toBeInTheDocument();
 
       // Delete button should be enabled
-      expect(screen.getByTestId('confirm-delete')).toBeEnabled()
-      expect(screen.getByText('Delete 2 Files')).toBeInTheDocument()
+      expect(screen.getByTestId('confirm-delete')).toBeEnabled();
+      expect(screen.getByText('Delete 2 Files')).toBeInTheDocument();
 
       // Confirm deletion
-      await user.click(screen.getByTestId('confirm-delete'))
-      expect(onConfirm).toHaveBeenCalledWith(['item1', 'item3'])
+      await user.click(screen.getByTestId('confirm-delete'));
+      expect(onConfirm).toHaveBeenCalledWith(['item1', 'item3']);
 
       // Modal should close
       await waitFor(() => {
-        expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument();
+      });
+    });
+  });
 
   describe('Mixed Content Compositions', () => {
     it('should handle rich text content with interactive elements', () => {
       const CommentComponent = () => {
-        const [likes, setLikes] = React.useState(5)
-        const [isLiked, setIsLiked] = React.useState(false)
+        const [likes, setLikes] = React.useState(5);
+        const [isLiked, setIsLiked] = React.useState(false);
 
         const handleLike = () => {
           if (isLiked) {
-            setLikes((prev) => prev - 1)
-            setIsLiked(false)
+            setLikes(prev => prev - 1);
+            setIsLiked(false);
           } else {
-            setLikes((prev) => prev + 1)
-            setIsLiked(true)
+            setLikes(prev => prev + 1);
+            setIsLiked(true);
           }
-        }
+        };
 
         return (
           <div data-testid="comment-component">
@@ -804,44 +807,44 @@ return <Button color={theme.primary}>Click me</Button>`}
               </Dropdown>
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      const { container } = render(<CommentComponent />)
+      const { container } = render(<CommentComponent />);
 
       // Verify rich text composition
-      expect(screen.getByText('John Doe')).toBeInTheDocument()
-      expect(screen.getByText('Contributor')).toBeInTheDocument()
-      expect(screen.getByText('2 hours ago')).toBeInTheDocument()
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Contributor')).toBeInTheDocument();
+      expect(screen.getByText('2 hours ago')).toBeInTheDocument();
 
       // Verify mixed text formatting
-      expect(screen.getByText('useTheme')).toBeInTheDocument()
-      expect(screen.getByText('performance improvements')).toBeInTheDocument()
-      expect(screen.getByTestId('docs-link')).toHaveAttribute('href', '/docs/theming')
+      expect(screen.getByText('useTheme')).toBeInTheDocument();
+      expect(screen.getByText('performance improvements')).toBeInTheDocument();
+      expect(screen.getByTestId('docs-link')).toHaveAttribute('href', '/docs/theming');
 
       // Verify code block
-      const codeBlocks = container.querySelectorAll('code')
-      expect(codeBlocks.length).toBeGreaterThan(1) // Both inline and block code
+      const codeBlocks = container.querySelectorAll('code');
+      expect(codeBlocks.length).toBeGreaterThan(1); // Both inline and block code
 
       // Verify interactive elements
-      expect(screen.getByTestId('like-button')).toBeInTheDocument()
-      expect(screen.getByTestId('reply-button')).toBeInTheDocument()
-      expect(screen.getByTestId('comment-menu')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId('like-button')).toBeInTheDocument();
+      expect(screen.getByTestId('reply-button')).toBeInTheDocument();
+      expect(screen.getByTestId('comment-menu')).toBeInTheDocument();
+    });
 
     it('should handle dashboard widget compositions', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const DashboardWidget = () => {
-        const [timeRange, setTimeRange] = React.useState('7d')
-        const [isExpanded, setIsExpanded] = React.useState(false)
+        const [timeRange, setTimeRange] = React.useState('7d');
+        const [isExpanded, setIsExpanded] = React.useState(false);
 
         const stats = {
           visitors: 1234,
           revenue: 5678,
           conversion: 3.2,
           change: '+12%',
-        }
+        };
 
         return (
           <div data-testid="dashboard-widget" style={{ border: '1px solid #ddd', padding: '16px' }}>
@@ -854,7 +857,7 @@ return <Button color={theme.primary}>Click me</Button>`}
               <div style={{ display: 'flex', gap: '8px' }}>
                 <Select
                   value={timeRange}
-                  onChange={(e) => setTimeRange(e.target.value)}
+                  onChange={e => setTimeRange(e.target.value)}
                   data-testid="time-range-select"
                 >
                   <option value="1d">Last 24h</option>
@@ -954,30 +957,30 @@ return <Button color={theme.primary}>Click me</Button>`}
               </div>
             )}
           </div>
-        )
-      }
+        );
+      };
 
-      render(<DashboardWidget />)
+      render(<DashboardWidget />);
 
       // Verify widget composition
-      expect(screen.getByText('Analytics Overview')).toBeInTheDocument()
-      expect(screen.getByText('Live')).toBeInTheDocument()
-      expect(screen.getByText('1,234')).toBeInTheDocument()
-      expect(screen.getByText('$5,678')).toBeInTheDocument()
-      expect(screen.getByText('3.2%')).toBeInTheDocument()
+      expect(screen.getByText('Analytics Overview')).toBeInTheDocument();
+      expect(screen.getByText('Live')).toBeInTheDocument();
+      expect(screen.getByText('1,234')).toBeInTheDocument();
+      expect(screen.getByText('$5,678')).toBeInTheDocument();
+      expect(screen.getByText('3.2%')).toBeInTheDocument();
 
       // Test time range selection
-      await user.selectOptions(screen.getByTestId('time-range-select'), '30d')
-      expect(screen.getByDisplayValue('Last 30 days')).toBeInTheDocument()
+      await user.selectOptions(screen.getByTestId('time-range-select'), '30d');
+      expect(screen.getByDisplayValue('Last 30 days')).toBeInTheDocument();
 
       // Test expansion
-      expect(screen.queryByTestId('expanded-content')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('expanded-content')).not.toBeInTheDocument();
 
-      await user.click(screen.getByTestId('expand-button'))
-      expect(screen.getByTestId('expanded-content')).toBeInTheDocument()
-      expect(screen.getByText('Detailed Breakdown')).toBeInTheDocument()
-      expect(screen.getByText('Search')).toBeInTheDocument()
-      expect(screen.getByText('623')).toBeInTheDocument()
-    })
-  })
-})
+      await user.click(screen.getByTestId('expand-button'));
+      expect(screen.getByTestId('expanded-content')).toBeInTheDocument();
+      expect(screen.getByText('Detailed Breakdown')).toBeInTheDocument();
+      expect(screen.getByText('Search')).toBeInTheDocument();
+      expect(screen.getByText('623')).toBeInTheDocument();
+    });
+  });
+});

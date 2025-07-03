@@ -3,7 +3,7 @@
  * Transforms enhanced tokens to include fallback chains for shadcn compatibility
  */
 
-import { createProtectedRegexTransform } from '../utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../utilities/protected-regex-transform-factory.js';
 
 /**
  * Add fallbacks to enhanced semantic tokens
@@ -181,4 +181,4 @@ export const addEnhancedFallbacksTransform = createProtectedRegexTransform({
     },
   ],
   changeType: 'enhanced-fallback',
-})
+});

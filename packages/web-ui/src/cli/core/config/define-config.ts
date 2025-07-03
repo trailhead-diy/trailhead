@@ -1,4 +1,4 @@
-import type { TrailheadConfig } from './schema.js'
+import type { TrailheadConfig } from './schema.js';
 
 /**
  * Helper function to define configuration with TypeScript support
@@ -23,5 +23,5 @@ import type { TrailheadConfig } from './schema.js'
  * ```
  */
 export function defineConfig(config: TrailheadConfig): TrailheadConfig {
-  return config
+  return config;
 }

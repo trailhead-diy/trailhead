@@ -3,8 +3,8 @@
  * Applies final AST formatting using the post-process function
  */
 
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
-import { postProcessAstOutput } from './post-process.js'
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
+import { postProcessAstOutput } from './post-process.js';
 
 /**
  * Post-process transform
@@ -15,7 +15,7 @@ export const postProcessTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const processed = postProcessAstOutput(content)
+    const processed = postProcessAstOutput(content);
 
     if (processed !== content) {
       return {
@@ -27,13 +27,13 @@ export const postProcessTransform: Transform = {
           },
         ],
         hasChanges: true,
-      }
+      };
     }
 
     return {
       content,
       changes: [],
       hasChanges: false,
-    }
+    };
   },
-}
+};

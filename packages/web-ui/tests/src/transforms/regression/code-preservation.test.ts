@@ -5,16 +5,16 @@
  * Tests that transformations are idempotent and preserve functionality.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { baseMappingsTransform } from '../../../../src/transforms/components/common/colors/base-mappings.js'
-import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js'
-import { promises as fs } from 'fs'
-import { existsSync } from 'fs'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { baseMappingsTransform } from '../../../../src/transforms/components/common/colors/base-mappings.js';
+import { runMainPipeline } from '../../../../src/transforms/pipelines/main.js';
+import { promises as fs } from 'fs';
+import { existsSync } from 'fs';
 import {
   createTempPath,
   createAbsoluteTestPath,
   safeJoin,
-} from '../../../utils/cross-platform-paths.js'
+} from '../../../utils/cross-platform-paths.js';
 
 describe('code preservation and regression prevention', () => {
   describe('idempotent transformations', () => {
@@ -24,22 +24,22 @@ describe('code preservation and regression prevention', () => {
           'bg-zinc-900 text-white',
           'hover:bg-zinc-800 focus:ring-zinc-950'
         )}
-      `
+      `;
 
       // First transformation
-      const first = baseMappingsTransform.execute(input)
+      const first = baseMappingsTransform.execute(input);
 
       // Second transformation on the result
-      const second = baseMappingsTransform.execute(first.content)
+      const second = baseMappingsTransform.execute(first.content);
 
       // Should be identical
-      expect(second.content).toBe(first.content)
-      expect(second.hasChanges).toBe(false)
+      expect(second.content).toBe(first.content);
+      expect(second.hasChanges).toBe(false);
 
       // Third transformation to be sure
-      const third = baseMappingsTransform.execute(second.content)
-      expect(third.content).toBe(first.content)
-    })
+      const third = baseMappingsTransform.execute(second.content);
+      expect(third.content).toBe(first.content);
+    });
 
     it('preserves already-transformed semantic tokens', () => {
       const alreadyTransformed = `
@@ -48,14 +48,14 @@ describe('code preservation and regression prevention', () => {
           'border-border hover:bg-muted',
           'focus:ring-primary dark:bg-card'
         )}
-      `
+      `;
 
-      const result = baseMappingsTransform.execute(alreadyTransformed)
+      const result = baseMappingsTransform.execute(alreadyTransformed);
 
-      expect(result.hasChanges).toBe(false)
-      expect(result.content).toBe(alreadyTransformed)
-    })
-  })
+      expect(result.hasChanges).toBe(false);
+      expect(result.content).toBe(alreadyTransformed);
+    });
+  });
 
   describe('syntax preservation', () => {
     it.fails('maintains valid JSX syntax after transformation', () => {
@@ -69,22 +69,22 @@ export function Component() {
     </div>
   )
 }
-`
+`;
 
-      const result = baseMappingsTransform.execute(validJSX)
+      const result = baseMappingsTransform.execute(validJSX);
 
       // Check balanced braces
-      expect(result.content.split('{').length).toBe(result.content.split('}').length)
+      expect(result.content.split('{').length).toBe(result.content.split('}').length);
 
       // Check quotes are preserved
-      expect(result.content).toContain('className="bg-foreground"')
-      expect(result.content).toContain("className={'text-background'}")
-      expect(result.content).toContain('className={`hover:bg-muted`}')
+      expect(result.content).toContain('className="bg-foreground"');
+      expect(result.content).toContain("className={'text-background'}");
+      expect(result.content).toContain('className={`hover:bg-muted`}');
 
       // Check ternary is preserved
-      expect(result.content).toContain('condition ?')
-      expect(result.content).toContain(': ')
-    })
+      expect(result.content).toContain('condition ?');
+      expect(result.content).toContain(': ');
+    });
 
     it.fails('preserves TypeScript types and interfaces', () => {
       const tsCode = `
@@ -102,22 +102,22 @@ const colorMap: Record<string, string> = {
 export function Button<T extends ButtonProps>({ variant, color }: T) {
   return <button className="bg-zinc-900">Click</button>
 }
-`
+`;
 
-      const result = baseMappingsTransform.execute(tsCode)
+      const result = baseMappingsTransform.execute(tsCode);
 
       // Types should be unchanged
-      expect(result.content).toContain("variant: 'primary' | 'secondary'")
-      expect(result.content).toContain('Record<string, string>')
-      expect(result.content).toContain('<T extends ButtonProps>')
+      expect(result.content).toContain("variant: 'primary' | 'secondary'");
+      expect(result.content).toContain('Record<string, string>');
+      expect(result.content).toContain('<T extends ButtonProps>');
 
       // Only className content should change
-      expect(result.content).toContain('className="bg-foreground"')
+      expect(result.content).toContain('className="bg-foreground"');
 
       // Color values in objects should be preserved
-      expect(result.content).toContain("zinc: 'zinc-900'")
-    })
-  })
+      expect(result.content).toContain("zinc: 'zinc-900'");
+    });
+  });
 
   describe('non-className context preservation', () => {
     it('does not transform colors in string literals', () => {
@@ -125,15 +125,15 @@ export function Button<T extends ButtonProps>({ variant, color }: T) {
 const message = 'Use zinc-900 for dark themes'
 const error = "Background should be white"
 const template = \`Color: \${color === 'dark' ? 'zinc-950' : 'white'}\`
-`
+`;
 
-      const result = baseMappingsTransform.execute(stringLiterals)
+      const result = baseMappingsTransform.execute(stringLiterals);
 
-      expect(result.hasChanges).toBe(false)
-      expect(result.content).toContain("'Use zinc-900 for dark themes'")
-      expect(result.content).toContain('"Background should be white"')
-      expect(result.content).toContain("'zinc-950'")
-    })
+      expect(result.hasChanges).toBe(false);
+      expect(result.content).toContain("'Use zinc-900 for dark themes'");
+      expect(result.content).toContain('"Background should be white"');
+      expect(result.content).toContain("'zinc-950'");
+    });
 
     it.fails('does not transform colors in comments', () => {
       const withComments = `
@@ -145,18 +145,18 @@ const template = \`Color: \${color === 'dark' ? 'zinc-950' : 'white'}\`
 export function Component() {
   return <div className="bg-zinc-900" /> // This will be transformed
 }
-`
+`;
 
-      const result = baseMappingsTransform.execute(withComments)
+      const result = baseMappingsTransform.execute(withComments);
 
       // Comments preserved
-      expect(result.content).toContain('// Use zinc-900 for primary text')
-      expect(result.content).toContain('/* Background should be white */')
-      expect(result.content).toContain('Can be zinc-950 or white')
+      expect(result.content).toContain('// Use zinc-900 for primary text');
+      expect(result.content).toContain('/* Background should be white */');
+      expect(result.content).toContain('Can be zinc-950 or white');
 
       // Only className transformed
-      expect(result.content).toContain('className="bg-foreground"')
-    })
+      expect(result.content).toContain('className="bg-foreground"');
+    });
 
     it.fails('preserves colors in data attributes and aria labels', () => {
       const dataAttributes = `
@@ -168,30 +168,30 @@ export function Component() {
 >
   Content
 </div>
-`
+`;
 
-      const result = baseMappingsTransform.execute(dataAttributes)
+      const result = baseMappingsTransform.execute(dataAttributes);
 
-      expect(result.content).toContain('data-color="zinc-900"')
-      expect(result.content).toContain('aria-label="Select white theme"')
-      expect(result.content).toContain('data-theme="zinc"')
-      expect(result.content).toContain('className="bg-foreground"')
-    })
-  })
+      expect(result.content).toContain('data-color="zinc-900"');
+      expect(result.content).toContain('aria-label="Select white theme"');
+      expect(result.content).toContain('data-theme="zinc"');
+      expect(result.content).toContain('className="bg-foreground"');
+    });
+  });
 
   describe('full pipeline regression tests', () => {
-    let tempDir: string
-    const catalystSource = createAbsoluteTestPath('catalyst-ui-kit', 'typescript')
-    const skipInCI = !existsSync(catalystSource)
+    let tempDir: string;
+    const catalystSource = createAbsoluteTestPath('catalyst-ui-kit', 'typescript');
+    const skipInCI = !existsSync(catalystSource);
 
     beforeEach(async () => {
-      tempDir = createTempPath('regression-test')
-      await fs.mkdir(tempDir, { recursive: true })
-    })
+      tempDir = createTempPath('regression-test');
+      await fs.mkdir(tempDir, { recursive: true });
+    });
 
     afterEach(async () => {
-      await fs.rm(tempDir, { recursive: true, force: true })
-    })
+      await fs.rm(tempDir, { recursive: true, force: true });
+    });
 
     it.fails('preserves component functionality after full transformation', async () => {
       const functionalComponent = `
@@ -253,54 +253,54 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
     </div>
   )
 }
-`
+`;
 
-      const componentPath = safeJoin(tempDir, 'data-list.tsx')
-      await fs.writeFile(componentPath, functionalComponent)
+      const componentPath = safeJoin(tempDir, 'data-list.tsx');
+      await fs.writeFile(componentPath, functionalComponent);
 
       await runMainPipeline({
         srcDir: tempDir,
         outDir: tempDir,
         verbose: false,
         dryRun: false,
-      })
+      });
 
-      const result = await fs.readFile(componentPath, 'utf-8')
+      const result = await fs.readFile(componentPath, 'utf-8');
 
       // All functionality should be preserved
-      expect(result).toContain('useState')
-      expect(result).toContain('useEffect')
-      expect(result).toContain('filter.toLowerCase()')
-      expect(result).toContain('onChange={(e) => setFilter(e.target.value)}')
-      expect(result).toContain('onClick={() => {')
-      expect(result).toContain('onSelect(item)')
+      expect(result).toContain('useState');
+      expect(result).toContain('useEffect');
+      expect(result).toContain('filter.toLowerCase()');
+      expect(result).toContain('onChange={(e) => setFilter(e.target.value)}');
+      expect(result).toContain('onClick={() => {');
+      expect(result).toContain('onSelect(item)');
 
       // Types should be preserved
-      expect(result).toContain('interface DataItem')
-      expect(result).toContain("status: 'active' | 'inactive'")
-      expect(result).toContain('useState<string | null>(null)')
+      expect(result).toContain('interface DataItem');
+      expect(result).toContain("status: 'active' | 'inactive'");
+      expect(result).toContain('useState<string | null>(null)');
 
       // Conditional logic preserved
-      expect(result).toContain('selected === item.id &&')
-      expect(result).toContain("item.status === 'inactive' &&")
-      expect(result).toContain("item.status === 'active' ?")
+      expect(result).toContain('selected === item.id &&');
+      expect(result).toContain("item.status === 'inactive' &&");
+      expect(result).toContain("item.status === 'active' ?");
 
       // Colors should be transformed
-      expect(result).toContain('bg-background')
-      expect(result).toContain('border-border')
-      expect(result).toContain('hover:bg-muted')
-      expect(result).toContain('text-foreground')
-      expect(result).toContain('focus:ring-primary')
+      expect(result).toContain('bg-background');
+      expect(result).toContain('border-border');
+      expect(result).toContain('hover:bg-muted');
+      expect(result).toContain('text-foreground');
+      expect(result).toContain('focus:ring-primary');
 
       // cn should replace clsx
-      expect(result).toContain('cn(')
-      expect(result).not.toContain('clsx')
-    })
+      expect(result).toContain('cn(');
+      expect(result).not.toContain('clsx');
+    });
 
     it.skipIf(skipInCI)('handles real Catalyst component without breaking', async () => {
       // Copy a real complex component
-      const sourceFile = createAbsoluteTestPath('catalyst-ui-kit', 'typescript', 'navbar.tsx')
-      const destFile = safeJoin(tempDir, 'navbar.tsx')
+      const sourceFile = createAbsoluteTestPath('catalyst-ui-kit', 'typescript', 'navbar.tsx');
+      const destFile = safeJoin(tempDir, 'navbar.tsx');
 
       if (
         await fs
@@ -308,33 +308,33 @@ export function DataList({ items, onSelect }: { items: DataItem[], onSelect: (it
           .then(() => true)
           .catch(() => false)
       ) {
-        await fs.copyFile(sourceFile, destFile)
+        await fs.copyFile(sourceFile, destFile);
 
-        const original = await fs.readFile(destFile, 'utf-8')
+        const original = await fs.readFile(destFile, 'utf-8');
 
         await runMainPipeline({
           srcDir: tempDir,
           outDir: tempDir,
           verbose: false,
           dryRun: false,
-        })
+        });
 
-        const transformed = await fs.readFile(destFile, 'utf-8')
+        const transformed = await fs.readFile(destFile, 'utf-8');
 
         // Should have changes
-        expect(transformed).not.toBe(original)
+        expect(transformed).not.toBe(original);
 
         // Should preserve all exports
-        const originalExports = original.match(/export\s+(function|const)\s+(\w+)/g) || []
-        const transformedExports = transformed.match(/export\s+(function|const)\s+(\w+)/g) || []
-        expect(transformedExports.length).toBe(originalExports.length)
+        const originalExports = original.match(/export\s+(function|const)\s+(\w+)/g) || [];
+        const transformedExports = transformed.match(/export\s+(function|const)\s+(\w+)/g) || [];
+        expect(transformedExports.length).toBe(originalExports.length);
 
         // Should maintain component structure
-        expect(transformed).toContain('Navbar')
-        expect(transformed).toContain('NavbarSpacer')
-        expect(transformed).toContain('NavbarSection')
-        expect(transformed).toContain('NavbarItem')
+        expect(transformed).toContain('Navbar');
+        expect(transformed).toContain('NavbarSpacer');
+        expect(transformed).toContain('NavbarSection');
+        expect(transformed).toContain('NavbarItem');
       }
-    })
-  })
-})
+    });
+  });
+});

@@ -5,7 +5,7 @@
  * instead of semantic destructive tokens, breaking theme consistency
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Fieldset semantic enhancement transform
@@ -17,7 +17,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const fieldsetSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Fieldset',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Fieldset') &&
     content.includes('export function ErrorMessage') &&
     content.includes('text-red-600') &&
@@ -36,7 +36,7 @@ export const fieldsetSemanticEnhancementTransform = createSemanticEnhancementTra
         name: { name: 'className' },
       })
       .forEach((path: any) => {
-        const value = path.node.value
+        const value = path.node.value;
         if (
           value?.type === 'JSXExpressionContainer' &&
           value.expression?.type === 'CallExpression' &&
@@ -52,12 +52,12 @@ export const fieldsetSemanticEnhancementTransform = createSemanticEnhancementTra
               // Replace hardcoded red colors with semantic destructive
               const updatedValue = arg.value
                 .replace('text-red-600', 'text-destructive')
-                .replace('dark:text-red-500', 'dark:text-destructive')
+                .replace('dark:text-red-500', 'dark:text-destructive');
 
-              value.expression.arguments[index] = j.stringLiteral(updatedValue)
+              value.expression.arguments[index] = j.stringLiteral(updatedValue);
             }
-          })
+          });
         }
-      })
+      });
   },
-})
+});

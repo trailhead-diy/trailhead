@@ -2,8 +2,8 @@
  * Shared constants for profiling system
  */
 
-import { join } from 'path'
-import type { ProfilerConfig, ProgressIndicators } from './types.js'
+import { join } from 'path';
+import type { ProfilerConfig, ProgressIndicators } from './types.js';
 
 // All 27 Catalyst components
 export const CATALYST_COMPONENTS = [
@@ -34,7 +34,7 @@ export const CATALYST_COMPONENTS = [
   'table.tsx',
   'text.tsx',
   'textarea.tsx',
-] as const
+] as const;
 
 // Directory configuration
 export const PROFILER_CONFIG: ProfilerConfig = {
@@ -43,7 +43,7 @@ export const PROFILER_CONFIG: ProfilerConfig = {
   traditionalDir: join(process.cwd(), 'temp/profile-transforms/traditional'),
   catalystSource: join(process.cwd(), 'catalyst-ui-kit/typescript'),
   reportPath: join(process.cwd(), 'docs'),
-} as const
+} as const;
 
 // Progress indicators
 export const PROGRESS_MESSAGES: ProgressIndicators = {
@@ -51,7 +51,7 @@ export const PROGRESS_MESSAGES: ProgressIndicators = {
   profile: 'Running performance profile...',
   cleanup: 'Cleaning up temporary files...',
   comparison: 'Comparing with traditional approach...',
-} as const
+} as const;
 
 // Default options
 export const DEFAULT_OPTIONS = {
@@ -60,14 +60,14 @@ export const DEFAULT_OPTIONS = {
   compare: false,
   verbose: false,
   interactive: false,
-} as const
+} as const;
 
 // CLI configuration
 export const CLI_CONFIG = {
   name: 'profile-transforms',
   description: 'Profile transformation performance',
   version: '1.0.0',
-} as const
+} as const;
 // Transform categories for reference
 export const TRANSFORM_CATEGORIES = {
   imports: ['clsx-to-cn', 'cleanup-unused'],
@@ -75,4 +75,4 @@ export const TRANSFORM_CATEGORIES = {
   colors: ['base-mappings', 'interactive-states', 'dark-mode', 'special-patterns'],
   edgeCases: ['text-colors', 'icon-fills', 'blue-to-primary', 'focus-states'],
   formatting: ['file-headers', 'post-process'],
-} as const
+} as const;

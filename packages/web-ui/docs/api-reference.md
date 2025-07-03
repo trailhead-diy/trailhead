@@ -54,7 +54,7 @@ import {
 
   // Layout Components
   AuthLayout,
-} from '@esteban-url/trailhead-web-ui'
+} from '@esteban-url/trailhead-web-ui';
 ```
 
 ### Theme System
@@ -79,7 +79,7 @@ import {
   type TrailheadThemeConfig,
   type ShadcnTheme,
   type ComponentThemeOverrides,
-} from '@esteban-url/trailhead-web-ui'
+} from '@esteban-url/trailhead-web-ui';
 ```
 
 ### Utilities
@@ -88,7 +88,7 @@ import {
 import {
   // Class name utility
   cn,
-} from '@esteban-url/trailhead-web-ui'
+} from '@esteban-url/trailhead-web-ui';
 ```
 
 ## Component Props
@@ -97,10 +97,10 @@ import {
 
 ```tsx
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  color?: 'blue' | 'white' | 'dark/zinc' | 'light' | 'dark/white' | 'red' | 'amber' | 'zinc'
-  outline?: boolean
-  plain?: boolean
-  children: React.ReactNode
+  color?: 'blue' | 'white' | 'dark/zinc' | 'light' | 'dark/white' | 'red' | 'amber' | 'zinc';
+  outline?: boolean;
+  plain?: boolean;
+  children: React.ReactNode;
 }
 ```
 
@@ -108,7 +108,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 ```tsx
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  invalid?: boolean
+  invalid?: boolean;
 }
 ```
 
@@ -116,22 +116,22 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 ```tsx
 interface DialogProps {
-  open: boolean
-  onClose: (open: boolean) => void
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
-  children: React.ReactNode
+  open: boolean;
+  onClose: (open: boolean) => void;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
+  children: React.ReactNode;
 }
 
 interface DialogTitleProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface DialogDescriptionProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface DialogActionsProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 ```
 
@@ -163,7 +163,7 @@ interface BadgeProps extends React.ComponentPropsWithoutRef<'span'> {
     | 'secondary'
     | 'accent'
     | 'muted'
-    | 'destructive'
+    | 'destructive';
 }
 ```
 
@@ -185,27 +185,27 @@ The Badge component supports both traditional color names and semantic color tok
 
 ```tsx
 interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface TableHeaderProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 ```
 
@@ -215,10 +215,10 @@ interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
 
 ```tsx
 interface ThemeProviderProps {
-  children: React.ReactNode
-  defaultTheme?: string // Default: 'zinc'
-  storageKey?: string // Default: 'theme'
-  enableSystem?: boolean // Default: true
+  children: React.ReactNode;
+  defaultTheme?: string; // Default: 'zinc'
+  storageKey?: string; // Default: 'theme'
+  enableSystem?: boolean; // Default: true
 }
 ```
 
@@ -226,14 +226,14 @@ interface ThemeProviderProps {
 
 ```tsx
 interface UseThemeResult {
-  theme: string | undefined // Current theme name
-  setTheme: (theme: string) => void // Set theme
-  resolvedTheme: string | undefined // Resolved theme (system aware)
-  themes: string[] // All available themes
-  systemTheme: 'light' | 'dark' | undefined // System preference
+  theme: string | undefined; // Current theme name
+  setTheme: (theme: string) => void; // Set theme
+  resolvedTheme: string | undefined; // Resolved theme (system aware)
+  themes: string[]; // All available themes
+  systemTheme: 'light' | 'dark' | undefined; // System preference
 }
 
-const { theme, setTheme, resolvedTheme, themes, systemTheme } = useTheme()
+const { theme, setTheme, resolvedTheme, themes, systemTheme } = useTheme();
 ```
 
 ### Theme Registry
@@ -275,10 +275,10 @@ const theme = createTheme('my-theme')
       'button-shadow': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
     },
   })
-  .build()
+  .build();
 
 // Register the theme
-themeRegistry.register('my-theme', theme)
+themeRegistry.register('my-theme', theme);
 ```
 
 ## Type Definitions
@@ -287,10 +287,10 @@ themeRegistry.register('my-theme', theme)
 
 ```tsx
 interface TrailheadThemeConfig {
-  name: string
-  light: ThemeConfig
-  dark: ThemeConfig
-  radius?: string
+  name: string;
+  light: ThemeConfig;
+  dark: ThemeConfig;
+  radius?: string;
 }
 ```
 
@@ -298,8 +298,8 @@ interface TrailheadThemeConfig {
 
 ```tsx
 interface ThemeConfig {
-  colors: ColorConfig
-  radius?: string
+  colors: ColorConfig;
+  radius?: string;
 }
 ```
 
@@ -307,31 +307,31 @@ interface ThemeConfig {
 
 ```tsx
 interface ColorConfig {
-  background: string
-  foreground: string
-  card: string
-  'card-foreground': string
-  popover: string
-  'popover-foreground': string
-  primary: string
-  'primary-foreground': string
-  secondary: string
-  'secondary-foreground': string
-  muted: string
-  'muted-foreground': string
-  accent: string
-  'accent-foreground': string
-  destructive: string
-  'destructive-foreground': string
-  border: string
-  input: string
-  ring: string
-  'chart-1'?: string
-  'chart-2'?: string
-  'chart-3'?: string
-  'chart-4'?: string
-  'chart-5'?: string
-  [key: string]: string | undefined // Component overrides
+  background: string;
+  foreground: string;
+  card: string;
+  'card-foreground': string;
+  popover: string;
+  'popover-foreground': string;
+  primary: string;
+  'primary-foreground': string;
+  secondary: string;
+  'secondary-foreground': string;
+  muted: string;
+  'muted-foreground': string;
+  accent: string;
+  'accent-foreground': string;
+  destructive: string;
+  'destructive-foreground': string;
+  border: string;
+  input: string;
+  ring: string;
+  'chart-1'?: string;
+  'chart-2'?: string;
+  'chart-3'?: string;
+  'chart-4'?: string;
+  'chart-5'?: string;
+  [key: string]: string | undefined; // Component overrides
 }
 ```
 
@@ -340,8 +340,8 @@ interface ColorConfig {
 ```tsx
 interface ComponentOverrides {
   [componentName: string]: {
-    [cssVariable: string]: string
-  }
+    [cssVariable: string]: string;
+  };
 }
 
 // Example:
@@ -353,7 +353,7 @@ const overrides: ComponentOverrides = {
   card: {
     'card-padding': '1.5rem',
   },
-}
+};
 ```
 
 ## Utility Functions
@@ -378,17 +378,17 @@ cn('base-class', condition && 'conditional-class', {
 Trailhead UI includes 8 predefined themes:
 
 ```tsx
-import { themePresets } from '@esteban-url/trailhead-web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui';
 
 // Available themes
-const redTheme = themePresets.red()
-const roseTheme = themePresets.rose()
-const orangeTheme = themePresets.orange()
-const greenTheme = themePresets.green()
-const blueTheme = themePresets.blue()
-const yellowTheme = themePresets.yellow()
-const violetTheme = themePresets.violet()
-const catalystTheme = themePresets.catalyst() // Original Catalyst colors
+const redTheme = themePresets.red();
+const roseTheme = themePresets.rose();
+const orangeTheme = themePresets.orange();
+const greenTheme = themePresets.green();
+const blueTheme = themePresets.blue();
+const yellowTheme = themePresets.yellow();
+const violetTheme = themePresets.violet();
+const catalystTheme = themePresets.catalyst(); // Original Catalyst colors
 ```
 
 ## CSS Custom Properties

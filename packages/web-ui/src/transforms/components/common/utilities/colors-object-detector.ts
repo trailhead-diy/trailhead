@@ -10,6 +10,6 @@
  */
 
 // Re-export everything from the modular implementation
-export * from './colors-object-detector/detectors.js'
-export * from './colors-object-detector/validators.js'
-export * from './colors-object-detector/protectors.js'
+export * from './colors-object-detector/detectors.js';
+export * from './colors-object-detector/validators.js';
+export * from './colors-object-detector/protectors.js';

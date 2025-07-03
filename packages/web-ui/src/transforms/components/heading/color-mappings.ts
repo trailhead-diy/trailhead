@@ -1,7 +1,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const headingColorMappings = makeProtected([
   // Text colors
@@ -79,11 +79,11 @@ const headingColorMappings = makeProtected([
     replacement: 'dark:text-muted-foreground',
     description: 'Convert dark mode zinc subheading to muted',
   },
-])
+]);
 
 export const headingColorMappingsTransform = createProtectedRegexTransform({
   name: 'heading-color-mappings',
   description: 'Convert heading hardcoded colors to semantic tokens',
   mappings: headingColorMappings,
   changeType: 'heading-color-semantic',
-})
+});

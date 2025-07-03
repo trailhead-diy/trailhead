@@ -12,10 +12,10 @@ The Pagination component is **mostly correctly implemented** with semantic token
 
 ```tsx
 // Current - HARDCODED
-current && 'before:bg-zinc-950/5 dark:before:bg-white/10'
+current && 'before:bg-zinc-950/5 dark:before:bg-white/10';
 
 // Recommended Fix
-current && 'before:bg-muted dark:before:bg-muted'
+current && 'before:bg-muted dark:before:bg-muted';
 ```
 
 **Impact**: Current page indicator may be invisible or poorly contrasted in themed environments, breaking navigation context for users.

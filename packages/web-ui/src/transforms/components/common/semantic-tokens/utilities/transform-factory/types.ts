@@ -2,36 +2,36 @@
  * Types for semantic enhancement transform factory
  */
 
-import { API } from 'jscodeshift'
+import { API } from 'jscodeshift';
 
 export interface ComponentConfig {
   /** Component name (e.g., 'Button', 'Badge') */
-  name: string
+  name: string;
   /** Pattern to detect if file contains this component */
-  detectPattern: (content: string) => boolean
+  detectPattern: (content: string) => boolean;
   /** Default color fallback */
-  defaultColor: string
+  defaultColor: string;
   /** How color type is defined */
-  typePattern: 'alias' | 'prop' | 'none'
+  typePattern: 'alias' | 'prop' | 'none';
   /** Name of type alias if typePattern is 'alias' */
-  typeAliasName?: string
+  typeAliasName?: string;
   /** Name of props interface if typePattern is 'prop' */
-  propsInterfaceName?: string
+  propsInterfaceName?: string;
   /** Whether component uses forwardRef */
-  isForwardRef?: boolean
+  isForwardRef?: boolean;
   /** Whether component has colors object */
-  hasColorsObject?: boolean
+  hasColorsObject?: boolean;
   /** Variable name for resolved classes */
-  variableName?: string
+  variableName?: string;
   /** Whether to use IIFE for resolution */
-  useIIFE?: boolean
+  useIIFE?: boolean;
   /** Custom resolution application logic */
-  applyResolution?: (root: any, j: API['jscodeshift'], variableName: string) => void
+  applyResolution?: (root: any, j: API['jscodeshift'], variableName: string) => void;
 }
 
 export interface TransformContext {
-  root: any
-  j: API['jscodeshift']
-  config: ComponentConfig
-  changes: any[]
+  root: any;
+  j: API['jscodeshift'];
+  config: ComponentConfig;
+  changes: any[];
 }

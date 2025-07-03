@@ -6,8 +6,8 @@
  * It operates on files in-place and does not copy or move files.
  */
 
-import type { Result } from './types.js'
-import { join } from 'path'
+import type { Result } from './types.js';
+import { join } from 'path';
 
 // ============================================================================
 // CORE TYPES - Immutable data structures
@@ -18,12 +18,12 @@ import { join } from 'path'
  * Immutable interface
  */
 export interface TransformConfig {
-  readonly srcDir: string
-  readonly verbose: boolean
-  readonly dryRun: boolean
-  readonly skipTransforms?: boolean
-  readonly enabledTransforms?: string[]
-  readonly disabledTransforms?: string[]
+  readonly srcDir: string;
+  readonly verbose: boolean;
+  readonly dryRun: boolean;
+  readonly skipTransforms?: boolean;
+  readonly enabledTransforms?: string[];
+  readonly disabledTransforms?: string[];
 }
 
 /**
@@ -31,11 +31,11 @@ export interface TransformConfig {
  * Immutable interface with readonly properties
  */
 export interface TransformResult {
-  readonly filesProcessed: number
-  readonly filesModified: number
-  readonly conversionsApplied: number
-  readonly errors: readonly string[]
-  readonly warnings: readonly string[]
+  readonly filesProcessed: number;
+  readonly filesModified: number;
+  readonly conversionsApplied: number;
+  readonly errors: readonly string[];
+  readonly warnings: readonly string[];
 }
 
 // ============================================================================
@@ -52,13 +52,13 @@ export const executeTransforms = async (
 ): Promise<Result<TransformResult, string>> => {
   try {
     // Execute transforms pipeline
-    const transformResult = await executeTransformPipeline(config)
-    return { success: true, value: transformResult }
+    const transformResult = await executeTransformPipeline(config);
+    return { success: true, value: transformResult };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    return { success: false, error: errorMessage }
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return { success: false, error: errorMessage };
   }
-}
+};
 
 /**
  * Pure function: Execute the transforms pipeline
@@ -67,7 +67,7 @@ export const executeTransforms = async (
 const executeTransformPipeline = async (config: TransformConfig): Promise<TransformResult> => {
   try {
     // Import the main pipeline (dependency injection pattern)
-    const { runMainPipeline } = await import('../../../transforms/pipelines/main.js')
+    const { runMainPipeline } = await import('../../../transforms/pipelines/main.js');
 
     // Execute pipeline with configuration
     await runMainPipeline({
@@ -78,10 +78,10 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
       skipTransforms: config.skipTransforms,
       enabledTransforms: config.enabledTransforms,
       disabledTransforms: config.disabledTransforms,
-    })
+    });
 
     // Calculate result statistics
-    const fileCount = await countTransformedFiles(config.srcDir)
+    const fileCount = await countTransformedFiles(config.srcDir);
 
     // If transforms were skipped, report 0 conversions
     if (config.skipTransforms) {
@@ -91,7 +91,7 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
         conversionsApplied: 0,
         errors: [],
         warnings: [],
-      }
+      };
     }
 
     return {
@@ -100,13 +100,13 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
       conversionsApplied: fileCount * 5, // Estimate: avg 5 conversions per file
       errors: [],
       warnings: [],
-    }
+    };
   } catch (error) {
     throw new Error(
       `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`
-    )
+    );
   }
-}
+};
 
 // ============================================================================
 // UTILITY FUNCTIONS - Pure functions for data transformation
@@ -118,13 +118,13 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
  */
 const countTransformedFiles = async (srcDir: string): Promise<number> => {
   try {
-    const fs = await import('fs/promises')
-    const files = await fs.readdir(srcDir)
-    return files.filter((file) => file.endsWith('.tsx')).length
+    const fs = await import('fs/promises');
+    const files = await fs.readdir(srcDir);
+    return files.filter(file => file.endsWith('.tsx')).length;
   } catch {
-    return 27 // Default estimate for Catalyst UI components
+    return 27; // Default estimate for Catalyst UI components
   }
-}
+};
 
 // ============================================================================
 // VALIDATION FUNCTIONS - Pure functions for result validation
@@ -136,11 +136,11 @@ const countTransformedFiles = async (srcDir: string): Promise<number> => {
  */
 export const validateTransformConfig = (config: TransformConfig): Result<void, string> => {
   if (!config.srcDir) {
-    return { success: false, error: 'srcDir is required' }
+    return { success: false, error: 'srcDir is required' };
   }
 
-  return { success: true, value: undefined }
-}
+  return { success: true, value: undefined };
+};
 
 /**
  * Pure function: Check if transforms are needed
@@ -148,18 +148,18 @@ export const validateTransformConfig = (config: TransformConfig): Result<void, s
  */
 export const needsTransformation = async (srcDir: string): Promise<boolean> => {
   try {
-    const fs = await import('fs/promises')
-    const files = await fs.readdir(srcDir)
-    const tsxFiles = files.filter((file) => file.endsWith('.tsx'))
+    const fs = await import('fs/promises');
+    const files = await fs.readdir(srcDir);
+    const tsxFiles = files.filter(file => file.endsWith('.tsx'));
 
     if (tsxFiles.length === 0) {
-      return false // No component files to transform
+      return false; // No component files to transform
     }
 
     // Check a sample file for hardcoded colors (indicates transformation needed)
-    const sampleFile = tsxFiles[0]
-    const filePath = join(srcDir, sampleFile)
-    const content = await fs.readFile(filePath, 'utf-8')
+    const sampleFile = tsxFiles[0];
+    const filePath = join(srcDir, sampleFile);
+    const content = await fs.readFile(filePath, 'utf-8');
 
     // Look for hardcoded color patterns
     const hardcodedPatterns = [
@@ -169,13 +169,13 @@ export const needsTransformation = async (srcDir: string): Promise<boolean> => {
       /ring-zinc-\d+/,
       /bg-slate-\d+/,
       /text-slate-\d+/,
-    ]
+    ];
 
-    return hardcodedPatterns.some((pattern) => pattern.test(content))
+    return hardcodedPatterns.some(pattern => pattern.test(content));
   } catch {
-    return true // If we can't check, assume transformation is needed
+    return true; // If we can't check, assume transformation is needed
   }
-}
+};
 
 // ============================================================================
 // EXPORTS - Clean public API

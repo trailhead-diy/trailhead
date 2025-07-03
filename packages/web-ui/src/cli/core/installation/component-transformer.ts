@@ -2,37 +2,37 @@
  * Component transformation module for no-wrapper installation
  */
 
-import type { Result, InstallError } from './types.js'
-import { Ok, Err } from './types.js'
+import type { Result, InstallError } from './types.js';
+import { Ok, Err } from './types.js';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 interface TransformOptions {
-  readonly removePrefix: string // 'catalyst-'
-  readonly updateExports: ReadonlyMap<string, string> // CatalystButton -> Button
-  readonly updateImports: ReadonlyMap<string, string> // './catalyst-text' -> './text'
-  readonly fixRelativePaths: ReadonlyMap<string, string> // '../utils/cn' -> './utils/cn'
+  readonly removePrefix: string; // 'catalyst-'
+  readonly updateExports: ReadonlyMap<string, string>; // CatalystButton -> Button
+  readonly updateImports: ReadonlyMap<string, string>; // './catalyst-text' -> './text'
+  readonly fixRelativePaths: ReadonlyMap<string, string>; // '../utils/cn' -> './utils/cn'
 }
 
 interface TransformResult {
-  readonly content: string
-  readonly transformations: readonly string[]
+  readonly content: string;
+  readonly transformations: readonly string[];
 }
 
 type TransformPattern = {
-  readonly regex: RegExp
-  readonly replacement: string | ((match: string) => string)
-  readonly description: string
-}
+  readonly regex: RegExp;
+  readonly replacement: string | ((match: string) => string);
+  readonly description: string;
+};
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
-const CATALYST_PREFIX = 'catalyst-'
-const CATALYST_COMPONENT_PREFIX = 'Catalyst'
+const CATALYST_PREFIX = 'catalyst-';
+const CATALYST_COMPONENT_PREFIX = 'Catalyst';
 
 // Component name mappings - only store the base names
 const COMPONENT_NAMES = [
@@ -141,14 +141,14 @@ const COMPONENT_NAMES = [
   'AlertProps',
   'DialogProps',
   'BadgeProps',
-] as const
+] as const;
 
 // Paths that need to be fixed when moving files up one level
 const RELATIVE_PATH_FIXES = [
   ['../utils/cn', './utils/cn'],
   ['../theme/index', './theme/index'],
   ['../theme', './theme'],
-] as const
+] as const;
 
 // ============================================================================
 // PURE HELPER FUNCTIONS
@@ -160,36 +160,36 @@ const RELATIVE_PATH_FIXES = [
 const toKebabCase = (name: string): string => {
   return name
     .replace(/([A-Z])/g, (match, p1, offset) => (offset > 0 ? '-' : '') + p1.toLowerCase())
-    .toLowerCase()
-}
+    .toLowerCase();
+};
 
 /**
  * Generate component export map from base names
  */
 const generateComponentMap = (): ReadonlyMap<string, string> => {
   const entries = COMPONENT_NAMES.map(
-    (name) => [`${CATALYST_COMPONENT_PREFIX}${name}`, name] as const
-  )
-  return Object.freeze(new Map(entries))
-}
+    name => [`${CATALYST_COMPONENT_PREFIX}${name}`, name] as const
+  );
+  return Object.freeze(new Map(entries));
+};
 
 /**
  * Generate import path map from component names
  */
 const generateImportMap = (): ReadonlyMap<string, string> => {
-  const entries = COMPONENT_NAMES.map((name) => {
-    const kebabName = toKebabCase(name)
-    return [`./${CATALYST_PREFIX}${kebabName}`, `./${kebabName}`] as const
-  })
-  return Object.freeze(new Map(entries))
-}
+  const entries = COMPONENT_NAMES.map(name => {
+    const kebabName = toKebabCase(name);
+    return [`./${CATALYST_PREFIX}${kebabName}`, `./${kebabName}`] as const;
+  });
+  return Object.freeze(new Map(entries));
+};
 
 /**
  * Generate relative path fixes map
  */
 const generatePathFixMap = (): ReadonlyMap<string, string> => {
-  return Object.freeze(new Map(RELATIVE_PATH_FIXES))
-}
+  return Object.freeze(new Map(RELATIVE_PATH_FIXES));
+};
 
 /**
  * Apply a single transformation pattern
@@ -199,15 +199,15 @@ const applyTransformation = (
   pattern: TransformPattern,
   transformations: string[]
 ): string => {
-  const before = content
-  const after = content.replace(pattern.regex, pattern.replacement as any)
+  const before = content;
+  const after = content.replace(pattern.regex, pattern.replacement as any);
 
   if (before !== after) {
-    transformations.push(pattern.description)
+    transformations.push(pattern.description);
   }
 
-  return after
-}
+  return after;
+};
 
 /**
  * Create transformation patterns for exports
@@ -228,7 +228,7 @@ const createExportPatterns = (oldName: string, newName: string): readonly Transf
     replacement: `export type ${newName}`,
     description: `Renamed export type ${oldName} to ${newName}`,
   },
-]
+];
 
 /**
  * Create transformation pattern for imports
@@ -237,7 +237,7 @@ const createImportPattern = (oldPath: string, newPath: string): TransformPattern
   regex: new RegExp(`from\\s+['"]${oldPath}['"]`, 'g'),
   replacement: `from '${newPath}'`,
   description: `Updated import path ${oldPath} to ${newPath}`,
-})
+});
 
 /**
  * Create transformation pattern for component references
@@ -246,7 +246,7 @@ const createReferencePattern = (oldName: string, newName: string): TransformPatt
   regex: new RegExp(`\\b${oldName}\\b`, 'g'),
   replacement: newName,
   description: `Updated references from ${oldName} to ${newName}`,
-})
+});
 
 // ============================================================================
 // MAIN TRANSFORMATION FUNCTIONS
@@ -261,40 +261,40 @@ export const transformComponentContent = (
   fileName: string,
   options: TransformOptions
 ): TransformResult => {
-  let transformed = content
-  const transformations: string[] = []
+  let transformed = content;
+  const transformations: string[] = [];
 
   // Apply export transformations
   options.updateExports.forEach((newName, oldName) => {
-    const patterns = createExportPatterns(oldName, newName)
-    patterns.forEach((pattern) => {
-      transformed = applyTransformation(transformed, pattern, transformations)
-    })
-  })
+    const patterns = createExportPatterns(oldName, newName);
+    patterns.forEach(pattern => {
+      transformed = applyTransformation(transformed, pattern, transformations);
+    });
+  });
 
   // Apply import path transformations
   options.updateImports.forEach((newPath, oldPath) => {
-    const pattern = createImportPattern(oldPath, newPath)
-    transformed = applyTransformation(transformed, pattern, transformations)
-  })
+    const pattern = createImportPattern(oldPath, newPath);
+    transformed = applyTransformation(transformed, pattern, transformations);
+  });
 
   // Apply component reference transformations
   options.updateExports.forEach((newName, oldName) => {
-    const pattern = createReferencePattern(oldName, newName)
-    transformed = applyTransformation(transformed, pattern, transformations)
-  })
+    const pattern = createReferencePattern(oldName, newName);
+    transformed = applyTransformation(transformed, pattern, transformations);
+  });
 
   // Apply relative path fixes
   options.fixRelativePaths.forEach((newPath, oldPath) => {
-    const pattern = createImportPattern(oldPath, newPath)
-    transformed = applyTransformation(transformed, pattern, transformations)
-  })
+    const pattern = createImportPattern(oldPath, newPath);
+    transformed = applyTransformation(transformed, pattern, transformations);
+  });
 
   return {
     content: transformed,
     transformations: Object.freeze(transformations),
-  }
-}
+  };
+};
 
 /**
  * Get transformation options for a component
@@ -306,29 +306,29 @@ export const getTransformOptions = (_componentName: string): TransformOptions =>
     updateExports: generateComponentMap(),
     updateImports: generateImportMap(),
     fixRelativePaths: generatePathFixMap(),
-  })
-}
+  });
+};
 
 /**
  * Transform lib/index.ts content for no-wrapper installation
  * @returns Transformed content with updated export paths
  */
 export const transformLibIndexContent = (content: string): TransformResult => {
-  const transformations: string[] = []
+  const transformations: string[] = [];
 
   const pattern: TransformPattern = {
     regex: /from '\.\/catalyst-/g,
     replacement: "from './",
     description: 'Removed catalyst- prefix from all export paths',
-  }
+  };
 
-  const transformed = applyTransformation(content, pattern, transformations)
+  const transformed = applyTransformation(content, pattern, transformations);
 
   return {
     content: transformed,
     transformations: Object.freeze(transformations),
-  }
-}
+  };
+};
 
 /**
  * Get the new filename without catalyst prefix
@@ -337,8 +337,8 @@ export const transformLibIndexContent = (content: string): TransformResult => {
 export const getTransformedFileName = (fileName: string): string => {
   return fileName.startsWith(CATALYST_PREFIX)
     ? fileName.substring(CATALYST_PREFIX.length)
-    : fileName
-}
+    : fileName;
+};
 
 /**
  * Validate transformation result
@@ -354,19 +354,19 @@ export const validateTransformResult = (
       type: 'ValidationError',
       message: `Transformation resulted in empty content for ${fileName}`,
       field: fileName,
-    })
+    });
   }
 
   // Check for basic syntax integrity - only validate if it's not an index file
   // Index files might have different export patterns
-  const exportCount = (result.content.match(/export/g) || []).length
+  const exportCount = (result.content.match(/export/g) || []).length;
   if (exportCount === 0 && !fileName.includes('index')) {
     return Err({
       type: 'ValidationError',
       message: `No exports found in transformed ${fileName}`,
       field: fileName,
-    })
+    });
   }
 
-  return Ok(result)
-}
+  return Ok(result);
+};

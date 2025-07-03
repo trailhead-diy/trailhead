@@ -5,14 +5,14 @@
  * They serve as documentation for future implementation.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 import {
   buttonDefaultColorTransform,
   badgeDefaultColorTransform,
   checkboxDefaultColorTransform,
   radioDefaultColorTransform,
   switchDefaultColorTransform,
-} from '@/transforms/components/common/semantic-tokens/update-defaults/index.js'
+} from '@/transforms/components/common/semantic-tokens/update-defaults/index.js';
 
 describe.skip('Default Color Update Transforms', () => {
   describe('Button transform', () => {
@@ -32,21 +32,21 @@ export const CatalystButton = forwardRef(function CatalystButton(
     className
   )
   return <button ref={ref}>{children}</button>
-})`
+})`;
 
-      const result = buttonDefaultColorTransform.execute(input)
+      const result = buttonDefaultColorTransform.execute(input);
 
-      expect(result.hasChanges).toBe(true)
-      expect(result.content).toContain("color ?? 'primary'")
-      expect(result.content).not.toContain("color ?? 'dark/zinc'")
-      expect(result.changes).toHaveLength(1)
+      expect(result.hasChanges).toBe(true);
+      expect(result.content).toContain("color ?? 'primary'");
+      expect(result.content).not.toContain("color ?? 'dark/zinc'");
+      expect(result.changes).toHaveLength(1);
       expect(result.changes[0]).toMatchObject({
         type: 'default-value',
         oldValue: 'dark/zinc',
         newValue: 'primary',
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe('Badge transform', () => {
     it('should update badge default color from zinc to primary', () => {
@@ -57,15 +57,15 @@ export function CatalystBadge({
   ...props
 }: BadgeProps & React.ComponentPropsWithoutRef<'span'>) {
   return <span className={cn(colors[color], className)} {...props} />
-}`
+}`;
 
-      const result = badgeDefaultColorTransform.execute(input)
+      const result = badgeDefaultColorTransform.execute(input);
 
-      expect(result.hasChanges).toBe(true)
-      expect(result.content).toContain("color = 'primary'")
-      expect(result.content).not.toContain("color = 'zinc'")
-    })
-  })
+      expect(result.hasChanges).toBe(true);
+      expect(result.content).toContain("color = 'primary'");
+      expect(result.content).not.toContain("color = 'zinc'");
+    });
+  });
 
   describe('Checkbox transform', () => {
     it('should update checkbox default color from dark/zinc to primary', () => {
@@ -79,15 +79,15 @@ export function CatalystCheckbox({
   className?: string
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   return <Headless.Checkbox {...props} />
-}`
+}`;
 
-      const result = checkboxDefaultColorTransform.execute(input)
+      const result = checkboxDefaultColorTransform.execute(input);
 
-      expect(result.hasChanges).toBe(true)
-      expect(result.content).toContain("color = 'primary'")
-      expect(result.content).not.toContain("color = 'dark/zinc'")
-    })
-  })
+      expect(result.hasChanges).toBe(true);
+      expect(result.content).toContain("color = 'primary'");
+      expect(result.content).not.toContain("color = 'dark/zinc'");
+    });
+  });
 
   describe('Radio transform', () => {
     it('should update radio default color from dark/zinc to primary', () => {
@@ -98,15 +98,15 @@ export function CatalystRadio({
   ...props
 }: { color?: Color; className?: string }) {
   return <Headless.Radio {...props} />
-}`
+}`;
 
-      const result = radioDefaultColorTransform.execute(input)
+      const result = radioDefaultColorTransform.execute(input);
 
-      expect(result.hasChanges).toBe(true)
-      expect(result.content).toContain("color = 'primary'")
-      expect(result.content).not.toContain("color = 'dark/zinc'")
-    })
-  })
+      expect(result.hasChanges).toBe(true);
+      expect(result.content).toContain("color = 'primary'");
+      expect(result.content).not.toContain("color = 'dark/zinc'");
+    });
+  });
 
   describe('Switch transform', () => {
     it('should update switch default color from dark/zinc to primary', () => {
@@ -120,25 +120,25 @@ export function CatalystSwitch({
   className?: string
 }) {
   return <Headless.Switch {...props} />
-}`
+}`;
 
-      const result = switchDefaultColorTransform.execute(input)
+      const result = switchDefaultColorTransform.execute(input);
 
-      expect(result.hasChanges).toBe(true)
-      expect(result.content).toContain("color = 'primary'")
-      expect(result.content).not.toContain("color = 'dark/zinc'")
-    })
-  })
+      expect(result.hasChanges).toBe(true);
+      expect(result.content).toContain("color = 'primary'");
+      expect(result.content).not.toContain("color = 'dark/zinc'");
+    });
+  });
 
   describe('Non-matching content', () => {
     it('should not transform files that do not match', () => {
-      const input = 'export const SomeOtherComponent = () => <div>Hello</div>'
+      const input = 'export const SomeOtherComponent = () => <div>Hello</div>';
 
-      expect(buttonDefaultColorTransform.execute(input).hasChanges).toBe(false)
-      expect(badgeDefaultColorTransform.execute(input).hasChanges).toBe(false)
-      expect(checkboxDefaultColorTransform.execute(input).hasChanges).toBe(false)
-      expect(radioDefaultColorTransform.execute(input).hasChanges).toBe(false)
-      expect(switchDefaultColorTransform.execute(input).hasChanges).toBe(false)
-    })
-  })
-})
+      expect(buttonDefaultColorTransform.execute(input).hasChanges).toBe(false);
+      expect(badgeDefaultColorTransform.execute(input).hasChanges).toBe(false);
+      expect(checkboxDefaultColorTransform.execute(input).hasChanges).toBe(false);
+      expect(radioDefaultColorTransform.execute(input).hasChanges).toBe(false);
+      expect(switchDefaultColorTransform.execute(input).hasChanges).toBe(false);
+    });
+  });
+});

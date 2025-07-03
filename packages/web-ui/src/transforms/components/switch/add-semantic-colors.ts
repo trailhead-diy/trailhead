@@ -4,13 +4,13 @@
  * to the existing colors object in the Switch component
  */
 
-import { createRequire } from 'module'
-import { API, FileInfo } from 'jscodeshift'
-import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js'
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
+import { createRequire } from 'module';
+import { API, FileInfo } from 'jscodeshift';
+import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js';
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
 
 // Create require function for ESM compatibility
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 /**
  * Semantic color definitions to add to the Switch colors object
@@ -42,7 +42,7 @@ const SEMANTIC_COLOR_DEFINITIONS = {
     '[--switch-bg-ring:var(--color-muted-foreground)]/90 [--switch-bg:var(--color-muted-foreground)] dark:[--switch-bg-ring:transparent]',
     '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-muted-foreground)]/90',
   ],
-}
+};
 
 export const switchAddSemanticColorsTransform: Transform = {
   name: 'switch-add-semantic-colors',
@@ -50,7 +50,7 @@ export const switchAddSemanticColorsTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const changes: any[] = []
+    const changes: any[] = [];
 
     // Quick check if this is the Switch component
     if (!content.includes('Switch') || !content.includes('colors')) {
@@ -58,7 +58,7 @@ export const switchAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     // Skip if semantic colors already exist
@@ -71,15 +71,15 @@ export const switchAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     try {
-      const jscodeshift = require('jscodeshift')
-      const j = jscodeshift.withParser('tsx')
+      const jscodeshift = require('jscodeshift');
+      const j = jscodeshift.withParser('tsx');
 
       const transformer = (fileInfo: FileInfo, _api: API) => {
-        const root = j(fileInfo.source)
+        const root = j(fileInfo.source);
 
         // Find the colors object
         root
@@ -87,8 +87,8 @@ export const switchAddSemanticColorsTransform: Transform = {
             id: { name: 'colors' },
           })
           .forEach((path: any) => {
-            const init = path.value.init
-            if (init?.type !== 'ObjectExpression') return
+            const init = path.value.init;
+            if (init?.type !== 'ObjectExpression') return;
 
             const existingKeys = new Set(
               init.properties
@@ -101,48 +101,48 @@ export const switchAddSemanticColorsTransform: Transform = {
                       : ''
                 )
                 .filter(Boolean)
-            )
+            );
 
             // Add semantic colors if they don't exist
             Object.entries(SEMANTIC_COLOR_DEFINITIONS).forEach(([colorName, classNames]) => {
               if (!existingKeys.has(colorName)) {
                 const arrayExpression = j.arrayExpression(
-                  classNames.map((className) => j.literal(className))
-                )
+                  classNames.map(className => j.literal(className))
+                );
 
-                const newProperty = j.property('init', j.identifier(colorName), arrayExpression)
+                const newProperty = j.property('init', j.identifier(colorName), arrayExpression);
 
-                init.properties.push(newProperty)
+                init.properties.push(newProperty);
 
                 changes.push({
                   type: 'semantic-color-added',
                   color: colorName,
                   classes: classNames,
-                })
+                });
               }
-            })
-          })
+            });
+          });
 
-        return root.toSource(STANDARD_AST_FORMAT_OPTIONS)
-      }
+        return root.toSource(STANDARD_AST_FORMAT_OPTIONS);
+      };
 
       const result = transformer(
         { path: 'switch.tsx', source: content },
         { jscodeshift: j, j, stats: () => {}, report: () => {} }
-      )
+      );
 
       return {
         content: result,
         changes,
         hasChanges: changes.length > 0,
-      }
+      };
     } catch (error) {
-      console.error('Error in switch-add-semantic-colors transform:', error)
+      console.error('Error in switch-add-semantic-colors transform:', error);
       return {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
   },
-}
+};

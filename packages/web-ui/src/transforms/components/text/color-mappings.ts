@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const textColorMappings = makeProtected([
   // Hierarchical text color patterns - preserve visual hierarchy
@@ -167,7 +167,7 @@ const textColorMappings = makeProtected([
     replacement: 'dark:data-hover:decoration-foreground',
     description: 'Convert dark mode white hover decoration to foreground',
   },
-])
+]);
 
 /**
  * Text color mapping transform
@@ -181,9 +181,9 @@ export const textColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'text-color-semantic',
 
   // Only apply to text component files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Text') ||
     content.includes('export function TextLink') ||
     content.includes('export function Strong') ||
     content.includes('export function Code'),
-})
+});

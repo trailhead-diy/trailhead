@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const listboxColorMappings = makeProtected([
   // Icon stroke colors - primary targets
@@ -58,7 +58,7 @@ const listboxColorMappings = makeProtected([
     replacement: 'dark:data-selected:bg-accent',
     description: 'Convert dark mode selected background to semantic accent',
   },
-])
+]);
 
 /**
  * Listbox color mapping transform
@@ -71,10 +71,10 @@ export const listboxColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'listbox-color-semantic',
 
   // Only apply to listbox files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Listbox') ||
     content.includes('export function ListboxButton') ||
     content.includes('export function ListboxOptions') ||
     content.includes('export function ListboxOption') ||
     content.includes('ListboxLabel'),
-})
+});

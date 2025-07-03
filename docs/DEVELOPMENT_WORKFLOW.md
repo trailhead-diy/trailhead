@@ -37,6 +37,7 @@ lefthook run pre-commit
 ### Performance Optimizations
 
 Performance optimizations:
+
 - Prettier cache: `.turbo/.prettiercache`
 - Oxlint: No caching needed due to Rust performance
 - Parallel execution of all tasks
@@ -76,6 +77,7 @@ Examples:
 ### Troubleshooting
 
 **Hooks not running?**
+
 ```bash
 # Reinstall hooks
 pnpm lefthook:install
@@ -84,18 +86,21 @@ pnpm prepare
 ```
 
 **Hooks too slow?**
+
 1. Check if Prettier cache is working: Look for `.turbo/.prettiercache`
 2. Skip type checking locally: Create `.lefthook-local.yml`
 3. Use `--quiet` flag for oxlint to reduce output
 
 **False positive in secret detection?**
 The basic secret detection may flag example code. If it's safe, use:
+
 ```bash
 git commit --no-verify -m "docs: add API example"
 ```
 
 **Large file warning?**
 Consider:
+
 1. Compressing images
 2. Moving binaries to Git LFS
 3. Using CDN for assets

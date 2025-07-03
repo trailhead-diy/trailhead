@@ -3,27 +3,27 @@
  * Minimal implementation to satisfy orchestrator requirements
  */
 
-import chalk from 'chalk'
+import chalk from 'chalk';
 
 export interface DependencyPromptOptions {
   analysis: {
-    missing: string[]
-    outdated: string[]
-    hasConflicts: boolean
-  }
-  currentDependencies: Record<string, string>
-  existingDependencies: Record<string, string>
-  canInstall: boolean
-  isNpmOnline: boolean
-  isYarnOnline: boolean
-  isPnpmOnline: boolean
-  hasExisting: boolean
-  isOffline: boolean
-  isCI: boolean
+    missing: string[];
+    outdated: string[];
+    hasConflicts: boolean;
+  };
+  currentDependencies: Record<string, string>;
+  existingDependencies: Record<string, string>;
+  canInstall: boolean;
+  isNpmOnline: boolean;
+  isYarnOnline: boolean;
+  isPnpmOnline: boolean;
+  hasExisting: boolean;
+  isOffline: boolean;
+  isCI: boolean;
 }
 
 export interface DependencyStrategy {
-  type: 'auto' | 'smart' | 'selective' | 'manual' | 'skip' | 'force'
+  type: 'auto' | 'smart' | 'selective' | 'manual' | 'skip' | 'force';
 }
 
 /**
@@ -36,10 +36,10 @@ export async function runDependencyPrompts(
   // For now, always use auto strategy
   // This can be expanded with actual prompts if needed
   if (options.isCI || !options.canInstall) {
-    return { strategy: { type: 'skip' } }
+    return { strategy: { type: 'skip' } };
   }
 
-  return { strategy: { type: 'auto' } }
+  return { strategy: { type: 'auto' } };
 }
 
 /**
@@ -51,7 +51,7 @@ export function showPostInstallInstructions(
   fallbackCommand?: string
 ): void {
   if (strategy.type === 'skip' || strategy.type === 'manual') {
-    console.log(chalk.yellow('\n📦 Manual dependency installation required:'))
-    console.log(chalk.cyan(`   ${fallbackCommand || `${packageManager} install`}`))
+    console.log(chalk.yellow('\n📦 Manual dependency installation required:'));
+    console.log(chalk.cyan(`   ${fallbackCommand || `${packageManager} install`}`));
   }
 }

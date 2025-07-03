@@ -4,13 +4,13 @@
  * to the existing colors object in the Checkbox component
  */
 
-import { createRequire } from 'module'
-import { API, FileInfo } from 'jscodeshift'
-import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js'
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
+import { createRequire } from 'module';
+import { API, FileInfo } from 'jscodeshift';
+import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js';
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
 
 // Create require function for ESM compatibility
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 /**
  * Semantic color definitions to add to the Checkbox colors object
@@ -39,7 +39,7 @@ const SEMANTIC_COLOR_DEFINITIONS = {
   // Muted uses the most subtle pattern
   muted:
     '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-muted)] [--checkbox-checked-border:var(--color-muted)]/90',
-}
+};
 
 export const checkboxAddSemanticColorsTransform: Transform = {
   name: 'checkbox-add-semantic-colors',
@@ -47,7 +47,7 @@ export const checkboxAddSemanticColorsTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const changes: any[] = []
+    const changes: any[] = [];
 
     // Quick check if this is the Checkbox component
     if (!content.includes('Checkbox') || !content.includes('colors')) {
@@ -55,7 +55,7 @@ export const checkboxAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     // Skip if semantic colors already exist
@@ -68,15 +68,15 @@ export const checkboxAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     try {
-      const jscodeshift = require('jscodeshift')
-      const j = jscodeshift.withParser('tsx')
+      const jscodeshift = require('jscodeshift');
+      const j = jscodeshift.withParser('tsx');
 
       const transformer = (fileInfo: FileInfo, _api: API) => {
-        const root = j(fileInfo.source)
+        const root = j(fileInfo.source);
 
         // Find the colors object
         root
@@ -84,8 +84,8 @@ export const checkboxAddSemanticColorsTransform: Transform = {
             id: { name: 'colors' },
           })
           .forEach((path: any) => {
-            const init = path.value.init
-            if (init?.type !== 'ObjectExpression') return
+            const init = path.value.init;
+            if (init?.type !== 'ObjectExpression') return;
 
             const existingKeys = new Set(
               init.properties
@@ -98,7 +98,7 @@ export const checkboxAddSemanticColorsTransform: Transform = {
                       : ''
                 )
                 .filter(Boolean)
-            )
+            );
 
             // Add semantic colors if they don't exist
             Object.entries(SEMANTIC_COLOR_DEFINITIONS).forEach(([colorName, className]) => {
@@ -107,7 +107,7 @@ export const checkboxAddSemanticColorsTransform: Transform = {
                   'init',
                   j.identifier(colorName),
                   j.literal(className)
-                )
+                );
 
                 // Find the best position to insert (after 'rose' if it exists, otherwise at the end)
                 const roseIndex = init.properties.findIndex(
@@ -115,50 +115,50 @@ export const checkboxAddSemanticColorsTransform: Transform = {
                     (prop.type === 'Property' || prop.type === 'ObjectProperty') &&
                     prop.key.type === 'Identifier' &&
                     prop.key.name === 'rose'
-                )
+                );
 
                 if (roseIndex !== -1) {
                   // Insert after 'rose'
-                  init.properties.splice(roseIndex + 1, 0, newProperty)
+                  init.properties.splice(roseIndex + 1, 0, newProperty);
                 } else {
                   // Add at the end
-                  init.properties.push(newProperty)
+                  init.properties.push(newProperty);
                 }
 
                 changes.push({
                   type: 'semantic-color-added',
                   color: colorName,
                   classes: className,
-                })
+                });
               }
-            })
-          })
+            });
+          });
 
         // Type update is handled by a separate transform to avoid AST complexity
 
-        return root.toSource(STANDARD_AST_FORMAT_OPTIONS)
-      }
+        return root.toSource(STANDARD_AST_FORMAT_OPTIONS);
+      };
 
       const result = transformer(
         { path: 'checkbox.tsx', source: content },
         { jscodeshift: j, j, stats: () => {}, report: () => {} }
-      )
+      );
 
       return {
         content: result,
         changes,
         hasChanges: changes.length > 0,
-      }
+      };
     } catch (error) {
-      console.error('Error in checkbox-add-semantic-colors transform:', error)
+      console.error('Error in checkbox-add-semantic-colors transform:', error);
       return {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
   },
-}
+};
 
 // Export for use in transform pipelines
 export default {
@@ -166,4 +166,4 @@ export default {
   transform: checkboxAddSemanticColorsTransform,
   description:
     'Adds semantic color definitions (primary, secondary, destructive, accent, muted) to Checkbox component',
-}
+};

@@ -10,20 +10,20 @@ The Enhanced Semantic Token System preserves Catalyst UI's careful visual hierar
 
 ```typescript
 // Original Catalyst: Clear visual distinction
-'[--btn-icon:var(--color-zinc-500)]' // Inactive state
-'data-active:[--btn-icon:var(--color-zinc-700)]' // Active state
+'[--btn-icon:var(--color-zinc-500)]'; // Inactive state
+'data-active:[--btn-icon:var(--color-zinc-700)]'; // Active state
 
 // Previous Transform: Visual hierarchy lost
-'[--btn-icon:var(--color-muted-foreground)]' // Both states flattened!
-'data-active:[--btn-icon:var(--color-muted-foreground)]'
+'[--btn-icon:var(--color-muted-foreground)]'; // Both states flattened!
+'data-active:[--btn-icon:var(--color-muted-foreground)]';
 ```
 
 ### After: Hierarchy Preserved
 
 ```typescript
 // Enhanced Transform: Visual distinction maintained
-'[--btn-icon:var(--color-icon-inactive)]' // Clear inactive state
-'data-active:[--btn-icon:var(--color-icon-active)]' // Clear active state
+'[--btn-icon:var(--color-icon-inactive)]'; // Clear inactive state
+'data-active:[--btn-icon:var(--color-icon-active)]'; // Clear active state
 ```
 
 ## Token Categories
@@ -38,7 +38,7 @@ export type HierarchicalTextToken =
   | 'text-secondary' // zinc-700/zinc-300 - Medium-high contrast
   | 'text-tertiary' // zinc-600/zinc-400 - Medium contrast
   | 'text-quaternary' // zinc-500/zinc-500 - Lower contrast
-  | 'text-muted' // zinc-400/zinc-600 - Lowest contrast
+  | 'text-muted'; // zinc-400/zinc-600 - Lowest contrast
 ```
 
 **Usage Examples:**
@@ -60,7 +60,7 @@ export type IconSemanticToken =
   | 'icon-inactive' // Default/rest state (zinc-500 equivalent)
   | 'icon-active' // Active/selected state (zinc-700 equivalent)
   | 'icon-hover' // Hover state icons
-  | 'icon-muted' // Decorative/low-priority icons
+  | 'icon-muted'; // Decorative/low-priority icons
 ```
 
 **Usage Examples:**
@@ -78,7 +78,7 @@ export type BorderSemanticToken =
   | 'border-strong' // High contrast borders (zinc-950 solid)
   | 'border-medium' // Standard borders (zinc-950/20)
   | 'border-subtle' // Low contrast borders (zinc-950/10)
-  | 'border-ghost' // Very subtle borders (zinc-950/5)
+  | 'border-ghost'; // Very subtle borders (zinc-950/5)
 ```
 
 **Usage Examples:**
@@ -101,7 +101,7 @@ export type ComponentSemanticToken =
   | 'table-header-text' // Table header text
   | 'table-body-text' // Table body text
   | 'button-text-default' // Default button text
-  | 'button-text-hover' // Hover button text
+  | 'button-text-hover'; // Hover button text
 ```
 
 ## Progressive Enhancement Theme System
@@ -138,9 +138,9 @@ Components use inline fallback chains for enhanced variables:
 
 ```tsx
 // Button icon states with fallbacks
-'[--btn-icon:var(--icon-inactive,var(--muted-foreground))]'
-'data-active:[--btn-icon:var(--icon-active,var(--primary))]'
-'data-hover:[--btn-icon:var(--icon-hover,var(--primary-foreground))]'
+'[--btn-icon:var(--icon-inactive,var(--muted-foreground))]';
+'data-active:[--btn-icon:var(--icon-active,var(--primary))]';
+'data-hover:[--btn-icon:var(--icon-hover,var(--primary-foreground))]';
 ```
 
 **Benefits:**
@@ -154,9 +154,9 @@ Components use inline fallback chains for enhanced variables:
 ### Catalyst Theme (1:1 Parity)
 
 ```typescript
-import { themePresets } from '@esteban-url/trailhead-web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui';
 
-const catalystTheme = themePresets.catalyst()
+const catalystTheme = themePresets.catalyst();
 ```
 
 Includes all enhanced variables for perfect visual match with original Catalyst UI.
@@ -164,9 +164,9 @@ Includes all enhanced variables for perfect visual match with original Catalyst 
 ### Color Themes
 
 ```typescript
-const redTheme = themePresets.red()
-const blueTheme = themePresets.blue()
-const greenTheme = themePresets.green()
+const redTheme = themePresets.red();
+const blueTheme = themePresets.blue();
+const greenTheme = themePresets.green();
 ```
 
 Base color themes with shadcn variables. Add enhanced variables as needed.
@@ -237,19 +237,19 @@ zinc-950/5  → border-ghost   // Preserves "very subtle" intent
 
 ```typescript
 // Works immediately - no changes needed!
-import { themePresets } from '@esteban-url/trailhead-web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui';
 
 // Use any preset or your existing shadcn theme
-const theme = themePresets.blue() // or your existing theme
+const theme = themePresets.blue(); // or your existing theme
 ```
 
 ### From Original Catalyst
 
 ```typescript
 // Use the Catalyst preset for perfect 1:1 parity
-import { themePresets } from '@esteban-url/trailhead-web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui';
 
-const catalystTheme = themePresets.catalyst()
+const catalystTheme = themePresets.catalyst();
 // All visual hierarchy preserved automatically
 ```
 
@@ -269,7 +269,7 @@ const myTheme = {
     'icon-inactive': 'oklch(0.4 0.01 200)',
     'icon-active': 'oklch(0.8 0.15 200)',
   },
-}
+};
 ```
 
 ## Development Best Practices
@@ -278,23 +278,23 @@ const myTheme = {
 
 ```typescript
 // ✅ Good: Specific semantic meaning
-className = 'text-table-header-text'
+className = 'text-table-header-text';
 
 // ✅ Good: Clear hierarchy level
-className = 'text-secondary-foreground'
+className = 'text-secondary-foreground';
 
 // ❌ Avoid: Generic tokens when specific ones exist
-className = 'text-foreground' // Too generic for table headers
+className = 'text-foreground'; // Too generic for table headers
 ```
 
 ### 2. Preserve State Distinctions
 
 ```typescript
 // ✅ Good: Clear state progression
-className = 'stroke-icon-inactive data-hover:stroke-icon-hover data-active:stroke-icon-active'
+className = 'stroke-icon-inactive data-hover:stroke-icon-hover data-active:stroke-icon-active';
 
 // ❌ Avoid: Flattened states
-className = 'stroke-muted-foreground data-hover:stroke-muted-foreground' // No distinction!
+className = 'stroke-muted-foreground data-hover:stroke-muted-foreground'; // No distinction!
 ```
 
 ### 3. Use Component-Specific Tokens

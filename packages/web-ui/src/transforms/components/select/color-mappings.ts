@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const selectColorMappings = makeProtected([
   // Icon stroke colors - primary targets
@@ -63,7 +63,7 @@ const selectColorMappings = makeProtected([
     replacement: 'dark:bg-muted/50',
     description: 'Convert dark mode zinc backgrounds to semantic muted with opacity',
   },
-])
+]);
 
 /**
  * Select color mapping transform
@@ -76,8 +76,8 @@ export const selectColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'select-color-semantic',
 
   // Only apply to select files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Select') ||
     content.includes('export function SelectValue') ||
     content.includes('export function SelectButton'),
-})
+});

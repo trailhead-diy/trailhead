@@ -107,7 +107,7 @@ The `dev:refresh` command copies fresh Catalyst components for development:
 Create a `trailhead.config.ts` file:
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-web-ui'
+import { defineConfig } from '@esteban-url/trailhead-web-ui';
 
 export default defineConfig({
   install: {
@@ -121,7 +121,7 @@ export default defineConfig({
     enabledTransforms: ['button', 'badge', 'alert', 'dialog'],
   },
   verbose: true,
-})
+});
 ```
 
 ### JavaScript Configuration
@@ -139,7 +139,7 @@ module.exports = {
     // Disable specific transforms
     disabledTransforms: ['table', 'combobox'],
   },
-}
+};
 ```
 
 ### Package.json Configuration

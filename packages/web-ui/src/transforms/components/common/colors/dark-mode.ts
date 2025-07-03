@@ -3,7 +3,7 @@
  * Transforms dark: prefixed colors to semantic tokens
  */
 
-import { createRegexTransform, type ColorMapping } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform, type ColorMapping } from '../utilities/regex-transform-factory.js';
 
 // Dark mode background colors
 const DARK_BACKGROUNDS: ColorMapping[] = [
@@ -27,7 +27,7 @@ const DARK_BACKGROUNDS: ColorMapping[] = [
     replacement: 'dark:bg-muted',
     description: 'dark:bg-zinc-800 → dark:bg-muted',
   },
-]
+];
 
 // Dark mode text colors
 const DARK_TEXT: ColorMapping[] = [
@@ -46,7 +46,7 @@ const DARK_TEXT: ColorMapping[] = [
     replacement: 'dark:text-muted-foreground',
     description: 'dark:text-zinc-500 → dark:text-muted-foreground',
   },
-]
+];
 
 // Dark mode borders
 const DARK_BORDERS: ColorMapping[] = [
@@ -65,7 +65,7 @@ const DARK_BORDERS: ColorMapping[] = [
     replacement: 'dark:border-border',
     description: 'dark:border-zinc-800 → dark:border-border',
   },
-]
+];
 
 // Dark mode rings
 const DARK_RINGS: ColorMapping[] = [
@@ -79,7 +79,7 @@ const DARK_RINGS: ColorMapping[] = [
     replacement: 'dark:ring-ring',
     description: 'dark:ring-zinc-700 → dark:ring-ring',
   },
-]
+];
 
 // Dark mode fills
 const DARK_FILLS: ColorMapping[] = [
@@ -93,7 +93,7 @@ const DARK_FILLS: ColorMapping[] = [
     replacement: 'dark:fill-muted-foreground',
     description: 'dark:fill-zinc-400 → dark:fill-muted-foreground',
   },
-]
+];
 
 // Dark mode icon fills (preserving the dark: prefix)
 const DARK_ICON_FILLS: ColorMapping[] = [
@@ -108,7 +108,7 @@ const DARK_ICON_FILLS: ColorMapping[] = [
     description:
       'dark:*:data-[slot=icon]:fill-zinc-400 → dark:*:data-[slot=icon]:fill-muted-foreground',
   },
-]
+];
 
 // Dark mode interactive states
 const DARK_INTERACTIVE: ColorMapping[] = [
@@ -127,7 +127,7 @@ const DARK_INTERACTIVE: ColorMapping[] = [
     replacement: 'dark:data-focus:ring-ring',
     description: 'dark:data-focus:ring-white/opacity → dark:data-focus:ring-ring',
   },
-]
+];
 
 /**
  * Dark mode color transform
@@ -146,4 +146,4 @@ export const darkModeTransform = createRegexTransform({
     ...DARK_INTERACTIVE,
   ],
   changeType: 'dark-mode-color',
-})
+});

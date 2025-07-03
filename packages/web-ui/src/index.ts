@@ -26,11 +26,11 @@ export {
   Table,
   Text,
   Textarea,
-} from './components/index.js'
+} from './components/index.js';
 
-export { ThemeProvider, useTheme } from './components/theme/theme-provider.js'
+export { ThemeProvider, useTheme } from './components/theme/theme-provider.js';
 
-export { ThemeSwitcher } from './components/theme/theme-switcher.js'
+export { ThemeSwitcher } from './components/theme/theme-switcher.js';
 
 export {
   createThemeMap,
@@ -39,18 +39,18 @@ export {
   getThemeNames,
   applyThemeToDocument,
   type ThemeMap,
-} from './components/theme/registry.js'
+} from './components/theme/registry.js';
 
-export { buildTheme, createTheme } from './components/theme/builder.js'
+export { buildTheme, createTheme } from './components/theme/builder.js';
 
 export {
   type TrailheadThemeConfig,
   type ShadcnTheme,
   type ComponentThemeOverrides,
-} from './components/theme/config.js'
+} from './components/theme/config.js';
 
-export { cn } from './components/utils/cn.js'
+export { cn } from './components/utils/cn.js';
 
-export { defineConfig } from './cli/core/config/define-config.js'
+export { defineConfig } from './cli/core/config/define-config.js';
 
-export type { ComboboxProps } from './components/combobox.js'
+export type { ComboboxProps } from './components/combobox.js';

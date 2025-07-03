@@ -3,7 +3,7 @@
  * Creates text and hover color classes for semantic tokens
  */
 
-import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js'
+import { createObjectLookupStyles } from '../common/semantic-tokens/utilities/semantic-styles-factory.js';
 
 /**
  * Create semantic link styles
@@ -26,4 +26,4 @@ export const createSemanticLinkStyles = createObjectLookupStyles(
     border: 'text-border hover:text-border/80 dark:text-border dark:hover:text-border/80',
   },
   'primary'
-)
+);

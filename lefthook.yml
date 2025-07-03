@@ -62,7 +62,7 @@ pre-commit:
         # Basic secret detection (cross-platform)
         files=$(git diff --cached --name-only)
         if [ -n "$files" ]; then
-          echo "$files" | xargs grep -E -i '(api[_-]?key|secret|token|password|private[_-]?key).*=.*["\'][^"\']+["\']' 2>/dev/null || true
+          echo "$files" | xargs grep -E -i '(api[_-]?key|secret|token|password|private[_-]?key).*=.*["'"'"'][^"'"'"']+["'"'"']' 2>/dev/null || true
         fi
         
     # 6. Check file sizes

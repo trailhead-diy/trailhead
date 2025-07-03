@@ -3,17 +3,17 @@
  * Uses shared transform-core for consistent behavior across CLI and install
  */
 
-import * as path from 'path'
-import ora from 'ora'
-import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js'
-import { Ok, Err } from './types.js'
-import { isTsxFile } from '../shared/file-filters.js'
-import type { TransformResult } from '../shared/transform-core.js'
+import * as path from 'path';
+import ora from 'ora';
+import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js';
+import { Ok, Err } from './types.js';
+import { isTsxFile } from '../shared/file-filters.js';
+import type { TransformResult } from '../shared/transform-core.js';
 import {
   executeTransforms,
   validateTransformConfig,
   type TransformConfig,
-} from '../shared/transform-core.js'
+} from '../shared/transform-core.js';
 
 // ============================================================================
 // ADAPTER TYPES - Bridge between install and transform interfaces
@@ -24,10 +24,10 @@ import {
  * Maps to TransformResult from shared core
  */
 export interface ConversionStats {
-  readonly filesProcessed: number
-  readonly filesModified: number
-  readonly conversionsApplied: number
-  readonly errors: readonly string[]
+  readonly filesProcessed: number;
+  readonly filesModified: number;
+  readonly conversionsApplied: number;
+  readonly errors: readonly string[];
 }
 
 // ============================================================================
@@ -43,31 +43,31 @@ export const runColorConversions = async (
   logger: Logger,
   config: InstallConfig
 ): Promise<Result<ConversionStats, InstallError>> => {
-  const spinner = ora('Preparing transform pipeline...').start()
+  const spinner = ora('Preparing transform pipeline...').start();
 
   try {
     // Path to the catalyst components directory
-    const catalystDir = path.join(config.libDir, 'catalyst')
+    const catalystDir = path.join(config.libDir, 'catalyst');
 
     // Verify that the catalyst directory exists
-    spinner.text = 'Verifying catalyst directory...'
+    spinner.text = 'Verifying catalyst directory...';
 
-    const existsResult = await fs.exists(catalystDir)
+    const existsResult = await fs.exists(catalystDir);
     if (!existsResult.success) {
-      spinner.fail('Failed to check catalyst directory')
+      spinner.fail('Failed to check catalyst directory');
       return Err({
         type: 'ConversionError',
         message: 'Failed to check catalyst directory',
         cause: (existsResult as any).error,
-      })
+      });
     }
 
     if (!existsResult.value) {
-      spinner.fail('Catalyst components directory not found')
+      spinner.fail('Catalyst components directory not found');
       return Err({
         type: 'ConversionError',
         message: `Catalyst components directory not found: ${catalystDir}`,
-      })
+      });
     }
 
     // Create transform configuration
@@ -76,23 +76,23 @@ export const runColorConversions = async (
       verbose: false, // Keep quiet during install
       dryRun: false,
       skipTransforms: true, // Components already copied by install process
-    }
+    };
 
     // Validate configuration
-    const validation = validateTransformConfig(transformConfig)
+    const validation = validateTransformConfig(transformConfig);
     if (!validation.success) {
-      spinner.fail('Invalid transform configuration')
+      spinner.fail('Invalid transform configuration');
       return Err({
         type: 'ConversionError',
         message: `Invalid transform configuration: ${validation.error}`,
-      })
+      });
     }
 
     // Execute transforms using shared core
-    spinner.text = 'Executing transforms pipeline...'
-    spinner.stop() // Stop spinner to avoid conflicts with executeTransforms
+    spinner.text = 'Executing transforms pipeline...';
+    spinner.stop(); // Stop spinner to avoid conflicts with executeTransforms
 
-    const transformResult = await executeTransforms(transformConfig)
+    const transformResult = await executeTransforms(transformConfig);
 
     // Convert result to legacy format for backward compatibility
     const actualResult = transformResult.success
@@ -103,34 +103,34 @@ export const runColorConversions = async (
           conversionsApplied: 0,
           errors: [transformResult.error],
           warnings: [],
-        }
-    const stats = transformResultToConversionStats(actualResult)
+        };
+    const stats = transformResultToConversionStats(actualResult);
 
     // Show results
     if (stats.filesModified > 0) {
-      logger.success(`Transform pipeline completed: ${stats.filesModified} files modified`)
+      logger.success(`Transform pipeline completed: ${stats.filesModified} files modified`);
       if (stats.conversionsApplied > 0) {
-        logger.info(`Applied ${stats.conversionsApplied} semantic token conversions`)
+        logger.info(`Applied ${stats.conversionsApplied} semantic token conversions`);
       }
     } else {
-      logger.info('No conversions needed - files already use semantic tokens')
+      logger.info('No conversions needed - files already use semantic tokens');
     }
 
     if (stats.errors.length > 0) {
-      logger.warning(`Transform warnings (${stats.errors.length}):`)
-      stats.errors.forEach((error) => logger.warning(`  • ${error}`))
+      logger.warning(`Transform warnings (${stats.errors.length}):`);
+      stats.errors.forEach(error => logger.warning(`  • ${error}`));
     }
 
-    return Ok(stats)
+    return Ok(stats);
   } catch (error) {
-    spinner.fail('Transform pipeline failed')
+    spinner.fail('Transform pipeline failed');
     return Err({
       type: 'ConversionError',
       message: `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`,
       cause: error,
-    })
+    });
   }
-}
+};
 
 // ============================================================================
 // ADAPTER FUNCTIONS - Bridge between interfaces
@@ -145,7 +145,7 @@ const transformResultToConversionStats = (result: TransformResult): ConversionSt
   filesModified: result.filesModified,
   conversionsApplied: result.conversionsApplied,
   errors: [...result.errors, ...result.warnings], // Combine errors and warnings
-})
+});
 
 // ============================================================================
 // LEGACY FUNCTIONS - Kept for backward compatibility
@@ -163,57 +163,57 @@ export const validateConversions = async (
   _logger: Logger,
   config: InstallConfig
 ): Promise<Result<boolean, InstallError>> => {
-  const spinner = ora('Validating semantic token conversions...').start()
+  const spinner = ora('Validating semantic token conversions...').start();
 
   try {
-    const catalystDir = path.join(config.libDir, 'catalyst')
+    const catalystDir = path.join(config.libDir, 'catalyst');
 
     // Read a few sample files to check if they contain semantic tokens
-    const sampleFiles = ['button.tsx', 'input.tsx', 'alert.tsx']
-    let hasSemanticTokens = false
+    const sampleFiles = ['button.tsx', 'input.tsx', 'alert.tsx'];
+    let hasSemanticTokens = false;
 
     for (const fileName of sampleFiles) {
-      const filePath = path.join(catalystDir, fileName)
+      const filePath = path.join(catalystDir, fileName);
 
-      const existsResult = await fs.exists(filePath)
-      if (!existsResult.success) continue
+      const existsResult = await fs.exists(filePath);
+      if (!existsResult.success) continue;
 
       if (existsResult.value) {
-        const readResult = await fs.readFile(filePath)
-        if (!readResult.success) continue
+        const readResult = await fs.readFile(filePath);
+        if (!readResult.success) continue;
 
-        const content = readResult.value
+        const content = readResult.value;
 
         // Check for semantic token patterns
         const hasTokens =
           content.includes('bg-primary') ||
           content.includes('text-primary') ||
           content.includes('border-primary') ||
-          content.includes('ring-primary')
+          content.includes('ring-primary');
 
         if (hasTokens) {
-          hasSemanticTokens = true
-          break
+          hasSemanticTokens = true;
+          break;
         }
       }
     }
 
     if (hasSemanticTokens) {
-      spinner.succeed('Semantic token validation passed')
+      spinner.succeed('Semantic token validation passed');
     } else {
-      spinner.warn('Semantic tokens not detected - components may need manual updates')
+      spinner.warn('Semantic tokens not detected - components may need manual updates');
     }
 
-    return Ok(hasSemanticTokens)
+    return Ok(hasSemanticTokens);
   } catch (error) {
-    spinner.fail('Failed to validate conversions')
+    spinner.fail('Failed to validate conversions');
     return Err({
       type: 'ConversionError',
       message: 'Failed to validate conversions',
       cause: error,
-    })
+    });
   }
-}
+};
 
 // ============================================================================
 // UTILITY FUNCTIONS - Shared utilities now in transform-core
@@ -226,16 +226,16 @@ export const needsConversion = async (
   fs: FileSystem,
   filePath: string
 ): Promise<Result<boolean, InstallError>> => {
-  const readResult = await fs.readFile(filePath)
+  const readResult = await fs.readFile(filePath);
   if (!readResult.success) {
     return Err({
       type: 'ConversionError',
       message: 'Failed to read file for conversion check',
       cause: (readResult as any).error,
-    })
+    });
   }
 
-  const content = readResult.value
+  const content = readResult.value;
 
   // Look for hardcoded color patterns that should be converted
   const hardcodedPatterns = [
@@ -245,11 +245,11 @@ export const needsConversion = async (
     /ring-zinc-\d+/,
     /bg-slate-\d+/,
     /text-slate-\d+/,
-  ]
+  ];
 
-  const needsConv = hardcodedPatterns.some((pattern) => pattern.test(content))
-  return Ok(needsConv)
-}
+  const needsConv = hardcodedPatterns.some(pattern => pattern.test(content));
+  return Ok(needsConv);
+};
 
 /**
  * Get list of files that need conversion
@@ -258,23 +258,23 @@ export const getFilesNeedingConversion = async (
   fs: FileSystem,
   catalystDir: string
 ): Promise<Result<string[], InstallError>> => {
-  const readDirResult = await fs.readDir(catalystDir)
-  if (!readDirResult.success) return readDirResult
+  const readDirResult = await fs.readDir(catalystDir);
+  if (!readDirResult.success) return readDirResult;
 
-  const files = readDirResult.value.filter(isTsxFile)
-  const filesNeedingConversion: string[] = []
+  const files = readDirResult.value.filter(isTsxFile);
+  const filesNeedingConversion: string[] = [];
 
   for (const file of files) {
-    const filePath = path.join(catalystDir, file)
-    const needsConvResult = await needsConversion(fs, filePath)
+    const filePath = path.join(catalystDir, file);
+    const needsConvResult = await needsConversion(fs, filePath);
 
     if (needsConvResult.success && needsConvResult.value) {
-      filesNeedingConversion.push(file)
+      filesNeedingConversion.push(file);
     }
   }
 
-  return Ok(filesNeedingConversion)
-}
+  return Ok(filesNeedingConversion);
+};
 
 // ============================================================================
 // CONVERSION REPORTING
@@ -284,31 +284,31 @@ export const getFilesNeedingConversion = async (
  * Pure function: Generate conversion summary report
  */
 export const generateConversionReport = (stats: ConversionStats): string[] => {
-  const report: string[] = []
+  const report: string[] = [];
 
-  report.push('🎨 Color Conversion Summary')
-  report.push('')
-  report.push(`Files processed: ${stats.filesProcessed}`)
-  report.push(`Files modified: ${stats.filesModified}`)
-  report.push(`Conversions applied: ${stats.conversionsApplied}`)
+  report.push('🎨 Color Conversion Summary');
+  report.push('');
+  report.push(`Files processed: ${stats.filesProcessed}`);
+  report.push(`Files modified: ${stats.filesModified}`);
+  report.push(`Conversions applied: ${stats.conversionsApplied}`);
 
   if (stats.errors.length > 0) {
-    report.push('')
-    report.push(`Warnings: ${stats.errors.length}`)
-    stats.errors.forEach((error) => {
-      report.push(`  • ${error}`)
-    })
+    report.push('');
+    report.push(`Warnings: ${stats.errors.length}`);
+    stats.errors.forEach(error => {
+      report.push(`  • ${error}`);
+    });
   }
 
   if (stats.filesModified > 0) {
-    report.push('')
-    report.push('✅ Components now use semantic color tokens')
-    report.push('   This enables dynamic theming with Trailhead UI')
+    report.push('');
+    report.push('✅ Components now use semantic color tokens');
+    report.push('   This enables dynamic theming with Trailhead UI');
   } else {
-    report.push('')
-    report.push('ℹ️  No conversions were needed')
-    report.push('   Components already use semantic tokens')
+    report.push('');
+    report.push('ℹ️  No conversions were needed');
+    report.push('   Components already use semantic tokens');
   }
 
-  return report
-}
+  return report;
+};

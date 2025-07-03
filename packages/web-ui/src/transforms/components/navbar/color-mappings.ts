@@ -7,7 +7,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const navbarColorMappings = makeProtected([
   // Icon fills
@@ -69,7 +69,7 @@ const navbarColorMappings = makeProtected([
     replacement: 'dark:bg-background/$1',
     description: 'Convert dark mode divider to semantic background with opacity',
   },
-])
+]);
 
 /**
  * Navbar color mapping transform
@@ -82,10 +82,10 @@ export const navbarColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'navbar-color-semantic',
 
   // Only apply to navbar files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Navbar') ||
     content.includes('export function NavbarItem') ||
     content.includes('export function NavbarDivider') ||
     content.includes('NavbarSection') ||
     content.includes('NavbarLabel'),
-})
+});

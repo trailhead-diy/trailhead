@@ -1,20 +1,20 @@
-import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { describe, it, expect } from 'vitest'
-import { Input, InputGroup } from '../../src/components/input'
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect } from 'vitest';
+import { Input, InputGroup } from '../../src/components/input';
 
 describe('Input', () => {
   it('should handle user input and disabled state', async () => {
-    const user = userEvent.setup()
-    const { rerender } = render(<Input placeholder="Type here" />)
+    const user = userEvent.setup();
+    const { rerender } = render(<Input placeholder="Type here" />);
 
-    const input = screen.getByPlaceholderText('Type here')
-    await user.type(input, 'Hello world')
-    expect(input).toHaveValue('Hello world')
+    const input = screen.getByPlaceholderText('Type here');
+    await user.type(input, 'Hello world');
+    expect(input).toHaveValue('Hello world');
 
-    rerender(<Input disabled placeholder="Type here" value="Hello world" />)
-    expect(input).toBeDisabled()
-  })
+    rerender(<Input disabled placeholder="Type here" value="Hello world" />);
+    expect(input).toBeDisabled();
+  });
 
   it('should compose InputGroup for related inputs', () => {
     render(
@@ -23,9 +23,9 @@ describe('Input', () => {
         <Input type="text" placeholder="Last name" />
         <Input type="email" placeholder="Email" />
       </InputGroup>
-    )
+    );
 
-    expect(screen.getByPlaceholderText('First name')).toHaveAttribute('type', 'text')
-    expect(screen.getByPlaceholderText('Email')).toHaveAttribute('type', 'email')
-  })
-})
+    expect(screen.getByPlaceholderText('First name')).toHaveAttribute('type', 'text');
+    expect(screen.getByPlaceholderText('Email')).toHaveAttribute('type', 'email');
+  });
+});

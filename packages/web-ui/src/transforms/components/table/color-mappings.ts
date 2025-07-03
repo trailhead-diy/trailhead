@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const tableColorMappings = makeProtected([
   // Table-specific text hierarchy - preserve header vs body text distinction
@@ -169,7 +169,7 @@ const tableColorMappings = makeProtected([
     replacement: 'dark:hover:bg-muted/50',
     description: 'Convert dark mode hover zinc backgrounds to semantic muted with opacity',
   },
-])
+]);
 
 /**
  * Table color mapping transform
@@ -182,11 +182,11 @@ export const tableColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'table-color-semantic',
 
   // Only apply to table files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Table') ||
     content.includes('export function TableHead') ||
     content.includes('export function TableBody') ||
     content.includes('export function TableRow') ||
     content.includes('export function TableHeader') ||
     content.includes('export function TableCell'),
-})
+});

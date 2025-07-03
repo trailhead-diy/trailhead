@@ -104,8 +104,8 @@ npx tsx scripts/profile-transforms.ts --interactive
 ### Run Individual Transform
 
 ```typescript
-import { baseMappingsTransform } from './components/common/colors/base-mappings'
-const result = baseMappingsTransform.execute(content)
+import { baseMappingsTransform } from './components/common/colors/base-mappings';
+const result = baseMappingsTransform.execute(content);
 ```
 
 ## Architecture
@@ -151,7 +151,7 @@ const pipeline = pipe(
   reorderClassNameArgs,
   preserveMultilineCnCalls,
   ensureBlankLineAfterImports
-)
+);
 ```
 
 ## Key Achievements

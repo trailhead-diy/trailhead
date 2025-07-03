@@ -8,7 +8,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const textareaColorMappings = makeProtected([
   // Validation border colors - primary targets
@@ -59,7 +59,7 @@ const textareaColorMappings = makeProtected([
     description:
       'Convert dark mode red validation backgrounds to semantic destructive with opacity',
   },
-])
+]);
 
 /**
  * Textarea color mapping transform
@@ -72,6 +72,6 @@ export const textareaColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'textarea-color-semantic',
 
   // Only apply to textarea files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Textarea') || content.includes('data-invalid:border-red-'),
-})
+});

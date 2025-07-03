@@ -3,7 +3,7 @@
  * Transforms hover, focus, active, and other interactive state colors
  */
 
-import { createRegexTransform, type ColorMapping } from '../utilities/regex-transform-factory.js'
+import { createRegexTransform, type ColorMapping } from '../utilities/regex-transform-factory.js';
 
 // Focus rings and outlines
 const FOCUS_COLORS: ColorMapping[] = [
@@ -47,7 +47,7 @@ const FOCUS_COLORS: ColorMapping[] = [
     replacement: 'data-focus:ring-ring',
     description: 'data-focus:ring-zinc-950/opacity → data-focus:ring-ring (focus state)',
   },
-]
+];
 
 // Hover States
 const HOVER_STATES: ColorMapping[] = [
@@ -66,7 +66,7 @@ const HOVER_STATES: ColorMapping[] = [
     replacement: 'data-hover:text-accent-foreground',
     description: 'data-hover:text-zinc-950 → data-hover:text-accent-foreground (hover text)',
   },
-]
+];
 
 // Active States
 const ACTIVE_STATES: ColorMapping[] = [
@@ -75,7 +75,7 @@ const ACTIVE_STATES: ColorMapping[] = [
     replacement: 'data-active:bg-muted',
     description: 'data-active:bg-zinc-950/opacity → data-active:bg-muted (active state)',
   },
-]
+];
 
 // Icon fill states with interactive modifiers
 const ICON_FILL_STATES: ColorMapping[] = [
@@ -111,7 +111,7 @@ const ICON_FILL_STATES: ColorMapping[] = [
     replacement: 'dark:data-current:*:data-[slot=icon]:fill-foreground',
     description: 'dark current icon fill-white → fill-foreground',
   },
-]
+];
 
 /**
  * Interactive states color transform
@@ -122,4 +122,4 @@ export const interactiveStatesTransform = createRegexTransform({
   description: 'Transform interactive state colors to semantic tokens',
   mappings: [...FOCUS_COLORS, ...HOVER_STATES, ...ACTIVE_STATES, ...ICON_FILL_STATES],
   changeType: 'interactive-color',
-})
+});

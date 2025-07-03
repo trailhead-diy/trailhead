@@ -7,7 +7,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const inputColorMappings = makeProtected([
   // Background colors
@@ -133,7 +133,7 @@ const inputColorMappings = makeProtected([
     replacement: 'dark:*:data-[slot=icon]:text-muted-foreground',
     description: 'Convert dark mode zinc icon colors to semantic muted-foreground',
   },
-])
+]);
 
 /**
  * Input color mapping transform
@@ -146,8 +146,8 @@ export const inputColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'input-color-semantic',
 
   // Only apply to input files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function InputGroup') ||
     content.includes('export const Input') ||
     content.includes('input.tsx'),
-})
+});

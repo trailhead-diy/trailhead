@@ -2,8 +2,8 @@
  * RedwoodSDK-specific guidance
  */
 
-import type { FrameworkInfo } from '../framework-detection.js'
-import type { FrameworkGuidance } from './types.js'
+import type { FrameworkInfo } from '../framework-detection.js';
+import type { FrameworkGuidance } from './types.js';
 
 // ============================================================================
 // REDWOOD SDK GUIDANCE
@@ -128,7 +128,7 @@ export function ThemeSwitcherDemo() {
     'Check that your CSS file is properly imported in your app',
     'Verify that the @custom-variant dark is correctly defined for dark mode',
   ],
-})
+});
 
 // ============================================================================
 // REDWOOD SDK CONFIG TEMPLATES
@@ -180,4 +180,4 @@ export const generateRedwoodSDKCSSTemplate = () => ({
   --color-input: 217.2 32.6% 17.5%;
   --color-ring: 212.7 26.8% 83.9%;
 }`,
-})
+});

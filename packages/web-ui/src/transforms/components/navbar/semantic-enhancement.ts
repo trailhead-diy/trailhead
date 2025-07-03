@@ -5,7 +5,7 @@
  * this is a no-op transform that maintains compatibility
  */
 
-import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js'
+import { createSemanticEnhancementTransform } from '../common/semantic-tokens/utilities/transform-factory.js';
 
 /**
  * Navbar semantic enhancement transform
@@ -13,7 +13,7 @@ import { createSemanticEnhancementTransform } from '../common/semantic-tokens/ut
  */
 export const navbarSemanticEnhancementTransform = createSemanticEnhancementTransform({
   name: 'Navbar',
-  detectPattern: (content) =>
+  detectPattern: content =>
     content.includes('export function Navbar') ||
     content.includes('export const NavbarItem') ||
     content.includes('export function NavbarDivider'),
@@ -22,4 +22,4 @@ export const navbarSemanticEnhancementTransform = createSemanticEnhancementTrans
   hasColorsObject: false,
   variableName: 'resolvedColorClasses',
   useIIFE: false,
-})
+});

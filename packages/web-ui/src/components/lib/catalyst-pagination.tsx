@@ -1,14 +1,14 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import type React from 'react'
-import { CatalystButton } from './catalyst-button'
-import { cn } from '../utils/cn'
+import type React from 'react';
+import { CatalystButton } from './catalyst-button';
+import { cn } from '../utils/cn';
 
 export function CatalystPagination({
   'aria-label': ariaLabel = 'Page navigation',
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'>) {
-  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />
+  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />;
 }
 
 export function CatalystPaginationPrevious({
@@ -40,7 +40,7 @@ export function CatalystPaginationPrevious({
         {children}
       </CatalystButton>
     </span>
-  )
+  );
 }
 
 export function CatalystPaginationNext({
@@ -72,14 +72,14 @@ export function CatalystPaginationNext({
         </svg>
       </CatalystButton>
     </span>
-  )
+  );
 }
 
 export function CatalystPaginationList({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />
+  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />;
 }
 
 export function CatalystPaginationPage({
@@ -102,7 +102,7 @@ export function CatalystPaginationPage({
     >
       <span className={cn('-mx-0.5')}>{children}</span>
     </CatalystButton>
-  )
+  );
 }
 
 export function CatalystPaginationGap({
@@ -121,5 +121,5 @@ export function CatalystPaginationGap({
     >
       {children}
     </span>
-  )
+  );
 }

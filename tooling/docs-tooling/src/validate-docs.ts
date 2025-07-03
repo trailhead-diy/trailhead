@@ -301,7 +301,7 @@ function main(): void {
   const docFiles = allFiles.filter((file) => {
     const relativePath = relative(process.cwd(), file);
     const filename = basename(file);
-    
+
     return (
       !relativePath.includes('templates/') &&
       !relativePath.includes('node_modules/') &&

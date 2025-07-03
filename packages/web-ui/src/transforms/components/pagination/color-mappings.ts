@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const paginationColorMappings = makeProtected([
   // Background colors for current page indicator
@@ -20,7 +20,7 @@ const paginationColorMappings = makeProtected([
     replacement: 'dark:before:bg-muted/20',
     description: 'Convert dark mode white background to muted with opacity',
   },
-])
+]);
 
 /**
  * Pagination color mapping transform
@@ -33,8 +33,8 @@ export const paginationColorMappingsTransform = createProtectedRegexTransform({
   changeType: 'pagination-color-semantic',
 
   // Only apply to pagination component files
-  contentFilter: (content) =>
+  contentFilter: content =>
     content.includes('export function Pagination') ||
     content.includes('export function PaginationPage') ||
     content.includes('export function PaginationGap'),
-})
+});

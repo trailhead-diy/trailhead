@@ -13,16 +13,16 @@ export const fixImportSemicolons = (code: string): string => {
       .replace(/^(import .+);$/gm, '$1')
       // Then add semicolons only to imports ending with .js (traditional pattern)
       .replace(/^(import .+from '[^']+\.js')$/gm, '$1;')
-  )
-}
+  );
+};
 
 /**
  * Remove extra blank lines between imports but preserve spacing structure
  * Normalize import spacing while maintaining readability
  */
 export const normalizeImportSpacing = (code: string): string => {
-  return code.replace(/^(import .+)\n\n+(import .+)/gm, '$1\n$2')
-}
+  return code.replace(/^(import .+)\n\n+(import .+)/gm, '$1\n$2');
+};
 
 /**
  * Ensure single blank line after last import before other code
@@ -31,8 +31,8 @@ export const normalizeImportSpacing = (code: string): string => {
 export const ensureBlankLineAfterImports = (code: string): string => {
   return code.replace(/^(import .+)\n\n*(.+)/gm, (match, importLine, nextLine) => {
     if (nextLine.startsWith('import ')) {
-      return `${importLine}\n${nextLine}`
+      return `${importLine}\n${nextLine}`;
     }
-    return `${importLine}\n\n${nextLine}`
-  })
-}
+    return `${importLine}\n\n${nextLine}`;
+  });
+};

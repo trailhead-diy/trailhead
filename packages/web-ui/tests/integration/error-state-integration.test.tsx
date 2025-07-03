@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Button } from '../../src/components/button'
-import { Input } from '../../src/components/input'
-import { Alert } from '../../src/components/alert'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { Button } from '../../src/components/button';
+import { Input } from '../../src/components/input';
+import { Alert } from '../../src/components/alert';
 import {
   Table,
   TableHead,
@@ -12,27 +12,27 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from '../../src/components/table'
-import { Text, Strong } from '../../src/components/text'
-import { Badge } from '../../src/components/badge'
-import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset'
+} from '../../src/components/table';
+import { Text, Strong } from '../../src/components/text';
+import { Badge } from '../../src/components/badge';
+import { Fieldset, Legend as FieldsetLegend } from '../../src/components/fieldset';
 
-const originalConsoleError = console.error
+const originalConsoleError = console.error;
 
 describe('Error State Integration Tests', () => {
   beforeEach(() => {
-    console.error = vi.fn()
-  })
+    console.error = vi.fn();
+  });
 
   afterEach(() => {
-    console.error = originalConsoleError
-    vi.restoreAllMocks()
-  })
+    console.error = originalConsoleError;
+    vi.restoreAllMocks();
+  });
 
   describe('Form Validation Error Propagation', () => {
     it.skip('should handle cascading validation errors across nested form components', async () => {
-      const user = userEvent.setup()
-      const onSubmit = vi.fn()
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
 
       const CascadingValidationForm = () => {
         const [formData, setFormData] = React.useState({
@@ -50,70 +50,70 @@ describe('Error State Integration Tests', () => {
             newsletter: false,
             terms: false,
           },
-        })
+        });
 
-        const [errors, setErrors] = React.useState<Record<string, Record<string, string>>>({})
-        const [isSubmitting, setIsSubmitting] = React.useState(false)
+        const [errors, setErrors] = React.useState<Record<string, Record<string, string>>>({});
+        const [isSubmitting, setIsSubmitting] = React.useState(false);
 
         const validateSection = (section: string, data: any) => {
-          const sectionErrors: Record<string, string> = {}
+          const sectionErrors: Record<string, string> = {};
 
           if (section === 'personalInfo') {
-            if (!data.firstName.trim()) sectionErrors.firstName = 'First name is required'
-            if (!data.lastName.trim()) sectionErrors.lastName = 'Last name is required'
+            if (!data.firstName.trim()) sectionErrors.firstName = 'First name is required';
+            if (!data.lastName.trim()) sectionErrors.lastName = 'Last name is required';
             if (!data.email.trim()) {
-              sectionErrors.email = 'Email is required'
+              sectionErrors.email = 'Email is required';
             } else if (!/\S+@\S+\.\S+/.test(data.email)) {
-              sectionErrors.email = 'Invalid email format'
+              sectionErrors.email = 'Invalid email format';
             }
           } else if (section === 'accountInfo') {
             if (!data.username.trim()) {
-              sectionErrors.username = 'Username is required'
+              sectionErrors.username = 'Username is required';
             } else if (data.username.length < 3) {
-              sectionErrors.username = 'Username must be at least 3 characters'
+              sectionErrors.username = 'Username must be at least 3 characters';
             }
 
             if (!data.password) {
-              sectionErrors.password = 'Password is required'
+              sectionErrors.password = 'Password is required';
             } else if (data.password.length < 8) {
-              sectionErrors.password = 'Password must be at least 8 characters'
+              sectionErrors.password = 'Password must be at least 8 characters';
             }
 
             if (data.password !== data.confirmPassword) {
-              sectionErrors.confirmPassword = 'Passwords do not match'
+              sectionErrors.confirmPassword = 'Passwords do not match';
             }
           } else if (section === 'preferences') {
             if (!data.terms) {
-              sectionErrors.terms = 'You must accept the terms and conditions'
+              sectionErrors.terms = 'You must accept the terms and conditions';
             }
           }
 
-          return sectionErrors
-        }
+          return sectionErrors;
+        };
 
         const handleSubmit = async (e: React.FormEvent) => {
-          e.preventDefault()
-          setIsSubmitting(true)
+          e.preventDefault();
+          setIsSubmitting(true);
 
           // Validate all sections
-          const allErrors: Record<string, Record<string, string>> = {}
-          let hasErrors = false
+          const allErrors: Record<string, Record<string, string>> = {};
+          let hasErrors = false;
 
-          Object.keys(formData).forEach((section) => {
+          Object.keys(formData).forEach(section => {
             const sectionErrors = validateSection(
               section,
               formData[section as keyof typeof formData]
-            )
+            );
             if (Object.keys(sectionErrors).length > 0) {
-              allErrors[section] = sectionErrors
-              hasErrors = true
+              allErrors[section] = sectionErrors;
+              hasErrors = true;
             }
-          })
+          });
 
           if (hasErrors) {
-            setErrors(allErrors)
-            setIsSubmitting(false)
-            return
+            setErrors(allErrors);
+            setIsSubmitting(false);
+            return;
           }
 
           try {
@@ -121,44 +121,44 @@ describe('Error State Integration Tests', () => {
             await new Promise((resolve, reject) => {
               setTimeout(() => {
                 if (formData.personalInfo.email === 'existing@example.com') {
-                  reject(new Error('Email already exists'))
+                  reject(new Error('Email already exists'));
                 } else {
-                  resolve(true)
+                  resolve(true);
                 }
-              }, 1000)
-            })
+              }, 1000);
+            });
 
-            onSubmit(formData)
-            setErrors({})
+            onSubmit(formData);
+            setErrors({});
           } catch (_error) {
             setErrors({
               personalInfo: { email: 'This email address is already in use' },
-            })
+            });
           } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
           }
-        }
+        };
 
         const updateNestedField = (section: string, field: string, value: any) => {
-          setFormData((prev) => ({
+          setFormData(prev => ({
             ...prev,
             [section]: {
               ...prev[section as keyof typeof prev],
               [field]: value,
             },
-          }))
+          }));
 
           // Clear field error when user starts typing
           if (errors[section]?.[field]) {
-            setErrors((prev) => ({
+            setErrors(prev => ({
               ...prev,
               [section]: {
                 ...prev[section],
                 [field]: '',
               },
-            }))
+            }));
           }
-        }
+        };
 
         return (
           <form onSubmit={handleSubmit} data-testid="cascading-form">
@@ -170,7 +170,7 @@ describe('Error State Integration Tests', () => {
                 <Input
                   placeholder="First Name"
                   value={formData.personalInfo.firstName}
-                  onChange={(e) => updateNestedField('personalInfo', 'firstName', e.target.value)}
+                  onChange={e => updateNestedField('personalInfo', 'firstName', e.target.value)}
                   data-testid="first-name-input"
                   aria-invalid={!!errors.personalInfo?.firstName}
                   disabled={isSubmitting}
@@ -186,7 +186,7 @@ describe('Error State Integration Tests', () => {
                 <Input
                   placeholder="Last Name"
                   value={formData.personalInfo.lastName}
-                  onChange={(e) => updateNestedField('personalInfo', 'lastName', e.target.value)}
+                  onChange={e => updateNestedField('personalInfo', 'lastName', e.target.value)}
                   data-testid="last-name-input"
                   aria-invalid={!!errors.personalInfo?.lastName}
                   disabled={isSubmitting}
@@ -203,7 +203,7 @@ describe('Error State Integration Tests', () => {
                   type="email"
                   placeholder="Email Address"
                   value={formData.personalInfo.email}
-                  onChange={(e) => updateNestedField('personalInfo', 'email', e.target.value)}
+                  onChange={e => updateNestedField('personalInfo', 'email', e.target.value)}
                   data-testid="email-input"
                   aria-invalid={!!errors.personalInfo?.email}
                   disabled={isSubmitting}
@@ -224,7 +224,7 @@ describe('Error State Integration Tests', () => {
                 <Input
                   placeholder="Username"
                   value={formData.accountInfo.username}
-                  onChange={(e) => updateNestedField('accountInfo', 'username', e.target.value)}
+                  onChange={e => updateNestedField('accountInfo', 'username', e.target.value)}
                   data-testid="username-input"
                   aria-invalid={!!errors.accountInfo?.username}
                   disabled={isSubmitting}
@@ -241,7 +241,7 @@ describe('Error State Integration Tests', () => {
                   type="password"
                   placeholder="Password"
                   value={formData.accountInfo.password}
-                  onChange={(e) => updateNestedField('accountInfo', 'password', e.target.value)}
+                  onChange={e => updateNestedField('accountInfo', 'password', e.target.value)}
                   data-testid="password-input"
                   aria-invalid={!!errors.accountInfo?.password}
                   disabled={isSubmitting}
@@ -258,7 +258,7 @@ describe('Error State Integration Tests', () => {
                   type="password"
                   placeholder="Confirm Password"
                   value={formData.accountInfo.confirmPassword}
-                  onChange={(e) =>
+                  onChange={e =>
                     updateNestedField('accountInfo', 'confirmPassword', e.target.value)
                   }
                   data-testid="confirm-password-input"
@@ -282,9 +282,7 @@ describe('Error State Integration Tests', () => {
                   <input
                     type="checkbox"
                     checked={formData.preferences.newsletter}
-                    onChange={(e) =>
-                      updateNestedField('preferences', 'newsletter', e.target.checked)
-                    }
+                    onChange={e => updateNestedField('preferences', 'newsletter', e.target.checked)}
                     data-testid="newsletter-checkbox"
                     disabled={isSubmitting}
                   />
@@ -297,7 +295,7 @@ describe('Error State Integration Tests', () => {
                   <input
                     type="checkbox"
                     checked={formData.preferences.terms}
-                    onChange={(e) => updateNestedField('preferences', 'terms', e.target.checked)}
+                    onChange={e => updateNestedField('preferences', 'terms', e.target.checked)}
                     data-testid="terms-checkbox"
                     disabled={isSubmitting}
                   />
@@ -315,82 +313,82 @@ describe('Error State Integration Tests', () => {
               {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
-        )
-      }
+        );
+      };
 
-      render(<CascadingValidationForm />)
+      render(<CascadingValidationForm />);
 
       // Test empty form submission - should show all required field errors
-      await user.click(screen.getByTestId('submit-button'))
+      await user.click(screen.getByTestId('submit-button'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('first-name-error')).toHaveTextContent('First name is required')
-        expect(screen.getByTestId('last-name-error')).toHaveTextContent('Last name is required')
-        expect(screen.getByTestId('email-error')).toHaveTextContent('Email is required')
-        expect(screen.getByTestId('username-error')).toHaveTextContent('Username is required')
-        expect(screen.getByTestId('password-error')).toHaveTextContent('Password is required')
+        expect(screen.getByTestId('first-name-error')).toHaveTextContent('First name is required');
+        expect(screen.getByTestId('last-name-error')).toHaveTextContent('Last name is required');
+        expect(screen.getByTestId('email-error')).toHaveTextContent('Email is required');
+        expect(screen.getByTestId('username-error')).toHaveTextContent('Username is required');
+        expect(screen.getByTestId('password-error')).toHaveTextContent('Password is required');
         expect(screen.getByTestId('terms-error')).toHaveTextContent(
           'You must accept the terms and conditions'
-        )
-      })
+        );
+      });
 
       // Fill form with invalid data
-      await user.type(screen.getByTestId('first-name-input'), 'John')
-      await user.type(screen.getByTestId('last-name-input'), 'Doe')
-      await user.type(screen.getByTestId('email-input'), 'invalid-email')
-      await user.type(screen.getByTestId('username-input'), 'ab') // Too short
-      await user.type(screen.getByTestId('password-input'), '123') // Too short
-      await user.type(screen.getByTestId('confirm-password-input'), 'different')
+      await user.type(screen.getByTestId('first-name-input'), 'John');
+      await user.type(screen.getByTestId('last-name-input'), 'Doe');
+      await user.type(screen.getByTestId('email-input'), 'invalid-email');
+      await user.type(screen.getByTestId('username-input'), 'ab'); // Too short
+      await user.type(screen.getByTestId('password-input'), '123'); // Too short
+      await user.type(screen.getByTestId('confirm-password-input'), 'different');
 
-      await user.click(screen.getByTestId('submit-button'))
+      await user.click(screen.getByTestId('submit-button'));
 
       // Should show validation errors for invalid data
       await waitFor(() => {
-        expect(screen.getByTestId('email-error')).toHaveTextContent('Invalid email format')
+        expect(screen.getByTestId('email-error')).toHaveTextContent('Invalid email format');
         expect(screen.getByTestId('username-error')).toHaveTextContent(
           'Username must be at least 3 characters'
-        )
+        );
         expect(screen.getByTestId('password-error')).toHaveTextContent(
           'Password must be at least 8 characters'
-        )
+        );
         expect(screen.getByTestId('confirm-password-error')).toHaveTextContent(
           'Passwords do not match'
-        )
-      })
+        );
+      });
 
       // Fix validation errors
-      await user.clear(screen.getByTestId('email-input'))
-      await user.type(screen.getByTestId('email-input'), 'existing@example.com')
+      await user.clear(screen.getByTestId('email-input'));
+      await user.type(screen.getByTestId('email-input'), 'existing@example.com');
 
-      await user.clear(screen.getByTestId('username-input'))
-      await user.type(screen.getByTestId('username-input'), 'validuser')
+      await user.clear(screen.getByTestId('username-input'));
+      await user.type(screen.getByTestId('username-input'), 'validuser');
 
-      await user.clear(screen.getByTestId('password-input'))
-      await user.type(screen.getByTestId('password-input'), 'validpassword123')
+      await user.clear(screen.getByTestId('password-input'));
+      await user.type(screen.getByTestId('password-input'), 'validpassword123');
 
-      await user.clear(screen.getByTestId('confirm-password-input'))
-      await user.type(screen.getByTestId('confirm-password-input'), 'validpassword123')
+      await user.clear(screen.getByTestId('confirm-password-input'));
+      await user.type(screen.getByTestId('confirm-password-input'), 'validpassword123');
 
-      await user.click(screen.getByTestId('terms-checkbox'))
+      await user.click(screen.getByTestId('terms-checkbox'));
 
       // Submit with existing email - should show server error
-      await user.click(screen.getByTestId('submit-button'))
+      await user.click(screen.getByTestId('submit-button'));
 
       // Should show loading state
-      expect(screen.getByText('Creating Account...')).toBeInTheDocument()
+      expect(screen.getByText('Creating Account...')).toBeInTheDocument();
 
       // Should show server error after API call
       await waitFor(() => {
         expect(screen.getByTestId('email-error')).toHaveTextContent(
           'This email address is already in use'
-        )
-      })
+        );
+      });
 
       // Fix email and submit successfully
-      await user.clear(screen.getByTestId('email-input'))
-      await user.type(screen.getByTestId('email-input'), 'new@example.com')
+      await user.clear(screen.getByTestId('email-input'));
+      await user.type(screen.getByTestId('email-input'), 'new@example.com');
 
-      await user.click(screen.getByTestId('submit-button'))
+      await user.click(screen.getByTestId('submit-button'));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({
@@ -408,19 +406,19 @@ describe('Error State Integration Tests', () => {
             newsletter: false,
             terms: true,
           },
-        })
-      })
-    })
-  })
+        });
+      });
+    });
+  });
 
   describe('Network Error Handling in Data Components', () => {
     it.skip('should handle network errors in data fetching with retry mechanisms', async () => {
-      const user = userEvent.setup()
-      let requestCount = 0
+      const user = userEvent.setup();
+      let requestCount = 0;
       const mockFetch = vi.fn().mockImplementation(() => {
-        requestCount++
+        requestCount++;
         if (requestCount <= 2) {
-          return Promise.reject(new Error('Network error'))
+          return Promise.reject(new Error('Network error'));
         }
         return Promise.resolve({
           ok: true,
@@ -429,44 +427,44 @@ describe('Error State Integration Tests', () => {
               { id: 1, name: 'John Doe', email: 'john@example.com' },
               { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
             ]),
-        })
-      })
+        });
+      });
 
-      global.fetch = mockFetch
+      global.fetch = mockFetch;
 
       const DataTableWithErrorHandling = () => {
-        const [data, setData] = React.useState<any[]>([])
-        const [loading, setLoading] = React.useState(false)
-        const [error, setError] = React.useState<string | null>(null)
-        const [retryCount, setRetryCount] = React.useState(0)
+        const [data, setData] = React.useState<any[]>([]);
+        const [loading, setLoading] = React.useState(false);
+        const [error, setError] = React.useState<string | null>(null);
+        const [retryCount, setRetryCount] = React.useState(0);
 
         const fetchData = async () => {
-          setLoading(true)
-          setError(null)
+          setLoading(true);
+          setError(null);
 
           try {
-            const response = await fetch('/api/users')
+            const response = await fetch('/api/users');
             if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            const users = await response.json()
-            setData(users)
-            setRetryCount(0)
+            const users = await response.json();
+            setData(users);
+            setRetryCount(0);
           } catch (_err) {
-            setError(_err instanceof Error ? _err.message : 'Failed to fetch data')
+            setError(_err instanceof Error ? _err.message : 'Failed to fetch data');
           } finally {
-            setLoading(false)
+            setLoading(false);
           }
-        }
+        };
 
         const handleRetry = () => {
-          setRetryCount((prev) => prev + 1)
-          fetchData()
-        }
+          setRetryCount(prev => prev + 1);
+          fetchData();
+        };
 
         React.useEffect(() => {
-          fetchData()
-        }, [])
+          fetchData();
+        }, []);
 
         if (loading) {
           return (
@@ -474,7 +472,7 @@ describe('Error State Integration Tests', () => {
               <Text>Loading users...</Text>
               {retryCount > 0 && <Text>Retry attempt {retryCount}</Text>}
             </div>
-          )
+          );
         }
 
         if (error) {
@@ -497,7 +495,7 @@ describe('Error State Integration Tests', () => {
                 </Button>
               </div>
             </div>
-          )
+          );
         }
 
         return (
@@ -511,7 +509,7 @@ describe('Error State Integration Tests', () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((user) => (
+                {data.map(user => (
                   <TableRow key={user.id}>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
@@ -520,125 +518,125 @@ describe('Error State Integration Tests', () => {
               </TableBody>
             </Table>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<DataTableWithErrorHandling />)
+      render(<DataTableWithErrorHandling />);
 
       // Should show loading state initially
-      expect(screen.getByTestId('loading-state')).toBeInTheDocument()
-      expect(screen.getByText('Loading users...')).toBeInTheDocument()
+      expect(screen.getByTestId('loading-state')).toBeInTheDocument();
+      expect(screen.getByText('Loading users...')).toBeInTheDocument();
 
       // Should show error state after first failed request
       await waitFor(() => {
-        expect(screen.getByTestId('error-state')).toBeInTheDocument()
-        expect(screen.getByText('Network error')).toBeInTheDocument()
-        expect(screen.getByTestId('retry-button')).toBeInTheDocument()
-      })
+        expect(screen.getByTestId('error-state')).toBeInTheDocument();
+        expect(screen.getByText('Network error')).toBeInTheDocument();
+        expect(screen.getByTestId('retry-button')).toBeInTheDocument();
+      });
 
       // Test retry functionality
-      await user.click(screen.getByTestId('retry-button'))
+      await user.click(screen.getByTestId('retry-button'));
 
       // Should show loading state with retry count
-      expect(screen.getByTestId('loading-state')).toBeInTheDocument()
-      expect(screen.getByText('Retry attempt 1')).toBeInTheDocument()
+      expect(screen.getByTestId('loading-state')).toBeInTheDocument();
+      expect(screen.getByText('Retry attempt 1')).toBeInTheDocument();
 
       // Should show error again after second failed request
       await waitFor(() => {
-        expect(screen.getByTestId('error-state')).toBeInTheDocument()
-        expect(screen.getByText('Retry (1)')).toBeInTheDocument()
-      })
+        expect(screen.getByTestId('error-state')).toBeInTheDocument();
+        expect(screen.getByText('Retry (1)')).toBeInTheDocument();
+      });
 
       // Test second retry - should succeed
-      await user.click(screen.getByTestId('retry-button'))
+      await user.click(screen.getByTestId('retry-button'));
 
       // Should eventually show successful data
       await waitFor(() => {
-        expect(screen.getByTestId('data-loaded')).toBeInTheDocument()
-        expect(screen.getByText('Users loaded successfully')).toBeInTheDocument()
-        expect(screen.getByText('John Doe')).toBeInTheDocument()
-        expect(screen.getByText('jane@example.com')).toBeInTheDocument()
-      })
+        expect(screen.getByTestId('data-loaded')).toBeInTheDocument();
+        expect(screen.getByText('Users loaded successfully')).toBeInTheDocument();
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+      });
 
-      expect(mockFetch).toHaveBeenCalledTimes(3)
-    })
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+    });
 
     it('should handle partial data loading failures gracefully', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       const PartialLoadingComponent = () => {
-        const [userData, setUserData] = React.useState<any>(null)
-        const [postsData] = React.useState<any[]>([])
-        const [commentsData, setCommentsData] = React.useState<any[]>([])
-        const [errors, setErrors] = React.useState<Record<string, string>>({})
+        const [userData, setUserData] = React.useState<any>(null);
+        const [postsData] = React.useState<any[]>([]);
+        const [commentsData, setCommentsData] = React.useState<any[]>([]);
+        const [errors, setErrors] = React.useState<Record<string, string>>({});
         const [loadingStates, setLoadingStates] = React.useState({
           user: false,
           posts: false,
           comments: false,
-        })
+        });
 
         const updateLoadingState = (key: string, value: boolean) => {
-          setLoadingStates((prev) => ({ ...prev, [key]: value }))
-        }
+          setLoadingStates(prev => ({ ...prev, [key]: value }));
+        };
 
         const updateError = (key: string, error: string | null) => {
-          setErrors((prev) => ({ ...prev, [key]: error || '' }))
-        }
+          setErrors(prev => ({ ...prev, [key]: error || '' }));
+        };
 
         const loadUserData = async () => {
-          updateLoadingState('user', true)
-          updateError('user', null)
+          updateLoadingState('user', true);
+          updateError('user', null);
 
           try {
             // Simulate successful user data load
-            await new Promise((resolve) => setTimeout(resolve, 500))
-            setUserData({ id: 1, name: 'John Doe', email: 'john@example.com' })
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setUserData({ id: 1, name: 'John Doe', email: 'john@example.com' });
           } catch (_err) {
-            updateError('user', 'Failed to load user data')
+            updateError('user', 'Failed to load user data');
           } finally {
-            updateLoadingState('user', false)
+            updateLoadingState('user', false);
           }
-        }
+        };
 
         const loadPostsData = async () => {
-          updateLoadingState('posts', true)
-          updateError('posts', null)
+          updateLoadingState('posts', true);
+          updateError('posts', null);
 
           try {
             // Simulate posts data failure
             await new Promise((_, reject) =>
               setTimeout(() => reject(new Error('Posts API unavailable')), 300)
-            )
+            );
           } catch (_err) {
-            updateError('posts', 'Failed to load posts')
+            updateError('posts', 'Failed to load posts');
           } finally {
-            updateLoadingState('posts', false)
+            updateLoadingState('posts', false);
           }
-        }
+        };
 
         const loadCommentsData = async () => {
-          updateLoadingState('comments', true)
-          updateError('comments', null)
+          updateLoadingState('comments', true);
+          updateError('comments', null);
 
           try {
             // Simulate successful comments load
-            await new Promise((resolve) => setTimeout(resolve, 400))
+            await new Promise(resolve => setTimeout(resolve, 400));
             setCommentsData([
               { id: 1, text: 'Great post!', author: 'Jane' },
               { id: 2, text: 'Thanks for sharing', author: 'Bob' },
-            ])
+            ]);
           } catch (_err) {
-            updateError('comments', 'Failed to load comments')
+            updateError('comments', 'Failed to load comments');
           } finally {
-            updateLoadingState('comments', false)
+            updateLoadingState('comments', false);
           }
-        }
+        };
 
         React.useEffect(() => {
-          loadUserData()
-          loadPostsData()
-          loadCommentsData()
-        }, [])
+          loadUserData();
+          loadPostsData();
+          loadCommentsData();
+        }, []);
 
         return (
           <div data-testid="partial-loading-component">
@@ -676,7 +674,7 @@ describe('Error State Integration Tests', () => {
                 </Alert>
               ) : postsData.length > 0 ? (
                 <div>
-                  {postsData.map((post) => (
+                  {postsData.map(post => (
                     <div key={post.id}>{post.title}</div>
                   ))}
                 </div>
@@ -699,7 +697,7 @@ describe('Error State Integration Tests', () => {
                 </Alert>
               ) : commentsData.length > 0 ? (
                 <div>
-                  {commentsData.map((comment) => (
+                  {commentsData.map(comment => (
                     <div key={comment.id}>
                       <Strong>{comment.author}:</Strong> {comment.text}
                     </div>
@@ -710,82 +708,82 @@ describe('Error State Integration Tests', () => {
               )}
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<PartialLoadingComponent />)
+      render(<PartialLoadingComponent />);
 
       // Initially all sections should be loading
-      expect(screen.getByText('Loading user...')).toBeInTheDocument()
-      expect(screen.getByText('Loading posts...')).toBeInTheDocument()
-      expect(screen.getByText('Loading comments...')).toBeInTheDocument()
+      expect(screen.getByText('Loading user...')).toBeInTheDocument();
+      expect(screen.getByText('Loading posts...')).toBeInTheDocument();
+      expect(screen.getByText('Loading comments...')).toBeInTheDocument();
 
       // Posts should fail first
       await waitFor(() => {
-        expect(screen.getByText('Failed to load posts')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Failed to load posts')).toBeInTheDocument();
+      });
 
       // Comments should load successfully
       await waitFor(() => {
-        expect(screen.getByText('Jane:')).toBeInTheDocument()
-        expect(screen.getByText('Great post!')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Jane:')).toBeInTheDocument();
+        expect(screen.getByText('Great post!')).toBeInTheDocument();
+      });
 
       // User should load successfully
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument()
-        expect(screen.getByText('john@example.com')).toBeInTheDocument()
-      })
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john@example.com')).toBeInTheDocument();
+      });
 
       // Posts section should still show error with retry option
-      expect(screen.getByTestId('retry-posts')).toBeInTheDocument()
+      expect(screen.getByTestId('retry-posts')).toBeInTheDocument();
 
       // Test selective retry
-      await user.click(screen.getByTestId('retry-posts'))
-      expect(screen.getByText('Loading posts...')).toBeInTheDocument()
+      await user.click(screen.getByTestId('retry-posts'));
+      expect(screen.getByText('Loading posts...')).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to load posts')).toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.getByText('Failed to load posts')).toBeInTheDocument();
+      });
+    });
+  });
 
   describe('Theme Error Handling and Fallbacks', () => {
     it.skip('should handle theme switching errors with graceful fallbacks', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup();
 
       // Mock theme provider with error simulation
       const ThemeWithErrors = () => {
-        const [currentTheme, setCurrentTheme] = React.useState('light')
-        const [themeError, setThemeError] = React.useState<string | null>(null)
-        const [isLoading, setIsLoading] = React.useState(false)
+        const [currentTheme, setCurrentTheme] = React.useState('light');
+        const [themeError, setThemeError] = React.useState<string | null>(null);
+        const [isLoading, setIsLoading] = React.useState(false);
 
         const switchTheme = async (newTheme: string) => {
-          setIsLoading(true)
-          setThemeError(null)
+          setIsLoading(true);
+          setThemeError(null);
 
           try {
             // Simulate theme switch that might fail
             await new Promise((resolve, reject) => {
               setTimeout(() => {
                 if (newTheme === 'invalid-theme') {
-                  reject(new Error('Theme not found'))
+                  reject(new Error('Theme not found'));
                 } else if (newTheme === 'network-theme') {
-                  reject(new Error('Network error loading theme'))
+                  reject(new Error('Network error loading theme'));
                 } else {
-                  resolve(true)
+                  resolve(true);
                 }
-              }, 500)
-            })
+              }, 500);
+            });
 
-            setCurrentTheme(newTheme)
+            setCurrentTheme(newTheme);
           } catch (_err) {
-            setThemeError(_err instanceof Error ? _err.message : 'Theme switch failed')
+            setThemeError(_err instanceof Error ? _err.message : 'Theme switch failed');
             // Keep the previous theme as fallback
           } finally {
-            setIsLoading(false)
+            setIsLoading(false);
           }
-        }
+        };
 
         return (
           <div data-testid="theme-component" data-theme={currentTheme}>
@@ -839,92 +837,92 @@ describe('Error State Integration Tests', () => {
               <Text>This content adapts to the theme</Text>
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<ThemeWithErrors />)
+      render(<ThemeWithErrors />);
 
       // Initial state
-      expect(screen.getByText('Current Theme: light')).toBeInTheDocument()
+      expect(screen.getByText('Current Theme: light')).toBeInTheDocument();
 
       // Test successful theme switch
-      await user.click(screen.getByTestId('switch-to-dark'))
+      await user.click(screen.getByTestId('switch-to-dark'));
 
       // Should show loading state
-      expect(screen.getByText('Switching...')).toBeInTheDocument()
-      expect(screen.getByTestId('switch-to-dark')).toBeDisabled()
+      expect(screen.getByText('Switching...')).toBeInTheDocument();
+      expect(screen.getByTestId('switch-to-dark')).toBeDisabled();
 
       // Should successfully switch to dark theme
       await waitFor(() => {
-        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument()
-        expect(screen.queryByText('Switching...')).not.toBeInTheDocument()
-      })
+        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument();
+        expect(screen.queryByText('Switching...')).not.toBeInTheDocument();
+      });
 
       // Test invalid theme error
-      await user.click(screen.getByTestId('switch-to-invalid'))
+      await user.click(screen.getByTestId('switch-to-invalid'));
 
       await waitFor(() => {
-        expect(screen.getByTestId('theme-error')).toBeInTheDocument()
-        expect(screen.getByText('Theme not found')).toBeInTheDocument()
+        expect(screen.getByTestId('theme-error')).toBeInTheDocument();
+        expect(screen.getByText('Theme not found')).toBeInTheDocument();
         // Should keep previous theme as fallback
-        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument()
-      })
+        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument();
+      });
 
       // Dismiss error
-      await user.click(screen.getByRole('button', { name: /close/i }))
-      expect(screen.queryByTestId('theme-error')).not.toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /close/i }));
+      expect(screen.queryByTestId('theme-error')).not.toBeInTheDocument();
 
       // Test network error
-      await user.click(screen.getByTestId('switch-to-network'))
+      await user.click(screen.getByTestId('switch-to-network'));
 
       await waitFor(() => {
-        expect(screen.getByText('Network error loading theme')).toBeInTheDocument()
+        expect(screen.getByText('Network error loading theme')).toBeInTheDocument();
         // Should still maintain previous theme
-        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument()
-      })
-    })
-  })
+        expect(screen.getByText('Current Theme: dark')).toBeInTheDocument();
+      });
+    });
+  });
 
   describe('Component Unmounting During Async Operations', () => {
     it('should handle component unmounting during async operations without memory leaks', async () => {
-      const user = userEvent.setup()
-      let isMounted = true
+      const user = userEvent.setup();
+      let isMounted = true;
 
       const AsyncComponent = ({ onComplete }: { onComplete: (data: any) => void }) => {
-        const [data, setData] = React.useState<any>(null)
-        const [loading, setLoading] = React.useState(false)
-        const [error, setError] = React.useState<string | null>(null)
+        const [data, setData] = React.useState<any>(null);
+        const [loading, setLoading] = React.useState(false);
+        const [error, setError] = React.useState<string | null>(null);
 
         React.useEffect(() => {
           return () => {
-            isMounted = false
-          }
-        }, [])
+            isMounted = false;
+          };
+        }, []);
 
         const loadData = async () => {
-          setLoading(true)
-          setError(null)
+          setLoading(true);
+          setError(null);
 
           try {
             // Long-running async operation
-            await new Promise((resolve) => setTimeout(resolve, 2000))
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             // Check if component is still mounted before updating state
             if (isMounted) {
-              const result = { id: 1, name: 'Test Data' }
-              setData(result)
-              onComplete(result)
+              const result = { id: 1, name: 'Test Data' };
+              setData(result);
+              onComplete(result);
             }
           } catch (_err) {
             if (isMounted) {
-              setError('Failed to load data')
+              setError('Failed to load data');
             }
           } finally {
             if (isMounted) {
-              setLoading(false)
+              setLoading(false);
             }
           }
-        }
+        };
 
         return (
           <div data-testid="async-component">
@@ -940,12 +938,12 @@ describe('Error State Integration Tests', () => {
               Load Data
             </Button>
           </div>
-        )
-      }
+        );
+      };
 
       const ComponentWrapper = () => {
-        const [showComponent, setShowComponent] = React.useState(true)
-        const [completedData, setCompletedData] = React.useState<any>(null)
+        const [showComponent, setShowComponent] = React.useState(true);
+        const [completedData, setCompletedData] = React.useState<any>(null);
 
         return (
           <div>
@@ -959,44 +957,44 @@ describe('Error State Integration Tests', () => {
               <div data-testid="completion-indicator">Completed: {completedData.name}</div>
             )}
           </div>
-        )
-      }
+        );
+      };
 
-      render(<ComponentWrapper />)
+      render(<ComponentWrapper />);
 
       // Start async operation
-      await user.click(screen.getByTestId('load-data'))
-      expect(screen.getByText('Loading data...')).toBeInTheDocument()
+      await user.click(screen.getByTestId('load-data'));
+      expect(screen.getByText('Loading data...')).toBeInTheDocument();
 
       // Unmount component while async operation is running
-      await user.click(screen.getByTestId('toggle-component'))
-      expect(screen.queryByTestId('async-component')).not.toBeInTheDocument()
+      await user.click(screen.getByTestId('toggle-component'));
+      expect(screen.queryByTestId('async-component')).not.toBeInTheDocument();
 
       // Wait for what would have been the completion time
-      await new Promise((resolve) => setTimeout(resolve, 2500))
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       // Should not show completion indicator since component was unmounted
-      expect(screen.queryByTestId('completion-indicator')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('completion-indicator')).not.toBeInTheDocument();
 
       // Remount component
-      await user.click(screen.getByTestId('toggle-component'))
-      expect(screen.getByTestId('async-component')).toBeInTheDocument()
+      await user.click(screen.getByTestId('toggle-component'));
+      expect(screen.getByTestId('async-component')).toBeInTheDocument();
 
       // Reset mount flag for new instance
-      isMounted = true
+      isMounted = true;
 
       // Start new async operation that completes normally
-      await user.click(screen.getByTestId('load-data'))
+      await user.click(screen.getByTestId('load-data'));
 
       await waitFor(
         () => {
-          expect(screen.getByText('Data loaded: Test Data')).toBeInTheDocument()
-          expect(screen.getByTestId('completion-indicator')).toBeInTheDocument()
+          expect(screen.getByText('Data loaded: Test Data')).toBeInTheDocument();
+          expect(screen.getByTestId('completion-indicator')).toBeInTheDocument();
         },
         { timeout: 3000 }
-      )
-    })
-  })
+      );
+    });
+  });
 
   describe('Error Boundary Integration', () => {
     it.skip('should handle errors across component boundaries with proper isolation', () => {
@@ -1005,37 +1003,37 @@ describe('Error State Integration Tests', () => {
         { hasError: boolean; error: Error | null }
       > {
         constructor(props: any) {
-          super(props)
-          this.state = { hasError: false, error: null }
+          super(props);
+          this.state = { hasError: false, error: null };
         }
 
         static getDerivedStateFromError(error: Error) {
-          return { hasError: true, error }
+          return { hasError: true, error };
         }
 
         componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-          console.error('Error caught by boundary:', error, errorInfo)
+          console.error('Error caught by boundary:', error, errorInfo);
         }
 
         render() {
           if (this.state.hasError) {
-            return this.props.fallback
+            return this.props.fallback;
           }
 
-          return this.props.children
+          return this.props.children;
         }
       }
 
       const BuggyComponent = ({ shouldThrow }: { shouldThrow: boolean }) => {
         if (shouldThrow) {
-          throw new Error('Component crashed!')
+          throw new Error('Component crashed!');
         }
-        return <Text>Component working normally</Text>
-      }
+        return <Text>Component working normally</Text>;
+      };
 
       const AppWithErrorBoundaries = () => {
-        const [throwError1, setThrowError1] = React.useState(false)
-        const [throwError2, setThrowError2] = React.useState(false)
+        const [throwError1, setThrowError1] = React.useState(false);
+        const [throwError2, setThrowError2] = React.useState(false);
 
         return (
           <div>
@@ -1078,43 +1076,43 @@ describe('Error State Integration Tests', () => {
               <Text>This section has no error boundary</Text>
             </div>
           </div>
-        )
-      }
+        );
+      };
 
-      render(<AppWithErrorBoundaries />)
+      render(<AppWithErrorBoundaries />);
 
       // Initially both components should work
-      expect(screen.getAllByText('Component working normally')).toHaveLength(2)
-      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument()
+      expect(screen.getAllByText('Component working normally')).toHaveLength(2);
+      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument();
 
       // Crash first component
-      const crashButton1 = screen.getByTestId('crash-component-1')
-      crashButton1.click()
+      const crashButton1 = screen.getByTestId('crash-component-1');
+      crashButton1.click();
 
       // Section 1 should show error, but section 2 should still work
       expect(
-        screen.getByText((content) =>
+        screen.getByText(content =>
           content.includes('Section 1 crashed but section 2 is still working')
         )
-      ).toBeInTheDocument()
-      expect(screen.getByText('Component working normally')).toBeInTheDocument() // Section 2 still working
-      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument()
+      ).toBeInTheDocument();
+      expect(screen.getByText('Component working normally')).toBeInTheDocument(); // Section 2 still working
+      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument();
 
       // Crash second component
-      const crashButton2 = screen.getByTestId('crash-component-2')
-      crashButton2.click()
+      const crashButton2 = screen.getByTestId('crash-component-2');
+      crashButton2.click();
 
       // Both sections should show errors, but section 3 should still work
       expect(
-        screen.getByText((content) =>
+        screen.getByText(content =>
           content.includes('Section 1 crashed but section 2 is still working')
         )
-      ).toBeInTheDocument()
+      ).toBeInTheDocument();
       expect(
         screen.getByText('Section 2 crashed but section 1 is still working')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument()
-      expect(screen.queryByText('Component working normally')).not.toBeInTheDocument()
-    })
-  })
-})
+      ).toBeInTheDocument();
+      expect(screen.getByText('Section 3 (No Error Boundary)')).toBeInTheDocument();
+      expect(screen.queryByText('Component working normally')).not.toBeInTheDocument();
+    });
+  });
+});

@@ -3,7 +3,7 @@
  * Transforms radio CSS variables to semantic tokens
  */
 
-import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js'
+import { createProtectedRegexTransform } from '../common/utilities/protected-regex-transform-factory.js';
 
 /**
  * Radio color mappings transform
@@ -37,4 +37,4 @@ export const radioColorMappingsTransform = createProtectedRegexTransform({
   ],
   changeType: 'color-mapping',
   globalProtection: true, // Enable protection for colors objects
-})
+});

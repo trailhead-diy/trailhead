@@ -1,9 +1,9 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import { useState } from 'react'
-import { SemanticColorToken, isSemanticToken, createSemanticComboboxStyles } from '../theme/index'
-import { cn } from '../utils/cn'
+import * as Headless from '@headlessui/react';
+import { useState } from 'react';
+import { SemanticColorToken, isSemanticToken, createSemanticComboboxStyles } from '../theme/index';
+import { cn } from '../utils/cn';
 
 export function CatalystCombobox<T>({
   options,
@@ -18,31 +18,31 @@ export function CatalystCombobox<T>({
   color,
   ...props
 }: {
-  options: T[]
-  displayValue: (value: T | null) => string | undefined
-  filter?: (value: T, query: string) => boolean
-  className?: string
-  placeholder?: string
-  autoFocus?: boolean
-  'aria-label'?: string
-  children: (value: NonNullable<T>) => React.ReactElement
-  color?: SemanticColorToken
+  options: T[];
+  displayValue: (value: T | null) => string | undefined;
+  filter?: (value: T, query: string) => boolean;
+  className?: string;
+  placeholder?: string;
+  autoFocus?: boolean;
+  'aria-label'?: string;
+  children: (value: NonNullable<T>) => React.ReactElement;
+  color?: SemanticColorToken;
 } & Omit<Headless.ComboboxProps<T, false>, 'as' | 'multiple' | 'children'> & {
-    anchor?: 'top' | 'bottom'
+    anchor?: 'top' | 'bottom';
   }) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('');
 
   const filteredOptions =
     query === ''
       ? options
-      : options.filter((option) =>
+      : options.filter(option =>
           filter
             ? filter(option, query)
             : displayValue(option)?.toLowerCase().includes(query.toLowerCase())
-        )
+        );
 
   const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticComboboxStyles(color) : ''
+    color && isSemanticToken(color) ? createSemanticComboboxStyles(color) : '';
 
   return (
     <Headless.Combobox
@@ -77,7 +77,7 @@ export function CatalystCombobox<T>({
           data-slot="control"
           aria-label={ariaLabel}
           displayValue={(option: T) => displayValue(option) ?? ''}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={event => setQuery(event.target.value)}
           placeholder={placeholder}
           className={cn(
             [
@@ -152,7 +152,7 @@ export function CatalystCombobox<T>({
         {({ option }: { option: T }) => children(option as NonNullable<T>)}
       </Headless.ComboboxOptions>
     </Headless.Combobox>
-  )
+  );
 }
 
 export function CatalystComboboxOption<T>({
@@ -172,7 +172,7 @@ export function CatalystComboboxOption<T>({
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  )
+  );
 
   return (
     <Headless.ComboboxOption
@@ -202,7 +202,7 @@ export function CatalystComboboxOption<T>({
         <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </Headless.ComboboxOption>
-  )
+  );
 }
 
 export function CatalystComboboxLabel({
@@ -214,7 +214,7 @@ export function CatalystComboboxLabel({
       {...props}
       className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
     />
-  )
+  );
 }
 
 export function CatalystComboboxDescription({
@@ -232,5 +232,5 @@ export function CatalystComboboxDescription({
     >
       <span className={cn('flex-1 truncate')}>{children}</span>
     </span>
-  )
+  );
 }

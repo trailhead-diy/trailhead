@@ -4,13 +4,13 @@
  * to the existing colors object in the Button component
  */
 
-import { createRequire } from 'module'
-import { API, FileInfo } from 'jscodeshift'
-import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js'
-import type { Transform, TransformResult } from '@/transforms/shared/types.js'
+import { createRequire } from 'module';
+import { API, FileInfo } from 'jscodeshift';
+import { STANDARD_AST_FORMAT_OPTIONS } from '@/transforms/components/common/formatting/ast-options.js';
+import type { Transform, TransformResult } from '@/transforms/shared/types.js';
 
 // Create require function for ESM compatibility
-const require = createRequire(import.meta.url)
+const require = createRequire(import.meta.url);
 
 /**
  * Semantic color definitions to add to the Button colors object
@@ -41,7 +41,7 @@ const SEMANTIC_COLOR_DEFINITIONS = {
     'dark:text-muted-foreground dark:[--btn-hover-overlay:var(--color-muted-foreground)]/5',
     '[--btn-icon:var(--color-muted-foreground)]/60 data-active:[--btn-icon:var(--color-muted-foreground)]/80 data-hover:[--btn-icon:var(--color-muted-foreground)]/80',
   ],
-}
+};
 
 export const buttonAddSemanticColorsTransform: Transform = {
   name: 'button-add-semantic-colors',
@@ -49,7 +49,7 @@ export const buttonAddSemanticColorsTransform: Transform = {
   type: 'ast',
 
   execute(content: string): TransformResult {
-    const changes: any[] = []
+    const changes: any[] = [];
 
     // Quick check if this is the Button component
     if (!content.includes('Button') || !content.includes('styles')) {
@@ -57,7 +57,7 @@ export const buttonAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     // Skip if semantic colors already exist
@@ -70,15 +70,15 @@ export const buttonAddSemanticColorsTransform: Transform = {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
 
     try {
-      const jscodeshift = require('jscodeshift')
-      const j = jscodeshift.withParser('tsx')
+      const jscodeshift = require('jscodeshift');
+      const j = jscodeshift.withParser('tsx');
 
       const transformer = (fileInfo: FileInfo, _api: API) => {
-        const root = j(fileInfo.source)
+        const root = j(fileInfo.source);
 
         // Find the styles object with colors property
         root
@@ -86,8 +86,8 @@ export const buttonAddSemanticColorsTransform: Transform = {
             id: { name: 'styles' },
           })
           .forEach((path: any) => {
-            const init = path.value.init
-            if (init?.type !== 'ObjectExpression') return
+            const init = path.value.init;
+            if (init?.type !== 'ObjectExpression') return;
 
             // Find the colors property
             const colorsProperty = init.properties.find(
@@ -95,11 +95,11 @@ export const buttonAddSemanticColorsTransform: Transform = {
                 (prop.type === 'Property' || prop.type === 'ObjectProperty') &&
                 prop.key.type === 'Identifier' &&
                 prop.key.name === 'colors'
-            )
+            );
 
-            if (!colorsProperty || colorsProperty.value.type !== 'ObjectExpression') return
+            if (!colorsProperty || colorsProperty.value.type !== 'ObjectExpression') return;
 
-            const colorsObject = colorsProperty.value
+            const colorsObject = colorsProperty.value;
             const existingKeys = new Set(
               colorsObject.properties
                 .filter((prop: any) => prop.type === 'Property' || prop.type === 'ObjectProperty')
@@ -111,48 +111,48 @@ export const buttonAddSemanticColorsTransform: Transform = {
                       : ''
                 )
                 .filter(Boolean)
-            )
+            );
 
             // Add semantic colors if they don't exist
             Object.entries(SEMANTIC_COLOR_DEFINITIONS).forEach(([colorName, classNames]) => {
               if (!existingKeys.has(colorName)) {
                 const arrayExpression = j.arrayExpression(
-                  classNames.map((className) => j.literal(className))
-                )
+                  classNames.map(className => j.literal(className))
+                );
 
-                const newProperty = j.property('init', j.identifier(colorName), arrayExpression)
+                const newProperty = j.property('init', j.identifier(colorName), arrayExpression);
 
-                colorsObject.properties.push(newProperty)
+                colorsObject.properties.push(newProperty);
 
                 changes.push({
                   type: 'semantic-color-added',
                   color: colorName,
                   classes: classNames,
-                })
+                });
               }
-            })
-          })
+            });
+          });
 
-        return root.toSource(STANDARD_AST_FORMAT_OPTIONS)
-      }
+        return root.toSource(STANDARD_AST_FORMAT_OPTIONS);
+      };
 
       const result = transformer(
         { path: 'button.tsx', source: content },
         { jscodeshift: j, j, stats: () => {}, report: () => {} }
-      )
+      );
 
       return {
         content: result,
         changes,
         hasChanges: changes.length > 0,
-      }
+      };
     } catch (error) {
-      console.error('Error in button-add-semantic-colors transform:', error)
+      console.error('Error in button-add-semantic-colors transform:', error);
       return {
         content,
         changes: [],
         hasChanges: false,
-      }
+      };
     }
   },
-}
+};

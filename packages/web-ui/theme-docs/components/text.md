@@ -22,10 +22,10 @@ Found in `catalyst-text.tsx`:
 
 ```tsx
 // Current - HARDCODED
-'decoration-zinc-950/50 data-hover:decoration-zinc-950 dark:decoration-white/50 dark:data-hover:decoration-white'
+'decoration-zinc-950/50 data-hover:decoration-zinc-950 dark:decoration-white/50 dark:data-hover:decoration-white';
 
 // Recommended Fix
-'decoration-muted-foreground data-hover:decoration-foreground dark:decoration-muted-foreground dark:data-hover:decoration-foreground'
+'decoration-muted-foreground data-hover:decoration-foreground dark:decoration-muted-foreground dark:data-hover:decoration-foreground';
 ```
 
 **Impact**: Link decorations don't adapt to theme colors, affecting text link consistency across themed environments.
@@ -70,7 +70,7 @@ const colors = {
   muted: 'text-zinc-600 dark:text-zinc-400',
   dim: 'text-zinc-500 dark:text-zinc-500',
   light: 'text-zinc-400 dark:text-zinc-600',
-}
+};
 ```
 
 ### Recommended Semantic System
@@ -86,7 +86,7 @@ const colors = {
   secondary: 'text-secondary',
   accent: 'text-accent',
   destructive: 'text-destructive',
-}
+};
 ```
 
 ## Implementation Priority

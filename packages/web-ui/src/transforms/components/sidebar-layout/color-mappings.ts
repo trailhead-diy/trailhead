@@ -6,7 +6,7 @@
 import {
   createProtectedRegexTransform,
   makeProtected,
-} from '../common/utilities/protected-regex-transform-factory.js'
+} from '../common/utilities/protected-regex-transform-factory.js';
 
 const sidebarLayoutColorMappings = makeProtected([
   // Backdrop colors
@@ -51,7 +51,7 @@ const sidebarLayoutColorMappings = makeProtected([
     replacement: 'dark:lg:ring-ring',
     description: 'Convert dark mode white ring to semantic ring',
   },
-])
+]);
 
 /**
  * SidebarLayout color mapping transform
@@ -64,5 +64,5 @@ export const sidebarLayoutColorMappingsTransform = createProtectedRegexTransform
   changeType: 'sidebar-layout-color-semantic',
 
   // Only apply to sidebar-layout component files
-  contentFilter: (content) => content.includes('export function SidebarLayout'),
-})
+  contentFilter: content => content.includes('export function SidebarLayout'),
+});
