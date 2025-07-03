@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "esteban-url/trailhead"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["@esteban-url/trailhead-cli", "@esteban-url/trailhead-web-ui"]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@repo/*"],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}

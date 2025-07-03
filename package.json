@@ -22,11 +22,15 @@
     "docs:coverage": "tsx tooling/docs-tooling/src/validate-docs.ts --coverage",
     "docs:new": "tsx tooling/docs-tooling/src/create-doc.ts",
     "changeset": "changeset",
-    "version": "changeset version",
+    "changeset:add": "changeset add",
+    "changeset:status": "changeset status --verbose",
+    "version-packages": "changeset version",
     "release": "turbo build --filter=./packages/* && changeset publish",
+    "release:dry-run": "changeset publish --dry-run",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.27.1",
     "@inquirer/prompts": "^7.1.0",
     "@types/node": "^24.0.10",
