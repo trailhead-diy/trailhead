@@ -65,7 +65,22 @@ pnpm build --filter=./packages/*
 
 ## Installation for Projects
 
-Since this is a private repository, install packages using GitHub references:
+### From GitHub Packages (Recommended)
+
+These packages are published to GitHub Packages. You'll need to authenticate first:
+
+```bash
+# Set up GitHub token (with read:packages scope)
+export GITHUB_TOKEN=your_github_token
+
+# Install from GitHub Packages
+npm install @esteban-url/trailhead-cli --registry=https://npm.pkg.github.com
+npm install @esteban-url/trailhead-web-ui --registry=https://npm.pkg.github.com
+```
+
+### From GitHub Repository
+
+Alternatively, install directly from the repository:
 
 ```bash
 # Install the UI library
