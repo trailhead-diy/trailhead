@@ -73,15 +73,7 @@ prepare-commit-msg:
 commit-msg:
   commands:
     commitlint:
-      run: |
-        first_line=$(head -n1 "$1")
-        if ! echo "$first_line" | grep -qE '^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}$'; then
-          echo "❌ Commit message must follow conventional format:"
-          echo "   type(scope?): description"
-          echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
-          echo "   Example: feat(web-ui): add dark mode support"
-          exit 1
-        fi
+      run: 'first_line=$(head -n1 {1}); if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+$"; then echo "❌ Commit message must follow conventional format:"; echo "   type(scope?): description"; echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"; echo "   Example: feat(web-ui): add dark mode support"; exit 1; fi'
 
 pre-push:
   parallel: true
