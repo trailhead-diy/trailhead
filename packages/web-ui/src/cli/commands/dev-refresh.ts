@@ -108,11 +108,11 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
 // ============================================================================
 
 /**
- * Create dev:refresh command
+ * Create dev-refresh command
  */
 export const createDevRefreshCommand = () => {
   return createCommand<DevRefreshOptions>({
-    name: 'dev:refresh',
+    name: 'dev-refresh',
     description: '[Dev] Copy fresh Catalyst components with catalyst- prefix for development',
 
     options: [
