@@ -53,6 +53,7 @@ Focus on high-ROI (Return on Investment) tests:
 - Use the TodoWrite tool for task management across the monorepo
 - Consider impact across packages when making changes
 - Test related packages when making cross-cutting changes
+- **Web Search**: When searching for current information, always use the current year (2025) not previous years. Check the environment date if unsure. This applies to all searches, including when using shortcuts like `uc7` or any other context.
 
 ### Dependency Management
 
@@ -459,8 +460,8 @@ pnpm build                  # Production build
 ### General Shortcuts
 
 - `uc7` = [Use Core Principles] Apply these principles: Deep analysis, exhaustive coverage, functional patterns, type safety, DRY, YAGNI, KISS, files should be organized logically and "do one thing well" and high-ROI testing approach if explicitly asked to add testing. Research current best practices and provide comprehensive solution. Do not commit unless explicitly stated. Ensure code passes all linting and type checking for the project's language.
-- `gcwm` = Git commit with meaningful message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
 - `qc` = Quality check in 3 passes: 1) Did I miss anything from the requirements? 2) Can this solution be improved (performance, readability, maintainability)? 3) Does it follow all project principles (DRY, YAGNI, KISS, functional patterns, type safety)?
+- `qcu` = Ultra-deep quality check: 1) Requirements audit - missed any stated/implied requirements, edge cases, error handling, accessibility, performance? 2) Security review - auth, validation, data exposure, OWASP top 10? 3) Architecture impact - system fit, scalability, tech debt, migration paths? 4) Future-proofing - assumptions, breakage points, extensibility? 5) Code excellence - elegant, self-documenting, follows all principles? 6) Hidden complexities - race conditions, memory leaks, performance cliffs, state issues? 7) Testing gaps - untested areas, integration points, failure/recovery scenarios?
 - `explain` = Explain this code/error/concept in simple terms with concrete examples
 - `refactor` = Suggest refactoring improvements focusing on readability, performance, and maintainability
 - `edge` = Identify edge cases, error scenarios, and potential bugs in this implementation
@@ -470,18 +471,12 @@ pnpm build                  # Production build
 - `quick` = Give me the most direct solution without explanation (for simple tasks)
 - `review` = Code review this as if you're a senior engineer: security, performance, best practices
 - `test` = Write high-ROI tests for this code following project principles
-- `gpr` = GitHub pull request: Create PR with title from commits, run validation checks,
-  assign reviewers based on changed files, and auto-link issues. Detects affected
-  packages in monorepo.
-- `gbcp` = Git branch, commit, push/PR workflow: 1) Create new feature branch from current
-  branch, 2) Stage all changes and commit with meaningful message (gcwm), 3) Push branch
-  and create PR with auto-generated description (gpr).
-- `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger
-  automated release via GitHub Action, 4) The automation handles version bumping, changelog
-  generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
-- `pubdr` = Publish dry-run: Check what would be published without actually releasing.
-  Runs `pnpm release:dry-run` to preview package contents and verify everything looks
-  correct before actual publish. Use before `pub` to ensure safety.
+- `clean` = Deep clean codebase: 1) Remove ALL backwards compatibility code (this is v1.0, no legacy support needed), 2) Delete unused files, functions, variables, imports, exports, 3) Remove low-ROI tests (rendering, prop forwarding, snapshots), 4) Delete obsolete documentation, 5) Remove commented-out code, 6) Eliminate dead code paths and unreachable conditions, 7) Remove unnecessary dependencies, 8) Delete example/demo files that aren't actively used. Be aggressive - if it's not actively used, it goes. Use git history if needed later.
+- `gcwm` = Git commit with meaningful message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
+- `gpr` = GitHub pull request: Create PR with title from commits, run validation checks, assign reviewers based on changed files, and auto-link issues. Detects affected packages in monorepo.
+- `gbcp` = Git branch, commit, push/PR workflow: 1) Create new feature branch from current branch, 2) Stage all changes and commit with meaningful message (gcwm), 3) Push branch and create PR with auto-generated description (gpr).
+- `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger automated release via GitHub Action, 4) The automation handles version bumping, changelog generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
+- `pubdr` = Publish dry-run: Check what would be published without actually releasing. Runs `pnpm release:dry-run` to preview package contents and verify everything looks correct before actual publish. Use before `pub` to ensure safety.
 
 ### Documentation Shortcuts
 

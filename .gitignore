@@ -44,3 +44,9 @@ Thumbs.db
 
 # Transform logs (web-ui package)
 **/transform-logs/
+
+# Lefthook local configuration
+.lefthook-local.yml
+
+# Tool caches
+.turbo/.prettiercache

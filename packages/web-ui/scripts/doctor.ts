@@ -65,11 +65,6 @@ const checks: Check[] = [
         : 'not found (first build will be slower)'
     },
   },
-  {
-    name: 'Husky hooks installed',
-    check: () => existsSync(join(process.cwd(), '.husky', '_', 'husky.sh')),
-    fix: 'Run: pnpm prepare',
-  },
 ]
 
 console.log(chalk.bold.blue('\n🩺 Trailhead UI Doctor\n'))
