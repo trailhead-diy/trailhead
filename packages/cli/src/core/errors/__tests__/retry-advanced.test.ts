@@ -39,7 +39,8 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('success'));
 
@@ -64,7 +65,8 @@ describe('Advanced Retry Functionality', () => {
       };
 
       const beforeRetry = vi.fn();
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('success'));
 
@@ -80,7 +82,7 @@ describe('Advanced Retry Functionality', () => {
     it.skip('should respect abort signal when already aborted - p-retry internal behavior', async () => {
       const controller = new AbortController();
       controller.abort(); // Abort before starting
-      
+
       const operation = vi.fn().mockResolvedValue(Ok('should not be called'));
 
       const result = await retryAdvanced(operation, {
@@ -101,7 +103,7 @@ describe('Advanced Retry Functionality', () => {
         message: 'Retry error',
         recoverable: true,
       };
-      
+
       let attemptCount = 0;
       const operation = vi.fn().mockImplementation(async () => {
         attemptCount++;
@@ -131,8 +133,11 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const customBackoff = vi.fn().mockImplementation((attempt) => attempt * 50);
-      const operation = vi.fn()
+      const customBackoff = vi
+        .fn()
+        .mockImplementation((attempt) => attempt * 50);
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('success'));
@@ -150,7 +155,7 @@ describe('Advanced Retry Functionality', () => {
   describe('RetryStrategies', () => {
     it('should provide conservative strategy', () => {
       const strategy = RetryStrategies.conservative();
-      
+
       expect(strategy.retries).toBe(5);
       expect(strategy.minTimeout).toBe(2000);
       expect(strategy.maxTimeout).toBe(30000);
@@ -160,7 +165,7 @@ describe('Advanced Retry Functionality', () => {
 
     it('should provide network strategy', () => {
       const strategy = RetryStrategies.network();
-      
+
       expect(strategy.retries).toBe(3);
       expect(strategy.minTimeout).toBe(1000);
       expect(strategy.jitter).toBe(true);
@@ -169,7 +174,7 @@ describe('Advanced Retry Functionality', () => {
 
     it('should provide infinite strategy', () => {
       const strategy = RetryStrategies.infinite();
-      
+
       expect(strategy.retries).toBe(Infinity);
       expect(strategy.minTimeout).toBe(1000);
       expect(strategy.maxTimeout).toBe(60000);
@@ -202,7 +207,8 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Err(error))
@@ -257,7 +263,8 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('success'));
 
@@ -266,7 +273,7 @@ describe('Advanced Retry Functionality', () => {
       expect(breaker.getState()).toBe('open');
 
       // Wait for reset timeout
-      await new Promise(resolve => setTimeout(resolve, 110));
+      await new Promise((resolve) => setTimeout(resolve, 110));
 
       // Should allow attempt in half-open state
       const result = await breaker.execute(operation);
@@ -279,25 +286,25 @@ describe('Advanced Retry Functionality', () => {
         failureThreshold: 2,
         resetTimeout: 1000,
       });
-      
+
       // First trip the breaker
       const error: CLIError = {
         code: 'RESET_TEST',
         message: 'Reset test',
         recoverable: true,
       };
-      
+
       const operation = vi.fn().mockResolvedValue(Err(error));
-      
+
       // Execute multiple times to trip the breaker
       await breaker.execute(operation, { retries: 0 });
       await breaker.execute(operation, { retries: 0 });
-      
+
       expect(breaker.getState()).toBe('open');
-      
+
       // Reset and verify
       breaker.reset();
-      
+
       expect(breaker.getState()).toBe('closed');
     });
   });
@@ -319,7 +326,7 @@ describe('Advanced Retry Functionality', () => {
         callCount++;
         // First call takes longer than timeout
         if (callCount === 1) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
         return Ok('success');
       });
@@ -333,7 +340,7 @@ describe('Advanced Retry Functionality', () => {
 
     it('should complete within timeout', async () => {
       const operation = vi.fn().mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         return Ok('quick success');
       });
 
@@ -385,13 +392,15 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const op1 = vi.fn()
+      const op1 = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('op1'));
-      
+
       const op2 = vi.fn().mockResolvedValue(Ok('op2'));
-      
-      const op3 = vi.fn()
+
+      const op3 = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('op3'));
@@ -424,14 +433,18 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(slowError))
         .mockResolvedValueOnce(Ok('success'));
 
       // Store the error for the custom backoff function
       (operation as any).lastError = slowError;
 
-      const result = await progressiveRetry(operation, { retries: 2, minTimeout: 10 });
+      const result = await progressiveRetry(operation, {
+        retries: 2,
+        minTimeout: 10,
+      });
 
       expect(result.success).toBe(true);
     });
@@ -446,11 +459,15 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(unknownError))
         .mockResolvedValueOnce(Ok('success'));
 
-      const result = await progressiveRetry(operation, { retries: 2, minTimeout: 10 });
+      const result = await progressiveRetry(operation, {
+        retries: 2,
+        minTimeout: 10,
+      });
 
       expect(result.success).toBe(true);
     });

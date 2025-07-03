@@ -20,27 +20,29 @@ const processCommand = createCommand({
   ],
   action: async (options, context) => {
     const [filePath] = context.args;
-    
+
     if (!filePath) {
-      return Err(new Error('File path required. Usage: file-processor process <file>'));
+      return Err(
+        new Error('File path required. Usage: file-processor process <file>'),
+      );
     }
 
     const fs = createFileSystem();
     const result = await fs.readFile(filePath);
-    
+
     if (!result.success) {
       return Err(new Error(`Failed to read file: ${result.error.message}`));
     }
 
     const content = result.value;
-    
+
     switch (options.operation) {
       case 'count-lines':
         const lines = content.split('\n').length;
         console.log(`Lines: ${lines}`);
         break;
       case 'word-count':
-        const words = content.split(/\s+/).filter(w => w.length > 0).length;
+        const words = content.split(/\s+/).filter((w) => w.length > 0).length;
         console.log(`Words: ${words}`);
         break;
       case 'uppercase':
@@ -73,13 +75,17 @@ const backupCommand = createCommand({
   ],
   action: async (options, context) => {
     const [sourcePath] = context.args;
-    
+
     if (!sourcePath) {
-      return Err(new Error('Source path required. Usage: file-processor backup <source> -d <destination>'));
+      return Err(
+        new Error(
+          'Source path required. Usage: file-processor backup <source> -d <destination>',
+        ),
+      );
     }
 
     const fs = createFileSystem();
-    
+
     // Check if source exists
     const sourceExists = await fs.exists(sourcePath);
     if (!sourceExists.success || !sourceExists.value) {
@@ -89,7 +95,11 @@ const backupCommand = createCommand({
     // Ensure destination directory exists
     const ensureResult = await fs.ensureDir(options.destination);
     if (!ensureResult.success) {
-      return Err(new Error(`Failed to create destination directory: ${ensureResult.error.message}`));
+      return Err(
+        new Error(
+          `Failed to create destination directory: ${ensureResult.error.message}`,
+        ),
+      );
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -97,15 +107,19 @@ const backupCommand = createCommand({
 
     // Use move or copy based on option
     const operation = options.move ? 'move' : 'copy';
-    const result = options.move 
+    const result = options.move
       ? await fs.move(sourcePath, backupPath)
       : await fs.copy(sourcePath, backupPath, { recursive: true });
 
     if (!result.success) {
-      return Err(new Error(`Failed to ${operation} files: ${result.error.message}`));
+      return Err(
+        new Error(`Failed to ${operation} files: ${result.error.message}`),
+      );
     }
 
-    console.log(`✅ ${operation === 'move' ? 'Moved' : 'Copied'} ${sourcePath} to ${backupPath}`);
+    console.log(
+      `✅ ${operation === 'move' ? 'Moved' : 'Copied'} ${sourcePath} to ${backupPath}`,
+    );
     return Ok(undefined);
   },
 });
@@ -131,25 +145,31 @@ const cleanupCommand = createCommand({
   ],
   action: async (options, context) => {
     const [targetPath] = context.args;
-    
+
     if (!targetPath) {
-      return Err(new Error('Target path required. Usage: file-processor cleanup <path>'));
+      return Err(
+        new Error('Target path required. Usage: file-processor cleanup <path>'),
+      );
     }
 
     const fs = createFileSystem();
-    
+
     if (options['empty-dirs']) {
       // Empty the directory but keep it
       const emptyResult = await fs.emptyDir(targetPath);
       if (!emptyResult.success) {
-        return Err(new Error(`Failed to empty directory: ${emptyResult.error.message}`));
+        return Err(
+          new Error(`Failed to empty directory: ${emptyResult.error.message}`),
+        );
       }
       console.log(`✅ Emptied directory: ${targetPath}`);
     } else {
       // Remove the entire path
       const removeResult = await fs.remove(targetPath);
       if (!removeResult.success) {
-        return Err(new Error(`Failed to remove path: ${removeResult.error.message}`));
+        return Err(
+          new Error(`Failed to remove path: ${removeResult.error.message}`),
+        );
       }
       console.log(`✅ Removed: ${targetPath}`);
     }

@@ -26,7 +26,7 @@ export function mockFileSystem(
       directories.add(parts.slice(0, i).join('/'));
     }
   }
-  
+
   // Always ensure root directory exists
   if (files.size > 0 || directories.size > 0) {
     directories.add('.');
@@ -178,7 +178,11 @@ export function mockFileSystem(
     // Test helpers
     getFiles: () => new Map(files),
     getDirectories: () => new Set(directories),
-    move: async (src: string, dest: string, _options?: MoveOptions): Promise<Result<void>> => {
+    move: async (
+      src: string,
+      dest: string,
+      _options?: MoveOptions,
+    ): Promise<Result<void>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
@@ -215,7 +219,10 @@ export function mockFileSystem(
       return Ok(undefined);
     },
 
-    outputFile: async (path: string, content: string): Promise<Result<void>> => {
+    outputFile: async (
+      path: string,
+      content: string,
+    ): Promise<Result<void>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
       // Add parent directories
@@ -335,29 +342,31 @@ export function createEnhancedMockFileSystem(
     exists: async (path: string): Promise<Result<boolean>> => {
       const error = checkForSimulatedError('exists', path);
       if (error) return Err(error);
-      const normalized = caseSensitive 
-        ? normalizePath(path) 
+      const normalized = caseSensitive
+        ? normalizePath(path)
         : normalizePath(path).toLowerCase();
-      
+
       if (!caseSensitive) {
         // Check if any file or directory matches case-insensitively
-        const lowerFiles = Array.from(files.keys()).map(k => k.toLowerCase());
-        const lowerDirs = Array.from(directories).map(d => d.toLowerCase());
-        return Ok(lowerFiles.includes(normalized) || lowerDirs.includes(normalized));
+        const lowerFiles = Array.from(files.keys()).map((k) => k.toLowerCase());
+        const lowerDirs = Array.from(directories).map((d) => d.toLowerCase());
+        return Ok(
+          lowerFiles.includes(normalized) || lowerDirs.includes(normalized),
+        );
       }
-      
+
       return Ok(files.has(normalized) || directories.has(normalized));
     },
 
     readFile: async (path: string): Promise<Result<string>> => {
       const error = checkForSimulatedError('readFile', path);
       if (error) return Err(error);
-      const normalized = caseSensitive 
-        ? normalizePath(path) 
+      const normalized = caseSensitive
+        ? normalizePath(path)
         : normalizePath(path).toLowerCase();
-      
+
       let content: string | undefined;
-      
+
       if (!caseSensitive) {
         // Find the actual file with case-insensitive search
         for (const [filePath, fileContent] of files.entries()) {
@@ -369,7 +378,7 @@ export function createEnhancedMockFileSystem(
       } else {
         content = files.get(normalized);
       }
-      
+
       if (content === undefined) {
         return Err({
           code: 'FILE_NOT_FOUND',

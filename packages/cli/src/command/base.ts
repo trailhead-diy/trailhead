@@ -39,7 +39,6 @@ export interface CommandConfig<T extends CommandOptions> {
   readonly validation?: CommandValidator<T>;
 }
 
-
 /**
  * Command action function type
  * @template T - Command options type
@@ -59,10 +58,10 @@ export type CommandValidator<T extends CommandOptions> = (
 
 /**
  * Create a command object for use with createCLI
- * 
+ *
  * Creates a command interface object that can be registered with a CLI instance.
  * The command configuration is validated at creation time to ensure proper structure.
- * 
+ *
  * @template T - Command options type extending CommandOptions
  * @param config - Command configuration object
  * @param config.name - Command name used for CLI invocation (e.g., 'build', 'test')
@@ -74,7 +73,7 @@ export type CommandValidator<T extends CommandOptions> = (
  * @param config.validation - Optional validation function for command options
  * @returns Command interface object ready for CLI registration
  * @throws {Error} When command configuration is invalid
- * 
+ *
  * @example
  * Basic command without options:
  * ```typescript
@@ -87,7 +86,7 @@ export type CommandValidator<T extends CommandOptions> = (
  *   }
  * });
  * ```
- * 
+ *
  * @example
  * Command with options and arguments:
  * ```typescript
@@ -95,7 +94,7 @@ export type CommandValidator<T extends CommandOptions> = (
  *   output?: string;
  *   watch?: boolean;
  * }
- * 
+ *
  * const buildCommand = createCommand<BuildOptions>({
  *   name: 'build',
  *   description: 'Build the project',
@@ -129,7 +128,9 @@ export function createCommand<T extends CommandOptions>(
   // Validate configuration
   const validationResult = validateCommandConfigWithCache(config);
   if (!validationResult.success) {
-    throw new Error(`Invalid command configuration: ${validationResult.error.message}`);
+    throw new Error(
+      `Invalid command configuration: ${validationResult.error.message}`,
+    );
   }
 
   return {
@@ -140,4 +141,3 @@ export function createCommand<T extends CommandOptions>(
     execute: config.action,
   };
 }
-

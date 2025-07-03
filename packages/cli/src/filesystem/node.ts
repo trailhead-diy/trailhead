@@ -1,6 +1,12 @@
 import fse from 'fs-extra';
 import path from 'path';
-import type { FileSystem, FileSystemError, CopyOptions, MoveOptions, MkdirOptions } from './types.js';
+import type {
+  FileSystem,
+  FileSystemError,
+  CopyOptions,
+  MoveOptions,
+  MkdirOptions,
+} from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
 
 export function createNodeFileSystem(): FileSystem {
@@ -78,7 +84,9 @@ export function createNodeFileSystem(): FileSystem {
 
     async readFile(filePath: string, encoding = 'utf-8') {
       try {
-        const content = await fse.readFile(filePath, { encoding: encoding as BufferEncoding });
+        const content = await fse.readFile(filePath, {
+          encoding: encoding as BufferEncoding,
+        });
         return Ok(content);
       } catch (error) {
         return Err(createError('Read file', filePath, error));
@@ -140,7 +148,7 @@ export function createNodeFileSystem(): FileSystem {
 
     async readJson<T = any>(filePath: string) {
       try {
-        const data = await fse.readJson(filePath) as T;
+        const data = (await fse.readJson(filePath)) as T;
         return Ok(data);
       } catch (error) {
         if ((error as any).code === 'ENOENT') {

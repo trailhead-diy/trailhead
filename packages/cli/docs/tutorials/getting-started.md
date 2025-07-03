@@ -19,6 +19,7 @@ In this tutorial, you'll build a simple greeting CLI application using @esteban-
 ## What You'll Build
 
 A CLI application called `greeter` that:
+
 - Takes a name as input
 - Provides optional formatting options
 - Uses Result types for error handling
@@ -27,6 +28,7 @@ A CLI application called `greeter` that:
 ## Before You Begin
 
 Make sure you have:
+
 - Node.js 18.0.0 or higher
 - TypeScript 5.0 or higher
 - Basic understanding of TypeScript and async/await
@@ -153,10 +155,10 @@ async function myAction(options: any, context: CommandContext) {
   context.logger.info("Processing...");
   context.logger.success("Done!");
   context.logger.error("Failed!");
-  
+
   // File system access
   const result = await context.fs.readFile("config.json");
-  
+
   // Project root directory
   console.log(context.projectRoot);
 }
@@ -175,16 +177,22 @@ const readCommand = createCommand({
   name: "read",
   description: "Read a file",
   options: [
-    { name: "file", alias: "f", type: "string", required: true, description: "File to read" },
+    {
+      name: "file",
+      alias: "f",
+      type: "string",
+      required: true,
+      description: "File to read",
+    },
   ],
   action: async (options, context) => {
     const fs = createFileSystem();
     const result = await fs.readFile(options.file);
-    
+
     if (!result.success) {
       return Err(new Error(`Failed to read: ${result.error.message}`));
     }
-    
+
     context.logger.info(result.value);
     return Ok(undefined);
   },
@@ -206,12 +214,12 @@ const initCommand = createCommand({
       message: "Project name:",
       default: "my-project",
     });
-    
+
     const template = await select({
       message: "Choose a template:",
       choices: ["basic", "advanced", "minimal"],
     });
-    
+
     context.logger.success(`Created ${name} with ${template} template`);
     return Ok(undefined);
   },
@@ -262,20 +270,20 @@ const mainCommand = createCommand({
       message: "Which file to process?",
       validate: (input) => input.length > 0,
     });
-    
+
     // Read file
     const fs = createFileSystem();
     const result = await fs.readFile(filename);
-    
+
     if (!result.success) {
       context.logger.error(`Failed to read ${filename}`);
       return result;
     }
-    
+
     // Process content
-    const lines = result.value.split('\n').length;
+    const lines = result.value.split("\n").length;
     context.logger.success(`Processed ${lines} lines from ${filename}`);
-    
+
     return Ok(undefined);
   },
 });

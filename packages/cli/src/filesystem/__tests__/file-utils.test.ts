@@ -152,7 +152,11 @@ describe('File Utils', () => {
       const result = await writeFile('test.ts', 'content');
 
       expect(result.success).toBe(true);
-      expect(mockFs.writeFile).toHaveBeenCalledWith('test.ts', 'content', 'utf8');
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
+        'test.ts',
+        'content',
+        'utf8',
+      );
     });
 
     it('should handle file write errors', async () => {
@@ -237,7 +241,9 @@ describe('File Utils', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(Error);
-        expect(result.error.message).toBe('Failed to create directory test-dir');
+        expect(result.error.message).toBe(
+          'Failed to create directory test-dir',
+        );
       }
     });
   });
@@ -370,7 +376,10 @@ describe('File Utils', () => {
       const result = getRelativePath('/full/path/src/utils/test.ts');
 
       expect(result).toBe('src/utils/test.ts');
-      expect(mockPath.relative).toHaveBeenCalledWith(process.cwd(), '/full/path/src/utils/test.ts');
+      expect(mockPath.relative).toHaveBeenCalledWith(
+        process.cwd(),
+        '/full/path/src/utils/test.ts',
+      );
     });
 
     it('should handle current directory files', () => {
@@ -551,7 +560,10 @@ describe('File Utils', () => {
       const ensureResult = await ensureDirectory('output');
       expect(ensureResult.success).toBe(true);
 
-      const writeResult = await writeFile('output/modified.ts', 'modified content');
+      const writeResult = await writeFile(
+        'output/modified.ts',
+        'modified content',
+      );
       expect(writeResult.success).toBe(true);
 
       // Verify stats tracking

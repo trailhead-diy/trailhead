@@ -26,7 +26,7 @@ export interface CLIConfig {
  * CLI application interface
  */
 export interface CLI {
-  /** 
+  /**
    * Run the CLI with provided arguments
    * @param argv - Command line arguments (defaults to process.argv)
    */
@@ -35,17 +35,17 @@ export interface CLI {
 
 /**
  * Create a CLI application with the specified configuration
- * 
+ *
  * Creates a complete CLI application that can parse command line arguments,
  * register commands, and execute them with proper error handling and validation.
- * 
+ *
  * @param config - CLI configuration object
  * @param config.name - Application name used in help text
  * @param config.version - Version string displayed with --version
  * @param config.description - Description shown in help text
  * @param config.commands - Array of command objects created with createCommand()
  * @returns CLI instance with run() method
- * 
+ *
  * @example
  * Basic CLI with single command:
  * ```typescript
@@ -57,21 +57,21 @@ export interface CLI {
  *     return { success: true, value: undefined };
  *   }
  * });
- * 
+ *
  * const cli = createCLI({
  *   name: 'my-cli',
  *   version: '1.0.0',
  *   description: 'My CLI application',
  *   commands: [testCommand]
  * });
- * 
+ *
  * // Run with process arguments
  * await cli.run();
- * 
+ *
  * // Or run with custom arguments
  * await cli.run(['node', 'cli.js', 'test', '--verbose']);
  * ```
- * 
+ *
  * @example
  * CLI with multiple commands:
  * ```typescript
@@ -83,7 +83,7 @@ export interface CLI {
  *     return { success: true, value: undefined };
  *   }
  * });
- * 
+ *
  * const testCommand = createCommand({
  *   name: 'test',
  *   description: 'Run tests',
@@ -92,14 +92,14 @@ export interface CLI {
  *     return { success: true, value: undefined };
  *   }
  * });
- * 
+ *
  * const cli = createCLI({
  *   name: 'project-tools',
  *   version: '2.1.0',
  *   description: 'Project development tools',
  *   commands: [buildCommand, testCommand]
  * });
- * 
+ *
  * await cli.run();
  * ```
  */
@@ -126,11 +126,15 @@ export function createCLI(config: CLIConfig): CLI {
           } else {
             // Handle array of argument definitions
             const argumentsString = command.arguments
-              .map(arg => {
+              .map((arg) => {
                 if (arg.variadic) {
-                  return arg.required !== false ? `<${arg.name}...>` : `[${arg.name}...]`;
+                  return arg.required !== false
+                    ? `<${arg.name}...>`
+                    : `[${arg.name}...]`;
                 } else {
-                  return arg.required !== false ? `<${arg.name}>` : `[${arg.name}]`;
+                  return arg.required !== false
+                    ? `<${arg.name}>`
+                    : `[${arg.name}]`;
                 }
               })
               .join(' ');
@@ -141,22 +145,29 @@ export function createCLI(config: CLIConfig): CLI {
         // Add options with performance optimization
         if (command.options && command.options.length > 0) {
           // Process all options with caching for better performance
-          const processedOptions = processCommandOptionsWithCache(command.options);
-          
+          const processedOptions = processCommandOptionsWithCache(
+            command.options,
+          );
+
           for (let i = 0; i < processedOptions.length; i++) {
             const option = command.options[i];
             const processed = processedOptions[i];
-            
+
             // Validate option configuration with enhanced error messages
             const validationResult = validateCommandOption(option, i);
             if (!validationResult.success) {
               const error = validationResult.error;
-              console.error(`\n❌ CLI Configuration Error in command '${command.name}':`);
+              console.error(
+                `\n❌ CLI Configuration Error in command '${command.name}':`,
+              );
               console.error(`   ${error.message}`);
               if (error.suggestion) {
                 console.error(`   💡 Suggestion: ${error.suggestion}`);
               }
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
+              console.error(
+                `   Option configuration:`,
+                JSON.stringify(option, null, 2),
+              );
               process.exit(1);
             }
 
@@ -168,18 +179,23 @@ export function createCLI(config: CLIConfig): CLI {
                   option.default,
                 );
               } else {
-                cmd.option(
-                  processed.flags,
-                  option.description,
-                  option.default,
-                );
+                cmd.option(processed.flags, option.description, option.default);
               }
             } catch (commanderError) {
-              console.error(`\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`);
-              console.error(`   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`);
+              console.error(
+                `\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`,
+              );
+              console.error(
+                `   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`,
+              );
               console.error(`   Flags: ${processed.flags}`);
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
-              console.error(`   💡 This usually indicates an invalid flags format or conflicting options`);
+              console.error(
+                `   Option configuration:`,
+                JSON.stringify(option, null, 2),
+              );
+              console.error(
+                `   💡 This usually indicates an invalid flags format or conflicting options`,
+              );
               process.exit(1);
             }
           }
@@ -201,7 +217,9 @@ export function createCLI(config: CLIConfig): CLI {
             const arg = args[i];
             if (Array.isArray(arg)) {
               // Variadic arguments come as arrays
-              positionalArgs = positionalArgs.concat(arg.filter(a => typeof a === 'string'));
+              positionalArgs = positionalArgs.concat(
+                arg.filter((a) => typeof a === 'string'),
+              );
             } else if (typeof arg === 'string') {
               positionalArgs.push(arg);
             }

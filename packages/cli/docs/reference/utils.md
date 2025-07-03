@@ -14,35 +14,35 @@ Styling, logging, spinners, and statistics tracking utilities for CLI applicatio
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/utils` |
-| **Since** | `v1.0.0` |
+| Property    | Value                              |
+| ----------- | ---------------------------------- |
+| **Package** | `@esteban-url/trailhead-cli`       |
+| **Module**  | `@esteban-url/trailhead-cli/utils` |
+| **Since**   | `v1.0.0`                           |
 
 ## Import
 
 ```typescript
-import { 
-  chalk, 
-  success, 
-  error, 
+import {
+  chalk,
+  success,
+  error,
   warning,
   createSpinner,
-  createStats
+  createStats,
 } from "@esteban-url/trailhead-cli/utils";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { 
-  chalk, 
-  success, 
-  error, 
+import {
+  chalk,
+  success,
+  error,
   warning,
   createSpinner,
-  createStats
+  createStats,
 } from "@esteban-url/trailhead-cli/utils";
 ```
 
@@ -68,15 +68,15 @@ Pre-defined color functions for consistent styling:
 
 ```typescript
 import {
-  success,   // Green text
-  error,     // Red text
-  warning,   // Yellow text
-  info,      // Blue text
-  muted,     // Gray text
-  bold,      // Bold text
-  dim,       // Dimmed text
-  italic,    // Italic text
-  underline  // Underlined text
+  success, // Green text
+  error, // Red text
+  warning, // Yellow text
+  info, // Blue text
+  muted, // Gray text
+  bold, // Bold text
+  dim, // Dimmed text
+  italic, // Italic text
+  underline, // Underlined text
 } from "@esteban-url/trailhead-cli/utils";
 
 // Usage
@@ -331,7 +331,7 @@ const schema = [
 
 const processed = processCommandOptions(
   { port: "8080", debug: "true" },
-  schema
+  schema,
 );
 // { port: 8080, host: "localhost", debug: true }
 ```
@@ -348,10 +348,10 @@ stats.startTimer("total");
 
 for (const file of files) {
   spinner.text = `Processing ${file}...`;
-  
+
   const result = await processFile(file);
   updateStats(stats, "files", result);
-  
+
   if (result.success) {
     stats.add("bytes_processed", result.value.size);
   }
@@ -371,11 +371,11 @@ function displayResults(results: any[], options: DisplayOptions) {
     { name: "color", type: "boolean", default: true },
     { name: "verbose", type: "boolean", default: false },
   ]);
-  
+
   if (processed.color) {
     console.log(success(`✓ Found ${results.length} results`));
-    
-    results.forEach(r => {
+
+    results.forEach((r) => {
       console.log(info(`  - ${r.name}`));
       if (processed.verbose) {
         console.log(muted(`    ${r.description}`));
@@ -384,7 +384,7 @@ function displayResults(results: any[], options: DisplayOptions) {
   } else {
     // Plain output
     console.log(`Found ${results.length} results`);
-    results.forEach(r => console.log(`  - ${r.name}`));
+    results.forEach((r) => console.log(`  - ${r.name}`));
   }
 }
 ```

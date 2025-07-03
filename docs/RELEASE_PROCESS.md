@@ -11,6 +11,7 @@ This guide explains how to release packages in the Trailhead monorepo using Chan
 ## Overview
 
 We use [Changesets](https://github.com/changesets/changesets) for:
+
 - Automated version management
 - Changelog generation
 - GitHub Packages publishing
@@ -34,6 +35,7 @@ pnpm changeset
 ```
 
 This will prompt you to:
+
 1. Select which packages have changed
 2. Choose the bump type (major/minor/patch)
 3. Write a summary for the changelog
@@ -48,12 +50,14 @@ This will prompt you to:
 
 ```markdown
 # Good examples:
+
 - Fixed TypeScript errors in CLI command handlers
 - Added support for dry-run mode in install command
 - Improved error messages for file system operations
-- **BREAKING**: Renamed @trailhead/* packages to @esteban-url/*
+- **BREAKING**: Renamed @trailhead/_ packages to @esteban-url/_
 
 # Poor examples:
+
 - Fixed stuff
 - Updates
 - Changes to code
@@ -107,6 +111,7 @@ git push --follow-tags
 ## Linked Packages
 
 The CLI and Web UI packages are linked, meaning:
+
 - They share version numbers
 - They're always released together
 - Internal dependencies are automatically updated
@@ -116,6 +121,7 @@ The CLI and Web UI packages are linked, meaning:
 ### "No changesets found"
 
 Create a changeset first:
+
 ```bash
 pnpm changeset:add
 ```
@@ -123,6 +129,7 @@ pnpm changeset:add
 ### "Package not found" during publish
 
 Ensure you're authenticated to GitHub Packages:
+
 ```bash
 npm login --scope=@esteban-url --registry=https://npm.pkg.github.com
 ```
@@ -130,6 +137,7 @@ npm login --scope=@esteban-url --registry=https://npm.pkg.github.com
 ### Version conflicts
 
 Check and resolve any uncommitted changes:
+
 ```bash
 git status
 pnpm changeset:status
@@ -182,6 +190,7 @@ git push origin feature-branch
 ### Manual Version Bump
 
 If automation fails:
+
 ```bash
 # Manually edit package.json versions
 # Update CHANGELOG.md files

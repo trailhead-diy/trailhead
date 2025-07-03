@@ -28,7 +28,9 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock console methods
-const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+const mockConsoleError = vi
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
 
 describe('Error Handlers', () => {
   beforeEach(() => {
@@ -98,9 +100,9 @@ describe('Error Handlers', () => {
 
       const lines = formatError(error, true);
 
-      expect(lines.some(line => line.includes('Caused by:'))).toBe(true);
-      expect(lines.some(line => line.includes('Root cause'))).toBe(true);
-      expect(lines.some(line => line.includes('Stack:'))).toBe(true);
+      expect(lines.some((line) => line.includes('Caused by:'))).toBe(true);
+      expect(lines.some((line) => line.includes('Root cause'))).toBe(true);
+      expect(lines.some((line) => line.includes('Stack:'))).toBe(true);
     });
 
     it('should handle non-Error cause objects', () => {
@@ -113,7 +115,7 @@ describe('Error Handlers', () => {
 
       const lines = formatError(error, true);
 
-      expect(lines.some(line => line.includes('String cause'))).toBe(true);
+      expect(lines.some((line) => line.includes('String cause'))).toBe(true);
     });
 
     it('should use appropriate icons for severity levels', () => {
@@ -172,7 +174,7 @@ describe('Error Handlers', () => {
       displayError(error);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Something went wrong')
+        expect.stringContaining('Something went wrong'),
       );
     });
 
@@ -187,7 +189,7 @@ describe('Error Handlers', () => {
       displayError(error, true);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Extra details')
+        expect.stringContaining('Extra details'),
       );
     });
   });
@@ -217,16 +219,16 @@ describe('Error Handlers', () => {
       displayErrorChain(chain);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Error chain:')
+        expect.stringContaining('Error chain:'),
       );
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Primary error')
+        expect.stringContaining('Primary error'),
       );
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Caused by:')
+        expect.stringContaining('Caused by:'),
       );
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('1. ')
+        expect.stringContaining('1. '),
       );
     });
 
@@ -243,10 +245,10 @@ describe('Error Handlers', () => {
       displayErrorChain(chain);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Only error')
+        expect.stringContaining('Only error'),
       );
       expect(mockConsoleError).not.toHaveBeenCalledWith(
-        expect.stringContaining('Caused by:')
+        expect.stringContaining('Caused by:'),
       );
     });
   });
@@ -263,7 +265,7 @@ describe('Error Handlers', () => {
       expect(() => handler(error)).toThrow('process.exit called');
       expect(mockExit).toHaveBeenCalledWith(2);
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Fatal error')
+        expect.stringContaining('Fatal error'),
       );
     });
 
@@ -292,10 +294,10 @@ describe('Error Handlers', () => {
       handler(error);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('PREFIX:')
+        expect.stringContaining('PREFIX:'),
       );
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Log this error')
+        expect.stringContaining('Log this error'),
       );
     });
 
@@ -310,7 +312,7 @@ describe('Error Handlers', () => {
       handler(error);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('No prefix error')
+        expect.stringContaining('No prefix error'),
       );
     });
   });
@@ -322,7 +324,7 @@ describe('Error Handlers', () => {
       const handler = createConditionalHandler(
         (error) => error.recoverable,
         trueHandler,
-        falseHandler
+        falseHandler,
       );
 
       const recoverableError: CLIError = {
@@ -343,7 +345,7 @@ describe('Error Handlers', () => {
       const handler = createConditionalHandler(
         (error) => error.recoverable,
         trueHandler,
-        falseHandler
+        falseHandler,
       );
 
       const nonRecoverableError: CLIError = {
@@ -362,7 +364,7 @@ describe('Error Handlers', () => {
       const trueHandler = vi.fn();
       const handler = createConditionalHandler(
         (error) => error.recoverable,
-        trueHandler
+        trueHandler,
       );
 
       const nonRecoverableError: CLIError = {
@@ -447,7 +449,8 @@ describe('Error Handlers', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn()
+      const operation = vi
+        .fn()
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Err(error))
         .mockResolvedValueOnce(Ok('success'));
@@ -486,9 +489,9 @@ describe('Error Handlers', () => {
 
       const operation = vi.fn().mockResolvedValue(Err(error));
 
-      const result = await retryWithBackoff(operation, { 
+      const result = await retryWithBackoff(operation, {
         maxRetries: 2,
-        initialDelay: 10
+        initialDelay: 10,
       });
 
       expect(result.success).toBe(false);
@@ -639,7 +642,9 @@ describe('Error Handlers', () => {
     });
 
     it('should throw for empty array', () => {
-      expect(() => buildErrorChain([])).toThrow('Cannot build error chain from empty array');
+      expect(() => buildErrorChain([])).toThrow(
+        'Cannot build error chain from empty array',
+      );
     });
   });
 
@@ -666,10 +671,30 @@ describe('Error Handlers', () => {
 
   describe('filter functions', () => {
     const errors: CLIError[] = [
-      { code: 'NET_ERROR', message: 'Network', category: 'network', recoverable: true },
-      { code: 'FS_ERROR', message: 'Filesystem', category: 'filesystem', recoverable: false },
-      { code: 'WARN_ERROR', message: 'Warning', severity: 'warning', recoverable: true } as SeverityError,
-      { code: 'FATAL_ERROR', message: 'Fatal', severity: 'fatal', recoverable: false } as SeverityError,
+      {
+        code: 'NET_ERROR',
+        message: 'Network',
+        category: 'network',
+        recoverable: true,
+      },
+      {
+        code: 'FS_ERROR',
+        message: 'Filesystem',
+        category: 'filesystem',
+        recoverable: false,
+      },
+      {
+        code: 'WARN_ERROR',
+        message: 'Warning',
+        severity: 'warning',
+        recoverable: true,
+      } as SeverityError,
+      {
+        code: 'FATAL_ERROR',
+        message: 'Fatal',
+        severity: 'fatal',
+        recoverable: false,
+      } as SeverityError,
     ];
 
     describe('filterByCategory', () => {
@@ -689,7 +714,7 @@ describe('Error Handlers', () => {
         const recoverableErrors = filterRecoverable(errors);
 
         expect(recoverableErrors).toHaveLength(2);
-        expect(recoverableErrors.every(e => e.recoverable)).toBe(true);
+        expect(recoverableErrors.every((e) => e.recoverable)).toBe(true);
       });
     });
 

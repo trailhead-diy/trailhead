@@ -14,22 +14,32 @@ Interactive user input functionality through a re-export of [@inquirer/prompts](
 
 ## Overview
 
-| Property | Value |
-|----------|-------|
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module** | `@esteban-url/trailhead-cli/prompts` |
-| **Since** | `v1.0.0` |
+| Property    | Value                                |
+| ----------- | ------------------------------------ |
+| **Package** | `@esteban-url/trailhead-cli`         |
+| **Module**  | `@esteban-url/trailhead-cli/prompts` |
+| **Since**   | `v1.0.0`                             |
 
 ## Import
 
 ```typescript
-import { prompt, select, confirm, multiselect } from "@esteban-url/trailhead-cli/prompts";
+import {
+  prompt,
+  select,
+  confirm,
+  multiselect,
+} from "@esteban-url/trailhead-cli/prompts";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { prompt, select, confirm, multiselect } from "@esteban-url/trailhead-cli/prompts";
+import {
+  prompt,
+  select,
+  confirm,
+  multiselect,
+} from "@esteban-url/trailhead-cli/prompts";
 ```
 
 ## Prompt Functions
@@ -139,7 +149,7 @@ import { password } from "@esteban-url/trailhead-cli/prompts";
 const secret = await password({
   message: "Enter your password:",
   mask: "*",
-  validate: (input) => 
+  validate: (input) =>
     input.length >= 8 || "Password must be at least 8 characters",
 });
 ```
@@ -188,9 +198,9 @@ Most prompt types accept these common options:
 
 ```typescript
 interface CommonOptions {
-  message: string;          // The question to ask
-  default?: any;           // Default value
-  theme?: Theme;           // Custom theme
+  message: string; // The question to ask
+  default?: any; // Default value
+  theme?: Theme; // Custom theme
 }
 ```
 
@@ -218,11 +228,11 @@ const result = await prompt({
 
 ```typescript
 interface Choice<T> {
-  name: string;           // Display name
-  value: T;              // Returned value
-  description?: string;   // Optional description
-  disabled?: boolean | string;  // Disable with optional reason
-  type?: "separator";    // Visual separator
+  name: string; // Display name
+  value: T; // Returned value
+  description?: string; // Optional description
+  disabled?: boolean | string; // Disable with optional reason
+  type?: "separator"; // Visual separator
 }
 
 const option = await select({
@@ -266,8 +276,8 @@ const templatesResult = await fs.readdir("./templates");
 if (templatesResult.success) {
   const template = await select({
     message: "Choose a template:",
-    choices: templatesResult.value.map(name => ({
-      name: name.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+    choices: templatesResult.value.map((name) => ({
+      name: name.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
       value: name,
     })),
   });
@@ -298,7 +308,10 @@ try {
 Use mock prompts for testing:
 
 ```typescript
-import { createTestContext, mockPrompts } from "@esteban-url/trailhead-cli/testing";
+import {
+  createTestContext,
+  mockPrompts,
+} from "@esteban-url/trailhead-cli/testing";
 
 test("interactive command", async () => {
   const prompts = mockPrompts({
@@ -306,9 +319,9 @@ test("interactive command", async () => {
     "Choose a template:": "typescript",
     "Initialize git?": true,
   });
-  
+
   const context = createTestContext({ prompts });
-  
+
   const result = await initCommand.execute({}, context);
   expect(result.success).toBe(true);
 });
@@ -345,16 +358,16 @@ const answer = await prompt({
 ```typescript
 // Re-exported from @inquirer/prompts
 export {
-  prompt,           // Text input
-  input,           // Alias for prompt
-  select,          // Single choice
-  confirm,         // Yes/no
-  checkbox as multiselect,  // Multiple choice
-  password,        // Hidden input
-  editor,          // Text editor
-  expand,          // Expand choices
-  rawlist,         // Numbered list
-  number,          // Numeric input
+  prompt, // Text input
+  input, // Alias for prompt
+  select, // Single choice
+  confirm, // Yes/no
+  checkbox as multiselect, // Multiple choice
+  password, // Hidden input
+  editor, // Text editor
+  expand, // Expand choices
+  rawlist, // Numbered list
+  number, // Numeric input
 } from "@inquirer/prompts";
 
 // Common types

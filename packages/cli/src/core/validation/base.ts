@@ -126,10 +126,11 @@ export const stringArray = (field?: string): Validator<string[]> =>
  * Create a field validator that extracts and validates a specific property from an object
  * Returns the original object if validation passes
  */
-export const field = <T extends Record<string, unknown>>(
-  fieldName: string,
-  validator: Validator<unknown>,
-): Validator<T> => 
+export const field =
+  <T extends Record<string, unknown>>(
+    fieldName: string,
+    validator: Validator<unknown>,
+  ): Validator<T> =>
   (value) => {
     if (!isObject(value)) {
       return Err(`Value must be an object to validate field ${fieldName}`);

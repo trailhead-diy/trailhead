@@ -6,7 +6,9 @@ import os from 'os';
  * Create a temporary directory for testing
  */
 export async function createTestTempDir(): Promise<string> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'esteban-url-trailhead-cli-test-'));
+  const tempDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), 'esteban-url-trailhead-cli-test-'),
+  );
   return tempDir;
 }
 
@@ -44,10 +46,10 @@ export async function createTestStructure(
   for (const [filePath, content] of Object.entries(structure)) {
     const fullPath = path.join(tempDir, filePath);
     const dir = path.dirname(fullPath);
-    
+
     // Ensure directory exists
     await fs.mkdir(dir, { recursive: true });
-    
+
     // Write file
     await fs.writeFile(fullPath, content);
   }

@@ -5,7 +5,7 @@ Advanced file processing CLI demonstrating filesystem operations, streaming, and
 ## Features
 
 - Line counting
-- Word counting  
+- Word counting
 - Text transformations
 - Batch processing
 - Progress tracking

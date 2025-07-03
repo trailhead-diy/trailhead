@@ -31,7 +31,9 @@ describe.skip('CLI Examples Error Scenarios', () => {
     // Clean test directory for each test
     const entries = await fs.readdir(testDir);
     await Promise.all(
-      entries.map(entry => fs.rm(path.join(testDir, entry), { recursive: true, force: true }))
+      entries.map((entry) =>
+        fs.rm(path.join(testDir, entry), { recursive: true, force: true }),
+      ),
     );
   });
 
@@ -45,10 +47,13 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
       invalidOperations.forEach(({ op, args, expectedError }) => {
         try {
-          execSync(`npx tsx "${basicCliPath}" calculate ${op} ${args.join(' ')}`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-          });
+          execSync(
+            `npx tsx "${basicCliPath}" calculate ${op} ${args.join(' ')}`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+            },
+          );
           expect.fail(`Should have rejected operation: ${op}`);
         } catch (error: any) {
           expect(error.stdout || error.stderr).toContain(expectedError);
@@ -58,9 +63,21 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
     it('should handle edge case numbers in calculations', () => {
       const edgeCases = [
-        { args: ['add', 'Infinity', '1'], shouldFail: true, expectedError: 'Numbers must be finite values' },
-        { args: ['add', 'NaN', '1'], shouldFail: true, expectedError: 'Both arguments must be valid numbers' },
-        { args: ['divide', '1', '0'], shouldFail: true, expectedError: 'Cannot divide by zero' },
+        {
+          args: ['add', 'Infinity', '1'],
+          shouldFail: true,
+          expectedError: 'Numbers must be finite values',
+        },
+        {
+          args: ['add', 'NaN', '1'],
+          shouldFail: true,
+          expectedError: 'Both arguments must be valid numbers',
+        },
+        {
+          args: ['divide', '1', '0'],
+          shouldFail: true,
+          expectedError: 'Cannot divide by zero',
+        },
         { args: ['subtract', '1e100', '1e99'], shouldFail: false },
         { args: ['multiply', '0.1', '0.2'], shouldFail: false },
       ];
@@ -81,13 +98,18 @@ describe.skip('CLI Examples Error Scenarios', () => {
           }
         } else {
           try {
-            const result = execSync(`npx tsx "${basicCliPath}" calculate ${args.join(' ')}`, {
-              encoding: 'utf8',
-              cwd: process.cwd(),
-            });
+            const result = execSync(
+              `npx tsx "${basicCliPath}" calculate ${args.join(' ')}`,
+              {
+                encoding: 'utf8',
+                cwd: process.cwd(),
+              },
+            );
             expect(result).toContain('=');
           } catch (error: any) {
-            expect.fail(`Should have succeeded with args: ${args.join(' ')}, but got: ${error.message}`);
+            expect.fail(
+              `Should have succeeded with args: ${args.join(' ')}, but got: ${error.message}`,
+            );
           }
         }
       });
@@ -104,20 +126,26 @@ describe.skip('CLI Examples Error Scenarios', () => {
       malformedInputs.forEach(({ args, expectedError, shouldPass }) => {
         if (shouldPass) {
           try {
-            const result = execSync(`npx tsx "${basicCliPath}" ${args.map(arg => `"${arg.replace(/"/g, '\\"')}"`).join(' ')}`, {
-              encoding: 'utf8',
-              cwd: process.cwd(),
-            });
+            const result = execSync(
+              `npx tsx "${basicCliPath}" ${args.map((arg) => `"${arg.replace(/"/g, '\\"')}"`).join(' ')}`,
+              {
+                encoding: 'utf8',
+                cwd: process.cwd(),
+              },
+            );
             expect(result).toBeDefined();
           } catch (error: any) {
             expect.fail(`Should have succeeded with: ${args.join(' ')}`);
           }
         } else {
           try {
-            execSync(`npx tsx "${basicCliPath}" ${args.map(arg => `"${arg.replace(/"/g, '\\"')}"`).join(' ')}`, {
-              encoding: 'utf8',
-              cwd: process.cwd(),
-            });
+            execSync(
+              `npx tsx "${basicCliPath}" ${args.map((arg) => `"${arg.replace(/"/g, '\\"')}"`).join(' ')}`,
+              {
+                encoding: 'utf8',
+                cwd: process.cwd(),
+              },
+            );
             expect.fail(`Should have failed with: ${args.join(' ')}`);
           } catch (error: any) {
             if (expectedError) {
@@ -130,27 +158,34 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
     it('should handle concurrent access scenarios', async () => {
       // Run multiple instances simultaneously to test concurrency
-      const promises = Array.from({ length: 5 }, (_, i) => 
-        new Promise<{ success: boolean; result?: string; error?: string }>((resolve) => {
-          try {
-            const result = execSync(`npx tsx "${basicCliPath}" calculate add ${i} ${i + 1}`, {
-              encoding: 'utf8',
-              cwd: process.cwd(),
-              timeout: 10000,
-            });
-            resolve({ success: true, result });
-          } catch (error: any) {
-            resolve({ success: false, error: error.message });
-          }
-        })
+      const promises = Array.from(
+        { length: 5 },
+        (_, i) =>
+          new Promise<{ success: boolean; result?: string; error?: string }>(
+            (resolve) => {
+              try {
+                const result = execSync(
+                  `npx tsx "${basicCliPath}" calculate add ${i} ${i + 1}`,
+                  {
+                    encoding: 'utf8',
+                    cwd: process.cwd(),
+                    timeout: 10000,
+                  },
+                );
+                resolve({ success: true, result });
+              } catch (error: any) {
+                resolve({ success: false, error: error.message });
+              }
+            },
+          ),
       );
 
       const results = await Promise.all(promises);
-      
+
       // Most should succeed
-      const successCount = results.filter(r => r.success).length;
+      const successCount = results.filter((r) => r.success).length;
       expect(successCount).toBeGreaterThan(3); // Allow for some failures in concurrent scenarios
-      
+
       // Check that successful results are correct
       results.forEach((result, i) => {
         if (result.success && result.result) {
@@ -165,7 +200,7 @@ describe.skip('CLI Examples Error Scenarios', () => {
       // Create a read-only directory
       const readOnlyDir = path.join(testDir, 'readonly');
       await fs.mkdir(readOnlyDir);
-      
+
       try {
         await fs.chmod(readOnlyDir, 0o444); // Read-only
 
@@ -174,15 +209,20 @@ describe.skip('CLI Examples Error Scenarios', () => {
         await fs.writeFile(inputFile, 'test content');
 
         try {
-          execSync(`npx tsx "${advancedCliPath}" process "${inputFile}" --output "${outputFile}"`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-          });
+          execSync(
+            `npx tsx "${advancedCliPath}" process "${inputFile}" --output "${outputFile}"`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+            },
+          );
           expect.fail('Should have failed due to permission error');
         } catch (error: any) {
-          expect(error.stdout || error.stderr).toContain('Failed to write file') ||
-          expect(error.stdout || error.stderr).toContain('permission') ||
-          expect(error.stdout || error.stderr).toContain('EACCES');
+          expect(error.stdout || error.stderr).toContain(
+            'Failed to write file',
+          ) ||
+            expect(error.stdout || error.stderr).toContain('permission') ||
+            expect(error.stdout || error.stderr).toContain('EACCES');
         }
       } finally {
         // Restore permissions for cleanup
@@ -197,7 +237,10 @@ describe.skip('CLI Examples Error Scenarios', () => {
     it('should handle corrupted file content', async () => {
       // Create files with various problematic content
       const testCases = [
-        { name: 'binary.dat', content: Buffer.from([0x00, 0x01, 0x02, 0xFF, 0xFE, 0xFD]) },
+        {
+          name: 'binary.dat',
+          content: Buffer.from([0x00, 0x01, 0x02, 0xff, 0xfe, 0xfd]),
+        },
         { name: 'huge-line.txt', content: 'x'.repeat(1000000) }, // 1MB single line
         { name: 'null-bytes.txt', content: 'hello\x00world\x00test' },
         { name: 'unicode.txt', content: '🚀🌟💎🔥⭐' },
@@ -208,17 +251,23 @@ describe.skip('CLI Examples Error Scenarios', () => {
         await fs.writeFile(inputFile, testCase.content);
 
         try {
-          const result = execSync(`npx tsx "${advancedCliPath}" process "${inputFile}" --dry-run`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-            timeout: 15000,
-          });
-          
+          const result = execSync(
+            `npx tsx "${advancedCliPath}" process "${inputFile}" --dry-run`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+              timeout: 15000,
+            },
+          );
+
           // Should handle gracefully, not crash
-          expect(result).toContain('DRY RUN') || expect(result).toContain('Processing');
+          expect(result).toContain('DRY RUN') ||
+            expect(result).toContain('Processing');
         } catch (error: any) {
           // Some formats might be rejected, but should fail gracefully
-          expect(error.stdout || error.stderr).not.toContain('Segmentation fault');
+          expect(error.stdout || error.stderr).not.toContain(
+            'Segmentation fault',
+          );
           expect(error.stdout || error.stderr).not.toContain('out of memory');
         }
       }
@@ -243,7 +292,9 @@ describe.skip('CLI Examples Error Scenarios', () => {
           // If it succeeds, that's fine too
         } catch (error: any) {
           // Should handle network errors gracefully
-          expect(error.stdout || error.stderr).not.toContain('uncaught exception');
+          expect(error.stdout || error.stderr).not.toContain(
+            'uncaught exception',
+          );
           expect(error.stdout || error.stderr).not.toContain('TypeError');
         }
       }
@@ -257,11 +308,14 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
       try {
         // Try to process with an output that might exhaust space
-        execSync(`npx tsx "${advancedCliPath}" process "${inputFile}" --output "${largeFile}" --repeat 1000000`, {
-          encoding: 'utf8',
-          cwd: process.cwd(),
-          timeout: 5000, // Quick timeout
-        });
+        execSync(
+          `npx tsx "${advancedCliPath}" process "${inputFile}" --output "${largeFile}" --repeat 1000000`,
+          {
+            encoding: 'utf8',
+            cwd: process.cwd(),
+            timeout: 5000, // Quick timeout
+          },
+        );
       } catch (error: any) {
         // Should handle space/resource errors gracefully
         expect(error.stdout || error.stderr).not.toContain('RangeError');
@@ -281,17 +335,20 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
       for (const testCase of testCases) {
         try {
-          execSync(`npx tsx "${interactiveCliPath}" ${testCase.args.join(' ')}`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-            timeout: testCase.timeout,
-            input: '', // No input provided
-          });
+          execSync(
+            `npx tsx "${interactiveCliPath}" ${testCase.args.join(' ')}`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+              timeout: testCase.timeout,
+              input: '', // No input provided
+            },
+          );
         } catch (error: any) {
           // Should handle timeout/interruption gracefully
           expect(error.stdout || error.stderr).not.toContain('Uncaught');
           expect(error.stdout || error.stderr).not.toContain('TypeError');
-          
+
           // Timeout is expected
           if (!error.message.includes('timeout')) {
             // If not a timeout, check for graceful handling
@@ -334,14 +391,20 @@ describe.skip('CLI Examples Error Scenarios', () => {
         new Promise<void>((resolve) => {
           try {
             const tempFile = path.join(testDir, 'concurrent-test.txt');
-            fs.writeFile(tempFile, 'test').then(() => {
-              execSync(`npx tsx "${advancedCliPath}" process "${tempFile}" --dry-run`, {
-                encoding: 'utf8',
-                timeout: 5000,
-              });
-            }).catch(() => {
-              // File errors acceptable
-            }).finally(() => resolve());
+            fs.writeFile(tempFile, 'test')
+              .then(() => {
+                execSync(
+                  `npx tsx "${advancedCliPath}" process "${tempFile}" --dry-run`,
+                  {
+                    encoding: 'utf8',
+                    timeout: 5000,
+                  },
+                );
+              })
+              .catch(() => {
+                // File errors acceptable
+              })
+              .finally(() => resolve());
           } catch {
             resolve();
           }
@@ -370,11 +433,13 @@ describe.skip('CLI Examples Error Scenarios', () => {
           env: { ...process.env, ...problematicEnv },
           timeout: 5000,
         });
-        
+
         // Should still show help even with problematic environment
       } catch (error: any) {
         // Some environment issues are acceptable, but shouldn't crash
-        expect(error.stdout || error.stderr).not.toContain('Cannot read property');
+        expect(error.stdout || error.stderr).not.toContain(
+          'Cannot read property',
+        );
         expect(error.stdout || error.stderr).not.toContain('TypeError');
       }
     });
@@ -383,17 +448,23 @@ describe.skip('CLI Examples Error Scenarios', () => {
       // Test behavior under memory constraints
       const testCases = [
         { command: 'greet', args: ['user'.repeat(1000)] }, // Very long argument
-        { command: 'calculate', args: ['add', '1'.repeat(100), '2'.repeat(100)] }, // Long numbers
+        {
+          command: 'calculate',
+          args: ['add', '1'.repeat(100), '2'.repeat(100)],
+        }, // Long numbers
       ];
 
       for (const testCase of testCases) {
         try {
-          execSync(`npx tsx "${basicCliPath}" ${testCase.command} ${testCase.args.join(' ')}`, {
-            encoding: 'utf8',
-            cwd: process.cwd(),
-            timeout: 10000,
-            maxBuffer: 1024 * 1024, // 1MB buffer limit
-          });
+          execSync(
+            `npx tsx "${basicCliPath}" ${testCase.command} ${testCase.args.join(' ')}`,
+            {
+              encoding: 'utf8',
+              cwd: process.cwd(),
+              timeout: 10000,
+              maxBuffer: 1024 * 1024, // 1MB buffer limit
+            },
+          );
         } catch (error: any) {
           // Memory-related errors should be handled gracefully
           if (error.message.includes('maxBuffer')) {
@@ -401,7 +472,9 @@ describe.skip('CLI Examples Error Scenarios', () => {
             expect(error.code).toBe('ERR_CHILD_PROCESS_STDOUT_MAXBUFFER');
           } else {
             // Other errors should still be graceful
-            expect(error.stdout || error.stderr).not.toContain('heap out of memory');
+            expect(error.stdout || error.stderr).not.toContain(
+              'heap out of memory',
+            );
           }
         }
       }
@@ -412,7 +485,7 @@ describe.skip('CLI Examples Error Scenarios', () => {
     it('should recover from temporary failures', async () => {
       // Create a scenario where first attempt fails but retry succeeds
       const unreliableFile = path.join(testDir, 'unreliable.txt');
-      
+
       // First, make the file unreadable
       await fs.writeFile(unreliableFile, 'test content');
       await fs.chmod(unreliableFile, 0o000); // No permissions
@@ -430,15 +503,19 @@ describe.skip('CLI Examples Error Scenarios', () => {
 
       // Now fix the file and try again
       await fs.chmod(unreliableFile, 0o644);
-      
+
       try {
-        const result = execSync(`npx tsx "${advancedCliPath}" process "${unreliableFile}" --dry-run`, {
-          encoding: 'utf8',
-          cwd: process.cwd(),
-          timeout: 5000,
-        });
-        
-        expect(result).toContain('DRY RUN') || expect(result).toContain('Processing');
+        const result = execSync(
+          `npx tsx "${advancedCliPath}" process "${unreliableFile}" --dry-run`,
+          {
+            encoding: 'utf8',
+            cwd: process.cwd(),
+            timeout: 5000,
+          },
+        );
+
+        expect(result).toContain('DRY RUN') ||
+          expect(result).toContain('Processing');
       } catch (error: any) {
         // If it still fails, that's okay - we tested the recovery scenario
         expect(error.stdout || error.stderr).toBeDefined();
@@ -471,13 +548,17 @@ describe.skip('CLI Examples Error Scenarios', () => {
           });
           expect.fail(`Should have failed for: ${mistake.command}`);
         } catch (error: any) {
-          const errorOutput = (error.stdout || error.stderr || '').toLowerCase();
-          
+          const errorOutput = (
+            error.stdout ||
+            error.stderr ||
+            ''
+          ).toLowerCase();
+
           // Should contain at least one helpful keyword
-          const hasHelpfulMessage = mistake.expectedHelpful.some(keyword => 
-            errorOutput.includes(keyword)
+          const hasHelpfulMessage = mistake.expectedHelpful.some((keyword) =>
+            errorOutput.includes(keyword),
           );
-          
+
           expect(hasHelpfulMessage).toBe(true);
         }
       }

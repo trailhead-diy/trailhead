@@ -35,18 +35,18 @@ export class PerformanceMonitor {
     testName: string,
     command: string,
     executor: () => Promise<any>,
-    timeout = 30000
+    timeout = 30000,
   ): Promise<PerformanceReport> {
     const startTime = Date.now();
     const startCpuUsage = process.cpuUsage();
-    
+
     let status: 'success' | 'error' | 'timeout' = 'success';
     let errorMessage: string | undefined;
 
     try {
       // Set up timeout
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), timeout)
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), timeout),
       );
 
       await Promise.race([executor(), timeoutPromise]);
@@ -101,23 +101,31 @@ export class PerformanceMonitor {
       return null;
     }
 
-    const successfulReports = this.reports.filter(r => r.status === 'success');
-    const executionTimes = successfulReports.map(r => r.metrics.executionTime);
-    const memoryUsages = successfulReports.map(r => r.metrics.memoryUsage.heapUsed);
+    const successfulReports = this.reports.filter(
+      (r) => r.status === 'success',
+    );
+    const executionTimes = successfulReports.map(
+      (r) => r.metrics.executionTime,
+    );
+    const memoryUsages = successfulReports.map(
+      (r) => r.metrics.memoryUsage.heapUsed,
+    );
 
     return {
       totalTests: this.reports.length,
       successful: successfulReports.length,
-      failed: this.reports.filter(r => r.status === 'error').length,
-      timedOut: this.reports.filter(r => r.status === 'timeout').length,
-      averageExecutionTime: executionTimes.length > 0 
-        ? executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length 
-        : 0,
+      failed: this.reports.filter((r) => r.status === 'error').length,
+      timedOut: this.reports.filter((r) => r.status === 'timeout').length,
+      averageExecutionTime:
+        executionTimes.length > 0
+          ? executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length
+          : 0,
       maxExecutionTime: Math.max(...executionTimes, 0),
       minExecutionTime: Math.min(...executionTimes, 0),
-      averageMemoryUsage: memoryUsages.length > 0
-        ? memoryUsages.reduce((a, b) => a + b, 0) / memoryUsages.length
-        : 0,
+      averageMemoryUsage:
+        memoryUsages.length > 0
+          ? memoryUsages.reduce((a, b) => a + b, 0) / memoryUsages.length
+          : 0,
       maxMemoryUsage: Math.max(...memoryUsages, 0),
     };
   }
@@ -126,11 +134,15 @@ export class PerformanceMonitor {
    * Export reports to JSON
    */
   exportToJson(): string {
-    return JSON.stringify({
-      summary: this.getSummary(),
-      reports: this.reports,
-      generatedAt: new Date().toISOString(),
-    }, null, 2);
+    return JSON.stringify(
+      {
+        summary: this.getSummary(),
+        reports: this.reports,
+        generatedAt: new Date().toISOString(),
+      },
+      null,
+      2,
+    );
   }
 
   /**
@@ -155,18 +167,31 @@ export class PerformanceMonitor {
       return { passed: true, violations: [] };
     }
 
-    if (thresholds.maxExecutionTime && summary.maxExecutionTime > thresholds.maxExecutionTime) {
-      violations.push(`Max execution time ${summary.maxExecutionTime}ms exceeds threshold ${thresholds.maxExecutionTime}ms`);
+    if (
+      thresholds.maxExecutionTime &&
+      summary.maxExecutionTime > thresholds.maxExecutionTime
+    ) {
+      violations.push(
+        `Max execution time ${summary.maxExecutionTime}ms exceeds threshold ${thresholds.maxExecutionTime}ms`,
+      );
     }
 
-    if (thresholds.maxMemoryUsage && summary.maxMemoryUsage > thresholds.maxMemoryUsage) {
-      violations.push(`Max memory usage ${Math.round(summary.maxMemoryUsage / 1024 / 1024)}MB exceeds threshold ${Math.round(thresholds.maxMemoryUsage / 1024 / 1024)}MB`);
+    if (
+      thresholds.maxMemoryUsage &&
+      summary.maxMemoryUsage > thresholds.maxMemoryUsage
+    ) {
+      violations.push(
+        `Max memory usage ${Math.round(summary.maxMemoryUsage / 1024 / 1024)}MB exceeds threshold ${Math.round(thresholds.maxMemoryUsage / 1024 / 1024)}MB`,
+      );
     }
 
     if (thresholds.maxFailureRate) {
-      const failureRate = (summary.failed + summary.timedOut) / summary.totalTests;
+      const failureRate =
+        (summary.failed + summary.timedOut) / summary.totalTests;
       if (failureRate > thresholds.maxFailureRate) {
-        violations.push(`Failure rate ${Math.round(failureRate * 100)}% exceeds threshold ${Math.round(thresholds.maxFailureRate * 100)}%`);
+        violations.push(
+          `Failure rate ${Math.round(failureRate * 100)}% exceeds threshold ${Math.round(thresholds.maxFailureRate * 100)}%`,
+        );
       }
     }
 
@@ -180,16 +205,20 @@ export class PerformanceMonitor {
 /**
  * Decorator for automatic performance monitoring
  */
-export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<any>>(
-  monitor: PerformanceMonitor,
-  testName: string,
-  command: string
-) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function withPerformanceMonitoring<
+  T extends (...args: any[]) => Promise<any>,
+>(monitor: PerformanceMonitor, testName: string, command: string) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function(...args: any[]) {
-      return monitor.monitor(testName, command, () => originalMethod.apply(this, args));
+    descriptor.value = async function (...args: any[]) {
+      return monitor.monitor(testName, command, () =>
+        originalMethod.apply(this, args),
+      );
     };
 
     return descriptor;

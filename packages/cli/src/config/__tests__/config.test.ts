@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { z } from 'zod';
-import { isOk, isErr, unwrap, getErrorMessage } from '../../core/errors/index.js';
+import {
+  isOk,
+  isErr,
+  unwrap,
+  getErrorMessage,
+} from '../../core/errors/index.js';
 
 // Mock cosmiconfig
 const mockSearch = vi.fn();
@@ -32,7 +37,7 @@ describe('Config Module', () => {
       });
 
       const config = defineConfig(schema);
-      
+
       expect(config).toHaveProperty('schema');
       expect(config).toHaveProperty('load');
       expect(typeof config.load).toBe('function');
@@ -136,9 +141,9 @@ describe('Config Module', () => {
       mockSearch.mockResolvedValue(null);
 
       const config = defineConfig(schema);
-      await config.load({ 
+      await config.load({
         name: 'my-cli',
-        searchFrom: '/custom/path' 
+        searchFrom: '/custom/path',
       });
 
       expect(mockCosmiconfig).toHaveBeenCalledWith('my-cli', {
@@ -198,12 +203,15 @@ describe('Config Module', () => {
 
       mockSearch.mockResolvedValue(null);
 
-      await loadConfig(schema, { 
+      await loadConfig(schema, {
         name: 'my-tool',
-        searchFrom: '/custom/search' 
+        searchFrom: '/custom/search',
       });
 
-      expect(mockCosmiconfig).toHaveBeenCalledWith('my-tool', expect.any(Object));
+      expect(mockCosmiconfig).toHaveBeenCalledWith(
+        'my-tool',
+        expect.any(Object),
+      );
       expect(mockSearch).toHaveBeenCalledWith('/custom/search');
     });
   });
@@ -282,11 +290,11 @@ describe('Config Module', () => {
       expect(unwrap(result)).toEqual({
         server: {
           host: '0.0.0.0', // default
-          port: 8080,      // from config
-          timeout: 5000,   // default
+          port: 8080, // from config
+          timeout: 5000, // default
         },
         logging: {
-          level: 'debug',  // from config
+          level: 'debug', // from config
           // file is optional, no default
         },
       });
@@ -371,7 +379,9 @@ describe('Config Module', () => {
       expect(isErr(result)).toBe(true);
       const error = result.error as any;
       expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
-      expect(getErrorMessage(result)).toContain('Invalid default configuration');
+      expect(getErrorMessage(result)).toContain(
+        'Invalid default configuration',
+      );
     });
 
     it('should handle malformed JSON config', async () => {
@@ -397,7 +407,7 @@ describe('Config Module', () => {
       mockSearch.mockResolvedValue({
         config: {
           name: 'ab', // too short
-          port: 99,   // too low
+          port: 99, // too low
           features: 'not-an-array',
         },
         filepath: '/project/config.json',
@@ -405,9 +415,11 @@ describe('Config Module', () => {
 
       const result = await loadConfig(schema);
       expect(isErr(result)).toBe(true);
-      
+
       const errorMsg = getErrorMessage(result);
-      expect(errorMsg).toContain('Invalid configuration in /project/config.json');
+      expect(errorMsg).toContain(
+        'Invalid configuration in /project/config.json',
+      );
     });
   });
 
@@ -440,10 +452,10 @@ describe('Config Module', () => {
 
       const result = await loadConfig(baseSchema, { name: 'myapp' });
       expect(isOk(result)).toBe(true);
-      
+
       const config = unwrap(result);
       expect(config.app.name).toBe('myapp'); // default
-      expect(config.app.debug).toBe(true);    // from config
+      expect(config.app.debug).toBe(true); // from config
       expect(config.database.url).toBe('postgresql://localhost:5432/myapp_dev');
     });
 

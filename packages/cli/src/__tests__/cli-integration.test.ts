@@ -22,7 +22,7 @@ describe('CLI Integration Tests', () => {
 
   it('should successfully create and run CLI with createCommand', async () => {
     const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
-    
+
     const testCommand = createCommand({
       name: 'test',
       description: 'Test command',
@@ -40,7 +40,7 @@ describe('CLI Integration Tests', () => {
     await expect(async () => {
       await cli.run(['node', 'test-cli', '--help']);
     }).rejects.toThrow('process.exit called');
-    
+
     // Verify that help was shown (process.exit was called with 0)
     expect(mockExit).toHaveBeenCalledWith(0);
   });
@@ -76,7 +76,7 @@ describe('CLI Integration Tests', () => {
 
   it('should execute command action when called', async () => {
     const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
-    
+
     const testCommand = createCommand({
       name: 'test',
       description: 'Test command',
@@ -96,7 +96,7 @@ describe('CLI Integration Tests', () => {
 
   it('should handle command options correctly', async () => {
     const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
-    
+
     const testCommand = createCommand({
       name: 'build',
       description: 'Build command',
@@ -119,7 +119,7 @@ describe('CLI Integration Tests', () => {
     });
 
     await cli.run(['node', 'test-cli', 'build']);
-    
+
     // Verify action was called with correct options
     expect(mockAction).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -132,45 +132,51 @@ describe('CLI Integration Tests', () => {
         verbose: false,
         fs: expect.any(Object),
         args: [],
-      })
+      }),
     );
   });
 
   describe('validation and error handling', () => {
     it('should throw error for invalid command configuration', () => {
-      expect(() => createCommand({
-        name: '',
-        description: 'Test command',
-        action: async () => ({ success: true, value: undefined }),
-      })).toThrow('Invalid command configuration');
+      expect(() =>
+        createCommand({
+          name: '',
+          description: 'Test command',
+          action: async () => ({ success: true, value: undefined }),
+        }),
+      ).toThrow('Invalid command configuration');
     });
 
     it('should throw error for invalid option configuration', () => {
-      expect(() => createCommand({
-        name: 'test',
-        description: 'Test command',
-        options: [
-          {
-            description: 'Invalid option without name or flags',
-          },
-        ],
-        action: async () => ({ success: true, value: undefined }),
-      })).toThrow('Invalid command configuration');
+      expect(() =>
+        createCommand({
+          name: 'test',
+          description: 'Test command',
+          options: [
+            {
+              description: 'Invalid option without name or flags',
+            },
+          ],
+          action: async () => ({ success: true, value: undefined }),
+        }),
+      ).toThrow('Invalid command configuration');
     });
 
     it('should accept valid command with proper options', () => {
-      expect(() => createCommand({
-        name: 'test',
-        description: 'Test command',
-        options: [
-          {
-            name: 'output',
-            description: 'Output directory',
-            type: 'string',
-          },
-        ],
-        action: async () => ({ success: true, value: undefined }),
-      })).not.toThrow();
+      expect(() =>
+        createCommand({
+          name: 'test',
+          description: 'Test command',
+          options: [
+            {
+              name: 'output',
+              description: 'Output directory',
+              type: 'string',
+            },
+          ],
+          action: async () => ({ success: true, value: undefined }),
+        }),
+      ).not.toThrow();
     });
   });
 });

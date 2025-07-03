@@ -54,7 +54,7 @@ describe('Command Patterns', () => {
         options,
         promptFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
@@ -64,9 +64,9 @@ describe('Command Patterns', () => {
     });
 
     it('should run prompts in interactive mode', async () => {
-      const options: TestOptions = { 
-        interactive: true, 
-        name: 'test' 
+      const options: TestOptions = {
+        interactive: true,
+        name: 'test',
       };
       const promptFn = vi.fn().mockResolvedValue({ value: 100 });
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
@@ -75,7 +75,7 @@ describe('Command Patterns', () => {
         options,
         promptFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
@@ -83,16 +83,18 @@ describe('Command Patterns', () => {
       expect(executeFn).toHaveBeenCalledWith({
         interactive: true,
         name: 'test', // CLI option takes precedence
-        value: 100,   // From prompts
+        value: 100, // From prompts
       });
-      expect(mockContext.logger.info).toHaveBeenCalledWith('Running in interactive mode...');
+      expect(mockContext.logger.info).toHaveBeenCalledWith(
+        'Running in interactive mode...',
+      );
     });
 
     it('should skip prompts when skipPrompts is true', async () => {
-      const options: TestOptions = { 
-        interactive: true, 
-        skipPrompts: true, 
-        name: 'test' 
+      const options: TestOptions = {
+        interactive: true,
+        skipPrompts: true,
+        name: 'test',
       };
       const promptFn = vi.fn().mockResolvedValue({ value: 100 });
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
@@ -101,7 +103,7 @@ describe('Command Patterns', () => {
         options,
         promptFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
@@ -118,7 +120,7 @@ describe('Command Patterns', () => {
         options,
         promptFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(false);
@@ -128,15 +130,15 @@ describe('Command Patterns', () => {
     });
 
     it('should merge prompt results with CLI options, prioritizing CLI', async () => {
-      const options: TestOptions = { 
-        interactive: true, 
+      const options: TestOptions = {
+        interactive: true,
         name: 'from-cli',
-        value: 42
+        value: 42,
       };
-      const promptFn = vi.fn().mockResolvedValue({ 
+      const promptFn = vi.fn().mockResolvedValue({
         name: 'from-prompt',
         value: 100,
-        extra: 'additional'
+        extra: 'additional',
       });
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
 
@@ -144,14 +146,14 @@ describe('Command Patterns', () => {
         options,
         promptFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(executeFn).toHaveBeenCalledWith({
         interactive: true,
-        name: 'from-cli',  // CLI takes precedence
-        value: 42,         // CLI takes precedence
-        extra: 'additional' // From prompt
+        name: 'from-cli', // CLI takes precedence
+        value: 42, // CLI takes precedence
+        extra: 'additional', // From prompt
       });
     });
   });
@@ -162,11 +164,20 @@ describe('Command Patterns', () => {
       const rules: ValidationRule<typeof data>[] = [
         {
           name: 'name-required',
-          validate: (d) => d.name ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
+          validate: (d) =>
+            d.name
+              ? Ok(d)
+              : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
         },
         {
           name: 'value-positive',
-          validate: (d) => d.value > 0 ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Value must be positive' }),
+          validate: (d) =>
+            d.value > 0
+              ? Ok(d)
+              : Err({
+                  code: 'VALIDATION_ERROR',
+                  message: 'Value must be positive',
+                }),
         },
       ];
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
@@ -175,13 +186,15 @@ describe('Command Patterns', () => {
         data,
         rules,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
       expect(result.value).toBe('success');
       expect(executeFn).toHaveBeenCalledWith(data);
-      expect(mockContext.logger.debug).toHaveBeenCalledWith('All validations passed');
+      expect(mockContext.logger.debug).toHaveBeenCalledWith(
+        'All validations passed',
+      );
     });
 
     it('should fail on first validation error', async () => {
@@ -189,11 +202,20 @@ describe('Command Patterns', () => {
       const rules: ValidationRule<typeof data>[] = [
         {
           name: 'name-required',
-          validate: (d) => d.name ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
+          validate: (d) =>
+            d.name
+              ? Ok(d)
+              : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
         },
         {
           name: 'value-positive',
-          validate: (d) => d.value > 0 ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Value must be positive' }),
+          validate: (d) =>
+            d.value > 0
+              ? Ok(d)
+              : Err({
+                  code: 'VALIDATION_ERROR',
+                  message: 'Value must be positive',
+                }),
         },
       ];
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
@@ -202,13 +224,15 @@ describe('Command Patterns', () => {
         data,
         rules,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(false);
       expect(result.error?.message).toBe('Name required');
       expect(executeFn).not.toHaveBeenCalled();
-      expect(mockContext.logger.error).toHaveBeenCalledWith('Validation failed: name-required');
+      expect(mockContext.logger.error).toHaveBeenCalledWith(
+        'Validation failed: name-required',
+      );
     });
 
     it('should transform data through validation rules', async () => {
@@ -225,7 +249,7 @@ describe('Command Patterns', () => {
         data,
         rules,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
@@ -264,7 +288,11 @@ describe('Command Patterns', () => {
         },
         {
           name: 'operation2',
-          execute: vi.fn().mockResolvedValue(Err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
+          execute: vi
+            .fn()
+            .mockResolvedValue(
+              Err({ code: 'OP_ERROR', message: 'Operation 2 failed' }),
+            ),
         },
       ];
 
@@ -273,8 +301,12 @@ describe('Command Patterns', () => {
       expect(result.success).toBe(false);
       expect(result.error?.message).toBe('Operation 2 failed');
       expect(rollback1).toHaveBeenCalled();
-      expect(mockContext.logger.warning).toHaveBeenCalledWith('Rolling back changes...');
-      expect(mockContext.logger.debug).toHaveBeenCalledWith('Rolled back: operation1');
+      expect(mockContext.logger.warning).toHaveBeenCalledWith(
+        'Rolling back changes...',
+      );
+      expect(mockContext.logger.debug).toHaveBeenCalledWith(
+        'Rolled back: operation1',
+      );
     });
 
     it('should handle rollback failures gracefully', async () => {
@@ -287,7 +319,11 @@ describe('Command Patterns', () => {
         },
         {
           name: 'operation2',
-          execute: vi.fn().mockResolvedValue(Err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
+          execute: vi
+            .fn()
+            .mockResolvedValue(
+              Err({ code: 'OP_ERROR', message: 'Operation 2 failed' }),
+            ),
         },
       ];
 
@@ -295,7 +331,9 @@ describe('Command Patterns', () => {
 
       expect(result.success).toBe(false);
       expect(rollback1).toHaveBeenCalled();
-      expect(mockContext.logger.error).toHaveBeenCalledWith('Failed to rollback: operation1');
+      expect(mockContext.logger.error).toHaveBeenCalledWith(
+        'Failed to rollback: operation1',
+      );
     });
 
     it('should handle operation exceptions', async () => {
@@ -445,16 +483,16 @@ describe('Command Patterns', () => {
   describe('executeBatch', () => {
     it('should process items in batches', async () => {
       const items = [1, 2, 3, 4, 5];
-      const processor = vi.fn().mockImplementation((item: number) => 
-        Promise.resolve(Ok(item * 2))
-      );
+      const processor = vi
+        .fn()
+        .mockImplementation((item: number) => Promise.resolve(Ok(item * 2)));
       const onProgress = vi.fn();
 
       const result = await executeBatch(
         items,
         processor,
         { batchSize: 2, onProgress },
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
@@ -469,7 +507,9 @@ describe('Command Patterns', () => {
       const items = [1, 2, 3, 4, 5];
       const processor = vi.fn().mockImplementation((item: number) => {
         if (item === 3) {
-          return Promise.resolve(Err({ code: 'PROCESS_ERROR', message: 'Failed on item 3' }));
+          return Promise.resolve(
+            Err({ code: 'PROCESS_ERROR', message: 'Failed on item 3' }),
+          );
         }
         return Promise.resolve(Ok(item * 2));
       });
@@ -478,7 +518,7 @@ describe('Command Patterns', () => {
         items,
         processor,
         { batchSize: 2 },
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(false);
@@ -494,20 +534,25 @@ describe('Command Patterns', () => {
 
     it('should load and execute with configuration', async () => {
       const options: TestOptions = { name: 'test' };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting1: 'value1', setting2: 42 }));
+      const loadConfigFn = vi
+        .fn()
+        .mockResolvedValue(Ok({ setting1: 'value1', setting2: 42 }));
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
 
       const result = await executeWithConfiguration(
         options,
         loadConfigFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(true);
       expect(result.value).toBe('success');
       expect(loadConfigFn).toHaveBeenCalledWith(undefined);
-      expect(executeFn).toHaveBeenCalledWith({ setting1: 'value1', setting2: 42 });
+      expect(executeFn).toHaveBeenCalledWith({
+        setting1: 'value1',
+        setting2: 42,
+      });
     });
 
     it('should load configuration from specified path', async () => {
@@ -519,7 +564,7 @@ describe('Command Patterns', () => {
         options,
         loadConfigFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(loadConfigFn).toHaveBeenCalledWith('/path/to/config.json');
@@ -527,22 +572,24 @@ describe('Command Patterns', () => {
 
     it('should apply overrides to configuration', async () => {
       const options: TestOptions = {
-        override: { setting1: 'overridden', newSetting: 'added' }
+        override: { setting1: 'overridden', newSetting: 'added' },
       };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting1: 'original', setting2: 42 }));
+      const loadConfigFn = vi
+        .fn()
+        .mockResolvedValue(Ok({ setting1: 'original', setting2: 42 }));
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
 
       await executeWithConfiguration(
         options,
         loadConfigFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(executeFn).toHaveBeenCalledWith({
         setting1: 'overridden', // Overridden
-        setting2: 42,           // Original
-        newSetting: 'added'     // Added
+        setting2: 42, // Original
+        newSetting: 'added', // Added
       });
     });
 
@@ -555,25 +602,29 @@ describe('Command Patterns', () => {
         options,
         loadConfigFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
-      expect(mockContext.logger.debug).toHaveBeenCalledWith('Applying preset: development');
+      expect(mockContext.logger.debug).toHaveBeenCalledWith(
+        'Applying preset: development',
+      );
       expect(executeFn).toHaveBeenCalledWith({ setting: 'value' });
     });
 
     it('should handle configuration load failure', async () => {
       const options: TestOptions = {};
-      const loadConfigFn = vi.fn().mockResolvedValue(
-        Err({ code: 'CONFIG_ERROR', message: 'Config file not found' })
-      );
+      const loadConfigFn = vi
+        .fn()
+        .mockResolvedValue(
+          Err({ code: 'CONFIG_ERROR', message: 'Config file not found' }),
+        );
       const executeFn = vi.fn().mockResolvedValue(Ok('success'));
 
       const result = await executeWithConfiguration(
         options,
         loadConfigFn,
         executeFn,
-        mockContext
+        mockContext,
       );
 
       expect(result.success).toBe(false);

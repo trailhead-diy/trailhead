@@ -34,7 +34,7 @@ describe('Chalk Utilities', () => {
     it('should format success messages', () => {
       const mockSuccess = vi.fn((text: string) => `green(${text})`);
       vi.doMock('chalk', () => ({ default: { green: mockSuccess } }));
-      
+
       // Since we're testing the wrapper functions, we test the expected behavior
       expect(typeof success).toBe('function');
     });
@@ -117,7 +117,7 @@ describe('Chalk Utilities', () => {
 
     it('should handle regular strings', () => {
       const testString = 'test message';
-      
+
       expect(() => success(testString)).not.toThrow();
       expect(() => error(testString)).not.toThrow();
       expect(() => warning(testString)).not.toThrow();
@@ -130,8 +130,9 @@ describe('Chalk Utilities', () => {
     });
 
     it('should handle special characters', () => {
-      const specialString = 'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
-      
+      const specialString =
+        'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
+
       expect(() => success(specialString)).not.toThrow();
       expect(() => error(specialString)).not.toThrow();
       expect(() => warning(specialString)).not.toThrow();
@@ -141,7 +142,7 @@ describe('Chalk Utilities', () => {
 
     it('should handle multiline strings', () => {
       const multilineString = 'Line 1\\nLine 2\\nLine 3';
-      
+
       expect(() => success(multilineString)).not.toThrow();
       expect(() => error(multilineString)).not.toThrow();
       expect(() => warning(multilineString)).not.toThrow();
@@ -149,7 +150,7 @@ describe('Chalk Utilities', () => {
 
     it('should return strings', () => {
       const testString = 'test';
-      
+
       expect(typeof success(testString)).toBe('string');
       expect(typeof error(testString)).toBe('string');
       expect(typeof warning(testString)).toBe('string');
@@ -174,7 +175,7 @@ describe('Chalk Utilities', () => {
 
     it('should allow method chaining via chalk', () => {
       const testString = 'test';
-      
+
       expect(() => chalk.bold.green(testString)).not.toThrow();
       expect(() => chalk.red.underline(testString)).not.toThrow();
       expect(() => chalk.dim.italic(testString)).not.toThrow();
@@ -195,7 +196,7 @@ describe('Chalk Utilities', () => {
 
     it('should handle very long strings', () => {
       const longString = 'a'.repeat(10000);
-      
+
       expect(() => success(longString)).not.toThrow();
       expect(() => error(longString)).not.toThrow();
     });
@@ -205,25 +206,25 @@ describe('Chalk Utilities', () => {
     it('should maintain consistent function signatures', () => {
       const colorFunctions = [success, error, warning, info, muted];
       const styleFunctions = [bold, dim, italic, underline];
-      
+
       // All color functions should be functions (chalk functions have length 0)
-      colorFunctions.forEach(fn => {
+      colorFunctions.forEach((fn) => {
         expect(typeof fn).toBe('function');
       });
-      
+
       // All style functions should be functions
-      styleFunctions.forEach(fn => {
+      styleFunctions.forEach((fn) => {
         expect(typeof fn).toBe('function');
       });
     });
 
     it('should return different outputs for different colors', () => {
       const testString = 'test';
-      
+
       const successOutput = success(testString);
       const errorOutput = error(testString);
       const warningOutput = warning(testString);
-      
+
       // Outputs should be different (assuming chalk adds ANSI codes)
       // We can't test exact output due to chalk's complexity, but we can
       // ensure they're all strings and potentially different

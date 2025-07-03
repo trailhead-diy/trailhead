@@ -109,7 +109,7 @@ describe('Stats Utilities', () => {
     it('should calculate elapsed time', () => {
       const stats = createStats();
       mockDate.mockReturnValue(1005000);
-      
+
       expect(getElapsedTime(stats)).toBe(5000);
     });
   });

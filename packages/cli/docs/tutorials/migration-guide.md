@@ -19,6 +19,7 @@ In this tutorial, you'll migrate an existing CLI application from a class-based 
 ## What You'll Accomplish
 
 Transform a traditional class-based CLI into:
+
 - Functional commands with explicit error handling
 - Result types instead of try/catch blocks
 - Composable operations with pure functions
@@ -27,6 +28,7 @@ Transform a traditional class-based CLI into:
 ## Before You Begin
 
 Make sure you have:
+
 - An existing CLI application to migrate
 - Basic understanding of TypeScript
 - Familiarity with Promise/async patterns
@@ -39,25 +41,25 @@ This tutorial takes approximately 30 minutes to complete.
 
 ```typescript
 // ❌ Traditional class-based command
-import { Command } from 'old-cli-framework';
+import { Command } from "old-cli-framework";
 
 class BuildCommand extends Command {
-  static description = 'Build the project';
-  
+  static description = "Build the project";
+
   async run() {
     try {
       const files = await this.readFiles();
       await this.processFiles(files);
-      this.log('Build complete');
+      this.log("Build complete");
     } catch (error) {
       this.error(error.message);
     }
   }
-  
+
   private async readFiles() {
     // Implementation
   }
-  
+
   private async processFiles(files: string[]) {
     // Implementation
   }
@@ -68,23 +70,23 @@ class BuildCommand extends Command {
 
 ```typescript
 // ✅ @esteban-url/trailhead-cli functional command
-import type { Command } from '@esteban-url/trailhead-cli/command';
-import type { Result } from '@esteban-url/trailhead-cli';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { Command } from "@esteban-url/trailhead-cli/command";
+import type { Result } from "@esteban-url/trailhead-cli";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
 const buildCommand: Command = {
-  name: 'build',
-  description: 'Build the project',
+  name: "build",
+  description: "Build the project",
   execute: async (options, context) => {
     const filesResult = await readFiles(context.fs);
     if (!filesResult.success) return filesResult;
-    
+
     const processResult = await processFiles(filesResult.value, context);
     if (!processResult.success) return processResult;
-    
-    context.logger.success('Build complete');
+
+    context.logger.success("Build complete");
     return Ok(undefined);
-  }
+  },
 };
 
 // Pure functions - easy to test
@@ -92,7 +94,10 @@ const readFiles = async (fs: FileSystem): Promise<Result<string[]>> => {
   // Implementation with Result types
 };
 
-const processFiles = async (files: string[], context: CommandContext): Promise<Result<void>> => {
+const processFiles = async (
+  files: string[],
+  context: CommandContext,
+): Promise<Result<void>> => {
   // Implementation with Result types
 };
 ```
@@ -103,24 +108,21 @@ const processFiles = async (files: string[], context: CommandContext): Promise<R
 
 ```typescript
 // ❌ Commander.js
-import { Command } from 'commander';
+import { Command } from "commander";
 const program = new Command();
 
-program
-  .name('mycli')
-  .description('CLI to do things')
-  .version('1.0.0');
+program.name("mycli").description("CLI to do things").version("1.0.0");
 
 program
-  .command('init')
-  .description('Initialize project')
-  .option('-t, --template <type>', 'project template')
+  .command("init")
+  .description("Initialize project")
+  .option("-t, --template <type>", "project template")
   .action(async (options) => {
     try {
       // Command logic with potential throws
-      console.log('Project initialized');
+      console.log("Project initialized");
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
       process.exit(1);
     }
   });
@@ -132,36 +134,36 @@ program.parse();
 
 ```typescript
 // ✅ @esteban-url/trailhead-cli
-import { createCLI } from '@esteban-url/trailhead-cli';
-import type { Command } from '@esteban-url/trailhead-cli/command';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { createCLI } from "@esteban-url/trailhead-cli";
+import type { Command } from "@esteban-url/trailhead-cli/command";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
 const initCommand: Command<{ template?: string }> = {
-  name: 'init',
-  description: 'Initialize project',
+  name: "init",
+  description: "Initialize project",
   options: [
     {
-      name: 'template',
-      alias: 't',
-      description: 'Project template',
-      type: 'string'
-    }
+      name: "template",
+      alias: "t",
+      description: "Project template",
+      type: "string",
+    },
   ],
   execute: async (options, context) => {
     // Command logic with Result types
     const result = await initializeProject(options.template, context);
     if (!result.success) return result;
-    
-    context.logger.success('Project initialized');
+
+    context.logger.success("Project initialized");
     return Ok(undefined);
-  }
+  },
 };
 
 const cli = createCLI({
-  name: 'mycli',
-  version: '1.0.0',
-  description: 'CLI to do things',
-  commands: [initCommand]
+  name: "mycli",
+  version: "1.0.0",
+  description: "CLI to do things",
+  commands: [initCommand],
 });
 
 // Graceful error handling - no process.exit
@@ -174,26 +176,26 @@ cli.run(process.argv);
 
 ```typescript
 // ❌ Oclif
-import { Command, Flags } from '@oclif/core';
+import { Command, Flags } from "@oclif/core";
 
 export default class Deploy extends Command {
-  static description = 'Deploy application';
+  static description = "Deploy application";
   static flags = {
-    environment: Flags.string({ char: 'e', required: true }),
-    verbose: Flags.boolean({ char: 'v' })
+    environment: Flags.string({ char: "e", required: true }),
+    verbose: Flags.boolean({ char: "v" }),
   };
-  
+
   async run(): Promise<void> {
     const { flags } = await this.parse(Deploy);
-    
+
     try {
       await this.deploy(flags.environment);
-      this.log('Deployment successful');
+      this.log("Deployment successful");
     } catch (error) {
       this.error(error.message, { exit: 1 });
     }
   }
-  
+
   private async deploy(env: string): Promise<void> {
     // Implementation
   }
@@ -204,8 +206,8 @@ export default class Deploy extends Command {
 
 ```typescript
 // ✅ @esteban-url/trailhead-cli
-import type { Command } from '@esteban-url/trailhead-cli/command';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { Command } from "@esteban-url/trailhead-cli/command";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
 interface DeployOptions {
   environment: string;
@@ -213,34 +215,37 @@ interface DeployOptions {
 }
 
 const deployCommand: Command<DeployOptions> = {
-  name: 'deploy',
-  description: 'Deploy application',
+  name: "deploy",
+  description: "Deploy application",
   options: [
     {
-      name: 'environment',
-      alias: 'e',
-      description: 'Target environment',
-      type: 'string',
-      required: true
+      name: "environment",
+      alias: "e",
+      description: "Target environment",
+      type: "string",
+      required: true,
     },
     {
-      name: 'verbose',
-      alias: 'v',
-      description: 'Verbose output',
-      type: 'boolean'
-    }
+      name: "verbose",
+      alias: "v",
+      description: "Verbose output",
+      type: "boolean",
+    },
   ],
   execute: async (options, context) => {
     const result = await deployApp(options.environment, context);
     if (!result.success) return result;
-    
-    context.logger.success('Deployment successful');
+
+    context.logger.success("Deployment successful");
     return Ok(undefined);
-  }
+  },
 };
 
 // Testable pure function
-const deployApp = async (env: string, context: CommandContext): Promise<Result<void>> => {
+const deployApp = async (
+  env: string,
+  context: CommandContext,
+): Promise<Result<void>> => {
   // Implementation with Result types
 };
 ```
@@ -251,33 +256,33 @@ const deployApp = async (env: string, context: CommandContext): Promise<Result<v
 
 ```typescript
 // ❌ Yargs
-import yargs from 'yargs';
+import yargs from "yargs";
 
 yargs
   .command(
-    'generate <type>',
-    'Generate code',
+    "generate <type>",
+    "Generate code",
     (yargs) => {
       return yargs
-        .positional('type', {
-          describe: 'Type to generate',
-          type: 'string'
+        .positional("type", {
+          describe: "Type to generate",
+          type: "string",
         })
-        .option('name', {
-          alias: 'n',
-          type: 'string',
-          description: 'Name of the generated item'
+        .option("name", {
+          alias: "n",
+          type: "string",
+          description: "Name of the generated item",
         });
     },
     async (argv) => {
       try {
         await generateCode(argv.type, argv.name);
-        console.log('Generation complete');
+        console.log("Generation complete");
       } catch (error) {
-        console.error('Generation failed:', error.message);
+        console.error("Generation failed:", error.message);
         process.exit(1);
       }
-    }
+    },
   )
   .demandCommand(1)
   .parse();
@@ -287,8 +292,8 @@ yargs
 
 ```typescript
 // ✅ @esteban-url/trailhead-cli
-import type { Command } from '@esteban-url/trailhead-cli/command';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { Command } from "@esteban-url/trailhead-cli/command";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
 interface GenerateOptions {
   type: string;
@@ -296,29 +301,29 @@ interface GenerateOptions {
 }
 
 const generateCommand: Command<GenerateOptions> = {
-  name: 'generate',
-  description: 'Generate code',
+  name: "generate",
+  description: "Generate code",
   options: [
     {
-      name: 'type',
-      description: 'Type to generate',
-      type: 'string',
-      required: true
+      name: "type",
+      description: "Type to generate",
+      type: "string",
+      required: true,
     },
     {
-      name: 'name',
-      alias: 'n',
-      description: 'Name of the generated item',
-      type: 'string'
-    }
+      name: "name",
+      alias: "n",
+      description: "Name of the generated item",
+      type: "string",
+    },
   ],
   execute: async (options, context) => {
     const result = await generateCode(options.type, options.name, context);
     if (!result.success) return result;
-    
-    context.logger.success('Generation complete');
+
+    context.logger.success("Generation complete");
     return Ok(undefined);
-  }
+  },
 };
 ```
 
@@ -332,20 +337,20 @@ async function readConfig(path: string): Promise<Config> {
   if (!fs.existsSync(path)) {
     throw new Error(`Config file not found: ${path}`);
   }
-  
-  const content = fs.readFileSync(path, 'utf8');
+
+  const content = fs.readFileSync(path, "utf8");
   const parsed = JSON.parse(content); // Might throw
-  
+
   if (!isValidConfig(parsed)) {
-    throw new Error('Invalid configuration');
+    throw new Error("Invalid configuration");
   }
-  
+
   return parsed;
 }
 
 // Caller must handle with try/catch
 try {
-  const config = await readConfig('config.json');
+  const config = await readConfig("config.json");
   // Use config
 } catch (error) {
   console.error(error.message);
@@ -356,27 +361,30 @@ try {
 
 ```typescript
 // ✅ Returns Results
-import { Ok, Err } from '@esteban-url/trailhead-cli';
-import type { Result } from '@esteban-url/trailhead-cli';
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { Ok, Err } from "@esteban-url/trailhead-cli";
+import type { Result } from "@esteban-url/trailhead-cli";
+import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
-async function readConfig(path: string, fs: FileSystem): Promise<Result<Config>> {
+async function readConfig(
+  path: string,
+  fs: FileSystem,
+): Promise<Result<Config>> {
   const existsResult = await fs.exists(path);
   if (!existsResult.success) return existsResult;
   if (!existsResult.value) {
     return Err(new Error(`Config file not found: ${path}`));
   }
-  
+
   const contentResult = await fs.readFile(path);
   if (!contentResult.success) return contentResult;
-  
+
   try {
     const parsed = JSON.parse(contentResult.value);
-    
+
     if (!isValidConfig(parsed)) {
-      return Err(new Error('Invalid configuration'));
+      return Err(new Error("Invalid configuration"));
     }
-    
+
     return Ok(parsed);
   } catch (error) {
     return Err(new Error(`Invalid JSON: ${error.message}`));
@@ -384,7 +392,7 @@ async function readConfig(path: string, fs: FileSystem): Promise<Result<Config>>
 }
 
 // Caller handles explicitly
-const configResult = await readConfig('config.json', context.fs);
+const configResult = await readConfig("config.json", context.fs);
 if (!configResult.success) {
   context.logger.error(configResult.error.message);
   return configResult;
@@ -400,18 +408,18 @@ const config = configResult.value;
 
 ```typescript
 // ❌ Direct Node.js fs
-import fs from 'fs/promises';
-import path from 'path';
+import fs from "fs/promises";
+import path from "path";
 
 async function createProject(name: string) {
   const projectDir = path.join(process.cwd(), name);
-  
+
   await fs.mkdir(projectDir, { recursive: true });
   await fs.writeFile(
-    path.join(projectDir, 'package.json'),
-    JSON.stringify({ name, version: '1.0.0' }, null, 2)
+    path.join(projectDir, "package.json"),
+    JSON.stringify({ name, version: "1.0.0" }, null, 2),
   );
-  
+
   // Hard to test without creating real files
 }
 ```
@@ -420,28 +428,31 @@ async function createProject(name: string) {
 
 ```typescript
 // ✅ FileSystem abstraction
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
-import type { Result } from '@esteban-url/trailhead-cli';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import type { Result } from "@esteban-url/trailhead-cli";
+import { Ok, Err } from "@esteban-url/trailhead-cli";
 
-async function createProject(name: string, fs: FileSystem): Promise<Result<void>> {
+async function createProject(
+  name: string,
+  fs: FileSystem,
+): Promise<Result<void>> {
   const projectDir = await fs.join(await fs.cwd(), name);
-  
+
   const mkdirResult = await fs.mkdir(projectDir, { recursive: true });
   if (!mkdirResult.success) return mkdirResult;
-  
-  const packageJsonPath = await fs.join(projectDir, 'package.json');
-  const packageJson = { name, version: '1.0.0' };
-  
+
+  const packageJsonPath = await fs.join(projectDir, "package.json");
+  const packageJson = { name, version: "1.0.0" };
+
   const writeResult = await fs.writeJson(packageJsonPath, packageJson);
   if (!writeResult.success) return writeResult;
-  
+
   return Ok(undefined);
 }
 
 // Easy to test with memory filesystem
 const memoryFs = mockFileSystem();
-const result = await createProject('test-project', memoryFs);
+const result = await createProject("test-project", memoryFs);
 ```
 
 ## Testing Migration
@@ -450,26 +461,29 @@ const result = await createProject('test-project', memoryFs);
 
 ```typescript
 // ❌ Hard to test
-import { tmpdir } from 'os';
-import { join } from 'path';
-import { mkdir, writeFile, rm } from 'fs/promises';
+import { tmpdir } from "os";
+import { join } from "path";
+import { mkdir, writeFile, rm } from "fs/promises";
 
-test('creates project', async () => {
+test("creates project", async () => {
   // Create temporary directory
   const tempDir = join(tmpdir(), `test-${Date.now()}`);
   await mkdir(tempDir, { recursive: true });
-  
+
   // Change working directory
   const originalCwd = process.cwd();
   process.chdir(tempDir);
-  
+
   try {
     // Run command
-    await createProject('my-app');
-    
+    await createProject("my-app");
+
     // Check files exist
-    const packageJson = await readFile(join(tempDir, 'my-app', 'package.json'), 'utf8');
-    expect(JSON.parse(packageJson).name).toBe('my-app');
+    const packageJson = await readFile(
+      join(tempDir, "my-app", "package.json"),
+      "utf8",
+    );
+    expect(JSON.parse(packageJson).name).toBe("my-app");
   } finally {
     // Cleanup
     process.chdir(originalCwd);
@@ -482,23 +496,27 @@ test('creates project', async () => {
 
 ```typescript
 // ✅ Easy to test
-import { createTestContext, mockFileSystem, expectResult } from '@esteban-url/trailhead-cli/testing';
+import {
+  createTestContext,
+  mockFileSystem,
+  expectResult,
+} from "@esteban-url/trailhead-cli/testing";
 
-test('creates project', async () => {
+test("creates project", async () => {
   const fs = mockFileSystem();
   const context = createTestContext({ filesystem: fs });
-  
+
   const result = await createProjectCommand.execute(
-    { name: 'my-app' },
-    context
+    { name: "my-app" },
+    context,
   );
-  
+
   expectResult(result);
-  
+
   // Check files in memory
-  const packageJsonResult = await fs.readJson('my-app/package.json');
+  const packageJsonResult = await fs.readJson("my-app/package.json");
   const packageJson = expectResult(packageJsonResult);
-  expect(packageJson.name).toBe('my-app');
+  expect(packageJson.name).toBe("my-app");
 });
 ```
 
@@ -515,18 +533,18 @@ interface Config {
 }
 
 function loadConfig(data: any): Config {
-  if (typeof data.port !== 'number' || data.port < 1 || data.port > 65535) {
-    throw new Error('Invalid port');
+  if (typeof data.port !== "number" || data.port < 1 || data.port > 65535) {
+    throw new Error("Invalid port");
   }
-  
-  if (typeof data.host !== 'string' || data.host.length === 0) {
-    throw new Error('Invalid host');
+
+  if (typeof data.host !== "string" || data.host.length === 0) {
+    throw new Error("Invalid host");
   }
-  
+
   return {
     port: data.port,
     host: data.host,
-    debug: Boolean(data.debug)
+    debug: Boolean(data.debug),
   };
 }
 ```
@@ -535,19 +553,19 @@ function loadConfig(data: any): Config {
 
 ```typescript
 // ✅ Schema validation
-import { defineConfig } from '@esteban-url/trailhead-cli/config';
-import { z } from 'zod';
+import { defineConfig } from "@esteban-url/trailhead-cli/config";
+import { z } from "zod";
 
 const ConfigSchema = z.object({
   port: z.number().min(1).max(65535),
   host: z.string().min(1),
-  debug: z.boolean().default(false)
+  debug: z.boolean().default(false),
 });
 
 const config = defineConfig(ConfigSchema);
 
 // Usage
-const result = await config.load('config.json', context.fs);
+const result = await config.load("config.json", context.fs);
 if (!result.success) {
   // Detailed validation errors
   context.logger.error(result.error.message);
@@ -576,17 +594,17 @@ Start with your simplest command:
 
 ```typescript
 // Create new command file
-import type { Command } from '@esteban-url/trailhead-cli/command';
-import { Ok } from '@esteban-url/trailhead-cli';
+import type { Command } from "@esteban-url/trailhead-cli/command";
+import { Ok } from "@esteban-url/trailhead-cli";
 
 const myCommand: Command = {
-  name: 'my-command',
-  description: 'Description of command',
+  name: "my-command",
+  description: "Description of command",
   execute: async (options, context) => {
     // Convert your existing logic
-    context.logger.info('Command executed');
+    context.logger.info("Command executed");
     return Ok(undefined);
-  }
+  },
 };
 
 export { myCommand };
@@ -617,8 +635,8 @@ Replace direct fs calls with FileSystem:
 
 ```typescript
 // Before
-import fs from 'fs/promises';
-const content = await fs.readFile(path, 'utf8');
+import fs from "fs/promises";
+const content = await fs.readFile(path, "utf8");
 
 // After
 const result = await context.fs.readFile(path);
@@ -647,9 +665,12 @@ const myCommand: Command<MyCommandOptions> = {
 Add tests using the testing utilities:
 
 ```typescript
-import { createTestContext, expectResult } from '@esteban-url/trailhead-cli/testing';
+import {
+  createTestContext,
+  expectResult,
+} from "@esteban-url/trailhead-cli/testing";
 
-test('my command works', async () => {
+test("my command works", async () => {
   const context = createTestContext();
   const result = await myCommand.execute({}, context);
   expectResult(result);
@@ -659,14 +680,14 @@ test('my command works', async () => {
 ### 7. Update Main CLI File
 
 ```typescript
-import { createCLI } from '@esteban-url/trailhead-cli';
-import { myCommand } from './commands/my-command.js';
+import { createCLI } from "@esteban-url/trailhead-cli";
+import { myCommand } from "./commands/my-command.js";
 
 const cli = createCLI({
-  name: 'my-cli',
-  version: '1.0.0',
-  description: 'My CLI application',
-  commands: [myCommand]
+  name: "my-cli",
+  version: "1.0.0",
+  description: "My CLI application",
+  commands: [myCommand],
 });
 
 cli.run(process.argv);
@@ -738,6 +759,6 @@ If you encounter issues during migration:
 ## See Also
 
 - [Getting Started](../getting-started.md) - Basic setup
-- [Architecture](../explanation/architecture.md) - Design philosophy  
+- [Architecture](../explanation/architecture.md) - Design philosophy
 - [Design Decisions](../explanation/design-decisions.md) - Why we made these choices
 - [Import Patterns](../how-to/import-patterns.md) - Using subpath exports

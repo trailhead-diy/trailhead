@@ -26,13 +26,13 @@ describe('FileSystem Edge Cases', () => {
       // Create a file in temp directory
       const testFile = path.join(tempDir, 'readonly.txt');
       await fs.writeFile(testFile, 'test content');
-      
+
       // Make file read-only (simulate permission issues)
       await fs.chmod(testFile, 0o444);
-      
+
       // Try to write to read-only file
       const result = await nodeFs.writeFile(testFile, 'new content');
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toMatch(/EACCES|EPERM/);
@@ -45,14 +45,14 @@ describe('FileSystem Edge Cases', () => {
       // Create a directory in temp
       const testDir = path.join(tempDir, 'protected');
       await fs.mkdir(testDir);
-      
+
       // Make directory read-only
       await fs.chmod(testDir, 0o555);
-      
+
       // Try to create file in read-only directory
       const testFile = path.join(testDir, 'test.txt');
       const result = await nodeFs.writeFile(testFile, 'content');
-      
+
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toMatch(/EACCES|EPERM/);
@@ -66,23 +66,23 @@ describe('FileSystem Edge Cases', () => {
       // Create a 1MB string
       const largeContent = 'x'.repeat(1024 * 1024);
       const testFile = path.join(tempDir, 'large.txt');
-      
+
       // Test write performance
       const writeStart = Date.now();
       const writeResult = await nodeFs.writeFile(testFile, largeContent);
       const writeTime = Date.now() - writeStart;
-      
+
       expect(writeResult.success).toBe(true);
       expect(writeTime).toBeLessThan(5000); // Should complete within 5 seconds
-      
+
       // Test read performance
       const readStart = Date.now();
       const readResult = await nodeFs.readFile(testFile);
       const readTime = Date.now() - readStart;
-      
+
       expect(readResult.success).toBe(true);
       expect(readTime).toBeLessThan(5000);
-      
+
       if (readResult.success) {
         expect(readResult.value.length).toBe(largeContent.length);
       }
@@ -101,17 +101,17 @@ describe('FileSystem Edge Cases', () => {
           },
         })),
       };
-      
+
       const testFile = path.join(tempDir, 'large.json');
-      
+
       // Test JSON write
       const writeResult = await nodeFs.writeJson(testFile, largeData);
       expect(writeResult.success).toBe(true);
-      
+
       // Test JSON read
       const readResult = await nodeFs.readJson(testFile);
       expect(readResult.success).toBe(true);
-      
+
       if (readResult.success) {
         expect(readResult.value.items).toHaveLength(10000);
         expect(readResult.value.items[0].id).toBe(0);
@@ -130,19 +130,19 @@ describe('FileSystem Edge Cases', () => {
         'file(with)parentheses.txt',
         'file[with]brackets.txt',
       ];
-      
+
       for (const fileName of specialPaths) {
         const testFile = path.join(tempDir, fileName);
         const content = `Content for ${fileName}`;
-        
+
         // Test write
         const writeResult = await nodeFs.writeFile(testFile, content);
         expect(writeResult.success).toBe(true, `Failed to write ${fileName}`);
-        
+
         // Test read
         const readResult = await nodeFs.readFile(testFile);
         expect(readResult.success).toBe(true, `Failed to read ${fileName}`);
-        
+
         if (readResult.success) {
           expect(readResult.value).toBe(content);
         }
@@ -151,20 +151,22 @@ describe('FileSystem Edge Cases', () => {
 
     it('should handle very long file paths', async () => {
       // Create nested directory structure
-      const longPath = Array.from({ length: 20 }, (_, i) => `level${i}`).join('/');
+      const longPath = Array.from({ length: 20 }, (_, i) => `level${i}`).join(
+        '/',
+      );
       const testFile = path.join(tempDir, longPath, 'deep-file.txt');
-      
+
       // Ensure directory exists
       const dirResult = await nodeFs.ensureDir(path.dirname(testFile));
       expect(dirResult.success).toBe(true);
-      
+
       // Test file operations
       const writeResult = await nodeFs.writeFile(testFile, 'deep content');
       expect(writeResult.success).toBe(true);
-      
+
       const readResult = await nodeFs.readFile(testFile);
       expect(readResult.success).toBe(true);
-      
+
       if (readResult.success) {
         expect(readResult.value).toBe('deep content');
       }
@@ -175,29 +177,29 @@ describe('FileSystem Edge Cases', () => {
     it('should handle concurrent file operations safely', async () => {
       const promises: Promise<any>[] = [];
       const fileCount = 50;
-      
+
       // Create multiple files concurrently
       for (let i = 0; i < fileCount; i++) {
         const testFile = path.join(tempDir, `concurrent-${i}.txt`);
         promises.push(nodeFs.writeFile(testFile, `Content ${i}`));
       }
-      
+
       const results = await Promise.all(promises);
-      
+
       // All operations should succeed
       for (const result of results) {
         expect(result.success).toBe(true);
       }
-      
+
       // Verify all files exist and have correct content
       const readPromises: Promise<any>[] = [];
       for (let i = 0; i < fileCount; i++) {
         const testFile = path.join(tempDir, `concurrent-${i}.txt`);
         readPromises.push(nodeFs.readFile(testFile));
       }
-      
+
       const readResults = await Promise.all(readPromises);
-      
+
       for (let i = 0; i < fileCount; i++) {
         expect(readResults[i].success).toBe(true);
         if (readResults[i].success) {
@@ -209,20 +211,20 @@ describe('FileSystem Edge Cases', () => {
     it('should handle concurrent directory operations', async () => {
       const dirCount = 20;
       const promises: Promise<any>[] = [];
-      
+
       // Create multiple directories concurrently
       for (let i = 0; i < dirCount; i++) {
         const testDir = path.join(tempDir, `concurrent-dir-${i}`);
         promises.push(nodeFs.mkdir(testDir));
       }
-      
+
       const results = await Promise.all(promises);
-      
+
       // All operations should succeed
       for (const result of results) {
         expect(result.success).toBe(true);
       }
-      
+
       // Verify all directories exist
       for (let i = 0; i < dirCount; i++) {
         const testDir = path.join(tempDir, `concurrent-dir-${i}`);
@@ -245,13 +247,14 @@ describe('FileSystem Edge Cases', () => {
           success: false as const,
           error: {
             code: 'ENOSPC',
-            message: 'Write failed for "/test/file.txt": No space left on device',
+            message:
+              'Write failed for "/test/file.txt": No space left on device',
             path: '/test/file.txt',
             recoverable: false,
           },
         }),
       };
-      
+
       const result = await mockFs.writeFile('/test/file.txt', 'content');
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -267,13 +270,14 @@ describe('FileSystem Edge Cases', () => {
           success: false as const,
           error: {
             code: 'EBUSY',
-            message: 'Remove failed for "/test/busy-file.txt": Resource busy or locked',
+            message:
+              'Remove failed for "/test/busy-file.txt": Resource busy or locked',
             path: '/test/busy-file.txt',
             recoverable: true,
           },
         }),
       };
-      
+
       const result = await mockFs.remove('/test/busy-file.txt');
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -292,14 +296,14 @@ describe('FileSystem Edge Cases', () => {
         { operation: 'mkdir', args: ['testdir'] },
         { operation: 'readdir', args: ['.'] },
       ];
-      
+
       for (const testCase of testCases) {
         const { operation, args } = testCase;
-        
+
         try {
           // Test memory filesystem
           const memoryResult = await (memoryFs as any)[operation](...args);
-          
+
           // For operations that should work in memory
           if (operation !== 'readdir' || args[0] === '.') {
             expect(memoryResult.success).toBeDefined();

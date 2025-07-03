@@ -5,14 +5,14 @@ import type { CommandOption } from './types.js';
 
 /**
  * Validates a command option configuration
- * 
+ *
  * Performs comprehensive validation of a command option to ensure it meets
  * CLI framework requirements and Commander.js compatibility.
- * 
+ *
  * @param option - The command option to validate
  * @param index - Index of the option in the options array (for error reporting)
  * @returns Result indicating validation success or detailed error information
- * 
+ *
  * @example
  * ```typescript
  * const option = {
@@ -20,14 +20,17 @@ import type { CommandOption } from './types.js';
  *   description: 'Output directory',
  *   type: 'string'
  * };
- * 
+ *
  * const result = validateCommandOption(option, 0);
  * if (!result.success) {
  *   console.error(result.error.message);
  * }
  * ```
  */
-export function validateCommandOption(option: CommandOption, index: number): Result<void> {
+export function validateCommandOption(
+  option: CommandOption,
+  index: number,
+): Result<void> {
   // Option must have either name or flags
   if (!option.name && !option.flags) {
     return Err({
@@ -35,7 +38,8 @@ export function validateCommandOption(option: CommandOption, index: number): Res
       message: `Option at index ${index} must have either 'name' or 'flags' property`,
       details: JSON.stringify({ option, index }),
       recoverable: false,
-      suggestion: 'Add either a "name" property or a "flags" property to the option',
+      suggestion:
+        'Add either a "name" property or a "flags" property to the option',
     });
   }
 
@@ -46,19 +50,21 @@ export function validateCommandOption(option: CommandOption, index: number): Res
         code: 'INVALID_OPTION_FLAGS',
         message: `Option at index ${index}: 'flags' must be a string`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
+        recoverable: false,
       });
     }
 
     // Validate flags format (should match Commander.js patterns)
-    const flagPattern = /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
+    const flagPattern =
+      /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
     if (!flagPattern.test(option.flags)) {
       return Err({
         code: 'INVALID_OPTION_FLAGS_FORMAT',
         message: `Option at index ${index}: Invalid flags format '${option.flags}'. Expected format: '--long' or '-s, --long' with optional value placeholder`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
-        suggestion: 'Use formats like "--output", "-o, --output", or "--output <value>"',
+        recoverable: false,
+        suggestion:
+          'Use formats like "--output", "-o, --output", or "--output <value>"',
       });
     }
   }
@@ -70,7 +76,7 @@ export function validateCommandOption(option: CommandOption, index: number): Res
         code: 'INVALID_OPTION_NAME',
         message: `Option at index ${index}: 'name' must be a non-empty string`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
+        recoverable: false,
       });
     }
 
@@ -81,21 +87,27 @@ export function validateCommandOption(option: CommandOption, index: number): Res
         code: 'INVALID_OPTION_NAME_FORMAT',
         message: `Option at index ${index}: Invalid name format '${option.name}'. Use alphanumeric characters and hyphens only`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
-        suggestion: 'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
+        recoverable: false,
+        suggestion:
+          'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
       });
     }
   }
 
   // Validate alias if provided
   if (option.alias !== undefined) {
-    if (typeof option.alias !== 'string' || option.alias.length !== 1 || !/[a-zA-Z]/.test(option.alias)) {
+    if (
+      typeof option.alias !== 'string' ||
+      option.alias.length !== 1 ||
+      !/[a-zA-Z]/.test(option.alias)
+    ) {
       return Err({
         code: 'INVALID_OPTION_ALIAS',
         message: `Option at index ${index}: 'alias' must be a single letter`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
-        suggestion: 'Use a single letter like "o" for output or "v" for verbose',
+        recoverable: false,
+        suggestion:
+          'Use a single letter like "o" for output or "v" for verbose',
       });
     }
   }
@@ -108,7 +120,7 @@ export function validateCommandOption(option: CommandOption, index: number): Res
         code: 'INVALID_OPTION_TYPE',
         message: `Option at index ${index}: Invalid type '${option.type}'. Must be one of: ${validTypes.join(', ')}`,
         details: JSON.stringify({ option, index }),
-      recoverable: false,
+        recoverable: false,
       });
     }
   }
@@ -128,15 +140,15 @@ export function validateCommandOption(option: CommandOption, index: number): Res
 
 /**
  * Validates a complete command configuration
- * 
+ *
  * Performs comprehensive validation of a command configuration object,
  * checking all properties including name, description, options, examples,
  * and action function for correctness and CLI framework compatibility.
- * 
+ *
  * @template T - Command options type extending CommandOptions
  * @param config - The command configuration to validate
  * @returns Result indicating validation success or detailed error information
- * 
+ *
  * @example
  * ```typescript
  * const config = {
@@ -149,14 +161,16 @@ export function validateCommandOption(option: CommandOption, index: number): Res
  *     return { success: true, value: undefined };
  *   }
  * };
- * 
+ *
  * const result = validateCommandConfig(config);
  * if (!result.success) {
  *   throw new Error(`Invalid command: ${result.error.message}`);
  * }
  * ```
  */
-export function validateCommandConfig<T extends CommandOptions>(config: CommandConfig<T>): Result<void> {
+export function validateCommandConfig<T extends CommandOptions>(
+  config: CommandConfig<T>,
+): Result<void> {
   // Validate name
   if (!config.name || typeof config.name !== 'string') {
     return Err({
@@ -174,7 +188,8 @@ export function validateCommandConfig<T extends CommandOptions>(config: CommandC
       message: `Invalid command name format '${config.name}'. Use alphanumeric characters and hyphens only`,
       details: JSON.stringify({ config }),
       recoverable: false,
-      suggestion: 'Use kebab-case like "build-app" or single words like "build"',
+      suggestion:
+        'Use kebab-case like "build-app" or single words like "build"',
     });
   }
 
@@ -195,7 +210,7 @@ export function validateCommandConfig<T extends CommandOptions>(config: CommandC
         code: 'INVALID_COMMAND_OPTIONS',
         message: 'Command options must be an array',
         details: JSON.stringify({ config }),
-      recoverable: false,
+        recoverable: false,
       });
     }
 
@@ -209,10 +224,10 @@ export function validateCommandConfig<T extends CommandOptions>(config: CommandC
     // Check for duplicate option names/flags
     const names = new Set<string>();
     const aliases = new Set<string>();
-    
+
     for (let i = 0; i < config.options.length; i++) {
       const option = config.options[i];
-      
+
       if (option.name) {
         if (names.has(option.name)) {
           return Err({
@@ -224,7 +239,7 @@ export function validateCommandConfig<T extends CommandOptions>(config: CommandC
         }
         names.add(option.name);
       }
-      
+
       if (option.alias) {
         if (aliases.has(option.alias)) {
           return Err({
@@ -246,7 +261,7 @@ export function validateCommandConfig<T extends CommandOptions>(config: CommandC
         code: 'INVALID_COMMAND_EXAMPLES',
         message: 'Command examples must be an array of strings',
         details: JSON.stringify({ config }),
-      recoverable: false,
+        recoverable: false,
       });
     }
 
@@ -292,25 +307,27 @@ const validationCache = new WeakMap<CommandConfig<any>, boolean>();
 
 /**
  * Validates command configuration with caching for performance
- * 
+ *
  * Provides cached validation for command configurations to avoid redundant
  * validation of the same configuration objects. Uses WeakMap for automatic
  * garbage collection when config objects are no longer referenced.
- * 
+ *
  * @template T - Command options type extending CommandOptions
  * @param config - The command configuration to validate
  * @returns Result indicating validation success or detailed error information
- * 
+ *
  * @example
  * ```typescript
  * // First call performs validation and caches result
  * const result1 = validateCommandConfigWithCache(config);
- * 
+ *
  * // Second call with same config object returns cached result
  * const result2 = validateCommandConfigWithCache(config);
  * ```
  */
-export function validateCommandConfigWithCache<T extends CommandOptions>(config: CommandConfig<T>): Result<void> {
+export function validateCommandConfigWithCache<T extends CommandOptions>(
+  config: CommandConfig<T>,
+): Result<void> {
   // Check cache first
   if (validationCache.has(config)) {
     return Ok(undefined);
@@ -318,11 +335,11 @@ export function validateCommandConfigWithCache<T extends CommandOptions>(config:
 
   // Perform validation
   const result = validateCommandConfig(config);
-  
+
   // Cache successful validations
   if (result.success) {
     validationCache.set(config, true);
   }
-  
+
   return result;
 }

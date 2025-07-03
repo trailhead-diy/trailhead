@@ -23,7 +23,7 @@ const greetCommand = createCommand({
     const name = context.args[0];
     const message = `${options.message}, ${name}!`;
     const output = options.uppercase ? message.toUpperCase() : message;
-    
+
     context.logger.success(output);
     return Ok(undefined);
   },
@@ -36,26 +36,34 @@ const calculateCommand = createCommand({
   arguments: '<operation> <num1> <num2>',
   action: async (options, context) => {
     const [operation, num1Str, num2Str] = context.args;
-    
+
     // Validate operation
-    if (!operation || !['add', 'subtract', 'multiply', 'divide'].includes(operation)) {
+    if (
+      !operation ||
+      !['add', 'subtract', 'multiply', 'divide'].includes(operation)
+    ) {
       return Err({
         code: 'INVALID_OPERATION',
         message: 'Operation must be: add, subtract, multiply, or divide',
       });
     }
-    
+
     // Validate numbers
-    if (!num1Str || !num2Str || isNaN(Number(num1Str)) || isNaN(Number(num2Str))) {
+    if (
+      !num1Str ||
+      !num2Str ||
+      isNaN(Number(num1Str)) ||
+      isNaN(Number(num2Str))
+    ) {
       return Err({
         code: 'INVALID_NUMBER',
         message: 'Both arguments must be valid numbers',
       });
     }
-    
+
     const num1 = Number(num1Str);
     const num2 = Number(num2Str);
-    
+
     // Check for Infinity and NaN
     if (!isFinite(num1) || !isFinite(num2) || isNaN(num1) || isNaN(num2)) {
       return Err({
@@ -63,7 +71,7 @@ const calculateCommand = createCommand({
         message: 'Numbers must be finite values',
       });
     }
-    
+
     let result: number;
     switch (operation) {
       case 'add':
@@ -90,7 +98,7 @@ const calculateCommand = createCommand({
           message: `Unknown operation: ${operation}`,
         });
     }
-    
+
     context.logger.info(`${num1} ${operation} ${num2} = ${result}`);
     return Ok(undefined);
   },

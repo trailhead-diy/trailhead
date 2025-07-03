@@ -8,9 +8,7 @@
   ],
   "commit": false,
   "fixed": [],
-  "linked": [
-    ["@esteban-url/trailhead-cli", "@esteban-url/trailhead-web-ui"]
-  ],
+  "linked": [["@esteban-url/trailhead-cli", "@esteban-url/trailhead-web-ui"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

@@ -12,7 +12,7 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('Basic CLI Example Integration Tests', () => {
   const basicCliPath = resolve(__dirname, '../basic-cli.ts');
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -32,37 +32,49 @@ describe.skip('Basic CLI Example Integration Tests', () => {
     });
 
     it('should greet with custom message', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" greet Bob --message "Hi there"`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" greet Bob --message "Hi there"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('Hi there, Bob!');
     });
 
     it('should greet with uppercase flag', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" greet Charlie --uppercase`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" greet Charlie --uppercase`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('HELLO, CHARLIE!');
     });
 
     it('should greet with custom message and uppercase', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" greet Dana --message "Good morning" --uppercase`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" greet Dana --message "Good morning" --uppercase`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('GOOD MORNING, DANA!');
     });
 
     it('should use short flags', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" greet Eve -m "Hey" -u`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" greet Eve -m "Hey" -u`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('HEY, EVE!');
     });
@@ -79,37 +91,49 @@ describe.skip('Basic CLI Example Integration Tests', () => {
     });
 
     it('should perform subtraction', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" calculate subtract 10 4`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" calculate subtract 10 4`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('10 subtract 4 = 6');
     });
 
     it('should perform multiplication', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" calculate multiply 7 6`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" calculate multiply 7 6`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('7 multiply 6 = 42');
     });
 
     it('should perform division', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" calculate divide 15 3`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" calculate divide 15 3`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('15 divide 3 = 5');
     });
 
     it('should handle decimal results', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" calculate divide 10 3`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" calculate divide 10 3`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('10 divide 3 = 3.3333333333333335');
     });
@@ -134,7 +158,9 @@ describe.skip('Basic CLI Example Integration Tests', () => {
         });
         expect.fail('Should have thrown an error');
       } catch (error: any) {
-        expect(error.stdout || error.stderr).toContain('Operation must be: add, subtract, multiply, or divide');
+        expect(error.stdout || error.stderr).toContain(
+          'Operation must be: add, subtract, multiply, or divide',
+        );
       }
     });
 
@@ -146,7 +172,9 @@ describe.skip('Basic CLI Example Integration Tests', () => {
         });
         expect.fail('Should have thrown an error');
       } catch (error: any) {
-        expect(error.stdout || error.stderr).toContain('Both arguments must be valid numbers');
+        expect(error.stdout || error.stderr).toContain(
+          'Both arguments must be valid numbers',
+        );
       }
     });
 
@@ -159,7 +187,9 @@ describe.skip('Basic CLI Example Integration Tests', () => {
         expect.fail('Should have thrown an error');
       } catch (error: any) {
         // Commander.js handles missing required arguments automatically
-        expect(error.stdout || error.stderr).toContain('missing required argument');
+        expect(error.stdout || error.stderr).toContain(
+          'missing required argument',
+        );
       }
     });
   });
@@ -172,7 +202,9 @@ describe.skip('Basic CLI Example Integration Tests', () => {
       });
 
       expect(result).toContain('example-cli');
-      expect(result).toContain('Example CLI demonstrating @esteban-url/trailhead-cli features');
+      expect(result).toContain(
+        'Example CLI demonstrating @esteban-url/trailhead-cli features',
+      );
       expect(result).toContain('greet');
       expect(result).toContain('calculate');
     });
@@ -255,10 +287,13 @@ describe.skip('Basic CLI Example Integration Tests', () => {
     });
 
     it('should handle floating point numbers', () => {
-      const result = execSync(`npx tsx "${basicCliPath}" calculate multiply 2.5 4`, {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-      });
+      const result = execSync(
+        `npx tsx "${basicCliPath}" calculate multiply 2.5 4`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+        },
+      );
 
       expect(result).toContain('2.5 multiply 4 = 10');
     });

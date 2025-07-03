@@ -38,7 +38,7 @@ describe('Spinner Utilities', () => {
     it('should create spinner with text', () => {
       const text = 'Loading...';
       const spinner = createSpinner(text);
-      
+
       expect(mockOra).toHaveBeenCalledWith({
         text,
         spinner: 'dots',
@@ -49,7 +49,7 @@ describe('Spinner Utilities', () => {
     it('should create spinner with custom text', () => {
       const customText = 'Processing files...';
       const spinner = createSpinner(customText);
-      
+
       expect(mockOra).toHaveBeenCalledWith({
         text: customText,
         spinner: 'dots',
@@ -59,7 +59,7 @@ describe('Spinner Utilities', () => {
 
     it('should handle empty text', () => {
       const spinner = createSpinner('');
-      
+
       expect(mockOra).toHaveBeenCalledWith({
         text: '',
         spinner: 'dots',
@@ -71,9 +71,9 @@ describe('Spinner Utilities', () => {
     it('should execute task with spinner and succeed', async () => {
       const mockTask = vi.fn().mockResolvedValue('success result');
       const text = 'Running task...';
-      
+
       const result = await withSpinner(text, mockTask);
-      
+
       expect(mockOra).toHaveBeenCalledWith({
         text,
         spinner: 'dots',
@@ -88,9 +88,9 @@ describe('Spinner Utilities', () => {
       const error = new Error('Task failed');
       const mockTask = vi.fn().mockRejectedValue(error);
       const text = 'Running failing task...';
-      
+
       await expect(withSpinner(text, mockTask)).rejects.toThrow('Task failed');
-      
+
       expect(mockOra).toHaveBeenCalledWith({
         text,
         spinner: 'dots',
@@ -102,9 +102,9 @@ describe('Spinner Utilities', () => {
 
     it('should handle basic task execution', async () => {
       const mockTask = vi.fn().mockResolvedValue('result');
-      
+
       const result = await withSpinner('Task', mockTask);
-      
+
       expect(mockSpinner.succeed).toHaveBeenCalled();
       expect(result).toBe('result');
     });

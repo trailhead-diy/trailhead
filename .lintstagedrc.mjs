@@ -3,7 +3,9 @@ import { relative } from 'node:path'
 
 export default {
   // Format all supported files
-  '**/*.{ts,tsx,js,jsx,json,md}': 'prettier --write --ignore-path .gitignore',
+  '**/*.{ts,tsx,js,jsx,json,md}': [
+    'prettier --write --ignore-path .gitignore --no-error-on-unmatched-pattern',
+  ],
   
   // Validate documentation files for Diátaxis compliance
   'docs/**/*.md': 'pnpm docs:validate',

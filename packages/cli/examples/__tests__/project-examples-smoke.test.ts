@@ -280,7 +280,7 @@ describe.skip('Project Examples Smoke Tests', () => {
       // NOTE: These standalone .ts files are meant for demonstration purposes.
       // They cannot be type-checked within the pnpm workspace because tsx
       // doesn't resolve workspace: protocol dependencies.
-      // 
+      //
       // To test these files:
       // 1. Copy them outside the monorepo
       // 2. Install @esteban-url/trailhead-cli from GitHub
@@ -293,25 +293,39 @@ describe.skip('Project Examples Smoke Tests', () => {
 
   describe('Examples Structure Validation', () => {
     it('should have valid TypeScript config for project examples', async () => {
-      const projectDirs = ['api-client', 'cross-platform-cli', 'file-processor', 'project-generator', 'todo-cli'];
-      
+      const projectDirs = [
+        'api-client',
+        'cross-platform-cli',
+        'file-processor',
+        'project-generator',
+        'todo-cli',
+      ];
+
       for (const dir of projectDirs) {
         const projectPath = resolve(examplesDir, dir);
-        
+
         try {
           await fs.access(projectPath);
-          
+
           // Check if it has a valid structure
           const hasPackage = await hasPackageJson(projectPath);
-          const hasSourceDir = await fs.access(resolve(projectPath, 'src')).then(() => true).catch(() => false);
-          const hasIndexFile = await fs.access(resolve(projectPath, 'src/index.ts')).then(() => true).catch(() => false);
-          
+          const hasSourceDir = await fs
+            .access(resolve(projectPath, 'src'))
+            .then(() => true)
+            .catch(() => false);
+          const hasIndexFile = await fs
+            .access(resolve(projectPath, 'src/index.ts'))
+            .then(() => true)
+            .catch(() => false);
+
           if (hasPackage) {
             expect(hasSourceDir).toBe(true);
             expect(hasIndexFile).toBe(true);
           }
         } catch (error) {
-          console.log(`Project ${dir} not found or has issues - this might be expected`);
+          console.log(
+            `Project ${dir} not found or has issues - this might be expected`,
+          );
         }
       }
     });
@@ -320,12 +334,14 @@ describe.skip('Project Examples Smoke Tests', () => {
       try {
         const tsconfigPath = resolve(examplesDir, 'tsconfig.json');
         await fs.access(tsconfigPath);
-        
+
         const tsconfig = JSON.parse(await fs.readFile(tsconfigPath, 'utf-8'));
         expect(tsconfig.extends).toBeDefined();
         expect(tsconfig.compilerOptions).toBeDefined();
       } catch (error) {
-        console.log('Examples tsconfig.json not found - this might be expected');
+        console.log(
+          'Examples tsconfig.json not found - this might be expected',
+        );
       }
     });
   });
