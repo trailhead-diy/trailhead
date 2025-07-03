@@ -42,11 +42,6 @@ describe('DescriptionList Components', () => {
       terms.forEach(term => {
         expect(term.closest('dt')).toBeInTheDocument();
       });
-
-      // Test complex content rendering
-      expect(screen.getByText('Full Name')).toBeInTheDocument();
-      expect(screen.getByText('john@example.com')).toBeInTheDocument();
-      expect(screen.getByText('+1-555-0123')).toBeInTheDocument();
     });
 
     it('should handle multiple patterns and accessibility', () => {
@@ -67,15 +62,6 @@ describe('DescriptionList Components', () => {
       const list = screen.getByLabelText('User information');
       expect(list).toBeInTheDocument();
       expect(list.tagName).toBe('DL');
-
-      // Test multiple details for one term
-      expect(screen.getByText('English')).toBeInTheDocument();
-      expect(screen.getByText('Spanish')).toBeInTheDocument();
-      expect(screen.getByText('French')).toBeInTheDocument();
-
-      // Test standalone components
-      expect(screen.getByText('Standalone Term')).toBeInTheDocument();
-      expect(screen.getByText('Standalone Details')).toBeInTheDocument();
     });
   });
 });

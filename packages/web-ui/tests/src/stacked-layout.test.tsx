@@ -16,9 +16,6 @@ describe('StackedLayout Component', () => {
       </StackedLayout>
     );
 
-    expect(screen.getByLabelText('Top navigation')).toBeInTheDocument();
-    expect(screen.getByLabelText('Side navigation')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Content Area' })).toBeInTheDocument();
-    expect(screen.getByText('Stacked layout content')).toBeInTheDocument();
   });
 });

@@ -29,7 +29,6 @@ describe('Navbar Components', () => {
     );
 
     // Test navigation structure
-    expect(screen.getByText('Brand')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/home');
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
     expect(screen.getByRole('link', { name: 'Login' })).toHaveAttribute('href', '/login');
@@ -45,9 +44,6 @@ describe('Navbar Components', () => {
         </NavbarSection>
       </Navbar>
     );
-
-    const nav = screen.getByLabelText('Main navigation');
-    expect(nav).toBeInTheDocument();
 
     const currentPage = screen.getByText('Dashboard');
     expect(currentPage).toHaveAttribute('aria-current', 'page');

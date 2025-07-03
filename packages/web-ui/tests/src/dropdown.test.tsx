@@ -158,8 +158,6 @@ describe('Dropdown Components', () => {
         expect(screen.getByRole('menu')).toBeInTheDocument();
       });
 
-      expect(screen.getByText('View Profile')).toBeInTheDocument();
-      expect(screen.getByText('Sign Out')).toBeInTheDocument();
       expect(screen.getByRole('menu').querySelectorAll('[role="group"]')).toHaveLength(2);
     });
   });

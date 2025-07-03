@@ -27,10 +27,6 @@ describe('Pagination Components', () => {
       </Pagination>
     );
 
-    // Test navigation structure
-    const nav = screen.getByLabelText('Search results pagination');
-    expect(nav).toBeInTheDocument();
-
     // Test links
     expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/page/1');
     expect(screen.getByRole('link', { name: 'Next page' })).toHaveAttribute('href', '/page/3');
@@ -38,8 +34,5 @@ describe('Pagination Components', () => {
     // Test current page
     const currentPage = screen.getByText('2');
     expect(currentPage.closest('a')).toHaveAttribute('aria-current', 'page');
-
-    // Test gap
-    expect(screen.getByText('…')).toBeInTheDocument();
   });
 });

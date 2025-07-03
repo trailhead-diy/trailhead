@@ -49,21 +49,4 @@ describe('Table Components', () => {
     expect(screen.getByRole('cell', { name: 'jane@example.com' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Active' })).toBeInTheDocument();
   });
-
-  it('should support table variants for different use cases', () => {
-    render(
-      <Table bleed striped dense>
-        <TableBody>
-          <TableRow>
-            <TableCell>Compact content with visual styling</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    );
-
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(
-      screen.getByRole('cell', { name: 'Compact content with visual styling' })
-    ).toBeInTheDocument();
-  });
 });

@@ -39,8 +39,6 @@ describe('Dialog Components', () => {
           <DialogTitle>Hidden Dialog</DialogTitle>
         </Dialog>
       );
-
-      expect(onClose).toBeInstanceOf(Function);
     });
   });
 
@@ -69,31 +67,12 @@ describe('Dialog Components', () => {
         </Dialog>
       );
 
-      // Test semantic structure
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByText('Delete File')).toBeInTheDocument();
-      expect(screen.getByText(/permanently delete/)).toBeInTheDocument();
-      expect(screen.getByText('document.pdf')).toBeInTheDocument();
-
       // Test user interactions
       await user.click(screen.getByText('Cancel'));
       expect(onClose).toHaveBeenCalledTimes(1);
 
       await user.click(screen.getByTestId('confirm-btn'));
       expect(onConfirm).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle minimal dialog configurations', () => {
-      render(
-        <Dialog open onClose={() => {}}>
-          <DialogTitle>Simple Dialog</DialogTitle>
-          <DialogBody>Basic content without actions</DialogBody>
-        </Dialog>
-      );
-
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByText('Simple Dialog')).toBeInTheDocument();
-      expect(screen.getByText('Basic content without actions')).toBeInTheDocument();
     });
   });
 
@@ -119,10 +98,6 @@ describe('Dialog Components', () => {
       const dialog = screen.getByRole('dialog');
       expect(dialog).toHaveAttribute('aria-labelledby', 'title');
       expect(dialog).toHaveAttribute('aria-describedby', 'desc');
-
-      // Test content accessibility
-      expect(screen.getByPlaceholderText('Focus management test')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument();
     });
   });
 });

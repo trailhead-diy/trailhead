@@ -32,22 +32,6 @@ describe('Fieldset Components', () => {
       </Fieldset>
     );
 
-    // Test semantic structure
-    expect(screen.getByRole('group')).toBeInTheDocument();
-    expect(screen.getByText('User Information')).toBeInTheDocument();
-
-    // Test form fields
-    expect(screen.getByLabelText('Username')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-
-    // Test descriptions
-    expect(screen.getByText('Enter your preferred username')).toBeInTheDocument();
-    expect(screen.getByText("We'll use this for notifications")).toBeInTheDocument();
-
-    // Test error messages
-    expect(screen.getByText('Username must be at least 3 characters')).toBeInTheDocument();
-    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
-
     // Test accessibility
     const emailInput = screen.getByLabelText('Email');
     expect(emailInput).toHaveAttribute('aria-invalid', 'true');

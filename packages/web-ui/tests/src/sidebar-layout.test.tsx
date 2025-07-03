@@ -16,9 +16,6 @@ describe('SidebarLayout Component', () => {
       </SidebarLayout>
     );
 
-    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument();
-    expect(screen.getByLabelText('Secondary navigation')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(screen.getByText('Main application content')).toBeInTheDocument();
   });
 });

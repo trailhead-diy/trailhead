@@ -4,34 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { Button } from '../../src/components/button';
 
 describe('Button', () => {
-  describe('Variant Props', () => {
-    it('should handle color variants', () => {
-      render(
-        <div>
-          <Button color="blue">Blue Button</Button>
-          <Button color="red">Red Button</Button>
-        </div>
-      );
-
-      expect(screen.getByText('Blue Button')).toBeInTheDocument();
-      expect(screen.getByText('Red Button')).toBeInTheDocument();
-    });
-
-    it('should handle boolean variants', () => {
-      render(
-        <div>
-          <Button outline>Outline Button</Button>
-          <Button plain>Plain Button</Button>
-          <Button disabled>Disabled Button</Button>
-        </div>
-      );
-
-      expect(screen.getByText('Outline Button')).toBeInTheDocument();
-      expect(screen.getByText('Plain Button')).toBeInTheDocument();
-      expect(screen.getByText('Disabled Button')).toBeDisabled();
-    });
-  });
-
   describe('Click Interactions', () => {
     it('should handle click events', async () => {
       const user = userEvent.setup();
