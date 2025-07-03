@@ -16,8 +16,8 @@ Fundamental types and utilities for error handling, validation, and logging.
 
 | Property | Value |
 |----------|-------|
-| **Package** | `@trailhead/cli` |
-| **Module** | `@trailhead/cli/core` |
+| **Package** | `@esteban-url/trailhead-cli` |
+| **Module** | `@esteban-url/trailhead-cli/core` |
 | **Since** | `v1.0.0` |
 
 ## Result Types
@@ -25,8 +25,8 @@ Fundamental types and utilities for error handling, validation, and logging.
 ### Basic Usage
 
 ```typescript
-import { Ok, Err, isOk, isErr } from "@trailhead/cli";
-import type { Result } from "@trailhead/cli";
+import { Ok, Err, isOk, isErr } from "@esteban-url/trailhead-cli";
+import type { Result } from "@esteban-url/trailhead-cli";
 ```
 
 ### Type Definition
@@ -113,7 +113,7 @@ const result = chain(Ok(10), x =>
 ### Error Creation
 
 ```typescript
-import { createError } from "@trailhead/cli/core";
+import { createError } from "@esteban-url/trailhead-cli/core";
 
 const error = createError({
   code: "FILE_NOT_FOUND",
@@ -143,7 +143,7 @@ import {
   fileSystemError, 
   validationError,
   displayError 
-} from "@trailhead/cli/core";
+} from "@esteban-url/trailhead-cli/core";
 
 // File system error
 const fsError = fileSystemError({
@@ -168,8 +168,8 @@ displayError(error, console.error);
 ### Validation Pipeline
 
 ```typescript
-import { createValidationPipeline } from "@trailhead/cli/core";
-import type { ValidationRule } from "@trailhead/cli/core";
+import { createValidationPipeline } from "@esteban-url/trailhead-cli/core";
+import type { ValidationRule } from "@esteban-url/trailhead-cli/core";
 
 const pipeline = createValidationPipeline([
   {
@@ -201,7 +201,7 @@ import {
   pattern,
   email,
   url
-} from "@trailhead/cli/core";
+} from "@esteban-url/trailhead-cli/core";
 
 // String validation
 const nameValidator = string()
@@ -239,7 +239,7 @@ import {
   createDefaultLogger,
   createSilentLogger,
   createPrefixedLogger 
-} from "@trailhead/cli/core";
+} from "@esteban-url/trailhead-cli/core";
 
 // Standard console logger with colors
 const logger = createDefaultLogger();

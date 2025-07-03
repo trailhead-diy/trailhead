@@ -308,7 +308,7 @@ describe('Testing Mocks', () => {
 
       const indexResult = await fs.readFile('cli-project/src/index.ts');
       expect(indexResult.success).toBe(true);
-      expect(indexResult.value).toContain('@trailhead/cli');
+      expect(indexResult.value).toContain('@esteban-url/trailhead-cli');
 
       const tsconfigResult = await fs.readJson('cli-project/tsconfig.json');
       expect(tsconfigResult.success).toBe(true);

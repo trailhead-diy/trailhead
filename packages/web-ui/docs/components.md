@@ -28,7 +28,7 @@ All components have been enhanced to support semantic color tokens while maintai
 Provides theme context and manages theme switching. Wraps next-themes internally for SSR-safe theme management.
 
 ```tsx
-import { ThemeProvider } from '@trailhead/web-ui'
+import { ThemeProvider } from '@esteban-url/trailhead-web-ui'
 
 // All available props
 ;<ThemeProvider
@@ -43,7 +43,7 @@ import { ThemeProvider } from '@trailhead/web-ui'
 Also exports the `useTheme()` hook for accessing theme state:
 
 ```tsx
-import { useTheme } from '@trailhead/web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui'
 
 const { theme, setTheme, themes, resolvedTheme } = useTheme()
 ```
@@ -53,7 +53,7 @@ const { theme, setTheme, themes, resolvedTheme } = useTheme()
 Pre-built UI component for theme selection with dark mode toggle and quick theme access.
 
 ```tsx
-import { ThemeSwitcher } from '@trailhead/web-ui'
+import { ThemeSwitcher } from '@esteban-url/trailhead-web-ui'
 
 // All available props
 ;<ThemeSwitcher
@@ -110,7 +110,7 @@ import {
 
   // Utility
   cn, // clsx + tailwind-merge utility
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 ```
 
 ## Component Categories
@@ -122,7 +122,7 @@ import {
 Interactive button with multiple variants and color options.
 
 ```tsx
-import { Button } from '@trailhead/web-ui'
+import { Button } from '@esteban-url/trailhead-web-ui'
 
 // Variants
 <Button>Default</Button>
@@ -151,7 +151,7 @@ import { Button } from '@trailhead/web-ui'
 Text input with validation states.
 
 ```tsx
-import { Input } from '@trailhead/web-ui'
+import { Input } from '@esteban-url/trailhead-web-ui'
 
 <Input placeholder="Enter text" />
 <Input type="email" required />
@@ -164,7 +164,7 @@ import { Input } from '@trailhead/web-ui'
 Multi-line text input.
 
 ```tsx
-import { Textarea } from '@trailhead/web-ui'
+import { Textarea } from '@esteban-url/trailhead-web-ui'
 
 <Textarea rows={4} placeholder="Enter description" />
 <Textarea resizable={false} />
@@ -175,7 +175,7 @@ import { Textarea } from '@trailhead/web-ui'
 Native select dropdown.
 
 ```tsx
-import { Select } from '@trailhead/web-ui'
+import { Select } from '@esteban-url/trailhead-web-ui'
 ;<Select>
   <option>Option 1</option>
   <option>Option 2</option>
@@ -187,7 +187,7 @@ import { Select } from '@trailhead/web-ui'
 Checkbox input with label.
 
 ```tsx
-import { Checkbox } from '@trailhead/web-ui'
+import { Checkbox } from '@esteban-url/trailhead-web-ui'
 
 <Checkbox name="terms" />
 <Checkbox defaultChecked />
@@ -199,7 +199,7 @@ import { Checkbox } from '@trailhead/web-ui'
 Radio button groups.
 
 ```tsx
-import { Radio, RadioGroup } from '@trailhead/web-ui'
+import { Radio, RadioGroup } from '@esteban-url/trailhead-web-ui'
 ;<RadioGroup name="option">
   <Radio value="1">Option 1</Radio>
   <Radio value="2">Option 2</Radio>
@@ -211,7 +211,7 @@ import { Radio, RadioGroup } from '@trailhead/web-ui'
 Toggle switch control.
 
 ```tsx
-import { Switch, SwitchField } from '@trailhead/web-ui'
+import { Switch, SwitchField } from '@esteban-url/trailhead-web-ui'
 ;<SwitchField>
   <Switch name="notifications" />
   <label>Enable notifications</label>
@@ -225,7 +225,7 @@ import { Switch, SwitchField } from '@trailhead/web-ui'
 Modal dialogs and alerts.
 
 ```tsx
-import { Dialog, DialogTitle, DialogDescription } from '@trailhead/web-ui'
+import { Dialog, DialogTitle, DialogDescription } from '@esteban-url/trailhead-web-ui'
 ;<Dialog open={open} onClose={setOpen}>
   <DialogTitle>Confirm Action</DialogTitle>
   <DialogDescription>Are you sure you want to continue?</DialogDescription>
@@ -237,7 +237,7 @@ import { Dialog, DialogTitle, DialogDescription } from '@trailhead/web-ui'
 Dropdown menus with items.
 
 ```tsx
-import { Dropdown, DropdownButton, DropdownMenu, DropdownItem } from '@trailhead/web-ui'
+import { Dropdown, DropdownButton, DropdownMenu, DropdownItem } from '@esteban-url/trailhead-web-ui'
 ;<Dropdown>
   <DropdownButton>Options</DropdownButton>
   <DropdownMenu>
@@ -252,7 +252,7 @@ import { Dropdown, DropdownButton, DropdownMenu, DropdownItem } from '@trailhead
 Navigation sidebar components.
 
 ```tsx
-import { Sidebar, SidebarLayout } from '@trailhead/web-ui'
+import { Sidebar, SidebarLayout } from '@esteban-url/trailhead-web-ui'
 ;<SidebarLayout>
   <Sidebar>{/* Sidebar content */}</Sidebar>
   <main>{/* Main content */}</main>
@@ -264,7 +264,7 @@ import { Sidebar, SidebarLayout } from '@trailhead/web-ui'
 Authentication page layout.
 
 ```tsx
-import { AuthLayout } from '@trailhead/web-ui'
+import { AuthLayout } from '@esteban-url/trailhead-web-ui'
 ;<AuthLayout>
   <form>{/* Login/signup form */}</form>
 </AuthLayout>
@@ -275,7 +275,7 @@ import { AuthLayout } from '@trailhead/web-ui'
 Stacked layout with navbar.
 
 ```tsx
-import { StackedLayout, Navbar } from '@trailhead/web-ui'
+import { StackedLayout, Navbar } from '@esteban-url/trailhead-web-ui'
 ;<StackedLayout navbar={<Navbar>{/* Nav items */}</Navbar>}>
   <main>{/* Main content */}</main>
 </StackedLayout>
@@ -288,7 +288,7 @@ import { StackedLayout, Navbar } from '@trailhead/web-ui'
 Data tables with sorting.
 
 ```tsx
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@trailhead/web-ui'
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@esteban-url/trailhead-web-ui'
 ;<Table>
   <TableHead>
     <TableRow>
@@ -310,7 +310,7 @@ import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@
 Status indicators and labels with color options.
 
 ```tsx
-import { Badge } from '@trailhead/web-ui'
+import { Badge } from '@esteban-url/trailhead-web-ui'
 
 // Default styling
 <Badge>Default</Badge>
@@ -334,7 +334,7 @@ import { Badge } from '@trailhead/web-ui'
 User profile images.
 
 ```tsx
-import { Avatar } from '@trailhead/web-ui'
+import { Avatar } from '@esteban-url/trailhead-web-ui'
 
 <Avatar src="/user.jpg" alt="User" />
 <Avatar initials="JD" />
@@ -346,7 +346,7 @@ import { Avatar } from '@trailhead/web-ui'
 Key-value pair lists.
 
 ```tsx
-import { DescriptionList, DescriptionTerm, DescriptionDetails } from '@trailhead/web-ui'
+import { DescriptionList, DescriptionTerm, DescriptionDetails } from '@esteban-url/trailhead-web-ui'
 ;<DescriptionList>
   <DescriptionTerm>Name</DescriptionTerm>
   <DescriptionDetails>John Doe</DescriptionDetails>
@@ -363,7 +363,7 @@ import { DescriptionList, DescriptionTerm, DescriptionDetails } from '@trailhead
 Styled anchor links.
 
 ```tsx
-import { Link } from '@trailhead/web-ui'
+import { Link } from '@esteban-url/trailhead-web-ui'
 
 <Link href="/about">About Us</Link>
 <Link href="/contact" target="_blank">Contact</Link>
@@ -374,7 +374,7 @@ import { Link } from '@trailhead/web-ui'
 Top navigation bar.
 
 ```tsx
-import { Navbar, NavbarSection, NavbarItem } from '@trailhead/web-ui'
+import { Navbar, NavbarSection, NavbarItem } from '@esteban-url/trailhead-web-ui'
 ;<Navbar>
   <NavbarSection>
     <NavbarItem href="/">Home</NavbarItem>
@@ -388,7 +388,7 @@ import { Navbar, NavbarSection, NavbarItem } from '@trailhead/web-ui'
 Page navigation controls.
 
 ```tsx
-import { Pagination, PaginationPrevious, PaginationNext } from '@trailhead/web-ui'
+import { Pagination, PaginationPrevious, PaginationNext } from '@esteban-url/trailhead-web-ui'
 ;<Pagination>
   <PaginationPrevious href="?page=1" />
   <PaginationNext href="?page=3" />
@@ -402,7 +402,7 @@ import { Pagination, PaginationPrevious, PaginationNext } from '@trailhead/web-u
 Alert messages and notifications using semantic theme colors.
 
 ```tsx
-import { Alert } from '@trailhead/web-ui'
+import { Alert } from '@esteban-url/trailhead-web-ui'
 
 // Default alert (uses theme colors automatically)
 <Alert>Default alert message</Alert>
@@ -428,7 +428,7 @@ import { Alert } from '@trailhead/web-ui'
 Semantic heading elements.
 
 ```tsx
-import { Heading } from '@trailhead/web-ui'
+import { Heading } from '@esteban-url/trailhead-web-ui'
 
 <Heading level={1}>Page Title</Heading>
 <Heading level={2}>Section Title</Heading>
@@ -440,7 +440,7 @@ import { Heading } from '@trailhead/web-ui'
 Styled text with variants.
 
 ```tsx
-import { Text } from '@trailhead/web-ui'
+import { Text } from '@esteban-url/trailhead-web-ui'
 
 <Text>Default text</Text>
 <Text size="sm">Small text</Text>
@@ -455,7 +455,7 @@ import { Text } from '@trailhead/web-ui'
 Visual separators.
 
 ```tsx
-import { Divider } from '@trailhead/web-ui'
+import { Divider } from '@esteban-url/trailhead-web-ui'
 
 <Divider />
 <Divider soft />
@@ -466,7 +466,7 @@ import { Divider } from '@trailhead/web-ui'
 Form field grouping.
 
 ```tsx
-import { Fieldset, Legend } from '@trailhead/web-ui'
+import { Fieldset, Legend } from '@esteban-url/trailhead-web-ui'
 ;<Fieldset>
   <Legend>User Information</Legend>
   {/* Form fields */}
@@ -480,7 +480,7 @@ import { Fieldset, Legend } from '@trailhead/web-ui'
 Custom select with search.
 
 ```tsx
-import { Listbox, ListboxOption } from '@trailhead/web-ui'
+import { Listbox, ListboxOption } from '@esteban-url/trailhead-web-ui'
 ;<Listbox value={selected} onChange={setSelected}>
   <ListboxOption value="1">Option 1</ListboxOption>
   <ListboxOption value="2">Option 2</ListboxOption>
@@ -492,7 +492,7 @@ import { Listbox, ListboxOption } from '@trailhead/web-ui'
 Autocomplete input.
 
 ```tsx
-import { Combobox, ComboboxOption } from '@trailhead/web-ui'
+import { Combobox, ComboboxOption } from '@esteban-url/trailhead-web-ui'
 ;<Combobox value={value} onChange={setValue}>
   <ComboboxOption value="react">React</ComboboxOption>
   <ComboboxOption value="vue">Vue</ComboboxOption>
@@ -504,7 +504,7 @@ import { Combobox, ComboboxOption } from '@trailhead/web-ui'
 ### Form with Validation
 
 ```tsx
-import { Input, Button, Text } from '@trailhead/web-ui'
+import { Input, Button, Text } from '@esteban-url/trailhead-web-ui'
 
 function Form() {
   const [error, setError] = useState('')
@@ -528,7 +528,7 @@ function Form() {
 ### Modal with Actions
 
 ```tsx
-import { Dialog, DialogTitle, DialogDescription, DialogActions, Button } from '@trailhead/web-ui'
+import { Dialog, DialogTitle, DialogDescription, DialogActions, Button } from '@esteban-url/trailhead-web-ui'
 
 function ConfirmDialog({ open, onClose, onConfirm }) {
   return (
@@ -565,7 +565,7 @@ import {
   DropdownButton,
   DropdownMenu,
   DropdownItem,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 
 function DataTable({ data }) {
   return (
@@ -621,7 +621,7 @@ All components include:
 All components are fully typed:
 
 ```tsx
-import type { ButtonProps, InputProps } from '@trailhead/web-ui'
+import type { ButtonProps, InputProps } from '@esteban-url/trailhead-web-ui'
 
 // Use component prop types
 const MyButton: React.FC<ButtonProps> = (props) => {

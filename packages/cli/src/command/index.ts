@@ -29,7 +29,7 @@ export {
   executeSubprocess,
   executeBatch,
   executeWithConfiguration,
-  // Requiered by @trailhead/web-ui
+  // Requiered by @esteban-url/trailhead-web-ui
   executeWithPhases,      // Multi-step transformation workflows
   executeWithDryRun,      // Safe preview of file operations  
   displaySummary,         // Formatted configuration/result display

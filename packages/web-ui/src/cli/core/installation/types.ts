@@ -10,6 +10,10 @@ export type { FrameworkType }
 // CORE DOMAIN TYPES
 // ============================================================================
 
+// Helper type for file filtering predicates
+// Generic type allows filtering arrays of any type, not just strings
+export type FileFilterPredicate<T = string> = (file: T) => boolean
+
 export interface InstallConfig {
   readonly catalystDir: string
   readonly destinationDir: string
@@ -81,7 +85,7 @@ export type InstallError =
 // ============================================================================
 
 // Import Result type from framework
-import { type Result as FrameworkResult } from '@trailhead/cli/core'
+import { type Result as FrameworkResult } from '@esteban-url/trailhead-cli/core'
 
 // Re-export Result type for this module
 export type Result<T, E> = FrameworkResult<T, E>
@@ -131,7 +135,7 @@ export interface ProcessRunner {
 }
 
 // Import Logger from framework
-export type { Logger } from '@trailhead/cli/core'
+export type { Logger } from '@esteban-url/trailhead-cli/core'
 
 export interface Hasher {
   calculateFileHash(filePath: string): Promise<Result<string, InstallError>>

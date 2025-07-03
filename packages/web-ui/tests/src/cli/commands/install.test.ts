@@ -7,11 +7,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { resolve } from 'path'
 import { Command } from 'commander'
 import { createInstallCommand } from '../../../../src/cli/commands/install.js'
-import type { CLIContext } from '../../../../src/cli/utils/types.js'
-import { withConsoleSpy } from '../../../utils/console'
-import type { Command as CLICommand } from '@trailhead/cli/command'
+import type { Command as CLICommand } from '@esteban-url/trailhead-cli/command'
 
-// Helper function to convert @trailhead/cli command to Commander.js command for testing
+// Helper function to convert @esteban-url/trailhead-cli command to Commander.js command for testing
 function convertToCommanderJS<T>(cliCommand: CLICommand<T>): Command {
   const cmd = new Command(cliCommand.name)
   cmd.description(cliCommand.description)
@@ -26,7 +24,7 @@ function convertToCommanderJS<T>(cliCommand: CLICommand<T>): Command {
     }
   }
   
-  // Add base CLI options that are automatically added by @trailhead/cli
+  // Add base CLI options that are automatically added by @esteban-url/trailhead-cli
   cmd.option('-v, --verbose', 'show detailed output', false)
   cmd.option('--dry-run', 'preview mode - show what would be done without executing', false)
   
@@ -100,8 +98,8 @@ vi.mock('../../../../src/cli/core/filesystem/index.js', () => ({
 }))
 
 // Mock logger from framework
-vi.mock('@trailhead/cli/core', async () => {
-  const actual = await vi.importActual('@trailhead/cli/core')
+vi.mock('@esteban-url/trailhead-cli/core', async () => {
+  const actual = await vi.importActual('@esteban-url/trailhead-cli/core')
   return {
     ...actual,
     createDefaultLogger: vi.fn().mockReturnValue({
@@ -124,11 +122,6 @@ vi.mock('@trailhead/cli/core', async () => {
 })
 
 describe('Install Command', () => {
-  // Create mock context
-  const mockContext: CLIContext = {
-    packageRoot: '/mock/package/root',
-    isProduction: false,
-  }
 
   beforeEach(() => {
     vi.clearAllMocks()

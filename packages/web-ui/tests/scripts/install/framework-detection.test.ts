@@ -11,7 +11,7 @@
 
 import { describe, it, expect, vi } from 'vitest'
 import type { FileSystem } from '../../../src/cli/core/installation/types.js'
-import { Ok, Err } from '@trailhead/cli'
+import { Ok, Err } from '@esteban-url/trailhead-cli'
 import { createTestPath, normalizeMockPath } from '../../utils/cross-platform-paths.js'
 import {
   getFrameworkDefinitions,

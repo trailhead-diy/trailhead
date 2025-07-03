@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@trailhead/cli';
+import { createCLI } from '@esteban-url/trailhead-cli';
 import { getCommand } from './commands/get.js';
 
 const cli = createCLI({

@@ -5,8 +5,8 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@trailhead/cli": ["../src/index.ts"],
-      "@trailhead/cli/*": ["../src/*/index.ts"]
+      "@esteban-url/trailhead-cli": ["../src/index.ts"],
+      "@esteban-url/trailhead-cli/*": ["../src/*/index.ts"]
     },
     "skipLibCheck": true,
     "noEmit": true,

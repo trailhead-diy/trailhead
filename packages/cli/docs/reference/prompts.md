@@ -16,20 +16,20 @@ Interactive user input functionality through a re-export of [@inquirer/prompts](
 
 | Property | Value |
 |----------|-------|
-| **Package** | `@trailhead/cli` |
-| **Module** | `@trailhead/cli/prompts` |
+| **Package** | `@esteban-url/trailhead-cli` |
+| **Module** | `@esteban-url/trailhead-cli/prompts` |
 | **Since** | `v1.0.0` |
 
 ## Import
 
 ```typescript
-import { prompt, select, confirm, multiselect } from "@trailhead/cli/prompts";
+import { prompt, select, confirm, multiselect } from "@esteban-url/trailhead-cli/prompts";
 ```
 
 ## Basic Usage
 
 ```typescript
-import { prompt, select, confirm, multiselect } from "@trailhead/cli/prompts";
+import { prompt, select, confirm, multiselect } from "@esteban-url/trailhead-cli/prompts";
 ```
 
 ## Prompt Functions
@@ -134,7 +134,7 @@ const features = await multiselect({
 Get sensitive input with masking.
 
 ```typescript
-import { password } from "@trailhead/cli/prompts";
+import { password } from "@esteban-url/trailhead-cli/prompts";
 
 const secret = await password({
   message: "Enter your password:",
@@ -149,7 +149,7 @@ const secret = await password({
 Get numeric input with validation.
 
 ```typescript
-import { number } from "@trailhead/cli/prompts";
+import { number } from "@esteban-url/trailhead-cli/prompts";
 
 const port = await number({
   message: "Enter port number:",
@@ -170,7 +170,7 @@ const port = await number({
 Open the user's default text editor.
 
 ```typescript
-import { editor } from "@trailhead/cli/prompts";
+import { editor } from "@esteban-url/trailhead-cli/prompts";
 
 const content = await editor({
   message: "Edit the configuration:",
@@ -258,7 +258,7 @@ if (type === "library") {
 ### Dynamic Choices
 
 ```typescript
-import { createFileSystem } from "@trailhead/cli/filesystem";
+import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
 
 const fs = createFileSystem();
 const templatesResult = await fs.readdir("./templates");
@@ -298,7 +298,7 @@ try {
 Use mock prompts for testing:
 
 ```typescript
-import { createTestContext, mockPrompts } from "@trailhead/cli/testing";
+import { createTestContext, mockPrompts } from "@esteban-url/trailhead-cli/testing";
 
 test("interactive command", async () => {
   const prompts = mockPrompts({

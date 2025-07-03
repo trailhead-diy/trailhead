@@ -1,12 +1,12 @@
 {
-  "name": "@trailhead/cli",
+  "name": "@esteban-url/trailhead-cli",
   "version": "0.1.0",
   "type": "module",
   "private": false,
   "description": "Private CLI framework for Trailhead projects - requires GitHub installation",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -46,7 +46,7 @@
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --emitDeclarationOnly && tsup",
+    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "pnpm build && vitest run",
@@ -56,6 +56,7 @@
     "test:examples:fast": "./examples/test-examples.sh --fast",
     "test:all": "pnpm test && pnpm test:examples",
     "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
     "pretest": "pnpm build",

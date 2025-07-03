@@ -154,7 +154,7 @@ Components use inline fallback chains for enhanced variables:
 ### Catalyst Theme (1:1 Parity)
 
 ```typescript
-import { themePresets } from '@trailhead/web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui'
 
 const catalystTheme = themePresets.catalyst()
 ```
@@ -237,7 +237,7 @@ zinc-950/5  → border-ghost   // Preserves "very subtle" intent
 
 ```typescript
 // Works immediately - no changes needed!
-import { themePresets } from '@trailhead/web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui'
 
 // Use any preset or your existing shadcn theme
 const theme = themePresets.blue() // or your existing theme
@@ -247,7 +247,7 @@ const theme = themePresets.blue() // or your existing theme
 
 ```typescript
 // Use the Catalyst preset for perfect 1:1 parity
-import { themePresets } from '@trailhead/web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui'
 
 const catalystTheme = themePresets.catalyst()
 // All visual hierarchy preserved automatically

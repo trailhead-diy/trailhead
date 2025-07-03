@@ -1,6 +1,6 @@
 # RedwoodJS SDK Demo - Trailhead UI
 
-A RedwoodJS SDK application demonstrating @trailhead/web-ui components and theming system.
+A RedwoodJS SDK application demonstrating @esteban-url/trailhead-web-ui components and theming system.
 
 **Part of the [Trailhead Monorepo](../../../README.md)** - This demo showcases the UI library with RedwoodJS SDK.
 
@@ -226,7 +226,7 @@ pnpm preview
 ## 🚀 Features
 
 - **RedwoodJS SDK** - Modern edge-first framework
-- **@trailhead/web-ui** - All 26 components with theme system
+- **@esteban-url/trailhead-web-ui** - All 26 components with theme system
 - **21 Built-in Themes** - Professional themes with dark mode
 - **Cloudflare Workers** - Edge deployment ready
 - **Tailwind CSS 4** - Modern utility-first CSS
@@ -254,7 +254,7 @@ apps/demos/rwsdk/
 
 ## 🎨 Theming
 
-The demo showcases @trailhead/web-ui's theming capabilities:
+The demo showcases @esteban-url/trailhead-web-ui's theming capabilities:
 
 - **Runtime theme switching** - Change themes without reload
 - **Dark mode support** - Automatic system preference detection

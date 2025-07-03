@@ -50,8 +50,8 @@ export default {
       commands.push('pnpm types')
     }
     
-    // Always run linting
-    commands.push('pnpm lint')
+    // Always run linting with auto-fix
+    commands.push('pnpm lint:fix')
     
     return commands
   }

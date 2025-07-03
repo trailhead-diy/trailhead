@@ -28,7 +28,7 @@ For static themes that ship with your application, simply use the built-in theme
 The theme registry provides methods for managing themes:
 
 ```typescript
-import { themeRegistry } from '@trailhead/web-ui'
+import { themeRegistry } from '@esteban-url/trailhead-web-ui'
 
 // Register a new theme
 themeRegistry.register('my-theme', themeConfig)
@@ -58,7 +58,7 @@ The registry is automatically integrated with the `useTheme` hook, so registered
 Perfect for SaaS applications with per-organization branding:
 
 ```tsx
-import { useTheme, createTheme, themeRegistry } from '@trailhead/web-ui'
+import { useTheme, createTheme, themeRegistry } from '@esteban-url/trailhead-web-ui'
 import { useEffect } from 'react'
 
 function OrganizationApp({ orgId }: { orgId: string }) {
@@ -93,7 +93,7 @@ function OrganizationApp({ orgId }: { orgId: string }) {
 Allow users to install themes from a marketplace:
 
 ```tsx
-import { useTheme, themeRegistry } from '@trailhead/web-ui'
+import { useTheme, themeRegistry } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function ThemeMarketplace() {
@@ -135,7 +135,7 @@ Let users create custom themes:
 
 ```tsx
 import { useState } from 'react'
-import { useTheme, createTheme, themeRegistry } from '@trailhead/web-ui'
+import { useTheme, createTheme, themeRegistry } from '@esteban-url/trailhead-web-ui'
 
 function ThemeBuilder() {
   const [colors, setColors] = useState({
@@ -182,7 +182,7 @@ function ThemeBuilder() {
 Sync themes with user preferences stored in your backend:
 
 ```tsx
-import { useTheme, themeRegistry } from '@trailhead/web-ui'
+import { useTheme, themeRegistry } from '@esteban-url/trailhead-web-ui'
 import { useUser } from '@/hooks/use-user'
 import { useEffect } from 'react'
 
@@ -236,7 +236,7 @@ const {
 The theme registry provides these methods:
 
 ```typescript
-import { themeRegistry } from '@trailhead/web-ui'
+import { themeRegistry } from '@esteban-url/trailhead-web-ui'
 
 // Register a new theme
 themeRegistry.register(name: string, config: TrailheadThemeConfig): void
@@ -262,7 +262,7 @@ themeRegistry.apply(name: string, mode?: 'light' | 'dark'): void
 Create themes using the fluent builder:
 
 ```tsx
-import { createTheme, themeRegistry } from '@trailhead/web-ui'
+import { createTheme, themeRegistry } from '@esteban-url/trailhead-web-ui'
 
 const theme = createTheme('My Theme')
   .withPrimaryColor('oklch(0.6 0.2 250)')
@@ -381,7 +381,7 @@ export async function getOrgTheme(orgId: string) {
 Always validate themes before storing:
 
 ```tsx
-import { validateTheme } from '@trailhead/web-ui'
+import { validateTheme } from '@esteban-url/trailhead-web-ui'
 
 export async function saveTheme(name: string, config: unknown) {
   const validation = validateTheme(config as TrailheadThemeConfig)
@@ -438,7 +438,7 @@ function App() {
 ## TypeScript Support
 
 ```tsx
-import type { TrailheadThemeConfig, ThemeConfig, ColorConfig } from '@trailhead/web-ui'
+import type { TrailheadThemeConfig, ThemeConfig, ColorConfig } from '@esteban-url/trailhead-web-ui'
 
 // Type-safe theme creation
 function createOrgTheme(colors: OrgColors): TrailheadThemeConfig {

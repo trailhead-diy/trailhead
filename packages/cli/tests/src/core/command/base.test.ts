@@ -7,9 +7,9 @@ import {
   type CommandConfig,
   type CommandContext,
   type CommandPhase,
-} from '@trailhead/cli/command';
-import { Ok, Err } from '@trailhead/cli';
-import { createError } from '@trailhead/cli/core';
+} from '@esteban-url/trailhead-cli/command';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { testPaths } from '../../../test-utils/cross-platform-paths.js';
 
 vi.mock('inquirer', () => ({

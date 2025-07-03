@@ -54,7 +54,7 @@ import {
 
   // Layout Components
   AuthLayout,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 ```
 
 ### Theme System
@@ -79,7 +79,7 @@ import {
   type TrailheadThemeConfig,
   type ShadcnTheme,
   type ComponentThemeOverrides,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 ```
 
 ### Utilities
@@ -88,7 +88,7 @@ import {
 import {
   // Class name utility
   cn,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 ```
 
 ## Component Props
@@ -378,7 +378,7 @@ cn('base-class', condition && 'conditional-class', {
 Trailhead UI includes 8 predefined themes:
 
 ```tsx
-import { themePresets } from '@trailhead/web-ui'
+import { themePresets } from '@esteban-url/trailhead-web-ui'
 
 // Available themes
 const redTheme = themePresets.red()
@@ -489,7 +489,7 @@ The ThemeProvider uses next-themes internally which automatically prevents flash
 
 ## CLI Reference
 
-Trailhead UI includes a CLI for installing and managing UI components in your project. The CLI is built on top of [@trailhead/cli](../../cli/README.md), which provides the underlying framework capabilities (Result types, validation, filesystem abstractions, etc.).
+Trailhead UI includes a CLI for installing and managing UI components in your project. The CLI is built on top of [@esteban-url/trailhead-cli](../../cli/README.md), which provides the underlying framework capabilities (Result types, validation, filesystem abstractions, etc.).
 
 ### Installation
 
@@ -501,7 +501,7 @@ pnpm add github:esteban-url/trailhead#packages/web-ui
 pnpm exec trailhead-ui install
 ```
 
-> **Note**: For detailed information about the CLI framework architecture, patterns, and utilities, see the [@trailhead/cli documentation](../../cli/README.md).
+> **Note**: For detailed information about the CLI framework architecture, patterns, and utilities, see the [@esteban-url/trailhead-cli documentation](../../cli/README.md).
 
 ### Commands
 

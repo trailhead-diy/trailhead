@@ -2,7 +2,7 @@
  * FileSystem adapter to bridge between different FileSystem interfaces
  */
 
-import type { FileSystem as FrameworkFileSystem } from '@trailhead/cli/filesystem'
+import type { FileSystem as FrameworkFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 import type {
   FileSystem as InstallFileSystem,
   InstallError,

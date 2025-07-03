@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { createCLI, Ok, Err, isOk } from '@trailhead/cli';
-import { createCommand } from '@trailhead/cli/command';
+import { createCLI, Ok, Err, isOk } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 
 // Example 1: Basic command with options
 const greetCommand = createCommand({
@@ -100,7 +100,7 @@ const calculateCommand = createCommand({
 const cli = createCLI({
   name: 'example-cli',
   version: '1.0.0',
-  description: 'Example CLI demonstrating @trailhead/cli features',
+  description: 'Example CLI demonstrating @esteban-url/trailhead-cli features',
   commands: [greetCommand, calculateCommand],
 });
 

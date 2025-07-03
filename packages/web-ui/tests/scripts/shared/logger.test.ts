@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { createDefaultLogger, createSilentLogger } from '@trailhead/cli/core'
+import { createDefaultLogger, createSilentLogger } from '@esteban-url/trailhead-cli/core'
 
 // Mock chalk
 vi.mock('chalk', () => ({

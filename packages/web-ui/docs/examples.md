@@ -19,7 +19,7 @@ Real-world examples and patterns for Trailhead UI.
 Allow each customer to have their own branding:
 
 ```tsx
-import { ThemeProvider, useTheme, createTheme } from '@trailhead/web-ui'
+import { ThemeProvider, useTheme, createTheme } from '@esteban-url/trailhead-web-ui'
 import { useEffect, useState } from 'react'
 
 // Set up with CLI: trailhead-ui install
@@ -64,7 +64,7 @@ function MultiTenantApp({ tenantId }: { tenantId: string }) {
 Multi-step form with progress tracking:
 
 ```tsx
-import { Button, Input, Heading } from '@trailhead/web-ui'
+import { Button, Input, Heading } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function OnboardingFlow() {
@@ -161,7 +161,7 @@ function OnboardingFlow() {
 Reusable product display component:
 
 ```tsx
-import { Badge, Button, Text, Heading } from '@trailhead/web-ui'
+import { Badge, Button, Text, Heading } from '@esteban-url/trailhead-web-ui'
 
 interface ProductCardProps {
   product: {
@@ -216,7 +216,7 @@ function ProductCard({ product }: ProductCardProps) {
 Cart with item management:
 
 ```tsx
-import { Dialog, DialogTitle, Button, Text, Divider } from '@trailhead/web-ui'
+import { Dialog, DialogTitle, Button, Text, Divider } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function ShoppingCart({ open, onClose, items, onUpdateQuantity, onRemove }) {
@@ -301,7 +301,7 @@ import {
   DropdownButton,
   DropdownMenu,
   DropdownItem,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 
 function AdminDashboard({ children }) {
   return (
@@ -360,7 +360,7 @@ import {
   Input,
   Select,
   Badge,
-} from '@trailhead/web-ui'
+} from '@esteban-url/trailhead-web-ui'
 import { useState, useMemo } from 'react'
 
 function UserTable({ users }) {
@@ -448,7 +448,7 @@ function UserTable({ users }) {
 Form with field-level and form-level validation:
 
 ```tsx
-import { Input, Textarea, Select, Checkbox, Button, Text } from '@trailhead/web-ui'
+import { Input, Textarea, Select, Checkbox, Button, Text } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 interface FormData {
@@ -616,7 +616,7 @@ function ContactForm() {
 Interactive theme customization interface:
 
 ```tsx
-import { Input, Select, Button, Heading, Text, useTheme, createTheme } from '@trailhead/web-ui'
+import { Input, Select, Button, Heading, Text, useTheme, createTheme } from '@esteban-url/trailhead-web-ui'
 import { useState } from 'react'
 
 function ThemeBuilder() {
@@ -757,7 +757,7 @@ function ThemeBuilder() {
 Form with proper ARIA labels and error handling:
 
 ```tsx
-import { Input, Button, Text } from '@trailhead/web-ui'
+import { Input, Button, Text } from '@esteban-url/trailhead-web-ui'
 import { useState, useId } from 'react'
 
 function AccessibleForm() {
@@ -873,7 +873,7 @@ Handle large lists efficiently:
 ```tsx
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef } from 'react'
-import { Text } from '@trailhead/web-ui'
+import { Text } from '@esteban-url/trailhead-web-ui'
 
 function VirtualList({ items }: { items: Array<any> }) {
   const parentRef = useRef<HTMLDivElement>(null)

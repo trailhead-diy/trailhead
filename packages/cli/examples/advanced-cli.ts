@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { createCLI, Ok, Err, isOk } from '@trailhead/cli';
-import { createCommand } from '@trailhead/cli/command';
-import { unwrap, match, tryCatch, tryCatchAsync, chain, all } from '@trailhead/cli/core';
-import { filterUndefined, mergeOptionsWithDefaults } from '@trailhead/cli/utils';
+import { createCLI, Ok, Err, isOk } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { unwrap, match, tryCatch, tryCatchAsync, chain, all } from '@esteban-url/trailhead-cli/core';
+import { filterUndefined, mergeOptionsWithDefaults } from '@esteban-url/trailhead-cli/utils';
 import { promises as fs } from 'fs';
 import path from 'path';
 

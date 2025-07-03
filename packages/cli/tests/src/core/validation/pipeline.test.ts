@@ -6,7 +6,7 @@ import {
   ValidationOk as Ok,
   ValidationErr as Err,
   type ValidationContext,
-} from '@trailhead/cli/core';
+} from '@esteban-url/trailhead-cli/core';
 
 describe('Validation Pipeline', () => {
   describe('Business Logic', () => {

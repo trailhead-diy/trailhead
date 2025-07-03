@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@trailhead/cli';
-import { createCommand } from '@trailhead/cli/command';
-import { createFileSystem } from '@trailhead/cli/filesystem';
-import { Ok, Err } from '@trailhead/cli';
+import { createCLI } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 const processCommand = createCommand({
   name: 'process',

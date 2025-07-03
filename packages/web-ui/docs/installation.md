@@ -11,7 +11,7 @@ This guide covers installing Trailhead UI in your project.
 
 ## Package Installation
 
-@trailhead/web-ui is distributed as a private package via GitHub. Install directly from the monorepo:
+@esteban-url/trailhead-web-ui is distributed as a private package via GitHub. Install directly from the monorepo:
 
 ```bash
 # Install from GitHub repository (monorepo)
@@ -171,7 +171,7 @@ trailhead-ui install --framework nextjs --dry-run
 
 ```bash
 # Ensure the package is installed correctly
-pnpm list @trailhead/web-ui
+pnpm list @esteban-url/trailhead-web-ui
 
 # Try using pnpm exec instead
 pnpm exec trailhead-ui install
@@ -291,7 +291,7 @@ For Next.js projects, add to your root layout:
 
 ```tsx
 // app/layout.tsx
-import { ThemeProvider } from '@trailhead/web-ui'
+import { ThemeProvider } from '@esteban-url/trailhead-web-ui'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -309,7 +309,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 Test your installation:
 
 ```tsx
-import { Button } from '@trailhead/web-ui'
+import { Button } from '@esteban-url/trailhead-web-ui'
 
 export function App() {
   return <Button>Hello Trailhead UI!</Button>

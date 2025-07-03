@@ -1,15 +1,13 @@
-import { Ok as CliOk, Err as CliErr, type Result } from '@trailhead/cli'
-import {
-  createCommand,
-  type CommandContext,
-} from '@trailhead/cli/command'
+import { Ok as CliOk, Err as CliErr, type Result } from '@esteban-url/trailhead-cli'
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
 import {
   createValidationPipeline,
   createRule,
   ValidationOk,
   ValidationErr,
-} from '@trailhead/cli/core'
-import { createNodeFileSystem } from '@trailhead/cli/filesystem'
+  type ValidationResult,
+} from '@esteban-url/trailhead-cli/core'
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 import { runInstallationPrompts } from '../prompts/installation.js'
 import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js'
 import {
@@ -18,12 +16,16 @@ import {
   type InstallOptions as CoreInstallOptions,
 } from '../core/installation/index.js'
 import { resolveConfiguration } from '../core/installation/config.js'
-import { detectFramework, VALID_FRAMEWORKS } from '../core/installation/framework-detection.js'
+import { detectFramework } from '../core/installation/framework-detection.js'
 import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js'
 import { convertInstallResult } from './utils/error-conversion.js'
 import { getTrailheadPackageRoot } from '../utils/context.js'
 import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js'
-import { type StrictInstallOptions, isValidFramework, isValidDependencyStrategy } from '../core/types/command-options.js'
+import {
+  type StrictInstallOptions,
+  isValidFramework,
+  isValidDependencyStrategy,
+} from '../core/types/command-options.js'
 
 // Use strict typing for better type safety
 type InstallOptions = StrictInstallOptions
@@ -53,7 +55,7 @@ const createInstallValidation = () => {
               )
             }
           }
-          
+
           // Validate dependency strategy if provided
           if (options.dependencyStrategy) {
             if (!isValidDependencyStrategy(options.dependencyStrategy)) {
@@ -273,7 +275,7 @@ async function executeInstallation(
  * Display installation summary
  */
 function displayInstallationSummary(
-  logger: import('@trailhead/cli/core').Logger,
+  logger: import('@esteban-url/trailhead-cli/core').Logger,
   summary: {
     framework: string
     filesInstalled: number
@@ -338,7 +340,10 @@ function getFrameworkSteps(framework: string): string[] {
 /**
  * Handle install command execution
  */
-async function handleInstall(options: InstallOptions, context: CommandContext): Promise<Result<void>> {
+async function handleInstall(
+  options: InstallOptions,
+  context: CommandContext
+): Promise<Result<void>> {
   // Validate options
   const validation = createInstallValidation()
   const validationResult = validation.validateSync(options)
@@ -346,19 +351,19 @@ async function handleInstall(options: InstallOptions, context: CommandContext): 
   if (validationResult.overall === 'fail') {
     context.logger.error('❌ Invalid options:')
     // Simple error display until formatValidationSummary is available
-    validationResult.failed.forEach((result) => {
+    validationResult.failed.forEach((result: ValidationResult) => {
       context.logger.error(`  • ${result.message}`)
     })
-    return CliErr(createCLIError(
-      CLI_ERROR_CODES.VALIDATION_ERROR,
-      'Invalid installation options',
-      { recoverable: true }
-    ))
+    return CliErr(
+      createCLIError(CLI_ERROR_CODES.VALIDATION_ERROR, 'Invalid installation options', {
+        recoverable: true,
+      })
+    )
   }
 
   // Show warnings if any
   if (validationResult.overall === 'warning') {
-    validationResult.warnings.forEach((result) => {
+    validationResult.warnings.forEach((result: ValidationResult) => {
       context.logger.info(`⚠ ${result.message}`)
     })
   }
@@ -412,7 +417,7 @@ export const createInstallCommand = () => {
   return createCommand<InstallOptions>({
     name: 'install',
     description: 'Install and configure Trailhead UI components with enhanced theming',
-    
+
     options: [
       {
         flags: '--catalyst-dir <path>',
@@ -453,7 +458,18 @@ export const createInstallCommand = () => {
       },
       {
         flags: '--dependency-strategy <strategy>',
-        description: 'dependency installation strategy (auto, smart, selective, manual, skip, force)',
+        description:
+          'dependency installation strategy (auto, smart, selective, manual, skip, force)',
+      },
+      {
+        flags: '--dry-run',
+        description: 'preview changes without making any modifications',
+        default: false,
+      },
+      {
+        flags: '-v, --verbose',
+        description: 'verbose output with detailed logging',
+        default: false,
       },
     ],
 
@@ -465,7 +481,7 @@ export const createInstallCommand = () => {
       '$ trailhead-ui install --interactive',
     ],
 
-    action: async (options, cmdContext) => {
+    action: async (options: InstallOptions, cmdContext: CommandContext) => {
       return await handleInstall(options, cmdContext)
     },
   })

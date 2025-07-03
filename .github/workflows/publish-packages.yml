@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@trailhead'
+          scope: '@esteban-url'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -59,6 +59,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
+      - name: Setup npm authentication
+        run: ./scripts/setup-npm-auth.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -66,18 +71,18 @@ jobs:
         run: pnpm build
 
       - name: Run tests
-        run: pnpm test --filter=@trailhead/${{ matrix.package }}
+        run: pnpm test --filter=@esteban-url/trailhead-${{ matrix.package }}
 
       - name: Run linting
-        run: pnpm lint --filter=@trailhead/${{ matrix.package }}
+        run: pnpm lint --filter=@esteban-url/trailhead-${{ matrix.package }}
 
       - name: Run type checking
-        run: pnpm types --filter=@trailhead/${{ matrix.package }}
+        run: pnpm types --filter=@esteban-url/trailhead-${{ matrix.package }}
 
       - name: Check package.json configuration
         working-directory: packages/${{ matrix.package }}
         run: |
-          echo "🔍 Verifying package.json configuration for @trailhead/${{ matrix.package }}"
+          echo "🔍 Verifying package.json configuration for @esteban-url/trailhead-${{ matrix.package }}"
           
           # Check publishConfig exists
           if ! grep -q "publishConfig" package.json; then
@@ -99,10 +104,10 @@ jobs:
           
           echo "✅ Package configuration is valid"
 
-      - name: Publish @trailhead/${{ matrix.package }}
+      - name: Publish @esteban-url/trailhead-${{ matrix.package }}
         working-directory: packages/${{ matrix.package }}
         run: |
-          echo "📦 Publishing @trailhead/${{ matrix.package }} to GitHub Packages"
+          echo "📦 Publishing @esteban-url/trailhead-${{ matrix.package }} to GitHub Packages"
           
           # Show package info
           echo "Package: $(jq -r '.name' package.json)"
@@ -118,7 +123,7 @@ jobs:
         run: |
           echo "🔍 Verifying package publication"
           
-          PACKAGE_NAME="@trailhead/${{ matrix.package }}"
+          PACKAGE_NAME="@esteban-url/trailhead-${{ matrix.package }}"
           PACKAGE_VERSION=$(jq -r '.version' packages/${{ matrix.package }}/package.json)
           
           # Wait a moment for package to be available
@@ -144,8 +149,8 @@ jobs:
         run: |
           echo "🎉 Successfully published packages to GitHub Packages"
           echo "📦 Packages are now available for installation with:"
-          echo "npm install @trailhead/cli --registry=https://npm.pkg.github.com"
-          echo "npm install @trailhead/web-ui --registry=https://npm.pkg.github.com"
+          echo "npm install @esteban-url/trailhead-cli --registry=https://npm.pkg.github.com"
+          echo "npm install @esteban-url/trailhead-web-ui --registry=https://npm.pkg.github.com"
 
   notify-failure:
     name: Notify Failure

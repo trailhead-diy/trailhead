@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
 
-// Skip project subdirectory tests - they require @trailhead/cli to be published
+// Skip project subdirectory tests - they require @esteban-url/trailhead-cli to be published
 // These tests work with standalone project examples that depend on the published package
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('Project Examples Smoke Tests', () => {
@@ -283,7 +283,7 @@ describe.skip('Project Examples Smoke Tests', () => {
       // 
       // To test these files:
       // 1. Copy them outside the monorepo
-      // 2. Install @trailhead/cli from GitHub
+      // 2. Install @esteban-url/trailhead-cli from GitHub
       // 3. Run tsc on them
       //
       // The actual example projects (api-client, todo-cli, etc.) are tested

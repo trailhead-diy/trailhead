@@ -20,14 +20,14 @@ related:
 
 | Property    | Value                           |
 | ----------- | ------------------------------- |
-| **Package** | `@trailhead/[package]`          |
-| **Module**  | `@trailhead/[package]/[module]` |
+| **Package** | `@esteban-url/trailhead-[package]`          |
+| **Module**  | `@esteban-url/trailhead-[package]/[module]` |
 | **Since**   | `v1.0.0`                        |
 
 ## Import
 
 ```typescript
-import { [exports] } from '@trailhead/[package]/[module]';
+import { [exports] } from '@esteban-url/trailhead-[package]/[module]';
 ```
 
 ## Functions

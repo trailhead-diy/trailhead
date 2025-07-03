@@ -1,6 +1,6 @@
 # CLI Examples
 
-Working code examples demonstrating various patterns and use cases with @trailhead/cli.
+Working code examples demonstrating various patterns and use cases with @esteban-url/trailhead-cli.
 
 ## Available Examples
 
@@ -51,9 +51,9 @@ cp -r api-client /path/to/my-project
 cd /path/to/my-project
 
 # 2. Update package.json dependency from:
-#    "@trailhead/cli": "workspace:*"
+#    "@esteban-url/trailhead-cli": "workspace:*"
 # To:
-#    "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"
+#    "@esteban-url/trailhead-cli": "github:esteban-url/trailhead#packages/cli"
 
 # 3. Update tsconfig.json to remove the extends
 #    and use a standalone configuration
@@ -78,11 +78,11 @@ To use an example as a template for your own project:
 2. Update the `package.json` dependency:
    ```json
    // Change from:
-   "@trailhead/cli": "file:../.."
+   "@esteban-url/trailhead-cli": "file:../.."
    
    // To one of:
-   "@trailhead/cli": "github:esteban-url/trailhead#packages/cli"  // GitHub
-   "@trailhead/cli": "^0.1.0"  // NPM (when published)
+   "@esteban-url/trailhead-cli": "github:esteban-url/trailhead#packages/cli"  // GitHub
+   "@esteban-url/trailhead-cli": "^0.1.0"  // NPM (when published)
    ```
 3. Install and use normally:
    ```bash

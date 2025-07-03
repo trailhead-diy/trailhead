@@ -1,6 +1,6 @@
 # Cross-Platform CLI Example
 
-Demonstrates building a CLI that works across different operating systems using @trailhead/cli.
+Demonstrates building a CLI that works across different operating systems using @esteban-url/trailhead-cli.
 
 ## Features
 

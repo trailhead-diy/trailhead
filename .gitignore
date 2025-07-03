@@ -20,6 +20,7 @@ build/
 *.pem
 .env*.local
 !.env.example
+.npmrc.local
 
 # Debug
 npm-debug.log*

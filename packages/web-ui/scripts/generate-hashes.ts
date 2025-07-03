@@ -8,7 +8,7 @@ import * as path from 'path'
 import chalk from 'chalk'
 
 // Import from CLI core for file system functions and types
-import { createNodeFileSystem } from '@trailhead/cli/filesystem'
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 // Import verification functions from CLI core
 import {
   createDefaultHasher,

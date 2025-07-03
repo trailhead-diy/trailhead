@@ -45,7 +45,7 @@ interface ThemeContextValue {
 ### Usage Examples
 
 ```tsx
-import { useTheme } from '@trailhead/web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui'
 
 function ThemeControls() {
   const { currentTheme, isDark, themes, setTheme, toggleDarkMode, registerTheme } = useTheme()
@@ -289,7 +289,7 @@ Define a custom theme using CSS:
 Create themes programmatically using the functional theme builder (located in `/src/components/theme/builder.ts`):
 
 ```tsx
-import { createTheme } from '@trailhead/web-ui'
+import { createTheme } from '@esteban-url/trailhead-web-ui'
 
 // Build a custom theme using the fluent API
 const customTheme = createTheme('custom')
@@ -329,7 +329,7 @@ pnpm exec trailhead-ui install
 For runtime theme management, use the `useTheme` hook:
 
 ```tsx
-import { useTheme } from '@trailhead/web-ui'
+import { useTheme } from '@esteban-url/trailhead-web-ui'
 
 function ThemeManager() {
   const { themes, currentTheme, setTheme, registerTheme } = useTheme()

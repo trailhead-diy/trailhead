@@ -2,8 +2,12 @@
  * Refactored Profile Command using command patterns
  */
 
-import { Ok } from '@trailhead/cli'
-import { createCommand, executeSubprocess } from '@trailhead/cli/command'
+import { Ok } from '@esteban-url/trailhead-cli'
+import {
+  createCommand,
+  executeSubprocess,
+  type CommandContext,
+} from '@esteban-url/trailhead-cli/command'
 import { type StrictProfileOptions } from '../core/types/command-options.js'
 
 // ============================================================================
@@ -50,7 +54,7 @@ export const createProfileCommand = () => {
       '$ node --expose-gc trailhead-ui profile --memory',
     ],
 
-    validation: (options) => {
+    validation: (options: ProfileOptions) => {
       if (options.pipeline && options.simple) {
         return {
           success: false,
@@ -66,7 +70,7 @@ export const createProfileCommand = () => {
       return { success: true, value: options }
     },
 
-    action: async (options, cmdContext) => {
+    action: async (options: ProfileOptions, cmdContext: CommandContext) => {
       // Set up environment based on options
       const env: Record<string, string> = {}
 

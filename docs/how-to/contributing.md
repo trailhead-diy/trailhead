@@ -28,7 +28,7 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
 
    The monorepo uses different PNPM versions:
    - **Root**: PNPM 8.15.0 (specified in root package.json)
-   - **@trailhead/web-ui**: PNPM 10.12.1 (specified in its package.json)
+   - **@esteban-url/trailhead-web-ui**: PNPM 10.12.1 (specified in its package.json)
 
    This is intentional to support different feature requirements. The root version manages the monorepo infrastructure while individual packages can specify their own versions for optimal compatibility.
 
@@ -49,8 +49,8 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
 
 ```bash
 # Work on specific package
-pnpm build --filter=@trailhead/web-ui
-pnpm test --filter=@trailhead/cli
+pnpm build --filter=@esteban-url/trailhead-web-ui
+pnpm test --filter=@esteban-url/trailhead-cli
 
 # Work on multiple packages
 pnpm build --filter=./packages/*
@@ -86,7 +86,7 @@ Use conventional commits:
 
 ## Package Structure
 
-- **packages/**: Public packages (@trailhead/\*)
+- **packages/**: Public packages (@esteban-url/\*)
 - **apps/**: Applications and demos
 - **tooling/**: Internal configurations (@repo/\*)
 

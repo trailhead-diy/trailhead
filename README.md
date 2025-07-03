@@ -6,8 +6,8 @@ Modern Turborepo monorepo containing enhanced Catalyst UI components, CLI framew
 
 Trailhead provides:
 
-- **[@trailhead/web-ui](./packages/web-ui)** - Enhanced Catalyst UI with advanced theming system
-- **[@trailhead/cli](./packages/cli)** - Reusable CLI framework for development tools
+- **[@esteban-url/trailhead-web-ui](./packages/web-ui)** - Enhanced Catalyst UI with advanced theming system
+- **[@esteban-url/trailhead-cli](./packages/cli)** - Reusable CLI framework for development tools
 - **Demo Applications** - Next.js and RedwoodJS examples showcasing all components
 - **Shared Tooling** - Common configurations for linting, TypeScript, and testing
 
@@ -16,8 +16,8 @@ Trailhead provides:
 ```
 trailhead/
 ├── packages/                    # Public packages
-│   ├── cli/                    # @trailhead/cli - CLI framework
-│   └── web-ui/                 # @trailhead/web-ui - UI component library
+│   ├── cli/                    # @esteban-url/trailhead-cli - CLI framework
+│   └── web-ui/                 # @esteban-url/trailhead-web-ui - UI component library
 ├── apps/                       # Applications
 │   └── demos/                  # Demo applications (Next.js, RedwoodJS)
 ├── tooling/                    # Internal tooling packages
@@ -55,9 +55,9 @@ pnpm dev
 
 ```bash
 # Work on specific package
-pnpm build --filter=@trailhead/web-ui
-pnpm test --filter=@trailhead/cli
-pnpm lint --filter=@trailhead/web-ui
+pnpm build --filter=@esteban-url/trailhead-web-ui
+pnpm test --filter=@esteban-url/trailhead-cli
+pnpm lint --filter=@esteban-url/trailhead-web-ui
 
 # Work on multiple packages
 pnpm build --filter=./packages/*
@@ -65,7 +65,22 @@ pnpm build --filter=./packages/*
 
 ## Installation for Projects
 
-Since this is a private repository, install packages using GitHub references:
+### From GitHub Packages (Recommended)
+
+These packages are published to GitHub Packages. You'll need to authenticate first:
+
+```bash
+# Set up GitHub token (with read:packages scope)
+export GITHUB_TOKEN=your_github_token
+
+# Install from GitHub Packages
+npm install @esteban-url/trailhead-cli --registry=https://npm.pkg.github.com
+npm install @esteban-url/trailhead-web-ui --registry=https://npm.pkg.github.com
+```
+
+### From GitHub Repository
+
+Alternatively, install directly from the repository:
 
 ```bash
 # Install the UI library
@@ -77,7 +92,7 @@ pnpm add github:esteban-url/trailhead#packages/cli
 
 ## Packages
 
-### [@trailhead/web-ui](./packages/web-ui)
+### [@esteban-url/trailhead-web-ui](./packages/web-ui)
 
 Enhanced Catalyst UI with advanced theming system:
 
@@ -86,7 +101,7 @@ Enhanced Catalyst UI with advanced theming system:
 - Semantic color tokens for consistent theming
 - Professional CLI with smart framework detection
 
-### [@trailhead/cli](./packages/cli)
+### [@esteban-url/trailhead-cli](./packages/cli)
 
 Reusable CLI framework extracted from the UI project:
 

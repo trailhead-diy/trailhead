@@ -12,8 +12,8 @@ swap:
   'err\(': 'Err('
   
   # Package names
-  'trailhead-cli': '@trailhead/cli'
-  'trailhead-web-ui': '@trailhead/web-ui'
+  'trailhead-cli': '@esteban-url/trailhead-cli'
+  'trailhead-web-ui': '@esteban-url/trailhead-web-ui'
   
   # Framework consistency
   'NextJS': 'Next.js'

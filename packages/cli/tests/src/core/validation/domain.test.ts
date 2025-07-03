@@ -13,8 +13,8 @@ import {
   projectConfig,
   importStatement,
   jsonContent,
-} from '@trailhead/cli/core';
-import type { Framework } from '@trailhead/cli/core';
+} from '@esteban-url/trailhead-cli/core';
+import type { Framework } from '@esteban-url/trailhead-cli/core';
 
 describe('Domain Validators', () => {
   describe('Framework Validation', () => {

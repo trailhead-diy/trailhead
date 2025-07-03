@@ -2,7 +2,7 @@
 
 The Trailhead UI CLI supports configuration files to customize its behavior without needing to pass command-line flags every time. This configuration is specific to the UI component installation and transformation commands.
 
-> **Note**: For general CLI framework documentation (Result types, validation, filesystem abstractions, etc.), see [@trailhead/cli documentation](../../cli/README.md).
+> **Note**: For general CLI framework documentation (Result types, validation, filesystem abstractions, etc.), see [@esteban-url/trailhead-cli documentation](../../cli/README.md).
 
 The configuration system uses [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) for flexible configuration file discovery.
 
@@ -107,7 +107,7 @@ The `dev:refresh` command copies fresh Catalyst components for development:
 Create a `trailhead.config.ts` file:
 
 ```typescript
-import { defineConfig } from '@trailhead/web-ui'
+import { defineConfig } from '@esteban-url/trailhead-web-ui'
 
 export default defineConfig({
   install: {

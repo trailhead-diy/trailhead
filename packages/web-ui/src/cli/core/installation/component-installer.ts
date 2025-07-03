@@ -18,6 +18,7 @@ import {
   getTransformedFileName,
   validateTransformResult,
 } from './component-transformer.js'
+import { isTsxFile, isCatalystComponent, isWrapperComponent } from '../shared/file-filters.js'
 
 // ============================================================================
 // CATALYST COMPONENT INSTALLATION
@@ -59,7 +60,7 @@ export const installCatalystComponents = async (
 
   if (!copyResult.success) return copyResult
 
-  const catalystFiles = copyResult.value.filter((file) => file.endsWith('.tsx'))
+  const catalystFiles = copyResult.value.filter(isTsxFile)
 
   // Install lib/index.ts
   const libIndexResult = await copyFile(fs, sourcePaths.libIndex, destPaths.libIndex, force)
@@ -67,7 +68,7 @@ export const installCatalystComponents = async (
 
   logger.success(`Installed ${catalystFiles.length} Catalyst components and lib index`)
 
-  return Ok([...catalystFiles.map((file) => `lib/${file}`), 'lib/index.ts'])
+  return Ok([...catalystFiles.map((file: string) => `lib/${file}`), 'lib/index.ts'])
 }
 
 // ============================================================================
@@ -109,13 +110,7 @@ export const installComponentWrappers = async (
   }
 
   // Get all component wrapper files (excluding theme-related and index files)
-  const wrapperFiles = dirCheckResult.value.files.filter(
-    (file) =>
-      file.endsWith('.tsx') &&
-      !file.startsWith('theme') &&
-      file !== 'index.tsx' &&
-      !file.includes('/') // Only root level component files
-  )
+  const wrapperFiles = dirCheckResult.value.files.filter(isWrapperComponent)
 
   for (const wrapperFile of wrapperFiles) {
     const sourcePath = path.join(sourceWrapperDir, wrapperFile)
@@ -248,9 +243,7 @@ export const installTransformedComponents = async (
   }
 
   // Get all catalyst-*.tsx files
-  const catalystFiles = sourceCheckResult.value.files.filter(
-    (file) => file.startsWith('catalyst-') && file.endsWith('.tsx')
-  )
+  const catalystFiles = sourceCheckResult.value.files.filter(isCatalystComponent)
 
   // Transform and copy each component file
   for (const fileName of catalystFiles) {

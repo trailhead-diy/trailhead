@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { createCLI, Ok, Err } from '@trailhead/cli';
-import { createCommand, executeInteractive, type CommandContext } from '@trailhead/cli/command';
-import { prompt, select, confirm, multiselect } from '@trailhead/cli/prompts';
+import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
+import { createCommand, executeInteractive, type CommandContext } from '@esteban-url/trailhead-cli/command';
+import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts';
 
 // Example: Interactive CLI with prompts
 

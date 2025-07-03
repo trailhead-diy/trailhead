@@ -1,8 +1,8 @@
-# High-ROI Effect.ts Patterns for @trailhead/cli Framework
+# High-ROI Effect.ts Patterns for @esteban-url/trailhead-cli Framework
 
 ## Overview
 
-This document outlines functional programming patterns inspired by Effect.ts that could enhance @trailhead/cli without the complexity and bundle size overhead of the full Effect.ts library. These patterns maintain the framework's simplicity while adding powerful capabilities.
+This document outlines functional programming patterns inspired by Effect.ts that could enhance @esteban-url/trailhead-cli without the complexity and bundle size overhead of the full Effect.ts library. These patterns maintain the framework's simplicity while adding powerful capabilities.
 
 ## 1. Tagged Errors with Pattern Matching
 
@@ -403,7 +403,7 @@ if (needsConfig) {
 
 ## Implementation Priority
 
-Based on current @trailhead/cli patterns and needs:
+Based on current @esteban-url/trailhead-cli patterns and needs:
 
 1. **High Priority** (Immediate value, low complexity):
    - Tagged errors with pattern matching

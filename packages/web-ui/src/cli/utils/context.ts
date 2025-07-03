@@ -7,7 +7,7 @@ import { dirname, join } from 'path'
 import { readFileSync, existsSync } from 'fs'
 import type { CLIContext } from './types.js'
 
-// Import local config for sync loading (until @trailhead/cli supports sync)
+// Import local config for sync loading (until @esteban-url/trailhead-cli supports sync)
 import { loadConfigSync } from '../core/config/index.js'
 
 /**

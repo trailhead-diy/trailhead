@@ -8,7 +8,7 @@ import {
   tryRecover,
   createError,
   type CLIError,
-} from '@trailhead/cli/core';
+} from '@esteban-url/trailhead-cli/core';
 
 describe('Error Handlers', () => {
   let consoleErrorSpy: any;

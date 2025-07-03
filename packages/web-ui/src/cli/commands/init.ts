@@ -2,8 +2,8 @@
  * Init Command - Initialize a new Trailhead UI project
  */
 
-import { Ok } from '@trailhead/cli'
-import { createCommand } from '@trailhead/cli/command'
+import { Ok } from '@esteban-url/trailhead-cli'
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
 import { type StrictInitOptions } from '../core/types/command-options.js'
 
 // Use strict typing for better type safety
@@ -13,7 +13,7 @@ export const createInitCommand = () => {
   return createCommand<InitOptions>({
     name: 'init',
     description: 'Initialize a new Trailhead UI project',
-    
+
     options: [
       {
         flags: '-n, --name <name>',
@@ -31,7 +31,7 @@ export const createInitCommand = () => {
       '$ trailhead-ui init --template nextjs',
     ],
 
-    action: async (_options, context) => {
+    action: async (_options: InitOptions, context: CommandContext) => {
       context.logger.info('🚧 Init command coming soon!')
       context.logger.info('For now, use: trailhead-ui install')
       return Ok(undefined)

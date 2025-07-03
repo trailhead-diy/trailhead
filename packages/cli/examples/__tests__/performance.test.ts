@@ -6,7 +6,7 @@ import { tmpdir } from 'os';
 import path from 'path';
 import { createCLIPerformanceMonitor } from '../../src/testing/performance.js';
 
-// Skip example CLI tests - they require @trailhead/cli to be published or dist files built
+// Skip example CLI tests - they require @esteban-url/trailhead-cli to be published or dist files built
 // These tests execute actual CLI files that import from dist/index.js
 // They will pass once the package is published to npm or when using make-standalone.sh script
 describe.skip('CLI Examples Performance Tests', () => {

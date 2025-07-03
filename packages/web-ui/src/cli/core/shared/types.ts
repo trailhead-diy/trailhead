@@ -64,7 +64,7 @@ export interface ConverterDefinition {
 }
 
 // Import Result type from framework
-import type { Result } from '@trailhead/cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
 
 // Re-export Result for backward compatibility with shared modules
 export type { Result }
