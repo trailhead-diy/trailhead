@@ -45,7 +45,7 @@ GitHub Packages is a private package registry that integrates with GitHub reposi
 
 ```json
 {
-  "name": "@trailhead/your-package-name",
+  "name": "@esteban-url/your-package-name",
   "version": "1.0.0",
   "private": true,
   "description": "Your package description",
@@ -53,7 +53,7 @@ GitHub Packages is a private package registry that integrates with GitHub reposi
   "types": "dist/index.d.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "repository": {
     "type": "git",
@@ -74,7 +74,7 @@ GitHub Packages is a private package registry that integrates with GitHub reposi
 Create `.npmrc` in your project root:
 
 ```
-@trailhead:registry=https://npm.pkg.github.com
+@esteban-url:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 always-auth=true
 ```
@@ -100,7 +100,7 @@ set GITHUB_TOKEN=your_personal_access_token
 Edit `~/.npmrc`:
 
 ```
-@trailhead:registry=https://npm.pkg.github.com
+@esteban-url:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=your_personal_access_token
 ```
 
@@ -133,14 +133,14 @@ Edit `~/.npmrc`:
 2. **Configure .npmrc** in consuming project:
 
    ```
-   @trailhead:registry=https://npm.pkg.github.com
+   @esteban-url:registry=https://npm.pkg.github.com
    //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
    ```
 
 3. **Install package:**
 
    ```bash
-   npm install @trailhead/your-package-name
+   npm install @esteban-url/your-package-name
    ```
 
 ### For Multiple Organizations
@@ -148,7 +148,7 @@ Edit `~/.npmrc`:
 If consuming packages from multiple GitHub organizations:
 
 ```
-@trailhead:registry=https://npm.pkg.github.com
+@esteban-url:registry=https://npm.pkg.github.com
 @company:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
@@ -179,7 +179,7 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@trailhead'
+          scope: '@esteban-url'
       
       - name: Install dependencies
         run: npm ci
@@ -288,7 +288,7 @@ npm config list
 npm whoami --registry=https://npm.pkg.github.com
 
 # Test package installation
-npm view @trailhead/your-package-name --registry=https://npm.pkg.github.com
+npm view @esteban-url/your-package-name --registry=https://npm.pkg.github.com
 ```
 
 ## Migration from Public npm
