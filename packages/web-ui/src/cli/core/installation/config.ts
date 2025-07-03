@@ -13,6 +13,7 @@ import type {
   CLIOptions,
 } from './types.js'
 import { Ok, Err, isString, isObject } from './types.js'
+import { isTsxFile } from '../shared/file-filters.js'
 
 // ============================================================================
 // CONFIGURATION DETECTION (Pure Functions)
@@ -439,7 +440,7 @@ export const verifyConfiguration = async (
   const readDirResult = await fs.readDir(config.catalystDir)
   if (!readDirResult.success) return readDirResult
 
-  const hasComponents = readDirResult.value.some((file) => file.endsWith('.tsx'))
+  const hasComponents = readDirResult.value.some(isTsxFile)
   if (!hasComponents) {
     return Err({
       type: 'ConfigurationError',

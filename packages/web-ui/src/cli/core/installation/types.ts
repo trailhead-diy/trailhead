@@ -10,6 +10,10 @@ export type { FrameworkType }
 // CORE DOMAIN TYPES
 // ============================================================================
 
+// Helper type for file filtering predicates
+// Generic type allows filtering arrays of any type, not just strings
+export type FileFilterPredicate<T = string> = (file: T) => boolean
+
 export interface InstallConfig {
   readonly catalystDir: string
   readonly destinationDir: string

@@ -7,6 +7,7 @@ import * as path from 'path'
 import ora from 'ora'
 import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js'
 import { Ok, Err } from './types.js'
+import { isTsxFile } from '../shared/file-filters.js'
 import type { TransformResult } from '../shared/transform-core.js'
 import {
   executeTransforms,
@@ -260,7 +261,7 @@ export const getFilesNeedingConversion = async (
   const readDirResult = await fs.readDir(catalystDir)
   if (!readDirResult.success) return readDirResult
 
-  const files = readDirResult.value.filter((file) => file.endsWith('.tsx'))
+  const files = readDirResult.value.filter(isTsxFile)
   const filesNeedingConversion: string[] = []
 
   for (const file of files) {

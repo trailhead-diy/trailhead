@@ -114,6 +114,9 @@ importers:
 
   packages/web-ui:
     dependencies:
+      '@esteban-url/trailhead-cli':
+        specifier: workspace:*
+        version: link:../cli
       '@headlessui/react':
         specifier: ^2.2.4
         version: 2.2.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -123,9 +126,6 @@ importers:
       '@npmcli/package-json':
         specifier: ^6.2.0
         version: 6.2.0
-      '@trailhead/cli':
-        specifier: workspace:*
-        version: link:../cli
       chalk:
         specifier: ^5.3.0
         version: 5.4.1

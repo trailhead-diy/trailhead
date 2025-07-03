@@ -13,6 +13,7 @@ import type {
   FrameworkType,
 } from './types.js'
 import { Ok, Err } from './types.js'
+import { isTsxFile } from '../shared/file-filters.js'
 import { generateDestinationPaths } from '../filesystem/paths.js'
 import { checkExistingFiles, ensureDirectories } from '../filesystem/operations.js'
 import {
@@ -110,7 +111,7 @@ export const performInstallation = async (
       if (existingFilesResult.value.length > 0) {
         mainSpinner.warn('Found existing files that would be overwritten')
         logger.warning('The following files already exist:')
-        existingFilesResult.value.forEach((file) => logger.warning(`  • ${file}`))
+        existingFilesResult.value.forEach((file: string) => logger.warning(`  • ${file}`))
         logger.warning('Use --force to overwrite existing files')
 
         return Err({
@@ -281,7 +282,7 @@ export const performInstallation = async (
       }
 
       // Log any warnings
-      installData.warnings.forEach((warning) => logger.warning(warning))
+      installData.warnings.forEach((warning: string) => logger.warning(warning))
     } else {
       mainSpinner.succeed('All dependencies already installed')
     }
@@ -482,15 +483,15 @@ export const performDryRunInstallation = async (
   const dirCheckResult = await fs.readDir(catalystDir)
   if (dirCheckResult.success) {
     const catalystFiles = dirCheckResult.value
-      .filter((file) => file.endsWith('.tsx'))
-      .map((file) => `lib/${file}`)
+      .filter(isTsxFile)
+      .map((file: string) => `lib/${file}`)
     plannedFiles.push(...catalystFiles)
 
     // Component wrappers
     const wrapperFiles = dirCheckResult.value
-      .filter((file) => file.endsWith('.tsx'))
-      .map((file) => file.replace('.tsx', ''))
-      .map((name) => `${name}.tsx`)
+      .filter(isTsxFile)
+      .map((file: string) => file.replace('.tsx', ''))
+      .map((name: string) => `${name}.tsx`)
     plannedFiles.push(...wrapperFiles)
   }
 

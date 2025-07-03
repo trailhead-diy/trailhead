@@ -1,6 +1,6 @@
 /**
  * Enhanced type-safe command option definitions for Trailhead UI CLI
- * 
+ *
  * Provides strict typing for all command options with proper validation
  * and better IntelliSense support.
  */
@@ -10,22 +10,12 @@ import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 /**
  * Valid framework types supported by Trailhead UI
  */
-export type FrameworkType = 
-  | 'nextjs' 
-  | 'vite' 
-  | 'redwood-sdk' 
-  | 'generic-react'
+export type FrameworkType = 'nextjs' | 'vite' | 'redwood-sdk' | 'generic-react'
 
 /**
  * Valid dependency installation strategies
  */
-export type DependencyStrategy = 
-  | 'auto' 
-  | 'smart' 
-  | 'selective' 
-  | 'manual' 
-  | 'skip' 
-  | 'force'
+export type DependencyStrategy = 'auto' | 'smart' | 'selective' | 'manual' | 'skip' | 'force'
 
 /**
  * Enhanced install command options with strict typing
@@ -40,6 +30,8 @@ export interface StrictInstallOptions extends CommandOptions {
   readonly overwrite?: boolean
   readonly wrappers?: boolean
   readonly dependencyStrategy?: DependencyStrategy
+  readonly dryRun?: boolean
+  readonly verbose?: boolean
 }
 
 /**
@@ -58,6 +50,7 @@ export interface StrictProfileOptions extends CommandOptions {
   readonly pipeline?: boolean
   readonly simple?: boolean
   readonly memory?: boolean
+  readonly verbose?: boolean
 }
 
 /**
@@ -67,6 +60,7 @@ export interface StrictDevRefreshOptions extends CommandOptions {
   readonly src?: string
   readonly dest?: string
   readonly clean?: boolean
+  readonly verbose?: boolean
 }
 
 /**
