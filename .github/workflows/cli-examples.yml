@@ -103,25 +103,27 @@ jobs:
         working-directory: packages/cli/examples
         run: |
           echo "🔍 Checking example syntax with Node.js..."
-          # Just check syntax, don't run
-          node --check basic-cli.ts || echo "Note: TypeScript syntax not fully supported"
-          node --check advanced-cli.ts || echo "Note: TypeScript syntax not fully supported"
-          node --check interactive-cli.ts || echo "Note: TypeScript syntax not fully supported"
+          # Just check syntax, don't run - check actual example files
+          node --check todo-cli/src/index.ts || echo "Note: TypeScript syntax not fully supported"
+          node --check file-processor/src/index.ts || echo "Note: TypeScript syntax not fully supported"
+          node --check api-client/src/index.ts || echo "Note: TypeScript syntax not fully supported"
 
       - name: Check example file structure
         working-directory: packages/cli/examples
         run: |
           echo "📁 Validating example file structure..."
           
-          # Check that all documented examples exist
-          test -f basic-cli.ts || { echo "❌ basic-cli.ts missing"; exit 1; }
-          test -f advanced-cli.ts || { echo "❌ advanced-cli.ts missing"; exit 1; }
-          test -f interactive-cli.ts || { echo "❌ interactive-cli.ts missing"; exit 1; }
+          # Check that all documented example directories exist
+          test -d todo-cli || { echo "❌ todo-cli directory missing"; exit 1; }
+          test -d file-processor || { echo "❌ file-processor directory missing"; exit 1; }
+          test -d api-client || { echo "❌ api-client directory missing"; exit 1; }
+          test -d cross-platform-cli || { echo "❌ cross-platform-cli directory missing"; exit 1; }
+          test -d project-generator || { echo "❌ project-generator directory missing"; exit 1; }
           
-          # Check test files exist
-          test -f __tests__/basic-cli.test.ts || { echo "❌ basic-cli.test.ts missing"; exit 1; }
-          test -f __tests__/advanced-cli.test.ts || { echo "❌ advanced-cli.test.ts missing"; exit 1; }
-          test -f __tests__/interactive-cli.test.ts || { echo "❌ interactive-cli.test.ts missing"; exit 1; }
+          # Check main example files exist
+          test -f todo-cli/src/index.ts || { echo "❌ todo-cli/src/index.ts missing"; exit 1; }
+          test -f file-processor/src/index.ts || { echo "❌ file-processor/src/index.ts missing"; exit 1; }
+          test -f api-client/src/index.ts || { echo "❌ api-client/src/index.ts missing"; exit 1; }
           
           # Check test runner script
           test -x test-examples.sh || { echo "❌ test-examples.sh missing or not executable"; exit 1; }
