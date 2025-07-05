@@ -8,6 +8,8 @@ overrides:
   glob@<10: '>=11.0.0'
   inflight: npm:@void/noop@^1.0.0
 
+pnpmfileChecksum: sha256-DyO6yjXE0gQbyrSMkuOoJ8hdZjiZkprg72xLxUslCdg=
+
 importers:
 
   .:
