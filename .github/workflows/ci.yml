@@ -126,7 +126,7 @@ jobs:
         continue-on-error: true
 
       - name: Run generator integration tests
-        run: pnpm test:integration --filter=create-trailhead-cli
+        run: pnpm --filter=create-trailhead-cli test:integration
 
   # Security checks
   security:
