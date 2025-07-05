@@ -3,6 +3,10 @@ import { resolve, join, dirname } from 'path';
 import fs from 'fs-extra';
 const { ensureDir, copy, writeFile, chmod } = fs;
 import { fileURLToPath } from 'url';
+import {
+  executeGitCommandSimple,
+  validateGitEnvironment,
+} from '@esteban-url/trailhead-cli/git';
 import { execa } from 'execa';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -402,48 +406,75 @@ async function initializeGitRepository(
 ): Promise<Result<void, CLIError>> {
   const { logger: _logger } = context;
 
-  try {
-    // Validate project path to prevent command injection
-    const pathValidation = validateProjectPath(projectPath, process.cwd());
-    if (!pathValidation.success) {
-      return pathValidation;
-    }
-    const safePath = pathValidation.value;
+  // Validate project path to prevent command injection
+  const pathValidation = validateProjectPath(projectPath, process.cwd());
+  if (!pathValidation.success) {
+    return pathValidation;
+  }
+  const safePath = pathValidation.value;
 
-    const spinner = ora('Initializing git repository...').start();
+  const spinner = ora('Initializing git repository...').start();
 
-    // Use secure command execution with validated path
-    await execa('git', ['init'], {
-      cwd: safePath,
-      stdio: 'pipe', // Prevent output injection
-      shell: false, // Disable shell interpretation
-    });
-
-    await execa('git', ['add', '.'], {
-      cwd: safePath,
-      stdio: 'pipe',
-      shell: false,
-    });
-
-    // Use predefined commit message to prevent injection
-    const commitMessage = 'feat: initial commit with trailhead-cli generator';
-    await execa('git', ['commit', '-m', commitMessage], {
-      cwd: safePath,
-      stdio: 'pipe',
-      shell: false,
-    });
-
-    spinner.succeed('Git repository initialized');
-    return Ok(undefined);
-  } catch (error) {
+  // Check if git is available and environment is valid
+  const envCheck = await validateGitEnvironment({ cwd: safePath });
+  if (!envCheck.success) {
+    spinner.fail('Git not available');
     return Err(
-      createError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
-        cause: error,
-        details:
-          'Git initialization failed - ensure git is installed and the directory is writable',
+      createError('GIT_INIT_FAILED', 'Git environment validation failed', {
+        cause: envCheck.error,
+        details: 'Git is not installed or not available in PATH',
       }),
     );
   }
+
+  // Initialize git repository
+  const initResult = await executeGitCommandSimple(['init'], { cwd: safePath });
+  if (!initResult.success) {
+    spinner.fail('Failed to initialize git repository');
+    return Err(
+      createError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
+        cause: initResult.error,
+        details: 'Git init command failed',
+      }),
+    );
+  }
+
+  // Stage all files
+  const addResult = await executeGitCommandSimple(['add', '.'], {
+    cwd: safePath,
+  });
+  if (!addResult.success) {
+    spinner.fail('Failed to stage files');
+    return Err(
+      createError(
+        'GIT_INIT_FAILED',
+        'Failed to stage files for initial commit',
+        {
+          cause: addResult.error,
+          details: 'Git add command failed',
+        },
+      ),
+    );
+  }
+
+  // Create initial commit
+  const commitMessage = 'feat: initial commit with trailhead-cli generator';
+  const commitResult = await executeGitCommandSimple(
+    ['commit', '-m', commitMessage],
+    { cwd: safePath },
+  );
+  if (!commitResult.success) {
+    spinner.fail('Failed to create initial commit');
+    return Err(
+      createError('GIT_INIT_FAILED', 'Failed to create initial commit', {
+        cause: commitResult.error,
+        details: 'Git commit command failed',
+      }),
+    );
+  }
+
+  spinner.succeed('Git repository initialized');
+  return Ok(undefined);
 }
 
 /**

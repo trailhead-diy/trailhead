@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { rmSync, existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { generateProject } from '../lib/generator.js';
 import {
@@ -12,6 +13,9 @@ import {
   formatValidationReport,
 } from '../lib/template-validator.js';
 import type { ProjectConfig, GeneratorContext } from '../lib/types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe('Generator Structure Tests', () => {
   let tempDir: string;
@@ -89,7 +93,7 @@ describe('Generator Structure Tests', () => {
 
       expect(report).toContain('Template Structure Validation Report');
       expect(report).toContain('✅ VALID');
-      expect(report).toContain('Test Coverage: 100%');
+      expect(report).toContain('**Test Coverage**: 100%');
       expect(report).toContain('BASIC Template');
       expect(report).toContain('ADVANCED Template');
       expect(report).toContain('ENTERPRISE Template');

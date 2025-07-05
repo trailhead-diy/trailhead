@@ -1,4 +1,5 @@
-import { validateGitConfigValue, sanitizeText } from './security.js';
+import { sanitizeText } from './security.js';
+import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
 import type { ProjectConfig, TemplateContext } from './types.js';
 
 /**
@@ -37,60 +38,62 @@ function sanitizePackageName(projectName: string): string {
  * Get git user name with security validation
  */
 async function getGitUser(): Promise<string> {
-  try {
-    const { execa } = await import('execa');
-    const { stdout } = await execa('git', ['config', '--global', 'user.name'], {
-      stdio: 'pipe',
-      shell: false,
-      timeout: 5000, // 5 second timeout
-    });
+  const nameResult = await executeGitCommandSimple(
+    ['config', '--global', 'user.name'],
+    { timeout: 5000 },
+  );
 
-    // Validate git output to prevent injection
-    const validation = validateGitConfigValue(stdout.trim());
-    if (!validation.success) {
-      console.warn('Invalid git user.name, using default');
-      return 'Your Name';
-    }
-
-    return validation.value;
-  } catch (error) {
-    // Don't expose error details for security
+  if (!nameResult.success) {
     return 'Your Name';
   }
+
+  const name = nameResult.value.trim();
+  if (!name) {
+    return 'Your Name';
+  }
+
+  // Basic validation to ensure it's not empty or suspicious
+  if (name.length > 100 || name.includes('\n') || name.includes('\0')) {
+    console.warn('Invalid git user.name, using default');
+    return 'Your Name';
+  }
+
+  return name;
 }
 
 /**
  * Get git user email with security validation
  */
 async function getGitEmail(): Promise<string> {
-  try {
-    const { execa } = await import('execa');
-    const { stdout } = await execa(
-      'git',
-      ['config', '--global', 'user.email'],
-      {
-        stdio: 'pipe',
-        shell: false,
-        timeout: 5000, // 5 second timeout
-      },
-    );
+  const emailResult = await executeGitCommandSimple(
+    ['config', '--global', 'user.email'],
+    { timeout: 5000 },
+  );
 
-    // Validate git output to prevent injection
-    const validation = validateGitConfigValue(stdout.trim());
-    if (!validation.success) {
-      console.warn('Invalid git user.email, using default');
-      return 'your.email@example.com';
-    }
-
-    // Basic email validation
-    const email = validation.value;
-    if (!email.includes('@') || email.length > 254) {
-      return 'your.email@example.com';
-    }
-
-    return email;
-  } catch (error) {
-    // Don't expose error details for security
+  if (!emailResult.success) {
     return 'your.email@example.com';
   }
+
+  const email = emailResult.value.trim();
+  if (!email) {
+    return 'your.email@example.com';
+  }
+
+  // Basic email validation
+  if (!email.includes('@') || email.length > 254 || email.length < 3) {
+    return 'your.email@example.com';
+  }
+
+  // Security validation to prevent dangerous characters
+  if (
+    email.includes('\n') ||
+    email.includes('\0') ||
+    email.includes(';') ||
+    email.includes('|')
+  ) {
+    console.warn('Invalid git user.email, using default');
+    return 'your.email@example.com';
+  }
+
+  return email;
 }

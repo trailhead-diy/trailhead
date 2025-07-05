@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { TemplateCompiler } from '../lib/template-compiler.js';
-import { writeFile, mkdirSync, rmSync } from 'fs';
+import { writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 
@@ -21,10 +21,10 @@ describe('Template Compiler Security', () => {
   describe('Context Sanitization', () => {
     it('should sanitize string values in context', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{projectName}}', () => {});
+      writeFileSync(templatePath, '{{projectName}}');
 
       const maliciousContext = {
-        projectName: 'test\\0malicious',
+        projectName: 'test\0malicious',
       };
 
       const result = await compiler.compileTemplate(
@@ -36,7 +36,7 @@ describe('Template Compiler Security', () => {
 
     it('should sanitize nested object properties', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{user.name}} {{user.email}}', () => {});
+      writeFileSync(templatePath, '{{user.name}} {{user.email}}');
 
       const maliciousContext = {
         user: {
@@ -54,7 +54,7 @@ describe('Template Compiler Security', () => {
 
     it('should handle array values safely', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{#each items}}{{this}}{{/each}}', () => {});
+      writeFileSync(templatePath, '{{#each items}}{{this}}{{/each}}');
 
       const maliciousContext = {
         items: ['item1\\0malicious', 'item2\\x01dangerous'],
@@ -69,7 +69,7 @@ describe('Template Compiler Security', () => {
 
     it('should filter out dangerous property types', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{projectName}} {{func}} {{undef}}', () => {});
+      writeFileSync(templatePath, '{{projectName}} {{func}} {{undef}}');
 
       const maliciousContext = {
         projectName: 'test',
@@ -89,7 +89,7 @@ describe('Template Compiler Security', () => {
   describe('Helper Security', () => {
     it('should sanitize input to string helpers', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{uppercase name}}', () => {});
+      writeFileSync(templatePath, '{{uppercase name}}');
 
       const maliciousContext = {
         name: 'test\\0malicious',
@@ -104,7 +104,7 @@ describe('Template Compiler Security', () => {
 
     it('should handle malicious input to case helpers', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{kebab name}} {{pascal name}}', () => {});
+      writeFileSync(templatePath, '{{kebab name}} {{pascal name}}');
 
       const maliciousContext = {
         name: 'Test\\x01Name',
@@ -119,7 +119,7 @@ describe('Template Compiler Security', () => {
 
     it('should safely handle JSON helper with malicious data', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{{json data}}}', () => {});
+      writeFileSync(templatePath, '{{{json data}}}');
 
       const maliciousContext = {
         data: {
@@ -141,7 +141,7 @@ describe('Template Compiler Security', () => {
   describe('Template Content Security', () => {
     it('should enable HTML escaping by default', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{content}}', () => {});
+      writeFileSync(templatePath, '{{content}}');
 
       const maliciousContext = {
         content: '<script>alert("xss")</script>',
@@ -157,7 +157,7 @@ describe('Template Compiler Security', () => {
 
     it('should operate in strict mode', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{undefinedVariable}}', () => {});
+      writeFileSync(templatePath, '{{undefinedVariable}}');
 
       const context = {
         definedVariable: 'test',
@@ -170,7 +170,7 @@ describe('Template Compiler Security', () => {
 
     it('should prevent partial injection', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{> ../malicious}}', () => {});
+      writeFileSync(templatePath, '{{> ../malicious}}');
 
       const context = {};
 
@@ -184,7 +184,7 @@ describe('Template Compiler Security', () => {
   describe('Cache Security', () => {
     it('should validate cached template integrity', async () => {
       const templatePath = join(tempDir, 'test.hbs');
-      writeFile(templatePath, '{{projectName}}', () => {});
+      writeFileSync(templatePath, '{{projectName}}');
 
       const context = { projectName: 'test' };
 
@@ -193,7 +193,7 @@ describe('Template Compiler Security', () => {
       expect(result1).toBe('test');
 
       // Simulate template modification (cache should be invalidated)
-      writeFile(templatePath, '{{projectName}} modified', () => {});
+      writeFileSync(templatePath, '{{projectName}} modified');
 
       // Second compilation should use new content
       const result2 = await compiler.compileTemplate(templatePath, context);
@@ -235,7 +235,7 @@ describe('Template Compiler Security', () => {
 
     it('should handle malformed templates gracefully', async () => {
       const templatePath = join(tempDir, 'malformed.hbs');
-      writeFile(templatePath, '{{#if unclosed', () => {});
+      writeFileSync(templatePath, '{{#if unclosed');
 
       await expect(async () => {
         await compiler.compileTemplate(templatePath, {});
@@ -245,7 +245,7 @@ describe('Template Compiler Security', () => {
     it('should prevent memory exhaustion attacks', async () => {
       const templatePath = join(tempDir, 'large.hbs');
       const largeTemplate = '{{projectName}}'.repeat(10000);
-      writeFile(templatePath, largeTemplate, () => {});
+      writeFileSync(templatePath, largeTemplate);
 
       const context = { projectName: 'x'.repeat(1000) };
 
@@ -258,7 +258,7 @@ describe('Template Compiler Security', () => {
   describe('Performance Security', () => {
     it('should handle many template compilations efficiently', async () => {
       const templatePath = join(tempDir, 'perf.hbs');
-      writeFile(templatePath, '{{projectName}}-{{version}}', () => {});
+      writeFileSync(templatePath, '{{projectName}}-{{version}}');
 
       const context = { projectName: 'test', version: '1.0.0' };
 
@@ -275,7 +275,7 @@ describe('Template Compiler Security', () => {
 
     it('should prevent ReDoS attacks in helpers', async () => {
       const templatePath = join(tempDir, 'redos.hbs');
-      writeFile(templatePath, '{{kebab evilString}}', () => {});
+      writeFileSync(templatePath, '{{kebab evilString}}');
 
       // String designed to cause catastrophic backtracking
       const evilString = 'a'.repeat(50) + 'X';

@@ -392,58 +392,13 @@ export function sanitizeText(
   sanitized = sanitized.replace(/\0/g, '');
 
   // Remove dangerous control characters (preserving tab, newline, carriage return)
-  sanitized = sanitized.replace(/[\u0001-\u0008]/g, ''); // Control chars 1-8
-  sanitized = sanitized.replace(/[\u000B-\u000C]/g, ''); // Vertical tab, form feed
-  sanitized = sanitized.replace(/[\u000E-\u001F]/g, ''); // Control chars 14-31
-  sanitized = sanitized.replace(/\u007F/g, ''); // DEL character
+  // eslint-disable-next-line no-control-regex -- Intentional sanitization of control characters
+  sanitized = sanitized.replace(/[\x01-\x08]/g, ''); // Control chars 1-8
+  // eslint-disable-next-line no-control-regex -- Intentional sanitization of control characters
+  sanitized = sanitized.replace(/[\x0B\x0C]/g, ''); // Vertical tab, form feed
+  // eslint-disable-next-line no-control-regex -- Intentional sanitization of control characters
+  sanitized = sanitized.replace(/[\x0E-\x1F]/g, ''); // Control chars 14-31
+  sanitized = sanitized.replace(/\x7F/g, ''); // DEL character
 
   return { success: true, value: sanitized.trim() };
-}
-
-/**
- * Validate git configuration value to prevent injection
- */
-export function validateGitConfigValue(
-  value: string,
-): Result<string, CLIError> {
-  if (!value || typeof value !== 'string') {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Git config value is required', {
-        details: 'Git config value must be a string',
-      }),
-    };
-  }
-
-  const trimmed = value.trim();
-
-  // Check for command injection patterns
-  const dangerousPatterns = [
-    /[;&|`$()]/, // Shell metacharacters
-    /[\n\r]/, // Newlines
-    /--/, // Git option prefix
-    /^-/, // Leading dash
-  ];
-
-  for (const pattern of dangerousPatterns) {
-    if (pattern.test(trimmed)) {
-      return {
-        success: false,
-        error: createError('VALIDATION_FAILED', 'Invalid git config value', {
-          details: 'Git config value contains dangerous characters',
-        }),
-      };
-    }
-  }
-
-  if (trimmed.length > 200) {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Git config value too long', {
-        details: 'Git config value must be 200 characters or less',
-      }),
-    };
-  }
-
-  return { success: true, value: trimmed };
 }

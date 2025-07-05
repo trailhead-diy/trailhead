@@ -7,7 +7,6 @@ import {
   validateTemplatePath,
   validateOutputPath,
   sanitizeText,
-  validateGitConfigValue,
 } from '../lib/security.js';
 
 describe('Security Utilities', () => {
@@ -281,52 +280,6 @@ describe('Security Utilities', () => {
     it('should handle custom max length', () => {
       const text = 'a'.repeat(100);
       const result = sanitizeText(text, 50);
-      expect(result.success).toBe(false);
-    });
-  });
-
-  describe('validateGitConfigValue', () => {
-    it('should accept clean git config values', () => {
-      const cleanValues = [
-        'John Doe',
-        'john@example.com',
-        'user.name',
-        'My Project',
-      ];
-
-      cleanValues.forEach((value) => {
-        const result = validateGitConfigValue(value);
-        expect(result.success).toBe(true);
-        expect(result.value).toBe(value);
-      });
-    });
-
-    it('should reject command injection attempts', () => {
-      const dangerousValues = [
-        'user; rm -rf /',
-        'user && echo pwned',
-        'user | cat /etc/passwd',
-        'user `whoami`',
-        'user $(whoami)',
-        'user\\n--help',
-        '--help',
-        '-help',
-      ];
-
-      dangerousValues.forEach((value) => {
-        const result = validateGitConfigValue(value);
-        expect(result.success).toBe(false);
-      });
-    });
-
-    it('should reject newlines', () => {
-      const result = validateGitConfigValue('user\nname');
-      expect(result.success).toBe(false);
-    });
-
-    it('should handle very long values', () => {
-      const longValue = 'a'.repeat(300);
-      const result = validateGitConfigValue(longValue);
       expect(result.success).toBe(false);
     });
   });

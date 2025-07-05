@@ -7,6 +7,11 @@ vi.mock('../lib/generator.js', () => ({
   generateProject: vi.fn().mockResolvedValue({ success: true }),
 }));
 
+// Mock fs module
+vi.mock('fs', () => ({
+  existsSync: vi.fn().mockReturnValue(false),
+}));
+
 describe('Generate Command', () => {
   let testContext: any;
 
@@ -27,16 +32,15 @@ describe('Generate Command', () => {
   });
 
   it('should handle existing directory without force flag', async () => {
-    // Mock existsSync to return true
-    vi.doMock('fs', () => ({
-      existsSync: vi.fn().mockReturnValue(true),
-    }));
+    // Mock existsSync to return true for this test
+    const { existsSync } = await import('fs');
+    vi.mocked(existsSync).mockReturnValueOnce(true);
 
     const result = await generateCommand.execute({}, testContext);
 
     expect(result.success).toBe(false);
     expect(result.error.message).toContain('already exists');
-  }, 10000);
+  });
 
   it('should execute in express mode with options', async () => {
     const options = {
@@ -70,11 +74,17 @@ describe('Generate Command', () => {
       error: new Error('Generator failed'),
     });
 
-    const result = await generateCommand.execute({}, testContext);
+    // Provide options to avoid interactive prompts
+    const options = {
+      template: 'basic',
+      'package-manager': 'pnpm',
+    };
+
+    const result = await generateCommand.execute(options, testContext);
 
     expect(result.success).toBe(false);
     expect(result.error.message).toContain('Generator failed');
-  }, 10000);
+  });
 
   it('should validate template options', async () => {
     const options = {
