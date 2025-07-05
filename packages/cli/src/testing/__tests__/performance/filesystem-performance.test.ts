@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createNodeFileSystem } from '../filesystem/node.js';
-import { createMemoryFileSystem } from '../filesystem/memory.js';
+import { createNodeFileSystem } from '../../../filesystem/node.js';
+import { createMemoryFileSystem } from '../../../filesystem/memory.js';
 import {
   createTestTempDir,
   cleanup,
   createTestStructure,
-} from './test-utils.js';
-import type { FileSystem } from '../filesystem/types.js';
+} from '../../test-utils.js';
+import type { FileSystem } from '../../../filesystem/types.js';
 import path from 'path';
 
 describe('FileSystem Performance Benchmarks', () => {

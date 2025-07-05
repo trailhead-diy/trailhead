@@ -14,8 +14,8 @@ import {
   testPaths,
   createPathRegex,
   normalizePath,
-} from '../../src/testing/index.js';
-import type { FileSystem } from '../../src/filesystem/types.js';
+} from '../index.js';
+import type { FileSystem } from '../../filesystem/types.js';
 
 describe('Cross-Platform Testing Examples', () => {
   let fs: FileSystem;
