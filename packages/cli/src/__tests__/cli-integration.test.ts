@@ -9,7 +9,7 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock console methods
-const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+const _mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('CLI Integration Tests', () => {
   beforeEach(() => {

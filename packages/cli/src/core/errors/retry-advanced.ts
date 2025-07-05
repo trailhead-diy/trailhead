@@ -1,5 +1,5 @@
-import pRetry, { AbortError, type Options as PRetryOptions } from 'p-retry';
-import type { CLIError, Result, AsyncResult } from './types.js';
+import pRetry, { AbortError } from 'p-retry';
+import type { CLIError, AsyncResult } from './types.js';
 import { RetryableError } from './retry-error.js';
 
 /**

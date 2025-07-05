@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { createNodeFileSystem } from '../filesystem/node.js';
-import { createMemoryFileSystem } from '../filesystem/memory.js';
-import { createTestTempDir, cleanup } from './test-utils.js';
-import type { FileSystem } from '../filesystem/types.js';
+import { createNodeFileSystem } from '../../../filesystem/node.js';
+import { createMemoryFileSystem } from '../../../filesystem/memory.js';
+import { createTestTempDir, cleanup } from '../../test-utils.js';
+import type { FileSystem } from '../../../filesystem/types.js';
 import { promises as fs } from 'fs';
 import path from 'path';
 

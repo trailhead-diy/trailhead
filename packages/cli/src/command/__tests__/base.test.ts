@@ -1,12 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { Command } from 'commander';
 import {
   createCommand,
   type CommandOptions,
   type CommandConfig,
 } from '../base.js';
-import type { CommandContext } from '../types.js';
-import { Ok, Err } from '../../core/errors/index.js';
+import { Ok } from '../../core/errors/index.js';
 
 // Mock external dependencies
 vi.mock('ora', () => ({
@@ -22,15 +20,15 @@ vi.mock('@inquirer/prompts', () => ({
 }));
 
 // Mock process.exit
-const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
+const _mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
   throw new Error('process.exit called');
 });
 
 // Mock console methods
-const mockConsoleError = vi
+const _mockConsoleError = vi
   .spyOn(console, 'error')
   .mockImplementation(() => {});
-const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+const _mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('Command Base', () => {
   beforeEach(() => {

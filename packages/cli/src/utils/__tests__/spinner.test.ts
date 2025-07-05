@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock ora before importing our module
 const mockSpinner = {
@@ -58,7 +58,7 @@ describe('Spinner Utilities', () => {
     });
 
     it('should handle empty text', () => {
-      const spinner = createSpinner('');
+      const _spinner = createSpinner('');
 
       expect(mockOra).toHaveBeenCalledWith({
         text: '',

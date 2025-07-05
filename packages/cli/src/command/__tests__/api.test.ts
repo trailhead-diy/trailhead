@@ -10,7 +10,7 @@ import {
 } from '@esteban-url/trailhead-cli/command';
 import { Ok, Err } from '@esteban-url/trailhead-cli';
 import { createError } from '@esteban-url/trailhead-cli/core';
-import { testPaths } from '../../../test-utils/cross-platform-paths.js';
+import { testPaths } from '../../testing/test-utils/cross-platform-paths.js';
 
 vi.mock('inquirer', () => ({
   default: {
