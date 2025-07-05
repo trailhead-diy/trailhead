@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createCLI, Ok, Err, isOk } from '@esteban-url/trailhead-cli';
+import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
 import { createCommand } from '@esteban-url/trailhead-cli/command';
 
 // Example 1: Basic command with options

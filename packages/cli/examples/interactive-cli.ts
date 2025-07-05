@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
+import { createCLI, Ok } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeInteractive,
-  type CommandContext,
 } from '@esteban-url/trailhead-cli/command';
 import {
   prompt,

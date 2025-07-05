@@ -332,7 +332,7 @@ describe('Command Patterns', () => {
       expect(result.success).toBe(false);
       expect(rollback1).toHaveBeenCalled();
       expect(mockContext.logger.error).toHaveBeenCalledWith(
-        'Failed to rollback: operation1',
+        'Failed to rollback: operation1: Error: Rollback failed',
       );
     });
 

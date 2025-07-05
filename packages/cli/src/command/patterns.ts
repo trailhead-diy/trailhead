@@ -98,8 +98,10 @@ export async function executeFileSystemOperations<T>(
               try {
                 await completedOp.rollback();
                 context.logger.debug(`Rolled back: ${completedOp.name}`);
-              } catch (_error) {
-                context.logger.error(`Failed to rollback: ${completedOp.name}`);
+              } catch (error) {
+                context.logger.error(
+                  `Failed to rollback: ${completedOp.name}: ${error}`,
+                );
               }
             }
           }

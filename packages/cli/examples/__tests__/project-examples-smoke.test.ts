@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'child_process';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
@@ -11,7 +11,7 @@ describe.skip('Project Examples Smoke Tests', () => {
   const examplesDir = resolve(__dirname, '..');
 
   // Helper function to ensure dependencies are installed
-  async function ensureDependencies(projectPath: string) {
+  async function ensureDependencies(_projectPath: string) {
     // In the monorepo context, dependencies are hoisted by pnpm
     // The examples rely on the built CLI package, so we just need
     // to ensure the package is built
@@ -365,7 +365,8 @@ describe.skip('Project Examples Smoke Tests', () => {
           }
         } catch (error) {
           console.log(
-            `Project ${dir} not found or has issues - this might be expected`,
+            `Project ${dir} not found or has issues - this might be expected:`,
+            error,
           );
         }
       }
@@ -381,7 +382,8 @@ describe.skip('Project Examples Smoke Tests', () => {
         expect(tsconfig.compilerOptions).toBeDefined();
       } catch (error) {
         console.log(
-          'Examples tsconfig.json not found - this might be expected',
+          'Examples tsconfig.json not found - this might be expected:',
+          error,
         );
       }
     });
