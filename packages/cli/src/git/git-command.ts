@@ -1,13 +1,5 @@
 import { spawn } from 'node:child_process';
-import {
-  Result,
-  Ok,
-  Err,
-  tryCatchAsync,
-  isOk,
-  isErr,
-  CLIError,
-} from '../core/index.js';
+import { Result, Ok, Err, tryCatchAsync, CLIError } from '../core/index.js';
 import { createGitError } from './errors.js';
 import type { GitCommandResult, GitOptions } from './types.js';
 
