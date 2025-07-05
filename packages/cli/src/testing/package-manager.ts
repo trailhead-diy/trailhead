@@ -5,7 +5,7 @@ import { Result, Ok, Err, type CLIError } from '../core/index.js';
  * Package manager configuration
  */
 export interface PackageManager {
-  name: 'pnpm' | 'npm' | 'yarn';
+  name: 'pnpm' | 'npm';
   command: string;
   runCommand: string;
   installCommand: string;
@@ -18,13 +18,12 @@ export interface PackageManager {
 const VERSION_REQUIREMENTS = {
   pnpm: '6.0.0',
   npm: '7.0.0',
-  yarn: '1.22.0',
 } as const;
 
 /**
  * Allowed package manager names for validation
  */
-const ALLOWED_MANAGERS = ['pnpm', 'npm', 'yarn'] as const;
+const ALLOWED_MANAGERS = ['pnpm', 'npm'] as const;
 
 /**
  * Default timeout for package manager commands (5 seconds)
@@ -224,7 +223,7 @@ const meetsVersionRequirement = (
 };
 
 /**
- * Detect available package manager with preference order: pnpm > npm > yarn
+ * Detect available package manager with preference order: pnpm > npm
  * Results are cached for performance. Use FORCE_PACKAGE_MANAGER env var to override.
  */
 export const detectPackageManager = (
@@ -298,7 +297,6 @@ export const detectPackageManager = (
   }> = [
     { name: 'pnpm', command: 'pnpm' },
     { name: 'npm', command: 'npm' },
-    { name: 'yarn', command: 'yarn' },
   ];
 
   const tried: string[] = [];
@@ -345,13 +343,13 @@ export const detectPackageManager = (
   const suggestion =
     versionIssues.length > 0
       ? 'Please update your package manager to meet the minimum version requirements'
-      : 'Please install pnpm (recommended), npm, or yarn';
+      : 'Please install pnpm (recommended) or npm';
 
   const error = Err({
     code: 'NO_PACKAGE_MANAGER',
     message: errorMessage,
     suggestion,
-    details: `You can also set FORCE_PACKAGE_MANAGER=npm (or pnpm/yarn) to override detection`,
+    details: `You can also set FORCE_PACKAGE_MANAGER=npm (or pnpm) to override detection`,
     recoverable: false,
   });
 
@@ -377,12 +375,6 @@ const getManagerConfig = (
       command: 'npm',
       runCommand: 'npm run',
       installCommand: 'npm install',
-    },
-    yarn: {
-      name: 'yarn' as const,
-      command: 'yarn',
-      runCommand: 'yarn run',
-      installCommand: 'yarn install',
     },
   };
 

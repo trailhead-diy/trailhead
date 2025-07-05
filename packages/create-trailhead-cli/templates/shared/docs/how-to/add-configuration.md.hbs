@@ -1,0 +1,416 @@
+---
+type: how-to
+title: How to Add Configuration to Your CLI
+description: Learn how to add type-safe configuration management to your CLI application
+tags: [configuration, zod, validation]
+---
+
+# How to Add Configuration to Your CLI
+
+This guide shows you how to add type-safe configuration management to your {{projectName}} CLI application using Zod schemas and the built-in configuration system.
+
+## Problem
+
+You want to allow users to configure your CLI application through configuration files, environment variables, or command-line options.
+
+## Solution Overview
+
+{{projectName}} provides a built-in configuration system that:
+- Uses Zod for type-safe schema validation
+- Supports multiple configuration sources
+- Provides a clean API for accessing configuration
+
+## Step 1: Define Your Configuration Schema
+
+Create a configuration schema using Zod:
+
+```typescript
+// src/config/schema.ts
+import { z } from 'zod'
+
+export const configSchema = z.object({
+  // Application settings
+  app: z.object({
+    name: z.string().default('{{packageName}}'),
+    version: z.string().default('1.0.0'),
+    debug: z.boolean().default(false)
+  }),
+  
+  // Build settings
+  build: z.object({
+    outDir: z.string().default('dist'),
+    target: z.enum(['node16', 'node18', 'node20']).default('node18'),
+    sourcemap: z.boolean().default(true),
+    minify: z.boolean().default(false)
+  }),
+  
+  // Server settings (if applicable)
+  server: z.object({
+    port: z.number().min(1000).max(65535).default(3000),
+    host: z.string().default('localhost'),
+    ssl: z.boolean().default(false)
+  }).optional(),
+  
+  // External services
+  services: z.object({
+    database: z.object({
+      url: z.string().url().optional(),
+      maxConnections: z.number().positive().default(10)
+    }).optional(),
+    
+    api: z.object({
+      baseUrl: z.string().url(),
+      timeout: z.number().positive().default(5000),
+      retries: z.number().min(0).max(5).default(3)
+    }).optional()
+  }).optional()
+})
+
+export type ProjectConfig = z.infer<typeof configSchema>
+```
+
+## Step 2: Create Configuration Loader
+
+Create a configuration loader that uses the trailhead-cli config system:
+
+```typescript
+// src/config/loader.ts
+import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
+import { configSchema, type ProjectConfig } from './schema.js'
+
+export const projectConfig = defineConfig(configSchema)
+
+export async function loadProjectConfig(): Promise<ProjectConfig> {
+  const result = await loadConfig(projectConfig, '{{packageName}}')
+  
+  if (!result.success) {
+    throw new Error(`Failed to load configuration: ${result.error.message}`)
+  }
+  
+  return result.value
+}
+```
+
+## Step 3: Create Configuration Files
+
+Create default configuration files in your project:
+
+```javascript
+// {{packageName}}.config.js
+export default {
+  app: {
+    name: '{{projectName}}',
+    debug: process.env.NODE_ENV === 'development'
+  },
+  
+  build: {
+    outDir: 'dist',
+    target: 'node18',
+    sourcemap: true,
+    minify: process.env.NODE_ENV === 'production'
+  },
+  
+  server: {
+    port: parseInt(process.env.PORT || '3000'),
+    host: process.env.HOST || 'localhost'
+  }
+}
+```
+
+```json
+// .{{packageName}}rc.json (alternative format)
+{
+  "app": {
+    "name": "{{projectName}}",
+    "debug": false
+  },
+  "build": {
+    "outDir": "dist",
+    "target": "node18"
+  }
+}
+```
+
+## Step 4: Use Configuration in Commands
+
+Use the configuration in your commands:
+
+```typescript
+// src/commands/build.ts
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { loadProjectConfig } from '../config/loader.js'
+
+export const buildCommand = createCommand({
+  name: 'build',
+  description: 'Build the project',
+  options: [
+    {
+      name: 'output',
+      alias: 'o',
+      type: 'string',
+      description: 'Override output directory'
+    },
+    {
+      name: 'minify',
+      type: 'boolean',
+      description: 'Override minify setting'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose } = context
+    
+    try {
+      // Load configuration
+      const config = await loadProjectConfig()
+      
+      // Merge with command options
+      const buildConfig = {
+        ...config.build,
+        outDir: options.output || config.build.outDir,
+        minify: options.minify ?? config.build.minify
+      }
+      
+      if (verbose) {
+        logger.debug('Build configuration:', buildConfig)
+      }
+      
+      logger.info(`Building to ${buildConfig.outDir}...`)
+      logger.info(`Target: ${buildConfig.target}`)
+      logger.info(`Minify: ${buildConfig.minify ? 'enabled' : 'disabled'}`)
+      
+      // Perform build with configuration
+      await performBuild(buildConfig)
+      
+      logger.success('Build completed!')
+      return Ok(undefined)
+      
+    } catch (error) {
+      logger.error(`Build failed: ${error}`)
+      return Err(error instanceof Error ? error : new Error(String(error)))
+    }
+  }
+})
+
+async function performBuild(config: any) {
+  // Your build logic here
+  await new Promise(resolve => setTimeout(resolve, 1000))
+}
+```
+
+## Step 5: Add Configuration Validation Command
+
+Create a command to validate configuration:
+
+```typescript
+// src/commands/config.ts
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { loadProjectConfig, projectConfig } from '../config/loader.js'
+import { configSchema } from '../config/schema.js'
+
+export const configCommand = createCommand({
+  name: 'config',
+  description: 'Manage project configuration',
+  arguments: '[key]',
+  options: [
+    {
+      name: 'validate',
+      alias: 'v',
+      type: 'boolean',
+      description: 'Validate configuration'
+    },
+    {
+      name: 'show',
+      alias: 's',
+      type: 'boolean',
+      description: 'Show current configuration'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, args } = context
+    
+    try {
+      if (options.validate) {
+        // Validate configuration
+        const config = await loadProjectConfig()
+        logger.success('✅ Configuration is valid')
+        return Ok(undefined)
+      }
+      
+      if (options.show || args.length === 0) {
+        // Show configuration
+        const config = await loadProjectConfig()
+        console.log(JSON.stringify(config, null, 2))
+        return Ok(undefined)
+      }
+      
+      // Get specific configuration value
+      const key = args[0]
+      const config = await loadProjectConfig()
+      const value = getConfigValue(config, key)
+      
+      if (value !== undefined) {
+        console.log(value)
+      } else {
+        logger.error(`Configuration key not found: ${key}`)
+        return Err(new Error(`Key not found: ${key}`))
+      }
+      
+      return Ok(undefined)
+      
+    } catch (error) {
+      logger.error(`Configuration error: ${error}`)
+      return Err(error instanceof Error ? error : new Error(String(error)))
+    }
+  }
+})
+
+function getConfigValue(config: any, key: string): any {
+  return key.split('.').reduce((obj, prop) => obj?.[prop], config)
+}
+```
+
+## Step 6: Environment Variable Support
+
+Add environment variable mapping:
+
+```typescript
+// src/config/env.ts
+export const envMapping = {
+  // App settings
+  'DEBUG': 'app.debug',
+  'APP_NAME': 'app.name',
+  
+  // Build settings
+  'BUILD_TARGET': 'build.target',
+  'BUILD_MINIFY': 'build.minify',
+  
+  // Server settings
+  'PORT': 'server.port',
+  'HOST': 'server.host',
+  
+  // Services
+  'DATABASE_URL': 'services.database.url',
+  'API_BASE_URL': 'services.api.baseUrl'
+}
+
+export function applyEnvironmentOverrides(config: any): any {
+  const overrides = { ...config }
+  
+  for (const [envVar, configPath] of Object.entries(envMapping)) {
+    const envValue = process.env[envVar]
+    if (envValue !== undefined) {
+      setConfigValue(overrides, configPath, parseEnvValue(envValue))
+    }
+  }
+  
+  return overrides
+}
+
+function setConfigValue(obj: any, path: string, value: any): void {
+  const keys = path.split('.')
+  const lastKey = keys.pop()!
+  const target = keys.reduce((current, key) => {
+    if (!current[key]) current[key] = {}
+    return current[key]
+  }, obj)
+  target[lastKey] = value
+}
+
+function parseEnvValue(value: string): any {
+  // Parse common value types
+  if (value === 'true') return true
+  if (value === 'false') return false
+  if (/^\d+$/.test(value)) return parseInt(value)
+  if (/^\d+\.\d+$/.test(value)) return parseFloat(value)
+  return value
+}
+```
+
+## Step 7: Add Configuration Tests
+
+Test your configuration system:
+
+```typescript
+// src/config/__tests__/loader.test.ts
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { loadProjectConfig } from '../loader.js'
+
+describe('Configuration', () => {
+  let originalEnv: NodeJS.ProcessEnv
+  
+  beforeEach(() => {
+    originalEnv = { ...process.env }
+  })
+  
+  afterEach(() => {
+    process.env = originalEnv
+  })
+  
+  it('should load default configuration', async () => {
+    const config = await loadProjectConfig()
+    
+    expect(config.app.name).toBe('{{packageName}}')
+    expect(config.build.target).toBe('node18')
+    expect(config.build.outDir).toBe('dist')
+  })
+  
+  it('should override with environment variables', async () => {
+    process.env.PORT = '8080'
+    process.env.BUILD_TARGET = 'node20'
+    
+    const config = await loadProjectConfig()
+    
+    expect(config.server?.port).toBe(8080)
+    expect(config.build.target).toBe('node20')
+  })
+  
+  it('should validate configuration schema', async () => {
+    process.env.PORT = 'invalid'
+    
+    await expect(loadProjectConfig()).rejects.toThrow()
+  })
+})
+```
+
+## Configuration File Discovery
+
+The configuration system will search for configuration files in this order:
+
+1. `{{packageName}}.config.js` (ES module)
+2. `{{packageName}}.config.cjs` (CommonJS)
+3. `.{{packageName}}rc.json` (JSON)
+4. `.{{packageName}}rc.js` (ES module)
+5. `{{packageName}}` field in `package.json`
+
+## Best Practices
+
+### 1. Use Type-Safe Schemas
+Always define schemas with proper validation and defaults.
+
+### 2. Support Multiple Sources
+Allow configuration from files, environment variables, and CLI options.
+
+### 3. Provide Sensible Defaults
+Ensure your CLI works without any configuration.
+
+### 4. Validate Early
+Validate configuration at startup to catch errors early.
+
+### 5. Document Configuration
+Provide clear documentation for all configuration options.
+
+## Troubleshooting
+
+**Configuration not loading**: Check file paths and ensure the configuration file is in a supported format.
+
+**Schema validation errors**: Review your Zod schema and ensure all required fields have defaults or are marked optional.
+
+**Environment variables not working**: Verify the environment variable names match your mapping.
+
+## Related Guides
+
+- [How to Handle Environment Variables](./environment-variables.md)
+- [Configuration Architecture](../explanation/configuration-architecture.md)
+- [Getting Started Tutorial](../tutorials/getting-started.md)

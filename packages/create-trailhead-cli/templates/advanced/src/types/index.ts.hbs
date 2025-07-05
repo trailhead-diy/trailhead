@@ -1,0 +1,139 @@
+/**
+ * Type definitions for {{projectName}}
+ * 
+ * Central location for all TypeScript types and interfaces
+ */
+
+export interface ProjectMetadata {
+  name: string
+  version: string
+  description: string
+  author: string
+  license: string
+}
+
+export interface BuildConfiguration {
+  outDir: string
+  target: string
+  sourcemap: boolean
+  minify: boolean
+  watch?: boolean
+}
+
+export interface ProjectFeatures {
+  linting: boolean
+  testing: boolean
+  typescript: boolean
+  documentation?: boolean
+  monitoring?: boolean
+}
+
+export interface ProjectConfig {
+  metadata: ProjectMetadata
+  build: BuildConfiguration
+  features: ProjectFeatures
+}
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+export interface LogEntry {
+  level: LogLevel
+  message: string
+  timestamp: Date
+  context?: Record<string, unknown>
+}
+
+export interface ValidationRule<T = any> {
+  name: string
+  description: string
+  validate: (input: T) => boolean | string
+  fix?: (input: T) => T
+}
+
+export interface CommandResult<T = void> {
+  success: boolean
+  data?: T
+  error?: Error
+  warnings?: string[]
+  metrics?: {
+    duration: number
+    memoryUsage: number
+  }
+}
+
+export interface FileOperation {
+  type: 'read' | 'write' | 'delete' | 'copy' | 'move'
+  source: string
+  destination?: string
+  content?: string
+  options?: {
+    encoding?: BufferEncoding
+    mode?: number
+    backup?: boolean
+  }
+}
+
+export interface TemplateContext {
+  projectName: string
+  packageName: string
+  version: string
+  author: string
+  description: string
+  features: ProjectFeatures
+  timestamp: string
+}
+
+export interface Plugin {
+  name: string
+  version: string
+  description: string
+  initialize: (config: ProjectConfig) => Promise<void>
+  execute: (context: any) => Promise<CommandResult>
+  cleanup?: () => Promise<void>
+}
+
+export type EventType = 'start' | 'progress' | 'complete' | 'error'
+
+export interface EventPayload<T = any> {
+  type: EventType
+  data?: T
+  timestamp: Date
+  source: string
+}
+
+export interface EventHandler<T = any> {
+  (payload: EventPayload<T>): void | Promise<void>
+}
+
+export class EventEmitter<T = any> {
+  private handlers = new Map<EventType, EventHandler<T>[]>()
+  
+  on(event: EventType, handler: EventHandler<T>): void {
+    if (!this.handlers.has(event)) {
+      this.handlers.set(event, [])
+    }
+    this.handlers.get(event)!.push(handler)
+  }
+  
+  off(event: EventType, handler: EventHandler<T>): void {
+    const handlers = this.handlers.get(event)
+    if (handlers) {
+      const index = handlers.indexOf(handler)
+      if (index > -1) {
+        handlers.splice(index, 1)
+      }
+    }
+  }
+  
+  async emit(event: EventType, data?: T): Promise<void> {
+    const handlers = this.handlers.get(event) || []
+    const payload: EventPayload<T> = {
+      type: event,
+      data,
+      timestamp: new Date(),
+      source: this.constructor.name
+    }
+    
+    await Promise.all(handlers.map(handler => handler(payload)))
+  }
+}

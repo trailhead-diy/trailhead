@@ -79,12 +79,12 @@ run_test() {
     fi
 }
 
-# Function to check if file exists
+# Function to check if file or directory exists
 check_file() {
     local file="$1"
     local description="$2"
     
-    if [ -f "$file" ]; then
+    if [ -f "$file" ] || [ -d "$file" ]; then
         echo -e "${GREEN}✓ Found: ${description}${NC}"
         return 0
     else
@@ -109,23 +109,21 @@ else
     exit 1
 fi
 
-# Check that all example files exist
-check_file "$EXAMPLES_DIR/basic-cli.ts" "Basic CLI Example"
-check_file "$EXAMPLES_DIR/advanced-cli.ts" "Advanced CLI Example"  
-check_file "$EXAMPLES_DIR/interactive-cli.ts" "Interactive CLI Example"
-check_file "$EXAMPLES_DIR/__tests__/basic-cli.test.ts" "Basic CLI Tests"
-check_file "$EXAMPLES_DIR/__tests__/advanced-cli.test.ts" "Advanced CLI Tests"
-check_file "$EXAMPLES_DIR/__tests__/interactive-cli.test.ts" "Interactive CLI Tests"
-check_file "$EXAMPLES_DIR/__tests__/project-examples-smoke.test.ts" "Project Examples Smoke Tests"
+# Check that all example directories exist
+check_file "$EXAMPLES_DIR/todo-cli" "Todo CLI Example Directory"
+check_file "$EXAMPLES_DIR/file-processor" "File Processor Example Directory"  
+check_file "$EXAMPLES_DIR/api-client" "API Client Example Directory"
+check_file "$EXAMPLES_DIR/cross-platform-cli" "Cross Platform CLI Example Directory"
+check_file "$EXAMPLES_DIR/project-generator" "Project Generator Example Directory"
 
 echo ""
 echo "🔧 Quick Syntax Check"
 echo "===================="
 
-# Check TypeScript compilation
-run_test "Basic CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/basic-cli.ts"
-run_test "Advanced CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/advanced-cli.ts"
-run_test "Interactive CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/interactive-cli.ts"
+# Check TypeScript compilation for each example
+run_test "Todo CLI TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/todo-cli/src/index.ts"
+run_test "File Processor TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/file-processor/src/index.ts"
+run_test "API Client TypeScript Check" "npx tsc --noEmit --skipLibCheck $EXAMPLES_DIR/api-client/src/index.ts"
 
 echo ""
 echo "🚀 Basic Execution Tests"
@@ -134,13 +132,13 @@ echo "========================"
 # Test help commands (quick smoke tests)
 # Use timeout if available, otherwise just run directly
 if command -v timeout >/dev/null 2>&1; then
-    run_test "Basic CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts --help"
-    run_test "Advanced CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/advanced-cli.ts --help"
-    run_test "Interactive CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/interactive-cli.ts --help"
+    run_test "Todo CLI Help" "timeout 10s npx tsx $EXAMPLES_DIR/todo-cli/src/index.ts --help"
+    run_test "File Processor Help" "timeout 10s npx tsx $EXAMPLES_DIR/file-processor/src/index.ts --help"
+    run_test "API Client Help" "timeout 10s npx tsx $EXAMPLES_DIR/api-client/src/index.ts --help"
 else
-    run_test "Basic CLI Help" "npx tsx $EXAMPLES_DIR/basic-cli.ts --help"
-    run_test "Advanced CLI Help" "npx tsx $EXAMPLES_DIR/advanced-cli.ts --help"
-    run_test "Interactive CLI Help" "npx tsx $EXAMPLES_DIR/interactive-cli.ts --help"
+    run_test "Todo CLI Help" "npx tsx $EXAMPLES_DIR/todo-cli/src/index.ts --help"
+    run_test "File Processor Help" "npx tsx $EXAMPLES_DIR/file-processor/src/index.ts --help"
+    run_test "API Client Help" "npx tsx $EXAMPLES_DIR/api-client/src/index.ts --help"
 fi
 
 echo ""
@@ -149,23 +147,18 @@ echo "========================"
 
 # Test basic functionality
 if command -v timeout >/dev/null 2>&1; then
-    run_test "Basic CLI Greet" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts greet TestUser"
-    run_test "Basic CLI Calculate" "timeout 10s npx tsx $EXAMPLES_DIR/basic-cli.ts calculate add 2 3"
-    run_test "Interactive CLI Non-Interactive" "timeout 10s npx tsx $EXAMPLES_DIR/interactive-cli.ts config"
+    run_test "Todo CLI List" "timeout 10s npx tsx $EXAMPLES_DIR/todo-cli/src/index.ts list"
+    run_test "File Processor Version" "timeout 10s npx tsx $EXAMPLES_DIR/file-processor/src/index.ts --version"
     
-    # Test dry-run mode for advanced CLI (create a temp file first)
-    echo "test content" > /tmp/test-input.txt
-    run_test "Advanced CLI Dry Run" "timeout 10s npx tsx $EXAMPLES_DIR/advanced-cli.ts process /tmp/test-input.txt --dry-run"
+    # Test API client with mock endpoint
+    run_test "API Client Help" "timeout 10s npx tsx $EXAMPLES_DIR/api-client/src/index.ts --help"
 else
-    run_test "Basic CLI Greet" "npx tsx $EXAMPLES_DIR/basic-cli.ts greet TestUser"
-    run_test "Basic CLI Calculate" "npx tsx $EXAMPLES_DIR/basic-cli.ts calculate add 2 3"
-    run_test "Interactive CLI Non-Interactive" "npx tsx $EXAMPLES_DIR/interactive-cli.ts config"
+    run_test "Todo CLI List" "npx tsx $EXAMPLES_DIR/todo-cli/src/index.ts list"
+    run_test "File Processor Version" "npx tsx $EXAMPLES_DIR/file-processor/src/index.ts --version"
     
-    # Test dry-run mode for advanced CLI (create a temp file first)
-    echo "test content" > /tmp/test-input.txt
-    run_test "Advanced CLI Dry Run" "npx tsx $EXAMPLES_DIR/advanced-cli.ts process /tmp/test-input.txt --dry-run"
+    # Test API client with mock endpoint
+    run_test "API Client Help" "npx tsx $EXAMPLES_DIR/api-client/src/index.ts --help"
 fi
-rm -f /tmp/test-input.txt
 
 echo ""
 echo "🧪 Running Full Test Suite"

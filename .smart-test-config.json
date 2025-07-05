@@ -1,0 +1,38 @@
+{
+  "highRiskPatterns": [
+    "\\.(ts|tsx|js|jsx)$",
+    "tsconfig",
+    "package\\.json$",
+    "turbo\\.json$",
+    "vitest\\.config",
+    "vite\\.config",
+    "tsup\\.config",
+    "lefthook\\.yml$"
+  ],
+  "skipPatterns": [
+    "\\.md$",
+    "README",
+    "CHANGELOG",
+    "LICENSE",
+    "\\.github/",
+    "\\.vscode/",
+    "\\.gitignore$",
+    "\\.prettierrc",
+    "\\.prettierignore",
+    "docs/",
+    "\\.smart-test-config\\.json$"
+  ],
+  "packageMappings": {
+    "cli": "@esteban-url/trailhead-cli",
+    "web-ui": "@esteban-url/trailhead-web-ui",
+    "create-trailhead-cli": "@esteban-url/create-trailhead-cli"
+  },
+  "testCommand": "pnpm test",
+  "monorepoMode": true,
+  "timeout": 120,
+  "maxRetries": 2,
+  "retryFlaky": true,
+  "parallelTesting": true,
+  "description": "Smart test configuration for Trailhead monorepo",
+  "version": "1.0.0"
+}

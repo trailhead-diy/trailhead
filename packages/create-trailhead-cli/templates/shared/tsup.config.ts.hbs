@@ -1,0 +1,51 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  {{#if HAS_SUBPATH_EXPORTS}}
+  // Multiple entry points for each subpath export
+  entry: {
+    index: 'src/index.ts',
+    {{#each SUBPATH_EXPORTS}}
+    '{{this}}/index': 'src/{{this}}/index.ts',
+    {{/each}}
+  },
+  {{else}}
+  entry: ['src/index.ts'],
+  {{/if}}
+  // ESM-only output
+  format: ['esm'],
+  // Generate TypeScript declarations using tsc
+  dts: false, // We'll use tsc separately for declarations
+  // Don't clean output directory - let tsc handle declarations
+  clean: false,
+  // Enable minification in production
+  minify: process.env.NODE_ENV === 'production',
+  // Generate source maps for debugging
+  sourcemap: true,
+  // Enable tree-shaking
+  treeshake: true,
+  // Split code for better caching
+  splitting: {{#if HAS_SUBPATH_EXPORTS}}true{{else}}false{{/if}},
+  // Target modern environments
+  target: 'node18',
+  // Platform-specific optimizations
+  platform: 'node',
+  // Output directory
+  outDir: 'dist',
+  // External dependencies
+  external: [
+    '@esteban-url/trailhead-cli',
+    '@inquirer/prompts',
+    'chalk',
+    'commander',
+    'cosmiconfig',
+    'fs-extra',
+    'glob',
+    'ora',
+    'zod'
+  ],
+  // ESBuild options
+  esbuildOptions: (options) => {
+    options.conditions = ['node'];
+  },
+});

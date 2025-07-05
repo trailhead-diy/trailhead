@@ -23,6 +23,61 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 7. **YAGNI** (You Aren't Gonna Need It) - Avoid over-engineering
 8. **Use semantic tokens** - Never hardcode colors, always use semantic tokens
 9. **No legacy code** - Keep codebase clean and modern until v2.0
+10. **Do One Thing Well** - Every feature, function, and file should have a single, clearly defined purpose
+
+### Development Discipline - MANDATORY WORKFLOW
+
+**CRITICAL**: All development work MUST follow this issue-driven workflow:
+
+#### 1. GitHub Issue First (NO EXCEPTIONS)
+
+- **Every feature** requires a GitHub issue describing specific user problem
+- **No work begins** without documented issue outlining problem and success criteria
+- **Single responsibility**: Each issue must address ONE clearly scoped problem
+- **User-focused**: Issues must describe user problems, not technical solutions
+
+#### 2. Branch Discipline (STRICT ENFORCEMENT)
+
+- **Never work on main branch** - all work happens on feature branches
+- **Feature branches from main only** - never create branches from other branches
+- **Branch-on-branch is a RED FLAG** - indicates scope creep and over-engineering
+- **Immediate cleanup** - delete feature branches after merge
+
+#### 3. Mandatory Workflow Steps
+
+```bash
+# 1. Create GitHub issue first (manual)
+# 2. Create feature branch from main
+git checkout main && git pull origin main
+git checkout -b feature/issue-123-specific-problem
+
+# 3. Work only on that single issue scope
+# 4. PR back to main when complete
+# 5. Delete feature branch immediately after merge
+```
+
+#### 4. Over-Engineering Prevention - REALITY CHECK FRAMEWORK
+
+**STOP AND ASK** before adding any feature, system, or abstraction:
+
+1. **Who requested this specifically?** If answer is "no one", don't build it
+2. **What user problem does this solve today?** If answer is vague, don't build it
+3. **Can this be solved with existing tools/libraries?** If yes, use those instead
+4. **Will this be used by >80% of users?** If no, don't include it
+5. **Can users add this themselves later?** If yes, leave it out
+
+**FORBIDDEN PATTERNS** (Immediate rejection):
+
+- ❌ "Future-proofing" without specific future requirements
+- ❌ Abstractions over abstractions (wrapper libraries)
+- ❌ Enterprise features for individual developers
+- ❌ Monitoring/observability for simple tools
+- ❌ "Best practices" that add complexity without clear benefit
+- ❌ Documentation frameworks for small projects
+- ❌ CI/CD optimizations for <5 contributors
+- ❌ Branches created from other branches (scope creep indicator)
+
+**CLAUDE MUST ACTIVELY RESIST** these requests and suggest simpler alternatives.
 
 ### Testing Philosophy - High-ROI Tests
 
@@ -516,6 +571,11 @@ pnpm build                  # Production build
 - `check-sync` = Check if current branch is up-to-date with main without pulling. Uses @esteban-url/trailhead-cli/git utilities.
 - `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger automated release via GitHub Action, 4) The automation handles version bumping, changelog generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
 - `pubdr` = Publish dry-run: Check what would be published without actually releasing. Runs `pnpm release:dry-run` to preview package contents and verify everything looks correct before actual publish. Use before `pub` to ensure safety.
+- `reality-check` = STOP. Is this actually needed? Ask: Who requested this? What specific problem does it solve? Can existing tools handle this? Will 80%+ of users need this? Be brutally honest about whether this adds value or just complexity.
+- `yagni-audit` = Review current implementation for YAGNI violations. Identify features, abstractions, configurations, or optimizations that aren't used by real users. Recommend removal.
+- `user-first` = Refocus on actual user needs. What do users actually want to accomplish? What's the simplest way to achieve that? Ignore "best practices" that don't serve real user goals.
+- `scope-check` = Verify single responsibility. Does this issue/PR address exactly one problem? Are we trying to do too much? Should this be split into separate issues?
+- `branch-audit` = Check branch structure. Are we working from main? Is this a branch-on-branch (red flag)? Does branch name match issue scope?
 
 ### Documentation Shortcuts
 
@@ -545,9 +605,62 @@ pnpm build                  # Production build
 - `one-line` = Compress answer to single line
 - `verbose` = Full explanation with examples and context (when you need details)
 
+## Assertive Response Templates for Over-Engineering
+
+**When user requests over-engineered features, Claude MUST respond:**
+
+### Template 1: Complexity Challenge
+
+```
+This appears to be over-engineering. Most users need [simple alternative].
+
+The proposed solution adds [specific complexity] without clear user benefit.
+
+Suggested approach: [simpler solution]
+
+If you have specific requirements that justify this complexity, please explain the user problem this solves.
+```
+
+### Template 2: Reality Check Response
+
+```
+REALITY CHECK:
+- Who specifically requested this feature?
+- What user problem does this solve today?
+- Can existing tools handle this?
+- Will 80%+ of users need this?
+
+Based on these questions, I recommend [simpler alternative] instead.
+```
+
+### Template 3: YAGNI Enforcement
+
+```
+This violates YAGNI (You Aren't Gonna Need It).
+
+Current approach creates unnecessary complexity for hypothetical future needs.
+
+Alternative: Start with [minimal solution]. Add complexity only when users specifically request it.
+```
+
+### Template 4: Branch Discipline Warning
+
+```
+Creating a branch from another branch is a RED FLAG indicating scope creep.
+
+This suggests we're trying to do more than originally planned.
+
+Recommended:
+1. Finish current branch and merge to main
+2. Create new branch from main for additional work
+3. Or reconsider if the additional work is actually needed
+```
+
 # important-instruction-reminders
 
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (\*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+**MOST IMPORTANT**: Claude MUST actively resist over-engineering requests using the reality check framework and assertive response templates above. Prevention of complexity is more valuable than removal of complexity.

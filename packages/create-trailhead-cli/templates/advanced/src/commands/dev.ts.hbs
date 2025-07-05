@@ -1,0 +1,142 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
+import { input, confirm } from '@inquirer/prompts'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
+
+interface DevOptions extends CommandOptions {
+  port?: number;
+  host?: string;
+  open?: boolean;
+  interactive?: boolean;
+}
+
+/**
+ * Dev Command
+ * 
+ * Example development command that demonstrates:
+ * - Interactive prompts
+ * - Configuration loading
+ * - Error handling patterns
+ */
+export const devCommand = createCommand<DevOptions>({
+  name: 'dev',
+  description: 'Start development server',
+  options: [
+    {
+      flags: '-p, --port <number>',
+      description: 'Port to serve on',
+      type: 'number',
+      default: 3000
+    },
+    {
+      flags: '-h, --host <host>',
+      description: 'Host to bind to',
+      type: 'string',
+      default: 'localhost'
+    },
+    {
+      flags: '--open',
+      description: 'Open browser automatically',
+      type: 'boolean'
+    },
+    {
+      flags: '-i, --interactive',
+      description: 'Run in interactive mode',
+      type: 'boolean'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose } = context
+    
+    try {
+      logger.info('Starting development server...')
+      
+      let port = options.port || 3000
+      let host = options.host || 'localhost'
+      
+      // Interactive mode
+      if (options.interactive) {
+        logger.info('Running in interactive mode')
+        
+        const portInput = await input({
+          message: 'Port:',
+          default: String(port),
+          validate: (value) => {
+            const num = parseInt(value)
+            return num > 0 && num < 65536 ? true : 'Port must be between 1 and 65535'
+          }
+        })
+        port = parseInt(portInput)
+        
+        host = await input({
+          message: 'Host:',
+          default: host
+        })
+        
+        const shouldOpen = await confirm({
+          message: 'Open browser automatically?',
+          default: options.open ?? false
+        })
+        
+        // Store the result for later use
+        if (shouldOpen) {
+          logger.info('Browser will be opened after server starts')
+        }
+      }
+      
+      if (verbose) {
+        logger.debug(`Server configuration: ${JSON.stringify({ port, host, open: options.open })}`)
+      }
+      
+      // Validate port availability (example)
+      const isPortAvailable = await checkPortAvailable(port)
+      if (!isPortAvailable.success) {
+        logger.error(`Port ${port} is already in use`)
+        return isPortAvailable
+      }
+      
+      logger.info(`Development server starting on http://${host}:${port}`)
+      
+      if (options.open) {
+        logger.info('Opening browser...')
+        // Browser opening logic would go here
+      }
+      
+      // Simulate server startup
+      logger.success('Development server is running!')
+      logger.info('Press Ctrl+C to stop')
+      
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Failed to start development server: ${errorMessage}`)
+      return Err(createError('DEV_SERVER_FAILED', `Dev server failed: ${errorMessage}`, {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+})
+
+/**
+ * Check if port is available (example utility function)
+ */
+async function checkPortAvailable(port: number): Promise<Result<boolean>> {
+  try {
+    // This is a simplified example
+    // In real implementation, you'd check if the port is actually available
+    if (port < 1 || port > 65535) {
+      return Err(createError('INVALID_PORT', 'Invalid port range', {
+        details: 'Port must be between 1 and 65535'
+      }))
+    }
+    
+    return Ok(true)
+  } catch (error) {
+    return Err(createError('PORT_CHECK_FAILED', 'Failed to check port availability', {
+      cause: error
+    }))
+  }
+}
