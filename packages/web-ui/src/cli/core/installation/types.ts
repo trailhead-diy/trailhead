@@ -57,28 +57,8 @@ export interface InstallationSummary {
 // ERROR TYPES FOR BETTER ERROR HANDLING
 // ============================================================================
 
-export type InstallError =
-  | { readonly type: 'ConfigurationError'; readonly message: string; readonly details?: string }
-  | {
-      readonly type: 'VerificationError';
-      readonly message: string;
-      readonly mismatches?: readonly FileMismatch[];
-    }
-  | {
-      readonly type: 'FileSystemError';
-      readonly message: string;
-      readonly path: string;
-      readonly cause?: unknown;
-    }
-  | {
-      readonly type: 'DependencyError';
-      readonly message: string;
-      readonly packageName?: string;
-      readonly cause?: unknown;
-    }
-  | { readonly type: 'ConversionError'; readonly message: string; readonly cause?: unknown }
-  | { readonly type: 'ValidationError'; readonly message: string; readonly field?: string }
-  | { readonly type: 'UserInputError'; readonly message: string; readonly cause?: unknown };
+// Re-export CLIError as InstallError for compatibility
+export type { CLIError as InstallError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // RESULT TYPE FOR FUNCTIONAL ERROR HANDLING
@@ -90,9 +70,8 @@ import { type Result as FrameworkResult } from '@esteban-url/trailhead-cli/core'
 // Re-export Result type for this module
 export type Result<T, E> = FrameworkResult<T, E>;
 
-// Create Ok and Err functions that work with our types
-export const Ok = <T>(value: T): Result<T, never> => ({ success: true, value });
-export const Err = <E>(error: E): Result<never, E> => ({ success: false, error });
+// Re-export Ok and Err from CLI package for compatibility
+export { Ok, Err } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // CLI OPTIONS AND FLAGS
@@ -115,21 +94,8 @@ export interface CLIOptions {
 // DEPENDENCY INJECTION INTERFACES
 // ============================================================================
 
-// Re-export FileSystem from CLI framework and adapt error types
-export type { FileSystem as FrameworkFileSystem } from '@esteban-url/trailhead-cli/filesystem';
-
-export interface FileSystem {
-  access(path: string, mode?: number): Promise<Result<void, InstallError>>;
-  readdir(path: string): Promise<Result<string[], InstallError>>;
-  readFile(path: string): Promise<Result<string, InstallError>>;
-  writeFile(path: string, content: string): Promise<Result<void, InstallError>>;
-  readJson<T>(path: string): Promise<Result<T, InstallError>>;
-  writeJson<T>(path: string, data: T, options?: WriteOptions): Promise<Result<void, InstallError>>;
-  cp(src: string, dest: string, options?: CopyOptions): Promise<Result<void, InstallError>>;
-  ensureDir(path: string): Promise<Result<void, InstallError>>;
-  stat(path: string): Promise<Result<FileStats, InstallError>>;
-  rm(path: string): Promise<Result<void, InstallError>>;
-}
+// Re-export FileSystem from CLI package for compatibility
+export type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 export interface ProcessRunner {
   execSync(command: string, options?: ExecOptions): Promise<Result<string, InstallError>>;

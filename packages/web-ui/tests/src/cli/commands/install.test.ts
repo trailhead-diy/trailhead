@@ -68,7 +68,7 @@ vi.mock('../../../../src/cli/core/installation/config.js', () => ({
 vi.mock('../../../../src/cli/core/filesystem/index.js', () => ({
   createFileSystem: vi.fn().mockReturnValue({
     exists: vi.fn(),
-    readDir: vi.fn(),
+    readdir: vi.fn(),
     readFile: vi.fn(),
     writeFile: vi.fn(),
     copy: vi.fn(),
@@ -80,7 +80,7 @@ vi.mock('../../../../src/cli/core/filesystem/index.js', () => ({
   }),
   createRobustFileSystem: vi.fn().mockReturnValue({
     exists: vi.fn(),
-    readDir: vi.fn(),
+    readdir: vi.fn(),
     readFile: vi.fn(),
     writeFile: vi.fn(),
     copy: vi.fn(),

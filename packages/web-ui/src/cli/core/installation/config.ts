@@ -12,8 +12,13 @@ import type {
   Result,
   CLIOptions,
 } from './types.js';
-import { Ok, Err, isString, isObject } from './types.js';
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
+
+// Helper functions for type checking
+const isString = (value: unknown): value is string => typeof value === 'string';
+const isObject = (value: unknown): value is Record<string, unknown> => 
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /**
  * Helper function to check if a path exists using access
@@ -72,11 +77,13 @@ export const detectCatalystDir = async (
     }
   }
 
-  return Err({
-    type: 'ConfigurationError',
-    message: 'Could not find catalyst-ui-kit directory',
-    details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-  });
+  return Err(createError(
+    'CATALYST_NOT_FOUND',
+    'Could not find catalyst-ui-kit directory',
+    {
+      details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`
+    }
+  ));
 };
 
 /**

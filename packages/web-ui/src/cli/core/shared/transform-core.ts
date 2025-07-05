@@ -66,39 +66,21 @@ export const executeTransforms = async (
  */
 const executeTransformPipeline = async (config: TransformConfig): Promise<TransformResult> => {
   try {
-    // Import the main pipeline (dependency injection pattern)
-    const { runMainPipeline } = await import('../../../transforms/pipelines/main.js');
+    // Import the simplified pipeline (dependency injection pattern)
+    const { runSimplifiedPipeline } = await import('../../../transforms/pipelines/simplified.js');
 
     // Execute pipeline with configuration
-    await runMainPipeline({
-      srcDir: config.srcDir,
-      outDir: config.srcDir,
+    const result = await runSimplifiedPipeline(config.srcDir, {
       verbose: config.verbose,
       dryRun: config.dryRun,
-      skipTransforms: config.skipTransforms,
-      enabledTransforms: config.enabledTransforms,
-      disabledTransforms: config.disabledTransforms,
     });
 
-    // Calculate result statistics
-    const fileCount = await countTransformedFiles(config.srcDir);
-
-    // If transforms were skipped, report 0 conversions
-    if (config.skipTransforms) {
-      return {
-        filesProcessed: fileCount,
-        filesModified: 0,
-        conversionsApplied: 0,
-        errors: [],
-        warnings: [],
-      };
-    }
-
+    // Use result from simplified pipeline
     return {
-      filesProcessed: fileCount,
-      filesModified: config.dryRun ? 0 : fileCount,
-      conversionsApplied: fileCount * 5, // Estimate: avg 5 conversions per file
-      errors: [],
+      filesProcessed: result.processedFiles,
+      filesModified: config.dryRun ? 0 : result.processedFiles,
+      conversionsApplied: result.processedFiles * 2, // Estimate: avg 2 conversions per file in simplified pipeline
+      errors: result.errors.map(e => e.error),
       warnings: [],
     };
   } catch (error) {
@@ -116,7 +98,7 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
  * Pure function: Count files that would be transformed
  * Single responsibility: provide file count statistics
  */
-const countTransformedFiles = async (srcDir: string): Promise<number> => {
+const _countTransformedFiles = async (srcDir: string): Promise<number> => {
   try {
     const fs = await import('fs/promises');
     const files = await fs.readdir(srcDir);

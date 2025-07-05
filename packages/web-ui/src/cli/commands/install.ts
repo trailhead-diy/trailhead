@@ -17,10 +17,9 @@ import {
 } from '../core/installation/index.js';
 import { resolveConfiguration } from '../core/installation/config.js';
 import { detectFramework } from '../core/installation/framework-detection.js';
-import { adaptFrameworkToInstallFS } from '../core/filesystem/adapter.js';
 import { convertInstallResult } from './utils/error-conversion.js';
 import { getTrailheadPackageRoot } from '../utils/context.js';
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import {
   type StrictInstallOptions,
   isValidFramework,
@@ -142,7 +141,7 @@ async function executeInstallation(
 ): Promise<Result<void>> {
   // Create dependencies
   const nodeFS = createNodeFileSystem();
-  const fs = adaptFrameworkToInstallFS(nodeFS);
+  const fs = nodeFS; // Use CLI package filesystem directly
   const logger = context.logger;
 
   try {
@@ -350,9 +349,7 @@ async function handleInstall(
       context.logger.error(`  • ${result.message}`);
     });
     return CliErr(
-      createCLIError(CLI_ERROR_CODES.VALIDATION_ERROR, 'Invalid installation options', {
-        recoverable: true,
-      })
+      createError('VALIDATION_ERROR', 'Invalid installation options')
     );
   }
 

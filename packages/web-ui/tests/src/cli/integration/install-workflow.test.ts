@@ -18,7 +18,7 @@ describe('Install Workflow Integration', () => {
   beforeEach(() => {
     mockFs = {
       exists: vi.fn(),
-      readDir: vi.fn(),
+      readdir: vi.fn(),
       readFile: vi.fn(),
       writeFile: vi.fn(),
       mkdir: vi.fn(),

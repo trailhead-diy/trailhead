@@ -19,7 +19,7 @@ import {
 const createMockDependencies = () => {
   const fs: FileSystem = {
     exists: vi.fn(),
-    readDir: vi.fn(),
+    readdir: vi.fn(),
     readFile: vi.fn(),
     writeFile: vi.fn(),
     readJson: vi.fn(),

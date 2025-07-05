@@ -20,7 +20,7 @@ import { ensureDirectory } from '@esteban-url/trailhead-cli/filesystem';
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
 
 // ============================================================================
@@ -47,13 +47,9 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
       // Check if source exists
       if (!existsSync(config.source)) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.PATH_NOT_FOUND,
-            `Source directory not found: ${config.source}`,
-            {
-              details: 'Please ensure catalyst-ui-kit is installed or provide a valid source path',
-              recoverable: true,
-            }
+          createError(
+            'SOURCE_NOT_FOUND',
+            `Source directory not found: ${config.source}. Please ensure catalyst-ui-kit is installed or provide a valid source path`
           )
         );
       }
@@ -61,10 +57,9 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
       // Source and dest cannot be the same
       if (config.source === config.dest) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.CONFIG_ERROR,
-            'Source and destination cannot be the same directory',
-            { recoverable: true }
+          createError(
+            'INVALID_CONFIGURATION',
+            'Source and destination cannot be the same directory'
           )
         );
       }
@@ -83,10 +78,9 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
         const result = await ensureDirectory(config.dest);
         if (!result.success) {
           return Err(
-            createCLIError(
-              CLI_ERROR_CODES.FS_ERROR,
-              `Failed to create destination directory: ${result.error.message}`,
-              { recoverable: false }
+            createError(
+              'FILESYSTEM_ERROR',
+              `Failed to create destination directory: ${result.error.message}`
             )
           );
         }
@@ -94,10 +88,9 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
         return Ok(config);
       } catch (error) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.FS_ERROR,
-            `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            { recoverable: false }
+          createError(
+            'FILESYSTEM_ERROR',
+            `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
         );
       }
@@ -207,10 +200,9 @@ export const createDevRefreshCommand = () => {
 
       if (!copyResult.success) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.FS_ERROR,
-            `Failed to copy files: ${copyResult.error.message}`,
-            { recoverable: false }
+          createError(
+            'COPY_ERROR',
+            `Failed to copy files: ${copyResult.error.message}`
           )
         );
       }

@@ -164,7 +164,7 @@ describe('Install Workflow - Critical User Journeys', () => {
       expect(configResult.success).toBe(false);
       if (configResult.success) return;
 
-      expect(configResult.error.type).toBe('ConfigurationError');
+      expect(configResult.error.code).toBe('CATALYST_NOT_FOUND');
       expect(configResult.error.message).toContain('Could not find catalyst-ui-kit directory');
     });
 

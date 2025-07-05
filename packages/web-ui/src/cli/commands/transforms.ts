@@ -15,7 +15,7 @@ import {
 } from '../core/shared/transform-core.js';
 import { runTransformPrompts } from '../prompts/transforms.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictTransformsOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
@@ -31,12 +31,12 @@ const createTransformPhases = (_options: TransformsOptions): CommandPhase<Transf
     execute: async (config: TransformConfig) => {
       const validationResult = validateTransformConfig(config);
       if (!validationResult.success) {
-        return Err({
-          code: 'VALIDATION_ERROR',
-          message: 'Invalid transform configuration',
-          details: validationResult.error,
-          recoverable: true,
-        });
+        return Err(
+          createError(
+            'VALIDATION_ERROR',
+            'Invalid transform configuration: ' + validationResult.error
+          )
+        );
       }
       return Ok(config);
     },
@@ -165,10 +165,9 @@ export const createTransformsCommand = () => {
 
                 if (!analysisResult.success) {
                   return Err(
-                    createCLIError(
-                      CLI_ERROR_CODES.DRY_RUN_ERROR,
-                      'Dry run analysis failed: ' + analysisResult.error,
-                      { recoverable: false }
+                    createError(
+                      'DRY_RUN_ERROR',
+                      'Dry run analysis failed: ' + analysisResult.error
                     )
                   );
                 }
@@ -224,10 +223,9 @@ export const createTransformsCommand = () => {
                     cmdContext.logger.info('No files needed transformation.');
                   } else {
                     return Err(
-                      createCLIError(
-                        CLI_ERROR_CODES.TRANSFORM_ERROR,
-                        'Transform failed: ' + transformResult.error,
-                        { recoverable: false }
+                      createError(
+                        'TRANSFORM_ERROR',
+                        'Transform failed: ' + transformResult.error
                       )
                     );
                   }

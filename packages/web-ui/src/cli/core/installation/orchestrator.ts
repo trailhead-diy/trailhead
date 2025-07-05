@@ -15,7 +15,6 @@ import type {
 import { Ok, Err } from './types.js';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
-import { checkExistingFiles, ensureDirectories } from '../filesystem/operations.js';
 import {
   analyzeDependencies,
   installDependenciesSmart,
@@ -105,10 +104,13 @@ export const performInstallation = async (
         ]
       : [config.componentsDir, `${config.componentsDir}/theme`, `${config.componentsDir}/utils`];
 
-    const ensureDirResult = await ensureDirectories(fs, directories);
-    if (!ensureDirResult.success) {
-      progressTracker.stop();
-      return ensureDirResult;
+    // Create directories using CLI filesystem
+    for (const dir of directories) {
+      const ensureDirResult = await fs.ensureDir(dir);
+      if (!ensureDirResult.success) {
+        progressTracker.stop();
+        return ensureDirResult;
+      }
     }
 
     // Step 2: Check for existing files if not forcing
@@ -129,17 +131,20 @@ export const performInstallation = async (
         destPaths.catalystDir,
       ];
 
-      const existingFilesResult = await checkExistingFiles(fs, pathsToCheck);
-      if (!existingFilesResult.success) {
-        progressTracker.stop();
-        return existingFilesResult;
+      // Check for existing files using CLI filesystem
+      const existingFiles: string[] = [];
+      for (const path of pathsToCheck) {
+        const existsResult = await fs.exists(path);
+        if (existsResult.success && existsResult.value) {
+          existingFiles.push(path);
+        }
       }
 
-      if (existingFilesResult.value.length > 0) {
+      if (existingFiles.length > 0) {
         progressTracker.stop();
         logger.warning('Found existing files that would be overwritten');
         logger.warning('The following files already exist:');
-        existingFilesResult.value.forEach((file: string) => logger.warning(`  • ${file}`));
+        existingFiles.forEach((file: string) => logger.warning(`  • ${file}`));
         logger.warning('Use --force to overwrite existing files');
 
         return Err({

@@ -43,7 +43,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "vite dev",
     "preview": "vite preview",
     "clean": "rm -rf dist node_modules/.vite",
