@@ -87,8 +87,8 @@ const backupCommand = createCommand({
     const fs = createFileSystem();
 
     // Check if source exists
-    const sourceExists = await fs.exists(sourcePath);
-    if (!sourceExists.success || !sourceExists.value) {
+    const sourceResult = await fs.access(sourcePath);
+    if (!sourceResult.success) {
       return Err(new Error(`Source path does not exist: ${sourcePath}`));
     }
 
@@ -108,8 +108,8 @@ const backupCommand = createCommand({
     // Use move or copy based on option
     const operation = options.move ? 'move' : 'copy';
     const result = options.move
-      ? await fs.move(sourcePath, backupPath)
-      : await fs.copy(sourcePath, backupPath, { recursive: true });
+      ? await fs.rename(sourcePath, backupPath)
+      : await fs.cp(sourcePath, backupPath, { recursive: true });
 
     if (!result.success) {
       return Err(
@@ -165,7 +165,10 @@ const cleanupCommand = createCommand({
       console.log(`✅ Emptied directory: ${targetPath}`);
     } else {
       // Remove the entire path
-      const removeResult = await fs.remove(targetPath);
+      const removeResult = await fs.rm(targetPath, {
+        recursive: true,
+        force: true,
+      });
       if (!removeResult.success) {
         return Err(
           new Error(`Failed to remove path: ${removeResult.error.message}`),

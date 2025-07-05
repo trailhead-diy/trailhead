@@ -71,24 +71,32 @@ const createMockFileSystem = (scenario: ProjectScenario): FileSystem => {
   const normalizedExistingFiles = new Set(Array.from(existingFiles).map(normalizeMockPath));
 
   return {
-    remove: vi.fn().mockImplementation(async (path: string) => {
+    rm: vi.fn().mockImplementation(async (path: string) => {
       const normalized = normalizeMockPath(path);
       if (normalizedExistingFiles.has(normalized)) {
         normalizedExistingFiles.delete(normalized);
         return Ok(undefined);
       }
       return Err({
-        recoverable: true,
+        type: 'FileSystemError',
         message: 'File not found',
         code: 'ENOENT',
         path,
       });
     }),
-    exists: vi.fn().mockImplementation(async (path: string) => {
+    access: vi.fn().mockImplementation(async (path: string) => {
       const normalized = normalizeMockPath(path);
-      return Ok(normalizedExistingFiles.has(normalized));
+      if (normalizedExistingFiles.has(normalized)) {
+        return Ok(undefined);
+      }
+      return Err({
+        type: 'FileSystemError',
+        message: 'File not found',
+        code: 'ENOENT',
+        path,
+      });
     }),
-    readDir: vi.fn().mockImplementation(async (path: string) => {
+    readdir: vi.fn().mockImplementation(async (path: string) => {
       if (path.includes('catalyst')) {
         return Ok(['button.tsx', 'input.tsx', 'dialog.tsx', 'table.tsx', 'theme-provider.tsx']);
       }
@@ -110,10 +118,10 @@ const createMockFileSystem = (scenario: ProjectScenario): FileSystem => {
             (fileContents as any)[path] || { name: 'test-project', version: '1.0.0' }
         );
       }
-      return Err({ recoverable: true, message: 'File not found', code: 'ENOENT', path });
+      return Err({ type: 'FileSystemError', message: 'File not found', code: 'ENOENT', path });
     }),
     writeJson: vi.fn().mockImplementation(async () => Ok(undefined)),
-    copy: vi.fn().mockImplementation(async () => Ok(undefined)),
+    cp: vi.fn().mockImplementation(async () => Ok(undefined)),
     ensureDir: vi.fn().mockImplementation(async () => Ok(undefined)),
     stat: vi.fn().mockImplementation(async () => Ok({ mtime: new Date(), size: 1000 })),
   };
@@ -595,11 +603,13 @@ describe('Installation Integration Tests', () => {
     it('should handle missing source files gracefully', async () => {
       const mockFs = createMockFileSystem('empty-nextjs');
       // Override to simulate missing source files
-      mockFs.exists = vi.fn().mockImplementation(async (path: string) => {
+      mockFs.access = vi.fn().mockImplementation(async (path: string) => {
         if (path.includes('/trailhead/')) {
-          return Ok(false); // Source files don't exist
+          return Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' }); // Source files don't exist
         }
-        return Ok(path.includes('/project/'));
+        return path.includes('/project/')
+          ? Ok(undefined)
+          : Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' });
       });
 
       const mockLogger = createMockLogger();

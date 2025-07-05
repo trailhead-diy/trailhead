@@ -31,13 +31,11 @@ describe('Testing Mocks', () => {
         'existing.txt': 'content',
       });
 
-      const existsResult = await fs.exists('existing.txt');
+      const existsResult = await fs.access('existing.txt');
       expect(existsResult.success).toBe(true);
-      expect(existsResult.value).toBe(true);
 
-      const notExistsResult = await fs.exists('nonexistent.txt');
-      expect(notExistsResult.success).toBe(true);
-      expect(notExistsResult.value).toBe(false);
+      const notExistsResult = await fs.access('nonexistent.txt');
+      expect(notExistsResult.success).toBe(false);
     });
 
     it('should return error for missing files', async () => {
@@ -60,9 +58,8 @@ describe('Testing Mocks', () => {
       expect(readResult.value).toBe('new content');
 
       // Directory should exist
-      const dirExistsResult = await fs.exists('new');
+      const dirExistsResult = await fs.access('new');
       expect(dirExistsResult.success).toBe(true);
-      expect(dirExistsResult.value).toBe(true);
     });
 
     it('should handle directory operations', async () => {
@@ -71,9 +68,8 @@ describe('Testing Mocks', () => {
       const mkdirResult = await fs.mkdir('testdir');
       expect(mkdirResult.success).toBe(true);
 
-      const existsResult = await fs.exists('testdir');
+      const existsResult = await fs.access('testdir');
       expect(existsResult.success).toBe(true);
-      expect(existsResult.value).toBe(true);
     });
 
     it('should list directory contents', async () => {
@@ -96,7 +92,7 @@ describe('Testing Mocks', () => {
         'source.txt': 'original content',
       });
 
-      const copyResult = await fs.copy('source.txt', 'destination.txt');
+      const copyResult = await fs.cp('source.txt', 'destination.txt');
       expect(copyResult.success).toBe(true);
 
       const readResult = await fs.readFile('destination.txt');
@@ -132,14 +128,12 @@ describe('Testing Mocks', () => {
       const ensureResult = await fs.ensureDir('deep/nested/path');
       expect(ensureResult.success).toBe(true);
 
-      const existsResult = await fs.exists('deep/nested/path');
+      const existsResult = await fs.access('deep/nested/path');
       expect(existsResult.success).toBe(true);
-      expect(existsResult.value).toBe(true);
 
       // Parent directories should also exist
-      const parentExistsResult = await fs.exists('deep');
+      const parentExistsResult = await fs.access('deep');
       expect(parentExistsResult.success).toBe(true);
-      expect(parentExistsResult.value).toBe(true);
     });
 
     it('should provide test helper methods', () => {
@@ -188,9 +182,8 @@ describe('Testing Mocks', () => {
 
       fs.addDirectory('new/directory');
 
-      const result = await fs.exists('new/directory');
+      const result = await fs.access('new/directory');
       expect(result.success).toBe(true);
-      expect(result.value).toBe(true);
     });
 
     it('should simulate errors when enabled', async () => {
@@ -283,13 +276,11 @@ describe('Testing Mocks', () => {
     });
 
     it('should have expected directory structure', async () => {
-      const distExists = await fs.exists('project/dist');
+      const distExists = await fs.access('project/dist');
       expect(distExists.success).toBe(true);
-      expect(distExists.value).toBe(true);
 
-      const nodeModulesExists = await fs.exists('project/node_modules');
+      const nodeModulesExists = await fs.access('project/node_modules');
       expect(nodeModulesExists.success).toBe(true);
-      expect(nodeModulesExists.value).toBe(true);
     });
   });
 

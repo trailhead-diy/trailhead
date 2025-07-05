@@ -1,8 +1,8 @@
 import type {
   FileSystem,
-  MoveOptions,
   MkdirOptions,
   CopyOptions,
+  RmOptions,
 } from './types.js';
 import { createNodeFileSystem } from './node.js';
 import { createMemoryFileSystem } from './memory.js';
@@ -42,7 +42,7 @@ function createDryRunFileSystem(fs: FileSystem): FileSystem {
       console.log(`[DRY RUN] Would create directory: ${path}`);
       return { success: true, value: undefined };
     },
-    copy: async (src: string, dest: string, _options?: CopyOptions) => {
+    cp: async (src: string, dest: string, _options?: CopyOptions) => {
       console.log(`[DRY RUN] Would copy: ${src} -> ${dest}`);
       return { success: true, value: undefined };
     },
@@ -50,13 +50,36 @@ function createDryRunFileSystem(fs: FileSystem): FileSystem {
       console.log(`[DRY RUN] Would write JSON to: ${path}`);
       return { success: true, value: undefined };
     },
-    move: async (src: string, dest: string, _options?: MoveOptions) => {
-      console.log(`[DRY RUN] Would move: ${src} -> ${dest}`);
+    rename: async (src: string, dest: string) => {
+      console.log(`[DRY RUN] Would rename: ${src} -> ${dest}`);
       return { success: true, value: undefined };
     },
-    remove: async (path: string) => {
+    rm: async (path: string, _options?: RmOptions) => {
       console.log(`[DRY RUN] Would remove: ${path}`);
       return { success: true, value: undefined };
+    },
+    access: async (path: string, _mode?: number) => {
+      console.log(`[DRY RUN] Would check access: ${path}`);
+      return { success: true, value: undefined };
+    },
+    stat: async (path: string) => {
+      console.log(`[DRY RUN] Would stat: ${path}`);
+      return {
+        success: true,
+        value: { size: 0, isFile: true, isDirectory: false, mtime: new Date() },
+      };
+    },
+    readdir: async (path: string) => {
+      console.log(`[DRY RUN] Would read directory: ${path}`);
+      return { success: true, value: [] };
+    },
+    ensureDir: async (path: string) => {
+      console.log(`[DRY RUN] Would ensure directory: ${path}`);
+      return { success: true, value: undefined };
+    },
+    readJson: async <T = any>(path: string) => {
+      console.log(`[DRY RUN] Would read JSON: ${path}`);
+      return { success: true, value: {} as T };
     },
     emptyDir: async (path: string) => {
       console.log(`[DRY RUN] Would empty directory: ${path}`);

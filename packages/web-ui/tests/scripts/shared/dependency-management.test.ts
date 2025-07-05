@@ -368,22 +368,21 @@ describe('Dependency Management - High ROI Tests', () => {
 
       beforeEach(() => {
         mockFs = {
-          exists: vi.fn(),
-          readDir: vi.fn(),
+          access: vi.fn(),
+          readdir: vi.fn(),
           readFile: vi.fn(),
           writeFile: vi.fn(),
           readJson: vi.fn(),
           writeJson: vi.fn(),
-          copy: vi.fn(),
+          cp: vi.fn(),
           ensureDir: vi.fn(),
           stat: vi.fn(),
-          move: vi.fn(),
-          remove: vi.fn(),
+          rm: vi.fn(),
         };
       });
 
       it('should return true when all dependencies exist', async () => {
-        vi.mocked(mockFs.exists).mockResolvedValue({ success: true, value: true });
+        vi.mocked(mockFs.access).mockResolvedValue({ success: true, value: undefined });
 
         const result = await checkKeyDependencies(mockFs, '/project', ['react', 'next']);
 
@@ -392,14 +391,14 @@ describe('Dependency Management - High ROI Tests', () => {
           expect(result.value).toBe(true);
         }
 
-        expect(mockFs.exists).toHaveBeenCalledWith('/project/node_modules/react');
-        expect(mockFs.exists).toHaveBeenCalledWith('/project/node_modules/next');
+        expect(mockFs.access).toHaveBeenCalledWith('/project/node_modules/react');
+        expect(mockFs.access).toHaveBeenCalledWith('/project/node_modules/next');
       });
 
       it('should return false when any dependency is missing', async () => {
-        vi.mocked(mockFs.exists)
-          .mockResolvedValueOnce({ success: true, value: true }) // react exists
-          .mockResolvedValueOnce({ success: true, value: false }); // next missing
+        vi.mocked(mockFs.access)
+          .mockResolvedValueOnce({ success: true, value: undefined }) // react exists
+          .mockResolvedValueOnce({ success: false, error: { code: 'ENOENT' } }); // next missing
 
         const result = await checkKeyDependencies(mockFs, '/project', ['react', 'next']);
 
@@ -415,7 +414,7 @@ describe('Dependency Management - High ROI Tests', () => {
           message: 'Permission denied',
           path: '/project/node_modules/react',
         };
-        vi.mocked(mockFs.exists).mockResolvedValue({ success: false, error: fsError });
+        vi.mocked(mockFs.access).mockResolvedValue({ success: false, error: fsError });
 
         const result = await checkKeyDependencies(mockFs, '/project', ['react']);
 
@@ -460,17 +459,16 @@ describe('Dependency Management - High ROI Tests', () => {
 
       beforeEach(() => {
         mockFs = {
-          exists: vi.fn(),
-          readDir: vi.fn(),
+          access: vi.fn(),
+          readdir: vi.fn(),
           readFile: vi.fn(),
           writeFile: vi.fn(),
           readJson: vi.fn(),
           writeJson: vi.fn(),
-          copy: vi.fn(),
+          cp: vi.fn(),
           ensureDir: vi.fn(),
           stat: vi.fn(),
-          move: vi.fn(),
-          remove: vi.fn(),
+          rm: vi.fn(),
         };
       });
 

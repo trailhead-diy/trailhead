@@ -280,6 +280,26 @@ export const isInstallationNeeded = (
 };
 
 /**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (
+  fs: FileSystem,
+  path: string
+): Promise<Result<boolean, DependencyError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err(DependencyErr('Failed to check path existence', result.error));
+  }
+};
+
+/**
  * Check if key dependencies exist in node_modules
  */
 export const checkKeyDependencies = async (
@@ -290,7 +310,7 @@ export const checkKeyDependencies = async (
   try {
     for (const dep of dependencies) {
       const depPath = `${projectRoot}/node_modules/${dep}`;
-      const existsResult = await fs.exists(depPath);
+      const existsResult = await pathExists(fs, depPath);
 
       if (!existsResult.success) {
         return Err(DependencyErr(`Failed to check dependency: ${dep}`, existsResult.error));

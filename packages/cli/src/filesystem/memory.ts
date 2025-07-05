@@ -1,4 +1,4 @@
-import type { FileSystem, MoveOptions } from './types.js';
+import type { FileSystem } from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
 import { posix, win32 } from 'path';
 
@@ -54,11 +54,6 @@ export function createMemoryFileSystem(
   }
 
   return {
-    async exists(path: string) {
-      const normalizedPath = normalizePath(path);
-      return Ok(files.has(normalizedPath) || directories.has(normalizedPath));
-    },
-
     async readFile(path: string) {
       const normalizedPath = normalizePath(path);
       const content = files.get(normalizedPath);
@@ -141,29 +136,6 @@ export function createMemoryFileSystem(
       return Ok(entries);
     },
 
-    async copy(src: string, dest: string) {
-      const normalizedSrc = normalizePath(src);
-      const normalizedDest = normalizePath(dest);
-      const content = files.get(normalizedSrc);
-      if (content === undefined) {
-        return Err({
-          code: 'ENOENT',
-          message: `Source file not found: ${src}`,
-          path: src,
-          recoverable: true,
-        });
-      }
-      files.set(normalizedDest, content);
-
-      // Add parent directories for dest
-      const parts = normalizedDest.split('/');
-      for (let i = 1; i < parts.length; i++) {
-        directories.add(parts.slice(0, i).join('/'));
-      }
-
-      return Ok(undefined);
-    },
-
     async ensureDir(path: string) {
       return this.mkdir(path, { recursive: true });
     },
@@ -197,45 +169,79 @@ export function createMemoryFileSystem(
       return this.writeFile(path, content);
     },
 
-    async move(src: string, dest: string, options: MoveOptions = {}) {
-      const normalizedSrc = normalizePath(src);
-      const normalizedDest = normalizePath(dest);
+    async emptyDir(path: string) {
+      const normalizedPath = normalizePath(path);
 
-      if (!files.has(normalizedSrc)) {
-        return Err({
-          code: 'ENOENT',
-          message: `Source file not found: ${src}`,
-          path: src,
-          recoverable: true,
-        });
+      // Create directory if it doesn't exist
+      directories.add(normalizedPath);
+
+      // Remove all files in this directory
+      const prefix = normalizedPath + '/';
+      for (const filePath of files.keys()) {
+        if (filePath.startsWith(prefix)) {
+          files.delete(filePath);
+        }
       }
 
-      if (files.has(normalizedDest) && !options.overwrite) {
-        return Err({
-          code: 'EEXIST',
-          message: `Destination already exists: ${dest}`,
-          path: dest,
-          recoverable: true,
-        });
-      }
-
-      const content = files.get(normalizedSrc)!;
-      files.set(normalizedDest, content);
-      files.delete(normalizedSrc);
-
-      // Update directory structure
-      const destDir = normalizedDest.substring(
-        0,
-        normalizedDest.lastIndexOf('/'),
-      );
-      if (destDir) {
-        directories.add(destDir);
+      // Remove all subdirectories
+      for (const dir of directories) {
+        if (dir.startsWith(prefix)) {
+          directories.delete(dir);
+        }
       }
 
       return Ok(undefined);
     },
 
-    async remove(path: string) {
+    async outputFile(path: string, content: string) {
+      // This is just like writeFile but ensures parent directories exist
+      return this.writeFile(path, content);
+    },
+
+    // New node:fs/promises compatible methods
+    async access(path: string, _mode?: number) {
+      const normalizedPath = normalizePath(path);
+      if (files.has(normalizedPath) || directories.has(normalizedPath)) {
+        return Ok(undefined);
+      }
+      return Err({
+        code: 'ENOENT',
+        message: `Path not found: ${path}`,
+        path,
+        recoverable: true,
+      });
+    },
+
+    async stat(path: string) {
+      const normalizedPath = normalizePath(path);
+      if (files.has(normalizedPath)) {
+        const content = files.get(normalizedPath) || '';
+        return Ok({
+          size: content.length,
+          isFile: true,
+          isDirectory: false,
+          mtime: new Date(),
+        });
+      } else if (directories.has(normalizedPath)) {
+        return Ok({
+          size: 0,
+          isFile: false,
+          isDirectory: true,
+          mtime: new Date(),
+        });
+      }
+      return Err({
+        code: 'ENOENT',
+        message: `Path not found: ${path}`,
+        path,
+        recoverable: true,
+      });
+    },
+
+    async rm(
+      path: string,
+      _options?: { recursive?: boolean; force?: boolean },
+    ) {
       const normalizedPath = normalizePath(path);
 
       // Remove file if it exists
@@ -274,33 +280,51 @@ export function createMemoryFileSystem(
       });
     },
 
-    async emptyDir(path: string) {
-      const normalizedPath = normalizePath(path);
-
-      // Create directory if it doesn't exist
-      directories.add(normalizedPath);
-
-      // Remove all files in this directory
-      const prefix = normalizedPath + '/';
-      for (const filePath of files.keys()) {
-        if (filePath.startsWith(prefix)) {
-          files.delete(filePath);
-        }
+    async cp(src: string, dest: string, _options?: any) {
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      const content = files.get(normalizedSrc);
+      if (content === undefined) {
+        return Err({
+          code: 'ENOENT',
+          message: `Source file not found: ${src}`,
+          path: src,
+          recoverable: true,
+        });
       }
+      files.set(normalizedDest, content);
 
-      // Remove all subdirectories
-      for (const dir of directories) {
-        if (dir.startsWith(prefix)) {
-          directories.delete(dir);
-        }
+      // Add parent directories for dest
+      const parts = normalizedDest.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
       }
 
       return Ok(undefined);
     },
 
-    async outputFile(path: string, content: string) {
-      // This is just like writeFile but ensures parent directories exist
-      return this.writeFile(path, content);
+    async rename(src: string, dest: string) {
+      const normalizedSrc = normalizePath(src);
+      const normalizedDest = normalizePath(dest);
+      const content = files.get(normalizedSrc);
+      if (content === undefined) {
+        return Err({
+          code: 'ENOENT',
+          message: `Source file not found: ${src}`,
+          path: src,
+          recoverable: true,
+        });
+      }
+      files.set(normalizedDest, content);
+      files.delete(normalizedSrc);
+
+      // Add parent directories for dest
+      const parts = normalizedDest.split('/');
+      for (let i = 1; i < parts.length; i++) {
+        directories.add(parts.slice(0, i).join('/'));
+      }
+
+      return Ok(undefined);
     },
 
     // Test helpers

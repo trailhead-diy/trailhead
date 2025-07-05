@@ -7,6 +7,28 @@ import type { FileSystem, Result, InstallError } from '../installation/types.js'
 import { Ok, Err } from '../installation/types.js';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
 
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err({
+      type: 'FileSystemError',
+      message: 'Failed to check path existence',
+      path,
+      cause: result.error,
+    });
+  }
+};
+
 // ============================================================================
 // FILE EXISTENCE CHECKING
 // ============================================================================
@@ -21,7 +43,7 @@ export const checkExistingFiles = async (
   const existingFiles: string[] = [];
 
   for (const filePath of paths) {
-    const existsResult = await fs.exists(filePath);
+    const existsResult = await pathExists(fs, filePath);
     if (!existsResult.success) return existsResult;
 
     if (existsResult.value) {
@@ -39,14 +61,14 @@ export const checkDirectoryContents = async (
   fs: FileSystem,
   dirPath: string
 ): Promise<Result<{ exists: boolean; files: string[] }, InstallError>> => {
-  const existsResult = await fs.exists(dirPath);
+  const existsResult = await pathExists(fs, dirPath);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
     return Ok({ exists: false, files: [] });
   }
 
-  const readDirResult = await fs.readDir(dirPath);
+  const readDirResult = await fs.readdir(dirPath);
   if (!readDirResult.success) return readDirResult;
 
   return Ok({ exists: true, files: readDirResult.value });
@@ -103,7 +125,7 @@ export const copyFile = async (
   options?: CopyFileOptions
 ): Promise<Result<void, InstallError>> => {
   // Check if source exists
-  const existsResult = await fs.exists(src);
+  const existsResult = await pathExists(fs, src);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -120,7 +142,7 @@ export const copyFile = async (
   }
 
   // Check if destination exists
-  const destExistsResult = await fs.exists(dest);
+  const destExistsResult = await pathExists(fs, dest);
   if (!destExistsResult.success) return destExistsResult;
 
   if (destExistsResult.value && !options?.overwrite) {
@@ -141,7 +163,7 @@ export const copyFile = async (
   }
 
   // Direct copy
-  return fs.copy(src, dest, { overwrite: options?.overwrite });
+  return fs.cp(src, dest, { overwrite: options?.overwrite });
 };
 
 /**
@@ -176,7 +198,7 @@ export const copyDirectory = async (
   options?: CopyFileOptions
 ): Promise<Result<string[], InstallError>> => {
   // Check source exists
-  const existsResult = await fs.exists(src);
+  const existsResult = await pathExists(fs, src);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -192,7 +214,7 @@ export const copyDirectory = async (
   if (!ensureDirResult.success) return ensureDirResult;
 
   // Read source directory
-  const readDirResult = await fs.readDir(src);
+  const readDirResult = await fs.readdir(src);
   if (!readDirResult.success) return readDirResult;
 
   const copiedFiles: string[] = [];
@@ -253,13 +275,13 @@ export const writeFileWithBackup = async (
   backupSuffix: string = '.backup'
 ): Promise<Result<void, InstallError>> => {
   // Check if file exists
-  const existsResult = await fs.exists(filePath);
+  const existsResult = await pathExists(fs, filePath);
   if (!existsResult.success) return existsResult;
 
   // Create backup if file exists
   if (existsResult.value) {
     const backupPath = `${filePath}${backupSuffix}`;
-    const copyResult = await fs.copy(filePath, backupPath, { overwrite: true });
+    const copyResult = await fs.cp(filePath, backupPath, { overwrite: true });
     if (!copyResult.success) return copyResult;
   }
 
@@ -307,7 +329,7 @@ export const executeBatchOperations = async (
               message: 'Copy operation requires src and dest',
             });
           }
-          const copyResult = await fs.copy(op.src, op.dest, { overwrite: true });
+          const copyResult = await fs.cp(op.src, op.dest, { overwrite: true });
           if (!copyResult.success) return copyResult;
           completed.push(`Copied ${op.src} to ${op.dest}`);
           break;
@@ -331,11 +353,11 @@ export const executeBatchOperations = async (
               message: 'Delete operation requires path',
             });
           }
-          const existsResult = await fs.exists(op.path);
+          const existsResult = await pathExists(fs, op.path);
           if (!existsResult.success) return existsResult;
 
           if (existsResult.value) {
-            const removeResult = await fs.remove(op.path);
+            const removeResult = await fs.rm(op.path);
             if (!removeResult.success) return removeResult;
             completed.push(`Deleted ${op.path}`);
           }

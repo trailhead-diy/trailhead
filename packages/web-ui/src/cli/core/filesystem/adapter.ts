@@ -1,5 +1,5 @@
 /**
- * FileSystem adapter to bridge between different FileSystem interfaces
+ * FileSystem adapter to bridge between CLI framework and web-ui interfaces
  */
 
 import type { FileSystem as FrameworkFileSystem } from '@esteban-url/trailhead-cli/filesystem';
@@ -10,7 +10,7 @@ import type {
 } from '../installation/types.js';
 
 /**
- * Convert shared FileSystemError to InstallError
+ * Convert framework FileSystemError to InstallError
  */
 function toInstallError(error: any): InstallError {
   return {
@@ -24,8 +24,16 @@ function toInstallError(error: any): InstallError {
 /**
  * Adapt framework FileSystem to installation FileSystem interface
  */
-export function adaptSharedToInstallFS(frameworkFS: FrameworkFileSystem): InstallFileSystem {
+export function adaptFrameworkToInstallFS(frameworkFS: FrameworkFileSystem): InstallFileSystem {
   return {
+    access: async (path: string, mode?: number): Promise<Result<void, InstallError>> => {
+      const result = await frameworkFS.access(path, mode);
+      if (!result.success) {
+        return { success: false, error: toInstallError(result.error) };
+      }
+      return { success: true, value: undefined };
+    },
+
     readFile: async (path: string): Promise<Result<string, InstallError>> => {
       const result = await frameworkFS.readFile(path);
       if (!result.success) {
@@ -42,14 +50,6 @@ export function adaptSharedToInstallFS(frameworkFS: FrameworkFileSystem): Instal
       return { success: true, value: undefined };
     },
 
-    exists: async (path: string): Promise<Result<boolean, InstallError>> => {
-      const result = await frameworkFS.exists(path);
-      if (!result.success) {
-        return { success: false, error: toInstallError(result.error) };
-      }
-      return { success: true, value: result.value };
-    },
-
     ensureDir: async (path: string): Promise<Result<void, InstallError>> => {
       const result = await frameworkFS.ensureDir(path);
       if (!result.success) {
@@ -58,7 +58,7 @@ export function adaptSharedToInstallFS(frameworkFS: FrameworkFileSystem): Instal
       return { success: true, value: undefined };
     },
 
-    readDir: async (path: string): Promise<Result<string[], InstallError>> => {
+    readdir: async (path: string): Promise<Result<string[], InstallError>> => {
       const result = await frameworkFS.readdir(path);
       if (!result.success) {
         return { success: false, error: toInstallError(result.error) };
@@ -66,12 +66,12 @@ export function adaptSharedToInstallFS(frameworkFS: FrameworkFileSystem): Instal
       return { success: true, value: result.value };
     },
 
-    copy: async (
+    cp: async (
       source: string,
       dest: string,
       options?: any
     ): Promise<Result<void, InstallError>> => {
-      const result = await frameworkFS.copy(source, dest, options);
+      const result = await frameworkFS.cp(source, dest, options);
       if (!result.success) {
         return { success: false, error: toInstallError(result.error) };
       }
@@ -98,25 +98,20 @@ export function adaptSharedToInstallFS(frameworkFS: FrameworkFileSystem): Instal
       return { success: true, value: undefined };
     },
 
-    remove: async (path: string): Promise<Result<void, InstallError>> => {
-      // Framework FileSystem doesn't have remove method
-      return {
-        success: false,
-        error: toInstallError({ message: 'Remove not supported by framework filesystem', path }),
-      };
+    rm: async (path: string): Promise<Result<void, InstallError>> => {
+      const result = await frameworkFS.rm(path, { recursive: true, force: true });
+      if (!result.success) {
+        return { success: false, error: toInstallError(result.error) };
+      }
+      return { success: true, value: undefined };
     },
 
     stat: async (path: string): Promise<Result<any, InstallError>> => {
-      // Framework FileSystem doesn't have stat method
-      const existsResult = await frameworkFS.exists(path);
-      if (!existsResult.success) {
-        return { success: false, error: toInstallError(existsResult.error) };
+      const result = await frameworkFS.stat(path);
+      if (!result.success) {
+        return { success: false, error: toInstallError(result.error) };
       }
-      if (!existsResult.value) {
-        return { success: false, error: toInstallError({ message: 'File not found', path }) };
-      }
-      // Return minimal stats
-      return { success: true, value: { mtime: new Date() } };
+      return { success: true, value: result.value };
     },
   };
 }

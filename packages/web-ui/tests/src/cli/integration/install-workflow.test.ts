@@ -49,12 +49,14 @@ describe('Install Workflow Integration', () => {
   describe('Complete Installation Flow', () => {
     it.fails('should successfully install for Next.js project', async () => {
       // Mock Next.js project structure
-      mockFs.exists.mockImplementation((path: string) => {
-        if (path.includes('package.json')) return Promise.resolve(true);
-        if (path.includes('next.config')) return Promise.resolve(true);
-        if (path.includes('tsconfig.json')) return Promise.resolve(true);
-        if (path.includes('components')) return Promise.resolve(true);
-        return Promise.resolve(false);
+      mockFs.access.mockImplementation((path: string) => {
+        if (path.includes('package.json')) return Promise.resolve(Ok(undefined));
+        if (path.includes('next.config')) return Promise.resolve(Ok(undefined));
+        if (path.includes('tsconfig.json')) return Promise.resolve(Ok(undefined));
+        if (path.includes('components')) return Promise.resolve(Ok(undefined));
+        return Promise.resolve(
+          Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' })
+        );
       });
 
       mockFs.readFile.mockImplementation((path: string) => {
@@ -117,7 +119,7 @@ describe('Install Workflow Integration', () => {
 
     it.fails('should handle missing dependencies gracefully', async () => {
       // Mock project without required dependencies
-      mockFs.exists.mockResolvedValue(true);
+      mockFs.access.mockResolvedValue(Ok(undefined));
       mockFs.readFile.mockImplementation((path: string) => {
         if (path.includes('package.json')) {
           return Promise.resolve(
@@ -144,7 +146,9 @@ describe('Install Workflow Integration', () => {
 
   describe('Error Scenarios', () => {
     it.fails('should fail when project root is not accessible', async () => {
-      mockFs.exists.mockResolvedValue(false);
+      mockFs.access.mockResolvedValue(
+        Err({ type: 'FileSystemError', message: 'File not found', path: '', code: 'ENOENT' })
+      );
 
       const configResult = await resolveConfiguration(mockFs, mockLogger, {
         destinationDir: 'invalid/path',
@@ -156,7 +160,7 @@ describe('Install Workflow Integration', () => {
     });
 
     it.fails('should handle file write failures gracefully', async () => {
-      mockFs.exists.mockResolvedValue(true);
+      mockFs.access.mockResolvedValue(Ok(undefined));
       mockFs.readFile.mockResolvedValue('{}');
       mockFs.writeFile.mockRejectedValue(new Error('Permission denied'));
       mockFs.glob.mockResolvedValue([]);
@@ -184,7 +188,7 @@ describe('Install Workflow Integration', () => {
 
   describe('Dry Run Mode', () => {
     it.fails('should not write files in dry run mode', async () => {
-      mockFs.exists.mockResolvedValue(true);
+      mockFs.access.mockResolvedValue(Ok(undefined));
       mockFs.readFile.mockResolvedValue('{}');
       mockFs.glob.mockResolvedValue([]);
 
@@ -213,7 +217,7 @@ describe('Install Workflow Integration', () => {
 
   describe('Force Installation', () => {
     it.fails('should overwrite existing files when force is enabled', async () => {
-      mockFs.exists.mockResolvedValue(true);
+      mockFs.access.mockResolvedValue(Ok(undefined));
       mockFs.glob.mockResolvedValue([
         '/test/project/components/th/button.tsx',
         '/test/project/components/th/alert.tsx',
@@ -246,10 +250,12 @@ describe('Install Workflow Integration', () => {
 
   describe('Framework-Specific Installation', () => {
     it.fails('should apply correct configuration for Vite projects', async () => {
-      mockFs.exists.mockImplementation((path: string) => {
-        if (path.includes('vite.config')) return Promise.resolve(true);
-        if (path.includes('package.json')) return Promise.resolve(true);
-        return Promise.resolve(false);
+      mockFs.access.mockImplementation((path: string) => {
+        if (path.includes('vite.config')) return Promise.resolve(Ok(undefined));
+        if (path.includes('package.json')) return Promise.resolve(Ok(undefined));
+        return Promise.resolve(
+          Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' })
+        );
       });
 
       mockFs.readFile.mockImplementation((path: string) => {
@@ -275,10 +281,12 @@ describe('Install Workflow Integration', () => {
     });
 
     it.fails('should detect RedwoodJS projects correctly', async () => {
-      mockFs.exists.mockImplementation((path: string) => {
-        if (path.includes('redwood.toml')) return Promise.resolve(true);
-        if (path.includes('package.json')) return Promise.resolve(true);
-        return Promise.resolve(false);
+      mockFs.access.mockImplementation((path: string) => {
+        if (path.includes('redwood.toml')) return Promise.resolve(Ok(undefined));
+        if (path.includes('package.json')) return Promise.resolve(Ok(undefined));
+        return Promise.resolve(
+          Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' })
+        );
       });
 
       mockFs.readFile.mockImplementation((path: string) => {

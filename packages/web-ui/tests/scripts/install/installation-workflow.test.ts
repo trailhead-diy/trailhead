@@ -21,7 +21,7 @@ const createMockFileSystem = (): FileSystem => {
   const directories = new Set<string>();
 
   return {
-    remove: vi.fn().mockImplementation(async (path: string) => {
+    rm: vi.fn().mockImplementation(async (path: string) => {
       if (files.has(path)) {
         files.delete(path);
       } else if (directories.has(path)) {
@@ -29,10 +29,13 @@ const createMockFileSystem = (): FileSystem => {
       }
       return Ok(undefined);
     }),
-    exists: vi.fn().mockImplementation(async (path: string) => {
-      return Ok(files.has(path) || directories.has(path));
+    access: vi.fn().mockImplementation(async (path: string) => {
+      if (files.has(path) || directories.has(path)) {
+        return Ok(undefined);
+      }
+      return Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' });
     }),
-    readDir: vi.fn().mockImplementation(async (path: string) => {
+    readdir: vi.fn().mockImplementation(async (path: string) => {
       if (path.includes('catalyst-ui-kit/typescript')) {
         return Ok(['button.tsx', 'input.tsx', 'alert.tsx', 'dialog.tsx', 'table.tsx']);
       }
@@ -58,7 +61,7 @@ const createMockFileSystem = (): FileSystem => {
       files.set(path, JSON.stringify(data, null, 2));
       return Ok(undefined);
     }),
-    copy: vi.fn().mockImplementation(async (src: string, dest: string) => {
+    cp: vi.fn().mockImplementation(async (src: string, dest: string) => {
       const content = files.get(src) || `// Component: ${src}`;
       files.set(dest, content);
       return Ok(undefined);
@@ -103,14 +106,19 @@ describe('Install Workflow - Critical User Journeys', () => {
       };
 
       // Mock Catalyst directory exists with components
-      vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.access).mockImplementation(async (path: string) => {
         if (path === catalystDir) {
-          return Ok(true);
+          return Ok(undefined);
         }
-        return Ok(false);
+        return Err({
+          type: 'FileSystemError',
+          message: 'File not found',
+          path: '',
+          code: 'ENOENT',
+        });
       });
 
-      vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.readdir).mockImplementation(async (path: string) => {
         if (path === catalystDir) {
           return Ok(['button.tsx', 'input.tsx', 'alert.tsx']);
         }
@@ -141,8 +149,13 @@ describe('Install Workflow - Critical User Journeys', () => {
         // No catalystDir provided - will trigger auto-detection
       };
 
-      vi.mocked(mockFs.exists).mockImplementation(async (_path: string) => {
-        return Ok(false); // No catalyst directory found
+      vi.mocked(mockFs.access).mockImplementation(async (_path: string) => {
+        return Err({
+          type: 'FileSystemError',
+          message: 'File not found',
+          path: '',
+          code: 'ENOENT',
+        }); // No catalyst directory found
       });
 
       const configResult = await resolveConfiguration(mockFs, mockLogger, options, '/project');
@@ -165,14 +178,19 @@ describe('Install Workflow - Critical User Journeys', () => {
       };
 
       // Mock existing config file
-      vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.access).mockImplementation(async (path: string) => {
         if (path === join(projectRoot, 'trailhead.config.json')) {
-          return Ok(true);
+          return Ok(undefined);
         }
         if (path === existingConfig.catalystDir) {
-          return Ok(true);
+          return Ok(undefined);
         }
-        return Ok(false);
+        return Err({
+          type: 'FileSystemError',
+          message: 'File not found',
+          path: '',
+          code: 'ENOENT',
+        });
       });
 
       vi.mocked(mockFs.readJson).mockImplementation(async (path: string) => {
@@ -182,7 +200,7 @@ describe('Install Workflow - Critical User Journeys', () => {
         return Ok({});
       });
 
-      vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.readdir).mockImplementation(async (path: string) => {
         if (path === existingConfig.catalystDir) {
           return Ok(['button.tsx']);
         }
@@ -210,14 +228,19 @@ describe('Install Workflow - Critical User Journeys', () => {
       };
 
       // Mock directory exists but is empty
-      vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.access).mockImplementation(async (path: string) => {
         if (path === '/project/empty-catalyst') {
-          return Ok(true);
+          return Ok(undefined);
         }
-        return Ok(false);
+        return Err({
+          type: 'FileSystemError',
+          message: 'File not found',
+          path: '',
+          code: 'ENOENT',
+        });
       });
 
-      vi.mocked(mockFs.readDir).mockImplementation(async (_path: string) => {
+      vi.mocked(mockFs.readdir).mockImplementation(async (_path: string) => {
         return Ok([]); // No .tsx files
       });
 
@@ -245,7 +268,7 @@ describe('Install Workflow - Critical User Journeys', () => {
       };
 
       // Mock file system error
-      vi.mocked(mockFs.exists).mockImplementation(async () => {
+      vi.mocked(mockFs.access).mockImplementation(async () => {
         return Err({
           type: 'FileSystemError',
           message: 'Permission denied',
@@ -259,7 +282,7 @@ describe('Install Workflow - Critical User Journeys', () => {
       if (configResult.success) return;
 
       expect(configResult.error.type).toBe('FileSystemError');
-      expect(configResult.error.message).toContain('Permission denied');
+      expect(configResult.error.message).toContain('Failed to check path existence');
     });
   });
 
@@ -364,14 +387,19 @@ describe('Install Workflow - Critical User Journeys', () => {
         verbose: true,
       };
 
-      vi.mocked(mockFs.exists).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.access).mockImplementation(async (path: string) => {
         if (path === options.catalystDir) {
-          return Ok(true);
+          return Ok(undefined);
         }
-        return Ok(false);
+        return Err({
+          type: 'FileSystemError',
+          message: 'File not found',
+          path: '',
+          code: 'ENOENT',
+        });
       });
 
-      vi.mocked(mockFs.readDir).mockImplementation(async (path: string) => {
+      vi.mocked(mockFs.readdir).mockImplementation(async (path: string) => {
         if (path.includes('catalyst')) {
           return Ok(['button.tsx']);
         }

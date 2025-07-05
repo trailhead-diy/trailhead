@@ -30,12 +30,15 @@ const testPath = (...segments: string[]) => createTestPath('test', 'project', ..
 
 // Mock FileSystem for testing
 const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSystem => ({
-  exists: vi.fn().mockImplementation(async (path: string) => {
+  access: vi.fn().mockImplementation(async (path: string) => {
     // Normalize the path to match how we store mock files
     const normalized = normalizeMockPath(path);
-    return Ok(normalized in mockFiles);
+    if (normalized in mockFiles) {
+      return Ok(undefined);
+    }
+    return Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' });
   }),
-  readDir: vi.fn(),
+  readdir: vi.fn(),
   readFile: vi.fn(),
   writeFile: vi.fn(),
   readJson: vi.fn().mockImplementation(async (path: string) => {
@@ -47,9 +50,10 @@ const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSyst
     return Err({ type: 'FileSystemError', message: 'File not found', path });
   }),
   writeJson: vi.fn(),
-  copy: vi.fn(),
+  cp: vi.fn(),
   ensureDir: vi.fn(),
   stat: vi.fn(),
+  rm: vi.fn(),
 });
 
 describe('Framework Detection Tests', () => {

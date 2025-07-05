@@ -17,7 +17,7 @@ import {
 } from '../core/installation/index.js';
 import { resolveConfiguration } from '../core/installation/config.js';
 import { detectFramework } from '../core/installation/framework-detection.js';
-import { adaptSharedToInstallFS } from '../core/filesystem/adapter.js';
+import { adaptFrameworkToInstallFS } from '../core/filesystem/adapter.js';
 import { convertInstallResult } from './utils/error-conversion.js';
 import { getTrailheadPackageRoot } from '../utils/context.js';
 import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
@@ -142,7 +142,7 @@ async function executeInstallation(
 ): Promise<Result<void>> {
   // Create dependencies
   const nodeFS = createNodeFileSystem();
-  const fs = adaptSharedToInstallFS(nodeFS);
+  const fs = adaptFrameworkToInstallFS(nodeFS);
   const logger = context.logger;
 
   try {
