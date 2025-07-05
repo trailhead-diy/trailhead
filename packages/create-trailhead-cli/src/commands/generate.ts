@@ -1,10 +1,25 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import {
+  createCommand,
+  type CommandContext,
+} from '@esteban-url/trailhead-cli/command';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { select, confirm } from '@inquirer/prompts';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 
 import { generateProject } from '../lib/generator.js';
+// Define options interface for type safety
+interface GenerateCommandOptions {
+  template?: string;
+  'package-manager'?: string;
+  docs?: boolean;
+  typescript?: boolean;
+  git?: boolean;
+  install?: boolean;
+  force?: boolean;
+  'dry-run'?: boolean;
+}
+
 import {
   type GenerateOptions,
   type TemplateVariant,
@@ -118,7 +133,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
       description: 'Show what would be generated without creating files',
     },
   ],
-  action: async (options, context) => {
+  action: async (options: GenerateCommandOptions, context: CommandContext) => {
     const { logger, verbose } = context;
     const projectName = context.args[0];
 

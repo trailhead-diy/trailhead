@@ -83,9 +83,13 @@ const textSchema = z
   .transform((text: string) => {
     // Remove dangerous characters
     let sanitized = text;
+    // eslint-disable-next-line no-control-regex
     sanitized = sanitized.replace(/\u0000/g, ''); // null bytes
+    // eslint-disable-next-line no-control-regex
     sanitized = sanitized.replace(/[\u0001-\u0008]/g, ''); // control chars
+    // eslint-disable-next-line no-control-regex
     sanitized = sanitized.replace(/[\u000B\u000C]/g, ''); // form feed, vertical tab
+    // eslint-disable-next-line no-control-regex
     sanitized = sanitized.replace(/[\u000E-\u001F]/g, ''); // other control chars
     sanitized = sanitized.replace(/\u007F/g, ''); // delete char
     return sanitized.trim();
@@ -290,7 +294,7 @@ export function validateOutputPath(
  */
 export function sanitizeText(
   input: string,
-  maxLength: number = MAX_TEXT_LENGTH,
+  _maxLength: number = MAX_TEXT_LENGTH,
 ): Result<string, CLIError> {
   if (!input || typeof input !== 'string') {
     return {
