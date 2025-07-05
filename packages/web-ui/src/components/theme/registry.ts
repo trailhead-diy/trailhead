@@ -28,8 +28,8 @@ export const createThemeMap = (): ThemeMap => {
     try {
       const theme = getPresetTheme(name);
       themes.set(name, theme);
-    } catch (error) {
-      console.warn(`Failed to load preset theme "${name}":`, error);
+    } catch (_error) {
+      // Silently skip failed preset themes
     }
   }
 
@@ -79,7 +79,6 @@ export const getThemeNames = (themes: ThemeMap): string[] => {
 export const applyThemeToDocument = (themes: ThemeMap, name: string, isDark: boolean): void => {
   const theme = getTheme(themes, name);
   if (!theme) {
-    console.error(`Theme "${name}" is not registered`);
     return;
   }
   applyTheme(theme, isDark);
