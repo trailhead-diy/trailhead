@@ -30,18 +30,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **CRITICAL**: All development work MUST follow this issue-driven workflow:
 
 #### 1. GitHub Issue First (NO EXCEPTIONS)
+
 - **Every feature** requires a GitHub issue describing specific user problem
 - **No work begins** without documented issue outlining problem and success criteria
 - **Single responsibility**: Each issue must address ONE clearly scoped problem
 - **User-focused**: Issues must describe user problems, not technical solutions
 
 #### 2. Branch Discipline (STRICT ENFORCEMENT)
+
 - **Never work on main branch** - all work happens on feature branches
 - **Feature branches from main only** - never create branches from other branches
 - **Branch-on-branch is a RED FLAG** - indicates scope creep and over-engineering
 - **Immediate cleanup** - delete feature branches after merge
 
 #### 3. Mandatory Workflow Steps
+
 ```bash
 # 1. Create GitHub issue first (manual)
 # 2. Create feature branch from main
@@ -58,12 +61,13 @@ git checkout -b feature/issue-123-specific-problem
 **STOP AND ASK** before adding any feature, system, or abstraction:
 
 1. **Who requested this specifically?** If answer is "no one", don't build it
-2. **What user problem does this solve today?** If answer is vague, don't build it  
+2. **What user problem does this solve today?** If answer is vague, don't build it
 3. **Can this be solved with existing tools/libraries?** If yes, use those instead
 4. **Will this be used by >80% of users?** If no, don't include it
 5. **Can users add this themselves later?** If yes, leave it out
 
 **FORBIDDEN PATTERNS** (Immediate rejection):
+
 - ❌ "Future-proofing" without specific future requirements
 - ❌ Abstractions over abstractions (wrapper libraries)
 - ❌ Enterprise features for individual developers
@@ -606,8 +610,9 @@ pnpm build                  # Production build
 **When user requests over-engineered features, Claude MUST respond:**
 
 ### Template 1: Complexity Challenge
+
 ```
-This appears to be over-engineering. Most users need [simple alternative]. 
+This appears to be over-engineering. Most users need [simple alternative].
 
 The proposed solution adds [specific complexity] without clear user benefit.
 
@@ -616,9 +621,10 @@ Suggested approach: [simpler solution]
 If you have specific requirements that justify this complexity, please explain the user problem this solves.
 ```
 
-### Template 2: Reality Check Response  
+### Template 2: Reality Check Response
+
 ```
-REALITY CHECK: 
+REALITY CHECK:
 - Who specifically requested this feature?
 - What user problem does this solve today?
 - Can existing tools handle this?
@@ -628,8 +634,9 @@ Based on these questions, I recommend [simpler alternative] instead.
 ```
 
 ### Template 3: YAGNI Enforcement
+
 ```
-This violates YAGNI (You Aren't Gonna Need It). 
+This violates YAGNI (You Aren't Gonna Need It).
 
 Current approach creates unnecessary complexity for hypothetical future needs.
 
@@ -637,12 +644,13 @@ Alternative: Start with [minimal solution]. Add complexity only when users speci
 ```
 
 ### Template 4: Branch Discipline Warning
+
 ```
 Creating a branch from another branch is a RED FLAG indicating scope creep.
 
 This suggests we're trying to do more than originally planned.
 
-Recommended: 
+Recommended:
 1. Finish current branch and merge to main
 2. Create new branch from main for additional work
 3. Or reconsider if the additional work is actually needed
