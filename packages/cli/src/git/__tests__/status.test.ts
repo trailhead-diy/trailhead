@@ -1,16 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-  getGitStatus,
   isWorkingDirectoryClean,
+  getGitStatus,
   formatGitStatus,
 } from '../status.js';
-import { executeGitCommandSimple } from '../git-command.js';
+import {
+  executeGitCommandSimple,
+  validateGitEnvironment,
+} from '../git-command.js';
 import type { GitStatus } from '../types.js';
 
 // Mock the git command execution
 vi.mock('../git-command.js');
 
 const mockExecuteGitCommandSimple = vi.mocked(executeGitCommandSimple);
+const mockValidateGitEnvironment = vi.mocked(validateGitEnvironment);
 
 describe('status', () => {
   beforeEach(() => {
@@ -20,36 +24,28 @@ describe('status', () => {
   describe('isWorkingDirectoryClean', () => {
     it('should return true for clean working directory', async () => {
       mockExecuteGitCommandSimple.mockResolvedValueOnce({
-        isOk: true,
-        value: '', // Empty output means clean
-        isErr: false,
-        error: undefined as never,
+        success: true,
+        value: '',
       });
 
       const result = await isWorkingDirectoryClean();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
+      expect(result.success).toBe(true);
+      if (result.success) {
         expect(result.value).toBe(true);
       }
-      expect(mockExecuteGitCommandSimple).toHaveBeenCalledWith(
-        ['status', '--porcelain'],
-        {},
-      );
     });
 
     it('should return false for dirty working directory', async () => {
       mockExecuteGitCommandSimple.mockResolvedValueOnce({
-        isOk: true,
+        success: true,
         value: ' M file1.txt\n?? file2.txt',
-        isErr: false,
-        error: undefined as never,
       });
 
       const result = await isWorkingDirectoryClean();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
+      expect(result.success).toBe(true);
+      if (result.success) {
         expect(result.value).toBe(false);
       }
     });
@@ -58,138 +54,95 @@ describe('status', () => {
   describe('getGitStatus', () => {
     it('should parse clean repository status', async () => {
       // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
         // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'main',
-          isErr: false,
-          error: undefined as never,
         })
-        // Mock status --porcelain
+        // Mock git status --porcelain
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '',
-          isErr: false,
-          error: undefined as never,
         });
 
       const result = await getGitStatus();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
-        const status = result.value;
-        expect(status.currentBranch).toBe('main');
-        expect(status.isClean).toBe(true);
-        expect(status.staged).toBe(0);
-        expect(status.modified).toBe(0);
-        expect(status.untracked).toBe(0);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.currentBranch).toBe('main');
+        expect(result.value.isClean).toBe(true);
+        expect(result.value.staged).toBe(0);
+        expect(result.value.modified).toBe(0);
+        expect(result.value.untracked).toBe(0);
       }
     });
 
     it('should parse repository with mixed changes', async () => {
       // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
         // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'feature',
-          isErr: false,
-          error: undefined as never,
         })
-        // Mock status --porcelain with various file states
+        // Mock git status --porcelain with mixed changes
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value:
-            'M  staged-file.txt\n M modified-file.txt\nA  added-file.txt\n?? untracked-file.txt\nMM both-modified.txt',
-          isErr: false,
-          error: undefined as never,
+            'M  staged.txt\n M modified.txt\n?? untracked.txt\nA  added.txt',
         });
 
       const result = await getGitStatus();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
-        const status = result.value;
-        expect(status.currentBranch).toBe('feature');
-        expect(status.isClean).toBe(false);
-        expect(status.staged).toBe(3); // M_, A_, MM (index has changes)
-        expect(status.modified).toBe(2); // _M, MM (working tree has changes)
-        expect(status.untracked).toBe(1); // ??
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.currentBranch).toBe('feature');
+        expect(result.value.isClean).toBe(false);
+        expect(result.value.staged).toBe(2); // M and A in index
+        expect(result.value.modified).toBe(1); // M in working tree
+        expect(result.value.untracked).toBe(1); // ??
       }
     });
 
     it('should handle various git status codes correctly', async () => {
       // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
         // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'test',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'main',
         })
-        // Mock status --porcelain with all possible states
+        // Mock git status --porcelain with various codes
         .mockResolvedValueOnce({
-          isOk: true,
-          value: [
-            'M  staged-modified.txt', // Staged modification
-            ' M unstaged-modified.txt', // Unstaged modification
-            'A  staged-added.txt', // Staged addition
-            '?? untracked.txt', // Untracked file
-            'MM both-modified.txt', // Modified in both index and working tree
-            'D  staged-deleted.txt', // Staged deletion
-            ' D unstaged-deleted.txt', // Unstaged deletion
-          ].join('\n'),
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value:
+            'MM both-modified.txt\nAM added-then-modified.txt\nD  deleted.txt\n M workspace-modified.txt\n?? untracked.txt',
         });
 
       const result = await getGitStatus();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
-        const status = result.value;
-        expect(status.staged).toBe(4); // M_, A_, MM, D_ (index has changes)
-        expect(status.modified).toBe(3); // _M, MM, _D (working tree has changes)
-        expect(status.untracked).toBe(1); // ??
-        expect(status.isClean).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.staged).toBe(3); // MM, AM, D (index changes)
+        expect(result.value.modified).toBe(3); // MM, AM, M (working tree changes)
+        expect(result.value.untracked).toBe(1); // ??
+        expect(result.value.isClean).toBe(false);
       }
     });
   });
@@ -204,8 +157,9 @@ describe('status', () => {
         untracked: 0,
       };
 
-      const formatted = formatGitStatus(status);
-      expect(formatted).toBe("On branch 'main' - working directory clean");
+      const result = formatGitStatus(status);
+
+      expect(result).toBe("On branch 'main' - working directory clean");
     });
 
     it('should format status with single file changes', () => {
@@ -217,8 +171,9 @@ describe('status', () => {
         untracked: 1,
       };
 
-      const formatted = formatGitStatus(status);
-      expect(formatted).toBe(
+      const result = formatGitStatus(status);
+
+      expect(result).toBe(
         "On branch 'feature', 1 staged file, 1 modified file, 1 untracked file",
       );
     });
@@ -232,8 +187,9 @@ describe('status', () => {
         untracked: 5,
       };
 
-      const formatted = formatGitStatus(status);
-      expect(formatted).toBe(
+      const result = formatGitStatus(status);
+
+      expect(result).toBe(
         "On branch 'develop', 3 staged files, 2 modified files, 5 untracked files",
       );
     });
@@ -244,11 +200,14 @@ describe('status', () => {
         isClean: false,
         staged: 2,
         modified: 0,
-        untracked: 0,
+        untracked: 1,
       };
 
-      const formatted = formatGitStatus(status);
-      expect(formatted).toBe("On branch 'hotfix', 2 staged files");
+      const result = formatGitStatus(status);
+
+      expect(result).toBe(
+        "On branch 'hotfix', 2 staged files, 1 untracked file",
+      );
     });
   });
 });

@@ -5,13 +5,18 @@ import {
   needsSync,
   formatSyncStatus,
 } from '../branch-sync.js';
-import { executeGitCommandSimple } from '../git-command.js';
+import {
+  executeGitCommandSimple,
+  validateGitEnvironment,
+} from '../git-command.js';
 import type { BranchSyncStatus } from '../types.js';
+import { createError } from '../../core/index.js';
 
 // Mock the git command execution
 vi.mock('../git-command.js');
 
 const mockExecuteGitCommandSimple = vi.mocked(executeGitCommandSimple);
+const mockValidateGitEnvironment = vi.mocked(validateGitEnvironment);
 
 describe('branch-sync', () => {
   beforeEach(() => {
@@ -21,16 +26,14 @@ describe('branch-sync', () => {
   describe('getCurrentBranch', () => {
     it('should return current branch name', async () => {
       mockExecuteGitCommandSimple.mockResolvedValueOnce({
-        isOk: true,
+        success: true,
         value: 'feature-branch',
-        isErr: false,
-        error: undefined as never,
       });
 
       const result = await getCurrentBranch();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
+      expect(result.success).toBe(true);
+      if (result.success) {
         expect(result.value).toBe('feature-branch');
       }
       expect(mockExecuteGitCommandSimple).toHaveBeenCalledWith(
@@ -41,17 +44,15 @@ describe('branch-sync', () => {
 
     it('should handle git command failure', async () => {
       mockExecuteGitCommandSimple.mockResolvedValueOnce({
-        isOk: false,
-        isErr: true,
-        error: 'Not a git repository',
-        value: undefined as never,
+        success: false,
+        error: createError('GIT_ERROR', 'Not a git repository'),
       });
 
       const result = await getCurrentBranch();
 
-      expect(result.isErr).toBe(true);
-      if (result.isErr) {
-        expect(result.error).toBe('Not a git repository');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe('Not a git repository');
       }
     });
   });
@@ -59,237 +60,179 @@ describe('branch-sync', () => {
   describe('checkBranchSync', () => {
     it('should return up-to-date status when branches are synced', async () => {
       // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
         // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'main',
-          isErr: false,
-          error: undefined as never,
         })
         // Mock remoteBranchExists
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'origin/main',
-          isErr: false,
-          error: undefined as never,
         })
         // Mock ahead count (origin/main..main)
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '0',
-          isErr: false,
-          error: undefined as never,
         })
         // Mock behind count (main..origin/main)
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '0',
-          isErr: false,
-          error: undefined as never,
         })
         // Mock isAncestor check
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'abc123',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'merge-base-sha',
         });
 
       const result = await checkBranchSync();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
-        const status = result.value;
-        expect(status.currentBranch).toBe('main');
-        expect(status.remoteBranch).toBe('origin/main');
-        expect(status.ahead).toBe(0);
-        expect(status.behind).toBe(0);
-        expect(status.isUpToDate).toBe(true);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.currentBranch).toBe('main');
+        expect(result.value.remoteBranch).toBe('origin/main');
+        expect(result.value.ahead).toBe(0);
+        expect(result.value.behind).toBe(0);
+        expect(result.value.isUpToDate).toBe(true);
+        expect(result.value.canFastForward).toBe(false);
       }
     });
 
     it('should return behind status when local branch is behind', async () => {
       // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
         // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'feature',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'main',
         })
         // Mock remoteBranchExists
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'origin/main',
-          isErr: false,
-          error: undefined as never,
         })
-        // Mock ahead count (origin/main..feature)
+        // Mock ahead count (origin/main..main)
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
+          value: '0',
+        })
+        // Mock behind count (main..origin/main)
+        .mockResolvedValueOnce({
+          success: true,
           value: '2',
-          isErr: false,
-          error: undefined as never,
         })
-        // Mock behind count (feature..origin/main)
+        // Mock isAncestor check (main is ancestor of origin/main)
         .mockResolvedValueOnce({
-          isOk: true,
-          value: '3',
-          isErr: false,
-          error: undefined as never,
-        })
-        // Mock isAncestor check
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'abc123',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'merge-base-sha',
         });
 
       const result = await checkBranchSync();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
-        const status = result.value;
-        expect(status.ahead).toBe(2);
-        expect(status.behind).toBe(3);
-        expect(status.isUpToDate).toBe(false);
-        expect(status.canFastForward).toBe(true);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.currentBranch).toBe('main');
+        expect(result.value.ahead).toBe(0);
+        expect(result.value.behind).toBe(2);
+        expect(result.value.isUpToDate).toBe(false);
+        expect(result.value.canFastForward).toBe(true);
       }
     });
   });
 
   describe('needsSync', () => {
     it('should return true when branch is behind', async () => {
-      // Mock the checkBranchSync call
+      // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
+        // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'main',
         })
+        // Mock remoteBranchExists
         .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: 'feature',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'origin/main',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock ahead count
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '0',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock behind count
         .mockResolvedValueOnce({
-          isOk: true,
-          value: '5',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: '2',
         })
+        // Mock isAncestor check
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'abc123',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'merge-base-sha',
         });
 
       const result = await needsSync();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
+      expect(result.success).toBe(true);
+      if (result.success) {
         expect(result.value).toBe(true);
       }
     });
 
     it('should return false when branch is up to date', async () => {
-      // Mock the checkBranchSync call
+      // Mock git environment validation
+      mockValidateGitEnvironment.mockResolvedValueOnce({
+        success: true,
+        value: true,
+      });
+
       mockExecuteGitCommandSimple
+        // Mock getCurrentBranch
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'git version 2.34.1',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
-          value: '.git',
-          isErr: false,
-          error: undefined as never,
-        })
-        .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'main',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock remoteBranchExists
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: 'origin/main',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock ahead count
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '0',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock behind count
         .mockResolvedValueOnce({
-          isOk: true,
+          success: true,
           value: '0',
-          isErr: false,
-          error: undefined as never,
         })
+        // Mock isAncestor check
         .mockResolvedValueOnce({
-          isOk: true,
-          value: 'abc123',
-          isErr: false,
-          error: undefined as never,
+          success: true,
+          value: 'merge-base-sha',
         });
 
       const result = await needsSync();
 
-      expect(result.isOk).toBe(true);
-      if (result.isOk) {
+      expect(result.success).toBe(true);
+      if (result.success) {
         expect(result.value).toBe(false);
       }
     });
@@ -306,8 +249,9 @@ describe('branch-sync', () => {
         canFastForward: false,
       };
 
-      const formatted = formatSyncStatus(status);
-      expect(formatted).toBe("Branch 'main' is up to date with 'origin/main'");
+      const result = formatSyncStatus(status);
+
+      expect(result).toBe("Branch 'main' is up to date with 'origin/main'");
     });
 
     it('should format ahead status', () => {
@@ -320,15 +264,16 @@ describe('branch-sync', () => {
         canFastForward: false,
       };
 
-      const formatted = formatSyncStatus(status);
-      expect(formatted).toBe(
+      const result = formatSyncStatus(status);
+
+      expect(result).toBe(
         "Branch 'feature' is 3 commits ahead compared to 'origin/main'",
       );
     });
 
     it('should format behind status with fast-forward suggestion', () => {
       const status: BranchSyncStatus = {
-        currentBranch: 'feature',
+        currentBranch: 'main',
         remoteBranch: 'origin/main',
         ahead: 0,
         behind: 2,
@@ -336,10 +281,10 @@ describe('branch-sync', () => {
         canFastForward: true,
       };
 
-      const formatted = formatSyncStatus(status);
-      expect(formatted).toContain('2 commits behind');
-      expect(formatted).toContain(
-        'can fast-forward with: git pull --rebase origin main',
+      const result = formatSyncStatus(status);
+
+      expect(result).toBe(
+        "Branch 'main' is 2 commits behind compared to 'origin/main' (can fast-forward with: git pull --rebase origin main)",
       );
     });
 
@@ -348,14 +293,16 @@ describe('branch-sync', () => {
         currentBranch: 'feature',
         remoteBranch: 'origin/main',
         ahead: 2,
-        behind: 3,
+        behind: 1,
         isUpToDate: false,
         canFastForward: false,
       };
 
-      const formatted = formatSyncStatus(status);
-      expect(formatted).toContain('2 commits ahead, 3 commits behind');
-      expect(formatted).toContain('merge required');
+      const result = formatSyncStatus(status);
+
+      expect(result).toBe(
+        "Branch 'feature' is 2 commits ahead, 1 commit behind compared to 'origin/main' (merge required)",
+      );
     });
   });
 });
