@@ -87,8 +87,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .turbo
-          key: turbo-${{ runner.os }}-${{ github.sha }}
+          key: turbo-build-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
+            turbo-build-${{ runner.os }}-
             turbo-${{ runner.os }}-
       
       - name: Build packages
@@ -102,14 +103,35 @@ jobs:
             packages/*/dist/
             tooling/*/dist/
           retention-days: 1
+      
+      - name: Upload Turborepo cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: turbo-cache
+          path: .turbo
+          retention-days: 1
 
-  # Parallel quality checks
-  lint:
-    name: Lint
+  # Consolidated quality checks
+  quality:
+    name: Quality (${{ matrix.task }})
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     needs: changes
     if: needs.changes.outputs.code == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [lint, format, security]
+        include:
+          - task: lint
+            cache-key: lint-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+            command: pnpm lint
+          - task: format
+            cache-key: format-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.json', '**/*.md') }}
+            command: pnpm format:check
+          - task: security
+            cache-key: security-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+            command: pnpm audit --audit-level=high || echo "::warning::Security vulnerabilities found"
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-pnpm
@@ -117,24 +139,19 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
       
-      - name: Run linting
-        run: pnpm lint
-
-  format:
-    name: Format Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-pnpm
+      - name: Cache quality check results
+        uses: actions/cache@v4
         with:
-          node-version: ${{ inputs.node-version }}
-          pnpm-version: ${{ inputs.pnpm-version }}
+          path: |
+            .turbo
+            node_modules/.cache
+          key: ${{ matrix.cache-key }}
+          restore-keys: |
+            ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ matrix.task }}-${{ runner.os }}-
       
-      - name: Check formatting
-        run: pnpm format:check
+      - name: Run ${{ matrix.task }}
+        run: ${{ matrix.command }}
 
   types:
     name: Type Check
@@ -149,10 +166,28 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
       
+      - name: Cache TypeScript compilation
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            node_modules/.cache
+            **/tsconfig.tsbuildinfo
+          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/tsconfig.json') }}
+          restore-keys: |
+            types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            types-${{ runner.os }}-
+      
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+      
+      - name: Download Turborepo cache
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-cache
+        continue-on-error: true
       
       - name: Run type checking
         run: pnpm types
@@ -175,13 +210,32 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
       
+      - name: Cache test results
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            node_modules/.cache
+            ~/.cache/vitest
+            **/coverage
+          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.test.*', '**/*.spec.*') }}
+          restore-keys: |
+            test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            test-${{ runner.os }}-
+      
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
       
-      - name: Run tests with coverage
-        run: pnpm test
+      - name: Download Turborepo cache
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-cache
+        continue-on-error: true
+      
+      - name: Run tests with coverage and parallel execution
+        run: pnpm test --max-workers=${{ runner.os == 'macOS' && 3 || 4 }} --reporter=verbose
       
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
@@ -220,29 +274,13 @@ jobs:
           pnpm pack
           node dist/src/cli.js --help
 
-  # Security scan
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-pnpm
-        with:
-          node-version: ${{ inputs.node-version }}
-          pnpm-version: ${{ inputs.pnpm-version }}
-      
-      - name: Run security audit
-        run: pnpm audit --audit-level=high || echo "::warning::Security vulnerabilities found"
 
   # Final status check
   status:
     name: CI Status
     runs-on: ubuntu-latest
     timeout-minutes: 2
-    needs: [lint, format, types, test, security]
+    needs: [quality, types, test]
     if: always()
     steps:
       - name: Check overall status
