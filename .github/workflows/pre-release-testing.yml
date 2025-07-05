@@ -23,15 +23,15 @@ jobs:
     name: Check Trigger
     runs-on: ubuntu-latest
     outputs:
-      should_run: \{{steps.check.outputs.should_run}}
+      should_run: ${{steps.check.outputs.should_run}}
     steps:
       - id: check
         run: |
-          if [[ "\{{github.ref}}" == refs/heads/main ]] || [[ "\{{github.ref}}" == refs/heads/release/* ]]; then
+          if [[ "${{github.ref}}" == refs/heads/main ]] || [[ "${{github.ref}}" == refs/heads/release/* ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
-          elif [[ "\{{github.event_name}}" == "pull_request" ]] && [[ "\{{contains(github.event.pull_request.labels.*.name, 'pre-release')}}" == "true" ]]; then
+          elif [[ "${{github.event_name}}" == "pull_request" ]] && [[ "${{contains(github.event.pull_request.labels.*.name, 'pre-release')}}" == "true" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
-          elif [[ "\{{github.event_name}}" == "workflow_dispatch" ]]; then
+          elif [[ "${{github.event_name}}" == "workflow_dispatch" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        install: [\{{github.event.inputs.install_dependencies || true}}]
+        install: [${{github.event.inputs.install_dependencies || true}}]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,7 +71,7 @@ jobs:
 
       - name: Run comprehensive E2E tests
         run: |
-          if [[ "\{{matrix.install}}" == "true" ]]; then
+          if [[ "${{matrix.install}}" == "true" ]]; then
             pnpm test:generator:full --install --ci
           else
             pnpm test:generator:full --ci
@@ -82,7 +82,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-failures-\{{matrix.install}}
+          name: e2e-test-failures-${{matrix.install}}
           path: |
             /tmp/create-trailhead-cli-e2e-*
           retention-days: 7
@@ -90,7 +90,7 @@ jobs:
   # Cross-platform compatibility testing (sample)
   cross-platform:
     name: Cross-Platform Test
-    runs-on: \{{matrix.os}}
+    runs-on: ${{matrix.os}}
     needs: check-trigger
     if: needs.check-trigger.outputs.should_run == 'true'
     strategy:
@@ -135,16 +135,16 @@ jobs:
           cd packages/create-trailhead-cli
           
           # Create test project
-          node dist/index.js generate test-\{{matrix.template}}-\{{matrix.package_manager}} \
-            --template \{{matrix.template}} \
-            --package-manager \{{matrix.package_manager}} \
+          node dist/index.js generate test-${{matrix.template}}-${{matrix.package_manager}} \
+            --template ${{matrix.template}} \
+            --package-manager ${{matrix.package_manager}} \
             --docs --git --force
           
           # Verify TypeScript compilation
-          cd test-\{{matrix.template}}-\{{matrix.package_manager}}
+          cd test-${{matrix.template}}-${{matrix.package_manager}}
           npx tsc --noEmit
           
-          echo "✅ Cross-platform test passed on \{{matrix.os}}"
+          echo "✅ Cross-platform test passed on ${{matrix.os}}"
 
   # Validation summary
   validation-summary:
@@ -155,13 +155,13 @@ jobs:
     steps:
       - name: Check results
         run: |
-          if [[ "\{{needs.generator-e2e.result}}" == "success" ]] && [[ "\{{needs.cross-platform.result}}" == "success" ]]; then
+          if [[ "${{needs.generator-e2e.result}}" == "success" ]] && [[ "${{needs.cross-platform.result}}" == "success" ]]; then
             echo "✅ All pre-release tests passed"
             echo "🚀 Ready for release"
           else
             echo "❌ Pre-release tests failed"
-            echo "generator-e2e: \{{needs.generator-e2e.result}}"
-            echo "cross-platform: \{{needs.cross-platform.result}}"
+            echo "generator-e2e: ${{needs.generator-e2e.result}}"
+            echo "cross-platform: ${{needs.cross-platform.result}}"
             exit 1
           fi
 
@@ -172,11 +172,11 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Generator E2E | \{{needs.generator-e2e.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Cross-Platform | \{{needs.cross-platform.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Generator E2E | ${{needs.generator-e2e.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cross-Platform | ${{needs.cross-platform.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [[ "\{{needs.generator-e2e.result}}" == "success" ]] && [[ "\{{needs.cross-platform.result}}" == "success" ]]; then
+          if [[ "${{needs.generator-e2e.result}}" == "success" ]] && [[ "${{needs.cross-platform.result}}" == "success" ]]; then
             echo "🎉 **All tests passed! Ready for release.**" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ **Some tests failed. Review before release.**" >> $GITHUB_STEP_SUMMARY
