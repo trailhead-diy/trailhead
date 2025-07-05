@@ -80,7 +80,7 @@ export const validateCommand = createCommand({
       
       // Validate test files
       if (shouldValidateTests) {
-        const testPattern = options.pattern || 'tests/**/*.{ts,js}'
+        const testPattern = options.pattern || 'src/**/__tests__/**/*.{test,spec}.{ts,js}'
         const testResults = await validateTestFiles(testPattern, verbose)
         validationResults.push(...testResults)
       }

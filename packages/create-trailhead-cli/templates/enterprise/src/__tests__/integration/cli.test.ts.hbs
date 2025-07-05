@@ -1,0 +1,220 @@
+import { describe, it, expect } from 'vitest'
+import { runCLI } from '@esteban-url/trailhead-cli/testing'
+
+describe('Enterprise CLI Integration', () => {
+  it('should display help information', async () => {
+    const result = await runCLI(['--help'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.stdout).toContain('{{description}}')
+    expect(result.value.stdout).toContain('monitor')
+    expect(result.value.stdout).toContain('security')
+  })
+
+  it('should handle unknown commands gracefully', async () => {
+    const result = await runCLI(['unknown-command'])
+    
+    expect(result.success).toBe(false)
+    expect(result.error.message).toContain('unknown')
+  })
+
+  it('should execute monitor command with dashboard mode', async () => {
+    const result = await runCLI(['monitor', '--mode', 'dashboard', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute monitor command with metrics mode', async () => {
+    const result = await runCLI(['monitor', '--mode', 'metrics', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute monitor command with health mode', async () => {
+    const result = await runCLI(['monitor', '--mode', 'health', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute monitor command with alerts mode', async () => {
+    const result = await runCLI(['monitor', '--mode', 'alerts'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with dependency scan', async () => {
+    const result = await runCLI(['security', '--scan', 'deps'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with code scan', async () => {
+    const result = await runCLI(['security', '--scan', 'code'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with configuration scan', async () => {
+    const result = await runCLI(['security', '--scan', 'config'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with comprehensive scan', async () => {
+    const result = await runCLI(['security', '--scan', 'all'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with compliance check', async () => {
+    const result = await runCLI(['security', '--scan', 'config', '--compliance', 'gdpr'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with severity filter', async () => {
+    const result = await runCLI(['security', '--scan', 'all', '--severity', 'high'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with JSON report', async () => {
+    const result = await runCLI(['security', '--scan', 'config', '--report', 'json'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command with HTML report', async () => {
+    const result = await runCLI(['security', '--scan', 'config', '--report', 'html'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should execute security command using alias', async () => {
+    const result = await runCLI(['sec', '--scan', 'deps'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle monitor command with custom interval', async () => {
+    const result = await runCLI(['monitor', '--mode', 'metrics', '--interval', '1', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle monitor command with export format', async () => {
+    const result = await runCLI(['monitor', '--mode', 'metrics', '--export', 'json', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle security command with fix option', async () => {
+    const result = await runCLI(['security', '--scan', 'config', '--fix'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle verbose output for monitor command', async () => {
+    const result = await runCLI(['monitor', '--mode', 'health', '--verbose', '--duration', '0.001'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle verbose output for security command', async () => {
+    const result = await runCLI(['security', '--scan', 'deps', '--verbose'])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should validate monitor mode options', async () => {
+    const result = await runCLI(['monitor', '--mode', 'invalid-mode'])
+    
+    expect(result.success).toBe(false)
+    // Should handle invalid mode gracefully
+  })
+
+  it('should validate security scan type options', async () => {
+    const result = await runCLI(['security', '--scan', 'invalid-scan'])
+    
+    expect(result.success).toBe(true) // Command succeeds but may have warnings
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle multiple monitor options', async () => {
+    const result = await runCLI([
+      'monitor', 
+      '--mode', 'dashboard', 
+      '--interval', '2', 
+      '--duration', '0.001'
+    ])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle multiple security options', async () => {
+    const result = await runCLI([
+      'security', 
+      '--scan', 'all', 
+      '--severity', 'medium', 
+      '--compliance', 'sox',
+      '--report', 'json'
+    ])
+    
+    expect(result.success).toBe(true)
+    expect(result.value.exitCode).toBe(0)
+  })
+
+  it('should handle security compliance standards', async () => {
+    const standards = ['sox', 'gdpr', 'hipaa', 'pci']
+    
+    for (const standard of standards) {
+      const result = await runCLI(['security', '--scan', 'config', '--compliance', standard])
+      expect(result.success).toBe(true)
+      expect(result.value.exitCode).toBe(0)
+    }
+  })
+
+  it('should handle monitor export formats', async () => {
+    const formats = ['json', 'csv', 'prometheus']
+    
+    for (const format of formats) {
+      const result = await runCLI([
+        'monitor', 
+        '--mode', 'metrics', 
+        '--export', format, 
+        '--duration', '0.001'
+      ])
+      expect(result.success).toBe(true)
+      expect(result.value.exitCode).toBe(0)
+    }
+  })
+
+  it('should handle security report formats', async () => {
+    const formats = ['json', 'html']
+    
+    for (const format of formats) {
+      const result = await runCLI(['security', '--scan', 'config', '--report', format])
+      expect(result.success).toBe(true)
+      expect(result.value.exitCode).toBe(0)
+    }
+  })
+})

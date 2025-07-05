@@ -113,7 +113,8 @@ export const initCommand = createCommand({
       logger.success(`Configuration created: ${configPath}`)
       
       // Create basic project structure
-      const directories = ['src', 'tests', 'docs']
+      // Tests use colocation pattern (src/**/__tests__/) instead of separate tests/ directory
+      const directories = ['src', 'docs']
       for (const dir of directories) {
         const ensureResult = await fs.ensureDirectory(dir)
         if (!ensureResult.success) {

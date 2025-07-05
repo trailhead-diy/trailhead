@@ -96,9 +96,11 @@ This project includes comprehensive tests using Vitest and the trailhead-cli tes
 │   └── commands/         # CLI commands
 │       ├── build.ts      # Build command
 │       └── dev.ts        # Development command
-├── tests/
-│   ├── unit/             # Unit tests
-│   └── integration/      # Integration tests
+├── src/
+│   ├── commands/
+│   │   └── __tests__/    # Unit tests colocated with commands
+│   └── __tests__/
+│       └── integration/  # Integration tests
 ├── bin/
 │   └── cli.js           # Executable entry point
 └── dist/                # Built output

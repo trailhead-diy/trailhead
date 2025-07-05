@@ -173,10 +173,11 @@ This template demonstrates advanced CLI patterns:
 │   │   └── performance.ts # Performance utilities
 │   └── types/            # TypeScript definitions
 │       └── index.ts      # Centralized types
-├── tests/
-│   ├── unit/             # Unit tests for commands
-│   ├── integration/      # End-to-end CLI tests
-│   └── fixtures/         # Test data and mocks
+├── src/
+│   └── __tests__/        # Test files using colocation pattern
+│       ├── integration/  # End-to-end CLI tests
+│       └── fixtures/     # Test data and mocks
+# Note: Unit tests are colocated with source code in src/commands/__tests__/
 ├── examples/             # Usage examples
 ├── docs/                 # Project documentation
 └── dist/                 # Built output

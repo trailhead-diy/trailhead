@@ -174,10 +174,10 @@ export const helloCommand = createCommand({
 Create a test for your command:
 
 ```typescript
-// tests/unit/hello.test.ts
+// src/commands/__tests__/hello.test.ts
 import { describe, it, expect } from 'vitest'
 import { createTestContext } from '@esteban-url/trailhead-cli/testing'
-import { helloCommand } from '../../src/commands/hello.js'
+import { helloCommand } from '../hello.js'
 
 describe('hello command', () => {
   it('should greet with default name', async () => {

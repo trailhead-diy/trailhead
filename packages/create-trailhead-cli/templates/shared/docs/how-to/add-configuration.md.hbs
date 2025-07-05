@@ -333,9 +333,9 @@ function parseEnvValue(value: string): any {
 Test your configuration system:
 
 ```typescript
-// tests/unit/config.test.ts
+// src/config/__tests__/loader.test.ts
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { loadProjectConfig } from '../../src/config/loader.js'
+import { loadProjectConfig } from '../loader.js'
 
 describe('Configuration', () => {
   let originalEnv: NodeJS.ProcessEnv
