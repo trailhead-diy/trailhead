@@ -50,3 +50,7 @@ Thumbs.db
 
 # Tool caches
 .turbo/.prettiercache
+.cache/
+
+# Temporary files
+temp/
