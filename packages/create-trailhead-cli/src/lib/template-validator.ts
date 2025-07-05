@@ -1,11 +1,5 @@
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import fg from 'fast-glob';
 import type { TemplateVariant, TemplateFile } from './types.js';
 import { getTemplateFiles } from './template-loader.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /**
  * Validation result for template structure analysis
@@ -160,8 +154,6 @@ function analyzeCommandCoverage(
   testFiles: string[],
 ): CommandCoverage[] {
   return commandFiles.map((commandFile) => {
-    const commandName = extractCommandName(commandFile);
-
     // Look for colocated test
     const colocatedTestPattern = commandFile.replace(
       /\/commands\/([^/]+)\.ts\.hbs$/,
@@ -213,7 +205,6 @@ function identifyMissingTests(commands: CommandCoverage[]): MissingTest[] {
   return commands
     .filter((cmd) => !cmd.hasTest)
     .map((cmd) => {
-      const commandName = extractCommandName(cmd.commandFile);
       const expectedTestPath = cmd.commandFile.replace(
         /\/commands\/([^/]+)\.ts\.hbs$/,
         '/commands/__tests__/$1.test.ts.hbs',

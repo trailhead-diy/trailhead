@@ -1,6 +1,8 @@
 import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import fg from 'fast-glob';
+import { validateTemplatePath } from './security.js';
 import type {
   TemplateVariant,
   TemplateFile,
@@ -59,7 +61,7 @@ export async function getTemplateFiles(
   variant: TemplateVariant,
   config?: TemplateLoaderConfig,
 ): Promise<TemplateFile[]> {
-  const { dirs } = resolveTemplatePaths(variant, config);
+  const { paths, dirs } = resolveTemplatePaths(variant, config);
 
   const files: TemplateFile[] = [];
 
@@ -67,6 +69,7 @@ export async function getTemplateFiles(
   const variantFiles = await loadTemplateFilesFromDirectory(
     dirs.variant,
     variant,
+    paths.base, // Pass base templates directory for security validation
   );
   files.push(...variantFiles);
 
@@ -74,6 +77,7 @@ export async function getTemplateFiles(
   const sharedFiles = await loadTemplateFilesFromDirectory(
     dirs.shared,
     'shared',
+    paths.base, // Pass base templates directory for security validation
   );
   files.push(...sharedFiles);
 
@@ -83,6 +87,7 @@ export async function getTemplateFiles(
       const additionalFiles = await loadTemplateFilesFromDirectory(
         additionalDir,
         'additional',
+        paths.base, // Pass base templates directory for security validation
       );
       files.push(...additionalFiles);
     }
@@ -123,7 +128,17 @@ function resolveTemplatePaths(
   config?: TemplateLoaderConfig,
 ) {
   // Default built-in template directory
-  const defaultTemplatesDir = resolve(__dirname, '../templates');
+  // When running from dist/lib, templates are at ../templates
+  // When running tests from src/lib, we need to check multiple locations
+  const candidatePaths = [
+    resolve(__dirname, '../templates'), // dist/lib -> dist/templates
+    resolve(__dirname, '../../templates'), // src/lib -> templates (during tests)
+    resolve(__dirname, '../../dist/templates'), // src/lib -> dist/templates (during tests)
+  ];
+
+  // Find the first path that exists
+  const defaultTemplatesDir =
+    candidatePaths.find((path) => existsSync(path)) || candidatePaths[0];
 
   // Use custom base directory if provided, otherwise use built-in
   const baseTemplatesDir = config?.templatesDir || defaultTemplatesDir;
@@ -182,26 +197,60 @@ function resolveTemplatePaths(
 async function loadTemplateFilesFromDirectory(
   dir: string,
   prefix: string,
+  baseTemplatesDir?: string,
 ): Promise<TemplateFile[]> {
   try {
+    // Only validate if baseTemplatesDir is provided
+    if (baseTemplatesDir) {
+      const dirValidation = validateTemplatePath(dir, baseTemplatesDir);
+      if (!dirValidation.success) {
+        console.warn(`Skipping invalid template directory: ${dir}`);
+        return [];
+      }
+    }
+
     const pattern = join(dir, '**/*');
     const filePaths = await fg(pattern, {
       dot: true,
       onlyFiles: true,
       followSymbolicLinks: false,
+      absolute: true, // Use absolute paths for security
     });
 
-    return filePaths.map((filePath) => {
-      const relativePath = filePath.replace(dir + '/', '');
+    return filePaths
+      .map((filePath) => {
+        // Validate each file path if baseTemplatesDir is provided
+        if (baseTemplatesDir) {
+          const fileValidation = validateTemplatePath(
+            filePath,
+            baseTemplatesDir,
+          );
+          if (!fileValidation.success) {
+            console.warn(`Skipping invalid template file: ${filePath}`);
+            return null;
+          }
+        }
 
-      return {
-        source: `${prefix}/${relativePath}`,
-        destination: processDestinationPath(relativePath),
-        isTemplate: isTemplateFile(filePath),
-        executable: isExecutableFile(filePath),
-      };
-    });
-  } catch {
+        const relativePath = filePath.replace(dir + '/', '');
+
+        // Additional validation of relative path
+        if (relativePath.includes('..') || relativePath.startsWith('/')) {
+          console.warn(`Skipping suspicious template file: ${relativePath}`);
+          return null;
+        }
+
+        const executableValue = isExecutableFile(filePath);
+        const templateFile: TemplateFile = {
+          source: `${prefix}/${relativePath}`,
+          destination: processDestinationPath(relativePath),
+          isTemplate: isTemplateFile(filePath),
+          executable: executableValue, // Always set executable property
+        };
+
+        return templateFile;
+      })
+      .filter((file): file is NonNullable<typeof file> => file !== null);
+  } catch (error) {
     // Directory doesn't exist, return empty array
     return [];
   }

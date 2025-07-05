@@ -135,8 +135,8 @@ export interface TemplateFile {
   destination: string;
   /** Whether file requires Handlebars template processing */
   isTemplate: boolean;
-  /** Whether file should be marked as executable (optional) */
-  executable?: boolean;
+  /** Whether file should be marked as executable */
+  executable: boolean;
 }
 
 /**

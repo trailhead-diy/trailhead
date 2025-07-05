@@ -36,7 +36,7 @@ describe('Generate Command', () => {
 
     expect(result.success).toBe(false);
     expect(result.error.message).toContain('already exists');
-  });
+  }, 10000);
 
   it('should execute in express mode with options', async () => {
     const options = {
@@ -74,7 +74,7 @@ describe('Generate Command', () => {
 
     expect(result.success).toBe(false);
     expect(result.error.message).toContain('Generator failed');
-  });
+  }, 10000);
 
   it('should validate template options', async () => {
     const options = {

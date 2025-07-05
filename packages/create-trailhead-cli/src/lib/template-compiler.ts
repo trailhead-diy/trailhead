@@ -1,6 +1,7 @@
 import { readFile, stat } from 'fs-extra';
 import { createHash } from 'crypto';
 import Handlebars from 'handlebars';
+import { sanitizeText } from './security.js';
 import type { TemplateContext } from './types.js';
 
 /**
@@ -106,45 +107,57 @@ export class TemplateCompiler {
         Array.isArray(array) && array.includes(value),
     );
 
-    // String helper for text manipulation
-    Handlebars.registerHelper('uppercase', (str: string) =>
-      typeof str === 'string' ? str.toUpperCase() : str,
-    );
+    // String helper for text manipulation with sanitization
+    Handlebars.registerHelper('uppercase', (str: string) => {
+      if (typeof str !== 'string') return str;
+      const sanitized = sanitizeText(str);
+      return sanitized.success ? sanitized.value.toUpperCase() : str;
+    });
 
-    Handlebars.registerHelper('lowercase', (str: string) =>
-      typeof str === 'string' ? str.toLowerCase() : str,
-    );
+    Handlebars.registerHelper('lowercase', (str: string) => {
+      if (typeof str !== 'string') return str;
+      const sanitized = sanitizeText(str);
+      return sanitized.success ? sanitized.value.toLowerCase() : str;
+    });
 
-    Handlebars.registerHelper('capitalize', (str: string) =>
-      typeof str === 'string'
-        ? str.charAt(0).toUpperCase() + str.slice(1)
-        : str,
-    );
+    Handlebars.registerHelper('capitalize', (str: string) => {
+      if (typeof str !== 'string') return str;
+      const sanitized = sanitizeText(str);
+      if (!sanitized.success) return str;
+      const clean = sanitized.value;
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    });
 
-    // Kebab case helper
-    Handlebars.registerHelper('kebab', (str: string) =>
-      typeof str === 'string'
-        ? str.replace(/[A-Z]/g, '-$&').toLowerCase().replace(/^-/, '')
-        : str,
-    );
+    // Kebab case helper with sanitization
+    Handlebars.registerHelper('kebab', (str: string) => {
+      if (typeof str !== 'string') return str;
+      const sanitized = sanitizeText(str);
+      if (!sanitized.success) return str;
+      return sanitized.value
+        .replace(/[A-Z]/g, '-$&')
+        .toLowerCase()
+        .replace(/^-/, '');
+    });
 
-    // Pascal case helper
-    Handlebars.registerHelper('pascal', (str: string) =>
-      typeof str === 'string'
-        ? str
-            .split(/[-_\s]+/)
-            .map(
-              (word) =>
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-            )
-            .join('')
-        : str,
-    );
+    // Pascal case helper with sanitization
+    Handlebars.registerHelper('pascal', (str: string) => {
+      if (typeof str !== 'string') return str;
+      const sanitized = sanitizeText(str);
+      if (!sanitized.success) return str;
+      return sanitized.value
+        .split(/[-_\s]+/)
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        )
+        .join('');
+    });
 
-    // Camel case helper
+    // Camel case helper with sanitization
     Handlebars.registerHelper('camel', (str: string) => {
       if (typeof str !== 'string') return str;
-      const pascal = str
+      const sanitized = sanitizeText(str);
+      if (!sanitized.success) return str;
+      const pascal = sanitized.value
         .split(/[-_\s]+/)
         .map(
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
@@ -156,7 +169,9 @@ export class TemplateCompiler {
     // JSON helper for safe JSON output
     Handlebars.registerHelper('json', (obj: any) => {
       try {
-        return JSON.stringify(obj, null, 2);
+        // Sanitize object properties to prevent injection
+        const safeObj = this.sanitizeObject(obj);
+        return JSON.stringify(safeObj, null, 2);
       } catch {
         return '{}';
       }
@@ -263,20 +278,24 @@ export class TemplateCompiler {
 
     // Read and compile template
     const templateContent = await readFile(templatePath, 'utf-8');
+
+    // Sanitize template context before compilation
+    const sanitizedContext = this.sanitizeContext(context);
+
     const template = Handlebars.compile(templateContent, {
-      // Optimize for performance
-      noEscape: false,
-      strict: false,
-      assumeObjects: true,
+      // Security-focused configuration
+      noEscape: true, // Enable HTML escaping for security
+      strict: true, // Strict mode to prevent undefined variable access
+      assumeObjects: false,
       preventIndent: false,
       ignoreStandalone: true,
-      explicitPartialContext: false,
+      explicitPartialContext: true,
     });
 
     // Cache the compiled template
     await this.cacheTemplate(templatePath, template);
 
-    return template(context);
+    return template(sanitizedContext);
   }
 
   /**
@@ -337,12 +356,13 @@ export class TemplateCompiler {
       try {
         const templateContent = await readFile(templatePath, 'utf-8');
         const template = Handlebars.compile(templateContent, {
-          noEscape: false,
-          strict: false,
-          assumeObjects: true,
+          // Security-focused configuration
+          noEscape: true, // Enable HTML escaping for security
+          strict: true, // Strict mode to prevent undefined variable access
+          assumeObjects: false,
           preventIndent: false,
           ignoreStandalone: true,
-          explicitPartialContext: false,
+          explicitPartialContext: true,
         });
 
         await this.cacheTemplate(templatePath, template);
@@ -384,5 +404,58 @@ export class TemplateCompiler {
     for (const [key] of toRemove) {
       this.cache.delete(key);
     }
+  }
+
+  /**
+   * Sanitize template context to prevent injection attacks
+   */
+  private sanitizeContext(context: TemplateContext): TemplateContext {
+    const sanitized: any = {};
+
+    for (const [key, value] of Object.entries(context)) {
+      if (typeof value === 'string') {
+        const sanitizedValue = sanitizeText(value);
+        sanitized[key] = sanitizedValue.success ? sanitizedValue.value : '';
+      } else if (typeof value === 'object' && value !== null) {
+        sanitized[key] = this.sanitizeObject(value);
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        sanitized[key] = value;
+      } else {
+        // Skip functions, undefined, null, symbols, etc.
+        sanitized[key] = '';
+      }
+    }
+
+    return sanitized as TemplateContext;
+  }
+
+  /**
+   * Recursively sanitize object properties
+   */
+  private sanitizeObject(obj: any): any {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.sanitizeObject(item));
+    }
+
+    const sanitized: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'string') {
+        const sanitizedValue = sanitizeText(value);
+        sanitized[key] = sanitizedValue.success ? sanitizedValue.value : '';
+      } else if (typeof value === 'object' && value !== null) {
+        sanitized[key] = this.sanitizeObject(value);
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        sanitized[key] = value;
+      } else {
+        // Skip functions, undefined, symbols, etc.
+        sanitized[key] = '';
+      }
+    }
+
+    return sanitized;
   }
 }

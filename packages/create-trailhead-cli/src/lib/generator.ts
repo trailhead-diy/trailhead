@@ -6,6 +6,13 @@ import { fileURLToPath } from 'url';
 import { execa } from 'execa';
 import chalk from 'chalk';
 import ora from 'ora';
+import {
+  validateProjectName,
+  validateProjectPath,
+  validatePackageManager,
+  validateTemplate,
+  validateOutputPath,
+} from './security.js';
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 import type {
@@ -183,8 +190,8 @@ export async function generateProject(
 /**
  * Validate project configuration before generation
  *
- * Performs comprehensive validation of all project configuration parameters
- * to ensure they meet requirements and prevent generation failures.
+ * Performs comprehensive security validation of all project configuration parameters
+ * to ensure they meet requirements and prevent security vulnerabilities.
  *
  * @param config - Project configuration to validate
  * @returns Result indicating validation success or specific validation errors
@@ -192,48 +199,36 @@ export async function generateProject(
  * @internal
  *
  * Validation checks include:
- * - Project name: must be non-empty string
- * - Project path: must be non-empty string
- * - Template: must be one of 'basic', 'advanced', 'enterprise'
- * - Package manager: must be one of 'npm', 'pnpm', 'yarn', 'bun'
+ * - Project name: alphanumeric with limited special chars, no path traversal
+ * - Project path: validated against directory traversal attacks
+ * - Template: whitelisted template variants only
+ * - Package manager: whitelisted package managers only
  */
 function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
-  if (!config.projectName || config.projectName.trim() === '') {
-    return Err(
-      createError('VALIDATION_FAILED', 'Project name is required', {
-        details: 'Please provide a valid project name',
-      }),
-    );
+  // Validate project name with security checks
+  const nameValidation = validateProjectName(config.projectName);
+  if (!nameValidation.success) {
+    return nameValidation;
   }
 
-  if (!config.projectPath || config.projectPath.trim() === '') {
-    return Err(
-      createError('VALIDATION_FAILED', 'Project path is required', {
-        details: 'Please provide a valid project path',
-      }),
-    );
+  // Validate project path with directory traversal protection
+  const pathValidation = validateProjectPath(config.projectPath, process.cwd());
+  if (!pathValidation.success) {
+    return pathValidation;
   }
 
-  const validTemplates = ['basic', 'advanced', 'enterprise'];
-  if (!validTemplates.includes(config.template)) {
-    return Err(
-      createError('VALIDATION_FAILED', `Invalid template: ${config.template}`, {
-        details: `Supported templates: ${validTemplates.join(', ')}`,
-      }),
-    );
+  // Validate template with whitelist
+  const templateValidation = validateTemplate(config.template);
+  if (!templateValidation.success) {
+    return templateValidation;
   }
 
-  const validPackageManagers = ['npm', 'pnpm', 'yarn', 'bun'];
-  if (!validPackageManagers.includes(config.packageManager)) {
-    return Err(
-      createError(
-        'VALIDATION_FAILED',
-        `Invalid package manager: ${config.packageManager}`,
-        {
-          details: `Supported package managers: ${validPackageManagers.join(', ')}`,
-        },
-      ),
-    );
+  // Validate package manager with whitelist
+  const packageManagerValidation = validatePackageManager(
+    config.packageManager,
+  );
+  if (!packageManagerValidation.success) {
+    return packageManagerValidation;
   }
 
   return Ok(undefined);
@@ -304,12 +299,28 @@ async function processTemplateFile(
 ): Promise<Result<void, CLIError>> {
   try {
     const { logger, verbose } = context;
-    const templatePath = resolve(
-      dirname(__filename),
-      '../templates',
+
+    // Validate template source path to prevent directory traversal
+    const baseTemplateDir = resolve(dirname(__filename), '../templates');
+    const templatePathValidation = validateOutputPath(
       templateFile.source,
+      baseTemplateDir,
     );
-    const outputPath = join(config.projectPath, templateFile.destination);
+    if (!templatePathValidation.success) {
+      return templatePathValidation;
+    }
+
+    // Validate output destination path to prevent directory traversal
+    const outputPathValidation = validateOutputPath(
+      templateFile.destination,
+      config.projectPath,
+    );
+    if (!outputPathValidation.success) {
+      return outputPathValidation;
+    }
+
+    const templatePath = templatePathValidation.value;
+    const outputPath = outputPathValidation.value;
 
     if (config.dryRun) {
       logger.info(`Would create: ${templateFile.destination}`);
@@ -369,8 +380,9 @@ async function processTemplateFile(
  *
  * Creates a new Git repository, adds all generated files, and makes
  * an initial commit with a conventional commit message.
+ * Uses secure command execution to prevent injection attacks.
  *
- * @param projectPath - Absolute path to the project directory
+ * @param projectPath - Absolute path to the project directory (must be validated)
  * @param context - Generator context with logger for user feedback
  * @returns Promise resolving to Result indicating Git initialization success or failure
  *
@@ -391,15 +403,35 @@ async function initializeGitRepository(
   const { logger: _logger } = context;
 
   try {
+    // Validate project path to prevent command injection
+    const pathValidation = validateProjectPath(projectPath, process.cwd());
+    if (!pathValidation.success) {
+      return pathValidation;
+    }
+    const safePath = pathValidation.value;
+
     const spinner = ora('Initializing git repository...').start();
 
-    await execa('git', ['init'], { cwd: projectPath });
-    await execa('git', ['add', '.'], { cwd: projectPath });
-    await execa(
-      'git',
-      ['commit', '-m', 'feat: initial commit with trailhead-cli generator'],
-      { cwd: projectPath },
-    );
+    // Use secure command execution with validated path
+    await execa('git', ['init'], {
+      cwd: safePath,
+      stdio: 'pipe', // Prevent output injection
+      shell: false, // Disable shell interpretation
+    });
+
+    await execa('git', ['add', '.'], {
+      cwd: safePath,
+      stdio: 'pipe',
+      shell: false,
+    });
+
+    // Use predefined commit message to prevent injection
+    const commitMessage = 'feat: initial commit with trailhead-cli generator';
+    await execa('git', ['commit', '-m', commitMessage], {
+      cwd: safePath,
+      stdio: 'pipe',
+      shell: false,
+    });
 
     spinner.succeed('Git repository initialized');
     return Ok(undefined);
@@ -407,7 +439,8 @@ async function initializeGitRepository(
     return Err(
       createError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
         cause: error,
-        details: error instanceof Error ? error.message : String(error),
+        details:
+          'Git initialization failed - ensure git is installed and the directory is writable',
       }),
     );
   }
@@ -418,6 +451,7 @@ async function initializeGitRepository(
  *
  * Executes the appropriate install command for the selected package manager
  * (npm, pnpm, yarn, or bun) in the project directory.
+ * Uses secure command execution to prevent injection attacks.
  *
  * @param config - Project configuration containing package manager selection
  * @param context - Generator context with logger for user feedback
@@ -443,14 +477,34 @@ async function installDependencies(
   const { logger: _logger } = context;
 
   try {
+    // Validate package manager to prevent command injection
+    const packageManagerValidation = validatePackageManager(
+      config.packageManager,
+    );
+    if (!packageManagerValidation.success) {
+      return packageManagerValidation;
+    }
+
+    // Validate project path to prevent command injection
+    const pathValidation = validateProjectPath(
+      config.projectPath,
+      process.cwd(),
+    );
+    if (!pathValidation.success) {
+      return pathValidation;
+    }
+    const safePath = pathValidation.value;
+
     const spinner = ora(
-      `Installing dependencies with ${config.packageManager}...`,
+      `Installing dependencies with ${packageManagerValidation.value}...`,
     ).start();
 
-    const installCommand = getInstallCommand(config.packageManager);
+    const installCommand = getInstallCommand(packageManagerValidation.value);
     await execa(installCommand.command, installCommand.args, {
-      cwd: config.projectPath,
-      stdio: 'pipe',
+      cwd: safePath,
+      stdio: 'pipe', // Prevent output injection
+      shell: false, // Disable shell interpretation
+      timeout: 300000, // 5 minute timeout for security
     });
 
     spinner.succeed('Dependencies installed');
@@ -462,7 +516,8 @@ async function installDependencies(
         'Failed to install dependencies',
         {
           cause: error,
-          details: error instanceof Error ? error.message : String(error),
+          details:
+            'Dependency installation failed - ensure the package manager is installed and accessible',
         },
       ),
     );
