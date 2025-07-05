@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
-        run: pnpm test --max-workers=4
+        run: pnpm test --concurrency=50%
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4

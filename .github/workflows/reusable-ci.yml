@@ -235,7 +235,7 @@ jobs:
           name: turbo-cache
 
       - name: Run tests with coverage and parallel execution
-        run: pnpm test --max-workers=${{ runner.os == 'macOS' && 3 || 4 }} --reporter=verbose
+        run: pnpm test --concurrency=${{ runner.os == 'macOS' && '25%' || '50%' }} --reporter=verbose
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
