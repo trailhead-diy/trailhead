@@ -1,0 +1,77 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Build Command
+ * 
+ * Example command that demonstrates trailhead-cli patterns:
+ * - Functional command creation
+ * - Result-based error handling
+ * - Context usage for logging and filesystem
+ */
+export const buildCommand = createCommand({
+  name: 'build',
+  description: 'Build the project',
+  options: [
+    {
+      name: 'output',
+      alias: 'o',
+      type: 'string',
+      description: 'Output directory',
+      default: 'dist'
+    },
+    {
+      name: 'watch',
+      alias: 'w',
+      type: 'boolean',
+      description: 'Watch for changes'
+    },
+    {
+      name: 'minify',
+      type: 'boolean',
+      description: 'Minify output'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, fs, verbose } = context
+    
+    try {
+      logger.info('Starting build process...')
+      
+      if (verbose) {
+        logger.debug('Build options:', options)
+      }
+      
+      // Example build logic using filesystem abstraction
+      const outputDir = options.output as string
+      const ensureResult = await fs.ensureDirectory(outputDir)
+      
+      if (!ensureResult.success) {
+        logger.error(`Failed to create output directory: ${ensureResult.error.message}`)
+        return ensureResult
+      }
+      
+      // Simulate build process
+      logger.info(`Building to ${outputDir}...`)
+      
+      if (options.watch) {
+        logger.info('Watching for changes... (Press Ctrl+C to stop)')
+        // Watch mode implementation would go here
+      }
+      
+      if (options.minify) {
+        logger.info('Minifying output...')
+        // Minification logic would go here
+      }
+      
+      logger.success('Build completed successfully!')
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Build failed: ${errorMessage}`)
+      return Err(new Error(`Build failed: ${errorMessage}`))
+    }
+  }
+})

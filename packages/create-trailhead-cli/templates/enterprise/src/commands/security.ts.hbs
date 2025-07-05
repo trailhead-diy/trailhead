@@ -1,0 +1,434 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { select, confirm, input } from '@inquirer/prompts'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+import { SecurityScanner } from '../security/scanner.js'
+import { VulnerabilityChecker } from '../security/vulnerability.js'
+import { ComplianceChecker } from '../security/compliance.js'
+import { AuditLogger } from '../security/audit.js'
+
+/**
+ * Security Command
+ * 
+ * Enterprise security features:
+ * - Vulnerability scanning
+ * - Compliance checking
+ * - Security audit logging
+ * - Access control validation
+ * - Dependency security analysis
+ */
+export const securityCommand = createCommand({
+  name: 'security',
+  description: 'Security scanning and compliance checking',
+  aliases: ['sec'],
+  options: [
+    {
+      name: 'scan',
+      alias: 's',
+      type: 'string',
+      description: 'Scan type (deps|code|config|all)'
+    },
+    {
+      name: 'compliance',
+      alias: 'c',
+      type: 'string',
+      description: 'Compliance standard (sox|gdpr|hipaa|pci)'
+    },
+    {
+      name: 'severity',
+      type: 'string',
+      description: 'Minimum severity level (low|medium|high|critical)'
+    },
+    {
+      name: 'fix',
+      alias: 'f',
+      type: 'boolean',
+      description: 'Auto-fix security issues where possible'
+    },
+    {
+      name: 'report',
+      alias: 'r',
+      type: 'string',
+      description: 'Generate security report (json|pdf|html)'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose } = context
+    
+    try {
+      logger.info('Starting security analysis...')
+      
+      const scanner = new SecurityScanner()
+      const vulnerabilityChecker = new VulnerabilityChecker()
+      const complianceChecker = new ComplianceChecker()
+      const auditLogger = new AuditLogger()
+      
+      // Log security event
+      await auditLogger.logSecurityEvent({
+        type: 'security_scan_initiated',
+        user: process.env.USER || 'unknown',
+        timestamp: new Date(),
+        details: { options }
+      })
+      
+      // Determine scan type
+      let scanType = options.scan
+      if (!scanType) {
+        scanType = await select({
+          message: 'Select security scan type:',
+          choices: [
+            { name: 'Dependency vulnerabilities', value: 'deps' },
+            { name: 'Source code analysis', value: 'code' },
+            { name: 'Configuration security', value: 'config' },
+            { name: 'Comprehensive scan', value: 'all' }
+          ]
+        })
+      }
+      
+      const minSeverity = options.severity || 'medium'
+      const shouldFix = options.fix || false
+      
+      if (verbose) {
+        logger.debug(`Scan type: ${scanType}, Min severity: ${minSeverity}, Auto-fix: ${shouldFix}`)
+      }
+      
+      const results = await runSecurityScan(
+        scanner,
+        vulnerabilityChecker,
+        scanType,
+        minSeverity,
+        logger
+      )
+      
+      // Check compliance if requested
+      if (options.compliance) {
+        const complianceResults = await runComplianceCheck(
+          complianceChecker,
+          options.compliance,
+          logger
+        )
+        results.compliance = complianceResults
+      }
+      
+      // Apply fixes if requested
+      if (shouldFix && results.fixableIssues.length > 0) {
+        const confirmFix = await confirm({
+          message: `Apply automatic fixes for ${results.fixableIssues.length} issues?`,
+          default: false
+        })
+        
+        if (confirmFix) {
+          const fixResults = await applySecurityFixes(results.fixableIssues, logger)
+          results.fixes = fixResults
+        }
+      }
+      
+      // Generate report
+      await generateSecurityReport(results, options.report, logger)
+      
+      // Log completion
+      await auditLogger.logSecurityEvent({
+        type: 'security_scan_completed',
+        user: process.env.USER || 'unknown',
+        timestamp: new Date(),
+        details: {
+          issues: results.issues.length,
+          critical: results.critical,
+          high: results.high,
+          medium: results.medium,
+          low: results.low
+        }
+      })
+      
+      // Summary
+      logger.info('')
+      logger.info('Security Scan Summary:')
+      logger.info(`  🔍 Total issues: ${results.issues.length}`)
+      if (results.critical > 0) logger.error(`  🚨 Critical: ${results.critical}`)
+      if (results.high > 0) logger.error(`  ⚠️  High: ${results.high}`)
+      if (results.medium > 0) logger.warn(`  📋 Medium: ${results.medium}`)
+      if (results.low > 0) logger.info(`  💡 Low: ${results.low}`)
+      
+      if (results.critical > 0 || results.high > 0) {
+        logger.error('Security issues found that require immediate attention!')
+        return Err(new Error(`${results.critical + results.high} critical/high severity issues found`))
+      }
+      
+      logger.success('Security scan completed successfully')
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Security scan failed: ${errorMessage}`)
+      return Err(new Error(`Security failed: ${errorMessage}`))
+    }
+  }
+})
+
+interface SecurityResults {
+  issues: SecurityIssue[]
+  fixableIssues: SecurityIssue[]
+  critical: number
+  high: number
+  medium: number
+  low: number
+  compliance?: ComplianceResults
+  fixes?: FixResults
+}
+
+interface SecurityIssue {
+  id: string
+  title: string
+  severity: 'critical' | 'high' | 'medium' | 'low'
+  description: string
+  file?: string
+  line?: number
+  fixable: boolean
+  cve?: string
+  references?: string[]
+}
+
+interface ComplianceResults {
+  standard: string
+  compliant: boolean
+  violations: ComplianceViolation[]
+  score: number
+}
+
+interface ComplianceViolation {
+  rule: string
+  description: string
+  severity: string
+  file?: string
+}
+
+interface FixResults {
+  attempted: number
+  successful: number
+  failed: number
+  details: string[]
+}
+
+/**
+ * Run security scan based on type
+ */
+async function runSecurityScan(
+  scanner: SecurityScanner,
+  vulnerabilityChecker: VulnerabilityChecker,
+  scanType: string,
+  minSeverity: string,
+  logger: any
+): Promise<SecurityResults> {
+  const results: SecurityResults = {
+    issues: [],
+    fixableIssues: [],
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0
+  }
+  
+  switch (scanType) {
+    case 'deps':
+      logger.info('Scanning dependencies for vulnerabilities...')
+      const depIssues = await vulnerabilityChecker.scanDependencies()
+      results.issues.push(...depIssues)
+      break
+      
+    case 'code':
+      logger.info('Analyzing source code for security issues...')
+      const codeIssues = await scanner.scanSourceCode()
+      results.issues.push(...codeIssues)
+      break
+      
+    case 'config':
+      logger.info('Checking configuration security...')
+      const configIssues = await scanner.scanConfiguration()
+      results.issues.push(...configIssues)
+      break
+      
+    case 'all':
+      logger.info('Running comprehensive security scan...')
+      const [deps, code, config] = await Promise.all([
+        vulnerabilityChecker.scanDependencies(),
+        scanner.scanSourceCode(),
+        scanner.scanConfiguration()
+      ])
+      results.issues.push(...deps, ...code, ...config)
+      break
+  }
+  
+  // Filter by severity and categorize
+  const severityOrder = ['low', 'medium', 'high', 'critical']
+  const minSeverityIndex = severityOrder.indexOf(minSeverity)
+  
+  results.issues = results.issues.filter(issue => 
+    severityOrder.indexOf(issue.severity) >= minSeverityIndex
+  )
+  
+  // Count by severity
+  results.issues.forEach(issue => {
+    switch (issue.severity) {
+      case 'critical': results.critical++; break
+      case 'high': results.high++; break
+      case 'medium': results.medium++; break
+      case 'low': results.low++; break
+    }
+  })
+  
+  // Identify fixable issues
+  results.fixableIssues = results.issues.filter(issue => issue.fixable)
+  
+  return results
+}
+
+/**
+ * Run compliance check
+ */
+async function runComplianceCheck(
+  complianceChecker: ComplianceChecker,
+  standard: string,
+  logger: any
+): Promise<ComplianceResults> {
+  logger.info(`Checking ${standard.toUpperCase()} compliance...`)
+  
+  const results = await complianceChecker.checkCompliance(standard)
+  
+  if (results.compliant) {
+    logger.success(`✅ ${standard.toUpperCase()} compliant (Score: ${results.score}/100)`)
+  } else {
+    logger.error(`❌ ${standard.toUpperCase()} non-compliant (Score: ${results.score}/100)`)
+    logger.error(`Found ${results.violations.length} violations`)
+  }
+  
+  return results
+}
+
+/**
+ * Apply security fixes
+ */
+async function applySecurityFixes(
+  fixableIssues: SecurityIssue[],
+  logger: any
+): Promise<FixResults> {
+  const results: FixResults = {
+    attempted: fixableIssues.length,
+    successful: 0,
+    failed: 0,
+    details: []
+  }
+  
+  for (const issue of fixableIssues) {
+    try {
+      logger.info(`Fixing: ${issue.title}`)
+      
+      // Simulate fix application
+      // In a real implementation, this would apply actual fixes
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      results.successful++
+      results.details.push(`✅ Fixed: ${issue.title}`)
+      
+    } catch (error) {
+      results.failed++
+      results.details.push(`❌ Failed to fix: ${issue.title} - ${error}`)
+    }
+  }
+  
+  logger.info(`Fixed ${results.successful}/${results.attempted} issues`)
+  return results
+}
+
+/**
+ * Generate security report
+ */
+async function generateSecurityReport(
+  results: SecurityResults,
+  format: string | undefined,
+  logger: any
+): Promise<void> {
+  if (!format) return
+  
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const filename = `security-report-${timestamp}.${format}`
+  
+  try {
+    switch (format) {
+      case 'json':
+        const fs = await import('fs/promises')
+        await fs.writeFile(filename, JSON.stringify(results, null, 2))
+        break
+        
+      case 'html':
+        const htmlReport = generateHTMLReport(results)
+        const fs2 = await import('fs/promises')
+        await fs2.writeFile(filename, htmlReport)
+        break
+        
+      case 'pdf':
+        logger.warn('PDF generation not implemented in this example')
+        return
+        
+      default:
+        logger.error(`Unsupported report format: ${format}`)
+        return
+    }
+    
+    logger.success(`Security report generated: ${filename}`)
+    
+  } catch (error) {
+    logger.error(`Failed to generate report: ${error}`)
+  }
+}
+
+/**
+ * Generate HTML security report
+ */
+function generateHTMLReport(results: SecurityResults): string {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+        .critical { color: #d32f2f; font-weight: bold; }
+        .high { color: #f57c00; font-weight: bold; }
+        .medium { color: #fbc02d; }
+        .low { color: #388e3c; }
+        .issue { margin: 10px 0; padding: 10px; border-left: 4px solid #ddd; }
+        .summary { display: flex; gap: 20px; margin: 20px 0; }
+        .stat { padding: 10px; border-radius: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Security Scan Report</h1>
+        <p>Generated: ${new Date().toLocaleString()}</p>
+    </div>
+    
+    <div class="summary">
+        <div class="stat critical">Critical: ${results.critical}</div>
+        <div class="stat high">High: ${results.high}</div>
+        <div class="stat medium">Medium: ${results.medium}</div>
+        <div class="stat low">Low: ${results.low}</div>
+    </div>
+    
+    <h2>Security Issues</h2>
+    ${results.issues.map(issue => `
+        <div class="issue">
+            <h3 class="${issue.severity}">${issue.title}</h3>
+            <p><strong>Severity:</strong> ${issue.severity.toUpperCase()}</p>
+            <p><strong>Description:</strong> ${issue.description}</p>
+            ${issue.file ? `<p><strong>File:</strong> ${issue.file}${issue.line ? `:${issue.line}` : ''}</p>` : ''}
+            ${issue.cve ? `<p><strong>CVE:</strong> ${issue.cve}</p>` : ''}
+            <p><strong>Fixable:</strong> ${issue.fixable ? 'Yes' : 'No'}</p>
+        </div>
+    `).join('')}
+</body>
+</html>
+  `
+  
+  return html
+}

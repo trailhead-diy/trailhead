@@ -1,0 +1,383 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { select, confirm } from '@inquirer/prompts'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+import { MetricsCollector } from '../monitoring/metrics.js'
+import { HealthChecker } from '../monitoring/health.js'
+import { AlertManager } from '../monitoring/alerts.js'
+
+/**
+ * Monitor Command
+ * 
+ * Enterprise monitoring and observability features:
+ * - Real-time metrics collection
+ * - Health checks and diagnostics
+ * - Alert management
+ * - Performance monitoring
+ * - System resource tracking
+ */
+export const monitorCommand = createCommand({
+  name: 'monitor',
+  description: 'Monitor system health and performance',
+  options: [
+    {
+      name: 'mode',
+      alias: 'm',
+      type: 'string',
+      description: 'Monitoring mode (dashboard|metrics|health|alerts)'
+    },
+    {
+      name: 'interval',
+      alias: 'i',
+      type: 'number',
+      description: 'Collection interval in seconds',
+      default: 30
+    },
+    {
+      name: 'export',
+      alias: 'e',
+      type: 'string',
+      description: 'Export format (json|csv|prometheus)'
+    },
+    {
+      name: 'duration',
+      alias: 'd',
+      type: 'number',
+      description: 'Monitoring duration in minutes (0 for continuous)'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose } = context
+    
+    try {
+      logger.info('Starting monitoring session...')
+      
+      const metricsCollector = new MetricsCollector()
+      const healthChecker = new HealthChecker()
+      const alertManager = new AlertManager()
+      
+      // Determine monitoring mode
+      let mode = options.mode
+      if (!mode) {
+        mode = await select({
+          message: 'Select monitoring mode:',
+          choices: [
+            { name: 'Real-time dashboard', value: 'dashboard' },
+            { name: 'Metrics collection', value: 'metrics' },
+            { name: 'Health checks', value: 'health' },
+            { name: 'Alert management', value: 'alerts' }
+          ]
+        })
+      }
+      
+      const interval = (options.interval as number) * 1000 // Convert to ms
+      const duration = options.duration ? (options.duration as number) * 60 * 1000 : 0
+      
+      if (verbose) {
+        logger.debug(`Mode: ${mode}, Interval: ${interval}ms, Duration: ${duration || 'continuous'}`)
+      }
+      
+      switch (mode) {
+        case 'dashboard':
+          return await runDashboard(metricsCollector, healthChecker, interval, duration, logger)
+          
+        case 'metrics':
+          return await collectMetrics(metricsCollector, interval, duration, options.export, logger)
+          
+        case 'health':
+          return await runHealthChecks(healthChecker, interval, duration, logger)
+          
+        case 'alerts':
+          return await manageAlerts(alertManager, logger)
+          
+        default:
+          logger.error(`Unknown monitoring mode: ${mode}`)
+          return Err(new Error(`Invalid mode: ${mode}`))
+      }
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Monitoring failed: ${errorMessage}`)
+      return Err(new Error(`Monitor failed: ${errorMessage}`))
+    }
+  }
+})
+
+/**
+ * Run real-time dashboard
+ */
+async function runDashboard(
+  metricsCollector: MetricsCollector,
+  healthChecker: HealthChecker,
+  interval: number,
+  duration: number,
+  logger: any
+): Promise<Result<void, Error>> {
+  logger.info('Starting real-time dashboard...')
+  logger.info('Press Ctrl+C to stop')
+  
+  const startTime = Date.now()
+  let running = true
+  
+  // Setup signal handlers
+  process.on('SIGINT', () => {
+    running = false
+    logger.info('Stopping dashboard...')
+  })
+  
+  while (running) {
+    try {
+      // Clear console and show header
+      console.clear()
+      console.log('🔍 {{projectName}} - Real-time Dashboard')
+      console.log('=====================================\n')
+      
+      // Collect current metrics
+      const metrics = await metricsCollector.collect()
+      const healthStatus = await healthChecker.checkAll()
+      
+      // Display metrics
+      console.log('📊 System Metrics:')
+      console.log(`   CPU Usage: ${metrics.cpu.toFixed(1)}%`)
+      console.log(`   Memory: ${(metrics.memory.used / 1024 / 1024).toFixed(1)}MB / ${(metrics.memory.total / 1024 / 1024).toFixed(1)}MB`)
+      console.log(`   Disk: ${(metrics.disk.used / 1024 / 1024 / 1024).toFixed(1)}GB / ${(metrics.disk.total / 1024 / 1024 / 1024).toFixed(1)}GB`)
+      console.log(`   Network: ↑${(metrics.network.upload / 1024).toFixed(1)}KB/s ↓${(metrics.network.download / 1024).toFixed(1)}KB/s\n`)
+      
+      // Display health status
+      console.log('💚 Health Status:')
+      for (const [service, status] of Object.entries(healthStatus)) {
+        const icon = status.healthy ? '✅' : '❌'
+        console.log(`   ${icon} ${service}: ${status.message}`)
+      }
+      
+      console.log('\n🕐 Last updated:', new Date().toLocaleTimeString())
+      
+      // Check duration
+      if (duration > 0 && Date.now() - startTime >= duration) {
+        running = false
+        logger.info('Dashboard duration completed')
+      }
+      
+      // Wait for next interval
+      if (running) {
+        await new Promise(resolve => setTimeout(resolve, interval))
+      }
+      
+    } catch (error) {
+      logger.error('Dashboard error:', error)
+      await new Promise(resolve => setTimeout(resolve, interval))
+    }
+  }
+  
+  return Ok(undefined)
+}
+
+/**
+ * Collect and export metrics
+ */
+async function collectMetrics(
+  metricsCollector: MetricsCollector,
+  interval: number,
+  duration: number,
+  exportFormat: string | undefined,
+  logger: any
+): Promise<Result<void, Error>> {
+  logger.info('Starting metrics collection...')
+  
+  const metrics: any[] = []
+  const startTime = Date.now()
+  let running = true
+  
+  process.on('SIGINT', () => {
+    running = false
+    logger.info('Stopping metrics collection...')
+  })
+  
+  while (running) {
+    try {
+      const metric = await metricsCollector.collect()
+      metric.timestamp = new Date().toISOString()
+      metrics.push(metric)
+      
+      logger.info(`Collected metric: CPU ${metric.cpu.toFixed(1)}%, Memory ${(metric.memory.used / 1024 / 1024).toFixed(1)}MB`)
+      
+      if (duration > 0 && Date.now() - startTime >= duration) {
+        running = false
+      }
+      
+      if (running) {
+        await new Promise(resolve => setTimeout(resolve, interval))
+      }
+      
+    } catch (error) {
+      logger.error('Metrics collection error:', error)
+      await new Promise(resolve => setTimeout(resolve, interval))
+    }
+  }
+  
+  // Export metrics
+  if (exportFormat && metrics.length > 0) {
+    const filename = `metrics-${Date.now()}.${exportFormat}`
+    
+    switch (exportFormat) {
+      case 'json':
+        const fs = await import('fs/promises')
+        await fs.writeFile(filename, JSON.stringify(metrics, null, 2))
+        break
+        
+      case 'csv':
+        const csvContent = convertToCSV(metrics)
+        const fs2 = await import('fs/promises')
+        await fs2.writeFile(filename, csvContent)
+        break
+        
+      case 'prometheus':
+        const promContent = convertToPrometheus(metrics)
+        const fs3 = await import('fs/promises')
+        await fs3.writeFile(filename, promContent)
+        break
+    }
+    
+    logger.success(`Metrics exported to ${filename}`)
+  }
+  
+  logger.info(`Collected ${metrics.length} metric samples`)
+  return Ok(undefined)
+}
+
+/**
+ * Run health checks
+ */
+async function runHealthChecks(
+  healthChecker: HealthChecker,
+  interval: number,
+  duration: number,
+  logger: any
+): Promise<Result<void, Error>> {
+  logger.info('Starting health checks...')
+  
+  const startTime = Date.now()
+  let running = true
+  
+  process.on('SIGINT', () => {
+    running = false
+    logger.info('Stopping health checks...')
+  })
+  
+  while (running) {
+    try {
+      const healthStatus = await healthChecker.checkAll()
+      
+      for (const [service, status] of Object.entries(healthStatus)) {
+        if (status.healthy) {
+          logger.info(`✅ ${service}: ${status.message}`)
+        } else {
+          logger.error(`❌ ${service}: ${status.message}`)
+        }
+      }
+      
+      if (duration > 0 && Date.now() - startTime >= duration) {
+        running = false
+      }
+      
+      if (running) {
+        await new Promise(resolve => setTimeout(resolve, interval))
+      }
+      
+    } catch (error) {
+      logger.error('Health check error:', error)
+      await new Promise(resolve => setTimeout(resolve, interval))
+    }
+  }
+  
+  return Ok(undefined)
+}
+
+/**
+ * Manage alerts
+ */
+async function manageAlerts(
+  alertManager: AlertManager,
+  logger: any
+): Promise<Result<void, Error>> {
+  logger.info('Alert management interface')
+  
+  const action = await select({
+    message: 'Select action:',
+    choices: [
+      { name: 'View active alerts', value: 'view' },
+      { name: 'Configure alert rules', value: 'configure' },
+      { name: 'Test alert system', value: 'test' },
+      { name: 'Alert history', value: 'history' }
+    ]
+  })
+  
+  switch (action) {
+    case 'view':
+      const alerts = await alertManager.getActiveAlerts()
+      if (alerts.length === 0) {
+        logger.info('No active alerts')
+      } else {
+        logger.info(`${alerts.length} active alerts:`)
+        alerts.forEach(alert => {
+          logger.warn(`⚠️  ${alert.severity}: ${alert.message}`)
+        })
+      }
+      break
+      
+    case 'test':
+      const shouldTest = await confirm({
+        message: 'Send a test alert?',
+        default: false
+      })
+      
+      if (shouldTest) {
+        await alertManager.sendTestAlert()
+        logger.info('Test alert sent')
+      }
+      break
+      
+    default:
+      logger.info(`${action} functionality not implemented in this example`)
+  }
+  
+  return Ok(undefined)
+}
+
+/**
+ * Convert metrics to CSV format
+ */
+function convertToCSV(metrics: any[]): string {
+  if (metrics.length === 0) return ''
+  
+  const headers = Object.keys(metrics[0])
+  const rows = metrics.map(metric => 
+    headers.map(header => JSON.stringify(metric[header])).join(',')
+  )
+  
+  return [headers.join(','), ...rows].join('\n')
+}
+
+/**
+ * Convert metrics to Prometheus format
+ */
+function convertToPrometheus(metrics: any[]): string {
+  if (metrics.length === 0) return ''
+  
+  const latest = metrics[metrics.length - 1]
+  const lines = [
+    `# HELP cpu_usage CPU usage percentage`,
+    `# TYPE cpu_usage gauge`,
+    `cpu_usage ${latest.cpu}`,
+    ``,
+    `# HELP memory_used Memory used in bytes`,
+    `# TYPE memory_used gauge`,
+    `memory_used ${latest.memory.used}`,
+    ``,
+    `# HELP disk_used Disk used in bytes`,
+    `# TYPE disk_used gauge`,
+    `disk_used ${latest.disk.used}`
+  ]
+  
+  return lines.join('\n')
+}

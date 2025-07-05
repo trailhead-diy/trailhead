@@ -1,0 +1,127 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { input, confirm } from '@inquirer/prompts'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Dev Command
+ * 
+ * Example development command that demonstrates:
+ * - Interactive prompts
+ * - Configuration loading
+ * - Error handling patterns
+ */
+export const devCommand = createCommand({
+  name: 'dev',
+  description: 'Start development server',
+  aliases: ['serve', 'start'],
+  options: [
+    {
+      name: 'port',
+      alias: 'p',
+      type: 'number',
+      description: 'Port to serve on',
+      default: 3000
+    },
+    {
+      name: 'host',
+      alias: 'h',
+      type: 'string',
+      description: 'Host to bind to',
+      default: 'localhost'
+    },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: 'Open browser automatically'
+    },
+    {
+      name: 'interactive',
+      alias: 'i',
+      type: 'boolean',
+      description: 'Run in interactive mode'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose } = context
+    
+    try {
+      logger.info('Starting development server...')
+      
+      let port = options.port as number
+      let host = options.host as string
+      
+      // Interactive mode
+      if (options.interactive) {
+        logger.info('Running in interactive mode')
+        
+        const portInput = await input({
+          message: 'Port:',
+          default: String(port),
+          validate: (value) => {
+            const num = parseInt(value)
+            return num > 0 && num < 65536 ? true : 'Port must be between 1 and 65535'
+          }
+        })
+        port = parseInt(portInput)
+        
+        host = await input({
+          message: 'Host:',
+          default: host
+        })
+        
+        const shouldOpen = await confirm({
+          message: 'Open browser automatically?',
+          default: options.open ?? false
+        })
+        options.open = shouldOpen
+      }
+      
+      if (verbose) {
+        logger.debug('Server configuration:', { port, host, open: options.open })
+      }
+      
+      // Validate port availability (example)
+      const isPortAvailable = await checkPortAvailable(port)
+      if (!isPortAvailable.success) {
+        logger.error(`Port ${port} is already in use`)
+        return isPortAvailable
+      }
+      
+      logger.info(`Development server starting on http://${host}:${port}`)
+      
+      if (options.open) {
+        logger.info('Opening browser...')
+        // Browser opening logic would go here
+      }
+      
+      // Simulate server startup
+      logger.success('Development server is running!')
+      logger.info('Press Ctrl+C to stop')
+      
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Failed to start development server: ${errorMessage}`)
+      return Err(new Error(`Dev server failed: ${errorMessage}`))
+    }
+  }
+})
+
+/**
+ * Check if port is available (example utility function)
+ */
+async function checkPortAvailable(port: number): Promise<Result<boolean, Error>> {
+  try {
+    // This is a simplified example
+    // In real implementation, you'd check if the port is actually available
+    if (port < 1 || port > 65535) {
+      return Err(new Error('Invalid port range'))
+    }
+    
+    return Ok(true)
+  } catch (error) {
+    return Err(error instanceof Error ? error : new Error(String(error)))
+  }
+}

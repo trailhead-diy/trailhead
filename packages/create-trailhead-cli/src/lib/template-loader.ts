@@ -1,0 +1,246 @@
+import { resolve, dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import fg from 'fast-glob';
+import type {
+  TemplateVariant,
+  TemplateFile,
+  TemplateLoaderConfig,
+} from './types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+/**
+ * Load and discover template files for a specific template variant
+ *
+ * Scans both variant-specific and shared template directories to build
+ * a complete list of files needed for project generation. Combines
+ * templates from both sources with proper precedence and metadata.
+ *
+ * @param variant - Template variant identifier ('basic', 'advanced', 'enterprise')
+ * @param config - Optional configuration for custom template paths
+ * @returns Promise resolving to array of template file metadata objects
+ *
+ * @example
+ * ```typescript
+ * // Using default built-in templates
+ * const files = await getTemplateFiles('advanced')
+ *
+ * // Using custom template directories
+ * const customFiles = await getTemplateFiles('basic', {
+ *   templatesDir: '/custom/templates',
+ *   variantDirs: {
+ *     basic: '/custom/templates/minimal'
+ *   },
+ *   additionalDirs: ['/extra/templates']
+ * })
+ *
+ * console.log(`Found ${files.length} template files`)
+ * files.forEach(file => {
+ *   console.log(`${file.source} -> ${file.destination}`)
+ *   if (file.isTemplate) console.log('  (will be processed with Handlebars)')
+ *   if (file.executable) console.log('  (will be made executable)')
+ * })
+ * ```
+ *
+ * File discovery process:
+ * 1. Determine template directories (built-in or custom)
+ * 2. Load variant-specific files from variant directory
+ * 3. Load shared files from shared directory
+ * 4. Load files from additional directories if specified
+ * 5. Combine all sets with variant files taking precedence
+ * 6. Process file metadata (template detection, executable flags, path mapping)
+ *
+ * @see {@link loadTemplateFilesFromDirectory} for directory scanning logic
+ * @see {@link TemplateFile} for file metadata structure
+ * @see {@link TemplateLoaderConfig} for configuration options
+ */
+export async function getTemplateFiles(
+  variant: TemplateVariant,
+  config?: TemplateLoaderConfig,
+): Promise<TemplateFile[]> {
+  const { dirs } = resolveTemplatePaths(variant, config);
+
+  const files: TemplateFile[] = [];
+
+  // Load variant-specific files
+  const variantFiles = await loadTemplateFilesFromDirectory(
+    dirs.variant,
+    variant,
+  );
+  files.push(...variantFiles);
+
+  // Load shared files
+  const sharedFiles = await loadTemplateFilesFromDirectory(
+    dirs.shared,
+    'shared',
+  );
+  files.push(...sharedFiles);
+
+  // Load additional files if configured
+  if (config?.additionalDirs) {
+    for (const additionalDir of config.additionalDirs) {
+      const additionalFiles = await loadTemplateFilesFromDirectory(
+        additionalDir,
+        'additional',
+      );
+      files.push(...additionalFiles);
+    }
+  }
+
+  return files;
+}
+
+/**
+ * Resolve template directory paths based on configuration
+ *
+ * Determines the actual filesystem paths to use for template loading,
+ * supporting both built-in templates and custom template directories.
+ *
+ * @param variant - Template variant to load
+ * @param config - Optional loader configuration with custom paths
+ * @returns Object containing resolved paths and directory mappings
+ *
+ * @internal
+ *
+ * Resolution priority:
+ * 1. Custom variant directories from config.variantDirs
+ * 2. Custom base directory from config.templatesDir
+ * 3. Built-in template directories (default)
+ *
+ * @example
+ * ```typescript
+ * const { paths, dirs } = resolveTemplatePaths('advanced', {
+ *   templatesDir: '/custom/templates',
+ *   variantDirs: { advanced: '/special/advanced' }
+ * })
+ * // dirs.variant will be '/special/advanced'
+ * // dirs.shared will be '/custom/templates/shared'
+ * ```
+ */
+function resolveTemplatePaths(
+  variant: TemplateVariant,
+  config?: TemplateLoaderConfig,
+) {
+  // Default built-in template directory
+  const defaultTemplatesDir = resolve(__dirname, '../templates');
+
+  // Use custom base directory if provided, otherwise use built-in
+  const baseTemplatesDir = config?.templatesDir || defaultTemplatesDir;
+
+  // Resolve variant directory
+  const variantDir =
+    config?.variantDirs?.[variant] || join(baseTemplatesDir, variant);
+
+  // Resolve shared directory
+  const sharedDir = config?.sharedDir || join(baseTemplatesDir, 'shared');
+
+  return {
+    paths: {
+      base: baseTemplatesDir,
+      default: defaultTemplatesDir,
+    },
+    dirs: {
+      variant: variantDir,
+      shared: sharedDir,
+    },
+  };
+}
+
+/**
+ * Load template files from a specific directory with metadata processing
+ *
+ * Uses fast-glob to efficiently scan directory trees and extract file
+ * metadata including template detection, executable flags, and path mapping.
+ * Handles directory-not-found gracefully by returning empty arrays.
+ *
+ * @param dir - Absolute path to directory to scan
+ * @param prefix - Prefix to use for source path identification in metadata
+ * @returns Promise resolving to array of template file metadata
+ *
+ * @internal
+ *
+ * Processing steps:
+ * 1. Scan directory with fast-glob for all files (including dotfiles)
+ * 2. Convert absolute paths to relative paths within directory
+ * 3. Generate metadata for each file:
+ *    - Source path with prefix
+ *    - Destination path (processed for special cases)
+ *    - Template flag (.hbs extension detection)
+ *    - Executable flag (path-based detection)
+ *
+ * Special file handling:
+ * - `.hbs` files are marked as templates and extension is removed from destination
+ * - Files in `bin/`, `scripts/`, `.husky/` are marked as executable
+ * - Files starting with `_` are converted to dotfiles (e.g., `_gitignore` → `.gitignore`)
+ * - `DOT_` prefix is converted to `.` (e.g., `DOT_env` → `.env`)
+ *
+ * @see {@link processDestinationPath} for path transformation logic
+ * @see {@link isTemplateFile} for template detection logic
+ * @see {@link isExecutableFile} for executable detection logic
+ */
+async function loadTemplateFilesFromDirectory(
+  dir: string,
+  prefix: string,
+): Promise<TemplateFile[]> {
+  try {
+    const pattern = join(dir, '**/*');
+    const filePaths = await fg(pattern, {
+      dot: true,
+      onlyFiles: true,
+      followSymbolicLinks: false,
+    });
+
+    return filePaths.map((filePath) => {
+      const relativePath = filePath.replace(dir + '/', '');
+
+      return {
+        source: `${prefix}/${relativePath}`,
+        destination: processDestinationPath(relativePath),
+        isTemplate: isTemplateFile(filePath),
+        executable: isExecutableFile(filePath),
+      };
+    });
+  } catch {
+    // Directory doesn't exist, return empty array
+    return [];
+  }
+}
+
+/**
+ * Process destination path (remove .hbs extension, handle special cases)
+ */
+function processDestinationPath(relativePath: string): string {
+  let destination = relativePath;
+
+  // Remove .hbs extension from template files
+  if (destination.endsWith('.hbs')) {
+    destination = destination.slice(0, -4);
+  }
+
+  // Handle special filename replacements
+  destination = destination.replace(/^_/, '.'); // _gitignore -> .gitignore
+  destination = destination.replace(/DOT_/, '.'); // DOT_env -> .env
+
+  return destination;
+}
+
+/**
+ * Check if file is a Handlebars template
+ */
+function isTemplateFile(filePath: string): boolean {
+  return filePath.endsWith('.hbs');
+}
+
+/**
+ * Check if file should be executable
+ */
+function isExecutableFile(filePath: string): boolean {
+  const executablePaths = ['bin/', 'scripts/', '.husky/'];
+
+  return (
+    executablePaths.some((path) => filePath.includes(path)) ||
+    filePath.endsWith('.sh') ||
+    filePath.includes('lefthook')
+  );
+}

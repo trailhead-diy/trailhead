@@ -1,0 +1,522 @@
+---
+type: reference
+title: API Reference
+description: Complete API reference for {{projectName}} CLI commands and options
+---
+
+# API Reference
+
+Complete reference documentation for {{projectName}} CLI commands, options, and configuration.
+
+## CLI Commands
+
+### `{{packageName}} --help`
+
+Display help information for the CLI.
+
+**Usage:**
+```bash
+{{packageName}} --help
+{{packageName}} -h
+```
+
+**Output:**
+- List of available commands
+- Global options
+- Usage examples
+
+### `{{packageName}} --version`
+
+Display the current version of {{projectName}}.
+
+**Usage:**
+```bash
+{{packageName}} --version
+{{packageName}} -V
+```
+
+**Output:**
+- Version number (e.g., `{{version}}`)
+
+## Core Commands
+
+{{#if (eq template "basic")}}
+### `build`
+
+Build the project with the specified configuration.
+
+**Usage:**
+```bash
+{{packageName}} build [options]
+```
+
+**Options:**
+- `-o, --output <dir>` - Output directory (default: `dist`)
+- `-w, --watch` - Watch for changes and rebuild automatically
+- `--minify` - Minify the output files
+- `-v, --verbose` - Show detailed build information
+
+**Examples:**
+```bash
+# Basic build
+{{packageName}} build
+
+# Build with custom output directory
+{{packageName}} build --output build
+
+# Build with watch mode
+{{packageName}} build --watch
+
+# Production build with minification
+{{packageName}} build --minify
+```
+
+**Exit Codes:**
+- `0` - Build successful
+- `1` - Build failed
+- `2` - Invalid arguments
+
+### `dev`
+
+Start the development server.
+
+**Usage:**
+```bash
+{{packageName}} dev [options]
+```
+
+**Options:**
+- `-p, --port <number>` - Port to serve on (default: `3000`)
+- `-h, --host <string>` - Host to bind to (default: `localhost`)
+- `--open` - Open browser automatically
+- `-i, --interactive` - Run in interactive mode
+
+**Examples:**
+```bash
+# Start development server
+{{packageName}} dev
+
+# Custom port and host
+{{packageName}} dev --port 8080 --host 0.0.0.0
+
+# Open browser automatically
+{{packageName}} dev --open
+
+# Interactive mode
+{{packageName}} dev --interactive
+```
+
+**Exit Codes:**
+- `0` - Server started successfully
+- `1` - Server failed to start
+- `3` - Port already in use
+{{/if}}
+
+{{#if (eq template "advanced")}}
+### `init`
+
+Initialize a new project configuration.
+
+**Usage:**
+```bash
+{{packageName}} init [options]
+```
+
+**Options:**
+- `-f, --force` - Overwrite existing configuration
+- `-t, --template <type>` - Project template (library|application|cli|api)
+- `--skip-install` - Skip dependency installation
+
+**Examples:**
+```bash
+# Interactive initialization
+{{packageName}} init
+
+# Force overwrite existing config
+{{packageName}} init --force
+
+# Use specific template
+{{packageName}} init --template library
+```
+
+### `config`
+
+Manage project configuration.
+
+**Usage:**
+```bash
+{{packageName}} config [key] [value]
+{{packageName}} config [options]
+```
+
+**Options:**
+- `-g, --get <key>` - Get configuration value
+- `-s, --set <key=value>` - Set configuration value
+- `-l, --list` - List all configuration values
+- `--validate` - Validate configuration file
+
+**Examples:**
+```bash
+# Show all configuration
+{{packageName}} config --list
+
+# Get specific value
+{{packageName}} config build.target
+
+# Set configuration value
+{{packageName}} config --set build.minify=true
+
+# Validate configuration
+{{packageName}} config --validate
+```
+
+### `validate`
+
+Validate project files and configuration.
+
+**Usage:**
+```bash
+{{packageName}} validate [options]
+```
+
+**Options:**
+- `-c, --config` - Validate configuration files only
+- `-s, --source` - Validate source code files
+- `-t, --tests` - Validate test files
+- `-f, --fix` - Auto-fix issues where possible
+- `-p, --pattern <glob>` - Custom file pattern to validate
+
+**Examples:**
+```bash
+# Validate everything
+{{packageName}} validate
+
+# Validate only source files
+{{packageName}} validate --source
+
+# Validate and auto-fix
+{{packageName}} validate --fix
+
+# Custom pattern
+{{packageName}} validate --pattern "src/**/*.ts"
+```
+{{/if}}
+
+{{#if (eq template "enterprise")}}
+### `monitor`
+
+Monitor system health and performance.
+
+**Usage:**
+```bash
+{{packageName}} monitor [options]
+```
+
+**Options:**
+- `-m, --mode <type>` - Monitoring mode (dashboard|metrics|health|alerts)
+- `-i, --interval <seconds>` - Collection interval in seconds (default: 30)
+- `-e, --export <format>` - Export format (json|csv|prometheus)
+- `-d, --duration <minutes>` - Monitoring duration in minutes (0 for continuous)
+
+**Examples:**
+```bash
+# Real-time dashboard
+{{packageName}} monitor --mode dashboard
+
+# Collect metrics for 5 minutes
+{{packageName}} monitor --mode metrics --duration 5
+
+# Export metrics to JSON
+{{packageName}} monitor --mode metrics --export json
+
+# Health checks every 10 seconds
+{{packageName}} monitor --mode health --interval 10
+```
+
+### `security`
+
+Security scanning and compliance checking.
+
+**Usage:**
+```bash
+{{packageName}} security [options]
+```
+
+**Aliases:** `sec`
+
+**Options:**
+- `-s, --scan <type>` - Scan type (deps|code|config|all)
+- `-c, --compliance <standard>` - Compliance standard (sox|gdpr|hipaa|pci)
+- `--severity <level>` - Minimum severity level (low|medium|high|critical)
+- `-f, --fix` - Auto-fix security issues where possible
+- `-r, --report <format>` - Generate security report (json|pdf|html)
+
+**Examples:**
+```bash
+# Comprehensive security scan
+{{packageName}} security --scan all
+
+# Dependency vulnerability scan
+{{packageName}} security --scan deps
+
+# GDPR compliance check
+{{packageName}} security --compliance gdpr
+
+# Generate HTML report
+{{packageName}} security --scan all --report html
+
+# Auto-fix issues
+{{packageName}} security --scan code --fix
+```
+
+### `metrics`
+
+Collect and analyze performance metrics.
+
+**Usage:**
+```bash
+{{packageName}} metrics [options]
+```
+
+**Options:**
+- `--collect` - Start metrics collection
+- `--analyze` - Analyze collected metrics
+- `--report <format>` - Generate metrics report
+- `--clean` - Clean old metrics data
+
+**Examples:**
+```bash
+# Start collecting metrics
+{{packageName}} metrics --collect
+
+# Analyze metrics
+{{packageName}} metrics --analyze
+
+# Generate report
+{{packageName}} metrics --report json
+```
+{{/if}}
+
+## Global Options
+
+All commands support these global options:
+
+- `-v, --verbose` - Show detailed output
+- `--dry-run` - Show what would be done without executing
+- `--help` - Show command-specific help
+- `--no-color` - Disable colored output
+- `--quiet` - Suppress non-error output
+
+## Configuration File Reference
+
+### Configuration Schema
+
+{{#if (eq template "basic")}}
+```typescript
+interface ProjectConfig {
+  name: string
+  version: string
+  build: {
+    outDir: string        // default: "dist"
+    target: string        // default: "node18"
+    sourcemap: boolean    // default: true
+    minify: boolean       // default: false
+  }
+  server?: {
+    port: number          // default: 3000
+    host: string          // default: "localhost"
+  }
+}
+```
+{{/if}}
+
+{{#if (eq template "advanced")}}
+```typescript
+interface ProjectConfig {
+  name: string
+  type: 'library' | 'application' | 'cli' | 'api'
+  version: string
+  features: {
+    linting: boolean      // default: true
+    testing: boolean      // default: true
+    typescript: boolean   // default: true
+  }
+  build: {
+    outDir: string        // default: "dist"
+    target: string        // default: "node18"
+    sourcemap: boolean    // default: true
+    minify: boolean       // default: false
+  }
+}
+```
+{{/if}}
+
+{{#if (eq template "enterprise")}}
+```typescript
+interface ProjectConfig {
+  name: string
+  type: 'library' | 'application' | 'cli' | 'api'
+  version: string
+  features: {
+    linting: boolean      // default: true
+    testing: boolean      // default: true
+    typescript: boolean   // default: true
+    monitoring: boolean   // default: true
+    security: boolean     // default: true
+  }
+  build: {
+    outDir: string        // default: "dist"
+    target: string        // default: "node18"
+    sourcemap: boolean    // default: true
+    minify: boolean       // default: false
+  }
+  monitoring: {
+    enabled: boolean      // default: true
+    interval: number      // default: 30000 (ms)
+    exporters: string[]   // default: ["prometheus"]
+  }
+  security: {
+    scanLevel: 'basic' | 'advanced' | 'enterprise'  // default: "basic"
+    autoFix: boolean      // default: false
+    compliance: string[]  // default: []
+  }
+}
+```
+{{/if}}
+
+### Configuration Files
+
+The CLI looks for configuration in these files (in order):
+
+1. `{{packageName}}.config.js` - ES module configuration
+2. `{{packageName}}.config.cjs` - CommonJS configuration  
+3. `.{{packageName}}rc.json` - JSON configuration
+4. `.{{packageName}}rc.js` - JavaScript configuration
+5. `package.json` - In the `{{packageName}}` field
+
+### Example Configuration
+
+```javascript
+// {{packageName}}.config.js
+export default {
+  name: "{{projectName}}",
+  type: "cli",
+  version: "{{version}}",
+  features: {
+    linting: true,
+    testing: true,
+    typescript: true
+  },
+  build: {
+    outDir: "dist",
+    target: "node18",
+    sourcemap: true,
+    minify: process.env.NODE_ENV === "production"
+  }
+}
+```
+
+## Environment Variables
+
+The following environment variables are supported:
+
+### General
+- `NODE_ENV` - Environment mode (development|production|test)
+- `DEBUG` - Enable debug logging
+- `NO_COLOR` - Disable colored output
+
+### Build Configuration
+- `BUILD_TARGET` - Override build target
+- `BUILD_MINIFY` - Override minify setting (true|false)
+- `BUILD_SOURCEMAP` - Override sourcemap setting (true|false)
+
+### Server Configuration  
+- `PORT` - Override server port
+- `HOST` - Override server host
+
+{{#if (eq template "enterprise")}}
+### Monitoring
+- `MONITORING_ENABLED` - Enable monitoring (true|false)
+- `METRICS_INTERVAL` - Metrics collection interval (ms)
+- `PROMETHEUS_ENABLED` - Enable Prometheus exporter (true|false)
+- `PROMETHEUS_PORT` - Prometheus exporter port
+
+### Security
+- `SECURITY_SCAN_LEVEL` - Security scan level (basic|advanced|enterprise)
+- `SECURITY_AUTO_FIX` - Enable auto-fix (true|false)
+{{/if}}
+
+## Exit Codes
+
+The CLI uses standard exit codes:
+
+- `0` - Success
+- `1` - General error
+- `2` - Invalid arguments or configuration
+- `3` - Resource unavailable (e.g., port in use)
+- `4` - Permission denied
+- `5` - File not found
+{{#if (eq template "enterprise")}}
+- `10` - Security issues found
+- `11` - Compliance violations found
+{{/if}}
+
+## Error Handling
+
+All commands use Result-based error handling:
+
+```typescript
+type Result<T, E = Error> = 
+  | { success: true; value: T }
+  | { success: false; error: E }
+```
+
+Errors include:
+- Descriptive error messages
+- Suggestions for resolution
+- Context information
+- Recovery instructions where applicable
+
+## Logging
+
+The CLI provides structured logging with levels:
+
+- `debug` - Detailed debugging information
+- `info` - General information
+- `warn` - Warning messages
+- `error` - Error messages
+- `success` - Success confirmations
+
+Use `--verbose` for debug-level logging or `--quiet` to suppress non-error output.
+
+## Integration
+
+### Programmatic Usage
+
+```typescript
+import { createCLI } from '@esteban-url/trailhead-cli'
+import { myCommand } from './commands/my-command.js'
+
+const cli = createCLI({
+  name: '{{packageName}}',
+  version: '{{version}}',
+  description: '{{description}}',
+  commands: [myCommand]
+})
+
+// Run with custom arguments
+await cli.run(['build', '--output', 'custom-dist'])
+```
+
+### Testing
+
+```typescript
+import { createTestContext, runCLI } from '@esteban-url/trailhead-cli/testing'
+
+// Test commands
+const context = createTestContext()
+const result = await myCommand.execute(options, context)
+
+// Test full CLI
+const result = await runCLI(['build', '--verbose'])
+```

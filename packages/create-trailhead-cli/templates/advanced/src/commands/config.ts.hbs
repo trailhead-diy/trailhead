@@ -1,0 +1,165 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { loadConfig, defineConfig } from '@esteban-url/trailhead-cli/config'
+import { z } from 'zod'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Configuration schema for {{projectName}}
+ */
+const configSchema = z.object({
+  name: z.string(),
+  type: z.enum(['library', 'application', 'cli', 'api']),
+  version: z.string(),
+  features: z.object({
+    linting: z.boolean().default(true),
+    testing: z.boolean().default(true),
+    typescript: z.boolean().default(true)
+  }),
+  build: z.object({
+    outDir: z.string().default('dist'),
+    target: z.string().default('node18'),
+    sourcemap: z.boolean().default(true),
+    minify: z.boolean().default(false)
+  })
+})
+
+type ProjectConfig = z.infer<typeof configSchema>
+
+/**
+ * Config Command
+ * 
+ * Advanced example demonstrating:
+ * - Type-safe configuration management
+ * - Schema validation with Zod
+ * - Configuration file discovery
+ * - Environment-specific overrides
+ */
+export const configCommand = createCommand({
+  name: 'config',
+  description: 'Manage project configuration',
+  arguments: '[key] [value]',
+  options: [
+    {
+      name: 'get',
+      alias: 'g',
+      type: 'string',
+      description: 'Get configuration value'
+    },
+    {
+      name: 'set',
+      alias: 's',
+      type: 'string',
+      description: 'Set configuration value (format: key=value)'
+    },
+    {
+      name: 'list',
+      alias: 'l',
+      type: 'boolean',
+      description: 'List all configuration values'
+    },
+    {
+      name: 'validate',
+      type: 'boolean',
+      description: 'Validate configuration file'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose, args } = context
+    
+    try {
+      // Define configuration
+      const config = defineConfig(configSchema)
+      
+      // Load configuration
+      const loadResult = await loadConfig(config, '{{packageName}}')
+      
+      if (!loadResult.success) {
+        logger.error(`Failed to load configuration: ${loadResult.error.message}`)
+        return loadResult
+      }
+      
+      const projectConfig = loadResult.value
+      
+      // Handle different command operations
+      if (options.validate) {
+        logger.success('Configuration is valid!')
+        if (verbose) {
+          logger.debug('Configuration:', projectConfig)
+        }
+        return Ok(undefined)
+      }
+      
+      if (options.list) {
+        logger.info('Current configuration:')
+        console.log(JSON.stringify(projectConfig, null, 2))
+        return Ok(undefined)
+      }
+      
+      if (options.get) {
+        const value = getNestedValue(projectConfig, options.get)
+        if (value !== undefined) {
+          console.log(value)
+        } else {
+          logger.error(`Configuration key not found: ${options.get}`)
+          return Err(new Error(`Key not found: ${options.get}`))
+        }
+        return Ok(undefined)
+      }
+      
+      if (options.set) {
+        const [key, value] = options.set.split('=', 2)
+        if (!key || value === undefined) {
+          logger.error('Invalid format. Use: --set key=value')
+          return Err(new Error('Invalid set format'))
+        }
+        
+        logger.info(`Setting ${key} = ${value}`)
+        // In a real implementation, you'd update the config file
+        logger.warn('Configuration updates not implemented in this example')
+        return Ok(undefined)
+      }
+      
+      // Handle positional arguments
+      if (args.length > 0) {
+        const key = args[0]
+        const value = getNestedValue(projectConfig, key)
+        
+        if (value !== undefined) {
+          console.log(value)
+        } else {
+          logger.error(`Configuration key not found: ${key}`)
+          return Err(new Error(`Key not found: ${key}`))
+        }
+        
+        return Ok(undefined)
+      }
+      
+      // Default: show configuration summary
+      logger.info(`Project: ${projectConfig.name} (${projectConfig.type})`)
+      logger.info(`Version: ${projectConfig.version}`)
+      logger.info(`Features: ${Object.entries(projectConfig.features)
+        .filter(([, enabled]) => enabled)
+        .map(([name]) => name)
+        .join(', ')}`
+      )
+      logger.info(`Build target: ${projectConfig.build.target}`)
+      
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Config operation failed: ${errorMessage}`)
+      return Err(new Error(`Config failed: ${errorMessage}`))
+    }
+  }
+})
+
+/**
+ * Get nested object value by dot notation key
+ */
+function getNestedValue(obj: any, key: string): any {
+  return key.split('.').reduce((current, prop) => {
+    return current && current[prop] !== undefined ? current[prop] : undefined
+  }, obj)
+}

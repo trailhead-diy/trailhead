@@ -1,0 +1,152 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { input, select, confirm } from '@inquirer/prompts'
+import { join } from 'path'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Init Command
+ * 
+ * Advanced example demonstrating:
+ * - Interactive project initialization
+ * - Configuration file generation
+ * - Multi-step setup process
+ * - Validation and error recovery
+ */
+export const initCommand = createCommand({
+  name: 'init',
+  description: 'Initialize a new project configuration',
+  options: [
+    {
+      name: 'force',
+      alias: 'f',
+      type: 'boolean',
+      description: 'Overwrite existing configuration'
+    },
+    {
+      name: 'template',
+      alias: 't',
+      type: 'string',
+      description: 'Project template to use'
+    },
+    {
+      name: 'skip-install',
+      type: 'boolean',
+      description: 'Skip dependency installation'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, fs, verbose } = context
+    
+    try {
+      logger.info('Initializing project configuration...')
+      
+      // Check for existing configuration
+      const configPath = join(process.cwd(), '{{packageName}}.config.js')
+      const configExists = await fs.exists(configPath)
+      
+      if (configExists.success && configExists.value && !options.force) {
+        logger.warn('Configuration file already exists')
+        const shouldOverwrite = await confirm({
+          message: 'Overwrite existing configuration?',
+          default: false
+        })
+        
+        if (!shouldOverwrite) {
+          logger.info('Initialization cancelled')
+          return Ok(undefined)
+        }
+      }
+      
+      // Gather project information
+      const projectName = await input({
+        message: 'Project name:',
+        default: process.cwd().split('/').pop() || 'my-project',
+        validate: (value) => value.length > 0 ? true : 'Project name is required'
+      })
+      
+      const projectType = await select({
+        message: 'Project type:',
+        choices: [
+          { name: 'Library', value: 'library' },
+          { name: 'Application', value: 'application' },
+          { name: 'CLI Tool', value: 'cli' },
+          { name: 'API Server', value: 'api' }
+        ]
+      })
+      
+      const enableLinting = await confirm({
+        message: 'Enable linting?',
+        default: true
+      })
+      
+      const enableTesting = await confirm({
+        message: 'Enable testing setup?',
+        default: true
+      })
+      
+      // Generate configuration
+      const config = {
+        name: projectName,
+        type: projectType,
+        version: '1.0.0',
+        features: {
+          linting: enableLinting,
+          testing: enableTesting,
+          typescript: true
+        },
+        build: {
+          outDir: 'dist',
+          target: 'node18'
+        }
+      }
+      
+      // Write configuration file
+      const configContent = `export default ${JSON.stringify(config, null, 2)}`
+      const writeResult = await fs.writeFile(configPath, configContent)
+      
+      if (!writeResult.success) {
+        logger.error(`Failed to write configuration: ${writeResult.error.message}`)
+        return writeResult
+      }
+      
+      logger.success(`Configuration created: ${configPath}`)
+      
+      // Create basic project structure
+      const directories = ['src', 'tests', 'docs']
+      for (const dir of directories) {
+        const ensureResult = await fs.ensureDirectory(dir)
+        if (!ensureResult.success) {
+          logger.warn(`Failed to create directory: ${dir}`)
+        } else {
+          if (verbose) {
+            logger.debug(`Created directory: ${dir}`)
+          }
+        }
+      }
+      
+      // Create initial files
+      if (projectType === 'cli') {
+        const cliTemplate = `#!/usr/bin/env node
+console.log('Hello from ${projectName}!')
+`
+        await fs.writeFile('src/index.ts', cliTemplate)
+        logger.info('Created CLI entry point: src/index.ts')
+      }
+      
+      logger.success('Project initialization completed!')
+      logger.info('')
+      logger.info('Next steps:')
+      logger.info('  1. Review the generated configuration')
+      logger.info('  2. Install dependencies')
+      logger.info('  3. Start developing!')
+      
+      return Ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Initialization failed: ${errorMessage}`)
+      return Err(new Error(`Init failed: ${errorMessage}`))
+    }
+  }
+})

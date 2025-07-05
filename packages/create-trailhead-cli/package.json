@@ -1,0 +1,88 @@
+{
+  "name": "create-trailhead-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "CLI generator for creating projects with @esteban-url/trailhead-cli",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "@esteban-url:registry": "https://npm.pkg.github.com"
+  },
+  "bin": {
+    "create-trailhead-cli": "./bin/cli.js",
+    "create-th-cli": "./bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
+    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "test": "pnpm build && vitest run",
+    "test:coverage": "pnpm build && vitest run --coverage",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "pretest": "pnpm build",
+    "prepack": "pnpm build",
+    "validate": "pnpm types && pnpm lint && pnpm test"
+  },
+  "dependencies": {
+    "@esteban-url/trailhead-cli": "workspace:*",
+    "@inquirer/prompts": "^7.0.0",
+    "handlebars": "^4.7.8",
+    "fast-glob": "^3.3.2",
+    "execa": "^9.4.0",
+    "fs-extra": "^11.3.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
+    "@types/handlebars": "^4.1.0",
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "oxlint": "^0.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "bin",
+    "templates",
+    "README.md"
+  ],
+  "keywords": [
+    "cli",
+    "generator",
+    "scaffold",
+    "create",
+    "trailhead-cli",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "directory": "packages/create-trailhead-cli"
+  },
+  "license": "MIT"
+}

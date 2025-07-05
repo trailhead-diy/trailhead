@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+import { createCLI } from '@esteban-url/trailhead-cli'
+import { buildCommand } from './commands/build.js'
+import { devCommand } from './commands/dev.js'
+import { initCommand } from './commands/init.js'
+import { configCommand } from './commands/config.js'
+import { validateCommand } from './commands/validate.js'
+import { monitorCommand } from './commands/monitor.js'
+import { securityCommand } from './commands/security.js'
+import { metricsCommand } from './commands/metrics.js'
+import { setupMonitoring } from './monitoring/setup.js'
+import { initializeLogger } from './lib/logger.js'
+import { loadSecurityConfig } from './security/config.js'
+
+/**
+ * {{projectName}} CLI - Enterprise Edition
+ * 
+ * {{description}}
+ * Built with @esteban-url/trailhead-cli
+ * 
+ * Enterprise features:
+ * - Advanced monitoring and observability
+ * - Security scanning and compliance
+ * - Performance metrics and alerting
+ * - Audit logging and tracing
+ * - Health checks and diagnostics
+ * - Multi-environment configuration
+ */
+async function main() {
+  // Initialize enterprise features
+  const logger = await initializeLogger()
+  const securityConfig = await loadSecurityConfig()
+  await setupMonitoring(logger)
+  
+  logger.info('Starting {{projectName}} CLI - Enterprise Edition')
+  logger.info(`Security level: ${securityConfig.level}`)
+  
+  const cli = createCLI({
+    name: '{{packageName}}',
+    version: '{{version}}',
+    description: '{{description}} - Enterprise Edition',
+    commands: [
+      buildCommand,
+      devCommand,
+      initCommand,
+      configCommand,
+      validateCommand,
+      monitorCommand,
+      securityCommand,
+      metricsCommand
+    ]
+  })
+
+  // Setup global error handling
+  process.on('uncaughtException', (error) => {
+    logger.error('Uncaught exception:', error)
+    process.exit(1)
+  })
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled rejection at:', promise, 'reason:', reason)
+    process.exit(1)
+  })
+
+  await cli.run()
+}
+
+// Run the CLI
+main().catch((error) => {
+  console.error('Fatal error:', error)
+  process.exit(1)
+})

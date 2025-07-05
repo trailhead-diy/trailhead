@@ -1,0 +1,121 @@
+# {{projectName}}
+
+{{description}}
+
+Built with [@esteban-url/trailhead-cli](https://github.com/esteban-url/trailhead) framework.
+
+## Installation
+
+```bash
+# Install globally
+{{packageManager}} add -g {{packageName}}
+
+# Or run directly
+npx {{packageName}}
+```
+
+## Usage
+
+```bash
+# Build the project
+{{packageName}} build
+
+# Start development server
+{{packageName}} dev
+
+# Get help
+{{packageName}} --help
+```
+
+## Commands
+
+### `build`
+
+Build the project to the output directory.
+
+```bash
+{{packageName}} build [options]
+
+Options:
+  -o, --output <dir>    Output directory (default: dist)
+  -w, --watch          Watch for changes
+  --minify             Minify output
+```
+
+### `dev`
+
+Start the development server.
+
+```bash
+{{packageName}} dev [options]
+
+Options:
+  -p, --port <number>   Port to serve on (default: 3000)
+  -h, --host <string>   Host to bind to (default: localhost)
+  --open               Open browser automatically
+  -i, --interactive    Run in interactive mode
+```
+
+## Development
+
+```bash
+# Install dependencies
+{{packageManager}} install
+
+# Start development
+{{packageManager}} dev
+
+# Run tests
+{{packageManager}} test
+
+# Build for production
+{{packageName}} build
+```
+
+## Testing
+
+This project includes comprehensive tests using Vitest and the trailhead-cli testing utilities:
+
+```bash
+# Run all tests
+{{packageManager}} test
+
+# Run tests in watch mode
+{{packageManager}} test:watch
+
+# Generate coverage report
+{{packageManager}} test:coverage
+```
+
+## Project Structure
+
+```
+{{projectName}}/
+├── src/
+│   ├── index.ts          # Main CLI entry point
+│   └── commands/         # CLI commands
+│       ├── build.ts      # Build command
+│       └── dev.ts        # Development command
+├── tests/
+│   ├── unit/             # Unit tests
+│   └── integration/      # Integration tests
+├── bin/
+│   └── cli.js           # Executable entry point
+└── dist/                # Built output
+```
+
+## Documentation
+
+For more information about the trailhead-cli framework, visit the [documentation](https://github.com/esteban-url/trailhead).
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+{{license}} © {{currentYear}} {{author}}

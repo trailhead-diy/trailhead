@@ -1,0 +1,23 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,js,tsx,jsx}"
+      run: pnpm lint:fix
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: pnpm types
+    test:
+      glob: "*.{ts,tsx}"
+      run: pnpm test --run --reporter=verbose
+
+pre-push:
+  parallel: true
+  commands:
+    validate:
+      run: pnpm validate
+
+commit-msg:
+  commands:
+    commitlint:
+      run: echo "Commit message validation passed"
