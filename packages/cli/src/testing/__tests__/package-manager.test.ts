@@ -21,10 +21,12 @@ describe('Package Manager Detection', () => {
     vi.clearAllMocks();
     clearPackageManagerCache();
     process.env = { ...originalEnv };
+    delete process.env.FORCE_PACKAGE_MANAGER;
   });
 
   afterEach(() => {
     process.env = originalEnv;
+    clearPackageManagerCache();
   });
 
   describe('detectPackageManager', () => {
@@ -242,11 +244,18 @@ describe('Package Manager Detection', () => {
 
   describe('execPackageManagerCommand', () => {
     it('should respect custom timeout in exec options', () => {
+      process.env.FORCE_PACKAGE_MANAGER = 'npm';
+      clearPackageManagerCache();
+      
       mockExecSync
         .mockImplementationOnce(() => '9.1.4\n')
         .mockImplementationOnce(() => 'output');
 
-      const _result = execPackageManagerCommand('test', { timeout: 1000 });
+      const _result = execPackageManagerCommand('test', { 
+        timeout: 1000 
+      }, { 
+        cache: createPackageManagerCache() 
+      });
 
       expect(mockExecSync).toHaveBeenNthCalledWith(
         2,
@@ -258,6 +267,9 @@ describe('Package Manager Detection', () => {
     });
 
     it('should handle timeout errors', () => {
+      process.env.FORCE_PACKAGE_MANAGER = 'npm';
+      clearPackageManagerCache();
+      
       const timeoutError = new Error('Command timed out');
       (timeoutError as any).code = 'ETIMEDOUT';
 
@@ -270,7 +282,10 @@ describe('Package Manager Detection', () => {
       const result = execPackageManagerCommand(
         'slow-command',
         {},
-        { timeout: 100 },
+        { 
+          timeout: 100,
+          cache: createPackageManagerCache() 
+        },
       );
 
       expect(result.success).toBe(false);
@@ -361,10 +376,10 @@ describe('Package Manager Detection', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toContain(
-          'No package manager found. Tried: pnpm, npm, yarn',
+          'No package manager found. Tried: pnpm, npm',
         );
         expect(result.error.suggestion).toBe(
-          'Please install pnpm (recommended), npm, or yarn',
+          'Please install pnpm (recommended) or npm',
         );
         expect(result.error.details).toContain('FORCE_PACKAGE_MANAGER');
       }
