@@ -69,7 +69,10 @@ const pathSchema = z
   .string()
   .min(1, 'Path cannot be empty')
   .max(MAX_PATH_LENGTH, `Path must be ${MAX_PATH_LENGTH} characters or less`)
-  .refine((path: string) => !path.includes('\0'), 'Path contains null bytes');
+  .refine(
+    (path: string) => !path.includes('\u0000'),
+    'Path contains null bytes',
+  );
 
 const textSchema = z
   .string()
@@ -80,11 +83,11 @@ const textSchema = z
   .transform((text: string) => {
     // Remove dangerous characters
     let sanitized = text;
-    sanitized = sanitized.replace(/\0/g, ''); // null bytes
-    sanitized = sanitized.replace(/[\x01-\x08]/g, ''); // control chars
-    sanitized = sanitized.replace(/[\x0B\x0C]/g, ''); // form feed, vertical tab
-    sanitized = sanitized.replace(/[\x0E-\x1F]/g, ''); // other control chars
-    sanitized = sanitized.replace(/\x7F/g, ''); // delete char
+    sanitized = sanitized.replace(/\u0000/g, ''); // null bytes
+    sanitized = sanitized.replace(/[\u0001-\u0008]/g, ''); // control chars
+    sanitized = sanitized.replace(/[\u000B\u000C]/g, ''); // form feed, vertical tab
+    sanitized = sanitized.replace(/[\u000E-\u001F]/g, ''); // other control chars
+    sanitized = sanitized.replace(/\u007F/g, ''); // delete char
     return sanitized.trim();
   });
 

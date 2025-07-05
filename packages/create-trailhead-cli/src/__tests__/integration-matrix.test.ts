@@ -16,11 +16,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { rmSync, existsSync } from 'fs';
-import { execa } from 'execa';
-import {
-  createTestContext,
-  mockFileSystem,
-} from '@esteban-url/trailhead-cli/testing';
+import { createTestContext } from '@esteban-url/trailhead-cli/testing';
 import { generateProject } from '../lib/generator.js';
 import type {
   ProjectConfig,

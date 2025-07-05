@@ -150,7 +150,8 @@ export class TemplateCompiler {
       return sanitized.value
         .split(/[-_\s]+/)
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+          (word: string) =>
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join('');
     });
@@ -163,7 +164,8 @@ export class TemplateCompiler {
       const pascal = sanitized.value
         .split(/[-_\s]+/)
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+          (word: string) =>
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join('');
       return pascal.charAt(0).toLowerCase() + pascal.slice(1);
