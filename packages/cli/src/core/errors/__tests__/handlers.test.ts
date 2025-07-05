@@ -505,8 +505,8 @@ describe('Error Handlers', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn().mockResolvedValue(Err(error));
-      const delays: number[] = [];
+      const _operation = vi.fn().mockResolvedValue(Err(error));
+      const _delays: number[] = [];
 
       // Skip this test as p-retry handles backoff internally
       // and we can't easily test the exact delays

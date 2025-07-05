@@ -14,7 +14,6 @@ import {
   createBackupName,
   createFileStats,
   updateFileStats,
-  type FileComparison,
   type FileStats,
 } from '../file-utils.js';
 

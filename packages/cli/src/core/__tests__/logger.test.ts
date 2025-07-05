@@ -5,10 +5,8 @@ import {
   createSilentLogger,
   createPrefixedLogger,
   createCollectingLogger,
-  createFileLogger,
   formatLogMessages,
   filterLogMessages,
-  type Logger,
   type LogMessage,
 } from '../logger.js';
 

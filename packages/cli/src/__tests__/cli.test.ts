@@ -9,7 +9,7 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock process.cwd
-const mockCwd = vi.spyOn(process, 'cwd').mockReturnValue('/test/project');
+const _mockCwd = vi.spyOn(process, 'cwd').mockReturnValue('/test/project');
 
 describe('CLI Integration Tests', () => {
   beforeEach(() => {

@@ -249,7 +249,7 @@ export function createInteractiveTestHelper(
       promptCount: number,
       timeout = 15000,
     ): Promise<InteractiveTestResult> {
-      const responses = Array.from({ length: promptCount }, (_, i) => ({
+      const responses = Array.from({ length: promptCount }, () => ({
         prompt: new RegExp('.+[?:]\\s*$', 'm'), // Match lines ending with ? or :
         response: '', // Just press enter for defaults
       }));
