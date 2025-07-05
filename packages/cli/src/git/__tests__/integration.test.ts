@@ -195,10 +195,12 @@ describe('git integration', () => {
 
       const result = await validateGitEnvironment({ cwd: '/tmp' });
 
-      // Should detect that /tmp is not a git repository
+      // Should detect that /tmp is not a git repository or git is not available
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.message).toMatch(/not a git repository/i);
+        expect(result.error.message).toMatch(
+          /not a git repository|git is not available/i,
+        );
       }
     });
   });

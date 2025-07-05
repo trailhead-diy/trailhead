@@ -1,4 +1,4 @@
-import { Result, Ok, Err, map, isOk, isErr, CLIError } from '../core/index.js';
+import { Result, Ok, Err, map, CLIError } from '../core/index.js';
 import {
   executeGitCommandSimple,
   validateGitEnvironment,
