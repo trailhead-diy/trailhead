@@ -4,15 +4,51 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Weekly full cross-platform regression testing (Mondays 8 AM UTC)
+    - cron: '0 8 * * 1'
 
 permissions:
   contents: read
 
 jobs:
-  ci:
-    name: Main CI
+  # Check what changes triggered this workflow
+  check-changes:
+    name: Check Changes
+    runs-on: ubuntu-latest
+    outputs:
+      needs-cross-platform: ${{ steps.filter.outputs.cli == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.deps == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+      is-scheduled: ${{ github.event_name == 'schedule' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cli:
+              - 'packages/cli/**'
+            workflows:
+              - '.github/workflows/**'
+            deps:
+              - 'pnpm-lock.yaml'
+              - 'turbo.json'
+
+  # Cross-platform CI (only when needed)
+  ci-cross-platform:
+    name: Cross-Platform CI
+    needs: check-changes
+    if: needs.check-changes.outputs.needs-cross-platform == 'true'
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      # Main branch tests on all platforms
       os-matrix: '["ubuntu-latest", "windows-latest", "macos-latest"]'
+    secrets: inherit
+
+  # Ubuntu-only CI (for web-ui and other changes)
+  ci-ubuntu:
+    name: Ubuntu CI
+    needs: check-changes
+    if: needs.check-changes.outputs.needs-cross-platform == 'false'
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      os-matrix: '["ubuntu-latest"]'
     secrets: inherit
