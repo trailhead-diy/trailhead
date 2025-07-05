@@ -11,6 +11,7 @@ export default defineConfig({
     'prompts/index': 'src/prompts/index.ts',
     'testing/index': 'src/testing/index.ts',
     'utils/index': 'src/utils/index.ts',
+    'git/index': 'src/git/index.ts',
   },
   // ESM-only output
   format: ['esm'],

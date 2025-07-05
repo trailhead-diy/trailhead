@@ -510,8 +510,10 @@ pnpm build                  # Production build
   unused variables with underscore, fix type errors, and ensure code passes all static
   analysis checks.
 - `gcwm` = Fix all lint and ts errors and warnings (fixlint). Git commit with meaningful message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
-- `gpr` = GitHub pull request: Create PR with title from commits, run validation checks, assign reviewers based on changed files, and auto-link issues. Detects affected packages in monorepo.
+- `gpr` = GitHub pull request: 1) Ensure branch is up-to-date with main (git fetch origin && git rebase origin/main), 2) Create PR with title from commits, 3) Run validation checks, 4) Assign reviewers based on changed files, and auto-link issues. Detects affected packages in monorepo.
 - `gbcp` = Git branch, commit, push/PR workflow: 1) Create new feature branch from current branch, 2) Stage all changes and commit with meaningful message (gcwm), 3) Push branch and create PR with auto-generated description (gpr).
+- `sync` = Sync branch with main using rebase strategy: 1) git fetch origin, 2) git rebase origin/main, 3) resolve conflicts if needed.
+- `check-sync` = Check if current branch is up-to-date with main without pulling. Uses @esteban-url/trailhead-cli/git utilities.
 - `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger automated release via GitHub Action, 4) The automation handles version bumping, changelog generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
 - `pubdr` = Publish dry-run: Check what would be published without actually releasing. Runs `pnpm release:dry-run` to preview package contents and verify everything looks correct before actual publish. Use before `pub` to ensure safety.
 
