@@ -1,39 +1,56 @@
 # Dependencies
 node_modules/
-.pnpm-store/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.lcov
 
 # Build outputs
 dist/
+.next/
+out/
 build/
 *.tsbuildinfo
+.turbo/
 
-# Runtime
-.env
-.env.local
-.env.production
+# Misc
+.DS_Store
+*.pem
+.env*.local
+!.env.example
+.npmrc.local
 
-# Logs
-*.log
+# Debug
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 pnpm-debug.log*
 
-# Coverage
-coverage/
-.nyc_output/
-
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
 # OS
-.DS_Store
 Thumbs.db
 
-# Testing
-.vitest/
+.git-backup-*/
 
-# Temporary
-tmp/
+# Claude Code local settings
+**/.claude/settings.local.json
+
+# Transform logs (web-ui package)
+**/transform-logs/
+
+# Lefthook local configuration
+.lefthook-local.yml
+
+# Tool caches
+.turbo/.prettiercache
+.cache/
+
+# Temporary files
 temp/

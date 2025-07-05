@@ -17,19 +17,19 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
+    "build": "{{packageManager}} run clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
-    "test": "pnpm build && vitest run",
-    "test:coverage": "pnpm build && vitest run --coverage",
+    "test": "{{packageManager}} run build && vitest run",
+    "test:coverage": "{{packageManager}} run build && vitest run --coverage",
     "test:watch": "vitest",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "pretest": "pnpm build",
-    "prepack": "pnpm build",
-    "validate": "pnpm types && pnpm lint && pnpm test"
+    "pretest": "{{packageManager}} run build",
+    "prepack": "{{packageManager}} run build",
+    "validate": "{{packageManager}} run types && {{packageManager}} run lint && {{packageManager}} run test"
   },
   "dependencies": {
     "@esteban-url/trailhead-cli": "^0.1.0",
@@ -37,10 +37,20 @@
     "chalk": "^5.3.0",
     "commander": "^14.0.0",
     "fs-extra": "^11.3.0",
+    "glob": "^10.3.0",
     "ora": "^8.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+{{#unless IS_MONOREPO}}
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "oxlint": "^0.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+{{/unless}}{{#if IS_MONOREPO}}
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
@@ -51,10 +61,11 @@
     "tsup": "^8.5.0",
     "typescript": "^5.3.0",
     "vitest": "^1.2.0"
+{{/if}}
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"{{#if (eq packageManager "pnpm")}},
+    "pnpm": ">=8.0.0"{{/if}}
   },
   "sideEffects": false,
   "files": [

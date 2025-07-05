@@ -1,0 +1,183 @@
+name: Pre-Release Testing
+
+on:
+  push:
+    branches: ['release/*', 'main']
+  pull_request:
+    branches: ['main']
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      install_dependencies:
+        description: 'Install dependencies in generated projects'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  # Check if this should run (label-based or branch-based)
+  check-trigger:
+    name: Check Trigger
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: \{{steps.check.outputs.should_run}}
+    steps:
+      - id: check
+        run: |
+          if [[ "\{{github.ref}}" == refs/heads/main ]] || [[ "\{{github.ref}}" == refs/heads/release/* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif [[ "\{{github.event_name}}" == "pull_request" ]] && [[ "\{{contains(github.event.pull_request.labels.*.name, 'pre-release')}}" == "true" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          elif [[ "\{{github.event_name}}" == "workflow_dispatch" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Comprehensive generator E2E testing with dependency installation
+  generator-e2e:
+    name: Generator E2E Tests
+    runs-on: ubuntu-latest
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should_run == 'true'
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        install: [\{{github.event.inputs.install_dependencies || true}}]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Run comprehensive E2E tests
+        run: |
+          if [[ "\{{matrix.install}}" == "true" ]]; then
+            pnpm test:generator:full --install --ci
+          else
+            pnpm test:generator:full --ci
+          fi
+        working-directory: packages/create-trailhead-cli
+
+      - name: Upload test artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-failures-\{{matrix.install}}
+          path: |
+            /tmp/create-trailhead-cli-e2e-*
+          retention-days: 7
+
+  # Cross-platform compatibility testing (sample)
+  cross-platform:
+    name: Cross-Platform Test
+    runs-on: \{{matrix.os}}
+    needs: check-trigger
+    if: needs.check-trigger.outputs.should_run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            template: advanced
+            package_manager: pnpm
+          - os: windows-latest
+            template: basic
+            package_manager: npm
+          - os: macos-latest
+            template: enterprise
+            package_manager: pnpm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Test single combination
+        shell: bash
+        run: |
+          # Test one representative combination per platform
+          cd packages/create-trailhead-cli
+          
+          # Create test project
+          node dist/index.js generate test-\{{matrix.template}}-\{{matrix.package_manager}} \
+            --template \{{matrix.template}} \
+            --package-manager \{{matrix.package_manager}} \
+            --docs --git --force
+          
+          # Verify TypeScript compilation
+          cd test-\{{matrix.template}}-\{{matrix.package_manager}}
+          npx tsc --noEmit
+          
+          echo "✅ Cross-platform test passed on \{{matrix.os}}"
+
+  # Validation summary
+  validation-summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [check-trigger, generator-e2e, cross-platform]
+    if: always() && needs.check-trigger.outputs.should_run == 'true'
+    steps:
+      - name: Check results
+        run: |
+          if [[ "\{{needs.generator-e2e.result}}" == "success" ]] && [[ "\{{needs.cross-platform.result}}" == "success" ]]; then
+            echo "✅ All pre-release tests passed"
+            echo "🚀 Ready for release"
+          else
+            echo "❌ Pre-release tests failed"
+            echo "generator-e2e: \{{needs.generator-e2e.result}}"
+            echo "cross-platform: \{{needs.cross-platform.result}}"
+            exit 1
+          fi
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "## 🧪 Pre-Release Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Generator E2E | \{{needs.generator-e2e.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cross-Platform | \{{needs.cross-platform.result == 'success' && '✅ Passed' || '❌ Failed'}} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "\{{needs.generator-e2e.result}}" == "success" ]] && [[ "\{{needs.cross-platform.result}}" == "success" ]]; then
+            echo "🎉 **All tests passed! Ready for release.**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Some tests failed. Review before release.**" >> $GITHUB_STEP_SUMMARY
+          fi

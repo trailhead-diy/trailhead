@@ -5,7 +5,7 @@ import { buildCommand } from '../build.js'
 describe('build command', () => {
   let testContext: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     testContext = createTestContext({
       verbose: false,
       fs: mockFileSystem({

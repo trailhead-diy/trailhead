@@ -1,6 +1,16 @@
 {
+  {{#if IS_MONOREPO}}
   "extends": "@repo/typescript-config/base.json",
+  {{else}}
+  "$schema": "https://json.schemastore.org/tsconfig",
+  {{/if}}
   "compilerOptions": {
+    {{#unless IS_MONOREPO}}
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022"],
+    "moduleResolution": "bundler",
+    {{/unless}}
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
@@ -10,9 +20,24 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    {{#unless IS_MONOREPO}}
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
+    {{/unless}}
+    "resolveJsonModule": true,
+    {{#if HAS_SUBPATH_EXPORTS}}
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      {{#each SUBPATH_EXPORTS}}
+      "{{../packageName}}/{{this}}": ["src/{{this}}/index.ts"],
+      {{/each}}
+    }
+    {{else}}
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+    {{/if}}
   },
   "include": [
     "src/**/*"
@@ -20,6 +45,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

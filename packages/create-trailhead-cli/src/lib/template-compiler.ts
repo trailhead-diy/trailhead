@@ -1,4 +1,5 @@
-import { readFile, stat } from 'fs-extra';
+import fs from 'fs-extra';
+const { readFile, stat } = fs;
 import { createHash } from 'crypto';
 import Handlebars from 'handlebars';
 import { sanitizeText } from './security.js';

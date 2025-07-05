@@ -115,7 +115,7 @@ describe('Security Utilities', () => {
 
   describe('validatePackageManager', () => {
     it('should accept valid package managers', () => {
-      const validPMs = ['npm', 'pnpm', 'yarn', 'bun'];
+      const validPMs = ['npm', 'pnpm'];
 
       validPMs.forEach((pm) => {
         const result = validatePackageManager(pm);
@@ -132,6 +132,8 @@ describe('Security Utilities', () => {
 
     it('should reject invalid package managers', () => {
       const invalidPMs = [
+        'yarn',
+        'bun',
         'pip',
         'cargo',
         'gem',

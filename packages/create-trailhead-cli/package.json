@@ -28,7 +28,8 @@
     "test": "pnpm build && vitest run",
     "test:coverage": "pnpm build && vitest run --coverage",
     "test:watch": "vitest",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration": "pnpm build && vitest run src/__tests__/integration-matrix.test.ts",
+    "test:generator:full": "tsx scripts/test-generator-full.ts",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
@@ -57,6 +58,7 @@
     "@vitest/coverage-v8": "^1.2.0",
     "oxlint": "^0.2.0",
     "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
     "typescript": "^5.3.0",
     "vitest": "^1.2.0"
   },

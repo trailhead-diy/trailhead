@@ -1,0 +1,254 @@
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Health Check Status
+ */
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy'
+
+export interface HealthCheckResult {
+  name: string
+  status: HealthStatus
+  message?: string
+  timestamp: number
+  duration: number
+  metadata?: Record<string, any>
+}
+
+export interface HealthCheck {
+  name: string
+  check: () => Promise<Result<void>>
+  timeout?: number
+  critical?: boolean
+}
+
+/**
+ * HealthChecker - Enterprise health monitoring
+ */
+export class HealthChecker {
+  private checks: Map<string, HealthCheck> = new Map()
+  private results: Map<string, HealthCheckResult> = new Map()
+
+  /**
+   * Register a health check
+   */
+  register(check: HealthCheck): void {
+    this.checks.set(check.name, check)
+  }
+
+  /**
+   * Remove a health check
+   */
+  unregister(name: string): void {
+    this.checks.delete(name)
+    this.results.delete(name)
+  }
+
+  /**
+   * Run all health checks
+   */
+  async checkAll(): Promise<Result<HealthCheckResult[]>> {
+    try {
+      const results: HealthCheckResult[] = []
+
+      for (const [name, check] of this.checks) {
+        const result = await this.runSingleCheck(check)
+        results.push(result)
+        this.results.set(name, result)
+      }
+
+      return Ok(results)
+    } catch (error) {
+      return Err(createError('HEALTH_CHECK_FAILED', 'Failed to run health checks', {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+
+  /**
+   * Run a specific health check
+   */
+  async check(name: string): Promise<Result<HealthCheckResult>> {
+    try {
+      const check = this.checks.get(name)
+      if (!check) {
+        return Err(createError('HEALTH_CHECK_NOT_FOUND', `Health check not found: ${name}`, {
+          details: `No health check registered with name '${name}'`
+        }))
+      }
+
+      const result = await this.runSingleCheck(check)
+      this.results.set(name, result)
+
+      return Ok(result)
+    } catch (error) {
+      return Err(createError('HEALTH_CHECK_FAILED', `Health check failed: ${name}`, {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+
+  /**
+   * Get overall system health status
+   */
+  getOverallStatus(): HealthStatus {
+    const results = Array.from(this.results.values())
+
+    if (results.length === 0) {
+      return 'healthy'
+    }
+
+    const unhealthy = results.filter(r => r.status === 'unhealthy')
+    const degraded = results.filter(r => r.status === 'degraded')
+
+    if (unhealthy.length > 0) {
+      return 'unhealthy'
+    }
+
+    if (degraded.length > 0) {
+      return 'degraded'
+    }
+
+    return 'healthy'
+  }
+
+  /**
+   * Get all health check results
+   */
+  getResults(): HealthCheckResult[] {
+    return Array.from(this.results.values())
+  }
+
+  /**
+   * Get health summary
+   */
+  getSummary(): {
+    status: HealthStatus
+    total: number
+    healthy: number
+    degraded: number
+    unhealthy: number
+    lastCheck: number
+  } {
+    const results = this.getResults()
+    const status = this.getOverallStatus()
+
+    return {
+      status,
+      total: results.length,
+      healthy: results.filter(r => r.status === 'healthy').length,
+      degraded: results.filter(r => r.status === 'degraded').length,
+      unhealthy: results.filter(r => r.status === 'unhealthy').length,
+      lastCheck: Math.max(...results.map(r => r.timestamp), 0)
+    }
+  }
+
+  /**
+   * Run a single health check
+   */
+  private async runSingleCheck(check: HealthCheck): Promise<HealthCheckResult> {
+    const startTime = Date.now()
+    
+    try {
+      // Set timeout for health check
+      const timeout = check.timeout || 5000
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Health check timeout')), timeout)
+      })
+
+      // Run the health check with timeout
+      const result = await Promise.race([
+        check.check(),
+        timeoutPromise
+      ])
+
+      const duration = Date.now() - startTime
+
+      if (result.success) {
+        return {
+          name: check.name,
+          status: 'healthy',
+          message: 'Check passed',
+          timestamp: Date.now(),
+          duration
+        }
+      } else {
+        return {
+          name: check.name,
+          status: check.critical ? 'unhealthy' : 'degraded',
+          message: result.error.message,
+          timestamp: Date.now(),
+          duration
+        }
+      }
+    } catch (error) {
+      const duration = Date.now() - startTime
+      const errorMessage = error instanceof Error ? error.message : String(error)
+
+      return {
+        name: check.name,
+        status: check.critical ? 'unhealthy' : 'degraded',
+        message: `Health check failed: ${errorMessage}`,
+        timestamp: Date.now(),
+        duration,
+        metadata: { error: errorMessage }
+      }
+    }
+  }
+}
+
+/**
+ * Built-in health checks
+ */
+export const builtInHealthChecks = {
+  /**
+   * Memory usage health check
+   */
+  memory: (): HealthCheck => ({
+    name: 'memory',
+    check: async () => {
+      const memUsage = process.memoryUsage()
+      const heapUsedMB = memUsage.heapUsed / 1024 / 1024
+      const heapTotalMB = memUsage.heapTotal / 1024 / 1024
+      const usagePercentage = (heapUsedMB / heapTotalMB) * 100
+
+      if (usagePercentage > 90) {
+        return Err(createError('MEMORY_HIGH', `Memory usage too high: ${usagePercentage.toFixed(1)}%`))
+      }
+
+      return Ok(undefined)
+    },
+    timeout: 1000,
+    critical: true
+  }),
+
+  /**
+   * Disk space health check (simplified)
+   */
+  disk: (): HealthCheck => ({
+    name: 'disk',
+    check: async () => {
+      // In a real implementation, you'd check actual disk space
+      // This is a simplified example
+      return Ok(undefined)
+    },
+    timeout: 2000,
+    critical: true
+  }),
+
+  /**
+   * Network connectivity health check (simplified)
+   */
+  network: (): HealthCheck => ({
+    name: 'network',
+    check: async () => {
+      // In a real implementation, you'd test network connectivity
+      // This is a simplified example
+      return Ok(undefined)
+    },
+    timeout: 5000,
+    critical: false
+  })
+}

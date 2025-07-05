@@ -15,7 +15,7 @@ describe('init command', () => {
   const mockSelect = vi.fn()
   const mockConfirm = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
     
     testContext = createTestContext({

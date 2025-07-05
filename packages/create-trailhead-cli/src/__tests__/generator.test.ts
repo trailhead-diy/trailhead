@@ -85,7 +85,7 @@ describe('Generator Integration', () => {
   });
 
   it('should support different package managers', async () => {
-    const packageManagers = ['npm', 'pnpm', 'yarn', 'bun'] as const;
+    const packageManagers = ['npm', 'pnpm'] as const;
 
     for (const pm of packageManagers) {
       const config: ProjectConfig = {

@@ -12,7 +12,7 @@ const MAX_PROJECT_NAME_LENGTH = 100;
 const MAX_PATH_LENGTH = 260; // Windows MAX_PATH limit
 
 // Allowed package managers
-const ALLOWED_PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun'] as const;
+const ALLOWED_PACKAGE_MANAGERS = ['npm', 'pnpm'] as const;
 
 // Allowed template variants
 const ALLOWED_TEMPLATES = ['basic', 'advanced', 'enterprise'] as const;
@@ -389,6 +389,7 @@ export function sanitizeText(
   let sanitized = input;
 
   // Remove null bytes
+  // eslint-disable-next-line no-control-regex
   sanitized = sanitized.replace(/\0/g, '');
 
   // Remove dangerous control characters (preserving tab, newline, carriage return)

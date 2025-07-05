@@ -17,25 +17,25 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
+    "build": "{{packageManager}} run clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
-    "test": "pnpm build && vitest run",
-    "test:coverage": "pnpm build && vitest run --coverage",
+    "test": "{{packageManager}} run build && vitest run",
+    "test:coverage": "{{packageManager}} run build && vitest run --coverage",
     "test:watch": "vitest",
-    "test:security": "pnpm build && node dist/index.js security --scan all",
+    "test:security": "{{packageManager}} run build && node dist/index.js security --scan all",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "pretest": "pnpm build",
-    "prepack": "pnpm build",
-    "validate": "pnpm types && pnpm lint && pnpm test && pnpm test:security",
+    "pretest": "{{packageManager}} run build",
+    "prepack": "{{packageManager}} run build",
+    "validate": "{{packageManager}} run types && {{packageManager}} run lint && {{packageManager}} run test && {{packageManager}} run test:security",
     "monitor": "node dist/index.js monitor --mode dashboard",
     "security:scan": "node dist/index.js security --scan all --report json",
-    "audit:deps": "pnpm audit --audit-level moderate",
-    "audit:licenses": "pnpm licenses list"
+    "audit:deps": "{{packageManager}} audit{{#if (eq packageManager "pnpm")}} --audit-level moderate{{/if}}",
+    "audit:licenses": "{{#if (eq packageManager "pnpm")}}{{packageManager}} licenses list{{else}}npm list --depth=0{{/if}}"
   },
   "dependencies": {
     "@esteban-url/trailhead-cli": "^0.1.0",
@@ -73,8 +73,8 @@
     "@types/supertest": "^2.0.16"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"{{#if (eq packageManager "pnpm")}},
+    "pnpm": ">=8.0.0"{{/if}}
   },
   "sideEffects": false,
   "files": [

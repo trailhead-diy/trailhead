@@ -93,7 +93,28 @@ export async function getTemplateFiles(
     }
   }
 
-  return files;
+  // Filter files based on template variant
+  const filteredFiles = files.filter((file) => {
+    const isMonorepo = variant === 'enterprise';
+
+    // Skip monorepo-specific files for non-monorepo templates
+    if (!isMonorepo) {
+      const monorepoOnlyFiles = [
+        'pnpm-workspace.yaml',
+        'turbo.json',
+        'package.root.json',
+        '.changeset/config.json',
+      ];
+
+      if (monorepoOnlyFiles.some((filename) => file.destination === filename)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  return filteredFiles;
 }
 
 /**
@@ -123,7 +144,7 @@ export async function getTemplateFiles(
  * // dirs.shared will be '/custom/templates/shared'
  * ```
  */
-function resolveTemplatePaths(
+export function resolveTemplatePaths(
   variant: TemplateVariant,
   config?: TemplateLoaderConfig,
 ) {
@@ -250,7 +271,7 @@ async function loadTemplateFilesFromDirectory(
         return templateFile;
       })
       .filter((file): file is NonNullable<typeof file> => file !== null);
-  } catch (error) {
+  } catch (_error) {
     // Directory doesn't exist, return empty array
     return [];
   }

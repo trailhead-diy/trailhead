@@ -13,7 +13,7 @@ describe('config command', () => {
   const mockLoadConfig = vi.fn()
   const mockDefineConfig = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
     
     testContext = createTestContext({

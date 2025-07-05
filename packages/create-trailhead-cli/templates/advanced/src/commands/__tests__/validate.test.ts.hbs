@@ -16,7 +16,7 @@ describe('validate command', () => {
   const mockGlob = vi.fn()
   const mockReadFile = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
     
     testContext = createTestContext({

@@ -21,10 +21,11 @@ export type TemplateVariant = 'basic' | 'advanced' | 'enterprise';
 /**
  * Supported package managers for dependency installation
  *
- * All major Node.js package managers are supported with automatic
- * command detection and installation workflow adaptation.
+ * Focus on the two most widely used and stable package managers:
+ * - npm: Universal compatibility, industry standard
+ * - pnpm: Modern, efficient, monorepo-ready
  */
-export type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
+export type PackageManager = 'npm' | 'pnpm';
 
 /**
  * User-facing generation options from interactive prompts or CLI flags
@@ -121,10 +122,14 @@ export interface TemplateContext {
   // Git hooks configuration
   /** CLI version for smart test runner */
   CLI_VERSION: string;
+  /** Project name for template context */
+  PROJECT_NAME: string;
   /** Whether project is a monorepo */
   IS_MONOREPO: boolean;
   /** Package manager command */
   PACKAGE_MANAGER: string;
+  /** Package manager version */
+  PACKAGE_MANAGER_VERSION: string;
   /** Directory containing packages (for monorepos) */
   PACKAGES_DIR: string;
   /** Regex pattern to match package files */
@@ -139,6 +144,10 @@ export interface TemplateContext {
   HIGH_RISK_PATTERNS: string[];
   /** File patterns to skip for test execution */
   SKIP_PATTERNS: string[];
+  /** Whether project has subpath exports */
+  HAS_SUBPATH_EXPORTS: boolean;
+  /** List of subpath exports */
+  SUBPATH_EXPORTS: string[];
   /** Package name mappings (for monorepos) */
   PACKAGE_MAPPINGS?: Record<string, string>;
   /** Lint command */

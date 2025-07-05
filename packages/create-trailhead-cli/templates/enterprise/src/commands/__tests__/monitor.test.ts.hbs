@@ -41,7 +41,7 @@ describe('monitor command', () => {
     log: console.log
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
     
     testContext = createTestContext({

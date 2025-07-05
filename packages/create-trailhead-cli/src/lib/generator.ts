@@ -1,5 +1,5 @@
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
-import { resolve, join, dirname } from 'path';
+import { resolve, dirname } from 'path';
 import fs from 'fs-extra';
 const { ensureDir, copy, writeFile, chmod } = fs;
 import { fileURLToPath } from 'url';
@@ -103,9 +103,15 @@ export async function generateProject(
     logger.info(`Found ${templateFiles.length} template files`);
 
     // Phase 2.5: Pre-compile templates for better performance
+    // Get the resolved template directory from template loader
+    const { resolveTemplatePaths } = await import('./template-loader.js');
+    const { paths } = resolveTemplatePaths(
+      config.template,
+      context.templateConfig,
+    );
     const templatePaths = templateFiles
       .filter((f) => f.isTemplate)
-      .map((f) => resolve(dirname(__filename), '../templates', f.source));
+      .map((f) => resolve(paths.base, f.source));
 
     if (templatePaths.length > 0) {
       const precompileSpinner = ora('Pre-compiling templates...').start();
@@ -305,7 +311,13 @@ async function processTemplateFile(
     const { logger, verbose } = context;
 
     // Validate template source path to prevent directory traversal
-    const baseTemplateDir = resolve(dirname(__filename), '../templates');
+    // Get the resolved template directory from template loader
+    const { resolveTemplatePaths } = await import('./template-loader.js');
+    const { paths } = resolveTemplatePaths(
+      config.template,
+      context.templateConfig,
+    );
+    const baseTemplateDir = paths.base;
     const templatePathValidation = validateOutputPath(
       templateFile.source,
       baseTemplateDir,
@@ -481,7 +493,7 @@ async function initializeGitRepository(
  * Install project dependencies using the configured package manager
  *
  * Executes the appropriate install command for the selected package manager
- * (npm, pnpm, yarn, or bun) in the project directory.
+ * (npm or pnpm) in the project directory.
  * Uses secure command execution to prevent injection attacks.
  *
  * @param config - Project configuration containing package manager selection
@@ -493,8 +505,6 @@ async function initializeGitRepository(
  * Supported package managers:
  * - npm: `npm install`
  * - pnpm: `pnpm install`
- * - yarn: `yarn install`
- * - bun: `bun install`
  *
  * Installation runs with piped stdio to suppress verbose output while
  * still capturing errors for diagnostics.
@@ -559,9 +569,9 @@ async function installDependencies(
  * Get package manager install command configuration
  *
  * Maps package manager names to their respective install commands and arguments.
- * Supports all major Node.js package managers with fallback to npm.
+ * Supports npm and pnpm with fallback to npm.
  *
- * @param packageManager - Package manager identifier ('npm', 'pnpm', 'yarn', 'bun')
+ * @param packageManager - Package manager identifier ('npm', 'pnpm')
  * @returns Object containing the executable command and its arguments array
  *
  * @internal
@@ -583,11 +593,7 @@ function getInstallCommand(packageManager: string): {
 } {
   switch (packageManager) {
     case 'pnpm':
-      return { command: 'pnpm', args: ['install'] };
-    case 'yarn':
-      return { command: 'yarn', args: ['install'] };
-    case 'bun':
-      return { command: 'bun', args: ['install'] };
+      return { command: 'pnpm', args: ['install', '--ignore-workspace'] };
     default:
       return { command: 'npm', args: ['install'] };
   }

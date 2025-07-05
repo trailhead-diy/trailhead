@@ -1,10 +1,11 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
 import { createValidationPipeline } from '@esteban-url/trailhead-cli/core'
 import { glob } from 'glob'
 import { readFile } from 'fs/promises'
 import { z } from 'zod'
 import type { Result } from '@esteban-url/trailhead-cli/core'
+import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Validate Command
@@ -16,39 +17,42 @@ import type { Result } from '@esteban-url/trailhead-cli/core'
  * - Custom validation rules
  * - Batch validation with reporting
  */
-export const validateCommand = createCommand({
+interface ValidateOptions extends CommandOptions {
+  config?: boolean;
+  source?: boolean;
+  tests?: boolean;
+  fix?: boolean;
+  pattern?: string;
+}
+
+export const validateCommand = createCommand<ValidateOptions>({
   name: 'validate',
   description: 'Validate project files and configuration',
   options: [
     {
-      name: 'config',
-      alias: 'c',
-      type: 'boolean',
-      description: 'Validate configuration files only'
+      flags: '-c, --config',
+      description: 'Validate configuration files only',
+      type: 'boolean'
     },
     {
-      name: 'source',
-      alias: 's',
-      type: 'boolean',
-      description: 'Validate source code files'
+      flags: '-s, --source',
+      description: 'Validate source code files',
+      type: 'boolean'
     },
     {
-      name: 'tests',
-      alias: 't',
-      type: 'boolean',
-      description: 'Validate test files'
+      flags: '-t, --tests',
+      description: 'Validate test files',
+      type: 'boolean'
     },
     {
-      name: 'fix',
-      alias: 'f',
-      type: 'boolean',
-      description: 'Auto-fix validation issues where possible'
+      flags: '-f, --fix',
+      description: 'Auto-fix validation issues where possible',
+      type: 'boolean'
     },
     {
-      name: 'pattern',
-      alias: 'p',
-      type: 'string',
-      description: 'File pattern to validate (glob)'
+      flags: '-p, --pattern <pattern>',
+      description: 'File pattern to validate (glob)',
+      type: 'string'
     }
   ],
   action: async (options, context) => {
@@ -100,7 +104,7 @@ export const validateCommand = createCommand({
       // Report results
       if (verbose || warnings.length > 0) {
         warnings.forEach(result => {
-          logger.warn(`${result.file}: ${result.message}`)
+          logger.error(`${result.file}: ${result.message}`)
         })
       }
       
@@ -119,14 +123,16 @@ export const validateCommand = createCommand({
       logger.info('Validation Summary:')
       logger.info(`  ✓ ${validationResults.length - errors.length - warnings.length} passed`)
       if (warnings.length > 0) {
-        logger.warn(`  ⚠ ${warnings.length} warnings`)
+        logger.error(`  ⚠ ${warnings.length} warnings`)
       }
       if (errors.length > 0) {
         logger.error(`  ✗ ${errors.length} errors`)
       }
       
       if (errors.length > 0) {
-        return Err(new Error(`Validation failed with ${errors.length} errors`))
+        return Err(createError('VALIDATION_FAILED', `Validation failed with ${errors.length} errors`, {
+          details: `Found ${errors.length} validation errors that need to be fixed`
+        }))
       }
       
       logger.success('Validation completed successfully!')
@@ -135,7 +141,10 @@ export const validateCommand = createCommand({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Validation failed: ${errorMessage}`)
-      return Err(new Error(`Validation failed: ${errorMessage}`))
+      return Err(createError('VALIDATION_ERROR', `Validation failed: ${errorMessage}`, {
+        cause: error,
+        details: 'An unexpected error occurred during validation'
+      }))
     }
   }
 })

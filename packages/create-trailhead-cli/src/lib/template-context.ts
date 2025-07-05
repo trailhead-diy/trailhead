@@ -25,8 +25,10 @@ export async function createTemplateContext(
 
     // Git hooks configuration
     CLI_VERSION: '0.1.0',
+    PROJECT_NAME: config.projectName,
     IS_MONOREPO: isMonorepo,
     PACKAGE_MANAGER: config.packageManager,
+    PACKAGE_MANAGER_VERSION: '10.12.4',
     PACKAGES_DIR: 'packages',
     PACKAGES_PATTERN: '^packages/([^/]+)/',
     TEST_COMMAND: `${config.packageManager} test`,
@@ -57,6 +59,22 @@ export async function createTemplateContext(
       'docs/',
       '\\.smart-test-config\\.json$',
     ],
+
+    // Additional template variables
+    HAS_SUBPATH_EXPORTS: config.template === 'enterprise',
+    SUBPATH_EXPORTS:
+      config.template === 'enterprise'
+        ? [
+            'core',
+            'command',
+            'config',
+            'filesystem',
+            'prompts',
+            'testing',
+            'utils',
+            'git',
+          ]
+        : [],
 
     PACKAGE_MAPPINGS: isMonorepo
       ? {

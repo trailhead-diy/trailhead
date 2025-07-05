@@ -1,0 +1,353 @@
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Alert Severity Levels
+ */
+export type AlertSeverity = 'low' | 'medium' | 'high' | 'critical'
+
+/**
+ * Alert Status
+ */
+export type AlertStatus = 'firing' | 'resolved' | 'suppressed'
+
+/**
+ * Alert Interface
+ */
+export interface Alert {
+  id: string
+  name: string
+  message: string
+  severity: AlertSeverity
+  status: AlertStatus
+  timestamp: number
+  source: string
+  tags?: Record<string, string>
+  metadata?: Record<string, any>
+}
+
+/**
+ * Alert Rule Interface
+ */
+export interface AlertRule {
+  name: string
+  condition: (context: any) => boolean
+  severity: AlertSeverity
+  message: string
+  cooldown?: number
+  enabled?: boolean
+}
+
+/**
+ * Alert Channel Interface
+ */
+export interface AlertChannel {
+  name: string
+  type: 'console' | 'webhook' | 'email' | 'slack'
+  config: Record<string, any>
+  enabled?: boolean
+  severityFilter?: AlertSeverity[]
+}
+
+/**
+ * AlertManager - Enterprise alert management
+ */
+export class AlertManager {
+  private rules: Map<string, AlertRule> = new Map()
+  private channels: Map<string, AlertChannel> = new Map()
+  private alerts: Map<string, Alert> = new Map()
+  private lastTriggered: Map<string, number> = new Map()
+
+  /**
+   * Add an alert rule
+   */
+  addRule(rule: AlertRule): void {
+    this.rules.set(rule.name, { enabled: true, ...rule })
+  }
+
+  /**
+   * Remove an alert rule
+   */
+  removeRule(name: string): void {
+    this.rules.delete(name)
+  }
+
+  /**
+   * Add an alert channel
+   */
+  addChannel(channel: AlertChannel): void {
+    this.channels.set(channel.name, { enabled: true, ...channel })
+  }
+
+  /**
+   * Remove an alert channel
+   */
+  removeChannel(name: string): void {
+    this.channels.delete(name)
+  }
+
+  /**
+   * Evaluate all alert rules
+   */
+  async evaluate(context: any): Promise<Result<Alert[]>> {
+    try {
+      const triggeredAlerts: Alert[] = []
+
+      for (const [name, rule] of this.rules) {
+        if (!rule.enabled) continue
+
+        const shouldTrigger = rule.condition(context)
+        if (shouldTrigger) {
+          const alert = await this.triggerAlert(rule, context)
+          if (alert.success) {
+            triggeredAlerts.push(alert.value)
+          }
+        }
+      }
+
+      return Ok(triggeredAlerts)
+    } catch (error) {
+      return Err(createError('ALERT_EVALUATION_FAILED', 'Failed to evaluate alert rules', {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+
+  /**
+   * Trigger an alert
+   */
+  async triggerAlert(rule: AlertRule, context: any): Promise<Result<Alert>> {
+    try {
+      // Check cooldown period
+      const lastTriggered = this.lastTriggered.get(rule.name) || 0
+      const cooldown = rule.cooldown || 300000 // 5 minutes default
+      
+      if (Date.now() - lastTriggered < cooldown) {
+        return Err(createError('ALERT_COOLDOWN', `Alert ${rule.name} is in cooldown period`))
+      }
+
+      // Create alert
+      const alert: Alert = {
+        id: `${rule.name}-${Date.now()}`,
+        name: rule.name,
+        message: rule.message,
+        severity: rule.severity,
+        status: 'firing',
+        timestamp: Date.now(),
+        source: 'alert-manager',
+        metadata: { context }
+      }
+
+      // Store alert
+      this.alerts.set(alert.id, alert)
+      this.lastTriggered.set(rule.name, Date.now())
+
+      // Send to channels
+      await this.sendToChannels(alert)
+
+      return Ok(alert)
+    } catch (error) {
+      return Err(createError('ALERT_TRIGGER_FAILED', `Failed to trigger alert: ${rule.name}`, {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+
+  /**
+   * Resolve an alert
+   */
+  async resolveAlert(alertId: string): Promise<Result<void>> {
+    try {
+      const alert = this.alerts.get(alertId)
+      if (!alert) {
+        return Err(createError('ALERT_NOT_FOUND', `Alert not found: ${alertId}`))
+      }
+
+      alert.status = 'resolved'
+      alert.metadata = { ...alert.metadata, resolvedAt: Date.now() }
+
+      // Send resolution notification
+      await this.sendToChannels(alert)
+
+      return Ok(undefined)
+    } catch (error) {
+      return Err(createError('ALERT_RESOLVE_FAILED', `Failed to resolve alert: ${alertId}`, {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+
+  /**
+   * Get all alerts
+   */
+  getAlerts(status?: AlertStatus): Alert[] {
+    const alerts = Array.from(this.alerts.values())
+    return status ? alerts.filter(a => a.status === status) : alerts
+  }
+
+  /**
+   * Get alert statistics
+   */
+  getStats(): {
+    total: number
+    firing: number
+    resolved: number
+    suppressed: number
+    bySeverity: Record<AlertSeverity, number>
+  } {
+    const alerts = this.getAlerts()
+    
+    return {
+      total: alerts.length,
+      firing: alerts.filter(a => a.status === 'firing').length,
+      resolved: alerts.filter(a => a.status === 'resolved').length,
+      suppressed: alerts.filter(a => a.status === 'suppressed').length,
+      bySeverity: {
+        low: alerts.filter(a => a.severity === 'low').length,
+        medium: alerts.filter(a => a.severity === 'medium').length,
+        high: alerts.filter(a => a.severity === 'high').length,
+        critical: alerts.filter(a => a.severity === 'critical').length
+      }
+    }
+  }
+
+  /**
+   * Send alert to configured channels
+   */
+  private async sendToChannels(alert: Alert): Promise<void> {
+    for (const [name, channel] of this.channels) {
+      if (!channel.enabled) continue
+
+      // Check severity filter
+      if (channel.severityFilter && !channel.severityFilter.includes(alert.severity)) {
+        continue
+      }
+
+      try {
+        await this.sendToChannel(channel, alert)
+      } catch (error) {
+        console.error(`Failed to send alert to channel ${name}:`, error)
+      }
+    }
+  }
+
+  /**
+   * Send alert to specific channel
+   */
+  private async sendToChannel(channel: AlertChannel, alert: Alert): Promise<void> {
+    switch (channel.type) {
+      case 'console':
+        this.sendToConsole(alert)
+        break
+      case 'webhook':
+        await this.sendToWebhook(channel.config, alert)
+        break
+      case 'email':
+        await this.sendToEmail(channel.config, alert)
+        break
+      case 'slack':
+        await this.sendToSlack(channel.config, alert)
+        break
+      default:
+        console.warn(`Unknown alert channel type: ${channel.type}`)
+    }
+  }
+
+  /**
+   * Send alert to console
+   */
+  private sendToConsole(alert: Alert): void {
+    const emoji = this.getSeverityEmoji(alert.severity)
+    const status = alert.status.toUpperCase()
+    
+    console.log(`\n${emoji} ALERT [${status}] ${alert.severity.toUpperCase()}`)
+    console.log(`Name: ${alert.name}`)
+    console.log(`Message: ${alert.message}`)
+    console.log(`Time: ${new Date(alert.timestamp).toISOString()}`)
+    console.log(`Source: ${alert.source}`)
+    if (alert.tags) {
+      console.log(`Tags: ${JSON.stringify(alert.tags)}`)
+    }
+    console.log('')
+  }
+
+  /**
+   * Send alert to webhook (simplified)
+   */
+  private async sendToWebhook(config: any, alert: Alert): Promise<void> {
+    // In a real implementation, you'd make an HTTP request
+    console.log(`Sending alert to webhook: ${config.url}`)
+    console.log(`Alert: ${alert.name} - ${alert.message}`)
+  }
+
+  /**
+   * Send alert to email (simplified)
+   */
+  private async sendToEmail(config: any, alert: Alert): Promise<void> {
+    // In a real implementation, you'd send an email
+    console.log(`Sending alert to email: ${config.to}`)
+    console.log(`Subject: [ALERT] ${alert.name}`)
+    console.log(`Body: ${alert.message}`)
+  }
+
+  /**
+   * Send alert to Slack (simplified)
+   */
+  private async sendToSlack(config: any, alert: Alert): Promise<void> {
+    // In a real implementation, you'd send to Slack API
+    console.log(`Sending alert to Slack channel: ${config.channel}`)
+    console.log(`Message: ${alert.name} - ${alert.message}`)
+  }
+
+  /**
+   * Get emoji for severity level
+   */
+  private getSeverityEmoji(severity: AlertSeverity): string {
+    switch (severity) {
+      case 'low': return '🟢'
+      case 'medium': return '🟡'
+      case 'high': return '🟠'
+      case 'critical': return '🔴'
+      default: return '⚪'
+    }
+  }
+}
+
+/**
+ * Built-in alert rules
+ */
+export const builtInAlertRules = {
+  /**
+   * High memory usage alert
+   */
+  highMemoryUsage: (): AlertRule => ({
+    name: 'high-memory-usage',
+    condition: (context) => {
+      const memUsage = process.memoryUsage()
+      const heapUsedMB = memUsage.heapUsed / 1024 / 1024
+      const heapTotalMB = memUsage.heapTotal / 1024 / 1024
+      const usagePercentage = (heapUsedMB / heapTotalMB) * 100
+      return usagePercentage > 80
+    },
+    severity: 'high',
+    message: 'Memory usage is above 80%',
+    cooldown: 300000 // 5 minutes
+  }),
+
+  /**
+   * Process uptime alert
+   */
+  longRunningProcess: (): AlertRule => ({
+    name: 'long-running-process',
+    condition: (context) => {
+      const uptimeHours = process.uptime() / 3600
+      return uptimeHours > 24 // Alert if process runs for more than 24 hours
+    },
+    severity: 'low',
+    message: 'Process has been running for more than 24 hours',
+    cooldown: 86400000 // 24 hours
+  })
+}

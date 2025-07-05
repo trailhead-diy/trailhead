@@ -5,7 +5,7 @@ import { devCommand } from '../dev.js'
 describe('dev command', () => {
   let testContext: any
 
-  beforeEach(() => {
+  beforeEach(async () => {
     testContext = createTestContext({
       verbose: false
     })

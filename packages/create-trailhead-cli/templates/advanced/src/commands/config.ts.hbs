@@ -1,8 +1,9 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
 import { loadConfig, defineConfig } from '@esteban-url/trailhead-cli/config'
 import { z } from 'zod'
 import type { Result } from '@esteban-url/trailhead-cli/core'
+import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Configuration schema for {{projectName}}
@@ -26,6 +27,13 @@ const configSchema = z.object({
 
 type ProjectConfig = z.infer<typeof configSchema>
 
+interface ConfigOptions extends CommandOptions {
+  get?: string;
+  set?: string;
+  list?: boolean;
+  validate?: boolean;
+}
+
 /**
  * Config Command
  * 
@@ -35,44 +43,38 @@ type ProjectConfig = z.infer<typeof configSchema>
  * - Configuration file discovery
  * - Environment-specific overrides
  */
-export const configCommand = createCommand({
+export const configCommand = createCommand<ConfigOptions>({
   name: 'config',
   description: 'Manage project configuration',
   arguments: '[key] [value]',
   options: [
     {
-      name: 'get',
-      alias: 'g',
-      type: 'string',
-      description: 'Get configuration value'
+      flags: '-g, --get <key>',
+      description: 'Get configuration value',
+      type: 'string'
     },
     {
-      name: 'set',
-      alias: 's',
-      type: 'string',
-      description: 'Set configuration value (format: key=value)'
+      flags: '-s, --set <key=value>',
+      description: 'Set configuration value (format: key=value)',
+      type: 'string'
     },
     {
-      name: 'list',
-      alias: 'l',
-      type: 'boolean',
-      description: 'List all configuration values'
+      flags: '-l, --list',
+      description: 'List all configuration values',
+      type: 'boolean'
     },
     {
-      name: 'validate',
-      type: 'boolean',
-      description: 'Validate configuration file'
+      flags: '--validate',
+      description: 'Validate configuration file',
+      type: 'boolean'
     }
   ],
   action: async (options, context) => {
     const { logger, verbose, args } = context
     
     try {
-      // Define configuration
-      const config = defineConfig(configSchema)
-      
       // Load configuration
-      const loadResult = await loadConfig(config, '{{packageName}}')
+      const loadResult = await loadConfig(configSchema, { name: '{{packageName}}' })
       
       if (!loadResult.success) {
         logger.error(`Failed to load configuration: ${loadResult.error.message}`)
@@ -85,7 +87,7 @@ export const configCommand = createCommand({
       if (options.validate) {
         logger.success('Configuration is valid!')
         if (verbose) {
-          logger.debug('Configuration:', projectConfig)
+          logger.debug(`Configuration: ${JSON.stringify(projectConfig)}`)
         }
         return Ok(undefined)
       }
@@ -102,7 +104,9 @@ export const configCommand = createCommand({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${options.get}`)
-          return Err(new Error(`Key not found: ${options.get}`))
+          return Err(createError('CONFIG_KEY_NOT_FOUND', `Key not found: ${options.get}`, {
+            details: `Configuration key '${options.get}' does not exist`
+          }))
         }
         return Ok(undefined)
       }
@@ -111,12 +115,14 @@ export const configCommand = createCommand({
         const [key, value] = options.set.split('=', 2)
         if (!key || value === undefined) {
           logger.error('Invalid format. Use: --set key=value')
-          return Err(new Error('Invalid set format'))
+          return Err(createError('INVALID_CONFIG_FORMAT', 'Invalid set format', {
+            details: 'Use format: --set key=value'
+          }))
         }
         
         logger.info(`Setting ${key} = ${value}`)
         // In a real implementation, you'd update the config file
-        logger.warn('Configuration updates not implemented in this example')
+        logger.error('Configuration updates not implemented in this example')
         return Ok(undefined)
       }
       
@@ -129,28 +135,33 @@ export const configCommand = createCommand({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${key}`)
-          return Err(new Error(`Key not found: ${key}`))
+          return Err(createError('CONFIG_KEY_NOT_FOUND', `Key not found: ${key}`, {
+            details: `Configuration key '${key}' does not exist`
+          }))
         }
         
         return Ok(undefined)
       }
       
       // Default: show configuration summary
-      logger.info(`Project: ${projectConfig.name} (${projectConfig.type})`)
-      logger.info(`Version: ${projectConfig.version}`)
-      logger.info(`Features: ${Object.entries(projectConfig.features)
+      logger.info(`Project: ${(projectConfig as any).name} (${(projectConfig as any).type})`)
+      logger.info(`Version: ${(projectConfig as any).version}`)
+      logger.info(`Features: ${Object.entries((projectConfig as any).features)
         .filter(([, enabled]) => enabled)
         .map(([name]) => name)
         .join(', ')}`
       )
-      logger.info(`Build target: ${projectConfig.build.target}`)
+      logger.info(`Build target: ${(projectConfig as any).build.target}`)
       
       return Ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Config operation failed: ${errorMessage}`)
-      return Err(new Error(`Config failed: ${errorMessage}`))
+      return Err(createError('CONFIG_OPERATION_FAILED', `Config failed: ${errorMessage}`, {
+        cause: error,
+        recoverable: true
+      }))
     }
   }
 })

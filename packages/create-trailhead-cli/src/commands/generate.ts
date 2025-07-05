@@ -60,7 +60,7 @@ interface GenerateCommandOptions {
  *
  * Features:
  * - Template variants: basic, advanced, enterprise
- * - Package manager support: npm, pnpm, yarn, bun
+ * - Package manager support: npm, pnpm
  * - Optional documentation generation
  * - Git repository initialization
  * - Automatic dependency installation
@@ -258,8 +258,6 @@ async function gatherConfiguration(
       choices: [
         { name: 'pnpm (recommended)', value: 'pnpm' },
         { name: 'npm', value: 'npm' },
-        { name: 'yarn', value: 'yarn' },
-        { name: 'bun', value: 'bun' },
       ],
       default: 'pnpm',
     })) as PackageManager;
