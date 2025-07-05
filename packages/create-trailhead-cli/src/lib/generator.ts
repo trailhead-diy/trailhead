@@ -1,12 +1,12 @@
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { resolve, dirname } from 'path';
-import fs from 'fs-extra';
-const { ensureDir, copy, writeFile, chmod } = fs;
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { fileURLToPath } from 'url';
 import {
   executeGitCommandSimple,
   validateGitEnvironment,
 } from '@esteban-url/trailhead-cli/git';
+import { detectPackageManager } from '@esteban-url/trailhead-cli/testing';
 import { execa } from 'execa';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -16,7 +16,7 @@ import {
   validatePackageManager,
   validateTemplate,
   validateOutputPath,
-} from './security.js';
+} from './validation.js';
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 import type {
@@ -30,6 +30,9 @@ import { TemplateCompiler } from './template-compiler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Global filesystem instance
+const fs = createNodeFileSystem();
 
 // Global template compiler instance for caching
 const templateCompiler = new TemplateCompiler();
@@ -170,7 +173,7 @@ export async function generateProject(
         context,
       );
       if (!gitResult.success) {
-        logger.warn('Failed to initialize git repository');
+        logger.warning('Failed to initialize git repository');
       }
     }
 
@@ -178,7 +181,7 @@ export async function generateProject(
     if (config.installDependencies && !config.dryRun) {
       const installResult = await installDependencies(config, context);
       if (!installResult.success) {
-        logger.warn('Failed to install dependencies');
+        logger.warning('Failed to install dependencies');
       }
     }
 
@@ -260,21 +263,20 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
 async function createProjectDirectory(
   projectPath: string,
 ): Promise<Result<void, CLIError>> {
-  try {
-    await ensureDir(projectPath);
-    return Ok(undefined);
-  } catch (error) {
+  const result = await fs.ensureDir(projectPath);
+  if (!result.success) {
     return Err(
       createError(
         'DIRECTORY_CREATE_FAILED',
         'Failed to create project directory',
         {
-          cause: error,
-          details: error instanceof Error ? error.message : String(error),
+          cause: result.error,
+          details: result.error.message,
         },
       ),
     );
   }
+  return Ok(undefined);
 }
 
 /**
@@ -344,7 +346,19 @@ async function processTemplateFile(
     }
 
     // Ensure output directory exists
-    await ensureDir(dirname(outputPath));
+    const ensureDirResult = await fs.ensureDir(dirname(outputPath));
+    if (!ensureDirResult.success) {
+      return Err(
+        createError(
+          'TEMPLATE_PROCESS_FAILED',
+          `Failed to create output directory ${dirname(outputPath)}`,
+          {
+            cause: ensureDirResult.error,
+            details: ensureDirResult.error.message,
+          },
+        ),
+      );
+    }
 
     if (templateFile.isTemplate) {
       // Process template with optimized compiler
@@ -353,7 +367,19 @@ async function processTemplateFile(
         templateContext,
       );
 
-      await writeFile(outputPath, processedContent, 'utf-8');
+      const writeResult = await fs.writeFile(outputPath, processedContent);
+      if (!writeResult.success) {
+        return Err(
+          createError(
+            'TEMPLATE_PROCESS_FAILED',
+            `Failed to write template file ${outputPath}`,
+            {
+              cause: writeResult.error,
+              details: writeResult.error.message,
+            },
+          ),
+        );
+      }
 
       if (verbose) {
         logger.debug(
@@ -362,7 +388,19 @@ async function processTemplateFile(
       }
     } else {
       // Copy file as-is
-      await copy(templatePath, outputPath);
+      const copyResult = await fs.copy(templatePath, outputPath);
+      if (!copyResult.success) {
+        return Err(
+          createError(
+            'TEMPLATE_PROCESS_FAILED',
+            `Failed to copy file ${templatePath} to ${outputPath}`,
+            {
+              cause: copyResult.error,
+              details: copyResult.error.message,
+            },
+          ),
+        );
+      }
 
       if (verbose) {
         logger.debug(
@@ -372,8 +410,19 @@ async function processTemplateFile(
     }
 
     // Set executable permissions if needed
+    // Note: CLI filesystem doesn't expose chmod, so we'll use fs directly for now
     if (templateFile.executable) {
-      await chmod(outputPath, 0o755);
+      try {
+        const { chmod } = await import('node:fs/promises');
+        await chmod(outputPath, 0o755);
+      } catch (error) {
+        // Non-critical error, just log it
+        if (verbose) {
+          logger.debug(
+            `Warning: Could not set executable permissions for ${outputPath}`,
+          );
+        }
+      }
     }
 
     return Ok(undefined);
@@ -502,14 +551,13 @@ async function initializeGitRepository(
  *
  * @internal
  *
- * Supported package managers:
- * - npm: `npm install`
- * - pnpm: `pnpm install`
+ * Automatically detects the best available package manager using CLI utilities.
+ * Supports npm and pnpm with proper version validation and caching.
  *
  * Installation runs with piped stdio to suppress verbose output while
  * still capturing errors for diagnostics.
  *
- * @see {@link getInstallCommand} for command resolution logic
+ * @see {@link detectPackageManager} for package manager detection logic
  */
 async function installDependencies(
   config: ProjectConfig,
@@ -518,14 +566,6 @@ async function installDependencies(
   const { logger: _logger } = context;
 
   try {
-    // Validate package manager to prevent command injection
-    const packageManagerValidation = validatePackageManager(
-      config.packageManager,
-    );
-    if (!packageManagerValidation.success) {
-      return packageManagerValidation;
-    }
-
     // Validate project path to prevent command injection
     const pathValidation = validateProjectPath(
       config.projectPath,
@@ -536,12 +576,34 @@ async function installDependencies(
     }
     const safePath = pathValidation.value;
 
+    // Use CLI package manager detection instead of manual validation
+    const packageManagerResult = detectPackageManager();
+    if (!packageManagerResult.success) {
+      return Err(
+        createError(
+          'PACKAGE_MANAGER_NOT_FOUND',
+          'No suitable package manager found',
+          {
+            cause: packageManagerResult.error,
+            details: packageManagerResult.error.message,
+            suggestion: packageManagerResult.error.suggestion,
+          },
+        ),
+      );
+    }
+
+    const packageManager = packageManagerResult.value;
     const spinner = ora(
-      `Installing dependencies with ${packageManagerValidation.value}...`,
+      `Installing dependencies with ${packageManager.name}...`,
     ).start();
 
-    const installCommand = getInstallCommand(packageManagerValidation.value);
-    await execa(installCommand.command, installCommand.args, {
+    // Use CLI package manager configuration
+    const installArgs =
+      packageManager.name === 'pnpm'
+        ? ['install', '--ignore-workspace']
+        : ['install'];
+
+    await execa(packageManager.command, installArgs, {
       cwd: safePath,
       stdio: 'pipe', // Prevent output injection
       shell: false, // Disable shell interpretation
@@ -565,36 +627,5 @@ async function installDependencies(
   }
 }
 
-/**
- * Get package manager install command configuration
- *
- * Maps package manager names to their respective install commands and arguments.
- * Supports npm and pnpm with fallback to npm.
- *
- * @param packageManager - Package manager identifier ('npm', 'pnpm')
- * @returns Object containing the executable command and its arguments array
- *
- * @internal
- *
- * @example
- * ```typescript
- * const npmCmd = getInstallCommand('npm')
- * // Returns: { command: 'npm', args: ['install'] }
- *
- * const pnpmCmd = getInstallCommand('pnpm')
- * // Returns: { command: 'pnpm', args: ['install'] }
- * ```
- *
- * @default Falls back to npm if package manager is not recognized
- */
-function getInstallCommand(packageManager: string): {
-  command: string;
-  args: string[];
-} {
-  switch (packageManager) {
-    case 'pnpm':
-      return { command: 'pnpm', args: ['install', '--ignore-workspace'] };
-    default:
-      return { command: 'npm', args: ['install'] };
-  }
-}
+// getInstallCommand function has been replaced with CLI package manager detection
+// See detectPackageManager() from @esteban-url/trailhead-cli/testing

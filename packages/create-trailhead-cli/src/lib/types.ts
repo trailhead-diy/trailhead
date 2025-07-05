@@ -13,10 +13,9 @@
  *
  * Each variant provides different levels of functionality and complexity:
  * - **basic**: Minimal CLI with essential features
- * - **advanced**: Full-featured CLI with examples and comprehensive testing
- * - **enterprise**: Production-ready CLI with monitoring, security, and observability
+ * - **advanced**: Basic features plus configuration and validation utilities
  */
-export type TemplateVariant = 'basic' | 'advanced' | 'enterprise';
+export type TemplateVariant = 'basic' | 'advanced';
 
 /**
  * Supported package managers for dependency installation
@@ -118,6 +117,8 @@ export interface TemplateContext {
   hasGit: boolean;
   /** Whether documentation generation is enabled */
   hasDocs: boolean;
+  /** Whether using advanced template */
+  isAdvanced: boolean;
 
   // Git hooks configuration
   /** CLI version for smart test runner */

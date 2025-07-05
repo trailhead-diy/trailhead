@@ -1,9 +1,11 @@
-import fs from 'fs-extra';
-const { readFile, stat } = fs;
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { createHash } from 'crypto';
 import Handlebars from 'handlebars';
-import { sanitizeText } from './security.js';
+import { sanitizeText } from './validation.js';
 import type { TemplateContext } from './types.js';
+
+// Global filesystem instance
+const fs = createNodeFileSystem();
 
 /**
  * Cache entry structure for compiled Handlebars templates
@@ -278,14 +280,20 @@ export class TemplateCompiler {
     }
 
     // Read and compile template
-    const templateContent = await readFile(templatePath, 'utf-8');
+    const contentResult = await fs.readFile(templatePath, 'utf-8');
+    if (!contentResult.success) {
+      throw new Error(
+        `Failed to read template file: ${contentResult.error.message}`,
+      );
+    }
+    const templateContent = contentResult.value;
 
     // Sanitize template context before compilation
     const sanitizedContext = this.sanitizeContext(context);
 
     const template = Handlebars.compile(templateContent, {
       // Security-focused configuration
-      noEscape: true, // Enable HTML escaping for security
+      noEscape: false, // Enable HTML escaping for security
       strict: true, // Strict mode to prevent undefined variable access
       assumeObjects: false,
       preventIndent: false,
@@ -309,6 +317,8 @@ export class TemplateCompiler {
     if (!cached) return null;
 
     try {
+      // Use node:fs/promises for stat since CLI filesystem doesn't expose it
+      const { stat } = await import('node:fs/promises');
       const stats = await stat(templatePath);
       const currentMtime = stats.mtime.getTime();
 
@@ -335,9 +345,18 @@ export class TemplateCompiler {
     template: HandlebarsTemplateDelegate,
   ): Promise<void> {
     try {
+      // Use node:fs/promises for stat since CLI filesystem doesn't expose it
+      const { stat } = await import('node:fs/promises');
       const stats = await stat(templatePath);
-      const templateContent = await readFile(templatePath, 'utf-8');
-      const hash = createHash('sha256').update(templateContent).digest('hex');
+
+      const contentResult = await fs.readFile(templatePath, 'utf-8');
+      if (!contentResult.success) {
+        return; // Can't cache if we can't read the file
+      }
+
+      const hash = createHash('sha256')
+        .update(contentResult.value)
+        .digest('hex');
 
       this.cache.set(templatePath, {
         template,
@@ -355,10 +374,14 @@ export class TemplateCompiler {
   async precompileTemplates(templatePaths: string[]): Promise<void> {
     const promises = templatePaths.map(async (templatePath) => {
       try {
-        const templateContent = await readFile(templatePath, 'utf-8');
-        const template = Handlebars.compile(templateContent, {
+        const contentResult = await fs.readFile(templatePath, 'utf-8');
+        if (!contentResult.success) {
+          return; // Skip files that can't be read
+        }
+
+        const template = Handlebars.compile(contentResult.value, {
           // Security-focused configuration
-          noEscape: true, // Enable HTML escaping for security
+          noEscape: false, // Enable HTML escaping for security
           strict: true, // Strict mode to prevent undefined variable access
           assumeObjects: false,
           preventIndent: false,

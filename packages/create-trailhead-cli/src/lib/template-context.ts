@@ -7,8 +7,9 @@ import type { ProjectConfig, TemplateContext } from './types.js';
 export async function createTemplateContext(
   config: ProjectConfig,
 ): Promise<TemplateContext> {
-  const isMonorepo = config.template === 'enterprise';
+  const isMonorepo = false; // No monorepo templates in simplified CLI generator
   const hasTypeScript = true; // All templates use TypeScript
+  const isAdvanced = config.template === 'advanced';
 
   return {
     projectName: config.projectName,
@@ -22,6 +23,7 @@ export async function createTemplateContext(
     currentYear: new Date().getFullYear(),
     hasGit: config.initGit,
     hasDocs: config.includeDocs,
+    isAdvanced,
 
     // Git hooks configuration
     CLI_VERSION: '0.1.0',
@@ -61,20 +63,8 @@ export async function createTemplateContext(
     ],
 
     // Additional template variables
-    HAS_SUBPATH_EXPORTS: config.template === 'enterprise',
-    SUBPATH_EXPORTS:
-      config.template === 'enterprise'
-        ? [
-            'core',
-            'command',
-            'config',
-            'filesystem',
-            'prompts',
-            'testing',
-            'utils',
-            'git',
-          ]
-        : [],
+    HAS_SUBPATH_EXPORTS: false, // No subpath exports in simplified templates
+    SUBPATH_EXPORTS: [], // No subpath exports needed
 
     PACKAGE_MAPPINGS: isMonorepo
       ? {

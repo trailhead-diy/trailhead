@@ -55,11 +55,11 @@ interface GenerateCommandOptions {
  * create-trailhead-cli my-project --template advanced --package-manager pnpm --git --install
  *
  * # Dry run mode
- * create-trailhead-cli my-project --dry-run --template enterprise
+ * create-trailhead-cli my-project --dry-run --template advanced
  * ```
  *
  * Features:
- * - Template variants: basic, advanced, enterprise
+ * - Template variants: basic, advanced
  * - Package manager support: npm, pnpm
  * - Optional documentation generation
  * - Git repository initialization
@@ -79,7 +79,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
       name: 'template',
       alias: 't',
       type: 'string',
-      description: 'Template variant (basic, advanced, enterprise)',
+      description: 'Template variant (basic, advanced)',
     },
     {
       name: 'package-manager',
@@ -239,12 +239,8 @@ async function gatherConfiguration(
       choices: [
         { name: 'Basic - Minimal CLI with essential features', value: 'basic' },
         {
-          name: 'Advanced - Full-featured CLI with examples and testing',
+          name: 'Advanced - Basic features plus configuration and validation',
           value: 'advanced',
-        },
-        {
-          name: 'Enterprise - Production-ready CLI with monitoring and security',
-          value: 'enterprise',
         },
       ],
       default: 'basic',

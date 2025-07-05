@@ -176,7 +176,7 @@ export async function validateTemplateConfig(
   // Validate base templates directory
   if (config.templatesDir) {
     try {
-      const { stat } = await import('fs-extra');
+      const { stat } = await import('node:fs/promises');
       const stats = await stat(config.templatesDir);
       if (!stats.isDirectory()) {
         errors.push(`templatesDir is not a directory: ${config.templatesDir}`);
@@ -191,7 +191,7 @@ export async function validateTemplateConfig(
     for (const [variant, path] of Object.entries(config.variantDirs)) {
       if (path) {
         try {
-          const { stat } = await import('fs-extra');
+          const { stat } = await import('node:fs/promises');
           const stats = await stat(path);
           if (!stats.isDirectory()) {
             errors.push(
@@ -208,7 +208,7 @@ export async function validateTemplateConfig(
   // Validate shared directory
   if (config.sharedDir) {
     try {
-      const { stat } = await import('fs-extra');
+      const { stat } = await import('node:fs/promises');
       const stats = await stat(config.sharedDir);
       if (!stats.isDirectory()) {
         errors.push(`sharedDir is not a directory: ${config.sharedDir}`);
@@ -222,7 +222,7 @@ export async function validateTemplateConfig(
   if (config.additionalDirs) {
     for (const [index, path] of config.additionalDirs.entries()) {
       try {
-        const { stat } = await import('fs-extra');
+        const { stat } = await import('node:fs/promises');
         const stats = await stat(path);
         if (!stats.isDirectory()) {
           errors.push(`additionalDir[${index}] is not a directory: ${path}`);

@@ -41,6 +41,9 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, testContext);
 
+    if (!result.success) {
+      console.error('Generator failed:', result.error.message);
+    }
     expect(result.success).toBe(true);
   });
 
@@ -65,7 +68,7 @@ describe('Generator Integration', () => {
   });
 
   it('should support different template variants', async () => {
-    const variants = ['basic', 'advanced', 'enterprise'] as const;
+    const variants = ['basic', 'advanced'] as const;
 
     for (const variant of variants) {
       const config: ProjectConfig = {

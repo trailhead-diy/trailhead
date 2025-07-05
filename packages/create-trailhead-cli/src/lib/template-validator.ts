@@ -106,7 +106,7 @@ export async function validateTemplateStructure(
 export async function validateAllTemplates(): Promise<
   TemplateValidationResult[]
 > {
-  const variants: TemplateVariant[] = ['basic', 'advanced', 'enterprise'];
+  const variants: TemplateVariant[] = ['basic', 'advanced'];
 
   const results = await Promise.all(
     variants.map((variant) => validateTemplateStructure(variant)),

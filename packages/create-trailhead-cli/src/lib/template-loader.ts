@@ -2,7 +2,7 @@ import { resolve, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
 import fg from 'fast-glob';
-import { validateTemplatePath } from './security.js';
+import { validateTemplatePath } from './validation.js';
 import type {
   TemplateVariant,
   TemplateFile,
@@ -19,7 +19,7 @@ const __dirname = dirname(__filename);
  * a complete list of files needed for project generation. Combines
  * templates from both sources with proper precedence and metadata.
  *
- * @param variant - Template variant identifier ('basic', 'advanced', 'enterprise')
+ * @param variant - Template variant identifier ('basic', 'advanced')
  * @param config - Optional configuration for custom template paths
  * @returns Promise resolving to array of template file metadata objects
  *
@@ -95,7 +95,7 @@ export async function getTemplateFiles(
 
   // Filter files based on template variant
   const filteredFiles = files.filter((file) => {
-    const isMonorepo = variant === 'enterprise';
+    const isMonorepo = false; // No monorepo support in simplified CLI generator
 
     // Skip monorepo-specific files for non-monorepo templates
     if (!isMonorepo) {

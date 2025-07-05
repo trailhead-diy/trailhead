@@ -12,10 +12,10 @@
  *   pnpm test:generator:full --install --ci  # CI mode with parallel execution
  *
  * Test Matrix:
- *   - 3 templates (basic, advanced, enterprise)
+ *   - 2 templates (basic, advanced)
  *   - 2 package managers (npm, pnpm)
  *   - 2 scenarios (minimal, full-setup)
- *   - Total: 12 comprehensive tests
+ *   - Total: 8 comprehensive tests
  */
 
 import { join } from 'path';
@@ -93,10 +93,10 @@ const scenarios: TestScenario[] = [
   },
 ];
 
-// Generate all test combinations (12 total)
+// Generate all test combinations (8 total)
 function generateTestCombinations(): TestCombination[] {
   const combinations: TestCombination[] = [];
-  const templates: TemplateVariant[] = ['basic', 'advanced', 'enterprise'];
+  const templates: TemplateVariant[] = ['basic', 'advanced'];
   const packageManagers: PackageManager[] = ['npm', 'pnpm'];
 
   for (const template of templates) {
@@ -492,10 +492,10 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log('  --help, -h      Show this help message');
   console.log('');
   console.log('Test Matrix:');
-  console.log('  • Templates: basic, advanced, enterprise');
+  console.log('  • Templates: basic, advanced');
   console.log('  • Package Managers: npm, pnpm');
   console.log('  • Scenarios: minimal, full-setup');
-  console.log('  • Total Combinations: 12');
+  console.log('  • Total Combinations: 8');
   process.exit(0);
 }
 
