@@ -4,20 +4,20 @@ on:
   workflow_call:
     inputs:
       os-matrix:
-        description: 'JSON array of operating systems to test on'
+        description: "JSON array of operating systems to test on"
         required: false
         type: string
         default: '["ubuntu-latest"]'
       node-version:
-        description: 'Node.js version to use'
+        description: "Node.js version to use"
         required: false
         type: string
-        default: '20.11.0'
+        default: "20.11.0"
       pnpm-version:
-        description: 'pnpm version to use'
+        description: "pnpm version to use"
         required: false
         type: string
-        default: '10.12.4'
+        default: "10.12.4"
 
 env:
   FORCE_COLOR: 3
@@ -37,7 +37,7 @@ jobs:
       tooling: ${{ steps.filter.outputs.tooling }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -77,12 +77,12 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: ./.github/actions/setup-node-pnpm
         with:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
-      
+
       - name: Cache Turborepo
         uses: actions/cache@v4
         continue-on-error: true
@@ -92,10 +92,10 @@ jobs:
           restore-keys: |
             turbo-build-${{ runner.os }}-
             turbo-${{ runner.os }}-
-      
+
       - name: Build packages
         run: pnpm build
-      
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -104,10 +104,9 @@ jobs:
             packages/*/dist/
             tooling/*/dist/
           retention-days: 1
-      
+
       - name: Upload Turborepo cache
         uses: actions/upload-artifact@v4
-        continue-on-error: true
         with:
           name: turbo-cache
           path: .turbo
@@ -126,10 +125,13 @@ jobs:
         task: [lint, format, security]
         include:
           - task: lint
+            cache-key: lint-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
             command: pnpm lint
           - task: format
+            cache-key: format-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.json', '**/*.md') }}
             command: pnpm format:check
           - task: security
+            cache-key: security-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
             command: pnpm audit --audit-level=high || echo "::warning::Security vulnerabilities found"
     steps:
       - uses: actions/checkout@v4
@@ -137,21 +139,20 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
-      
+
       - name: Cache quality check results
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
-          key: ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.cache-key }}
           restore-keys: |
+            ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ matrix.task }}-${{ runner.os }}-
-      
+
       - name: Run ${{ matrix.task }}
         run: ${{ matrix.command }}
-        continue-on-error: ${{ matrix.task == 'security' }}
 
   types:
     name: Type Check
@@ -165,30 +166,30 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
-      
+
       - name: Cache TypeScript compilation
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             **/tsconfig.tsbuildinfo
-          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/tsconfig.json') }}
           restore-keys: |
+            types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             types-${{ runner.os }}-
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-      
+
       - name: Download Turborepo cache
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: turbo-cache
-      
+        continue-on-error: true
+
       - name: Run type checking
         run: pnpm types
 
@@ -209,34 +210,34 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
-      
+
       - name: Cache test results
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             ~/.cache/vitest
             **/coverage
-          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.test.*', '**/*.spec.*') }}
           restore-keys: |
+            test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             test-${{ runner.os }}-
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-      
+
       - name: Download Turborepo cache
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: turbo-cache
-      
+        continue-on-error: true
+
       - name: Run tests with coverage and parallel execution
-        run: pnpm test -- --max-workers=${{ runner.os == 'macOS' && 3 || 4 }} --reporter=verbose
-      
+        run: pnpm test --max-workers=${{ runner.os == 'macOS' && 3 || 4 }} --reporter=verbose
+
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v5
@@ -260,12 +261,12 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-      
+
       - name: Test CLI installation
         continue-on-error: true
         run: |
@@ -274,7 +275,6 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm pack
           node dist/src/cli.js --help
-
 
   # Final status check
   status:
