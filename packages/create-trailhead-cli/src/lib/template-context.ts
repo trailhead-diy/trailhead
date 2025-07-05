@@ -1,4 +1,3 @@
-import { sanitizeText } from './security.js';
 import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
 import type { ProjectConfig, TemplateContext } from './types.js';
 
@@ -8,6 +7,9 @@ import type { ProjectConfig, TemplateContext } from './types.js';
 export async function createTemplateContext(
   config: ProjectConfig,
 ): Promise<TemplateContext> {
+  const isMonorepo = config.template === 'enterprise';
+  const hasTypeScript = true; // All templates use TypeScript
+
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
@@ -20,6 +22,64 @@ export async function createTemplateContext(
     currentYear: new Date().getFullYear(),
     hasGit: config.initGit,
     hasDocs: config.includeDocs,
+
+    // Git hooks configuration
+    CLI_VERSION: '0.1.0',
+    IS_MONOREPO: isMonorepo,
+    PACKAGE_MANAGER: config.packageManager,
+    PACKAGES_DIR: 'packages',
+    PACKAGES_PATTERN: '^packages/([^/]+)/',
+    TEST_COMMAND: `${config.packageManager} test`,
+    TIMEOUT: 120,
+    FILE_PATTERNS: hasTypeScript ? 'ts,tsx,js,jsx,json,md' : 'js,jsx,json,md',
+
+    HIGH_RISK_PATTERNS: [
+      hasTypeScript ? '\\.(ts|tsx|js|jsx)$' : '\\.(js|jsx)$',
+      'tsconfig',
+      'package\\.json$',
+      ...(isMonorepo ? ['turbo\\.json$'] : []),
+      'vitest\\.config',
+      'vite\\.config',
+      'tsup\\.config',
+      'lefthook\\.yml$',
+    ],
+
+    SKIP_PATTERNS: [
+      '\\.md$',
+      'README',
+      'CHANGELOG',
+      'LICENSE',
+      '\\.github/',
+      '\\.vscode/',
+      '\\.gitignore$',
+      '\\.prettierrc',
+      '\\.prettierignore',
+      'docs/',
+      '\\.smart-test-config\\.json$',
+    ],
+
+    PACKAGE_MAPPINGS: isMonorepo
+      ? {
+          cli: `@${config.projectName}/cli`,
+          core: `@${config.projectName}/core`,
+          utils: `@${config.projectName}/utils`,
+        }
+      : undefined,
+
+    LINT_COMMAND: 'oxlint',
+    TYPECHECK_COMMAND: hasTypeScript
+      ? `${config.packageManager} types`
+      : 'echo "No TypeScript"',
+    SMART_TEST_COMMAND: './scripts/smart-test-runner.sh',
+
+    SECRETS_PRIORITY: 5,
+    FILESIZE_PRIORITY: 6,
+    TESTS_PRIORITY: 7,
+
+    DOCS_VALIDATION: config.includeDocs,
+    CHANGESET_REMINDER: isMonorepo,
+    CONVENTIONAL_COMMITS: true,
+    LOCKFILE_VALIDATION: config.packageManager === 'pnpm',
   };
 }
 

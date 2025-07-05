@@ -117,6 +117,50 @@ export interface TemplateContext {
   hasGit: boolean;
   /** Whether documentation generation is enabled */
   hasDocs: boolean;
+
+  // Git hooks configuration
+  /** CLI version for smart test runner */
+  CLI_VERSION: string;
+  /** Whether project is a monorepo */
+  IS_MONOREPO: boolean;
+  /** Package manager command */
+  PACKAGE_MANAGER: string;
+  /** Directory containing packages (for monorepos) */
+  PACKAGES_DIR: string;
+  /** Regex pattern to match package files */
+  PACKAGES_PATTERN: string;
+  /** Test command to execute */
+  TEST_COMMAND: string;
+  /** Test execution timeout in seconds */
+  TIMEOUT: number;
+  /** File patterns for template processing */
+  FILE_PATTERNS: string;
+  /** High-risk file patterns that trigger full tests */
+  HIGH_RISK_PATTERNS: string[];
+  /** File patterns to skip for test execution */
+  SKIP_PATTERNS: string[];
+  /** Package name mappings (for monorepos) */
+  PACKAGE_MAPPINGS?: Record<string, string>;
+  /** Lint command */
+  LINT_COMMAND: string;
+  /** TypeScript type checking command */
+  TYPECHECK_COMMAND: string;
+  /** Smart test runner script path */
+  SMART_TEST_COMMAND: string;
+  /** Secrets scanning priority */
+  SECRETS_PRIORITY: number;
+  /** File size check priority */
+  FILESIZE_PRIORITY: number;
+  /** Tests execution priority */
+  TESTS_PRIORITY: number;
+  /** Whether docs validation is enabled */
+  DOCS_VALIDATION: boolean;
+  /** Whether changeset reminder is enabled */
+  CHANGESET_REMINDER: boolean;
+  /** Whether conventional commits are enforced */
+  CONVENTIONAL_COMMITS: boolean;
+  /** Whether lockfile validation is enabled */
+  LOCKFILE_VALIDATION: boolean;
 }
 
 /**

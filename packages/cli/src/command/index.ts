@@ -8,6 +8,7 @@ export type {
 } from './types.js';
 
 export { createCommand } from './base.js';
+export { createGitHooksCommand } from './git-hooks.js';
 
 export {
   validateCommandOption,

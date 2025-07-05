@@ -128,3 +128,4 @@ Built with modern tooling:
 - [CLI Framework Documentation](./packages/cli/README.md) - CLI development guide
 - [Contributing Guide](./docs/CONTRIBUTING.md) - Development workflow
 - [Monorepo Architecture](./CLAUDE.md) - Detailed development guidance
+test doc change

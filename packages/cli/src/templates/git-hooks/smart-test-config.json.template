@@ -1,0 +1,29 @@
+{
+  "highRiskPatterns": [
+    {{#each HIGH_RISK_PATTERNS}}
+    "{{this}}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  ],
+  "skipPatterns": [
+    {{#each SKIP_PATTERNS}}
+    "{{this}}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  ],
+  {{#if IS_MONOREPO}}
+  "packageMappings": {
+    {{#each PACKAGE_MAPPINGS}}
+    "{{@key}}": "{{this}}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  {{/if}}
+  "testCommand": "{{TEST_COMMAND}}",
+  {{#if IS_MONOREPO}}
+  "monorepoMode": true,
+  {{/if}}
+  "timeout": {{TIMEOUT}},
+  "maxRetries": 2,
+  "retryFlaky": true,
+  "parallelTesting": {{#if IS_MONOREPO}}true{{else}}false{{/if}},
+  "description": "Smart test configuration for {{PROJECT_NAME}}",
+  "version": "1.0.0"
+}

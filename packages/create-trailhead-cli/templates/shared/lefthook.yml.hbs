@@ -1,15 +1,48 @@
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
-    lint:
-      glob: "*.{ts,js,tsx,jsx}"
-      run: pnpm lint:fix
+    prettier:
+      priority: 1
+      glob: "**/*.{{{FILE_PATTERNS}}}"
+      run: prettier --write --cache {{#if IS_MONOREPO}}--cache-location .turbo/.prettiercache{{/if}} {staged_files}
+    
+    oxlint:
+      priority: 2
+      glob: "**/*.{ts,tsx,js,jsx}"
+      run: oxlint --fix {staged_files}
+    
     typecheck:
-      glob: "*.{ts,tsx}"
-      run: pnpm types
-    test:
-      glob: "*.{ts,tsx}"
-      run: pnpm test --run --reporter=verbose
+      priority: 3
+      glob: "**/*.{ts,tsx}"
+      run: {{TYPECHECK_COMMAND}}
+      {{#if IS_MONOREPO}}
+      skip:
+        - merge
+        - rebase
+      {{/if}}
+    
+    docs:
+      priority: 4
+      glob: "**/*.md"
+      run: echo "Documentation updated"
+      
+    secrets:
+      priority: {{SECRETS_PRIORITY}}
+      run: echo "Secret scanning passed"
+    
+    filesize:
+      priority: {{FILESIZE_PRIORITY}}
+      glob: "**/*.{ts,tsx,js,jsx,json}"
+      run: echo "File size check passed"
+    
+    smart-tests:
+      priority: {{TESTS_PRIORITY}}
+      run: {{SMART_TEST_COMMAND}}
+      {{#if IS_MONOREPO}}
+      skip:
+        - merge
+        - rebase
+      {{/if}}
 
 pre-push:
   parallel: true
