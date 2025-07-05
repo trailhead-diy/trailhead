@@ -97,6 +97,7 @@ export function useTheme(): ThemeContextValue {
     (name: string) => {
       // Validate theme exists
       if (!getTheme(themes, name)) {
+        console.error(`Theme "${name}" is not registered`);
         return;
       }
       // Set theme with current dark mode state
