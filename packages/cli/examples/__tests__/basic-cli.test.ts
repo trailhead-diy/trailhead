@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { resolve } from 'path';
 
 // Mock process.exit to prevent test suite from exiting
-const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
+const _mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
   throw new Error('process.exit called');
 });
 

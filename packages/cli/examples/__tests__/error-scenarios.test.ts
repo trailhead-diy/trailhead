@@ -22,7 +22,7 @@ describe.skip('CLI Examples Error Scenarios', () => {
   afterAll(async () => {
     try {
       await fs.rm(testDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });
@@ -135,7 +135,9 @@ describe.skip('CLI Examples Error Scenarios', () => {
             );
             expect(result).toBeDefined();
           } catch (error: any) {
-            expect.fail(`Should have succeeded with: ${args.join(' ')}`);
+            expect.fail(
+              `Should have succeeded with: ${args.join(' ')}, error: ${error.message}`,
+            );
           }
         } else {
           try {

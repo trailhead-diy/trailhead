@@ -61,7 +61,7 @@ const addCommand = createCommand({
 const listCommand = createCommand({
   name: 'list',
   description: 'List all todos',
-  action: async (options, context) => {
+  action: async (_options, _context) => {
     const fs = new FileSystem();
     const todos = await loadTodos(fs);
 

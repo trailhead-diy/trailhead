@@ -4,12 +4,11 @@ import { createCLI } from '@esteban-url/trailhead-cli';
 import { createCommand } from '@esteban-url/trailhead-cli/command';
 import { Ok } from '@esteban-url/trailhead-cli';
 import { platform, homedir, tmpdir } from 'os';
-import { join } from 'path';
 
 const infoCommand = createCommand({
   name: 'info',
   description: 'Display system information',
-  action: async (options, context) => {
+  action: async (_options, _context) => {
     const info = {
       platform: platform(),
       homeDirectory: homedir(),

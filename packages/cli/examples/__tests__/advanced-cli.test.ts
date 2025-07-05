@@ -44,7 +44,7 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
     // Clean up temporary directory
     try {
       await fs.rm(testDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });
@@ -394,7 +394,7 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
             'Failed to write file',
           );
         }
-      } catch (error) {
+      } catch {
         // Skip this test if we can't create read-only directory
         console.log(
           'Skipping permission test - unable to create read-only directory',
@@ -404,7 +404,7 @@ describe.skip('Advanced CLI Example Integration Tests', () => {
         try {
           await fs.chmod(readOnlyDir, 0o755);
           await fs.rmdir(readOnlyDir);
-        } catch (error) {
+        } catch {
           // Ignore cleanup errors
         }
       }

@@ -38,7 +38,7 @@ describe.skip('CLI Examples Performance Tests', () => {
     // Clean up test directory
     try {
       await fs.rm(testDir, { recursive: true, force: true });
-    } catch (_error) {
+    } catch {
       // Ignore cleanup errors
     }
 
