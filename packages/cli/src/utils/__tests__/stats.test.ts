@@ -4,7 +4,6 @@ import {
   updateStats,
   getElapsedTime,
   formatStats,
-  type StatsTracker,
 } from '../stats.js';
 
 describe('Stats Utilities', () => {

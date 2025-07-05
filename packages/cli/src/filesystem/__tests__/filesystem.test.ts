@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createFileSystem } from '../factory.js';
 import { createMemoryFileSystem } from '../memory.js';
 import {
   isOk,

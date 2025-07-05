@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   chalk,
   success,
@@ -14,7 +14,7 @@ import {
 
 describe('Chalk Utilities', () => {
   // Mock chalk for testing
-  const mockChalk = {
+  const _mockChalk = {
     green: vi.fn((text: string) => `green(${text})`),
     red: vi.fn((text: string) => `red(${text})`),
     yellow: vi.fn((text: string) => `yellow(${text})`),

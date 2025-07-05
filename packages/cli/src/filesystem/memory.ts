@@ -1,6 +1,6 @@
 import type { FileSystem, MoveOptions } from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
-import { sep, posix, win32 } from 'path';
+import { posix, win32 } from 'path';
 
 /**
  * Normalizes paths for internal storage (always use forward slashes)

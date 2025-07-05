@@ -1,11 +1,6 @@
 import { Command } from 'commander';
-import chalk from 'chalk';
 import type { Result } from '../core/errors/index.js';
-import { displayError, createError } from '../core/errors/index.js';
-import { createDefaultLogger } from '../core/index.js';
-import { createFileSystem } from '../filesystem/index.js';
-import { processCommandOptions } from '../utils/index.js';
-import type { CommandContext, CommandPhase, CommandOption } from './types.js';
+import type { CommandContext, CommandOption } from './types.js';
 import { validateCommandConfigWithCache } from './validation.js';
 
 /**

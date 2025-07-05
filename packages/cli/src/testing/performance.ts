@@ -206,7 +206,7 @@ export class PerformanceMonitor {
  * Decorator for automatic performance monitoring
  */
 export function withPerformanceMonitoring<
-  T extends (...args: any[]) => Promise<any>,
+  _T extends (...args: any[]) => Promise<any>,
 >(monitor: PerformanceMonitor, testName: string, command: string) {
   return function (
     target: any,
