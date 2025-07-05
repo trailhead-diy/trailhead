@@ -2,7 +2,7 @@
   "highRiskPatterns": [
     "\\.(ts|tsx|js|jsx)$",
     "tsconfig",
-    "package\\.json$", 
+    "package\\.json$",
     "turbo\\.json$",
     "vitest\\.config",
     "vite\\.config",
@@ -12,7 +12,7 @@
   "skipPatterns": [
     "\\.md$",
     "README",
-    "CHANGELOG", 
+    "CHANGELOG",
     "LICENSE",
     "\\.github/",
     "\\.vscode/",
