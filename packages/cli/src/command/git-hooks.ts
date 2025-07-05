@@ -632,8 +632,6 @@ async function removeGitHooks(
  * Interactive configuration wizard for git hooks
  */
 async function configureGitHooks(): Promise<Result<void, CLIError>> {
-  const fs = createFileSystem();
-
   try {
     console.log(chalk.blue('🔧 Git Hooks Configuration Wizard'));
     console.log('This wizard will help you configure smart test execution.');
@@ -646,7 +644,6 @@ async function configureGitHooks(): Promise<Result<void, CLIError>> {
     }
 
     const config = configResult.value;
-    const vars = generateTemplateVars(config, { type: 'smart-aggressive' });
 
     // Interactive prompts would go here
     console.log(chalk.green('Current Configuration:'));
