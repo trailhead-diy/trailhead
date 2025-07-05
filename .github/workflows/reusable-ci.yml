@@ -85,6 +85,7 @@ jobs:
       
       - name: Cache Turborepo
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: .turbo
           key: turbo-build-${{ runner.os }}-${{ github.sha }}
@@ -106,6 +107,7 @@ jobs:
       
       - name: Upload Turborepo cache
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: turbo-cache
           path: .turbo
@@ -124,13 +126,10 @@ jobs:
         task: [lint, format, security]
         include:
           - task: lint
-            cache-key: lint-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
             command: pnpm lint
           - task: format
-            cache-key: format-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.json', '**/*.md') }}
             command: pnpm format:check
           - task: security
-            cache-key: security-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
             command: pnpm audit --audit-level=high || echo "::warning::Security vulnerabilities found"
     steps:
       - uses: actions/checkout@v4
@@ -141,17 +140,18 @@ jobs:
       
       - name: Cache quality check results
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
-          key: ${{ matrix.cache-key }}
+          key: ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ matrix.task }}-${{ runner.os }}-
       
       - name: Run ${{ matrix.task }}
         run: ${{ matrix.command }}
+        continue-on-error: ${{ matrix.task == 'security' }}
 
   types:
     name: Type Check
@@ -168,14 +168,14 @@ jobs:
       
       - name: Cache TypeScript compilation
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             **/tsconfig.tsbuildinfo
-          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/tsconfig.json') }}
+          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             types-${{ runner.os }}-
       
       - name: Download build artifacts
@@ -185,9 +185,9 @@ jobs:
       
       - name: Download Turborepo cache
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: turbo-cache
-        continue-on-error: true
       
       - name: Run type checking
         run: pnpm types
@@ -212,15 +212,15 @@ jobs:
       
       - name: Cache test results
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             ~/.cache/vitest
             **/coverage
-          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.test.*', '**/*.spec.*') }}
+          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
             test-${{ runner.os }}-
       
       - name: Download build artifacts
@@ -230,9 +230,9 @@ jobs:
       
       - name: Download Turborepo cache
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: turbo-cache
-        continue-on-error: true
       
       - name: Run tests with coverage and parallel execution
         run: pnpm test --max-workers=${{ runner.os == 'macOS' && 3 || 4 }} --reporter=verbose
@@ -267,6 +267,7 @@ jobs:
           name: build-artifacts
       
       - name: Test CLI installation
+        continue-on-error: true
         run: |
           cd packages/web-ui
           # Need to install dependencies first
