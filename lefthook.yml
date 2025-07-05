@@ -88,6 +88,36 @@ pre-push:
           exit 1
         }
         echo "✅ Lockfile is up to date"
+    
+    # Check branch sync status (warning only)
+    branch-sync-check:
+      priority: 2
+      run: |
+        echo "🌿 Checking branch sync status..."
+        cd packages/cli && pnpm build > /dev/null 2>&1
+        node --input-type=module -e "
+          import { checkBranchSync, formatSyncStatus } from './dist/git/index.js';
+          (async () => {
+            const result = await checkBranchSync('origin/main', { fetch: true });
+            if (!result.success) {
+              console.log('ℹ️ Could not check branch sync:', result.error.message);
+              process.exit(0);
+            }
+            const status = result.value;
+            if (!status.isUpToDate) {
+              console.log('⚠️ ' + formatSyncStatus(status));
+              if (status.behind > 10) {
+                console.log('❌ Branch is significantly behind. Please sync before pushing.');
+                process.exit(1);
+              }
+            } else {
+              console.log('✅ Branch is up to date with origin/main');
+            }
+          })().catch(err => {
+            console.log('ℹ️ Branch sync check failed:', err.message);
+            process.exit(0);
+          });
+        "
 
 # Personal overrides (not committed)
 # Create .lefthook-local.yml to customize
