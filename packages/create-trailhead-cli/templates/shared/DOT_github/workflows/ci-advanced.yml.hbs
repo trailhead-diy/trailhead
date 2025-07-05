@@ -82,7 +82,7 @@ jobs:
         run: {{PACKAGE_MANAGER}} types
 
       - name: Run tests
-        run: {{PACKAGE_MANAGER}} test{{#if IS_MONOREPO}} --max-workers=$\{{ matrix.os == 'macos-latest' && '3' || '4' }}{{/if}} --reporter=verbose
+        run: {{PACKAGE_MANAGER}} test{{#if IS_MONOREPO}} --concurrency=$\{{ matrix.os == 'macos-latest' && '25%' || '50%' }}{{/if}} --reporter=verbose
 
       {{#if IS_MONOREPO}}- name: Build packages
         run: {{PACKAGE_MANAGER}} build{{/if}}

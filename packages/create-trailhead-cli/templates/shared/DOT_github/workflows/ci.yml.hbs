@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
 
       - name: Run tests
-        run: {{PACKAGE_MANAGER}} test{{#if IS_MONOREPO}} --max-workers=4{{/if}}
+        run: {{PACKAGE_MANAGER}} test{{#if IS_MONOREPO}} --concurrency=50%{{/if}}
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
