@@ -6,7 +6,7 @@ import {
   executeGitCommandSimple,
   validateGitEnvironment,
 } from '@esteban-url/trailhead-cli/git';
-import { detectPackageManager } from '@esteban-url/trailhead-cli/testing';
+import { detectPackageManager } from '@esteban-url/trailhead-cli/utils';
 import { execa } from 'execa';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -628,4 +628,4 @@ async function installDependencies(
 }
 
 // getInstallCommand function has been replaced with CLI package manager detection
-// See detectPackageManager() from @esteban-url/trailhead-cli/testing
+// See detectPackageManager() from @esteban-url/trailhead-cli/utils
