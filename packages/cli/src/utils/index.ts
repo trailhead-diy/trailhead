@@ -10,7 +10,7 @@ export {
   italic,
   underline,
 } from './chalk.js';
-export { ora, createSpinner, withSpinner } from './spinner.js';
+export { createSpinner, withSpinner } from './spinner.js';
 export { createDefaultLogger } from '../core/logger.js';
 
 export {

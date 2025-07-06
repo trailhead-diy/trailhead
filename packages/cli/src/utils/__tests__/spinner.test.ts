@@ -1,25 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-// Mock ora before importing our module
+// Mock yocto-spinner before importing our module
 const mockSpinner = {
   start: vi.fn().mockReturnThis(),
   stop: vi.fn().mockReturnThis(),
-  succeed: vi.fn().mockReturnThis(),
-  fail: vi.fn().mockReturnThis(),
-  warn: vi.fn().mockReturnThis(),
+  success: vi.fn().mockReturnThis(),
+  error: vi.fn().mockReturnThis(),
+  warning: vi.fn().mockReturnThis(),
   info: vi.fn().mockReturnThis(),
   text: '',
   isSpinning: false,
 };
 
-const mockOra = vi.fn(() => mockSpinner);
+const mockYoctoSpinner = vi.fn(() => mockSpinner);
 
-vi.mock('ora', () => ({
-  default: mockOra,
+vi.mock('yocto-spinner', () => ({
+  default: mockYoctoSpinner,
 }));
 
 // Import after mocking
-const { ora, createSpinner, withSpinner } = await import('../spinner.js');
+const { createSpinner, withSpinner } = await import('../spinner.js');
 
 describe('Spinner Utilities', () => {
   beforeEach(() => {
@@ -28,20 +28,13 @@ describe('Spinner Utilities', () => {
     mockSpinner.text = '';
   });
 
-  describe('ora re-export', () => {
-    it('should re-export ora', () => {
-      expect(ora).toBe(mockOra);
-    });
-  });
-
   describe('createSpinner', () => {
     it('should create spinner with text', () => {
       const text = 'Loading...';
       const spinner = createSpinner(text);
 
-      expect(mockOra).toHaveBeenCalledWith({
+      expect(mockYoctoSpinner).toHaveBeenCalledWith({
         text,
-        spinner: 'dots',
       });
       expect(spinner).toBe(mockSpinner);
     });
@@ -50,9 +43,8 @@ describe('Spinner Utilities', () => {
       const customText = 'Processing files...';
       const spinner = createSpinner(customText);
 
-      expect(mockOra).toHaveBeenCalledWith({
+      expect(mockYoctoSpinner).toHaveBeenCalledWith({
         text: customText,
-        spinner: 'dots',
       });
       expect(spinner).toBe(mockSpinner);
     });
@@ -60,9 +52,8 @@ describe('Spinner Utilities', () => {
     it('should handle empty text', () => {
       const _spinner = createSpinner('');
 
-      expect(mockOra).toHaveBeenCalledWith({
+      expect(mockYoctoSpinner).toHaveBeenCalledWith({
         text: '',
-        spinner: 'dots',
       });
     });
   });
@@ -74,13 +65,12 @@ describe('Spinner Utilities', () => {
 
       const result = await withSpinner(text, mockTask);
 
-      expect(mockOra).toHaveBeenCalledWith({
+      expect(mockYoctoSpinner).toHaveBeenCalledWith({
         text,
-        spinner: 'dots',
       });
       expect(mockSpinner.start).toHaveBeenCalled();
       expect(mockTask).toHaveBeenCalled();
-      expect(mockSpinner.succeed).toHaveBeenCalled();
+      expect(mockSpinner.success).toHaveBeenCalled();
       expect(result).toBe('success result');
     });
 
@@ -91,13 +81,12 @@ describe('Spinner Utilities', () => {
 
       await expect(withSpinner(text, mockTask)).rejects.toThrow('Task failed');
 
-      expect(mockOra).toHaveBeenCalledWith({
+      expect(mockYoctoSpinner).toHaveBeenCalledWith({
         text,
-        spinner: 'dots',
       });
       expect(mockSpinner.start).toHaveBeenCalled();
       expect(mockTask).toHaveBeenCalled();
-      expect(mockSpinner.fail).toHaveBeenCalled();
+      expect(mockSpinner.error).toHaveBeenCalled();
     });
 
     it('should handle basic task execution', async () => {
@@ -105,7 +94,7 @@ describe('Spinner Utilities', () => {
 
       const result = await withSpinner('Task', mockTask);
 
-      expect(mockSpinner.succeed).toHaveBeenCalled();
+      expect(mockSpinner.success).toHaveBeenCalled();
       expect(result).toBe('result');
     });
   });
