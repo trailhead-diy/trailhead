@@ -1,24 +1,25 @@
-name: CI - Main Branch
+name: Tier 1 - Main Branch CI
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/workflows/pre-release-testing.yml'  # Tier 2 changes don't need Tier 1
   workflow_dispatch:
-  schedule:
-    # Weekly full cross-platform regression testing (Mondays 8 AM UTC)
-    - cron: '0 8 * * 1'
 
 permissions:
   contents: read
 
 jobs:
-  # Check what changes triggered this workflow
-  check-changes:
-    name: Check Changes
+  # Smart change detection for main branch
+  detect-strategy:
+    name: Detect CI Strategy
     runs-on: ubuntu-latest
     outputs:
-      needs-cross-platform: ${{ steps.filter.outputs.cli == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.deps == 'true' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-      is-scheduled: ${{ github.event_name == 'schedule' }}
+      needs-tier-2: ${{ steps.filter.outputs.cli == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.critical == 'true' }}
+      tier-1-only: ${{ steps.filter.outputs.cli == 'false' && steps.filter.outputs.critical == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -27,28 +28,45 @@ jobs:
           filters: |
             cli:
               - 'packages/cli/**'
+              - 'packages/create-trailhead-cli/**'
             workflows:
               - '.github/workflows/**'
-            deps:
+            critical:
               - 'pnpm-lock.yaml'
               - 'turbo.json'
+              - 'package.json'
+            web-ui:
+              - 'packages/web-ui/**'
+            demos:
+              - 'apps/demos/**'
 
-  # Cross-platform CI (only when needed)
-  ci-cross-platform:
-    name: Cross-Platform CI
-    needs: check-changes
-    if: needs.check-changes.outputs.needs-cross-platform == 'true'
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      os-matrix: '["ubuntu-latest", "windows-latest", "macos-latest"]'
-    secrets: inherit
-
-  # Ubuntu-only CI (for web-ui and other changes)
-  ci-ubuntu:
-    name: Ubuntu CI
-    needs: check-changes
-    if: needs.check-changes.outputs.needs-cross-platform == 'false'
+  # Fast Tier 1 CI for all main branch changes
+  tier-1-ci:
+    name: Tier 1 Fast Validation
+    needs: detect-strategy
     uses: ./.github/workflows/reusable-ci.yml
     with:
       os-matrix: '["ubuntu-latest"]'
+      fast-mode: true
     secrets: inherit
+
+  # Trigger Tier 2 for critical changes
+  trigger-tier-2:
+    name: Trigger Tier 2 Validation
+    needs: [detect-strategy, tier-1-ci]
+    if: needs.detect-strategy.outputs.needs-tier-2 == 'true' && needs.tier-1-ci.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger comprehensive validation
+        run: |
+          echo "🚀 Critical changes detected - Tier 2 validation will run automatically"
+          echo "Changes requiring comprehensive validation:"
+          if [[ "${{ needs.detect-strategy.outputs.cli }}" == "true" ]]; then
+            echo "  - CLI package changes"
+          fi
+          if [[ "${{ needs.detect-strategy.outputs.workflows }}" == "true" ]]; then
+            echo "  - Workflow changes"
+          fi
+          if [[ "${{ needs.detect-strategy.outputs.critical }}" == "true" ]]; then
+            echo "  - Critical configuration changes"
+          fi

@@ -83,14 +83,15 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pnpm-version: ${{ inputs.pnpm-version }}
 
-      - name: Cache Turborepo
+      - name: Cache TurboRepo (GitHub Actions)
         uses: actions/cache@v4
-        continue-on-error: true
         with:
-          path: .turbo
-          key: turbo-build-${{ runner.os }}-${{ github.sha }}
+          path: |
+            .turbo
+            node_modules/.cache
+          key: turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', 'turbo.json', '**/turbo.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
           restore-keys: |
-            turbo-build-${{ runner.os }}-
+            turbo-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', 'turbo.json', '**/turbo.json') }}-
             turbo-${{ runner.os }}-
 
       - name: Build packages
@@ -140,14 +141,15 @@ jobs:
 
       - name: Cache quality check results
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
-          key: ${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+            ~/.cache
+          key: quality-${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/oxlintrc.*', '**/.prettierrc.*') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
           restore-keys: |
-            ${{ matrix.task }}-${{ runner.os }}-
+            quality-${{ matrix.task }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/oxlintrc.*', '**/.prettierrc.*') }}-
+            quality-${{ matrix.task }}-${{ runner.os }}-
 
       - name: Run ${{ matrix.task }}
         run: ${{ matrix.command }}
@@ -168,14 +170,15 @@ jobs:
 
       - name: Cache TypeScript compilation
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             **/tsconfig.tsbuildinfo
-          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+            ~/.cache
+          key: types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/tsconfig*.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
           restore-keys: |
+            types-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/tsconfig*.json') }}-
             types-${{ runner.os }}-
 
       - name: Download build artifacts
@@ -212,15 +215,15 @@ jobs:
 
       - name: Cache test results
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             .turbo
             node_modules/.cache
             ~/.cache/vitest
-            **/coverage
-          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+            ~/.cache
+          key: test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/vitest.config.*', '**/package.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.test.*') }}
           restore-keys: |
+            test-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', '**/vitest.config.*', '**/package.json') }}-
             test-${{ runner.os }}-
 
       - name: Download build artifacts

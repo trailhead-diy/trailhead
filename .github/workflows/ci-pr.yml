@@ -1,4 +1,4 @@
-name: CI - Pull Request
+name: Tier 1 - Fast PR CI
 
 on:
   pull_request:
@@ -9,10 +9,11 @@ permissions:
   pull-requests: read
 
 jobs:
-  ci:
-    name: PR CI
+  fast-ci:
+    name: Fast PR Validation
     uses: ./.github/workflows/reusable-ci.yml
     with:
-      # PRs only test on Ubuntu for speed
+      # PRs use Ubuntu-only for speed (<5min target)
       os-matrix: '["ubuntu-latest"]'
+      fast-mode: true
     secrets: inherit
