@@ -222,7 +222,7 @@ detect_risk_level() {
   fi
   
   if [[ -z "$skip_patterns" ]]; then
-    skip_patterns='\.md$|README|CHANGELOG|LICENSE|\.github/'
+    skip_patterns='\.md$|README|CHANGELOG|LICENSE|\.github/|\.vscode/|\.gitignore$|\.prettierrc|\.prettierignore|docs/|\.smart-test-config\.json$|\.mcp\.json$|scripts/.*\.sh$'
   fi
   
   log_verbose "High-risk patterns: $high_risk_patterns"
