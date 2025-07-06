@@ -139,33 +139,9 @@ pre-commit:
           echo "ℹ️ No package.json changes, skipping workspace validation"
         fi
         
-    # 9. Circular dependency detection (conditional)
-    circular-deps:
-      priority: 9
-      glob: "packages/**/*.{ts,tsx}"
-      run: |
-        echo "🔍 Checking for circular dependencies..."
-        # Check if madge is available
-        if command -v madge >/dev/null 2>&1; then
-          madge --circular --extensions ts,tsx packages/ || {
-            echo "❌ Circular dependencies detected - this would fail in CI"
-            exit 1
-          }
-          echo "✅ No circular dependencies found"
-        elif command -v npx >/dev/null 2>&1; then
-          npx madge --circular --extensions ts,tsx packages/ || {
-            echo "❌ Circular dependencies detected - this would fail in CI"
-            exit 1
-          }
-          echo "✅ No circular dependencies found"
-        else
-          echo "⚠️ madge not available, skipping circular dependency check"
-          echo "   Install with: npm install -g madge"
-        fi
-        
-    # 10. Environment parity check
+    # 9. Environment parity check
     env-check:
-      priority: 10
+      priority: 9
       run: |
         echo "🌍 Checking environment parity..."
         node -e "
@@ -224,9 +200,9 @@ pre-commit:
           }
         " || exit 1
         
-    # 11. Package.json validation
+    # 10. Package.json validation
     package-validation:
-      priority: 11
+      priority: 10
       run: |
         # Only run when package.json files change
         if git diff --cached --name-only | grep -q 'package\.json$'; then
