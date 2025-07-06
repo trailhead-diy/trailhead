@@ -6,29 +6,33 @@ This repository implements a **two-tier CI strategy** to optimize testing effici
 
 ## Strategy Components
 
-### Tier 1: Fast Essential CI (< 5 minutes)
+### Tier 1: Fast Essential CI (< 2 minutes)
 
-**Target**: Ubuntu-only, essential validation
+**Philosophy**: Simple is better - proven performance over complex abstractions
+
+**Target**: Ubuntu-only, essential validation with battle-tested simplicity
 **Triggers**:
 
-- Pull requests to main
-- Regular development work
+- Pull requests to main (`ci-pr.yml`)
+- Main branch pushes (non-CLI) (`ci-main.yml`)
 
 **What it runs**:
 
-- ✅ Quality checks (lint, format, types) - parallelized
+- ✅ Quality checks (lint, format, types) - parallelized matrix
 - ✅ Unit tests with coverage
-- ✅ Basic integration tests
+- ✅ Generator integration tests
 - ✅ Quick security audit
 - ✅ Build validation
 
 **Optimizations**:
 
-- Ubuntu-only execution
-- Smart change detection
-- GitHub Actions caching for TurboRepo
-- Parallel job execution
-- Artifact sharing between jobs
+- **Proven architecture**: Uses battle-tested legacy CI structure
+- **Direct execution**: No reusable workflow overhead
+- **Parallel jobs**: Matrix strategy for maximum speed
+- **Simple caching**: Efficient without over-engineering
+- **No artifacts**: Eliminates upload/download overhead
+
+**Performance**: Consistently 1-1.5 minutes (proven in production)
 
 ### Tier 2: Comprehensive Pre-Release CI (15-20 minutes)
 
@@ -76,18 +80,39 @@ We use **GitHub Actions built-in caching** instead of remote TurboRepo caching:
 ## Decision Tree
 
 ```
-PR/Push → Change Detection → Tier 1 (Fast)
-                            └── Quality + Tests + Build
+PR → Tier 1 Fast (Proven)
+     └── Quality + Tests + Build (1-1.5min)
 
-Tag/Release → Tier 2 (Comprehensive)
+Main Push (non-CLI) → Tier 1 Main
+                      └── Smart detection + Fast validation
+
+CLI Changes → Tier 2 (Comprehensive)
               └── Cross-platform + Security + Performance + E2E
 
-CLI Changes → Tier 2 (CLI-focused)
-              └── Cross-platform CLI testing
+Tag/Release → Tier 2 (Comprehensive)
+              └── Full validation matrix
 
 Weekly → Tier 2 (Regression)
-         └── Full validation matrix
+         └── Complete cross-platform testing
 ```
+
+## Pragmatic Philosophy
+
+### Why Simple Beats Complex
+
+Our Tier 1 strategy prioritizes **proven performance** over theoretical optimizations:
+
+- **Legacy CI architecture**: Battle-tested, consistently fast (1-1.5min)
+- **No premature optimization**: Avoided over-engineering for marginal gains
+- **YAGNI compliance**: Built what's needed, not what might be needed
+- **Developer experience**: Fast feedback loops are more valuable than perfect abstractions
+
+### Lessons Learned
+
+1. **Performance trumps patterns**: 1.5min simple CI beats 5min "optimized" CI
+2. **Simplicity scales**: Easier to debug, maintain, and understand
+3. **Proven > Theoretical**: Real performance data beats architectural ideals
+4. **KISS principle**: Keep It Simple, Stupid - especially for critical path operations
 
 ## Performance Targets
 

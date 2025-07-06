@@ -7,6 +7,8 @@ on:
       - 'docs/**'
       - '**/*.md'
       - '.github/workflows/pre-release-testing.yml'  # Tier 2 changes don't need Tier 1
+      - 'packages/cli/**'  # CLI changes trigger Tier 2
+      - 'packages/create-trailhead-cli/**'  # CLI changes trigger Tier 2
   workflow_dispatch:
 
 permissions:
