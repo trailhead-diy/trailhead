@@ -27,6 +27,7 @@
     "version-packages": "changeset version",
     "release": "turbo build --filter=./packages/* && changeset publish",
     "release:dry-run": "changeset publish --dry-run",
+    "fresh-start": "node scripts/fresh-start.js",
     "prepare": "lefthook install",
     "lefthook": "lefthook",
     "lefthook:install": "lefthook install",
