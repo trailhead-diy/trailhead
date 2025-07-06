@@ -51,6 +51,7 @@ pre-commit:
     # 5. Check for secrets (security)
     secrets:
       priority: 5
+      exclude: '(pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$'
       run: git diff --cached --name-only | xargs grep -l -E -i "(api[_-]?key|secret|token|password)" 2>/dev/null && echo "⚠️ Potential secrets detected" || true
 
     # 6. Check file sizes (size validation)
