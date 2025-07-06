@@ -22,17 +22,16 @@ pre-commit:
     # 1. Format code (fastest, auto-fix)
     prettier:
       priority: 1
-      glob: "**/*.{ts,tsx,js,jsx,json,md}"
-      run: pnpm prettier --write {staged_files} --cache --cache-location .turbo/.prettiercache
+      run: pnpm prettier --write "**/*.{ts,tsx,js,jsx,json,md}" --cache --cache-location .turbo/.prettiercache
       stage_fixed: true
-      
+
     # 2. Lint TypeScript/JavaScript with oxlint (critical errors)
     oxlint:
       priority: 2
       glob: "packages/**/*.{ts,tsx,js,jsx}"
       run: pnpm oxlint {staged_files} --fix
       stage_fixed: true
-      
+
     # 3. Type check (logic errors)
     typecheck:
       priority: 3
@@ -44,10 +43,13 @@ pre-commit:
       priority: 4
       glob: "{docs,packages/**/docs}/**/*.md"
       run: |
-        for file in {staged_files}; do
-          pnpm docs:validate "$file"
-        done
-        
+        staged_docs=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md)$' | grep -E '(docs/|packages/.*/docs/)' || true)
+        if [ -n "$staged_docs" ]; then
+          for file in $staged_docs; do
+            pnpm docs:validate "$file"
+          done
+        fi
+
     # 5. Check for secrets (security)
     secrets:
       priority: 5
@@ -57,12 +59,254 @@ pre-commit:
     # 6. Check file sizes (size validation)
     filesize:
       priority: 6
-      run: 'find {staged_files} -size +1M 2>/dev/null | head -5 | xargs -I {} echo "⚠️ Large file: {}" || true'
-      
+      run: |
+        large_files=$(git diff --cached --name-only | xargs ls -la 2>/dev/null | awk '$5 > 1048576 {print $9, "(" $5 " bytes)"}' || true)
+        if [ -n "$large_files" ]; then
+          echo "⚠️ Large files detected:"
+          echo "$large_files"
+        fi
+
     # 7. Smart test execution (comprehensive validation)
     smart-tests:
       priority: 7
       run: ./scripts/smart-test-runner.sh
+
+    # 8. Build validation
+    build-affected:
+      priority: 8
+      run: |
+        # Only build when source files change
+        if git diff --cached --name-only | grep -qE '\.(ts|tsx|js|jsx|json|vue|svelte)$'; then
+          echo "🔨 Building affected packages..."
+          # Use Turborepo's affected detection with caching
+          pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo || {
+            echo "❌ Build failed - this would fail in CI"
+            exit 1
+          }
+          echo "✅ Build validation passed"
+        else
+          echo "ℹ️ No source files changed, skipping build validation"
+        fi
+
+    # 9. Workspace dependency validation
+    workspace-check:
+      priority: 9
+      run: |
+        # Only run when package.json files change
+        if git diff --cached --name-only | grep -q 'package\.json$'; then
+          echo "📦 Validating workspace dependencies..."
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              // Get all package.json files
+              const packages = [];
+              const packageDirs = ['packages/cli', 'packages/web-ui', 'packages/create-trailhead-cli'];
+              
+              for (const dir of packageDirs) {
+                const pkgPath = path.join(dir, 'package.json');
+                if (fs.existsSync(pkgPath)) {
+                  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+                  packages.push({ dir, pkg });
+                }
+              }
+              
+              let errors = [];
+              
+              // Check workspace: protocol usage
+              for (const { dir, pkg } of packages) {
+                const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+                for (const [name, version] of Object.entries(deps)) {
+                  if (name.startsWith('@repo/') && !version.startsWith('workspace:')) {
+                    errors.push(\`\${dir}: Internal dependency '\${name}' should use 'workspace:*' protocol\`);
+                  }
+                }
+              }
+              
+              if (errors.length > 0) {
+                console.error('❌ Workspace dependency validation failed:');
+                errors.forEach(err => console.error('  ' + err));
+                process.exit(1);
+              } else {
+                console.log('✅ Workspace dependencies validated');
+              }
+            } catch (err) {
+              console.log('⚠️ Workspace validation skipped:', err.message);
+            }
+          " || exit 1
+        else
+          echo "ℹ️ No package.json changes, skipping workspace validation"
+        fi
+        
+    # 10. Circular dependency detection
+    circular-deps:
+      priority: 10
+      run: |
+        # Only run when TypeScript files change
+        if git diff --cached --name-only | grep -qE '\.(ts|tsx)$'; then
+          echo "🔍 Checking for circular dependencies..."
+          # Check if madge is available
+          if command -v madge >/dev/null 2>&1; then
+            madge --circular --extensions ts,tsx packages/ || {
+              echo "❌ Circular dependencies detected - this would fail in CI"
+              exit 1
+            }
+            echo "✅ No circular dependencies found"
+          elif command -v npx >/dev/null 2>&1; then
+            npx madge --circular --extensions ts,tsx packages/ || {
+              echo "❌ Circular dependencies detected - this would fail in CI"
+              exit 1
+            }
+            echo "✅ No circular dependencies found"
+          else
+            echo "⚠️ madge not available, skipping circular dependency check"
+            echo "   Install with: npm install -g madge"
+          fi
+        else
+          echo "ℹ️ No TypeScript files changed, skipping circular dependency check"
+        fi
+        
+    # 11. Environment parity check
+    env-check:
+      priority: 11
+      run: |
+        echo "🌍 Checking environment parity..."
+        node -e "
+          const fs = require('fs');
+          // Use built-in version comparison instead of semver
+          function satisfies(version, range) {
+            // Simple version check - remove 'v' prefix and handle basic ranges
+            const cleanVersion = version.replace(/^v/, '');
+            
+            // Handle different range operators
+            if (range.startsWith('>=')) {
+              const minVersion = range.substring(2);
+              const [vMajor, vMinor = 0, vPatch = 0] = cleanVersion.split('.').map(Number);
+              const [rMajor, rMinor = 0, rPatch = 0] = minVersion.split('.').map(Number);
+              
+              if (vMajor > rMajor) return true;
+              if (vMajor < rMajor) return false;
+              if (vMinor > rMinor) return true;
+              if (vMinor < rMinor) return false;
+              return vPatch >= rPatch;
+            }
+            
+            // Default to basic equality check
+            return cleanVersion.startsWith(range.replace(/[>=~^]/, ''));
+          }
+          
+          try {
+            // Check Node version against engines
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            const nodeVersion = process.version;
+            const engines = pkg.engines?.node;
+            
+            if (engines && !satisfies(nodeVersion, engines)) {
+              console.error(\`❌ Node version mismatch: current \${nodeVersion}, required \${engines}\`);
+              process.exit(1);
+            }
+            
+            // Check pnpm version if specified
+            const pnpmVersion = pkg.engines?.pnpm;
+            if (pnpmVersion) {
+              try {
+                const { execSync } = require('child_process');
+                const currentPnpm = execSync('pnpm --version', { encoding: 'utf8' }).trim();
+                if (!satisfies(currentPnpm, pnpmVersion)) {
+                  console.error(\`❌ PNPM version mismatch: current \${currentPnpm}, required \${pnpmVersion}\`);
+                  process.exit(1);
+                }
+              } catch (err) {
+                console.log('⚠️ Could not check PNPM version');
+              }
+            }
+            
+            console.log('✅ Environment parity check passed');
+          } catch (err) {
+            console.log('⚠️ Environment check skipped:', err.message);
+          }
+        " || exit 1
+        
+    # 12. Package.json validation
+    package-validation:
+      priority: 12
+      run: |
+        # Only run when package.json files change
+        if git diff --cached --name-only | grep -q 'package\.json$'; then
+          echo "📋 Validating package.json files..."
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            
+            try {
+              // Get all package.json files
+              const packages = [];
+              const packageDirs = ["packages/cli", "packages/web-ui", "packages/create-trailhead-cli"];
+              
+              for (const dir of packageDirs) {
+                const pkgPath = path.join(dir, "package.json");
+                if (fs.existsSync(pkgPath)) {
+                  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+                  packages.push({ dir, pkg, path: pkgPath });
+                }
+              }
+              
+              let errors = [];
+              let warnings = [];
+              
+              // 1. Required scripts validation
+              const requiredScripts = ["build", "test", "lint", "types"];
+              for (const { dir, pkg } of packages) {
+                for (const script of requiredScripts) {
+                  if (!pkg.scripts || !pkg.scripts[script]) {
+                    errors.push(`${dir}: Missing required script "${script}"`);
+                  }
+                }
+              }
+              
+              // 2. License consistency
+              for (const { dir, pkg } of packages) {
+                if (!pkg.license) {
+                  errors.push(`${dir}: Missing license field`);
+                } else if (pkg.license !== "MIT") {
+                  warnings.push(`${dir}: License "${pkg.license}" may not match expected "MIT"`);
+                }
+              }
+              
+              // 3. Repository field consistency
+              for (const { dir, pkg } of packages) {
+                if (!pkg.repository) {
+                  errors.push(`${dir}: Missing repository field`);
+                } else if (typeof pkg.repository === "object") {
+                  if (!pkg.repository.directory) {
+                    errors.push(`${dir}: Repository missing directory field for monorepo`);
+                  } else if (pkg.repository.directory !== dir) {
+                    errors.push(`${dir}: Repository directory "${pkg.repository.directory}" does not match actual path "${dir}"`);
+                  }
+                }
+              }
+              
+              // Report results
+              if (warnings.length > 0) {
+                console.log("⚠️ Package.json warnings:");
+                warnings.forEach(warn => console.log("  " + warn));
+              }
+              
+              if (errors.length > 0) {
+                console.error("❌ Package.json validation failed:");
+                errors.forEach(err => console.error("  " + err));
+                process.exit(1);
+              } else {
+                console.log("✅ Package.json validation passed");
+              }
+            } catch (err) {
+              console.log("⚠️ Package.json validation skipped:", err.message);
+            }
+          ' || exit 1
+        else
+          echo "ℹ️ No package.json changes, skipping validation"
+        fi
 
 prepare-commit-msg:
   commands:
@@ -94,7 +338,7 @@ pre-push:
           exit 1
         }
         echo "✅ Lockfile is up to date"
-    
+
     # Check branch sync status (warning only)
     branch-sync-check:
       priority: 2

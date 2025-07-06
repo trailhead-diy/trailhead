@@ -7,16 +7,18 @@
 The custom `pathExists()` method has been removed from the FileSystem interface. Use the native `access()` method instead:
 
 **Before:**
+
 ```typescript
-const exists = await fs.pathExists('/some/path');
+const exists = await fs.pathExists("/some/path");
 if (exists) {
   // path exists
 }
 ```
 
 **After:**
+
 ```typescript
-const result = await fs.access('/some/path');
+const result = await fs.access("/some/path");
 if (result.success) {
   // path exists
 }
