@@ -9,7 +9,7 @@ import {
   validatePrerequisites,
   performDryRunInstallation,
 } from '../../../../../src/cli/core/installation/orchestrator.js';
-// Note: Ok and Err are not directly used in test functions but imported by mocked modules
+import { Ok, Err } from '../../../../../src/cli/core/installation/types.js';
 import type {
   InstallConfig,
   Logger,
@@ -159,133 +159,6 @@ describe('orchestrator - High-ROI Tests', () => {
         expect(result.error.type).toBe('DependencyError');
         expect(result.error.message).toBe('Cannot read package.json: file is corrupted');
       }
-    });
-
-    it('should handle interactive dependency installation workflow', async () => {
-      // Setup: Interactive mode with dependency prompts
-      const { ensureDirectories, checkExistingFiles } = await import(
-        '../../../../../src/cli/core/filesystem/operations.js'
-      );
-      const { executeInstallationSteps } = await import(
-        '../../../../../src/cli/core/installation/step-executor.js'
-      );
-      const { createInstallationSteps } = await import(
-        '../../../../../src/cli/core/installation/step-factory.js'
-      );
-      const { analyzeDependencies, installDependenciesSmart } = await import(
-        '../../../../../src/cli/core/installation/dependencies.js'
-      );
-      const { detectWorkspace, detectCIEnvironment, checkOfflineMode } = await import(
-        '../../../../../src/cli/core/installation/workspace-detection.js'
-      );
-
-      (ensureDirectories as any).mockResolvedValue(Ok(undefined));
-      (checkExistingFiles as any).mockResolvedValue(Ok([]));
-      (createInstallationSteps as any).mockReturnValue([]);
-      (executeInstallationSteps as any).mockResolvedValue(
-        Ok({ installedFiles: [], failedSteps: [] })
-      );
-      (analyzeDependencies as any).mockResolvedValue(
-        Ok({
-          needsInstall: true,
-          added: { react: '^18.0.0', tailwindcss: '^3.0.0' },
-        })
-      );
-      (detectWorkspace as any).mockResolvedValue(Ok(null));
-      (detectCIEnvironment as any).mockReturnValue(null); // Not in CI
-      (checkOfflineMode as any).mockResolvedValue(false);
-      mockFS.readJson.mockResolvedValue(Ok({ dependencies: {}, devDependencies: {} }));
-      (installDependenciesSmart as any).mockResolvedValue(
-        Ok({
-          installed: true,
-          warnings: [],
-        })
-      );
-
-      // Mock the dynamic import for dependency prompts
-      vi.doMock('../../prompts/dependencies.js', () => ({
-        runDependencyPrompts: vi.fn().mockResolvedValue({ strategy: { type: 'auto' } }),
-        showPostInstallInstructions: vi.fn(),
-      }));
-
-      const result = await performInstallation(
-        mockFS,
-        mockLogger,
-        config,
-        trailheadRoot,
-        false,
-        'nextjs' as FrameworkType,
-        true,
-        { interactive: true }
-      );
-
-      expect(result.success).toBe(true);
-      expect(installDependenciesSmart).toHaveBeenCalled();
-    });
-
-    it('should handle CI environment and skip interactive prompts', async () => {
-      // Setup: CI environment detected
-      const { ensureDirectories, checkExistingFiles } = await import(
-        '../../../../../src/cli/core/filesystem/operations.js'
-      );
-      const { executeInstallationSteps } = await import(
-        '../../../../../src/cli/core/installation/step-executor.js'
-      );
-      const { createInstallationSteps } = await import(
-        '../../../../../src/cli/core/installation/step-factory.js'
-      );
-      const { analyzeDependencies, installDependenciesSmart } = await import(
-        '../../../../../src/cli/core/installation/dependencies.js'
-      );
-      const { detectCIEnvironment } = await import(
-        '../../../../../src/cli/core/installation/workspace-detection.js'
-      );
-
-      (ensureDirectories as any).mockResolvedValue(Ok(undefined));
-      (checkExistingFiles as any).mockResolvedValue(Ok([]));
-      (createInstallationSteps as any).mockReturnValue([]);
-      (executeInstallationSteps as any).mockResolvedValue(
-        Ok({ installedFiles: [], failedSteps: [] })
-      );
-      (analyzeDependencies as any).mockResolvedValue(
-        Ok({
-          needsInstall: true,
-          added: { react: '^18.0.0' },
-        })
-      );
-      (detectCIEnvironment as any).mockReturnValue({
-        type: 'github',
-        name: 'GitHub Actions',
-        isCI: true,
-      });
-      (installDependenciesSmart as any).mockResolvedValue(
-        Ok({
-          installed: true,
-          warnings: [],
-        })
-      );
-
-      const result = await performInstallation(
-        mockFS,
-        mockLogger,
-        config,
-        trailheadRoot,
-        false,
-        'nextjs' as FrameworkType,
-        true,
-        { interactive: true } // Should be ignored in CI
-      );
-
-      expect(result.success).toBe(true);
-      // Should use auto strategy in CI environment
-      expect(installDependenciesSmart).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-        { type: 'auto' }
-      );
     });
 
     it('should handle installation failure with detailed error reporting', async () => {

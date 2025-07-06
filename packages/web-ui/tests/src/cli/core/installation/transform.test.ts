@@ -339,7 +339,7 @@ describe('transform - High-ROI Tests', () => {
       expect(report).toContain('Files modified: 5');
       expect(report).toContain('Conversions applied: 25');
       expect(report).toContain('✅ Components now use semantic color tokens');
-      expect(report).toContain('This enables dynamic theming with Trailhead UI');
+      expect(report).toContain('   This enables dynamic theming with Trailhead UI');
     });
 
     it('should generate informative report when no conversions are needed', () => {
@@ -353,7 +353,7 @@ describe('transform - High-ROI Tests', () => {
       const report = generateConversionReport(stats);
 
       expect(report).toContain('ℹ️  No conversions were needed');
-      expect(report).toContain('Components already use semantic tokens');
+      expect(report).toContain('   Components already use semantic tokens');
     });
 
     it('should include warnings and errors in conversion report', () => {
@@ -370,8 +370,8 @@ describe('transform - High-ROI Tests', () => {
       const report = generateConversionReport(stats);
 
       expect(report).toContain('Warnings: 2');
-      expect(report).toContain('• Warning: Unusual color pattern in custom-component.tsx');
-      expect(report).toContain('• Minor: Formatting adjusted');
+      expect(report).toContain('  • Warning: Unusual color pattern in custom-component.tsx');
+      expect(report).toContain('  • Minor: Formatting adjusted');
     });
 
     it('should provide user guidance for empty conversion results', () => {
@@ -386,7 +386,7 @@ describe('transform - High-ROI Tests', () => {
 
       expect(report).toContain('Files processed: 0');
       expect(report).toContain('Warnings: 1');
-      expect(report).toContain('• No catalyst files found');
+      expect(report).toContain('  • No catalyst files found');
     });
   });
 });

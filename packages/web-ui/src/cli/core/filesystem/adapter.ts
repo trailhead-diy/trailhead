@@ -17,7 +17,7 @@ function toInstallError(error: any): InstallError {
     type: 'FileSystemError',
     message: error.message || 'Filesystem operation failed',
     path: error.path || '',
-    cause: error.cause || error,
+    cause: error,
   };
 }
 
