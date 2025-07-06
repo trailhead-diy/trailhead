@@ -1,10 +1,8 @@
-name: CI
+name: Tier 1 - Fast PR CI (Proven)
 
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
