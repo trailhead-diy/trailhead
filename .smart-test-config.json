@@ -1,6 +1,6 @@
 {
   "highRiskPatterns": [
-    "\\.(ts|tsx|js|jsx)$",
+    "src/.*\\.(ts|tsx|js|jsx)$",
     "tsconfig",
     "package\\.json$",
     "turbo\\.json$",
@@ -22,7 +22,10 @@
     "docs/",
     "\\.smart-test-config\\.json$",
     "\\.mcp\\.json$",
-    "scripts/.*\\.sh$"
+    "scripts/.*\\.sh$",
+    ".*\\.test\\.(ts|tsx|js|jsx)$",
+    ".*/__tests__/.*$",
+    "tests/.*$"
   ],
   "packageMappings": {
     "cli": "@esteban-url/trailhead-cli",

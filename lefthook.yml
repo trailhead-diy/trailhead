@@ -17,12 +17,13 @@ output:
 colors: true
 
 pre-commit:
-  parallel: false
+  parallel: true
   commands:
     # 1. Format code (fastest, auto-fix)
     prettier:
       priority: 1
-      run: pnpm prettier --write "**/*.{ts,tsx,js,jsx,json,md}" --cache --cache-location .turbo/.prettiercache
+      glob: "**/*.{ts,tsx,js,jsx,json,md}"
+      run: pnpm prettier --write {staged_files} --cache --cache-location .turbo/.prettiercache
       stage_fixed: true
 
     # 2. Lint TypeScript/JavaScript with oxlint (critical errors)
@@ -35,7 +36,7 @@ pre-commit:
     # 3. Type check (logic errors)
     typecheck:
       priority: 3
-      glob: "packages/**/*.{ts,tsx}"
+      glob: "**/*.{ts,tsx}"
       run: pnpm types --filter="./packages/*" -- --incremental
 
     # 4. Validate documentation structure (if docs changed)
@@ -50,47 +51,46 @@ pre-commit:
           done
         fi
 
-    # 5. Check for secrets (security)
-    secrets:
+    # 5. Security and size checks (lightweight)
+    security-checks:
       priority: 5
-      exclude: '(pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$'
-      run: git diff --cached --name-only | xargs grep -l -E -i "(api[_-]?key|secret|token|password)" 2>/dev/null && echo "⚠️ Potential secrets detected" || true
-
-    # 6. Check file sizes (size validation)
-    filesize:
-      priority: 6
       run: |
-        large_files=$(git diff --cached --name-only | xargs ls -la 2>/dev/null | awk '$5 > 1048576 {print $9, "(" $5 " bytes)"}' || true)
-        if [ -n "$large_files" ]; then
-          echo "⚠️ Large files detected:"
-          echo "$large_files"
+        # Check for secrets (skip lock files)
+        staged_files=$(git diff --cached --name-only | grep -vE '(pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$' || true)
+        if [ -n "$staged_files" ]; then
+          if echo "$staged_files" | xargs grep -l -E -i "(api[_-]?key|secret|token|password)" 2>/dev/null; then
+            echo "⚠️ Potential secrets detected"
+          fi
+          
+          # Check file sizes (only for large files)
+          large_files=$(echo "$staged_files" | xargs ls -la 2>/dev/null | awk '$5 > 1048576 {print $9, "(" $5 " bytes)"}' || true)
+          if [ -n "$large_files" ]; then
+            echo "⚠️ Large files detected:"
+            echo "$large_files"
+          fi
         fi
 
-    # 7. Smart test execution (comprehensive validation)
+    # 6. Smart test execution (comprehensive validation)
     smart-tests:
-      priority: 7
+      priority: 6
       run: ./scripts/smart-test-runner.sh
 
-    # 8. Build validation
+    # 7. Build validation (conditional)
     build-affected:
-      priority: 8
+      priority: 7
+      glob: "**/*.{ts,tsx,js,jsx,json}"
       run: |
-        # Only build when source files change
-        if git diff --cached --name-only | grep -qE '\.(ts|tsx|js|jsx|json|vue|svelte)$'; then
-          echo "🔨 Building affected packages..."
-          # Use Turborepo's affected detection with caching
-          pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo || {
-            echo "❌ Build failed - this would fail in CI"
-            exit 1
-          }
-          echo "✅ Build validation passed"
-        else
-          echo "ℹ️ No source files changed, skipping build validation"
-        fi
+        echo "🔨 Building affected packages..."
+        # Use Turborepo's affected detection with caching
+        pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo || {
+          echo "❌ Build failed - this would fail in CI"
+          exit 1
+        }
+        echo "✅ Build validation passed"
 
-    # 9. Workspace dependency validation
+    # 8. Workspace dependency validation
     workspace-check:
-      priority: 9
+      priority: 8
       run: |
         # Only run when package.json files change
         if git diff --cached --name-only | grep -q 'package\.json$'; then
@@ -139,37 +139,33 @@ pre-commit:
           echo "ℹ️ No package.json changes, skipping workspace validation"
         fi
         
-    # 10. Circular dependency detection
+    # 9. Circular dependency detection (conditional)
     circular-deps:
-      priority: 10
+      priority: 9
+      glob: "packages/**/*.{ts,tsx}"
       run: |
-        # Only run when TypeScript files change
-        if git diff --cached --name-only | grep -qE '\.(ts|tsx)$'; then
-          echo "🔍 Checking for circular dependencies..."
-          # Check if madge is available
-          if command -v madge >/dev/null 2>&1; then
-            madge --circular --extensions ts,tsx packages/ || {
-              echo "❌ Circular dependencies detected - this would fail in CI"
-              exit 1
-            }
-            echo "✅ No circular dependencies found"
-          elif command -v npx >/dev/null 2>&1; then
-            npx madge --circular --extensions ts,tsx packages/ || {
-              echo "❌ Circular dependencies detected - this would fail in CI"
-              exit 1
-            }
-            echo "✅ No circular dependencies found"
-          else
-            echo "⚠️ madge not available, skipping circular dependency check"
-            echo "   Install with: npm install -g madge"
-          fi
+        echo "🔍 Checking for circular dependencies..."
+        # Check if madge is available
+        if command -v madge >/dev/null 2>&1; then
+          madge --circular --extensions ts,tsx packages/ || {
+            echo "❌ Circular dependencies detected - this would fail in CI"
+            exit 1
+          }
+          echo "✅ No circular dependencies found"
+        elif command -v npx >/dev/null 2>&1; then
+          npx madge --circular --extensions ts,tsx packages/ || {
+            echo "❌ Circular dependencies detected - this would fail in CI"
+            exit 1
+          }
+          echo "✅ No circular dependencies found"
         else
-          echo "ℹ️ No TypeScript files changed, skipping circular dependency check"
+          echo "⚠️ madge not available, skipping circular dependency check"
+          echo "   Install with: npm install -g madge"
         fi
         
-    # 11. Environment parity check
+    # 10. Environment parity check
     env-check:
-      priority: 11
+      priority: 10
       run: |
         echo "🌍 Checking environment parity..."
         node -e "
@@ -228,9 +224,9 @@ pre-commit:
           }
         " || exit 1
         
-    # 12. Package.json validation
+    # 11. Package.json validation
     package-validation:
-      priority: 12
+      priority: 11
       run: |
         # Only run when package.json files change
         if git diff --cached --name-only | grep -q 'package\.json$'; then
