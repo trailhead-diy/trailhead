@@ -115,17 +115,20 @@ export interface CLIOptions {
 // DEPENDENCY INJECTION INTERFACES
 // ============================================================================
 
+// Re-export FileSystem from CLI framework and adapt error types
+export type { FileSystem as FrameworkFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+
 export interface FileSystem {
-  exists(path: string): Promise<Result<boolean, InstallError>>;
-  readDir(path: string): Promise<Result<string[], InstallError>>;
+  access(path: string, mode?: number): Promise<Result<void, InstallError>>;
+  readdir(path: string): Promise<Result<string[], InstallError>>;
   readFile(path: string): Promise<Result<string, InstallError>>;
   writeFile(path: string, content: string): Promise<Result<void, InstallError>>;
   readJson<T>(path: string): Promise<Result<T, InstallError>>;
   writeJson<T>(path: string, data: T, options?: WriteOptions): Promise<Result<void, InstallError>>;
-  copy(src: string, dest: string, options?: CopyOptions): Promise<Result<void, InstallError>>;
+  cp(src: string, dest: string, options?: CopyOptions): Promise<Result<void, InstallError>>;
   ensureDir(path: string): Promise<Result<void, InstallError>>;
   stat(path: string): Promise<Result<FileStats, InstallError>>;
-  remove(path: string): Promise<Result<void, InstallError>>;
+  rm(path: string): Promise<Result<void, InstallError>>;
 }
 
 export interface ProcessRunner {

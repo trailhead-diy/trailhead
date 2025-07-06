@@ -388,7 +388,7 @@ async function processTemplateFile(
       }
     } else {
       // Copy file as-is
-      const copyResult = await fs.copy(templatePath, outputPath);
+      const copyResult = await fs.cp(templatePath, outputPath);
       if (!copyResult.success) {
         return Err(
           createError(

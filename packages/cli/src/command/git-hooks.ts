@@ -47,38 +47,33 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
   try {
     // Detect package manager
     let packageManager = 'npm';
-    const pnpmLockExists = await fs.exists('pnpm-lock.yaml');
-    const yarnLockExists = await fs.exists('yarn.lock');
+    const pnpmLockResult = await fs.access('pnpm-lock.yaml');
+    const yarnLockResult = await fs.access('yarn.lock');
 
-    if (pnpmLockExists.success && pnpmLockExists.value) {
+    if (pnpmLockResult.success) {
       packageManager = 'pnpm';
-    } else if (yarnLockExists.success && yarnLockExists.value) {
+    } else if (yarnLockResult.success) {
       packageManager = 'yarn';
     }
 
     // Detect monorepo
-    const turboExists = await fs.exists('turbo.json');
-    const pnpmWorkspaceExists = await fs.exists('pnpm-workspace.yaml');
-    const lernaExists = await fs.exists('lerna.json');
+    const turboResult = await fs.access('turbo.json');
+    const pnpmWorkspaceResult = await fs.access('pnpm-workspace.yaml');
+    const lernaResult = await fs.access('lerna.json');
 
     const isMonorepo =
-      (turboExists.success && turboExists.value) ||
-      (pnpmWorkspaceExists.success && pnpmWorkspaceExists.value) ||
-      (lernaExists.success && lernaExists.value);
+      turboResult.success || pnpmWorkspaceResult.success || lernaResult.success;
 
     // Detect TypeScript
-    const tsConfigExists = await fs.exists('tsconfig.json');
-    const hasTypeScript = tsConfigExists.success && tsConfigExists.value;
+    const tsconfigResult = await fs.access('tsconfig.json');
+    const hasTypeScript = tsconfigResult.success;
 
     // Detect test framework
     let testFramework = 'vitest';
-    const jestConfigJsExists = await fs.exists('jest.config.js');
-    const jestConfigTsExists = await fs.exists('jest.config.ts');
+    const jestConfigJsResult = await fs.access('jest.config.js');
+    const jestConfigTsResult = await fs.access('jest.config.ts');
 
-    if (
-      (jestConfigJsExists.success && jestConfigJsExists.value) ||
-      (jestConfigTsExists.success && jestConfigTsExists.value)
-    ) {
+    if (jestConfigJsResult.success || jestConfigTsResult.success) {
       testFramework = 'jest';
     }
 
@@ -110,8 +105,8 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
 
     if (isMonorepo) {
       try {
-        const packagesDirExists = await fs.exists('packages');
-        if (packagesDirExists.success && packagesDirExists.value) {
+        const packagesDirResult = await fs.access('packages');
+        if (packagesDirResult.success) {
           const dirResult = await fs.readdir('packages');
           if (dirResult.success) {
             packages = dirResult.value;
@@ -330,12 +325,12 @@ async function installGitHooks(
     console.log(chalk.blue('🔧 Installing smart git hooks...'));
 
     // Detect project configuration
-    const configResult = await detectProjectConfig();
-    if (!configResult.success) {
-      return Err(configResult.error);
+    const projectConfigResult = await detectProjectConfig();
+    if (!projectConfigResult.success) {
+      return Err(projectConfigResult.error);
     }
 
-    const config = configResult.value;
+    const config = projectConfigResult.value;
     const vars = generateTemplateVars(config, options);
 
     if (options.dryRun) {
@@ -416,12 +411,8 @@ async function installGitHooks(
     const lefthookContent = renderTemplate(lefthookTemplateResult.value, vars);
 
     const lefthookPath = 'lefthook.yml';
-    const lefthookExistsResult = await fs.exists(lefthookPath);
-    if (
-      lefthookExistsResult.success &&
-      lefthookExistsResult.value &&
-      !options.force
-    ) {
+    const lefthookResult = await fs.access(lefthookPath);
+    if (lefthookResult.success && !options.force) {
       console.log(
         chalk.yellow(
           `⚠️  ${lefthookPath} already exists. Use --force to overwrite.`,
@@ -460,12 +451,8 @@ async function installGitHooks(
     const configContent = renderTemplate(configTemplateResult.value, vars);
 
     const configPath = '.smart-test-config.json';
-    const configExistsResult = await fs.exists(configPath);
-    if (
-      configExistsResult.success &&
-      configExistsResult.value &&
-      !options.force
-    ) {
+    const smartConfigResult = await fs.access(configPath);
+    if (smartConfigResult.success && !options.force) {
       console.log(
         chalk.yellow(
           `⚠️  ${configPath} already exists. Use --force to overwrite.`,
@@ -499,12 +486,8 @@ async function installGitHooks(
     }
 
     const readmePath = path.join(scriptsDir, 'README.md');
-    const readmeExistsResult = await fs.exists(readmePath);
-    if (
-      !readmeExistsResult.success ||
-      !readmeExistsResult.value ||
-      options.force
-    ) {
+    const readmeResult = await fs.access(readmePath);
+    if (!readmeResult.success || options.force) {
       const writeReadmeResult = await fs.writeFile(
         readmePath,
         readmeTemplateResult.value,
@@ -589,9 +572,12 @@ async function removeGitHooks(
     ];
 
     for (const file of filesToRemove) {
-      const existsResult = await fs.exists(file);
-      if (existsResult.success && existsResult.value) {
-        const removeResult = await fs.remove(file);
+      const fileResult = await fs.access(file);
+      if (fileResult.success) {
+        const removeResult = await fs.rm(file, {
+          recursive: true,
+          force: true,
+        });
         if (removeResult.success) {
           console.log(chalk.gray(`   Removed ${file}`));
         }
@@ -602,7 +588,10 @@ async function removeGitHooks(
     try {
       const entriesResult = await fs.readdir(scriptsDir);
       if (entriesResult.success && entriesResult.value.length === 0) {
-        const removeDirResult = await fs.remove(scriptsDir);
+        const removeDirResult = await fs.rm(scriptsDir, {
+          recursive: true,
+          force: true,
+        });
         if (removeDirResult.success) {
           console.log(chalk.gray(`   Removed empty directory ${scriptsDir}`));
         }
@@ -782,9 +771,8 @@ export function createGitHooksCommand(): Command {
       ];
 
       for (const file of files) {
-        const existsResult = await fs.exists(file);
-        const exists = existsResult.success && existsResult.value;
-        const status = exists
+        const fileResult = await fs.access(file);
+        const status = fileResult.success
           ? chalk.green('✅ Installed')
           : chalk.red('❌ Missing');
         console.log(`   ${file}: ${status}`);

@@ -20,25 +20,22 @@ describe('FileSystem', () => {
   });
 
   describe('Basic Operations', () => {
-    describe('exists', () => {
-      it('should return false for non-existent file', async () => {
-        const result = await fs.exists('/non-existent.txt');
-        expect(isOk(result)).toBe(true);
-        expect(unwrap(result)).toBe(false);
+    describe('access', () => {
+      it('should return error for non-existent file', async () => {
+        const result = await fs.access('/non-existent.txt');
+        expect(result.success).toBe(false);
       });
 
-      it('should return true for existing file', async () => {
+      it('should return success for existing file', async () => {
         await fs.writeFile('/test.txt', 'content');
-        const result = await fs.exists('/test.txt');
-        expect(isOk(result)).toBe(true);
-        expect(unwrap(result)).toBe(true);
+        const result = await fs.access('/test.txt');
+        expect(result.success).toBe(true);
       });
 
-      it('should return true for existing directory', async () => {
+      it('should return success for existing directory', async () => {
         await fs.mkdir('/test-dir');
-        const result = await fs.exists('/test-dir');
-        expect(isOk(result)).toBe(true);
-        expect(unwrap(result)).toBe(true);
+        const result = await fs.access('/test-dir');
+        expect(result.success).toBe(true);
       });
     });
 
@@ -99,8 +96,8 @@ describe('FileSystem', () => {
         const result = await fs.mkdir('/new-dir');
         expect(isOk(result)).toBe(true);
 
-        const exists = await fs.exists('/new-dir');
-        expect(unwrap(exists)).toBe(true);
+        const accessResult = await fs.access('/new-dir');
+        expect(accessResult.success).toBe(true);
       });
 
       it('should create nested directories with recursive option', async () => {
@@ -109,8 +106,8 @@ describe('FileSystem', () => {
         });
         expect(isOk(result)).toBe(true);
 
-        const exists = await fs.exists('/parent/child/grandchild');
-        expect(unwrap(exists)).toBe(true);
+        const accessResult = await fs.access('/parent/child/grandchild');
+        expect(accessResult.success).toBe(true);
       });
 
       it('should create nested paths without error in memory filesystem', async () => {
@@ -172,7 +169,7 @@ describe('FileSystem', () => {
         const content = 'file content';
         await fs.writeFile('/source.txt', content);
 
-        const result = await fs.copy('/source.txt', '/dest.txt');
+        const result = await fs.cp('/source.txt', '/dest.txt');
         expect(isOk(result)).toBe(true);
 
         const destContent = await fs.readFile('/dest.txt');
@@ -184,7 +181,7 @@ describe('FileSystem', () => {
         await fs.writeFile('/dest.txt', 'old content');
 
         // Memory filesystem allows overwriting
-        const result = await fs.copy('/source.txt', '/dest.txt');
+        const result = await fs.cp('/source.txt', '/dest.txt');
         expect(isOk(result)).toBe(true);
 
         const content = await fs.readFile('/dest.txt');
@@ -192,7 +189,7 @@ describe('FileSystem', () => {
       });
 
       it('should return error for non-existent source', async () => {
-        const result = await fs.copy('/non-existent.txt', '/dest.txt');
+        const result = await fs.cp('/non-existent.txt', '/dest.txt');
         expect(isErr(result)).toBe(true);
         expect(getErrorMessage(result)).toContain('not found');
       });
@@ -203,8 +200,8 @@ describe('FileSystem', () => {
         const result = await fs.ensureDir('/new/path/to/dir');
         expect(isOk(result)).toBe(true);
 
-        const exists = await fs.exists('/new/path/to/dir');
-        expect(unwrap(exists)).toBe(true);
+        const accessResult = await fs.access('/new/path/to/dir');
+        expect(accessResult.success).toBe(true);
       });
 
       it('should not fail if directory already exists', async () => {
@@ -217,8 +214,8 @@ describe('FileSystem', () => {
         const result = await fs.ensureDir('/a/b/c/d/e');
         expect(isOk(result)).toBe(true);
 
-        const exists = await fs.exists('/a/b/c/d/e');
-        expect(unwrap(exists)).toBe(true);
+        const accessResult = await fs.access('/a/b/c/d/e');
+        expect(accessResult.success).toBe(true);
       });
     });
 
@@ -358,10 +355,10 @@ describe('FileSystem', () => {
 
       memFs.clear?.();
 
-      const fileExists = await memFs.exists('/file.txt');
-      const dirExists = await memFs.exists('/dir');
-      expect(unwrap(fileExists)).toBe(false);
-      expect(unwrap(dirExists)).toBe(false);
+      const fileResult = await memFs.access('/file.txt');
+      const dirResult = await memFs.access('/dir');
+      expect(fileResult.success).toBe(false);
+      expect(dirResult.success).toBe(false);
     });
   });
 
@@ -369,12 +366,12 @@ describe('FileSystem', () => {
     describe('move', () => {
       it('should move file to new location', async () => {
         await fs.writeFile('/source.txt', 'content to move');
-        const moveResult = await fs.move('/source.txt', '/destination.txt');
+        const moveResult = await fs.rename('/source.txt', '/destination.txt');
         expect(isOk(moveResult)).toBe(true);
 
         // Source should not exist
-        const sourceExists = await fs.exists('/source.txt');
-        expect(unwrap(sourceExists)).toBe(false);
+        const sourceResult = await fs.access('/source.txt');
+        expect(sourceResult.success).toBe(false);
 
         // Destination should exist with content
         const destContent = await fs.readFile('/destination.txt');
@@ -382,7 +379,7 @@ describe('FileSystem', () => {
       });
 
       it('should return error when moving non-existent file', async () => {
-        const result = await fs.move('/non-existent.txt', '/dest.txt');
+        const result = await fs.rename('/non-existent.txt', '/dest.txt');
         expect(isErr(result)).toBe(true);
         expect(getErrorMessage(result)).toContain('not found');
       });
@@ -391,11 +388,11 @@ describe('FileSystem', () => {
     describe('remove', () => {
       it('should remove file', async () => {
         await fs.writeFile('/file-to-remove.txt', 'content');
-        const removeResult = await fs.remove('/file-to-remove.txt');
+        const removeResult = await fs.rm('/file-to-remove.txt');
         expect(isOk(removeResult)).toBe(true);
 
-        const exists = await fs.exists('/file-to-remove.txt');
-        expect(unwrap(exists)).toBe(false);
+        const result = await fs.access('/file-to-remove.txt');
+        expect(result.success).toBe(false);
       });
 
       it('should remove directory and its contents', async () => {
@@ -403,18 +400,18 @@ describe('FileSystem', () => {
         await fs.writeFile('/dir/file2.txt', 'content2');
         await fs.mkdir('/dir/subdir', { recursive: true });
 
-        const removeResult = await fs.remove('/dir');
+        const removeResult = await fs.rm('/dir', { recursive: true });
         expect(isOk(removeResult)).toBe(true);
 
-        const dirExists = await fs.exists('/dir');
-        expect(unwrap(dirExists)).toBe(false);
+        const dirResult = await fs.access('/dir');
+        expect(dirResult.success).toBe(false);
 
-        const file1Exists = await fs.exists('/dir/file1.txt');
-        expect(unwrap(file1Exists)).toBe(false);
+        const file1Result = await fs.access('/dir/file1.txt');
+        expect(file1Result.success).toBe(false);
       });
 
       it('should return error when removing non-existent path', async () => {
-        const result = await fs.remove('/non-existent');
+        const result = await fs.rm('/non-existent');
         expect(isErr(result)).toBe(true);
         expect(getErrorMessage(result)).toContain('not found');
       });
@@ -429,22 +426,22 @@ describe('FileSystem', () => {
         const emptyResult = await fs.emptyDir('/dir');
         expect(isOk(emptyResult)).toBe(true);
 
-        const dirExists = await fs.exists('/dir');
-        expect(unwrap(dirExists)).toBe(true);
+        const dirResult = await fs.access('/dir');
+        expect(dirResult.success).toBe(true);
 
-        const file1Exists = await fs.exists('/dir/file1.txt');
-        expect(unwrap(file1Exists)).toBe(false);
+        const file1Result = await fs.access('/dir/file1.txt');
+        expect(file1Result.success).toBe(false);
 
-        const subdirExists = await fs.exists('/dir/subdir');
-        expect(unwrap(subdirExists)).toBe(false);
+        const subdirResult = await fs.access('/dir/subdir');
+        expect(subdirResult.success).toBe(false);
       });
 
       it('should create directory if it does not exist', async () => {
         const result = await fs.emptyDir('/new-empty-dir');
         expect(isOk(result)).toBe(true);
 
-        const exists = await fs.exists('/new-empty-dir');
-        expect(unwrap(exists)).toBe(true);
+        const accessResult = await fs.access('/new-empty-dir');
+        expect(accessResult.success).toBe(true);
       });
     });
 
@@ -459,8 +456,8 @@ describe('FileSystem', () => {
         const content = await fs.readFile('/deep/nested/path/file.txt');
         expect(unwrap(content)).toBe('content');
 
-        const dirExists = await fs.exists('/deep/nested/path');
-        expect(unwrap(dirExists)).toBe(true);
+        const dirResult = await fs.access('/deep/nested/path');
+        expect(dirResult.success).toBe(true);
       });
     });
   });

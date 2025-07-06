@@ -8,6 +8,31 @@ import ora from 'ora';
 import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js';
 import { Ok, Err } from './types.js';
 import { isTsxFile } from '../shared/file-filters.js';
+
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return { success: true, value: true };
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return { success: true, value: false };
+    }
+    // Other errors are actual errors
+    return {
+      success: false,
+      error: {
+        type: 'FileSystemError',
+        message: 'Failed to check path existence',
+        path,
+        cause: result.error,
+      },
+    };
+  }
+};
 import type { TransformResult } from '../shared/transform-core.js';
 import {
   executeTransforms,
@@ -52,7 +77,7 @@ export const runColorConversions = async (
     // Verify that the catalyst directory exists
     spinner.text = 'Verifying catalyst directory...';
 
-    const existsResult = await fs.exists(catalystDir);
+    const existsResult = await pathExists(fs, catalystDir);
     if (!existsResult.success) {
       spinner.fail('Failed to check catalyst directory');
       return Err({
@@ -175,7 +200,7 @@ export const validateConversions = async (
     for (const fileName of sampleFiles) {
       const filePath = path.join(catalystDir, fileName);
 
-      const existsResult = await fs.exists(filePath);
+      const existsResult = await pathExists(fs, filePath);
       if (!existsResult.success) continue;
 
       if (existsResult.value) {
@@ -258,7 +283,7 @@ export const getFilesNeedingConversion = async (
   fs: FileSystem,
   catalystDir: string
 ): Promise<Result<string[], InstallError>> => {
-  const readDirResult = await fs.readDir(catalystDir);
+  const readDirResult = await fs.readdir(catalystDir);
   if (!readDirResult.success) return readDirResult;
 
   const files = readDirResult.value.filter(isTsxFile);

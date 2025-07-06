@@ -3,6 +3,28 @@ import { cosmiconfig } from 'cosmiconfig';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
 
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err({
+      type: 'FileSystemError',
+      message: 'Failed to check path existence',
+      path,
+      cause: result.error,
+    });
+  }
+};
+
 export type FrameworkType = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react';
 
 export const VALID_FRAMEWORKS: readonly FrameworkType[] = [
@@ -133,7 +155,7 @@ export const checkConfigFiles = async (
     // First try traditional file checking
     for (const configFile of configFiles) {
       const configPath = path.join(projectRoot, configFile);
-      const existsResult = await fs.exists(configPath);
+      const existsResult = await pathExists(fs, configPath);
 
       if (!existsResult.success) {
         return Err(existsResult.error);
@@ -200,7 +222,7 @@ export const readPackageJson = async (
 ): Promise<Result<unknown, InstallError>> => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
 
-  const existsResult = await fs.exists(packageJsonPath);
+  const existsResult = await pathExists(fs, packageJsonPath);
   if (!existsResult.success) {
     return Err(existsResult.error);
   }

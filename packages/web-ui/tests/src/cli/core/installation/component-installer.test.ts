@@ -148,7 +148,7 @@ export * from './catalyst-alert'`
     });
 
     it('handles missing source directory', async () => {
-      fs.readDir = vi.fn().mockResolvedValue(
+      fs.readdir = vi.fn().mockResolvedValue(
         Err({
           type: 'FileSystemError',
           message: 'Directory not found',

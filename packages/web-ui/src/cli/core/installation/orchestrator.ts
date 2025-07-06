@@ -28,6 +28,28 @@ import { analyzeDependencies as analyzeCore } from './dependency-resolution.js';
 import { detectPackageManager } from 'nypm';
 import { countFilesByPattern, formatFileSummary } from './shared-utils.js';
 
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err({
+      type: 'FileSystemError',
+      message: 'Failed to check path existence',
+      path,
+      cause: result.error,
+    });
+  }
+};
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -385,7 +407,7 @@ export const validatePrerequisites = async (
   trailheadRoot: string
 ): Promise<Result<void, InstallError>> => {
   // Check if Trailhead root exists
-  const rootExistsResult = await fs.exists(trailheadRoot);
+  const rootExistsResult = await pathExists(fs, trailheadRoot);
   if (!rootExistsResult.success) return rootExistsResult;
   if (!rootExistsResult.value) {
     return Err({
@@ -396,7 +418,7 @@ export const validatePrerequisites = async (
   }
 
   // Check if project root exists
-  const projectExistsResult = await fs.exists(config.projectRoot);
+  const projectExistsResult = await pathExists(fs, config.projectRoot);
   if (!projectExistsResult.success) return projectExistsResult;
   if (!projectExistsResult.value) {
     return Err({
@@ -419,7 +441,7 @@ export const validatePrerequisites = async (
   }
 
   // Clean up test file
-  await fs.remove(writeTestPath);
+  await fs.rm(writeTestPath);
 
   return Ok(undefined);
 };
@@ -480,7 +502,7 @@ export const performDryRunInstallation = async (
 
   // Check for Catalyst components
   const catalystDir = `${trailheadRoot}/src/components/lib`;
-  const dirCheckResult = await fs.readDir(catalystDir);
+  const dirCheckResult = await fs.readdir(catalystDir);
   if (dirCheckResult.success) {
     const catalystFiles = dirCheckResult.value
       .filter(isTsxFile)
@@ -499,7 +521,7 @@ export const performDryRunInstallation = async (
   const existingFiles: string[] = [];
   for (const file of plannedFiles) {
     const fullPath = `${config.componentsDir}/${file}`;
-    const existsResult = await fs.exists(fullPath);
+    const existsResult = await pathExists(fs, fullPath);
     if (existsResult.success && existsResult.value) {
       existingFiles.push(file);
     }

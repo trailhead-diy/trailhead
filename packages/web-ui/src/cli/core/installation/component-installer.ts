@@ -6,6 +6,28 @@ import * as path from 'path';
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
 import { Ok, Err } from './types.js';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
+
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err({
+      type: 'FileSystemError',
+      message: 'Failed to check path existence',
+      path,
+      cause: result.error,
+    });
+  }
+};
 import {
   copyDirectory,
   writeFileWithBackup,
@@ -199,7 +221,7 @@ async function copyFile(
   dest: string,
   force: boolean
 ): Promise<Result<void, InstallError>> {
-  const existsResult = await fs.exists(src);
+  const existsResult = await pathExists(fs, src);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -210,7 +232,7 @@ async function copyFile(
     });
   }
 
-  return fs.copy(src, dest, { overwrite: force });
+  return fs.cp(src, dest, { overwrite: force });
 }
 
 // ============================================================================

@@ -222,7 +222,7 @@ detect_risk_level() {
   fi
   
   if [[ -z "$skip_patterns" ]]; then
-    skip_patterns='\.md$|README|CHANGELOG|LICENSE|\.github/'
+    skip_patterns='\.md$|README|CHANGELOG|LICENSE|\.github/|\.vscode/|\.gitignore$|\.prettierrc|\.prettierignore|docs/|\.smart-test-config\.json$|\.mcp\.json$|scripts/.*\.sh$'
   fi
   
   log_verbose "High-risk patterns: $high_risk_patterns"
@@ -393,6 +393,19 @@ execute_tests() {
     
     ((attempt++))
   done
+}
+
+# Detect package manager
+detect_package_manager() {
+  if [[ -f "pnpm-lock.yaml" ]]; then
+    echo "pnpm"
+  elif [[ -f "yarn.lock" ]]; then
+    echo "yarn"
+  elif [[ -f "package-lock.json" ]]; then
+    echo "npm"
+  else
+    echo "npm"  # default fallback
+  fi
 }
 
 # Show progress indicator for long-running tests

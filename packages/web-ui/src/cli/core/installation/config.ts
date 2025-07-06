@@ -15,6 +15,28 @@ import type {
 import { Ok, Err, isString, isObject } from './types.js';
 import { isTsxFile } from '../shared/file-filters.js';
 
+/**
+ * Helper function to check if a path exists using access
+ */
+const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
+  const result = await fs.access(path);
+  if (result.success) {
+    return Ok(true);
+  } else {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((result.error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual errors
+    return Err({
+      type: 'FileSystemError',
+      message: 'Failed to check path existence',
+      path,
+      cause: result.error,
+    });
+  }
+};
+
 // ============================================================================
 // CONFIGURATION DETECTION (Pure Functions)
 // ============================================================================
@@ -34,7 +56,7 @@ export const detectCatalystDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await fs.exists(candidatePath);
+    const existsResult = await pathExists(fs, candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -43,7 +65,7 @@ export const detectCatalystDir = async (
         ? candidatePath
         : path.join(candidatePath, 'typescript');
 
-      const typescriptExistsResult = await fs.exists(typescriptDir);
+      const typescriptExistsResult = await pathExists(fs, typescriptDir);
       if (typescriptExistsResult.success && typescriptExistsResult.value) {
         return Ok(typescriptDir);
       }
@@ -72,7 +94,7 @@ export const detectComponentsDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await fs.exists(candidatePath);
+    const existsResult = await pathExists(fs, candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -99,7 +121,7 @@ export const detectLibDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await fs.exists(candidatePath);
+    const existsResult = await pathExists(fs, candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -246,7 +268,7 @@ export const readTrailheadConfig = async (
 ): Promise<Result<InstallationTrailheadConfig | null, InstallError>> => {
   const configPath = path.join(projectRoot, 'trailhead.config.json');
 
-  const existsResult = await fs.exists(configPath);
+  const existsResult = await pathExists(fs, configPath);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -326,7 +348,7 @@ export const resolveConfiguration = async (
       destinationDir = existingConfig.destinationDir;
     } else {
       // Detect default destination directory based on project structure
-      const srcComponentsExists = await fs.exists(path.join(projectRoot, 'src', 'components'));
+      const srcComponentsExists = await pathExists(fs, path.join(projectRoot, 'src', 'components'));
       if (srcComponentsExists.success && srcComponentsExists.value) {
         destinationDir = path.join('src', 'components', 'th');
       } else {
@@ -425,7 +447,7 @@ export const verifyConfiguration = async (
   config: InstallConfig
 ): Promise<Result<void, InstallError>> => {
   // Check if catalyst directory exists and contains TypeScript files
-  const catalystExistsResult = await fs.exists(config.catalystDir);
+  const catalystExistsResult = await pathExists(fs, config.catalystDir);
   if (!catalystExistsResult.success) return catalystExistsResult;
 
   if (!catalystExistsResult.value) {
@@ -437,7 +459,7 @@ export const verifyConfiguration = async (
   }
 
   // Check if catalyst directory contains component files
-  const readDirResult = await fs.readDir(config.catalystDir);
+  const readDirResult = await fs.readdir(config.catalystDir);
   if (!readDirResult.success) return readDirResult;
 
   const hasComponents = readDirResult.value.some(isTsxFile);

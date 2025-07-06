@@ -140,14 +140,23 @@ export function createMockFileSystem(options: MockFileSystemOptions = {}): FileS
     },
 
     // FileSystem interface implementation
-    exists: vi.fn().mockImplementation(async (path: string) => {
-      const error = checkSimulatedError('exists', path);
+    access: vi.fn().mockImplementation(async (path: string, _mode?: number) => {
+      const error = checkSimulatedError('access', path);
       if (error) return Err(error);
 
-      return Ok(pathExists(path));
+      if (!pathExists(path)) {
+        return Err({
+          type: 'FileSystemError',
+          message: `Path not found: ${path}`,
+          path,
+          code: 'ENOENT',
+        });
+      }
+
+      return Ok(undefined);
     }),
 
-    readDir: vi.fn().mockImplementation(async (path: string) => {
+    readdir: vi.fn().mockImplementation(async (path: string) => {
       const error = checkSimulatedError('readDir', path);
       if (error) return Err(error);
 
@@ -261,7 +270,7 @@ export function createMockFileSystem(options: MockFileSystemOptions = {}): FileS
       }
     }),
 
-    copy: vi.fn().mockImplementation(async (src: string, dest: string) => {
+    cp: vi.fn().mockImplementation(async (src: string, dest: string) => {
       const error = checkSimulatedError('copy', src) || checkSimulatedError('copy', dest);
       if (error) return Err(error);
 
@@ -312,7 +321,7 @@ export function createMockFileSystem(options: MockFileSystemOptions = {}): FileS
       });
     }),
 
-    remove: vi.fn().mockImplementation(async (path: string) => {
+    rm: vi.fn().mockImplementation(async (path: string) => {
       const error = checkSimulatedError('remove', path);
       if (error) return Err(error);
 
