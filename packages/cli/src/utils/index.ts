@@ -29,3 +29,16 @@ export {
   coerceOptionType,
   processCommandOptions,
 } from './options.js';
+
+// Package manager utilities
+export {
+  detectPackageManager,
+  getRunCommand,
+  execPackageManagerCommand,
+  getPackageManagerInfo,
+  clearPackageManagerCache,
+  createPackageManagerCache,
+  SemVer,
+  type PackageManager,
+  type DetectOptions,
+} from './package-manager.js';
