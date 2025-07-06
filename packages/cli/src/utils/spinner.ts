@@ -1,26 +1,24 @@
 /**
  * Spinner utilities for CLI loading indicators
- * Built on ora for consistent spinner styling
+ * Built on yocto-spinner for minimal bundle size
  */
-import ora from 'ora';
-export { ora };
+import yoctoSpinner from 'yocto-spinner';
 
 /**
  * Create a spinner with standard configuration
  * @param text - Text to display next to the spinner
- * @returns Configured ora spinner instance
+ * @returns Configured yocto-spinner instance
  * @example
  * ```typescript
  * const spinner = createSpinner('Loading...');
  * spinner.start();
  * // ... do work ...
- * spinner.succeed();
+ * spinner.success();
  * ```
  */
 export function createSpinner(text: string) {
-  return ora({
+  return yoctoSpinner({
     text,
-    spinner: 'dots',
   });
 }
 
@@ -44,11 +42,11 @@ export function withSpinner<T>(text: string, fn: () => Promise<T>): Promise<T> {
 
   return fn()
     .then((result) => {
-      spinner.succeed();
+      spinner.success();
       return result;
     })
     .catch((error) => {
-      spinner.fail();
+      spinner.error();
       throw error;
     });
 }
