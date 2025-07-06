@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: "10.12.4"
+      fast-mode:
+        description: "Enable fast mode optimizations for Tier 1 CI"
+        required: false
+        type: boolean
+        default: true
 
 env:
   FORCE_COLOR: 3
