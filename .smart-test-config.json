@@ -20,7 +20,9 @@
     "\\.prettierrc",
     "\\.prettierignore",
     "docs/",
-    "\\.smart-test-config\\.json$"
+    "\\.smart-test-config\\.json$",
+    "\\.mcp\\.json$",
+    "scripts/.*\\.sh$"
   ],
   "packageMappings": {
     "cli": "@esteban-url/trailhead-cli",

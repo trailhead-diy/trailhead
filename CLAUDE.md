@@ -12,18 +12,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Skip transitional phrases ("Let me...", "I'll help you...")
 - Be direct like a CLI response
 
-### Development Principles
+### Core Development Principles
 
 1. **Prefer libraries over custom implementations** - Use established libraries
 2. **Write easy to read code** - Clarity over cleverness, explicit over implicit
-3. **Always test new code** - Every feature/change must have tests
+3. **Always test new code** - Every feature/change must have HIGH-ROI tests
 4. **Follow functional programming principles** - Pure functions, immutable data
 5. **DRY** (Don't Repeat Yourself)
 6. **KISS** (Keep It Simple, Stupid)
 7. **YAGNI** (You Aren't Gonna Need It) - Avoid over-engineering
-8. **Use semantic tokens** - Never hardcode colors, always use semantic tokens
-9. **No legacy code** - Keep codebase clean and modern until v2.0
-10. **Do One Thing Well** - Every feature, function, and file should have a single, clearly defined purpose
+8. **No legacy code** - Keep codebase clean and modern until v2.0
+9. **Do One Thing Well** - Every feature, function, and file should have a single, clearly defined purpose
 
 ### Development Discipline - MANDATORY WORKFLOW
 
@@ -109,6 +108,47 @@ Focus on high-ROI (Return on Investment) tests:
 - Consider impact across packages when making changes
 - Test related packages when making cross-cutting changes
 - **Web Search**: When searching for current information, always use the current year (2025) not previous years. Check the environment date if unsure. This applies to all searches, including when using shortcuts like `uc7` or any other context.
+- **Context7 MCP**: Use Context7 for up-to-date documentation by adding "use context7" to queries. Essential for `uc7` shortcut to get latest docs and best practices.
+
+### Context7 MCP Integration
+
+**IMPORTANT**: Context7 provides access to up-to-date, version-specific documentation for eliminating outdated code examples and hallucinated APIs.
+
+#### Configuration
+
+Context7 MCP is configured for this project:
+
+- Local server: `claude mcp list` shows `context7: npx -y @upstash/context7-mcp@latest`
+- Project config: `.mcp.json` contains Context7 server definition
+
+#### Usage Examples
+
+**Basic Usage:**
+
+```
+How do I implement server components in Next.js 15? use context7
+```
+
+**With uc7 Shortcut:**
+
+```
+uc7 - Create a React component with Tailwind CSS using latest best practices
+```
+
+**Framework-Specific Queries:**
+
+```
+Show me the latest Vite configuration options for React. use context7
+What are the new features in TypeScript 5.8? use context7
+How to use Turborepo with Next.js app router? use context7
+```
+
+#### Best Practices
+
+1. **Always include "use context7"** for technical documentation queries
+2. **Be specific about versions** when asking about framework features
+3. **Use with `uc7` shortcut** for comprehensive, up-to-date solutions
+4. **Combine with current year** (2025) in searches for latest information
 
 ### Dependency Management
 
@@ -547,7 +587,7 @@ pnpm build                  # Production build
 
 ### General Shortcuts
 
-- `uc7` = [Use Core Principles] Apply these principles: Deep analysis, exhaustive coverage, functional patterns, type safety, DRY, YAGNI, KISS, files should be organized logically and "do one thing well" and high-ROI testing approach if explicitly asked to add testing. Research current best practices and provide comprehensive solution. Do not commit unless explicitly stated. Ensure code passes all linting and type checking for the project's language.
+- `uc7` = [use Context7] Apply these principles: Deep analysis, exhaustive coverage, functional patterns, type safety, DRY, YAGNI, KISS, files should be organized logically and "do one thing well" and high-ROI testing approach if explicitly asked to add testing. Research current best practices and provide comprehensive solution using **Context7 MCP for up-to-date documentation** (add "use context7" to queries). Do not commit unless explicitly stated.
 - `askq` = Ask clarifying questions to understand requirements, constraints, and expected outcomes. Focus on ambiguous requirements, missing context, edge cases, and technical constraints that would impact the solution.
 - `qc` = Quality check in 3 passes: 1) Did I miss anything from the requirements? 2) Can this solution be improved (performance, readability, maintainability)? 3) Does it follow all project principles (DRY, YAGNI, KISS, functional patterns, type safety)?
 - `qcu` = Ultra-deep quality check: 1) Requirements audit - missed any stated/implied requirements, edge cases, error handling, accessibility, performance? 2) Security review - auth, validation, data exposure, OWASP top 10? 3) Architecture impact - system fit, scalability, tech debt, migration paths? 4) Future-proofing - assumptions, breakage points, extensibility? 5) Code excellence - elegant, self-documenting, follows all principles? 6) Hidden complexities - race conditions, memory leaks, performance cliffs, state issues? 7) Testing gaps - untested areas, integration points, failure/recovery scenarios?
