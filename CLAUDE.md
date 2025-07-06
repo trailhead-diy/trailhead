@@ -593,21 +593,21 @@ pnpm build                  # Production build
 - `qcu` = Ultra-deep quality check: 1) Requirements audit - missed any stated/implied requirements, edge cases, error handling, accessibility, performance? 2) Security review - auth, validation, data exposure, OWASP top 10? 3) Architecture impact - system fit, scalability, tech debt, migration paths? 4) Future-proofing - assumptions, breakage points, extensibility? 5) Code excellence - elegant, self-documenting, follows all principles? 6) Hidden complexities - race conditions, memory leaks, performance cliffs, state issues? 7) Testing gaps - untested areas, integration points, failure/recovery scenarios?
 - `explain` = Explain this code/error/concept in simple terms with concrete examples
 - `refactor` = Suggest refactoring improvements focusing on readability, performance, and maintainability
-- `edge` = Identify edge cases, error scenarios, and potential bugs in this implementation
+- `edge-cases` = Identify edge cases, error scenarios, and potential bugs in this implementation
 - `alt` = Provide alternative approaches with pros/cons for each
-- `fix` = Debug this issue systematically: reproduce → isolate → fix → verify
-- `plan` = Create a detailed implementation plan with TodoWrite before starting
+- `fix-this` = Debug this issue systematically: reproduce → isolate → fix → verify
+- `todo-plan` = Create a detailed implementation plan with TodoWrite before starting
 - `quick` = Give me the most direct solution without explanation (for simple tasks)
-- `review` = Code review this as if you're a senior engineer: security, performance, best practices
-- `test` = Write high-ROI tests for this code following project principles
-- `clean` = Deep clean codebase: 1) Remove ALL backwards compatibility code (this is v1.0, no legacy support needed), 2) Delete unused files, functions, variables, imports, exports, 3) Remove low-ROI tests (rendering, prop forwarding, snapshots), 4) Delete obsolete documentation, 5) Remove commented-out code, 6) Eliminate dead code paths and unreachable conditions, 7) Remove unnecessary dependencies, 8) Delete example/bothedemo files that aren't actively used. Be aggressive - if it's not actively used, it goes. Use git history if needed later.
+- `code-review` = Code review this as if you're a senior engineer: security, performance, best practices
+- `write-tests` = Write high-ROI tests for this code following project principles
+- `clean-code` = Deep clean codebase: 1) Remove ALL backwards compatibility code (this is v1.0, no legacy support needed), 2) Delete unused files, functions, variables, imports, exports, 3) Remove low-ROI tests (rendering, prop forwarding, snapshots), 4) Delete obsolete documentation, 5) Remove commented-out code, 6) Eliminate dead code paths and unreachable conditions, 7) Remove unnecessary dependencies, 8) Delete example/bothedemo files that aren't actively used. Be aggressive - if it's not actively used, it goes. Use git history if needed later.
 - `fixlint` = Fix all TypeScript errors and lint warnings. Remove unused imports, prefix
   unused variables with underscore, fix type errors, and ensure code passes all static
   analysis checks.
 - `gcwm` = Fix all lint and ts errors and warnings (fixlint). Git commit with meaningful message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
 - `gpr` = GitHub pull request: 1) Ensure branch is up-to-date with main (git fetch origin && git rebase origin/main), 2) Create PR with title from commits, 3) Run validation checks, 4) Assign reviewers based on changed files, and auto-link issues. Detects affected packages in monorepo.
 - `gbcp` = Git branch, commit, push/PR workflow: 1) Create new feature branch from current branch, 2) Stage all changes and commit with meaningful message (gcwm), 3) Push branch and create PR with auto-generated description (gpr).
-- `sync` = Sync branch with main using rebase strategy: 1) git fetch origin, 2) git rebase origin/main, 3) resolve conflicts if needed.
+- `sync-main` = Sync branch with main using rebase strategy: 1) git fetch origin, 2) git rebase origin/main, 3) resolve conflicts if needed.
 - `check-sync` = Check if current branch is up-to-date with main without pulling. Uses @esteban-url/trailhead-cli/git utilities.
 - `pub` = Publish packages with Changesets: 1) Check release status with `pnpm changeset:status`, 2) If no changeset exists, create one with `pnpm changeset:add`, 3) Push changes to trigger automated release via GitHub Action, 4) The automation handles version bumping, changelog generation, and publishing. For manual release: `pnpm version-packages` then `pnpm release`.
 - `pubdr` = Publish dry-run: Check what would be published without actually releasing. Runs `pnpm release:dry-run` to preview package contents and verify everything looks correct before actual publish. Use before `pub` to ensure safety.
@@ -616,10 +616,11 @@ pnpm build                  # Production build
 - `user-first` = Refocus on actual user needs. What do users actually want to accomplish? What's the simplest way to achieve that? Ignore "best practices" that don't serve real user goals.
 - `scope-check` = Verify single responsibility. Does this issue/PR address exactly one problem? Are we trying to do too much? Should this be split into separate issues?
 - `branch-audit` = Check branch structure. Are we working from main? Is this a branch-on-branch (red flag)? Does branch name match issue scope?
+- `gh-issue` = Read GitHub issue and create action plan: 1) Fetch issue details with `gh issue view [number]`, 2) Analyze problem statement and acceptance criteria, 3) Create TodoWrite plan with specific implementation steps, 4) Check for related issues/PRs, 5) Identify affected packages in monorepo, 6) Create feature branch from main with descriptive name.
 
 ### Documentation Shortcuts
 
-- `docs` = Write comprehensive documentation with: clear overview, usage examples, API reference, edge cases, and common pitfalls
+- `write-docs` = Write comprehensive documentation with: clear overview, usage examples, API reference, edge cases, and common pitfalls
 - `docstring` = Add inline documentation (JSDoc/docstrings) with parameters, return values, examples, and throws
 - `readme` = Create/update README with: project overview, installation, usage, API, examples, contributing guidelines
 - `api` = Document API endpoints/functions with: description, parameters, return types, error codes, examples
