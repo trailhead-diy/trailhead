@@ -13,7 +13,7 @@ This repository implements a **two-tier CI strategy** to optimize testing effici
 **Target**: Ubuntu-only, essential validation with battle-tested simplicity
 **Triggers**:
 
-- Pull requests to main (`ci-fast-pr.yml`)
+- Pull requests to main (`ci-pr.yml`)
 - Main branch pushes (non-CLI) (`ci-main.yml`)
 
 **What it runs**:
