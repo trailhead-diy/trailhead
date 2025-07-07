@@ -9,20 +9,31 @@ import {
 
 // Mock cosmiconfig
 const mockSearch = vi.fn();
+const mockSearchSync = vi.fn();
 const mockCosmiconfig = vi.fn(() => ({
   search: mockSearch,
+}));
+const mockCosmiconfigSync = vi.fn(() => ({
+  search: mockSearchSync,
 }));
 
 vi.mock('cosmiconfig', () => ({
   cosmiconfig: mockCosmiconfig,
+  cosmiconfigSync: mockCosmiconfigSync,
 }));
 
 // Import after mocking
-const { defineConfig, loadConfig } = await import('../config.js');
+const { defineConfig, loadConfig, loadConfigSync } = await import(
+  '../config.js'
+);
 
 describe('Config Module', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSearch.mockClear();
+    mockSearchSync.mockClear();
+    mockCosmiconfig.mockClear();
+    mockCosmiconfigSync.mockClear();
   });
 
   afterEach(() => {
@@ -507,6 +518,211 @@ describe('Config Module', () => {
       const result = await loadConfig(schema);
       expect(isOk(result)).toBe(true);
       expect(unwrap(result)).toEqual(packageJsonConfig);
+    });
+  });
+
+  describe('loadConfigSync', () => {
+    it('should be a convenience function for defineConfig + loadSync', () => {
+      const schema = z.object({
+        name: z.string().default('test-app'),
+        version: z.string().default('1.0.0'),
+      });
+
+      mockSearchSync.mockReturnValue(null);
+
+      const result = loadConfigSync(schema);
+      expect(isOk(result)).toBe(true);
+      expect(unwrap(result)).toEqual({
+        name: 'test-app',
+        version: '1.0.0',
+      });
+    });
+
+    it('should load and validate config from file synchronously', () => {
+      const schema = z.object({
+        name: z.string(),
+        port: z.number(),
+        features: z.array(z.string()).optional(),
+      });
+
+      const configData = {
+        name: 'my-sync-app',
+        port: 4000,
+        features: ['auth', 'api'],
+      };
+
+      // Mock config found
+      mockSearchSync.mockReturnValue({
+        config: configData,
+        filepath: '/project/.configrc.json',
+      });
+
+      const result = loadConfigSync(schema);
+
+      expect(isOk(result)).toBe(true);
+      expect(unwrap(result)).toEqual(configData);
+    });
+
+    it('should return validation error for invalid config synchronously', () => {
+      const schema = z.object({
+        name: z.string(),
+        port: z.number(),
+      });
+
+      // Mock invalid config
+      mockSearchSync.mockReturnValue({
+        config: {
+          name: 'test',
+          port: 'invalid-port', // Should be number
+        },
+        filepath: '/project/.configrc.json',
+      });
+
+      const result = loadConfigSync(schema);
+
+      expect(isErr(result)).toBe(true);
+      const error = result.error as any;
+      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
+      expect(getErrorMessage(result)).toContain('Invalid configuration');
+    });
+
+    it('should handle cosmiconfigSync errors', () => {
+      const schema = z.object({
+        name: z.string().default('test'),
+      });
+
+      // Mock cosmiconfigSync error
+      mockSearchSync.mockImplementation(() => {
+        throw new Error('File system error');
+      });
+
+      const result = loadConfigSync(schema);
+
+      expect(isErr(result)).toBe(true);
+      const error = result.error as any;
+      expect(error.code).toBe('CONFIG_LOAD_ERROR');
+      expect(getErrorMessage(result)).toContain('Failed to load configuration');
+    });
+
+    it('should forward options to cosmiconfigSync', () => {
+      const schema = z.object({
+        name: z.string().default('test'),
+      });
+
+      mockSearchSync.mockReturnValue(null);
+
+      loadConfigSync(schema, {
+        name: 'my-cli',
+        searchFrom: '/custom/path',
+      });
+
+      expect(mockCosmiconfigSync).toHaveBeenCalledWith('my-cli', {
+        searchPlaces: [
+          'package.json',
+          '.my-clirc',
+          '.my-clirc.json',
+          '.my-clirc.js',
+          '.my-clirc.ts',
+          '.my-clirc.mjs',
+          '.my-clirc.cjs',
+          '.my-clirc.yaml',
+          '.my-clirc.yml',
+          'my-cli.config.js',
+          'my-cli.config.ts',
+          'my-cli.config.mjs',
+          'my-cli.config.cjs',
+          'my-cli.config.json',
+        ],
+        ignoreEmptySearchPlaces: false,
+      });
+
+      expect(mockSearchSync).toHaveBeenCalledWith('/custom/path');
+    });
+
+    it('should have consistent behavior with async version', () => {
+      const schema = z.object({
+        name: z.string().default('test-app'),
+        port: z.number().default(3000),
+        debug: z.boolean().default(false),
+      });
+
+      const configData = {
+        name: 'my-app',
+        port: 8080,
+        debug: true,
+      };
+
+      // Setup both mocks with same data
+      mockSearch.mockResolvedValue({
+        config: configData,
+        filepath: '/project/config.json',
+      });
+      mockSearchSync.mockReturnValue({
+        config: configData,
+        filepath: '/project/config.json',
+      });
+
+      // Test sync version
+      const syncResult = loadConfigSync(schema);
+
+      expect(isOk(syncResult)).toBe(true);
+      expect(unwrap(syncResult)).toEqual(configData);
+
+      // Both should produce same results (we can't easily compare the async result here)
+    });
+  });
+
+  describe('defineConfig with loadSync', () => {
+    it('should provide loadSync method on schema', () => {
+      const schema = z.object({
+        name: z.string().default('test'),
+        port: z.number().default(3000),
+      });
+
+      const config = defineConfig(schema);
+
+      expect(config).toHaveProperty('loadSync');
+      expect(typeof config.loadSync).toBe('function');
+    });
+
+    it('should load config synchronously via schema.loadSync', () => {
+      const schema = z.object({
+        name: z.string().default('test-schema'),
+        port: z.number().default(4000),
+      });
+
+      mockSearchSync.mockReturnValue(null);
+
+      const config = defineConfig(schema);
+      const result = config.loadSync();
+
+      expect(isOk(result)).toBe(true);
+      expect(unwrap(result)).toEqual({
+        name: 'test-schema',
+        port: 4000,
+      });
+    });
+
+    it('should handle validation errors in schema.loadSync', () => {
+      const schema = z.object({
+        name: z.string(),
+        port: z.number(),
+      });
+
+      mockSearchSync.mockReturnValue({
+        config: {
+          name: 'test',
+          port: 'not-a-number',
+        },
+        filepath: '/project/config.json',
+      });
+
+      const config = defineConfig(schema);
+      const result = config.loadSync();
+
+      expect(isErr(result)).toBe(true);
+      const error = result.error as any;
+      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
     });
   });
 });

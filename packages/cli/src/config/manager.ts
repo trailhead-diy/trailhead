@@ -52,6 +52,38 @@ export function createConfigurationManager(): ConfigurationManager {
       }
     },
 
+    loadSync: <T>(name: string, options: LoadOptions = {}): Result<T> => {
+      const schema = schemas.get(name);
+      if (!schema) {
+        return Err({
+          code: 'CONFIG_NOT_FOUND',
+          message: `Configuration schema '${name}' not found`,
+          recoverable: false,
+        });
+      }
+
+      try {
+        // Check cache first if enabled
+        if (schema.options.cache && cache.has(name)) {
+          return Ok(cache.get(name) as T);
+        }
+
+        const result = schema.loadSync({ name, ...options });
+
+        if (result.success && schema.options.cache) {
+          cache.set(name, result.value);
+        }
+
+        return result;
+      } catch (error) {
+        return Err({
+          code: 'CONFIG_LOAD_ERROR',
+          message: `Failed to load configuration '${name}': ${(error as Error).message}`,
+          recoverable: false,
+        });
+      }
+    },
+
     loadAll: async (
       options: LoadOptions = {},
     ): Promise<Result<Record<string, unknown>>> => {
@@ -61,6 +93,36 @@ export function createConfigurationManager(): ConfigurationManager {
       for (const [name, schema] of schemas) {
         try {
           const result = await schema.load({ name, ...options });
+          if (result.success) {
+            results[name] = result.value;
+          } else {
+            errors.push(`${name}: ${result.error.message}`);
+          }
+        } catch (error) {
+          errors.push(`${name}: ${(error as Error).message}`);
+        }
+      }
+
+      if (errors.length > 0) {
+        return Err({
+          code: 'CONFIG_LOAD_MULTIPLE_ERRORS',
+          message: `Failed to load some configurations: ${errors.join(', ')}`,
+          recoverable: true,
+        });
+      }
+
+      return Ok(results);
+    },
+
+    loadAllSync: (
+      options: LoadOptions = {},
+    ): Result<Record<string, unknown>> => {
+      const results: Record<string, unknown> = {};
+      const errors: string[] = [];
+
+      for (const [name, schema] of schemas) {
+        try {
+          const result = schema.loadSync({ name, ...options });
           if (result.success) {
             results[name] = result.value;
           } else {
@@ -127,4 +189,15 @@ export async function loadGlobalConfig<T>(
 ): Promise<Result<T>> {
   const manager = getGlobalConfigManager();
   return manager.load<T>(name, options);
+}
+
+/**
+ * Load configuration from global manager synchronously
+ */
+export function loadGlobalConfigSync<T>(
+  name: string,
+  options: LoadOptions = {},
+): Result<T> {
+  const manager = getGlobalConfigManager();
+  return manager.loadSync<T>(name, options);
 }

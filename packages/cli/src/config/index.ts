@@ -4,6 +4,7 @@ export {
   getGlobalConfigManager,
   registerGlobalConfig,
   loadGlobalConfig,
+  loadGlobalConfigSync,
 } from './manager.js';
 export type {
   ConfigSchema,
