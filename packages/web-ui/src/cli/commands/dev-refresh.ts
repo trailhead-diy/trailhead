@@ -10,7 +10,6 @@ import {
   type CommandPhase,
   type CommandContext,
 } from '@esteban-url/trailhead-cli/command';
-import type { TrailheadConfig } from '../core/config/index.js';
 import { existsSync } from 'fs';
 import { rm } from 'fs/promises';
 import { join } from 'path';
@@ -20,7 +19,7 @@ import { ensureDirectory } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
-import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js';
+import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
 
@@ -150,26 +149,21 @@ export const createDevRefreshCommand = () => {
     action: async (options: DevRefreshOptions, cmdContext: CommandContext) => {
       // Load configuration
       const configResult = loadConfigSync(cmdContext.projectRoot);
-      let loadedConfig: TrailheadConfig | null = null;
-      let configPath: string | null = null;
+      const loadedConfig = configResult.config;
+      const configPath = configResult.filepath;
 
-      if (configResult.success) {
-        loadedConfig = configResult.value.config;
-        configPath = configResult.value.filepath;
+      // Always show when config is found
+      if (configPath) {
+        cmdContext.logger.info(`Configuration loaded from: ${configPath}`);
+      }
 
-        // Always show when config is found
-        if (configPath) {
-          cmdContext.logger.info(`Found configuration at: ${configPath}`);
-        }
-
-        // Log detailed config in verbose mode (check both CLI option and config setting)
-        if (loadedConfig && (options.verbose || loadedConfig.verbose)) {
-          logConfigDiscovery(configPath, loadedConfig, true);
-        }
+      // Log detailed config in verbose mode (check both CLI option and config setting)
+      if (options.verbose || loadedConfig.verbose) {
+        logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
       }
 
       // Build configuration merging: CLI options > config file > defaults
-      const devRefreshConfig = loadedConfig?.devRefresh;
+      const devRefreshConfig = loadedConfig.devRefresh;
       const config: RefreshConfig = {
         source: join(
           cmdContext.projectRoot,

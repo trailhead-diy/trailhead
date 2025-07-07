@@ -1,239 +1,153 @@
 import { cosmiconfig, cosmiconfigSync } from 'cosmiconfig';
 import type { z } from 'zod';
-import { Ok, Err } from '../core/errors/index.js';
-import type { Result } from '../core/errors/index.js';
 import type {
-  ConfigSchema,
-  LoadOptions,
-  SchemaConfigOptions,
+  CreateConfigOptions,
+  ConfigLoader,
+  ConfigLoadResult,
 } from './types.js';
 
-export function defineConfig<T>(
-  schema: z.ZodSchema<T>,
-  options: SchemaConfigOptions = {},
-): ConfigSchema<T> {
-  const config = {
-    schema,
-    options,
-
-    async load(loadOptions: LoadOptions = {}): Promise<Result<T>> {
-      return loadConfigAsync(schema, { ...options, ...loadOptions });
-    },
-
-    loadSync(loadOptions: LoadOptions = {}): Result<T> {
-      return loadConfigSyncImpl(schema, { ...options, ...loadOptions });
-    },
-
-    merge(configs: Partial<T>[]): Result<T> {
-      return mergeConfigs(schema, configs);
-    },
-
-    validate(config: unknown): Result<T> {
-      return validateConfig(schema, config);
-    },
-  };
-
-  return config;
-}
-
-export async function loadConfig<T>(
-  schema: z.ZodSchema<T>,
-  options: LoadOptions = {},
-): Promise<Result<T>> {
-  return loadConfigAsync(schema, options);
-}
-
-export function loadConfigSync<T>(
-  schema: z.ZodSchema<T>,
-  options: LoadOptions = {},
-): Result<T> {
-  return loadConfigSyncImpl(schema, options);
-}
-
 /**
- * Async configuration loading implementation
+ * Create a simplified configuration loader
  */
-async function loadConfigAsync<T>(
-  schema: z.ZodSchema<T>,
-  options: LoadOptions = {},
-): Promise<Result<T>> {
-  const explorer = cosmiconfig(options.name ?? 'config', {
-    searchPlaces: createSearchPlaces(options.name ?? 'config'),
-    ignoreEmptySearchPlaces: false,
-    ...options.cosmiconfigOptions,
-  });
+export function createConfig<T>(
+  options: CreateConfigOptions<T>,
+): ConfigLoader<T> {
+  const { name, schema, defaults, searchPlaces } = options;
 
-  try {
-    const result = await explorer.search(options.searchFrom);
-    return processConfigResult(schema, result, options);
-  } catch (error) {
-    return Err({
-      code: 'CONFIG_LOAD_ERROR',
-      message: `Failed to load configuration: ${(error as Error).message}`,
-      recoverable: false,
-    });
-  }
-}
-
-/**
- * Sync configuration loading implementation
- */
-function loadConfigSyncImpl<T>(
-  schema: z.ZodSchema<T>,
-  options: LoadOptions = {},
-): Result<T> {
-  const cosmiconfigOptions = options.cosmiconfigOptions || {};
-  const { transform: _transform, ...syncOptions } = cosmiconfigOptions;
-  const explorer = cosmiconfigSync(options.name ?? 'config', {
-    searchPlaces: createSearchPlaces(options.name ?? 'config'),
-    ignoreEmptySearchPlaces: false,
-    ...syncOptions,
-  });
-
-  try {
-    const result = explorer.search(options.searchFrom);
-    return processConfigResultSync(schema, result, options);
-  } catch (error) {
-    return Err({
-      code: 'CONFIG_LOAD_ERROR',
-      message: `Failed to load configuration: ${(error as Error).message}`,
-      recoverable: false,
-    });
-  }
-}
-
-/**
- * Create search places array for cosmiconfig
- */
-function createSearchPlaces(name: string): string[] {
-  return [
-    'package.json',
-    `.${name}rc`,
-    `.${name}rc.json`,
+  // Create default search places if not provided
+  // Order matters: most specific files first
+  const defaultSearchPlaces = [
+    `${name}.config.js`,
+    `${name}.config.cjs`,
     `.${name}rc.js`,
-    `.${name}rc.ts`,
-    `.${name}rc.mjs`,
     `.${name}rc.cjs`,
+    `.${name}rc.json`,
     `.${name}rc.yaml`,
     `.${name}rc.yml`,
-    `${name}.config.js`,
-    `${name}.config.ts`,
-    `${name}.config.mjs`,
-    `${name}.config.cjs`,
-    `${name}.config.json`,
+    `.${name}rc`,
+    'package.json',
   ];
+
+  const finalSearchPlaces = searchPlaces || defaultSearchPlaces;
+
+  return {
+    async load(searchFrom?: string): Promise<ConfigLoadResult<T>> {
+      const explorer = cosmiconfig(name, {
+        searchPlaces: finalSearchPlaces,
+        ignoreEmptySearchPlaces: false,
+      });
+
+      try {
+        const result = await explorer.search(searchFrom);
+        return processResult(result, schema, defaults);
+      } catch (error) {
+        throw new Error(
+          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      }
+    },
+
+    loadSync(searchFrom?: string): ConfigLoadResult<T> {
+      const explorer = cosmiconfigSync(name, {
+        searchPlaces: finalSearchPlaces,
+        ignoreEmptySearchPlaces: false,
+      });
+
+      try {
+        const result = explorer.search(searchFrom);
+        return processResult(result, schema, defaults);
+      } catch (error) {
+        throw new Error(
+          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
+      }
+    },
+
+    clearCache(): void {
+      cosmiconfig(name).clearCaches();
+      cosmiconfigSync(name).clearCaches();
+    },
+  };
 }
 
 /**
- * Process cosmiconfig result for async loading
+ * Process cosmiconfig result into our standard format
  */
-function processConfigResult<T>(
-  schema: z.ZodSchema<T>,
+function processResult<T>(
   result: any,
-  options: LoadOptions,
-): Result<T> {
+  schema: z.ZodSchema<T>,
+  defaults?: T,
+): ConfigLoadResult<T> {
+  // No config found - use defaults
   if (!result || result.isEmpty) {
-    return handleNoConfig(schema, options);
+    if (!defaults) {
+      throw new Error('No configuration found and no defaults provided');
+    }
+
+    // Validate defaults against schema
+    const validatedDefaults = schema.parse(defaults);
+
+    return {
+      config: validatedDefaults,
+      filepath: null,
+      source: 'defaults',
+    };
   }
 
-  return validateAndMergeConfig(schema, result.config, options);
+  // Config found - validate and merge with defaults
+  const validatedConfig = schema.parse(result.config);
+
+  const finalConfig = defaults
+    ? mergeWithDefaults(defaults, validatedConfig)
+    : validatedConfig;
+
+  const source = result.filepath?.endsWith('package.json')
+    ? 'package.json'
+    : 'file';
+
+  return {
+    config: finalConfig,
+    filepath: result.filepath,
+    source,
+  };
 }
 
 /**
- * Process cosmiconfig result for sync loading
+ * Deep merge defaults with user configuration (user config takes precedence)
  */
-function processConfigResultSync<T>(
-  schema: z.ZodSchema<T>,
-  result: any,
-  options: LoadOptions,
-): Result<T> {
-  if (!result || result.isEmpty) {
-    return handleNoConfig(schema, options);
+function mergeWithDefaults<T>(defaults: T, userConfig: T): T {
+  if (typeof defaults !== 'object' || defaults === null) {
+    return userConfig as T;
   }
 
-  return validateAndMergeConfig(schema, result.config, options);
-}
-
-/**
- * Handle case when no configuration file is found
- */
-function handleNoConfig<T>(
-  schema: z.ZodSchema<T>,
-  options: LoadOptions,
-): Result<T> {
-  const defaultConfig = options.defaults || {};
-  const parsed = schema.safeParse(defaultConfig);
-
-  if (!parsed.success) {
-    return Err({
-      code: 'CONFIG_VALIDATION_ERROR',
-      message: `Invalid default configuration: ${parsed.error.message}`,
-      recoverable: false,
-    });
+  if (typeof userConfig !== 'object' || userConfig === null) {
+    return defaults;
   }
 
-  return Ok(parsed.data);
-}
+  // Start with defaults and override with user values
+  const result = { ...defaults };
 
-/**
- * Validate configuration and merge with defaults
- */
-function validateAndMergeConfig<T>(
-  schema: z.ZodSchema<T>,
-  config: unknown,
-  options: LoadOptions,
-): Result<T> {
-  // Merge with defaults if provided
-  const mergedConfig = options.defaults
-    ? { ...options.defaults, ...(config as Record<string, unknown>) }
-    : config;
+  for (const key in userConfig) {
+    if (Object.prototype.hasOwnProperty.call(userConfig, key)) {
+      const userValue = userConfig[key];
+      const defaultValue = (defaults as any)[key];
 
-  const parsed = schema.safeParse(mergedConfig);
-  if (!parsed.success) {
-    return Err({
-      code: 'CONFIG_VALIDATION_ERROR',
-      message: `Invalid configuration: ${formatZodError(parsed.error)}`,
-      recoverable: false,
-    });
+      if (
+        typeof defaultValue === 'object' &&
+        defaultValue !== null &&
+        !Array.isArray(defaultValue) &&
+        typeof userValue === 'object' &&
+        userValue !== null &&
+        !Array.isArray(userValue)
+      ) {
+        // Recursively merge objects
+        (result as any)[key] = mergeWithDefaults(defaultValue, userValue);
+      } else {
+        // Override with user value (user config takes precedence)
+        (result as any)[key] = userValue;
+      }
+    }
   }
 
-  return Ok(parsed.data);
-}
-
-/**
- * Validate configuration against schema
- */
-function validateConfig<T>(schema: z.ZodSchema<T>, config: unknown): Result<T> {
-  const parsed = schema.safeParse(config);
-  if (!parsed.success) {
-    return Err({
-      code: 'CONFIG_VALIDATION_ERROR',
-      message: `Invalid configuration: ${formatZodError(parsed.error)}`,
-      recoverable: false,
-    });
-  }
-  return Ok(parsed.data);
-}
-
-/**
- * Merge multiple configuration objects
- */
-function mergeConfigs<T>(
-  schema: z.ZodSchema<T>,
-  configs: Partial<T>[],
-): Result<T> {
-  const merged = configs.reduce((acc, config) => ({ ...acc, ...config }), {});
-  return validateConfig(schema, merged);
-}
-
-/**
- * Format Zod validation errors for user-friendly display
- */
-function formatZodError(error: z.ZodError): string {
-  return error.issues
-    .map((issue) => {
-      const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : '';
-      return `${path}${issue.message}`;
-    })
-    .join(', ');
+  return result;
 }

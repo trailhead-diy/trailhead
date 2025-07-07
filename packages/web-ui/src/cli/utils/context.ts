@@ -7,8 +7,8 @@ import { dirname, join } from 'path';
 import { readFileSync, existsSync } from 'fs';
 import type { CLIContext } from './types.js';
 
-// Import local config for sync loading (until @esteban-url/trailhead-cli supports sync)
-import { loadConfigSync } from '../core/config/index.js';
+// Import new CLI package-based configuration
+import { loadConfigSync } from '../config.js';
 
 /**
  * Pure function: Get package version from package.json
@@ -46,28 +46,27 @@ export const isTrailheadProject = (projectRoot: string): boolean => {
 export const createCLIContext = (baseDir: string): CLIContext => {
   const projectRoot = process.cwd();
 
-  // Load configuration
-  const configResult = loadConfigSync(projectRoot);
+  // Load configuration using simplified CLI package system
+  try {
+    const configResult = loadConfigSync(projectRoot);
 
-  // Build context with optional config
-  if (configResult.success) {
     return {
       version: getPackageVersion(baseDir),
       projectRoot,
       isTrailheadProject: isTrailheadProject(projectRoot),
       config: {
         loaded: true,
-        filepath: configResult.value.filepath,
-        data: configResult.value.config,
+        filepath: configResult.filepath,
+        data: configResult.config,
       },
     };
+  } catch (_error) {
+    return {
+      version: getPackageVersion(baseDir),
+      projectRoot,
+      isTrailheadProject: isTrailheadProject(projectRoot),
+    };
   }
-
-  return {
-    version: getPackageVersion(baseDir),
-    projectRoot,
-    isTrailheadProject: isTrailheadProject(projectRoot),
-  };
 };
 
 /**

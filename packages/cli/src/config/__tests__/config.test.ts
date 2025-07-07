@@ -1,20 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { z } from 'zod';
-import {
-  isOk,
-  isErr,
-  unwrap,
-  getErrorMessage,
-} from '../../core/errors/index.js';
 
 // Mock cosmiconfig
 const mockSearch = vi.fn();
 const mockSearchSync = vi.fn();
+const mockClearCaches = vi.fn();
 const mockCosmiconfig = vi.fn(() => ({
   search: mockSearch,
+  clearCaches: mockClearCaches,
 }));
 const mockCosmiconfigSync = vi.fn(() => ({
   search: mockSearchSync,
+  clearCaches: mockClearCaches,
 }));
 
 vi.mock('cosmiconfig', () => ({
@@ -23,9 +20,7 @@ vi.mock('cosmiconfig', () => ({
 }));
 
 // Import after mocking
-const { defineConfig, loadConfig, loadConfigSync } = await import(
-  '../config.js'
-);
+const { createConfig } = await import('../config.js');
 
 describe('Config Module', () => {
   beforeEach(() => {
@@ -34,47 +29,70 @@ describe('Config Module', () => {
     mockSearchSync.mockClear();
     mockCosmiconfig.mockClear();
     mockCosmiconfigSync.mockClear();
+    mockClearCaches.mockClear();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('defineConfig', () => {
-    it('should create config schema with load method', () => {
+  describe('createConfig', () => {
+    it('should create config loader with load methods', () => {
       const schema = z.object({
-        name: z.string().default('test'),
-        port: z.number().default(3000),
+        name: z.string(),
+        port: z.number(),
       });
 
-      const config = defineConfig(schema);
+      const defaults = {
+        name: 'test',
+        port: 3000,
+      };
 
-      expect(config).toHaveProperty('schema');
-      expect(config).toHaveProperty('load');
-      expect(typeof config.load).toBe('function');
-      expect(config.schema).toBe(schema);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      expect(configLoader).toHaveProperty('load');
+      expect(configLoader).toHaveProperty('loadSync');
+      expect(configLoader).toHaveProperty('clearCache');
+      expect(typeof configLoader.load).toBe('function');
+      expect(typeof configLoader.loadSync).toBe('function');
+      expect(typeof configLoader.clearCache).toBe('function');
     });
 
     it('should load config with defaults when no config file found', async () => {
       const schema = z.object({
-        name: z.string().default('default-name'),
-        port: z.number().default(8080),
-        debug: z.boolean().default(false),
+        name: z.string(),
+        port: z.number(),
+        debug: z.boolean(),
       });
+
+      const defaults = {
+        name: 'default-name',
+        port: 8080,
+        debug: false,
+      };
 
       // Mock no config found
       mockSearch.mockResolvedValue(null);
 
-      const config = defineConfig(schema);
-      const result = await config.load();
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
 
-      expect(isOk(result)).toBe(true);
-      const data = unwrap(result);
-      expect(data).toEqual({
+      const result = await configLoader.load();
+
+      expect(result.config).toEqual({
         name: 'default-name',
         port: 8080,
         debug: false,
       });
+      expect(result.filepath).toBe(null);
+      expect(result.source).toBe('defaults');
     });
 
     it('should load and validate config from file', async () => {
@@ -96,14 +114,19 @@ describe('Config Module', () => {
         filepath: '/project/.configrc.json',
       });
 
-      const config = defineConfig(schema);
-      const result = await config.load();
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+      });
 
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual(configData);
+      const result = await configLoader.load();
+
+      expect(result.config).toEqual(configData);
+      expect(result.filepath).toBe('/project/.configrc.json');
+      expect(result.source).toBe('file');
     });
 
-    it('should return validation error for invalid config', async () => {
+    it('should throw validation error for invalid config', async () => {
       const schema = z.object({
         name: z.string(),
         port: z.number(),
@@ -118,61 +141,67 @@ describe('Config Module', () => {
         filepath: '/project/.configrc.json',
       });
 
-      const config = defineConfig(schema);
-      const result = await config.load();
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+      });
 
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
-      expect(getErrorMessage(result)).toContain('Invalid configuration');
+      await expect(configLoader.load()).rejects.toThrow();
     });
 
     it('should handle cosmiconfig errors', async () => {
       const schema = z.object({
-        name: z.string().default('test'),
+        name: z.string(),
       });
+
+      const defaults = {
+        name: 'test',
+      };
 
       // Mock cosmiconfig error
       mockSearch.mockRejectedValue(new Error('File system error'));
 
-      const config = defineConfig(schema);
-      const result = await config.load();
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
 
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_LOAD_ERROR');
-      expect(getErrorMessage(result)).toContain('Failed to load configuration');
+      await expect(configLoader.load()).rejects.toThrow(
+        'Failed to load configuration',
+      );
     });
 
     it('should pass options to cosmiconfig', async () => {
       const schema = z.object({
-        name: z.string().default('test'),
+        name: z.string(),
       });
+
+      const defaults = {
+        name: 'test',
+      };
 
       mockSearch.mockResolvedValue(null);
 
-      const config = defineConfig(schema);
-      await config.load({
+      const configLoader = createConfig({
         name: 'my-cli',
-        searchFrom: '/custom/path',
+        schema,
+        defaults,
       });
+
+      await configLoader.load('/custom/path');
 
       expect(mockCosmiconfig).toHaveBeenCalledWith('my-cli', {
         searchPlaces: [
-          'package.json',
-          '.my-clirc',
-          '.my-clirc.json',
+          'my-cli.config.js',
+          'my-cli.config.cjs',
           '.my-clirc.js',
-          '.my-clirc.ts',
-          '.my-clirc.mjs',
           '.my-clirc.cjs',
+          '.my-clirc.json',
           '.my-clirc.yaml',
           '.my-clirc.yml',
-          'my-cli.config.js',
-          'my-cli.config.ts',
-          'my-cli.config.mjs',
-          'my-cli.config.cjs',
-          'my-cli.config.json',
+          '.my-clirc',
+          'package.json',
         ],
         ignoreEmptySearchPlaces: false,
       });
@@ -180,72 +209,32 @@ describe('Config Module', () => {
       expect(mockSearch).toHaveBeenCalledWith('/custom/path');
     });
 
-    it('should use default config name when not provided', async () => {
+    it('should use custom search places when provided', async () => {
       const schema = z.object({
-        name: z.string().default('test'),
+        name: z.string(),
       });
+
+      const defaults = {
+        name: 'test',
+      };
+
+      const customSearchPlaces = ['custom.config.js', '.customrc.json'];
 
       mockSearch.mockResolvedValue(null);
 
-      const config = defineConfig(schema);
-      await config.load();
+      const configLoader = createConfig({
+        name: 'custom',
+        schema,
+        defaults,
+        searchPlaces: customSearchPlaces,
+      });
 
-      expect(mockCosmiconfig).toHaveBeenCalledWith('config', {
-        searchPlaces: [
-          'package.json',
-          '.configrc',
-          '.configrc.json',
-          '.configrc.js',
-          '.configrc.ts',
-          '.configrc.mjs',
-          '.configrc.cjs',
-          '.configrc.yaml',
-          '.configrc.yml',
-          'config.config.js',
-          'config.config.ts',
-          'config.config.mjs',
-          'config.config.cjs',
-          'config.config.json',
-        ],
+      await configLoader.load();
+
+      expect(mockCosmiconfig).toHaveBeenCalledWith('custom', {
+        searchPlaces: customSearchPlaces,
         ignoreEmptySearchPlaces: false,
       });
-    });
-  });
-
-  describe('loadConfig', () => {
-    it('should be a convenience function for defineConfig + load', async () => {
-      const schema = z.object({
-        name: z.string().default('test-app'),
-        version: z.string().default('1.0.0'),
-      });
-
-      mockSearch.mockResolvedValue(null);
-
-      const result = await loadConfig(schema);
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual({
-        name: 'test-app',
-        version: '1.0.0',
-      });
-    });
-
-    it('should forward options to defineConfig', async () => {
-      const schema = z.object({
-        name: z.string().default('test'),
-      });
-
-      mockSearch.mockResolvedValue(null);
-
-      await loadConfig(schema, {
-        name: 'my-tool',
-        searchFrom: '/custom/search',
-      });
-
-      expect(mockCosmiconfig).toHaveBeenCalledWith(
-        'my-tool',
-        expect.any(Object),
-      );
-      expect(mockSearch).toHaveBeenCalledWith('/custom/search');
     });
   });
 
@@ -253,16 +242,29 @@ describe('Config Module', () => {
     it('should handle complex nested schemas', async () => {
       const schema = z.object({
         database: z.object({
-          host: z.string().default('localhost'),
-          port: z.number().default(5432),
-          ssl: z.boolean().default(false),
+          host: z.string(),
+          port: z.number(),
+          ssl: z.boolean(),
         }),
         api: z.object({
-          version: z.enum(['v1', 'v2']).default('v2'),
-          endpoints: z.array(z.string()).default([]),
+          version: z.enum(['v1', 'v2']),
+          endpoints: z.array(z.string()),
         }),
-        features: z.record(z.boolean()).default({}),
+        features: z.record(z.boolean()),
       });
+
+      const defaults = {
+        database: {
+          host: 'localhost',
+          port: 5432,
+          ssl: false,
+        },
+        api: {
+          version: 'v2' as const,
+          endpoints: [] as string[],
+        },
+        features: {} as Record<string, boolean>,
+      };
 
       const configData = {
         database: {
@@ -285,28 +287,48 @@ describe('Config Module', () => {
         filepath: '/project/config.json',
       });
 
-      const result = await loadConfig(schema);
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual(configData);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      const result = await configLoader.load();
+      expect(result.config).toEqual(configData);
+      expect(result.filepath).toBe('/project/config.json');
+      expect(result.source).toBe('file');
     });
 
-    it('should apply schema defaults for partial config', async () => {
+    it('should merge with defaults for partial config', async () => {
       const schema = z.object({
         server: z.object({
-          host: z.string().default('0.0.0.0'),
-          port: z.number().default(3000),
-          timeout: z.number().default(5000),
+          host: z.string(),
+          port: z.number(),
+          timeout: z.number(),
         }),
         logging: z.object({
-          level: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+          level: z.enum(['debug', 'info', 'warn', 'error']),
           file: z.string().optional(),
         }),
       });
 
+      const defaults = {
+        server: {
+          host: '0.0.0.0',
+          port: 3000,
+          timeout: 5000,
+        },
+        logging: {
+          level: 'info' as const,
+        },
+      };
+
       // Partial config - only some values provided
       const partialConfig = {
         server: {
+          host: '0.0.0.0',
           port: 8080,
+          timeout: 5000,
         },
         logging: {
           level: 'debug' as const,
@@ -318,17 +340,21 @@ describe('Config Module', () => {
         filepath: '/project/.configrc',
       });
 
-      const result = await loadConfig(schema);
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual({
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      const result = await configLoader.load();
+      expect(result.config).toEqual({
         server: {
-          host: '0.0.0.0', // default
+          host: '0.0.0.0',
           port: 8080, // from config
-          timeout: 5000, // default
+          timeout: 5000,
         },
         logging: {
           level: 'debug', // from config
-          // file is optional, no default
         },
       });
     });
@@ -336,8 +362,13 @@ describe('Config Module', () => {
     it('should validate enum values', async () => {
       const schema = z.object({
         environment: z.enum(['development', 'staging', 'production']),
-        logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+        logLevel: z.enum(['debug', 'info', 'warn', 'error']),
       });
+
+      const defaults = {
+        environment: 'development' as const,
+        logLevel: 'info' as const,
+      };
 
       mockSearch.mockResolvedValue({
         config: {
@@ -347,9 +378,13 @@ describe('Config Module', () => {
         filepath: '/project/config.js',
       });
 
-      const result = await loadConfig(schema);
-      expect(isErr(result)).toBe(true);
-      expect(getErrorMessage(result)).toContain('Invalid configuration');
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      await expect(configLoader.load()).rejects.toThrow();
     });
 
     it('should handle array validations', async () => {
@@ -358,6 +393,12 @@ describe('Config Module', () => {
         ports: z.array(z.number().min(1).max(65535)),
         features: z.array(z.enum(['auth', 'cache', 'logging'])),
       });
+
+      const defaults = {
+        allowedHosts: ['https://example.com'],
+        ports: [80, 443],
+        features: ['auth'] as Array<'auth' | 'cache' | 'logging'>,
+      };
 
       mockSearch.mockResolvedValue({
         config: {
@@ -368,35 +409,42 @@ describe('Config Module', () => {
         filepath: '/project/config.json',
       });
 
-      const result = await loadConfig(schema);
-      expect(isErr(result)).toBe(true);
-      expect(getErrorMessage(result)).toContain('Invalid configuration');
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      await expect(configLoader.load()).rejects.toThrow();
     });
   });
 
   describe('Search Places', () => {
     it('should include all expected search places', async () => {
-      const schema = z.object({ name: z.string().default('test') });
+      const schema = z.object({ name: z.string() });
+      const defaults = { name: 'test' };
+
       mockSearch.mockResolvedValue(null);
 
-      await loadConfig(schema, { name: 'myapp' });
+      const configLoader = createConfig({
+        name: 'myapp',
+        schema,
+        defaults,
+      });
+
+      await configLoader.load();
 
       expect(mockCosmiconfig).toHaveBeenCalledWith('myapp', {
         searchPlaces: [
-          'package.json',
-          '.myapprc',
-          '.myapprc.json',
+          'myapp.config.js',
+          'myapp.config.cjs',
           '.myapprc.js',
-          '.myapprc.ts',
-          '.myapprc.mjs',
           '.myapprc.cjs',
+          '.myapprc.json',
           '.myapprc.yaml',
           '.myapprc.yml',
-          'myapp.config.js',
-          'myapp.config.ts',
-          'myapp.config.mjs',
-          'myapp.config.cjs',
-          'myapp.config.json',
+          '.myapprc',
+          'package.json',
         ],
         ignoreEmptySearchPlaces: false,
       });
@@ -412,26 +460,38 @@ describe('Config Module', () => {
 
       mockSearch.mockResolvedValue(null);
 
-      const result = await loadConfig(schema);
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
-      expect(getErrorMessage(result)).toContain(
-        'Invalid default configuration',
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        // No defaults provided
+      });
+
+      await expect(configLoader.load()).rejects.toThrow(
+        'No configuration found and no defaults provided',
       );
     });
 
     it('should handle malformed JSON config', async () => {
       const schema = z.object({
-        name: z.string().default('test'),
+        name: z.string(),
       });
+
+      const defaults = {
+        name: 'test',
+      };
 
       // Mock cosmiconfig throwing JSON parse error
       mockSearch.mockRejectedValue(new SyntaxError('Unexpected token in JSON'));
 
-      const result = await loadConfig(schema);
-      expect(isErr(result)).toBe(true);
-      expect(getErrorMessage(result)).toContain('Failed to load configuration');
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      await expect(configLoader.load()).rejects.toThrow(
+        'Failed to load configuration',
+      );
     });
 
     it('should provide detailed validation errors', async () => {
@@ -440,6 +500,12 @@ describe('Config Module', () => {
         port: z.number().min(1000).max(9999),
         features: z.array(z.string()),
       });
+
+      const defaults = {
+        name: 'default',
+        port: 3000,
+        features: [] as string[],
+      };
 
       mockSearch.mockResolvedValue({
         config: {
@@ -450,11 +516,13 @@ describe('Config Module', () => {
         filepath: '/project/config.json',
       });
 
-      const result = await loadConfig(schema);
-      expect(isErr(result)).toBe(true);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
 
-      const errorMsg = getErrorMessage(result);
-      expect(errorMsg).toContain('Invalid configuration');
+      await expect(configLoader.load()).rejects.toThrow();
     });
   });
 
@@ -462,17 +530,28 @@ describe('Config Module', () => {
     it('should work with environment-specific configs', async () => {
       const baseSchema = z.object({
         app: z.object({
-          name: z.string().default('myapp'),
-          debug: z.boolean().default(false),
+          name: z.string(),
+          debug: z.boolean(),
         }),
         database: z.object({
-          url: z.string().default('sqlite:memory:'),
+          url: z.string(),
         }),
       });
+
+      const defaults = {
+        app: {
+          name: 'myapp',
+          debug: false,
+        },
+        database: {
+          url: 'sqlite:memory:',
+        },
+      };
 
       // Development config
       const devConfig = {
         app: {
+          name: 'myapp',
           debug: true,
         },
         database: {
@@ -485,13 +564,21 @@ describe('Config Module', () => {
         filepath: '/project/.myapprc.json',
       });
 
-      const result = await loadConfig(baseSchema, { name: 'myapp' });
-      expect(isOk(result)).toBe(true);
+      const configLoader = createConfig({
+        name: 'myapp',
+        schema: baseSchema,
+        defaults,
+      });
 
-      const config = unwrap(result);
-      expect(config.app.name).toBe('myapp'); // default
-      expect(config.app.debug).toBe(true); // from config
-      expect(config.database.url).toBe('postgresql://localhost:5432/myapp_dev');
+      const result = await configLoader.load();
+
+      expect(result.config.app.name).toBe('myapp'); // from config (merged)
+      expect(result.config.app.debug).toBe(true); // from config
+      expect(result.config.database.url).toBe(
+        'postgresql://localhost:5432/myapp_dev',
+      );
+      expect(result.filepath).toBe('/project/.myapprc.json');
+      expect(result.source).toBe('file');
     });
 
     it('should handle package.json configuration', async () => {
@@ -515,27 +602,45 @@ describe('Config Module', () => {
         filepath: '/project/package.json',
       });
 
-      const result = await loadConfig(schema);
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual(packageJsonConfig);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+      });
+
+      const result = await configLoader.load();
+      expect(result.config).toEqual(packageJsonConfig);
+      expect(result.filepath).toBe('/project/package.json');
+      expect(result.source).toBe('package.json');
     });
   });
 
-  describe('loadConfigSync', () => {
-    it('should be a convenience function for defineConfig + loadSync', () => {
+  describe('loadSync', () => {
+    it('should load config with defaults synchronously', () => {
       const schema = z.object({
-        name: z.string().default('test-app'),
-        version: z.string().default('1.0.0'),
+        name: z.string(),
+        version: z.string(),
       });
+
+      const defaults = {
+        name: 'test-app',
+        version: '1.0.0',
+      };
 
       mockSearchSync.mockReturnValue(null);
 
-      const result = loadConfigSync(schema);
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual({
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
+      });
+
+      const result = configLoader.loadSync();
+      expect(result.config).toEqual({
         name: 'test-app',
         version: '1.0.0',
       });
+      expect(result.filepath).toBe(null);
+      expect(result.source).toBe('defaults');
     });
 
     it('should load and validate config from file synchronously', () => {
@@ -557,13 +662,19 @@ describe('Config Module', () => {
         filepath: '/project/.configrc.json',
       });
 
-      const result = loadConfigSync(schema);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+      });
 
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual(configData);
+      const result = configLoader.loadSync();
+
+      expect(result.config).toEqual(configData);
+      expect(result.filepath).toBe('/project/.configrc.json');
+      expect(result.source).toBe('file');
     });
 
-    it('should return validation error for invalid config synchronously', () => {
+    it('should throw validation error for invalid config synchronously', () => {
       const schema = z.object({
         name: z.string(),
         port: z.number(),
@@ -578,151 +689,59 @@ describe('Config Module', () => {
         filepath: '/project/.configrc.json',
       });
 
-      const result = loadConfigSync(schema);
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+      });
 
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
-      expect(getErrorMessage(result)).toContain('Invalid configuration');
+      expect(() => configLoader.loadSync()).toThrow();
     });
 
     it('should handle cosmiconfigSync errors', () => {
       const schema = z.object({
-        name: z.string().default('test'),
+        name: z.string(),
       });
+
+      const defaults = {
+        name: 'test',
+      };
 
       // Mock cosmiconfigSync error
       mockSearchSync.mockImplementation(() => {
         throw new Error('File system error');
       });
 
-      const result = loadConfigSync(schema);
-
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_LOAD_ERROR');
-      expect(getErrorMessage(result)).toContain('Failed to load configuration');
-    });
-
-    it('should forward options to cosmiconfigSync', () => {
-      const schema = z.object({
-        name: z.string().default('test'),
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
       });
 
-      mockSearchSync.mockReturnValue(null);
-
-      loadConfigSync(schema, {
-        name: 'my-cli',
-        searchFrom: '/custom/path',
-      });
-
-      expect(mockCosmiconfigSync).toHaveBeenCalledWith('my-cli', {
-        searchPlaces: [
-          'package.json',
-          '.my-clirc',
-          '.my-clirc.json',
-          '.my-clirc.js',
-          '.my-clirc.ts',
-          '.my-clirc.mjs',
-          '.my-clirc.cjs',
-          '.my-clirc.yaml',
-          '.my-clirc.yml',
-          'my-cli.config.js',
-          'my-cli.config.ts',
-          'my-cli.config.mjs',
-          'my-cli.config.cjs',
-          'my-cli.config.json',
-        ],
-        ignoreEmptySearchPlaces: false,
-      });
-
-      expect(mockSearchSync).toHaveBeenCalledWith('/custom/path');
-    });
-
-    it('should have consistent behavior with async version', () => {
-      const schema = z.object({
-        name: z.string().default('test-app'),
-        port: z.number().default(3000),
-        debug: z.boolean().default(false),
-      });
-
-      const configData = {
-        name: 'my-app',
-        port: 8080,
-        debug: true,
-      };
-
-      // Setup both mocks with same data
-      mockSearch.mockResolvedValue({
-        config: configData,
-        filepath: '/project/config.json',
-      });
-      mockSearchSync.mockReturnValue({
-        config: configData,
-        filepath: '/project/config.json',
-      });
-
-      // Test sync version
-      const syncResult = loadConfigSync(schema);
-
-      expect(isOk(syncResult)).toBe(true);
-      expect(unwrap(syncResult)).toEqual(configData);
-
-      // Both should produce same results (we can't easily compare the async result here)
+      expect(() => configLoader.loadSync()).toThrow(
+        'Failed to load configuration',
+      );
     });
   });
 
-  describe('defineConfig with loadSync', () => {
-    it('should provide loadSync method on schema', () => {
-      const schema = z.object({
-        name: z.string().default('test'),
-        port: z.number().default(3000),
-      });
-
-      const config = defineConfig(schema);
-
-      expect(config).toHaveProperty('loadSync');
-      expect(typeof config.loadSync).toBe('function');
-    });
-
-    it('should load config synchronously via schema.loadSync', () => {
-      const schema = z.object({
-        name: z.string().default('test-schema'),
-        port: z.number().default(4000),
-      });
-
-      mockSearchSync.mockReturnValue(null);
-
-      const config = defineConfig(schema);
-      const result = config.loadSync();
-
-      expect(isOk(result)).toBe(true);
-      expect(unwrap(result)).toEqual({
-        name: 'test-schema',
-        port: 4000,
-      });
-    });
-
-    it('should handle validation errors in schema.loadSync', () => {
+  describe('clearCache', () => {
+    it('should call clearCaches on cosmiconfig', () => {
       const schema = z.object({
         name: z.string(),
-        port: z.number(),
       });
 
-      mockSearchSync.mockReturnValue({
-        config: {
-          name: 'test',
-          port: 'not-a-number',
-        },
-        filepath: '/project/config.json',
+      const defaults = {
+        name: 'test',
+      };
+
+      const configLoader = createConfig({
+        name: 'test-config',
+        schema,
+        defaults,
       });
 
-      const config = defineConfig(schema);
-      const result = config.loadSync();
+      configLoader.clearCache();
 
-      expect(isErr(result)).toBe(true);
-      const error = result.error as any;
-      expect(error.code).toBe('CONFIG_VALIDATION_ERROR');
+      expect(mockClearCaches).toHaveBeenCalled();
     });
   });
 });

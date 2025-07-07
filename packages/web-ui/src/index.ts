@@ -51,6 +51,7 @@ export {
 
 export { cn } from './components/utils/cn.js';
 
-export { defineConfig } from './cli/core/config/define-config.js';
+// Note: defineConfig is now provided by @esteban-url/trailhead-cli/config
+// export { defineConfig } from './cli/config.js';
 
 export type { ComboboxProps } from './components/combobox.js';

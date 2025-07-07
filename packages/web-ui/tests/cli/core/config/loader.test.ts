@@ -1,13 +1,25 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import {
-  loadConfig,
-  loadConfigSync,
-  clearConfigCache,
-} from '../../../../src/cli/core/config/loader.js';
-import { defaultConfig } from '../../../../src/cli/core/config/schema.js';
+import { loadConfig, loadConfigSync, clearConfigCache } from '../../../../src/cli/config.js';
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+
+// Default configuration for tests
+const defaultConfig = {
+  install: {
+    wrappers: true,
+  },
+  transforms: {
+    enabled: true,
+    excludePatterns: [],
+    disabledTransforms: [],
+  },
+  devRefresh: {
+    prefix: 'catalyst-',
+  },
+  verbose: false,
+  dryRun: false,
+};
 
 describe('Configuration Loader', () => {
   let testDir: string;
@@ -31,11 +43,9 @@ describe('Configuration Loader', () => {
     it('should return default config when no config file exists', async () => {
       const result = await loadConfig(testDir);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.config).toEqual(defaultConfig);
-        expect(result.value.filepath).toBe(null);
-      }
+      expect(result.config).toEqual(defaultConfig);
+      expect(result.filepath).toBe(null);
+      expect(result.source).toBe('defaults');
     });
 
     it('should load config from .trailheadrc.json', async () => {
@@ -53,14 +63,12 @@ describe('Configuration Loader', () => {
 
       const result = await loadConfig(testDir);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.config.transforms?.enabled).toBe(false);
-        expect(result.value.config.transforms?.srcDir).toBe('./custom/src');
-        expect(result.value.config.transforms?.enabledTransforms).toEqual(['button', 'badge']);
-        expect(result.value.config.verbose).toBe(true);
-        expect(result.value.filepath).toBe(configPath);
-      }
+      expect(result.config.transforms?.enabled).toBe(false);
+      expect(result.config.transforms?.srcDir).toBe('./custom/src');
+      expect(result.config.transforms?.enabledTransforms).toEqual(['button', 'badge']);
+      expect(result.config.verbose).toBe(true);
+      expect(result.filepath).toBe(configPath);
+      expect(result.source).toBe('file');
     });
 
     it('should validate config schema', async () => {
@@ -73,15 +81,11 @@ describe('Configuration Loader', () => {
 
       writeFileSync(configPath, JSON.stringify(invalidConfig, null, 2));
 
-      const result = await loadConfig(testDir);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.code).toBe('CONFIG_ERROR');
-      }
+      // Should throw an error due to invalid schema
+      await expect(loadConfig(testDir)).rejects.toThrow();
     });
 
-    it('should cache loaded config', async () => {
+    it('should cache loaded config when file unchanged', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
       const testConfig = { verbose: true };
 
@@ -89,17 +93,12 @@ describe('Configuration Loader', () => {
 
       // First load
       const result1 = await loadConfig(testDir);
-      expect(result1.success).toBe(true);
+      expect(result1.config.verbose).toBe(true);
 
-      // Modify the file
-      writeFileSync(configPath, JSON.stringify({ verbose: false }, null, 2));
-
-      // Second load should return cached value
+      // Second load without file change should return cached value
       const result2 = await loadConfig(testDir);
-      expect(result2.success).toBe(true);
-      if (result2.success && result1.success) {
-        expect(result2.value.config.verbose).toBe(result1.value.config.verbose);
-      }
+      expect(result2.config.verbose).toBe(result1.config.verbose);
+      expect(result2.config.verbose).toBe(true);
     });
   });
 
@@ -120,11 +119,10 @@ describe('Configuration Loader', () => {
 
       const result = loadConfigSync(testDir);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.config.install?.destDir).toBe('./components/ui');
-        expect(result.value.config.install?.wrappers).toBe(false);
-      }
+      expect(result.config.install?.destDir).toBe('./components/ui');
+      expect(result.config.install?.wrappers).toBe(false);
+      expect(result.filepath).toBe(configPath);
+      expect(result.source).toBe('file');
     });
   });
 
@@ -144,11 +142,9 @@ describe('Configuration Loader', () => {
 
       const result = await loadConfig(testDir);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.config.transforms?.srcDir).toBe('./src/components');
-        expect(result.value.filepath).toBe(packagePath);
-      }
+      expect(result.config.transforms?.srcDir).toBe('./src/components');
+      expect(result.filepath).toBe(packagePath);
+      expect(result.source).toBe('package.json');
     });
 
     it('should prefer .trailheadrc over package.json', async () => {
@@ -170,11 +166,9 @@ describe('Configuration Loader', () => {
 
       const result = await loadConfig(testDir);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.config.verbose).toBe(true);
-        expect(result.value.filepath).toBe(rcPath);
-      }
+      expect(result.config.verbose).toBe(true);
+      expect(result.filepath).toBe(rcPath);
+      expect(result.source).toBe('file');
     });
   });
 });
