@@ -6,7 +6,11 @@ const baseConfig = createVitestConfig();
 
 const packageSpecificConfig = defineConfig({
   test: {
-    include: ['./tests/**/*.test.{ts,tsx}'],
+    include: [
+      './tests/**/*.test.{ts,tsx}',
+      './src/**/__tests__/**/*.test.{ts,tsx}',
+      './src/**/*.test.{ts,tsx}',
+    ],
     exclude: ['./tests/scripts/install/future/**/*'],
     setupFiles: ['./vitest.setup.ts'],
     coverage: {

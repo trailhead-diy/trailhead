@@ -21,6 +21,7 @@ import type {
   AsyncResult,
 } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
+import { isNotTestRelated } from './file-filters.js';
 
 // ============================================================================
 // CONVERSION STATS UTILITIES
@@ -89,10 +90,18 @@ export async function findComponentFiles(
     'dist/**',
     'build/**',
     '.git/**',
+    '**/__tests__/**',
+    '**/*.test.*',
+    '**/*.spec.*',
     ...skipFiles.map(f => `**/${f}`),
   ]);
 
-  return result.success ? result.value : [];
+  if (!result.success) {
+    return [];
+  }
+
+  // Additional filtering to ensure no test files are included
+  return result.value.filter(file => isNotTestRelated(file));
 }
 
 /**

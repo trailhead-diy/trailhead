@@ -66,20 +66,20 @@ export const executeTransforms = async (
  */
 const executeTransformPipeline = async (config: TransformConfig): Promise<TransformResult> => {
   try {
-    // Import the simplified pipeline (dependency injection pattern)
-    const { runSimplifiedPipeline } = await import('../../../transforms/pipelines/simplified.js');
+    // Import the main pipeline (dependency injection pattern)
+    const { runMainPipeline } = await import('../../../transforms/pipelines/main.js');
 
     // Execute pipeline with configuration
-    const result = await runSimplifiedPipeline(config.srcDir, {
+    const result = await runMainPipeline(config.srcDir, {
       verbose: config.verbose,
       dryRun: config.dryRun,
     });
 
-    // Use result from simplified pipeline
+    // Use result from main pipeline
     return {
       filesProcessed: result.processedFiles,
       filesModified: config.dryRun ? 0 : result.processedFiles,
-      conversionsApplied: result.processedFiles * 2, // Estimate: avg 2 conversions per file in simplified pipeline
+      conversionsApplied: result.processedFiles * 2, // Estimate: avg 2 conversions per file in main pipeline
       errors: result.errors.map(e => e.error),
       warnings: [],
     };

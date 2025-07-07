@@ -15,10 +15,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
 
-import {
-  runSimplifiedPipeline,
-  getSimplifiedPipelineInfo,
-} from '../../transforms/pipelines/simplified.js';
+import { runMainPipeline, getMainPipelineInfo } from '../../transforms/pipelines/main.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 
 // ============================================================================
@@ -57,7 +54,7 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
   {
     name: 'Running enhancement pipeline',
     execute: async (config: EnhanceConfig) => {
-      const result = await runSimplifiedPipeline(config.sourceDir, {
+      const result = await runMainPipeline(config.sourceDir, {
         verbose: config.verbose,
         dryRun: config.dryRun,
         filter: (filename: string) => {
@@ -162,7 +159,7 @@ export const createEnhanceCommand = () => {
     action: async (options: EnhanceOptions, cmdContext: CommandContext) => {
       // Show pipeline info if requested
       if (options.info) {
-        const info = getSimplifiedPipelineInfo();
+        const info = getMainPipelineInfo();
 
         console.log(chalk.blue('🔧 Enhancement Pipeline Information'));
         console.log(chalk.gray(`Total transforms: ${info.transformCount}`));
@@ -222,7 +219,7 @@ export const createEnhanceCommand = () => {
           { label: 'Mode', value: options.dryRun ? 'Dry Run' : 'Live' },
           {
             label: 'Transforms Applied',
-            value: getSimplifiedPipelineInfo().transformCount.toString(),
+            value: getMainPipelineInfo().transformCount.toString(),
           },
           ...(configPath ? [{ label: 'Config', value: configPath }] : []),
         ],
