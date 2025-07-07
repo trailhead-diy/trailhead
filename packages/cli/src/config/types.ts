@@ -54,8 +54,12 @@ export interface ConfigurationManager {
   register: <T>(name: string, schema: ConfigSchema<T>) => void;
   /** Load specific configuration by name */
   load: <T>(name: string, options?: LoadOptions) => Promise<Result<T>>;
+  /** Load specific configuration by name synchronously */
+  loadSync: <T>(name: string, options?: LoadOptions) => Result<T>;
   /** Load all registered configurations */
   loadAll: (options?: LoadOptions) => Promise<Result<Record<string, unknown>>>;
+  /** Load all registered configurations synchronously */
+  loadAllSync: (options?: LoadOptions) => Result<Record<string, unknown>>;
   /** Get registered schema by name */
   getSchema: <T>(name: string) => ConfigSchema<T> | undefined;
   /** Clear configuration cache */
