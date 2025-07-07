@@ -15,8 +15,11 @@ import { existsSync } from 'fs';
 import { rm } from 'fs/promises';
 import { join } from 'path';
 
+// Import framework utilities
+import { ensureDirectory } from '@esteban-url/trailhead-cli/filesystem';
+
 // Import local utilities
-import { copyFreshFilesBatch, ensureDirectory } from '../core/shared/file-utils.js';
+import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js';
 import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';

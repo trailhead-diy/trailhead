@@ -1,17 +1,12 @@
 #!/usr/bin/env tsx
 
 /**
- * Shared file utilities for conversion scripts
- * Reliability and performance focused utilities
+ * UI-specific file utilities for Trailhead web-ui
+ * Focused on Catalyst component operations and UI installation workflows
  */
 
-import { promises as fs } from 'fs';
 import * as path from 'path';
 import {
-  fileExists as frameworkFileExists,
-  ensureDirectory as frameworkEnsureDirectory,
-  getRelativePath as frameworkGetRelativePath,
-  createBackupName as frameworkCreateBackupName,
   findFiles,
   readFile,
   writeFile as frameworkWriteFile,
@@ -31,27 +26,30 @@ import type {
   AsyncResult,
 } from './types.js';
 
+// ============================================================================
+// UI-SPECIFIC FILE OPERATIONS
+// ============================================================================
+
 /**
- * Find component files to process based on configuration
- * Pure function that respects skip patterns and ignore rules
+ * Find component files specifically for UI component processing
  */
 export async function findComponentFiles(
   directory: string,
   skipFiles: string[] = []
-): Promise<Result<string[], Error>> {
-  const ignorePatterns = ['**/*.test.tsx', '**/*.spec.tsx'];
+): Promise<string[]> {
+  const result = await findFiles(directory, '**/*.{tsx,ts}', [
+    'node_modules/**',
+    'dist/**',
+    'build/**',
+    '.git/**',
+    ...skipFiles.map(f => `**/${f}`),
+  ]);
 
-  // Add skip files to ignore patterns
-  skipFiles.forEach(skipFile => {
-    ignorePatterns.push(`**/${skipFile}`);
-  });
-
-  return findFiles(directory, '**/*.tsx', ignorePatterns);
+  return result.success ? result.value : [];
 }
 
 /**
- * Create initial conversion statistics object
- * Pure function with performance tracking
+ * Create conversion statistics tracker for UI transformations
  */
 export function createConversionStats(): ConversionStats {
   const stats = createStats<{ totalConversions: number }>({
@@ -68,15 +66,13 @@ export function createConversionStats(): ConversionStats {
 }
 
 /**
- * Update conversion statistics with file results
- * Pure function for immutable updates
+ * Update conversion statistics with processing results
  */
 export function updateStats(
   stats: ConversionStats,
   result: FileProcessingResult,
   conversionTypes: Array<{ description: string }>
 ): ConversionStats {
-  // Convert to StatsTracker format
   const tracker: StatsTracker<{ totalConversions: number }> = {
     filesProcessed: stats.filesProcessed,
     filesModified: stats.filesModified,
@@ -112,53 +108,7 @@ export function updateStats(
 }
 
 /**
- * Read file content safely with error handling
- */
-export async function readFileContent(filePath: string): AsyncResult<string, Error> {
-  return readFile(filePath);
-}
-
-/**
- * Write file content safely with error handling
- */
-export async function writeFileContent(
-  filePath: string,
-  content: string,
-  dryRun: boolean = false
-): AsyncResult<boolean, Error> {
-  if (dryRun) {
-    return { success: true, value: true };
-  }
-
-  const result = await frameworkWriteFile(filePath, content);
-  if (result.success) {
-    return { success: true, value: true };
-  } else {
-    return { success: false, error: result.error };
-  }
-}
-
-// Re-export framework utilities for backward compatibility
-export const fileExists = frameworkFileExists;
-
-// Adapter for ensureDirectory to match local AsyncResult type
-export async function ensureDirectory(dirPath: string): AsyncResult<boolean, Error> {
-  const result = await frameworkEnsureDirectory(dirPath);
-  if (result.success) {
-    return { success: true, value: true };
-  } else {
-    return { success: false, error: result.error };
-  }
-}
-
-export const getRelativePath = frameworkGetRelativePath;
-
-export const createBackupName = frameworkCreateBackupName;
-
-export const compareFiles = frameworkCompareFiles;
-
-/**
- * Copy fresh files from catalyst source to destination with batch confirmation
+ * Copy fresh Catalyst files in batch mode for development workflow
  * Returns list of files that were copied or need confirmation
  */
 export async function copyFreshFilesBatch(
@@ -181,34 +131,7 @@ export async function copyFreshFilesBatch(
   Error
 > {
   try {
-    // If we're adding prefixes, clean up old non-prefixed files first
-    if (addPrefix && (await frameworkFileExists(destDir))) {
-      try {
-        const existingFiles = await fs.readdir(destDir);
-        const nonPrefixedFiles = existingFiles.filter(
-          f => !f.startsWith('catalyst-') && f.endsWith('.tsx')
-        );
-
-        // Remove old non-prefixed files
-        for (const file of nonPrefixedFiles) {
-          const filePath = path.join(destDir, file);
-          try {
-            await fs.unlink(filePath);
-          } catch (_error) {
-            // Ignore errors for individual file deletions
-          }
-        }
-      } catch (_error) {
-        // Ignore errors if we can't read the directory
-      }
-    }
-
-    // Find all .tsx files in catalyst source
-    const sourceFilesResult = await findComponentFiles(catalystSourceDir, []);
-    if (!sourceFilesResult.success) {
-      return { success: false, error: sourceFilesResult.error };
-    }
-
+    const sourceFiles = await findComponentFiles(catalystSourceDir);
     const copied: string[] = [];
     const skipped: string[] = [];
     const failed: string[] = [];
@@ -219,16 +142,15 @@ export async function copyFreshFilesBatch(
       comparison: FileComparison;
     }> = [];
 
-    // First pass: analyze all files
-    for (const sourceFile of sourceFilesResult.value) {
+    for (const sourceFile of sourceFiles) {
+      const _relativePath = path.relative(catalystSourceDir, sourceFile);
       const fileName = path.basename(sourceFile);
-      // Add 'catalyst-' prefix if addPrefix is true and prefix not already present
-      const destFileName =
-        addPrefix && !fileName.startsWith('catalyst-') ? `catalyst-${fileName}` : fileName;
+      const destFileName = addPrefix ? `catalyst-${fileName}` : fileName;
       const destFile = path.join(destDir, destFileName);
 
-      // Compare files
+      // Check if destination exists and compare
       const comparisonResult = await frameworkCompareFiles(sourceFile, destFile);
+
       if (!comparisonResult.success) {
         failed.push(destFileName);
         continue;
@@ -236,36 +158,37 @@ export async function copyFreshFilesBatch(
 
       const comparison = comparisonResult.value;
 
-      // If source doesn't exist, skip
-      if (!comparison.sourceExists) {
-        skipped.push(destFileName);
-        continue;
-      }
-
-      // If files are identical, skip
-      if (comparison.identical) {
-        skipped.push(destFileName);
-        continue;
-      }
-
-      // If destination doesn't exist, copy directly
       if (!comparison.destExists) {
-        const sourceContent = comparison.sourceContent || '';
-        const copyResult = await writeFileContent(destFile, sourceContent);
-        if (copyResult.success) {
-          copied.push(destFileName);
+        // File doesn't exist at destination, copy it
+        const sourceResult = await readFile(sourceFile);
+        if (sourceResult.success) {
+          const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+          if (writeResult.success) {
+            copied.push(destFileName);
+          } else {
+            failed.push(destFileName);
+          }
         } else {
           failed.push(destFileName);
         }
         continue;
       }
 
+      if (comparison.identical) {
+        skipped.push(destFileName);
+        continue;
+      }
+
       // Destination exists and is different
       if (force) {
-        const sourceContent = comparison.sourceContent || '';
-        const copyResult = await writeFileContent(destFile, sourceContent);
-        if (copyResult.success) {
-          copied.push(destFileName);
+        const sourceResult = await readFile(sourceFile);
+        if (sourceResult.success) {
+          const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+          if (writeResult.success) {
+            copied.push(destFileName);
+          } else {
+            failed.push(destFileName);
+          }
         } else {
           failed.push(destFileName);
         }
@@ -288,8 +211,7 @@ export async function copyFreshFilesBatch(
 }
 
 /**
- * Copy fresh files from catalyst source to destination
- * Returns list of files that were copied or need confirmation
+ * Copy fresh files from catalyst source to destination with confirmation support
  */
 export async function copyFreshFiles(
   catalystSourceDir: string,
@@ -297,81 +219,41 @@ export async function copyFreshFiles(
   force: boolean = false,
   onConfirmOverwrite?: (filePath: string, comparison: FileComparison) => Promise<boolean>,
   addPrefix: boolean = false
-): AsyncResult<{ copied: string[]; skipped: string[]; failed: string[] }, Error> {
+): AsyncResult<{ copied: string[]; skipped: string[] }, Error> {
   try {
-    // Find all .tsx files in catalyst source
-    const sourceFilesResult = await findComponentFiles(catalystSourceDir, []);
-    if (!sourceFilesResult.success) {
-      return { success: false, error: sourceFilesResult.error };
+    const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix);
+
+    if (!batchResult.success) {
+      return batchResult;
     }
 
-    const copied: string[] = [];
-    const skipped: string[] = [];
-    const failed: string[] = [];
+    const { copied, skipped, filesToConfirm } = batchResult.value;
+    const finalCopied = [...copied];
+    const finalSkipped = [...skipped];
 
-    for (const sourceFile of sourceFilesResult.value) {
-      const fileName = path.basename(sourceFile);
-      // Add 'catalyst-' prefix if addPrefix is true and prefix not already present
-      const destFileName =
-        addPrefix && !fileName.startsWith('catalyst-') ? `catalyst-${fileName}` : fileName;
-      const destFile = path.join(destDir, destFileName);
-
-      // Compare files
-      const comparisonResult = await frameworkCompareFiles(sourceFile, destFile);
-      if (!comparisonResult.success) {
-        failed.push(destFileName);
-        continue;
-      }
-
-      const comparison = comparisonResult.value;
-
-      // If source doesn't exist, skip
-      if (!comparison.sourceExists) {
-        skipped.push(destFileName);
-        continue;
-      }
-
-      // If files are identical, skip
-      if (comparison.identical) {
-        skipped.push(destFileName);
-        continue;
-      }
-
-      // If destination doesn't exist, copy directly
-      if (!comparison.destExists) {
-        const sourceContent = comparison.sourceContent || '';
-        const copyResult = await writeFileContent(destFile, sourceContent);
-        if (copyResult.success) {
-          copied.push(destFileName);
+    // Handle confirmation for conflicting files
+    for (const { fileName, sourceFile, destFile, comparison } of filesToConfirm) {
+      if (onConfirmOverwrite) {
+        const shouldOverwrite = await onConfirmOverwrite(destFile, comparison);
+        if (shouldOverwrite) {
+          const sourceResult = await readFile(sourceFile);
+          if (sourceResult.success) {
+            const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+            if (writeResult.success) {
+              finalCopied.push(fileName);
+            }
+          }
         } else {
-          failed.push(destFileName);
-        }
-        continue;
-      }
-
-      // Destination exists and is different - need confirmation
-      let shouldCopy = force;
-
-      if (!force && onConfirmOverwrite) {
-        shouldCopy = await onConfirmOverwrite(destFileName, comparison);
-      }
-
-      if (shouldCopy) {
-        const sourceContent = comparison.sourceContent || '';
-        const copyResult = await writeFileContent(destFile, sourceContent);
-        if (copyResult.success) {
-          copied.push(destFileName);
-        } else {
-          failed.push(destFileName);
+          finalSkipped.push(fileName);
         }
       } else {
-        skipped.push(destFileName);
+        finalSkipped.push(fileName);
       }
     }
 
     return {
       success: true,
-      value: { copied, skipped, failed },
+      value: { copied: finalCopied, skipped: finalSkipped },
     };
   } catch (error) {
     return {
@@ -381,10 +263,8 @@ export async function copyFreshFiles(
   }
 }
 
-//TODO: Delete?
 /**
- * Validate converter configuration
- * Pure function with comprehensive checks
+ * Validate UI converter configuration
  */
 export function validateConfig(config: ConverterConfig): Result<ConverterConfig, Error> {
   if (!config.name || config.name.trim().length === 0) {

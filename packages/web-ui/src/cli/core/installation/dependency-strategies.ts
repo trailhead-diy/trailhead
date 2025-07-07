@@ -5,12 +5,9 @@
 import type { WorkspaceInfo, CIEnvironment } from './workspace-detection.js';
 import type { DependencyAnalysis, ConflictSeverity } from './dependency-resolution.js';
 import { analyzeConflictSeverity } from './dependency-resolution.js';
-import {
-  buildInstallCommand,
-  getStrategyOptions,
-  getPackageManagerEnv,
-  type PackageManagerName,
-} from './package-manager-registry.js';
+
+// Simple package manager support for npm and pnpm only
+type PackageManagerName = 'npm' | 'pnpm';
 
 // ============================================================================
 // TYPES
@@ -42,6 +39,95 @@ export interface InstallOptions {
   readonly useLockfile: boolean;
   readonly flags: readonly string[];
   readonly env: Readonly<Record<string, string>>;
+}
+
+// ============================================================================
+// SIMPLE PACKAGE MANAGER UTILITIES (npm/pnpm only)
+// ============================================================================
+
+/**
+ * Build install command for npm or pnpm
+ */
+function buildInstallCommand(
+  pm: PackageManagerName,
+  options: {
+    ci?: boolean;
+    force?: boolean;
+    frozen?: boolean;
+    legacyPeerDeps?: boolean;
+    offline?: boolean;
+    verbose?: boolean;
+    timeout?: number;
+    workspace?: string;
+  } = {}
+): string {
+  const parts: string[] = [];
+
+  if (pm === 'npm') {
+    parts.push(options.ci ? 'npm ci' : 'npm install');
+    if (options.force) parts.push('--force');
+    if (options.legacyPeerDeps) parts.push('--legacy-peer-deps');
+  } else if (pm === 'pnpm') {
+    parts.push(options.ci || options.frozen ? 'pnpm install --frozen-lockfile' : 'pnpm install');
+    if (options.force) parts.push('--force');
+  }
+
+  return parts.join(' ');
+}
+
+/**
+ * Get environment variables for npm or pnpm
+ */
+function getPackageManagerEnv(
+  pm: PackageManagerName,
+  options: { color?: boolean; ci?: boolean } = {}
+): Record<string, string> {
+  const env: Record<string, string> = {};
+
+  if (options.color) {
+    env.FORCE_COLOR = '1';
+  }
+
+  if (options.ci) {
+    env.CI = '1';
+  }
+
+  return env;
+}
+
+/**
+ * Get strategy options for npm or pnpm
+ */
+function getStrategyOptions(
+  strategy: DependencyStrategy,
+  pm: PackageManagerName,
+  hasLockfile: boolean
+): {
+  ci?: boolean;
+  force?: boolean;
+  frozen?: boolean;
+  legacyPeerDeps?: boolean;
+  offline?: boolean;
+  verbose?: boolean;
+  timeout?: number;
+  workspace?: string;
+} {
+  const baseOptions = {
+    ci: strategy.useLockfile && hasLockfile,
+    force: strategy.type === 'force',
+    frozen: strategy.useLockfile && hasLockfile,
+  };
+
+  // npm-specific options
+  if (pm === 'npm') {
+    return {
+      ...baseOptions,
+      legacyPeerDeps: strategy.peerDeps === 'legacy',
+    };
+  }
+
+  // pnpm options
+  return baseOptions;
 }
 
 // ============================================================================

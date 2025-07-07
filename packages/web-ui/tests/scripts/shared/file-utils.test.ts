@@ -1,11 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { resolve } from 'path';
 import type { FileProcessingResult } from '../../../src/cli/core/shared/types';
-import {
-  createConversionStats,
-  updateStats,
-  getRelativePath,
-} from '../../../src/cli/core/shared/file-utils';
+import { createConversionStats, updateStats } from '../../../src/cli/core/shared/file-utils';
+import { getRelativePath } from '../../../src/cli/core/filesystem/paths';
 
 describe('file-utils', () => {
   describe('Stats Management Workflow', () => {
@@ -60,15 +57,16 @@ describe('file-utils', () => {
 
   describe('Path Utilities', () => {
     it('should handle relative path conversion for display', () => {
-      // Test basic functionality without assuming exact format
-      const result1 = getRelativePath(resolve('absolute', 'path', 'file.tsx'));
+      // Test basic functionality with correct signature (projectRoot, absolutePath)
+      const projectRoot = process.cwd();
+      const absolutePath = resolve(projectRoot, 'components', 'file.tsx');
+
+      const result1 = getRelativePath(projectRoot, absolutePath);
       expect(typeof result1).toBe('string');
+      expect(result1).toContain('file.tsx');
 
-      const result2 = getRelativePath('./relative/path/file.tsx');
-      expect(result2).toContain('file.tsx');
-
-      const result3 = getRelativePath('src/button.tsx');
-      expect(result3).toContain('button.tsx');
+      const result2 = getRelativePath(projectRoot, resolve(projectRoot, 'lib', 'utils.ts'));
+      expect(result2).toContain('utils.ts');
     });
   });
 

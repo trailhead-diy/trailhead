@@ -14,7 +14,6 @@ import type {
 } from './types.js';
 import { Ok, Err, CORE_DEPENDENCIES, FRAMEWORK_DEPENDENCIES } from './types.js';
 
-import { tryCatchAsync } from './functional-utils.js';
 import {
   analyzeDependencies as analyzeCore,
   resolveDependencies,
@@ -27,12 +26,7 @@ import {
   getInstallOptions,
   type DependencyStrategy,
 } from './dependency-strategies.js';
-import { createProgressState } from './progress-tracking.js';
-import {
-  getInstallFallback,
-  formatRecoveryInstructions,
-  type InstallFallback,
-} from './error-recovery.js';
+import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
 
 // ============================================================================
 // TYPES
@@ -41,7 +35,6 @@ import {
 export interface DependencyInstallResult {
   readonly installed: boolean;
   readonly strategy: DependencyStrategy;
-  readonly fallback?: InstallFallback;
   readonly warnings: readonly string[];
 }
 
@@ -56,22 +49,21 @@ export const readPackageJson = async (
   fs: FileSystem,
   projectRoot: string
 ): Promise<Result<PackageJsonDeps, InstallError>> => {
-  return tryCatchAsync(
-    async () => {
-      const pkgJson = await PackageJson.load(projectRoot);
-      const content = pkgJson.content as Record<string, unknown>;
+  try {
+    const pkgJson = await PackageJson.load(projectRoot);
+    const content = pkgJson.content as Record<string, unknown>;
 
-      return {
-        dependencies: content.dependencies as Record<string, string> | undefined,
-        devDependencies: content.devDependencies as Record<string, string> | undefined,
-      };
-    },
-    error => ({
+    return Ok({
+      dependencies: content.dependencies as Record<string, string> | undefined,
+      devDependencies: content.devDependencies as Record<string, string> | undefined,
+    });
+  } catch (error) {
+    return Err({
       type: 'DependencyError',
       message: 'Failed to read package.json',
       cause: error,
-    })
-  );
+    });
+  }
 };
 
 /**
@@ -83,30 +75,30 @@ export const writePackageJson = async (
   originalPackageJson: Record<string, unknown>,
   updatedDeps: PackageJsonDeps
 ): Promise<Result<void, InstallError>> => {
-  return tryCatchAsync(
-    async () => {
-      const pkgJson = await PackageJson.load(projectRoot);
+  try {
+    const pkgJson = await PackageJson.load(projectRoot);
 
-      // Update dependencies
-      pkgJson.update({
-        dependencies: {
-          ...((originalPackageJson.dependencies as Record<string, string>) || {}),
-          ...updatedDeps.dependencies,
-        },
-        devDependencies: {
-          ...((originalPackageJson.devDependencies as Record<string, string>) || {}),
-          ...updatedDeps.devDependencies,
-        },
-      });
+    // Update dependencies
+    pkgJson.update({
+      dependencies: {
+        ...((originalPackageJson.dependencies as Record<string, string>) || {}),
+        ...updatedDeps.dependencies,
+      },
+      devDependencies: {
+        ...((originalPackageJson.devDependencies as Record<string, string>) || {}),
+        ...updatedDeps.devDependencies,
+      },
+    });
 
-      await pkgJson.save();
-    },
-    error => ({
+    await pkgJson.save();
+    return Ok(undefined);
+  } catch (error) {
+    return Err({
       type: 'DependencyError',
       message: 'Failed to write package.json',
       cause: error,
-    })
-  );
+    });
+  }
 };
 
 // ============================================================================
@@ -374,16 +366,16 @@ export const installDependenciesSmart = async (
 
       const options = getInstallOptions(strategy, packageManager, hasLockfile);
 
-      // Create progress state
-      const _progressState = createProgressState(Object.keys(dependencyUpdate.added));
-
+      // Use framework retry logic for package installation
       try {
-        await nypmInstall({
-          cwd: config.projectRoot,
-          silent: false,
-          packageManager: packageManager as any,
-          // Additional options from our strategy
-          ...(options.env && { env: options.env }),
+        await retryableOperation(async () => {
+          await nypmInstall({
+            cwd: config.projectRoot,
+            silent: false,
+            packageManager: packageManager as any,
+            // Additional options from our strategy
+            ...(options.env && { env: options.env }),
+          });
         });
 
         logger.success('Dependencies installed successfully');
@@ -393,16 +385,13 @@ export const installDependenciesSmart = async (
           strategy,
           warnings: [...resolution.warnings, ...resolution.suggestions],
         });
-      } catch (error) {
-        const fallback = getInstallFallback(packageManager, error as Error);
-
+      } catch (_error) {
         logger.warning('Automatic installation failed');
-        formatRecoveryInstructions(fallback).forEach(line => logger.info(line));
+        logger.info(`Run "${packageManager} install" to install dependencies manually`);
 
         return Ok({
           installed: false,
           strategy,
-          fallback,
           warnings: resolution.warnings,
         });
       }

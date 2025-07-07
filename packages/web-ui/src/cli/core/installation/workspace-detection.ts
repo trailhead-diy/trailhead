@@ -4,8 +4,7 @@
 
 import * as path from 'path';
 import type { FileSystem, Result, InstallError } from './types.js';
-import { Ok } from './types.js';
-import { tryCatchAsync } from './functional-utils.js';
+import { Ok, Err } from './types.js';
 
 /**
  * Helper function to check if a path exists using access
@@ -163,21 +162,20 @@ export const detectWorkspace = async (
     checkPackageJsonWorkspace,
   ];
 
-  return tryCatchAsync(
-    async () => {
-      for (const detector of detectors) {
-        const result = await detector(fs, projectRoot);
-        if (result) return result;
-      }
-      return null;
-    },
-    error => ({
+  try {
+    for (const detector of detectors) {
+      const result = await detector(fs, projectRoot);
+      if (result) return Ok(result);
+    }
+    return Ok(null);
+  } catch (error) {
+    return Err({
       type: 'FileSystemError',
       message: 'Failed to detect workspace',
       path: projectRoot,
       cause: error,
-    })
-  );
+    });
+  }
 };
 
 // ============================================================================
@@ -258,30 +256,29 @@ export const findWorkspaceRoot = async (
   fs: FileSystem,
   startPath: string
 ): Promise<Result<string | null, InstallError>> => {
-  return tryCatchAsync(
-    async () => {
-      let currentPath = startPath;
-      const root = path.parse(currentPath).root;
+  try {
+    let currentPath = startPath;
+    const root = path.parse(currentPath).root;
 
-      while (currentPath !== root) {
-        const workspaceResult = await detectWorkspace(fs, currentPath);
+    while (currentPath !== root) {
+      const workspaceResult = await detectWorkspace(fs, currentPath);
 
-        if (workspaceResult.success && workspaceResult.value) {
-          return currentPath;
-        }
-
-        currentPath = path.dirname(currentPath);
+      if (workspaceResult.success && workspaceResult.value) {
+        return Ok(currentPath);
       }
 
-      return null;
-    },
-    error => ({
+      currentPath = path.dirname(currentPath);
+    }
+
+    return Ok(null);
+  } catch (error) {
+    return Err({
       type: 'FileSystemError',
       message: 'Failed to find workspace root',
       path: startPath,
       cause: error,
-    })
-  );
+    });
+  }
 };
 
 /**
@@ -307,21 +304,20 @@ export const getWorkspacePackages = async (
     return Ok([]);
   }
 
-  return tryCatchAsync(
-    async () => {
-      const _packages: string[] = [];
+  try {
+    const _packages: string[] = [];
 
-      // TODO: Implement glob pattern matching for workspace paths
-      // For now, return the workspace patterns as-is
-      return Object.freeze(workspace.workspaces!);
-    },
-    error => ({
+    // TODO: Implement glob pattern matching for workspace paths
+    // For now, return the workspace patterns as-is
+    return Ok(Object.freeze(workspace.workspaces!));
+  } catch (error) {
+    return Err({
       type: 'FileSystemError',
       message: 'Failed to get workspace packages',
       path: workspace.root,
       cause: error,
-    })
-  );
+    });
+  }
 };
 
 /**

@@ -1,8 +1,12 @@
 /**
- * Installation prompts for Trailhead UI CLI
+ * Installation prompts for Trailhead UI CLI - migrated to use enhanced framework
  */
 
 import { input, select, confirm, checkbox } from '@inquirer/prompts';
+import {
+  createDirectoryPrompt,
+  createConfirmationPrompt,
+} from '@esteban-url/trailhead-cli/prompts';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import type { InstallOptions, FrameworkChoice, PromptChoice } from '../utils/types.js';
@@ -198,37 +202,35 @@ export const promptCatalystSource = async (): Promise<string> => {
 };
 
 /**
- * Prompt for destination directory
+ * Prompt for destination directory using enhanced framework
  */
 export const promptDestination = async (): Promise<{ destinationDir: string }> => {
   const defaultDestinationDir = detectDestinationDir();
 
-  const destinationDir = await input({
-    message: 'Installation destination directory:',
-    default: defaultDestinationDir,
-    validate: value => {
-      if (!value.trim()) return 'Destination directory is required';
-      return true;
-    },
-  });
+  const directoryPrompt = createDirectoryPrompt(
+    'Installation destination directory:',
+    defaultDestinationDir
+  );
 
+  const destinationDir = await directoryPrompt();
   return { destinationDir };
 };
 
 /**
- * Prompt for overwrite confirmation
+ * Prompt for overwrite confirmation using enhanced framework
  */
 export const promptOverwrite = async (existingFiles: readonly string[]): Promise<boolean> => {
   if (existingFiles.length === 0) return false;
 
-  console.log('\nThe following files already exist:');
-  existingFiles.forEach(file => console.log(`  • ${file}`));
-  console.log('');
+  const details = existingFiles.map(file => `Overwrite ${file}`);
 
-  return await confirm({
-    message: 'Do you want to overwrite existing files?',
-    default: false,
-  });
+  const overwritePrompt = createConfirmationPrompt(
+    'Do you want to overwrite existing files?',
+    details,
+    false
+  );
+
+  return await overwritePrompt();
 };
 
 /**
@@ -261,23 +263,23 @@ export const promptConfigOptions = async (): Promise<{
 };
 
 /**
- * Prompt for wrapper component option
+ * Prompt for wrapper component option using enhanced framework
  */
 export const promptWrapperOption = async (): Promise<boolean> => {
-  console.log('\n📦 Component Structure Options:');
-  console.log('\n  With wrappers (recommended):');
-  console.log('    • Two files per component for easier customization');
-  console.log('    • components/ui/button.tsx (wrapper)');
-  console.log('    • components/ui/lib/catalyst-button.tsx (implementation)');
-  console.log('\n  Without wrappers:');
-  console.log('    • Single file per component, simpler structure');
-  console.log('    • components/ui/button.tsx (direct implementation)');
-  console.log('');
+  const details = [
+    'Create two files per component for easier customization',
+    'Wrapper: components/ui/button.tsx',
+    'Implementation: components/ui/lib/catalyst-button.tsx',
+    'Alternative: single file structure without wrappers',
+  ];
 
-  return await confirm({
-    message: 'Use wrapper components?',
-    default: true,
-  });
+  const wrapperPrompt = createConfirmationPrompt(
+    'Use wrapper components? (recommended)',
+    details,
+    true
+  );
+
+  return await wrapperPrompt();
 };
 
 /**

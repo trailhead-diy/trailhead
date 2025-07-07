@@ -1,27 +1,45 @@
-export {
-  input as prompt,
-  select,
-  confirm,
-  checkbox as multiselect,
-  password,
-  editor,
-  expand,
-  rawlist,
-  search,
-} from '@inquirer/prompts';
+// Re-export all Inquirer.js prompts with enhanced TypeScript support
+export * from '@inquirer/prompts';
 
-export type PromptChoice<T = string> = {
-  name?: string;
-  value: T;
-  short?: string;
-  disabled?: boolean | string;
-};
+// Simple prompt helpers that leverage Inquirer's built-in capabilities
+export function createConfirmationPrompt(
+  message: string,
+  details?: string[],
+  defaultValue: boolean = true,
+) {
+  return async () => {
+    if (details && details.length > 0) {
+      console.log('\nThis will:');
+      details.forEach((detail) => console.log(`  • ${detail}`));
+      console.log('');
+    }
 
-export type PromptOptions = {
-  message: string;
-  default?: any;
-  validate?: (input: any) => boolean | string | Promise<boolean | string>;
-  filter?: (input: any) => any;
-  transformer?: (input: any, answers: any, flags: any) => any;
-  when?: boolean | ((answers: any) => boolean | Promise<boolean>);
-};
+    const { confirm } = await import('@inquirer/prompts');
+    return confirm({
+      message,
+      default: defaultValue,
+    });
+  };
+}
+
+export function createDirectoryPrompt(message: string, defaultPath?: string) {
+  return async () => {
+    const { input } = await import('@inquirer/prompts');
+    return input({
+      message,
+      default: defaultPath,
+      validate: (answer) => {
+        if (!answer || typeof answer !== 'string') {
+          return 'Please enter a valid directory path';
+        }
+        if (answer.includes('..') || answer.startsWith('/')) {
+          return 'Please enter a relative path without ".." segments';
+        }
+        return true;
+      },
+      transformer: (answer) => {
+        return String(answer).trim().replace(/\\/g, '/');
+      },
+    });
+  };
+}
