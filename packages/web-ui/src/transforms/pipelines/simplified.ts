@@ -51,7 +51,6 @@ const SIMPLIFIED_TRANSFORM_ORDER: Transform[] = [
   reorderClassNameArgsTransform,
   removeUnusedClassNameTransform,
 
-
   catalystPrefixTransform,
   // 4. Final formatting
   fileHeadersTransform,
@@ -156,9 +155,9 @@ export async function runSimplifiedPipelineWithFs(
         }
 
         // Use injected filesystem if available
-        const contentResult = fs ?
-          await fs.readFile(filePath) :
-          { success: true, value: await readFile(filePath, 'utf-8') };
+        const contentResult = fs
+          ? await fs.readFile(filePath)
+          : { success: true, value: await readFile(filePath, 'utf-8') };
 
         if (!contentResult.success) {
           errors.push({ file, error: 'Failed to read file' });

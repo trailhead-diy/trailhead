@@ -213,7 +213,9 @@ export const createTransformsCommand = () => {
                       const fileSystem = fs.createFileSystem();
                       const readResult = await fileSystem.readdir(transformConfig.srcDir);
                       if (readResult.success) {
-                        const tsxFiles = readResult.value.filter((f: string) => f.endsWith('.tsx')).sort();
+                        const tsxFiles = readResult.value
+                          .filter((f: string) => f.endsWith('.tsx'))
+                          .sort();
                         tsxFiles.forEach((file: string) => {
                           cmdContext.logger.info(`  ✓ ${file}`);
                         });

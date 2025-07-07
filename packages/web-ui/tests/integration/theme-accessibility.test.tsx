@@ -119,7 +119,6 @@ describe('Theme Accessibility Validation', () => {
         button.focus();
 
         // Check for focus styles (ring color should be visible)
-        const _buttonStyles = window.getComputedStyle(button);
         // In real browser, would check ring color contrast
         expect(button).toHaveFocus();
 
@@ -127,7 +126,6 @@ describe('Theme Accessibility Validation', () => {
         const input = screen.getByRole('textbox');
         input.focus();
 
-        const _inputStyles = window.getComputedStyle(input);
         expect(input).toHaveFocus();
 
         unmount();
@@ -342,8 +340,6 @@ describe('Theme Accessibility Validation', () => {
 
   describe('Color Blind Accessibility', () => {
     it('should not rely solely on color for important UI elements', () => {
-      const _themes = createThemeMap();
-
       // Test that destructive elements have more than just color
       render(
         <ThemeProvider defaultTheme="zinc">

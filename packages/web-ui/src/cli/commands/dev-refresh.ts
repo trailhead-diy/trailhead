@@ -12,7 +12,7 @@ import {
 } from '@esteban-url/trailhead-cli/command';
 import { join } from 'path';
 
-// Import framework utilities  
+// Import framework utilities
 import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import local utilities

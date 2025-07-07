@@ -222,9 +222,11 @@ async function executeInstallation(
     const coreOptions: CoreInstallOptions = {
       interactive: effectiveOptions.interactive,
       skipDependencyPrompts: false,
-      dependencyStrategy: effectiveOptions.dependencyStrategy && isValidDependencyStrategy(effectiveOptions.dependencyStrategy) 
-        ? effectiveOptions.dependencyStrategy 
-        : 'auto',
+      dependencyStrategy:
+        effectiveOptions.dependencyStrategy &&
+        isValidDependencyStrategy(effectiveOptions.dependencyStrategy)
+          ? effectiveOptions.dependencyStrategy
+          : 'auto',
     };
 
     const installResult = await performInstallation(

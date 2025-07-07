@@ -9,7 +9,10 @@ import { loadConfig, loadConfigSync, clearConfigCache } from '../../../../src/cl
 // Create a unique temp directory for each test run
 const createTempDir = () => {
   const baseTempDir = tmpdir();
-  const testDir = join(baseTempDir, `trailhead-config-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const testDir = join(
+    baseTempDir,
+    `trailhead-config-test-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
   mkdirSync(testDir, { recursive: true });
   return testDir;
 };
@@ -67,7 +70,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       // CLI framework merges with defaults, so verify expected merged result
       expect(result.filepath).toBe(configPath);
       expect(result.source).toBe('file');
-      
+
       // Verify the loaded config has merged properly with defaults
       expect(result.config.transforms.enabled).toBe(false); // from file
       expect(result.config.transforms.srcDir).toBe('./custom/src'); // from file
@@ -95,7 +98,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
 
     it('should handle malformed JSON files gracefully', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
-      
+
       // Write malformed JSON file
       writeFileSync(configPath, '{ "transforms": { "enabled": true, } }'); // trailing comma makes it invalid JSON
 
@@ -118,7 +121,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       const result2 = await loadConfig(testDir);
       expect(result2.config.verbose).toBe(true);
       expect(result2.filepath).toBe(configPath);
-      
+
       // Both results should be consistent
       expect(result2.config.verbose).toBe(result1.config.verbose);
       expect(result2.filepath).toBe(result1.filepath);
@@ -182,14 +185,14 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
     it('should prefer .trailheadrc over package.json', async () => {
       const rcPath = join(testDir, '.trailheadrc.json');
       const packagePath = join(testDir, 'package.json');
-      
+
       // Write both files
       const packageJson = {
         name: 'test-package',
         trailhead: { verbose: false },
       };
       const rcConfig = { verbose: true };
-      
+
       writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
       writeFileSync(rcPath, JSON.stringify(rcConfig, null, 2));
 
@@ -263,7 +266,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
   describe('Error scenarios', () => {
     it('should handle malformed JSON gracefully', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
-      
+
       // Write malformed JSON
       writeFileSync(configPath, '{ "transforms": { "enabled": true, } }'); // trailing comma
 

@@ -12,11 +12,9 @@ describe('ThemeProvider with next-themes Integration', () => {
   describe('High-ROI User Workflow Tests', () => {
     it('should allow users to switch themes', async () => {
       const user = userEvent.setup();
-      let _capturedTheme = '';
 
       const TestComponent = () => {
         const { currentTheme, setTheme } = useTheme();
-        _capturedTheme = currentTheme || '';
 
         return (
           <div>

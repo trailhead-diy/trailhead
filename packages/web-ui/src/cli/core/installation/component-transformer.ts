@@ -201,9 +201,10 @@ const applyTransformation = (
   transformations: string[]
 ): string => {
   const before = content;
-  const after = typeof pattern.replacement === 'string' 
-    ? content.replace(pattern.regex, pattern.replacement)
-    : content.replace(pattern.regex, pattern.replacement);
+  const after =
+    typeof pattern.replacement === 'string'
+      ? content.replace(pattern.regex, pattern.replacement)
+      : content.replace(pattern.regex, pattern.replacement);
 
   if (before !== after) {
     transformations.push(pattern.description);

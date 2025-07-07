@@ -95,7 +95,6 @@ export async function findComponentFiles(
   return result.success ? result.value : [];
 }
 
-
 /**
  * Copy fresh Catalyst files in batch mode for development workflow
  * Returns list of files that were copied or need confirmation
