@@ -7,6 +7,7 @@ import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import chalk from 'chalk';
 import type { Transform } from '../shared/types.js';
+import type { FileSystem } from '../../cli/core/installation/types.js';
 
 // Essential semantic color transforms (per component)
 import { buttonAddSemanticColorsTransform } from '../components/button/add-semantic-colors.js';
@@ -27,6 +28,7 @@ import { clsxToCnTransform } from '../components/common/imports/clsx-to-cn.js';
 
 // Formatting
 import { fileHeadersTransform } from '../components/common/formatting/file-headers.js';
+import { catalystPrefixTransform } from '../components/common/imports/catalyst-prefix.js';
 
 /**
  * Simplified transform order - only essential transforms
@@ -49,6 +51,8 @@ const SIMPLIFIED_TRANSFORM_ORDER: Transform[] = [
   reorderClassNameArgsTransform,
   removeUnusedClassNameTransform,
 
+
+  catalystPrefixTransform,
   // 4. Final formatting
   fileHeadersTransform,
 ];
@@ -72,9 +76,29 @@ function isNonCriticalASTError(error: any): boolean {
 }
 
 /**
- * Execute the simplified pipeline on a directory of files
+ * Execute the simplified pipeline on a directory of files (Node.js filesystem)
  */
 export async function runSimplifiedPipeline(
+  sourceDir: string,
+  options: {
+    verbose?: boolean;
+    dryRun?: boolean;
+    filter?: (filename: string) => boolean;
+  } = {}
+): Promise<{
+  success: boolean;
+  processedFiles: number;
+  errors: Array<{ file: string; error: string }>;
+  summary: string;
+}> {
+  return runSimplifiedPipelineWithFs(null, sourceDir, options);
+}
+
+/**
+ * Execute the simplified pipeline with injectable filesystem
+ */
+export async function runSimplifiedPipelineWithFs(
+  fs: FileSystem | null,
   sourceDir: string,
   options: {
     verbose?: boolean;
@@ -100,7 +124,24 @@ export async function runSimplifiedPipeline(
   let processedFiles = 0;
 
   try {
-    const files = await readdir(sourceDir);
+    // Use injected filesystem if available, otherwise fall back to Node.js fs
+    let files: string[];
+    if (fs) {
+      const readdirResult = await fs.readdir(sourceDir);
+      if (!readdirResult.success) {
+        errors.push({ file: sourceDir, error: 'Failed to read directory' });
+        return {
+          success: false,
+          processedFiles: 0,
+          errors,
+          summary: 'Failed to read directory',
+        };
+      }
+      files = readdirResult.value;
+    } else {
+      files = await readdir(sourceDir);
+    }
+
     const tsxFiles = files.filter(f => f.endsWith('.tsx'));
     const filteredFiles = filter ? tsxFiles.filter(filter) : tsxFiles;
 
@@ -114,7 +155,17 @@ export async function runSimplifiedPipeline(
           console.log(chalk.gray(`Processing ${file}...`));
         }
 
-        let content = await readFile(filePath, 'utf-8');
+        // Use injected filesystem if available
+        const contentResult = fs ?
+          await fs.readFile(filePath) :
+          { success: true, value: await readFile(filePath, 'utf-8') };
+
+        if (!contentResult.success) {
+          errors.push({ file, error: 'Failed to read file' });
+          continue;
+        }
+
+        let content = contentResult.value;
         let hasChanges = false;
 
         // Apply each transform in order
@@ -139,7 +190,11 @@ export async function runSimplifiedPipeline(
 
         // Write file if changes were made and not in dry run mode
         if (hasChanges && !dryRun) {
-          await writeFile(filePath, content, 'utf-8');
+          if (fs) {
+            await fs.writeFile(filePath, content);
+          } else {
+            await writeFile(filePath, content, 'utf-8');
+          }
         }
 
         if (hasChanges) {

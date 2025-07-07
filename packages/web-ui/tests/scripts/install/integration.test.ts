@@ -274,7 +274,7 @@ describe('Installation Integration Tests', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value.strategy).toBeDefined();
-        expect(['install', 'update', 'skip']).toContain(result.value.strategy);
+        expect(['force', 'skip']).toContain(result.value.strategy.type);
       }
     });
 
@@ -300,7 +300,7 @@ describe('Installation Integration Tests', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value.strategy).toBe('install');
+        expect(result.value.strategy.type).toBe('force');
       }
     });
   });

@@ -2,8 +2,8 @@
  * SHA verification logic for Trailhead UI install script
  */
 
-import * as path from 'path';
-import * as crypto from 'crypto';
+import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 import ora from 'ora';
 import type {
   CatalystHashData,
@@ -17,7 +17,6 @@ import type {
   InstallConfig,
 } from './types.js';
 import { Ok, Err, CATALYST_COMPONENT_FILES, CATALYST_VERSION } from './types.js';
-import { pathExists } from './filesystem-helpers.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
@@ -34,7 +33,7 @@ export const calculateFileHash = async (
   const readResult = await fs.readFile(filePath);
   if (!readResult.success) return readResult;
 
-  const hash = crypto.createHash('sha256').update(readResult.value, 'utf8').digest('hex');
+  const hash = createHash('sha256').update(readResult.value, 'utf8').digest('hex');
   return Ok(`sha256:${hash}`);
 };
 
@@ -42,7 +41,7 @@ export const calculateFileHash = async (
  * Pure function: Calculate SHA-256 hash of string content
  */
 export const calculateStringHash = (content: string): string => {
-  const hash = crypto.createHash('sha256').update(content, 'utf8').digest('hex');
+  const hash = createHash('sha256').update(content, 'utf8').digest('hex');
   return `sha256:${hash}`;
 };
 
@@ -67,10 +66,8 @@ export const readCatalystHashes = async (
 ): Promise<Result<CatalystHashData, InstallError>> => {
   const hashFilePath = path.join(projectRoot, 'scripts', 'catalyst-hashes.json');
 
-  const existsResult = await pathExists(hashFilePath);
-  if (!existsResult.success) return existsResult;
-
-  if (!existsResult.value) {
+  const existsResult = await fs.access(hashFilePath);
+  if (!existsResult.success) {
     return Err(
       createError('VERIFICATION_ERROR', 'catalyst-hashes.json not found in scripts directory')
     );
@@ -170,13 +167,8 @@ export const calculateCatalystHashes = async (
 
     const filePath = path.join(catalystDir, fileName);
 
-    const existsResult = await pathExists(filePath);
-    if (!existsResult.success) {
-      spinner?.fail('Failed to check file existence');
-      return existsResult;
-    }
-
-    if (existsResult.value) {
+    const existsResult = await fs.access(filePath);
+    if (existsResult.success) {
       const hashResult = await hasher.calculateFileHash(filePath);
       if (!hashResult.success) {
         spinner?.fail('Failed to calculate hash');

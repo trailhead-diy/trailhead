@@ -88,7 +88,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(error);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to find files');
+        expect(result.error.cause).toBe(error);
       }
     });
 
@@ -99,8 +101,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect(result.error.message).toBe('string error');
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to find files');
+        expect((result.error.cause as Error).message).toBe('string error');
       }
     });
   });
@@ -127,7 +130,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(error);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect(result.error.cause).toBe(error);
       }
     });
 
@@ -138,8 +143,11 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect(result.error.message).toBe('Failed to read restricted.ts');
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect((result.error.cause as Error).message).toBe(
+          'Failed to read restricted.ts',
+        );
       }
     });
   });
@@ -166,7 +174,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(error);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to write file');
+        expect(result.error.cause).toBe(error);
       }
     });
 
@@ -177,8 +187,11 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect(result.error.message).toBe('Failed to write test.ts');
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to write file');
+        expect((result.error.cause as Error).message).toBe(
+          'Failed to write test.ts',
+        );
       }
     });
   });
@@ -228,7 +241,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(error);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to create directory');
+        expect(result.error.cause).toBe(error);
       }
     });
 
@@ -239,8 +254,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(Error);
-        expect(result.error.message).toBe(
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to create directory');
+        expect((result.error.cause as Error).message).toBe(
           'Failed to create directory test-dir',
         );
       }
@@ -333,7 +349,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(readError);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect(result.error.cause).toBe(readError);
       }
     });
 
@@ -348,7 +366,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(readError);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect(result.error.cause).toBe(readError);
       }
     });
 
@@ -539,7 +559,9 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBe(error);
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect(result.error.cause).toBe(error);
       }
     });
   });
@@ -586,7 +608,11 @@ describe('File Utils', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.message).toBe('Destination read failed');
+        expect(result.error.code).toBe('FILESYSTEM_ERROR');
+        expect(result.error.message).toBe('Failed to read file');
+        expect((result.error.cause as Error).message).toBe(
+          'Destination read failed',
+        );
       }
     });
   });

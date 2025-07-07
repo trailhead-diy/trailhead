@@ -45,22 +45,22 @@ export type TrailheadConfigInput = z.infer<typeof trailheadConfigSchema>;
  * Final configuration types (with required defaults applied)
  */
 export interface TransformConfig {
-  enabled: boolean;
+  enabled?: boolean;
   srcDir?: string;
-  excludePatterns: string[];
+  excludePatterns?: string[];
   enabledTransforms?: string[];
-  disabledTransforms: string[];
+  disabledTransforms?: string[];
 }
 
 export interface InstallationConfig {
   destDir?: string;
-  wrappers: boolean;
+  wrappers?: boolean;
 }
 
 export interface DevRefreshConfig {
   srcDir?: string;
   destDir?: string;
-  prefix: string;
+  prefix?: string;
 }
 
 export interface TrailheadConfig {
@@ -68,8 +68,8 @@ export interface TrailheadConfig {
   install?: InstallationConfig;
   transforms?: TransformConfig;
   devRefresh?: DevRefreshConfig;
-  verbose: boolean;
-  dryRun: boolean;
+  verbose?: boolean;
+  dryRun?: boolean;
 }
 
 /**
@@ -92,7 +92,7 @@ const defaultConfig: TrailheadConfig = {
 };
 
 /**
- * Configuration search places for cosmiconfig
+ * Configuration search places for CLI framework config system
  * Order matters: most specific files first
  */
 const SEARCH_PLACES = [
@@ -122,10 +122,18 @@ const configLoader = createConfig({
  */
 export function loadConfigSync(startPath?: string): ConfigLoadResult<TrailheadConfig> {
   const result = configLoader.loadSync(startPath);
+
+  // CLI framework already handles validation and merging with defaults
+  // Just need to determine source and return in the expected format
+  let source: 'file' | 'package.json' | 'defaults' = 'defaults';
+  if (result.filepath) {
+    source = result.filepath.endsWith('package.json') ? 'package.json' : 'file';
+  }
+
   return {
-    config: result.config as TrailheadConfig, // Safe cast since defaults ensure all required fields
+    config: result.config,
     filepath: result.filepath,
-    source: result.source,
+    source,
   };
 }
 
@@ -134,10 +142,18 @@ export function loadConfigSync(startPath?: string): ConfigLoadResult<TrailheadCo
  */
 export async function loadConfig(startPath?: string): Promise<ConfigLoadResult<TrailheadConfig>> {
   const result = await configLoader.load(startPath);
+
+  // CLI framework already handles validation and merging with defaults
+  // Just need to determine source and return in the expected format
+  let source: 'file' | 'package.json' | 'defaults' = 'defaults';
+  if (result.filepath) {
+    source = result.filepath.endsWith('package.json') ? 'package.json' : 'file';
+  }
+
   return {
-    config: result.config as TrailheadConfig, // Safe cast since defaults ensure all required fields
+    config: result.config,
     filepath: result.filepath,
-    source: result.source,
+    source,
   };
 }
 

@@ -2,11 +2,11 @@
  * Component installation module
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
-import { pathExists } from './filesystem-helpers.js';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import {
   transformComponentContent,
   getTransformOptions,
@@ -36,12 +36,7 @@ export const installCatalystComponents = async (
   // Check if source catalyst directory exists
   const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
   if (!sourceCheckResult.success) {
-    return Err(
-      createError('FILESYSTEM_ERROR', 'Failed to check source directory', {
-        details: `Path: ${sourcePaths.catalystDir}`,
-        cause: sourceCheckResult.error,
-      })
-    );
+    return Err(sourceCheckResult.error);
   }
 
   if (!sourceCheckResult.value) {
@@ -79,12 +74,7 @@ export const installCatalystComponents = async (
 // COMPONENT WRAPPER GENERATION
 // ============================================================================
 
-/**
- * Pure function: Generate wrapper component content
- */
-export const generateWrapperComponent = (componentName: string): string => {
-  return `export * from './lib/${componentName}.js'\n`;
-};
+// generateWrapperComponent removed - was unused utility function
 
 /**
  * Install component wrapper files by copying from Trailhead UI source

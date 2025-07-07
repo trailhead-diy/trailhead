@@ -5,7 +5,7 @@
  * Focused on Catalyst component operations and UI installation workflows
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import {
   findFiles,
   readFile,
@@ -13,11 +13,6 @@ import {
   compareFiles as frameworkCompareFiles,
   type FileComparison,
 } from '@esteban-url/trailhead-cli/filesystem';
-import {
-  createStats,
-  updateStats as frameworkUpdateStats,
-  type StatsTracker,
-} from '@esteban-url/trailhead-cli/utils';
 import type {
   ConversionStats,
   FileProcessingResult,
@@ -25,6 +20,58 @@ import type {
   Result,
   AsyncResult,
 } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
+
+// ============================================================================
+// CONVERSION STATS UTILITIES
+// ============================================================================
+
+/**
+ * Create initial conversion statistics
+ */
+export function createConversionStats(): ConversionStats {
+  return {
+    filesProcessed: 0,
+    filesModified: 0,
+    totalConversions: 0,
+    conversionsByType: new Map(),
+  };
+}
+
+/**
+ * Update conversion statistics with processing results
+ */
+export function updateStats(
+  stats: ConversionStats,
+  result: FileProcessingResult,
+  conversionTypes: { description: string }[]
+): ConversionStats {
+  const newStats: ConversionStats = {
+    filesProcessed: stats.filesProcessed + 1,
+    filesModified: stats.filesModified + (result.success && result.changes > 0 ? 1 : 0),
+    totalConversions: stats.totalConversions + (result.success ? result.changes : 0),
+    conversionsByType: new Map(stats.conversionsByType),
+  };
+
+  // Update conversion type counts
+  for (const conversion of conversionTypes) {
+    const current = newStats.conversionsByType.get(conversion.description) || 0;
+    newStats.conversionsByType.set(conversion.description, current + 1);
+  }
+
+  return newStats;
+}
+
+// ============================================================================
+// PATH UTILITIES
+// ============================================================================
+
+/**
+ * Get relative path for display purposes
+ */
+export function getRelativePath(projectRoot: string, absolutePath: string): string {
+  return path.relative(projectRoot, absolutePath);
+}
 
 // ============================================================================
 // UI-SPECIFIC FILE OPERATIONS
@@ -48,64 +95,6 @@ export async function findComponentFiles(
   return result.success ? result.value : [];
 }
 
-/**
- * Create conversion statistics tracker for UI transformations
- */
-export function createConversionStats(): ConversionStats {
-  const stats = createStats<{ totalConversions: number }>({
-    totalConversions: 0,
-  });
-
-  return {
-    filesProcessed: stats.filesProcessed,
-    filesModified: stats.filesModified,
-    totalConversions: stats.custom?.totalConversions || 0,
-    conversionsByType: stats.operationsByType,
-    startTime: stats.startTime,
-  };
-}
-
-/**
- * Update conversion statistics with processing results
- */
-export function updateStats(
-  stats: ConversionStats,
-  result: FileProcessingResult,
-  conversionTypes: Array<{ description: string }>
-): ConversionStats {
-  const tracker: StatsTracker<{ totalConversions: number }> = {
-    filesProcessed: stats.filesProcessed,
-    filesModified: stats.filesModified,
-    totalOperations: stats.totalConversions,
-    operationsByType: stats.conversionsByType,
-    startTime: stats.startTime,
-    custom: { totalConversions: stats.totalConversions },
-  };
-
-  const operationTypes =
-    result.success && result.changes > 0
-      ? conversionTypes.map(({ description }) => ({ type: description, count: 1 }))
-      : [];
-
-  const updatedTracker = frameworkUpdateStats(tracker, {
-    filesProcessed: 1,
-    filesModified: result.success && result.changes > 0 ? 1 : 0,
-    operations: result.success ? result.changes : 0,
-    operationTypes,
-    custom: {
-      totalConversions: stats.totalConversions + (result.success ? result.changes : 0),
-    },
-  });
-
-  // Convert back to ConversionStats format
-  return {
-    filesProcessed: updatedTracker.filesProcessed,
-    filesModified: updatedTracker.filesModified,
-    totalConversions: updatedTracker.custom?.totalConversions || 0,
-    conversionsByType: updatedTracker.operationsByType,
-    startTime: updatedTracker.startTime,
-  };
-}
 
 /**
  * Copy fresh Catalyst files in batch mode for development workflow
@@ -116,20 +105,17 @@ export async function copyFreshFilesBatch(
   destDir: string,
   force: boolean = false,
   addPrefix: boolean = false
-): AsyncResult<
-  {
-    copied: string[];
-    skipped: string[];
-    failed: string[];
-    filesToConfirm: Array<{
-      fileName: string;
-      sourceFile: string;
-      destFile: string;
-      comparison: FileComparison;
-    }>;
-  },
-  Error
-> {
+): AsyncResult<{
+  copied: string[];
+  skipped: string[];
+  failed: string[];
+  filesToConfirm: Array<{
+    fileName: string;
+    sourceFile: string;
+    destFile: string;
+    comparison: FileComparison;
+  }>;
+}> {
   try {
     const sourceFiles = await findComponentFiles(catalystSourceDir);
     const copied: string[] = [];
@@ -143,7 +129,6 @@ export async function copyFreshFilesBatch(
     }> = [];
 
     for (const sourceFile of sourceFiles) {
-      const _relativePath = path.relative(catalystSourceDir, sourceFile);
       const fileName = path.basename(sourceFile);
       const destFileName = addPrefix ? `catalyst-${fileName}` : fileName;
       const destFile = path.join(destDir, destFileName);
@@ -205,7 +190,9 @@ export async function copyFreshFilesBatch(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error : new Error('Failed to copy fresh files'),
+      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+        cause: error instanceof Error ? error : undefined,
+      }),
     };
   }
 }
@@ -219,7 +206,7 @@ export async function copyFreshFiles(
   force: boolean = false,
   onConfirmOverwrite?: (filePath: string, comparison: FileComparison) => Promise<boolean>,
   addPrefix: boolean = false
-): AsyncResult<{ copied: string[]; skipped: string[] }, Error> {
+): AsyncResult<{ copied: string[]; skipped: string[] }> {
   try {
     const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix);
 
@@ -258,7 +245,9 @@ export async function copyFreshFiles(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error : new Error('Failed to copy fresh files'),
+      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+        cause: error instanceof Error ? error : undefined,
+      }),
     };
   }
 }
@@ -266,13 +255,19 @@ export async function copyFreshFiles(
 /**
  * Validate UI converter configuration
  */
-export function validateConfig(config: ConverterConfig): Result<ConverterConfig, Error> {
+export function validateConfig(config: ConverterConfig): Result<ConverterConfig> {
   if (!config.name || config.name.trim().length === 0) {
-    return { success: false, error: new Error('Converter name is required') };
+    return {
+      success: false,
+      error: createError('VALIDATION_ERROR', 'Converter name is required'),
+    };
   }
 
   if (!config.description || config.description.trim().length === 0) {
-    return { success: false, error: new Error('Converter description is required') };
+    return {
+      success: false,
+      error: createError('VALIDATION_ERROR', 'Converter description is required'),
+    };
   }
 
   return { success: true, value: config };

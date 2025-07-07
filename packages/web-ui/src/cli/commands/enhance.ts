@@ -101,8 +101,8 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
       if (!result.success) {
         return Err(
           createError(
-            'Enhancement pipeline failed',
-            `${result.errors.length} errors occurred during enhancement`
+            'ENHANCEMENT_ERROR',
+            `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
           )
         );
       }

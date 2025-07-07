@@ -142,13 +142,8 @@ export interface PackageJsonDeps {
 // VALIDATION HELPERS
 // ============================================================================
 
-export const isString = (value: unknown): value is string => typeof value === 'string';
-
-export const isObject = (value: unknown): value is Record<string, unknown> =>
-  value !== null && typeof value === 'object' && !Array.isArray(value);
-
-export const isRecord = (value: unknown): value is Record<string, string> =>
-  isObject(value) && Object.values(value).every(isString);
+// Import validation utilities from CLI framework instead of duplicating
+export { string, object } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // REQUIRED DEPENDENCIES CONSTANTS

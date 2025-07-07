@@ -2,7 +2,7 @@
  * Configuration detection and validation for Trailhead UI install script
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import type {
   InstallConfig,
   InstallationTrailheadConfig,
@@ -12,14 +12,8 @@ import type {
   Result,
   CLIOptions,
 } from './types.js';
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
+import { Ok, Err, createError, nonEmptyString, object } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
-import { pathExists } from './filesystem-helpers.js';
-
-// Helper functions for type checking
-const isString = (value: unknown): value is string => typeof value === 'string';
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // ============================================================================
 // CONFIGURATION DETECTION (Pure Functions)
@@ -40,19 +34,17 @@ export const detectCatalystDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      // Check if it contains typescript files
-      const typescriptDir = candidatePath.endsWith('typescript')
-        ? candidatePath
-        : path.join(candidatePath, 'typescript');
+    // Check if it contains typescript files
+    const typescriptDir = candidatePath.endsWith('typescript')
+      ? candidatePath
+      : path.join(candidatePath, 'typescript');
 
-      const typescriptExistsResult = await pathExists(typescriptDir);
-      if (typescriptExistsResult.success && typescriptExistsResult.value) {
-        return Ok(typescriptDir);
-      }
+    const typescriptExistsResult = await fs.access(typescriptDir);
+    if (typescriptExistsResult.success) {
+      return Ok(typescriptDir);
     }
   }
 
@@ -78,12 +70,10 @@ export const detectComponentsDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      return Ok(candidatePath);
-    }
+    return Ok(candidatePath);
   }
 
   // Default to src/components if none found
@@ -105,12 +95,10 @@ export const detectLibDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      return Ok(candidatePath);
-    }
+    return Ok(candidatePath);
   }
 
   // Default to src/lib if none found
@@ -123,113 +111,81 @@ export const detectLibDir = async (
 // ============================================================================
 
 /**
- * Pure function: Validate InstallationTrailheadConfig object
+ * Pure function: Validate InstallationTrailheadConfig object using CLI framework validation
  */
 export const validateTrailheadConfig = (
   config: unknown
 ): Result<InstallationTrailheadConfig, InstallError> => {
-  if (!isObject(config)) {
-    return Err(createError('VALIDATION_ERROR', 'Configuration must be an object'));
+  // Validate object structure first
+  const objectResult = object('config')(config);
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
-  const { catalystDir, destinationDir, componentsDir, libDir } = config;
+  const configObj = objectResult.value;
 
-  if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'catalystDir must be a non-empty string', {
-        details: 'Field: catalystDir',
-      })
-    );
-  }
+  // Validate each required field
+  const fields = ['catalystDir', 'destinationDir', 'componentsDir', 'libDir'];
+  const validatedFields: Record<string, string> = {};
 
-  if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'destinationDir must be a non-empty string', {
-        details: 'Field: destinationDir',
-      })
-    );
-  }
+  for (const field of fields) {
+    const fieldResult = nonEmptyString(field)(configObj[field]);
 
-  if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'componentsDir must be a non-empty string', {
-        details: 'Field: componentsDir',
-      })
-    );
-  }
+    if (!fieldResult.success) {
+      return Err(
+        createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
+          details: `Field: ${field}`,
+        })
+      );
+    }
 
-  if (!isString(libDir) || !libDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'libDir must be a non-empty string', {
-        details: 'Field: libDir',
-      })
-    );
+    validatedFields[field] = fieldResult.value.trim();
   }
 
   return Ok({
-    catalystDir: catalystDir.trim(),
-    destinationDir: destinationDir.trim(),
-    componentsDir: componentsDir.trim(),
-    libDir: libDir.trim(),
+    catalystDir: validatedFields.catalystDir,
+    destinationDir: validatedFields.destinationDir,
+    componentsDir: validatedFields.componentsDir,
+    libDir: validatedFields.libDir,
   });
 };
 
 /**
- * Pure function: Validate InstallConfig object
+ * Pure function: Validate InstallConfig object using CLI framework validation
  */
 export const validateInstallConfig = (config: unknown): Result<InstallConfig, InstallError> => {
-  if (!isObject(config)) {
-    return Err(createError('VALIDATION_ERROR', 'Install configuration must be an object'));
+  // Validate object structure first
+  const objectResult = object('config')(config);
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
-  const { catalystDir, destinationDir, componentsDir, libDir, projectRoot } = config;
+  const configObj = objectResult.value;
 
-  if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'catalystDir must be a non-empty string', {
-        details: 'Field: catalystDir',
-      })
-    );
-  }
+  // Validate each required field (including projectRoot for InstallConfig)
+  const fields = ['catalystDir', 'destinationDir', 'componentsDir', 'libDir', 'projectRoot'];
+  const validatedFields: Record<string, string> = {};
 
-  if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'destinationDir must be a non-empty string', {
-        details: 'Field: destinationDir',
-      })
-    );
-  }
+  for (const field of fields) {
+    const fieldResult = nonEmptyString(field)(configObj[field]);
 
-  if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'componentsDir must be a non-empty string', {
-        details: 'Field: componentsDir',
-      })
-    );
-  }
+    if (!fieldResult.success) {
+      return Err(
+        createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
+          details: `Field: ${field}`,
+        })
+      );
+    }
 
-  if (!isString(libDir) || !libDir.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'libDir must be a non-empty string', {
-        details: 'Field: libDir',
-      })
-    );
-  }
-
-  if (!isString(projectRoot) || !projectRoot.trim()) {
-    return Err(
-      createError('VALIDATION_ERROR', 'projectRoot must be a non-empty string', {
-        details: 'Field: projectRoot',
-      })
-    );
+    validatedFields[field] = fieldResult.value.trim();
   }
 
   return Ok({
-    catalystDir: catalystDir.trim(),
-    destinationDir: destinationDir.trim(),
-    componentsDir: componentsDir.trim(),
-    libDir: libDir.trim(),
-    projectRoot: projectRoot.trim(),
+    catalystDir: validatedFields.catalystDir,
+    destinationDir: validatedFields.destinationDir,
+    componentsDir: validatedFields.componentsDir,
+    libDir: validatedFields.libDir,
+    projectRoot: validatedFields.projectRoot,
   });
 };
 
@@ -246,10 +202,8 @@ export const readTrailheadConfig = async (
 ): Promise<Result<InstallationTrailheadConfig | null, InstallError>> => {
   const configPath = path.join(projectRoot, 'trailhead.config.json');
 
-  const existsResult = await pathExists(configPath);
-  if (!existsResult.success) return existsResult;
-
-  if (!existsResult.value) {
+  const existsResult = await fs.access(configPath);
+  if (!existsResult.success) {
     return Ok(null);
   }
 
@@ -326,8 +280,8 @@ export const resolveConfiguration = async (
       destinationDir = existingConfig.destinationDir;
     } else {
       // Detect default destination directory based on project structure
-      const srcComponentsExists = await pathExists(path.join(projectRoot, 'src', 'components'));
-      if (srcComponentsExists.success && srcComponentsExists.value) {
+      const srcComponentsExists = await fs.access(path.join(projectRoot, 'src', 'components'));
+      if (srcComponentsExists.success) {
         destinationDir = path.join('src', 'components', 'th');
       } else {
         destinationDir = path.join('components', 'th');
@@ -426,10 +380,8 @@ export const verifyConfiguration = async (
   config: InstallConfig
 ): Promise<Result<void, InstallError>> => {
   // Check if catalyst directory exists and contains TypeScript files
-  const catalystExistsResult = await pathExists(config.catalystDir);
-  if (!catalystExistsResult.success) return catalystExistsResult;
-
-  if (!catalystExistsResult.value) {
+  const catalystExistsResult = await fs.access(config.catalystDir);
+  if (!catalystExistsResult.success) {
     return Err(
       createError(
         'CONFIGURATION_ERROR',

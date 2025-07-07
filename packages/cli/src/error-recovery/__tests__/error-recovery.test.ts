@@ -13,12 +13,7 @@ vi.mock('p-retry', () => ({
       } catch (error) {
         attempts++;
         if (options?.onFailedAttempt) {
-          try {
-            options.onFailedAttempt(error);
-          } catch (err) {
-            // If onFailedAttempt throws, stop retrying
-            throw err;
-          }
+          options.onFailedAttempt(error);
         }
 
         if (attempts > maxRetries) {
@@ -210,7 +205,7 @@ describe('Error Recovery', () => {
 
       try {
         await retryableOperation(operation);
-      } catch (error) {
+      } catch {
         // Expected to fail
       }
 

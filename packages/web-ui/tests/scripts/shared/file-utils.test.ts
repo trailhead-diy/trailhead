@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { resolve } from 'path';
 import type { FileProcessingResult } from '../../../src/cli/core/shared/types';
-import { createConversionStats, updateStats } from '../../../src/cli/core/shared/file-utils';
-import { getRelativePath } from '../../../src/cli/core/filesystem/paths';
+import {
+  createConversionStats,
+  updateStats,
+  getRelativePath,
+} from '../../../src/cli/core/shared/file-utils';
 
 describe('file-utils', () => {
   describe('Stats Management Workflow', () => {

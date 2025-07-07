@@ -188,7 +188,7 @@ async function executeInstallation(
     const frameworkResult = await detectFramework(
       fs,
       config.projectRoot,
-      options.framework as any // Cast since we've validated it
+      options.framework && isValidFramework(options.framework) ? options.framework : undefined
     );
 
     if (!frameworkResult.success) {
@@ -222,7 +222,9 @@ async function executeInstallation(
     const coreOptions: CoreInstallOptions = {
       interactive: effectiveOptions.interactive,
       skipDependencyPrompts: false,
-      dependencyStrategy: effectiveOptions.dependencyStrategy as any,
+      dependencyStrategy: effectiveOptions.dependencyStrategy && isValidDependencyStrategy(effectiveOptions.dependencyStrategy) 
+        ? effectiveOptions.dependencyStrategy 
+        : 'auto',
     };
 
     const installResult = await performInstallation(

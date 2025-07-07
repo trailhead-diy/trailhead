@@ -263,7 +263,7 @@ describe('Install Workflow - Critical User Journeys', () => {
     it('should handle file system errors gracefully', async () => {
       const options = {
         destinationDir: 'components/th',
-        catalystDir: '/project/catalyst-ui-kit/typescript',
+        // Don't provide catalystDir so detectCatalystDir gets called
       };
 
       // Mock file system error
@@ -280,7 +280,7 @@ describe('Install Workflow - Critical User Journeys', () => {
       expect(configResult.success).toBe(false);
       if (configResult.success) return;
 
-      expect(configResult.error.message).toContain('Failed to check path existence');
+      expect(configResult.error.message).toContain('Could not find catalyst-ui-kit directory');
     });
   });
 

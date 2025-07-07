@@ -10,12 +10,10 @@ import {
   type CommandPhase,
   type CommandContext,
 } from '@esteban-url/trailhead-cli/command';
-import { existsSync } from 'fs';
-import { rm } from 'fs/promises';
 import { join } from 'path';
 
-// Import framework utilities
-import { ensureDirectory } from '@esteban-url/trailhead-cli/filesystem';
+// Import framework utilities  
+import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
@@ -45,7 +43,11 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
     name: 'Validating paths',
     execute: async (config: RefreshConfig) => {
       // Check if source exists
-      if (!existsSync(config.source)) {
+      const sourceExistsResult = await pathExists(config.source);
+      if (!sourceExistsResult.success) {
+        return Err(sourceExistsResult.error);
+      }
+      if (!sourceExistsResult.value) {
         return Err(
           createError(
             'SOURCE_NOT_FOUND',
@@ -71,8 +73,16 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
     name: 'Preparing destination',
     execute: async (config: RefreshConfig) => {
       try {
-        if (config.clean && existsSync(config.dest)) {
-          await rm(config.dest, { recursive: true });
+        if (config.clean) {
+          const destExistsResult = await pathExists(config.dest);
+          if (!destExistsResult.success) {
+            return Err(destExistsResult.error);
+          }
+          if (destExistsResult.value) {
+            // Use Node.js fs for removal since CLI framework doesn't export removeDirectory
+            const { rm } = await import('fs/promises');
+            await rm(config.dest, { recursive: true });
+          }
         }
 
         const result = await ensureDirectory(config.dest);

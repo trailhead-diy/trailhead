@@ -3,13 +3,15 @@
  * Type safety and maintainability focused interfaces
  */
 
+// Re-export StatsTracker from CLI framework for other uses
+export type { StatsTracker } from '@esteban-url/trailhead-cli/utils';
+
+// UI-specific conversion stats interface
 export interface ConversionStats {
-  filesProcessed: number;
-  filesModified: number;
-  totalConversions: number;
-  conversionsByType: Map<string, number>;
-  startTime: number;
-  endTime?: number;
+  readonly filesProcessed: number;
+  readonly filesModified: number;
+  readonly totalConversions: number;
+  readonly conversionsByType: Map<string, number>;
 }
 
 export interface ConversionMapping {
@@ -63,13 +65,13 @@ export interface ConverterDefinition {
   processor?: (content: string) => ConversionResult;
 }
 
-// Import Result type from framework
-import type { Result } from '@esteban-url/trailhead-cli/core';
+// Import Result and CLIError types from framework
+import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 
 // Re-export Result for backward compatibility with shared modules
 export type { Result };
 
-export type AsyncResult<T, E = Error> = Promise<Result<T, E>>;
+export type AsyncResult<T, E = CLIError> = Promise<Result<T, E>>;
 
 // Environment configuration
 export interface EnvironmentConfig {
@@ -81,14 +83,8 @@ export interface EnvironmentConfig {
   catalystSourceDir?: string;
 }
 
-// File comparison result
-export interface FileComparison {
-  sourceExists: boolean;
-  destExists: boolean;
-  identical: boolean;
-  sourceContent?: string;
-  destContent?: string;
-}
+// File comparison result - re-export from CLI framework
+export type { FileComparison } from '@esteban-url/trailhead-cli/filesystem';
 
 // Processing configuration
 export interface ProcessingConfig {

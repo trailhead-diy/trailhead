@@ -1,9 +1,8 @@
-import * as path from 'path';
-import { cosmiconfig } from 'cosmiconfig';
+import * as path from 'node:path';
 import { createError } from '@esteban-url/trailhead-cli/core';
+import { createConfig, z } from '@esteban-url/trailhead-cli/config';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
-import { pathExists } from './filesystem-helpers.js';
 
 export type FrameworkType = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react';
 
@@ -122,7 +121,8 @@ export const extractFrameworkVersion = (
 // ============================================================================
 
 /**
- * Check if config files exist for a framework using cosmiconfig for better discovery
+ * Check if config files exist for a framework
+ * Uses the provided filesystem interface for proper dependency injection
  */
 export const checkConfigFiles = async (
   fs: FileSystem,
@@ -132,21 +132,11 @@ export const checkConfigFiles = async (
   try {
     let matches = 0;
 
-    // First try traditional file checking
     for (const configFile of configFiles) {
       const configPath = path.join(projectRoot, configFile);
-      const existsResult = await pathExists(configPath);
+      const existsResult = await fs.access(configPath);
 
-      if (!existsResult.success) {
-        return Err(
-          createError('FILESYSTEM_ERROR', 'Failed to check config file', {
-            details: `Path: ${configPath}`,
-            cause: existsResult.error,
-          })
-        );
-      }
-
-      if (existsResult.value) {
+      if (existsResult.success) {
         matches++;
       }
     }
@@ -163,14 +153,16 @@ export const checkConfigFiles = async (
 };
 
 /**
- * Enhanced config detection using cosmiconfig
+ * Enhanced config detection using CLI framework config system
  */
-export const detectConfigWithCosmiconfig = async (
+export const detectConfigWithFramework = async (
   moduleName: string,
   projectRoot: string
 ): Promise<Result<boolean, InstallError>> => {
   try {
-    const explorer = cosmiconfig(moduleName, {
+    const configLoader = createConfig({
+      name: moduleName,
+      schema: z.unknown(), // Accept any config structure for detection
       searchPlaces: [
         `${moduleName}.config.js`,
         `${moduleName}.config.ts`,
@@ -183,11 +175,10 @@ export const detectConfigWithCosmiconfig = async (
         `.${moduleName}rc.yml`,
         `package.json`,
       ],
-      stopDir: projectRoot,
     });
 
-    const result = await explorer.search(projectRoot);
-    return Ok(result !== null);
+    const result = await configLoader.load(projectRoot);
+    return Ok(result.filepath !== null);
   } catch (error) {
     return Err(
       createError('FILESYSTEM_ERROR', `Failed to detect ${moduleName} configuration`, {
@@ -207,17 +198,8 @@ export const readPackageJson = async (
 ): Promise<Result<unknown, InstallError>> => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
 
-  const existsResult = await pathExists(packageJsonPath);
+  const existsResult = await fs.access(packageJsonPath);
   if (!existsResult.success) {
-    return Err(
-      createError('FILESYSTEM_ERROR', 'Failed to check package.json', {
-        details: `Path: ${packageJsonPath}`,
-        cause: existsResult.error,
-      })
-    );
-  }
-
-  if (!existsResult.value) {
     return Err(
       createError('FILESYSTEM_ERROR', 'package.json not found', {
         details: `Path: ${packageJsonPath}`,
@@ -289,8 +271,8 @@ export const detectFramework = async (
   const packageJson = packageJsonResult.value;
   const frameworks = getFrameworkDefinitions();
 
-  // Try enhanced detection for specific frameworks using cosmiconfig
-  const tailwindDetected = await detectConfigWithCosmiconfig('tailwind', projectRoot);
+  // Try enhanced detection for specific frameworks using CLI framework config
+  const tailwindDetected = await detectConfigWithFramework('tailwind', projectRoot);
   if (tailwindDetected.success && tailwindDetected.value) {
     // Project uses Tailwind CSS, which is good for our components
   }

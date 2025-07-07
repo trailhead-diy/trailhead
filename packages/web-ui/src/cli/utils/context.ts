@@ -11,9 +11,9 @@ import type { CLIContext } from './types.js';
 import { loadConfigSync } from '../config.js';
 
 /**
- * Pure function: Get package version from package.json
+ * Internal helper: Get package version from package.json
  */
-export const getPackageVersion = async (baseDir: string): Promise<string> => {
+const getPackageVersion = async (baseDir: string): Promise<string> => {
   const fs = createNodeFileSystem();
   try {
     const packagePath = join(baseDir, '..', '..', 'package.json');

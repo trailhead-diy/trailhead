@@ -3,12 +3,12 @@
  * Uses shared transform-core for consistent behavior across CLI and install
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import ora from 'ora';
 import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
-import { pathExists } from './filesystem-helpers.js';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
 import type { TransformResult } from '../shared/transform-core.js';
 import {
@@ -59,7 +59,7 @@ export const runColorConversions = async (
       spinner.fail('Failed to check catalyst directory');
       return Err(
         createError('CONVERSION_ERROR', 'Failed to check catalyst directory', {
-          cause: (existsResult as any).error,
+          cause: existsResult.error,
         })
       );
     }
@@ -228,7 +228,7 @@ export const needsConversion = async (
   if (!readResult.success) {
     return Err(
       createError('CONVERSION_ERROR', 'Failed to read file for conversion check', {
-        cause: (readResult as any).error,
+        cause: readResult.error,
       })
     );
   }

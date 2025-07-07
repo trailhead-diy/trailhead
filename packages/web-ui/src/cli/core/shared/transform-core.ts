@@ -84,9 +84,14 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
       warnings: [],
     };
   } catch (error) {
-    throw new Error(
-      `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`
-    );
+    // Return error result instead of throwing
+    return {
+      filesProcessed: 0,
+      filesModified: 0,
+      conversionsApplied: 0,
+      errors: [`Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`],
+      warnings: [],
+    };
   }
 };
 

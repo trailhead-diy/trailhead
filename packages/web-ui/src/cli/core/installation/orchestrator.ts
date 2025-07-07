@@ -14,12 +14,12 @@ import type {
 } from './types.js';
 import { Ok, Err } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
-import { pathExists } from './filesystem-helpers.js';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
 import {
-  analyzeDependencies,
-  installDependenciesSmart,
+  analyzeDependenciesEnhanced,
+  installDependenciesSmartEnhanced,
   type DependencyInstallResult,
 } from './dependencies.js';
 import { executeInstallationSteps } from './step-executor.js';
@@ -155,7 +155,7 @@ export const performInstallation = async (
 
     // Step 3: Analyze and update dependencies
     progressTracker.nextStep('Analyzing project dependencies...');
-    const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
+    const depAnalysisResult = await analyzeDependenciesEnhanced(fs, logger, config, framework);
     if (!depAnalysisResult.success) {
       progressTracker.stop();
       return depAnalysisResult;
@@ -240,7 +240,7 @@ export const performInstallation = async (
         progressTracker.nextStep('Installing dependencies...');
 
         // Install with selected strategy
-        installResult = await installDependenciesSmart(
+        installResult = await installDependenciesSmartEnhanced(
           fs,
           logger,
           config,
@@ -264,7 +264,7 @@ export const performInstallation = async (
           ? { type: options.dependencyStrategy }
           : { type: 'auto' as const };
 
-        installResult = await installDependenciesSmart(
+        installResult = await installDependenciesSmartEnhanced(
           fs,
           logger,
           config,
@@ -386,7 +386,7 @@ export const validatePrerequisites = async (
 ): Promise<Result<void, InstallError>> => {
   // Check if Trailhead root exists
   const rootExistsResult = await pathExists(trailheadRoot);
-  if (!rootExistsResult.success) return rootExistsResult;
+  if (!rootExistsResult.success) return Err(rootExistsResult.error);
   if (!rootExistsResult.value) {
     return Err(
       createError('CONFIGURATION_ERROR', `Trailhead UI root not found: ${trailheadRoot}`, {
@@ -397,7 +397,7 @@ export const validatePrerequisites = async (
 
   // Check if project root exists
   const projectExistsResult = await pathExists(config.projectRoot);
-  if (!projectExistsResult.success) return projectExistsResult;
+  if (!projectExistsResult.success) return Err(projectExistsResult.error);
   if (!projectExistsResult.value) {
     return Err(
       createError('CONFIGURATION_ERROR', `Project root not found: ${config.projectRoot}`, {
@@ -443,7 +443,7 @@ export const performDryRunInstallation = async (
   logger.info(`Component structure: ${useWrappers ? 'With wrappers' : 'Without wrappers'}`);
 
   // Check what dependencies would be installed
-  const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
+  const depAnalysisResult = await analyzeDependenciesEnhanced(fs, logger, config, framework);
   if (depAnalysisResult.success) {
     const dependencyUpdate = depAnalysisResult.value;
     const missingDeps = Object.keys(dependencyUpdate.added);

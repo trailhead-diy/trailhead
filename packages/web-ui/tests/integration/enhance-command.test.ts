@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockFileSystem } from '@esteban-url/trailhead-cli/testing';
 // import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { join } from 'path';
-import { runSimplifiedPipeline } from '../../src/transforms/pipelines/simplified.js';
+import { runSimplifiedPipelineWithFs } from '../../src/transforms/pipelines/simplified.js';
 
 describe('Enhance Command Integration', () => {
   let fs: ReturnType<typeof mockFileSystem>;
@@ -53,8 +53,8 @@ export function Button({ color = 'blue', children, ...props }) {
       [buttonPath]: buttonComponent,
     });
 
-    // Run simplified pipeline directly
-    const result = await runSimplifiedPipeline(componentsDir, {
+    // Run simplified pipeline directly with mock filesystem
+    const result = await runSimplifiedPipelineWithFs(fs, componentsDir, {
       dryRun: false,
       verbose: false,
     });
@@ -104,7 +104,7 @@ export function Button({ color = 'blue', children, ...props }) {
     fs = mockFileSystem(fileMap);
 
     // Run simplified pipeline directly
-    const result = await runSimplifiedPipeline(componentsDir, {
+    const result = await runSimplifiedPipelineWithFs(fs, componentsDir, {
       dryRun: false,
       verbose: true,
     });
@@ -132,7 +132,7 @@ export function Button({ color = 'blue', children, ...props }) {
     });
 
     // Run simplified pipeline in dry-run mode
-    const result = await runSimplifiedPipeline(componentsDir, {
+    const result = await runSimplifiedPipelineWithFs(fs, componentsDir, {
       dryRun: true,
       verbose: true,
     });
@@ -149,7 +149,7 @@ export function Button({ color = 'blue', children, ...props }) {
   it('should handle missing source directory gracefully', async () => {
     const nonExistentDir = join(testDir, 'non-existent-dir');
 
-    const result = await runSimplifiedPipeline(nonExistentDir, {
+    const result = await runSimplifiedPipelineWithFs(fs, nonExistentDir, {
       dryRun: false,
       verbose: false,
     });

@@ -208,13 +208,16 @@ export const createTransformsCommand = () => {
                     if (cmdContext.verbose) {
                       cmdContext.logger.info('');
                       cmdContext.logger.info('Modified files:');
-                      // List files in the source directory
-                      const fs = await import('fs/promises');
-                      const files = await fs.readdir(transformConfig.srcDir);
-                      const tsxFiles = files.filter(f => f.endsWith('.tsx')).sort();
-                      tsxFiles.forEach(file => {
-                        console.log(`  ✓ ${file}`);
-                      });
+                      // List files in the source directory using CLI framework filesystem
+                      const fs = await import('@esteban-url/trailhead-cli/filesystem');
+                      const fileSystem = fs.createFileSystem();
+                      const readResult = await fileSystem.readdir(transformConfig.srcDir);
+                      if (readResult.success) {
+                        const tsxFiles = readResult.value.filter((f: string) => f.endsWith('.tsx')).sort();
+                        tsxFiles.forEach((file: string) => {
+                          cmdContext.logger.info(`  ✓ ${file}`);
+                        });
+                      }
                     }
                   } else if (transformResult.success) {
                     cmdContext.logger.info('No files needed transformation.');
