@@ -1,8 +1,8 @@
 /**
- * Installation orchestrator module
+ * Installation orchestrator module - migrated to use enhanced CLI framework
  */
 
-import ora from 'ora';
+import { createProgressTracker } from '@esteban-url/trailhead-cli/progress';
 import type {
   InstallConfig,
   InstallationSummary,
@@ -86,11 +86,16 @@ export const performInstallation = async (
   useWrappers: boolean = true,
   options: InstallOptions = {}
 ): Promise<Result<InstallationSummary, InstallError>> => {
-  const mainSpinner = ora('Preparing Trailhead UI installation...').start();
+  // Use enhanced framework progress tracking instead of ora spinner
+  const progressTracker = createProgressTracker({
+    totalSteps: 6, // Directory creation, file checking, installation steps, dependencies, verification, summary
+    showStepNames: true,
+    format: 'Trailhead UI Installation [{bar}] {percentage}% | {stepName}',
+  });
 
   try {
     // Step 1: Create directory structure
-    mainSpinner.text = 'Creating directories...';
+    progressTracker.nextStep('Creating directories...');
     const directories = useWrappers
       ? [
           config.componentsDir,
@@ -102,13 +107,13 @@ export const performInstallation = async (
 
     const ensureDirResult = await ensureDirectories(fs, directories);
     if (!ensureDirResult.success) {
-      mainSpinner.fail('Failed to create directories');
+      progressTracker.stop();
       return ensureDirResult;
     }
 
     // Step 2: Check for existing files if not forcing
     if (!force) {
-      mainSpinner.text = 'Checking for existing files...';
+      progressTracker.nextStep('Checking for existing files...');
       const destPaths = generateDestinationPaths(config);
       const pathsToCheck = [
         destPaths.themeConfig,
@@ -126,12 +131,13 @@ export const performInstallation = async (
 
       const existingFilesResult = await checkExistingFiles(fs, pathsToCheck);
       if (!existingFilesResult.success) {
-        mainSpinner.fail('Failed to check existing files');
+        progressTracker.stop();
         return existingFilesResult;
       }
 
       if (existingFilesResult.value.length > 0) {
-        mainSpinner.warn('Found existing files that would be overwritten');
+        progressTracker.stop();
+        logger.warning('Found existing files that would be overwritten');
         logger.warning('The following files already exist:');
         existingFilesResult.value.forEach((file: string) => logger.warning(`  • ${file}`));
         logger.warning('Use --force to overwrite existing files');
@@ -148,10 +154,11 @@ export const performInstallation = async (
     const allSteps = createInstallationSteps(fs, logger, trailheadRoot, config, force, useWrappers);
 
     // Execute all installation steps
+    progressTracker.nextStep('Installing components...');
     const executionResult = await executeInstallationSteps(
       allSteps,
       logger,
-      mainSpinner,
+      null, // No spinner needed - using listr2 now
       config.componentsDir
     );
 
@@ -162,10 +169,10 @@ export const performInstallation = async (
     const { installedFiles: allInstalledFiles, failedSteps } = executionResult.value;
 
     // Step 3: Analyze and update dependencies
-    mainSpinner.text = 'Analyzing project dependencies...';
+    progressTracker.nextStep('Analyzing project dependencies...');
     const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
     if (!depAnalysisResult.success) {
-      mainSpinner.fail('Failed to analyze dependencies');
+      progressTracker.stop();
       return depAnalysisResult;
     }
 
@@ -177,8 +184,8 @@ export const performInstallation = async (
 
       // Handle interactive mode
       if (options.interactive && !options.skipDependencyPrompts) {
-        // Stop spinner for interactive prompts
-        mainSpinner.stop();
+        // Stop progress for interactive prompts
+        progressTracker.stop();
 
         // Prepare dependency analysis
         const [workspaceResult, isOffline, detected] = await Promise.all([
@@ -243,8 +250,8 @@ export const performInstallation = async (
           strategy = { type: 'auto' };
         }
 
-        // Restart spinner
-        mainSpinner.start('Installing dependencies...');
+        // Restart progress tracking
+        progressTracker.nextStep('Installing dependencies...');
 
         // Install with selected strategy
         installResult = await installDependenciesSmart(
@@ -257,22 +264,15 @@ export const performInstallation = async (
         );
 
         // Show post-install instructions if needed
-        if (
-          installResult.success &&
-          (!installResult.value.installed || installResult.value.fallback)
-        ) {
-          mainSpinner.stop();
+        if (installResult.success && !installResult.value.installed) {
+          progressTracker.stop();
           const { showPostInstallInstructions } = await getDependencyPrompts();
-          showPostInstallInstructions(
-            packageManager,
-            strategy,
-            installResult.value.fallback?.command
-          );
-          mainSpinner.start();
+          showPostInstallInstructions(packageManager, strategy);
+          progressTracker.nextStep('Completing installation...');
         }
       } else {
         // Non-interactive mode
-        mainSpinner.text = 'Installing dependencies smartly...';
+        progressTracker.nextStep('Installing dependencies smartly...');
 
         const strategy = options.dependencyStrategy
           ? { type: options.dependencyStrategy }
@@ -289,24 +289,22 @@ export const performInstallation = async (
       }
 
       if (!installResult.success) {
-        mainSpinner.fail('Failed to install dependencies');
+        progressTracker.stop();
         return installResult;
       }
 
       const installData = installResult.value;
 
       if (installData.installed) {
-        mainSpinner.succeed('Dependencies installed successfully');
-      } else if (installData.fallback) {
-        mainSpinner.warn('Automatic installation failed');
+        progressTracker.nextStep('Dependencies installed successfully');
       } else {
-        mainSpinner.info('Package.json updated. Manual installation required.');
+        progressTracker.nextStep('Package.json updated, manual installation required');
       }
 
       // Log any warnings
       installData.warnings.forEach((warning: string) => logger.warning(warning));
     } else {
-      mainSpinner.succeed('All dependencies already installed');
+      progressTracker.nextStep('All dependencies already installed');
     }
 
     // Create installation summary with failure tracking
@@ -318,19 +316,19 @@ export const performInstallation = async (
       ...(failedSteps.length > 0 && { failedSteps: Object.freeze([...failedSteps]) }),
     };
 
-    const successMessage = buildSuccessMessage(
+    const _successMessage = buildSuccessMessage(
       allInstalledFiles.length,
       dependenciesAdded.length,
       failedSteps.length
     );
-    mainSpinner.succeed(successMessage);
+    progressTracker.stop();
 
     // Log detailed summary
     logInstallationSummary(logger, allInstalledFiles, dependenciesAdded, failedSteps);
 
     return Ok(summary);
   } catch (error) {
-    mainSpinner.fail('Installation failed');
+    progressTracker.stop();
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorDetails = error instanceof Error && error.stack ? error.stack : undefined;
 

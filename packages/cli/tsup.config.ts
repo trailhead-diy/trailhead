@@ -12,6 +12,9 @@ export default defineConfig({
     'testing/index': 'src/testing/index.ts',
     'utils/index': 'src/utils/index.ts',
     'git/index': 'src/git/index.ts',
+    'workflows/index': 'src/workflows/index.ts',
+    'error-recovery/index': 'src/error-recovery/index.ts',
+    'progress/index': 'src/progress/index.ts',
   },
   // ESM-only output
   format: ['esm'],
@@ -35,8 +38,11 @@ export default defineConfig({
     'commander',
     'cosmiconfig',
     'glob',
-    'ora',
     'zod',
     '@inquirer/prompts',
+    'listr2',
+    'p-retry',
+    'cli-progress',
+    'yocto-spinner',
   ],
 });

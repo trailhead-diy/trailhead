@@ -1,10 +1,11 @@
 /**
- * Step execution module - handles individual installation step execution
+ * Step execution module - migrated to use enhanced CLI framework
  */
 
+import { createTaskList, createTask } from '@esteban-url/trailhead-cli/workflows';
+import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
 import type { Result, InstallError, Logger } from './types.js';
 import { Ok, Err } from './types.js';
-import type { Ora } from 'ora';
 
 // ============================================================================
 // TYPES
@@ -30,7 +31,7 @@ export interface StepExecutionResult {
 /**
  * Execute a single installation step with proper error handling
  */
-const executeStep = async (
+const _executeStep = async (
   step: InstallationStep,
   logger: Logger
 ): Promise<Result<readonly string[], InstallError>> => {
@@ -56,7 +57,7 @@ const executeStep = async (
 /**
  * Log error details for a failed step
  */
-const logStepError = (step: InstallationStep, error: InstallError, logger: Logger): void => {
+const _logStepError = (step: InstallationStep, error: InstallError, logger: Logger): void => {
   logger.error(
     `Installation failed at ${step.critical ? 'critical' : 'non-critical'} step: ${step.name}`
   );
@@ -75,7 +76,7 @@ const logStepError = (step: InstallationStep, error: InstallError, logger: Logge
 /**
  * Handle cleanup recommendation after failure
  */
-const suggestCleanup = (
+const _suggestCleanup = (
   installedFiles: readonly string[],
   componentsDir: string,
   logger: Logger
@@ -87,42 +88,77 @@ const suggestCleanup = (
 };
 
 /**
- * Execute all installation steps
+ * Execute all installation steps using enhanced CLI framework with listr2
  */
 export const executeInstallationSteps = async (
   steps: readonly InstallationStep[],
   logger: Logger,
-  spinner: Ora,
+  _spinner: any, // Keep for compatibility but don't use
   componentsDir: string
 ): Promise<Result<StepExecutionResult, InstallError>> => {
   const allInstalledFiles: string[] = [];
   const failedSteps: string[] = [];
 
-  for (const step of steps) {
-    spinner.text = step.text;
+  try {
+    // Convert installation steps to listr2 tasks
+    const tasks = steps.map(step =>
+      createTask(
+        step.name,
+        async () => {
+          // Use retry for retryable steps
+          const executeWithRetry = step.retryable
+            ? () =>
+                retryableOperation(async () => {
+                  const result = await step.execute();
+                  if (!result.success) {
+                    throw new Error(result.error.message);
+                  }
+                  return result.value;
+                })
+            : async () => {
+                const result = await step.execute();
+                if (!result.success) {
+                  throw new Error(result.error.message);
+                }
+                return result.value;
+              };
 
-    const result = await executeStep(step, logger);
+          const files = await executeWithRetry();
+          allInstalledFiles.push(...files);
+          logger.debug(`Completed ${step.name}: ${files.length} files`);
+          return files;
+        },
+        {
+          skip: () => false,
+          retry: step.retryable ? 3 : 0,
+        }
+      )
+    );
 
-    if (!result.success) {
-      if (step.critical) {
-        spinner.fail(`Failed to install ${step.name} (critical step)`);
-        logStepError(step, result.error, logger);
-        suggestCleanup(allInstalledFiles, componentsDir, logger);
-        return result as Result<never, InstallError>;
-      } else {
-        // Non-critical failure - log and continue
-        spinner.warn(`Failed to install ${step.name} (non-critical, continuing)`);
-        failedSteps.push(step.name);
-        logger.warning(`Skipping ${step.name}: ${result.error.message}`);
-        continue;
-      }
+    // Create and run task list
+    const taskList = createTaskList(tasks, {
+      concurrent: false,
+      exitOnError: true, // Fail hard on any error - for proper error handling
+    });
+
+    await taskList.run();
+
+    return Ok({
+      installedFiles: Object.freeze([...allInstalledFiles]),
+      failedSteps: Object.freeze([...failedSteps]),
+    });
+  } catch (error) {
+    // If a critical step fails, suggest cleanup
+    if (allInstalledFiles.length > 0) {
+      logger.warning('\nPartially installed files remain. To clean up:');
+      logger.warning(`  rm -rf ${componentsDir}`);
     }
 
-    allInstalledFiles.push(...result.value);
+    return Err({
+      type: 'FileSystemError',
+      message: error instanceof Error ? error.message : 'Installation step execution failed',
+      path: componentsDir,
+      cause: error,
+    });
   }
-
-  return Ok({
-    installedFiles: Object.freeze([...allInstalledFiles]),
-    failedSteps: Object.freeze([...failedSteps]),
-  });
 };

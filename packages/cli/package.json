@@ -47,6 +47,18 @@
     "./git": {
       "types": "./dist/git/index.d.ts",
       "default": "./dist/git/index.js"
+    },
+    "./workflows": {
+      "types": "./dist/workflows/index.d.ts",
+      "default": "./dist/workflows/index.js"
+    },
+    "./error-recovery": {
+      "types": "./dist/error-recovery/index.d.ts",
+      "default": "./dist/error-recovery/index.js"
+    },
+    "./progress": {
+      "types": "./dist/progress/index.d.ts",
+      "default": "./dist/progress/index.js"
     }
   },
   "scripts": {
@@ -69,12 +81,15 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^7.0.0",
+    "@types/cli-progress": "^3.11.6",
     "chalk": "^5.3.0",
+    "cli-progress": "^3.12.0",
     "commander": "^14.0.0",
     "cosmiconfig": "^9.0.0",
     "glob": "^11.0.0",
-    "yocto-spinner": "^1.0.0",
+    "listr2": "^8.3.3",
     "p-retry": "^6.2.1",
+    "yocto-spinner": "^1.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

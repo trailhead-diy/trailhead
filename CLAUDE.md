@@ -107,7 +107,6 @@ Focus on high-ROI (Return on Investment) tests:
 - Use the TodoWrite tool for task management across the monorepo
 - Consider impact across packages when making changes
 - Test related packages when making cross-cutting changes
-- **Web Search**: When searching for current information, always use the current year (2025) not previous years. Check the environment date if unsure. This applies to all searches, including when using shortcuts like `uc7` or any other context.
 - **Context7 MCP**: Use Context7 for up-to-date documentation by adding "use context7" to queries. Essential for `uc7` shortcut to get latest docs and best practices.
 
 ### Context7 MCP Integration

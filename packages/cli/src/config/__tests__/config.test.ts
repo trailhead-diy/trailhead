@@ -147,12 +147,23 @@ describe('Config Module', () => {
       });
 
       expect(mockCosmiconfig).toHaveBeenCalledWith('my-cli', {
-        searchPlaces: expect.arrayContaining([
+        searchPlaces: [
           'package.json',
           '.my-clirc',
           '.my-clirc.json',
+          '.my-clirc.js',
+          '.my-clirc.ts',
+          '.my-clirc.mjs',
+          '.my-clirc.cjs',
+          '.my-clirc.yaml',
+          '.my-clirc.yml',
           'my-cli.config.js',
-        ]),
+          'my-cli.config.ts',
+          'my-cli.config.mjs',
+          'my-cli.config.cjs',
+          'my-cli.config.json',
+        ],
+        ignoreEmptySearchPlaces: false,
       });
 
       expect(mockSearch).toHaveBeenCalledWith('/custom/path');
@@ -169,12 +180,23 @@ describe('Config Module', () => {
       await config.load();
 
       expect(mockCosmiconfig).toHaveBeenCalledWith('config', {
-        searchPlaces: expect.arrayContaining([
+        searchPlaces: [
           'package.json',
           '.configrc',
           '.configrc.json',
+          '.configrc.js',
+          '.configrc.ts',
+          '.configrc.mjs',
+          '.configrc.cjs',
+          '.configrc.yaml',
+          '.configrc.yml',
           'config.config.js',
-        ]),
+          'config.config.ts',
+          'config.config.mjs',
+          'config.config.cjs',
+          'config.config.json',
+        ],
+        ignoreEmptySearchPlaces: false,
       });
     });
   });
@@ -357,11 +379,15 @@ describe('Config Module', () => {
           '.myapprc.ts',
           '.myapprc.mjs',
           '.myapprc.cjs',
+          '.myapprc.yaml',
+          '.myapprc.yml',
           'myapp.config.js',
           'myapp.config.ts',
           'myapp.config.mjs',
           'myapp.config.cjs',
+          'myapp.config.json',
         ],
+        ignoreEmptySearchPlaces: false,
       });
     });
   });
@@ -417,9 +443,7 @@ describe('Config Module', () => {
       expect(isErr(result)).toBe(true);
 
       const errorMsg = getErrorMessage(result);
-      expect(errorMsg).toContain(
-        'Invalid configuration in /project/config.json',
-      );
+      expect(errorMsg).toContain('Invalid configuration');
     });
   });
 

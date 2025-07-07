@@ -4,7 +4,6 @@
 
 import semver from 'semver';
 import type { PackageJsonDeps } from './types.js';
-import { updateRecord } from './functional-utils.js';
 
 // ============================================================================
 // TYPES
@@ -202,7 +201,7 @@ export const resolveDependencies = (
   // Force mode - just use required versions
   if (strategy === 'force') {
     const forcedDeps = analysis.conflicts.reduce(
-      (acc, conflict) => updateRecord(acc, { [conflict.name]: conflict.required }),
+      (acc, conflict) => ({ ...acc, [conflict.name]: conflict.required }),
       analysis.missing
     );
 
@@ -233,14 +232,14 @@ export const resolveDependencies = (
         case 'incompatible':
           return {
             ...acc,
-            dependencies: updateRecord(acc.dependencies, resolution.dependency || {}),
+            dependencies: { ...acc.dependencies, ...(resolution.dependency || {}) },
             warnings: [...acc.warnings, resolution.warning || ''],
           };
 
         case 'override':
           return {
             ...acc,
-            overrides: updateRecord(acc.overrides, resolution.override || {}),
+            overrides: { ...acc.overrides, ...(resolution.override || {}) },
             suggestions: [...acc.suggestions, resolution.suggestion || ''],
           };
 
