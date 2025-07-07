@@ -17,7 +17,6 @@ import {
 } from '../core/installation/index.js';
 import { resolveConfiguration } from '../core/installation/config.js';
 import { detectFramework } from '../core/installation/framework-detection.js';
-import { convertInstallResult } from './utils/error-conversion.js';
 import { getTrailheadPackageRoot } from '../utils/context.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import {
@@ -179,7 +178,7 @@ async function executeInstallation(
     );
 
     if (!resolveResult.success) {
-      return convertInstallResult(resolveResult);
+      return resolveResult;
     }
 
     const config = resolveResult.value;
@@ -193,7 +192,7 @@ async function executeInstallation(
     );
 
     if (!frameworkResult.success) {
-      return convertInstallResult(frameworkResult);
+      return frameworkResult;
     }
 
     const framework = frameworkResult.value;
@@ -211,7 +210,7 @@ async function executeInstallation(
       );
 
       if (!dryRunResult.success) {
-        return convertInstallResult(dryRunResult);
+        return dryRunResult;
       }
 
       logger.info('\nDry run complete. No files were installed.');
@@ -238,7 +237,7 @@ async function executeInstallation(
     );
 
     if (!installResult.success) {
-      return convertInstallResult(installResult);
+      return installResult;
     }
 
     const summary = installResult.value;

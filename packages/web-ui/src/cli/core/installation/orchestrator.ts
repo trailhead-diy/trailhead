@@ -14,6 +14,7 @@ import type {
 } from './types.js';
 import { Ok, Err } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
+import { pathExists } from './filesystem-helpers.js';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
 import {
@@ -27,28 +28,6 @@ import { detectWorkspace, detectCIEnvironment, checkOfflineMode } from './worksp
 import { analyzeDependencies as analyzeCore } from './dependency-resolution.js';
 import { detectPackageManager } from 'nypm';
 import { countFilesByPattern, formatFileSummary } from './shared-utils.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err(
-      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
-        cause: result.error,
-      })
-    );
-  }
-};
 
 // ============================================================================
 // TYPES
@@ -135,7 +114,7 @@ export const performInstallation = async (
       // Check for existing files using CLI filesystem
       const existingFiles: string[] = [];
       for (const path of pathsToCheck) {
-        const existsResult = await pathExists(fs, path);
+        const existsResult = await pathExists(path);
         if (existsResult.success && existsResult.value) {
           existingFiles.push(path);
         }
@@ -406,7 +385,7 @@ export const validatePrerequisites = async (
   trailheadRoot: string
 ): Promise<Result<void, InstallError>> => {
   // Check if Trailhead root exists
-  const rootExistsResult = await pathExists(fs, trailheadRoot);
+  const rootExistsResult = await pathExists(trailheadRoot);
   if (!rootExistsResult.success) return rootExistsResult;
   if (!rootExistsResult.value) {
     return Err(
@@ -417,7 +396,7 @@ export const validatePrerequisites = async (
   }
 
   // Check if project root exists
-  const projectExistsResult = await pathExists(fs, config.projectRoot);
+  const projectExistsResult = await pathExists(config.projectRoot);
   if (!projectExistsResult.success) return projectExistsResult;
   if (!projectExistsResult.value) {
     return Err(
@@ -520,7 +499,7 @@ export const performDryRunInstallation = async (
   const existingFiles: string[] = [];
   for (const file of plannedFiles) {
     const fullPath = `${config.componentsDir}/${file}`;
-    const existsResult = await pathExists(fs, fullPath);
+    const existsResult = await pathExists(fullPath);
     if (existsResult.success && existsResult.value) {
       existingFiles.push(file);
     }

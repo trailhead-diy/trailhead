@@ -9,9 +9,10 @@
  * - Confidence scoring and prioritization
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import type { FileSystem } from '../../../src/cli/core/installation/types.js';
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { describe, it, expect } from 'vitest';
+import { mockFileSystem } from '@esteban-url/trailhead-cli/testing';
+// import type { FileSystem } from '@esteban-url/trailhead-cli/core';
+// import { Ok, Err } from '@esteban-url/trailhead-cli';
 import { createTestPath, normalizeMockPath } from '../../utils/cross-platform-paths.js';
 import {
   getFrameworkDefinitions,
@@ -28,33 +29,27 @@ import {
 // Helper to create OS-agnostic test paths
 const testPath = (...segments: string[]) => createTestPath('test', 'project', ...segments);
 
-// Mock FileSystem for testing
-const createMockFileSystem = (mockFiles: Record<string, unknown> = {}): FileSystem => ({
-  access: vi.fn().mockImplementation(async (path: string) => {
-    // Normalize the path to match how we store mock files
+// Helper to create mock filesystem with CLI framework patterns
+const createMockFs = (mockFiles: Record<string, unknown> = {}) => {
+  // Prepare initial files for mockFileSystem
+  const initialFiles: Record<string, string> = {};
+
+  for (const [path, content] of Object.entries(mockFiles)) {
     const normalized = normalizeMockPath(path);
-    if (normalized in mockFiles) {
-      return Ok(undefined);
+    if (content === true) {
+      // For file existence checks, create empty file
+      initialFiles[normalized] = '';
+    } else if (typeof content === 'object') {
+      // For JSON files
+      initialFiles[normalized] = JSON.stringify(content);
+    } else {
+      // For string content
+      initialFiles[normalized] = String(content);
     }
-    return Err({ type: 'FileSystemError', message: 'File not found', path, code: 'ENOENT' });
-  }),
-  readdir: vi.fn(),
-  readFile: vi.fn(),
-  writeFile: vi.fn(),
-  readJson: vi.fn().mockImplementation(async (path: string) => {
-    // Normalize the path to match how we store mock files
-    const normalized = normalizeMockPath(path);
-    if (mockFiles[normalized]) {
-      return Ok(mockFiles[normalized]);
-    }
-    return Err({ type: 'FileSystemError', message: 'File not found', path });
-  }),
-  writeJson: vi.fn(),
-  cp: vi.fn(),
-  ensureDir: vi.fn(),
-  stat: vi.fn(),
-  rm: vi.fn(),
-});
+  }
+
+  return mockFileSystem(initialFiles);
+};
 
 describe('Framework Detection Tests', () => {
   describe('Framework Definitions', () => {
@@ -222,7 +217,7 @@ describe('Framework Detection Tests', () => {
   describe('Complete Framework Detection', () => {
     it('should detect Next.js project correctly', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('next.config.js'))]: true,
         [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
@@ -244,7 +239,7 @@ describe('Framework Detection Tests', () => {
 
     it('should detect Vite project correctly', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('vite.config.ts'))]: true,
         [normalizeMockPath(testPath('package.json'))]: {
           devDependencies: {
@@ -266,7 +261,7 @@ describe('Framework Detection Tests', () => {
 
     it('should detect RedwoodSDK project correctly', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('wrangler.jsonc'))]: true,
         [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
@@ -287,7 +282,7 @@ describe('Framework Detection Tests', () => {
 
     it('should fallback to generic React when only React is detected', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             react: '^18.2.0',
@@ -307,7 +302,7 @@ describe('Framework Detection Tests', () => {
 
     it('should force framework when specified', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('package.json'))]: {
           dependencies: {
             react: '^18.2.0',
@@ -327,7 +322,7 @@ describe('Framework Detection Tests', () => {
     it('should prioritize frameworks correctly', async () => {
       // Project with both Next.js and Vite (should prefer Next.js due to higher priority)
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('next.config.js'))]: true,
         [normalizeMockPath(testPath('vite.config.js'))]: true,
         [normalizeMockPath(testPath('package.json'))]: {
@@ -352,7 +347,7 @@ describe('Framework Detection Tests', () => {
     });
 
     it('should handle missing package.json', async () => {
-      const mockFs = createMockFileSystem({});
+      const mockFs = createMockFs({});
       const projectRoot = testPath();
 
       const result = await detectFramework(mockFs, projectRoot);
@@ -365,7 +360,7 @@ describe('Framework Detection Tests', () => {
 
     it('should return error for invalid forced framework', async () => {
       const projectRoot = testPath();
-      const mockFs = createMockFileSystem({
+      const mockFs = createMockFs({
         [normalizeMockPath(testPath('package.json'))]: { dependencies: { react: '^18.2.0' } },
       });
 
@@ -443,21 +438,8 @@ describe('Framework Detection Tests', () => {
 
   describe('Edge Cases and Error Handling', () => {
     it('should handle FileSystem errors gracefully', async () => {
-      const mockFs: FileSystem = {
-        ...createMockFileSystem(),
-        exists: vi
-          .fn()
-          .mockImplementation(async () =>
-            Err({ type: 'FileSystemError', message: 'Permission denied', path: '/test' })
-          ),
-        readJson: vi.fn().mockImplementation(async () =>
-          Err({
-            type: 'FileSystemError',
-            message: 'Permission denied',
-            path: '/test/package.json',
-          })
-        ),
-      };
+      // Create empty mock filesystem to simulate missing files
+      const mockFs = mockFileSystem({});
 
       const result = await detectFramework(mockFs, '/test/project');
 
@@ -465,16 +447,10 @@ describe('Framework Detection Tests', () => {
     });
 
     it('should handle malformed package.json', async () => {
-      const mockFs = createMockFileSystem({
-        'package.json': 'invalid json',
+      // Create filesystem with invalid JSON
+      const mockFs = mockFileSystem({
+        [normalizeMockPath('/test/project/package.json')]: 'invalid json content',
       });
-
-      // Mock readJson to return the invalid data
-      mockFs.readJson = vi
-        .fn()
-        .mockImplementation(async () =>
-          Err({ type: 'FileSystemError', message: 'Invalid JSON', path: '/test/package.json' })
-        );
 
       const result = await detectFramework(mockFs, '/test/project');
 

@@ -17,29 +17,8 @@ import type {
   InstallConfig,
 } from './types.js';
 import { Ok, Err, CATALYST_COMPONENT_FILES, CATALYST_VERSION } from './types.js';
+import { pathExists } from './filesystem-helpers.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err(
-      createError('FILE_SYSTEM_ERROR', 'Failed to check path existence', {
-        details: `path: ${path}`,
-        cause: result.error,
-      })
-    );
-  }
-};
 
 // ============================================================================
 // HASH CALCULATION (Pure Functions)
@@ -88,7 +67,7 @@ export const readCatalystHashes = async (
 ): Promise<Result<CatalystHashData, InstallError>> => {
   const hashFilePath = path.join(projectRoot, 'scripts', 'catalyst-hashes.json');
 
-  const existsResult = await pathExists(fs, hashFilePath);
+  const existsResult = await pathExists(hashFilePath);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -191,7 +170,7 @@ export const calculateCatalystHashes = async (
 
     const filePath = path.join(catalystDir, fileName);
 
-    const existsResult = await pathExists(fs, filePath);
+    const existsResult = await pathExists(filePath);
     if (!existsResult.success) {
       spinner?.fail('Failed to check file existence');
       return existsResult;

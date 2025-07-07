@@ -3,28 +3,7 @@ import { cosmiconfig } from 'cosmiconfig';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err(
-      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
-        cause: result.error,
-      })
-    );
-  }
-};
+import { pathExists } from './filesystem-helpers.js';
 
 export type FrameworkType = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react';
 
@@ -156,10 +135,15 @@ export const checkConfigFiles = async (
     // First try traditional file checking
     for (const configFile of configFiles) {
       const configPath = path.join(projectRoot, configFile);
-      const existsResult = await pathExists(fs, configPath);
+      const existsResult = await pathExists(configPath);
 
       if (!existsResult.success) {
-        return Err(existsResult.error);
+        return Err(
+          createError('FILESYSTEM_ERROR', 'Failed to check config file', {
+            details: `Path: ${configPath}`,
+            cause: existsResult.error,
+          })
+        );
       }
 
       if (existsResult.value) {
@@ -223,9 +207,14 @@ export const readPackageJson = async (
 ): Promise<Result<unknown, InstallError>> => {
   const packageJsonPath = path.join(projectRoot, 'package.json');
 
-  const existsResult = await pathExists(fs, packageJsonPath);
+  const existsResult = await pathExists(packageJsonPath);
   if (!existsResult.success) {
-    return Err(existsResult.error);
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check package.json', {
+        details: `Path: ${packageJsonPath}`,
+        cause: existsResult.error,
+      })
+    );
   }
 
   if (!existsResult.value) {

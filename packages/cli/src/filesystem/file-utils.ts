@@ -93,6 +93,29 @@ export async function fileExists(filePath: string): Promise<boolean> {
 }
 
 /**
+ * Check if path exists with Result-based error handling
+ */
+export async function pathExists(
+  filePath: string,
+): Promise<Result<boolean, Error>> {
+  try {
+    await fs.access(filePath);
+    return Ok(true);
+  } catch (error) {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual filesystem errors
+    return Err(
+      error instanceof Error
+        ? error
+        : new Error(`Failed to check path existence: ${filePath}`),
+    );
+  }
+}
+
+/**
  * Create directory if it doesn't exist
  */
 export async function ensureDirectory(

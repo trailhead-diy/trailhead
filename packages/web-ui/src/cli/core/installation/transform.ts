@@ -8,29 +8,8 @@ import ora from 'ora';
 import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
+import { pathExists } from './filesystem-helpers.js';
 
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return { success: true, value: true };
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return { success: true, value: false };
-    }
-    // Other errors are actual errors
-    return {
-      success: false,
-      error: createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
-        cause: result.error,
-      }),
-    };
-  }
-};
 import type { TransformResult } from '../shared/transform-core.js';
 import {
   executeTransforms,
@@ -75,7 +54,7 @@ export const runColorConversions = async (
     // Verify that the catalyst directory exists
     spinner.text = 'Verifying catalyst directory...';
 
-    const existsResult = await pathExists(fs, catalystDir);
+    const existsResult = await pathExists(catalystDir);
     if (!existsResult.success) {
       spinner.fail('Failed to check catalyst directory');
       return Err(
@@ -198,7 +177,7 @@ export const validateConversions = async (
     for (const fileName of sampleFiles) {
       const filePath = path.join(catalystDir, fileName);
 
-      const existsResult = await pathExists(fs, filePath);
+      const existsResult = await pathExists(filePath);
       if (!existsResult.success) continue;
 
       if (existsResult.value) {

@@ -3,30 +3,26 @@
  */
 
 import * as path from 'path';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 
 /**
- * Helper function to check if a path exists using access
+ * Helper function to check if a path exists using CLI framework pathExists
+ * Converts CLI framework Result<boolean, Error> to our InstallError type
  */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
+const checkPathExists = async (filePath: string): Promise<Result<boolean, InstallError>> => {
+  const result = await pathExists(filePath);
   if (result.success) {
-    return { success: true, value: true };
+    return Ok(result.value);
   } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return { success: true, value: false };
-    }
-    // Other errors are actual errors
-    return {
-      success: false,
-      error: createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${filePath}`,
         cause: result.error,
-      }),
-    };
+      })
+    );
   }
 };
 
@@ -56,7 +52,7 @@ export interface CIEnvironment {
  */
 const checkPnpmWorkspace = async (fs: FileSystem, root: string): Promise<WorkspaceInfo | null> => {
   const configPath = path.join(root, 'pnpm-workspace.yaml');
-  const existsResult = await pathExists(fs, configPath);
+  const existsResult = await checkPathExists(configPath);
 
   if (!existsResult.success || !existsResult.value) {
     return null;
@@ -74,7 +70,7 @@ const checkPnpmWorkspace = async (fs: FileSystem, root: string): Promise<Workspa
  */
 const checkLernaWorkspace = async (fs: FileSystem, root: string): Promise<WorkspaceInfo | null> => {
   const configPath = path.join(root, 'lerna.json');
-  const existsResult = await pathExists(fs, configPath);
+  const existsResult = await checkPathExists(configPath);
 
   if (!existsResult.success || !existsResult.value) {
     return null;
@@ -92,7 +88,7 @@ const checkLernaWorkspace = async (fs: FileSystem, root: string): Promise<Worksp
  */
 const checkRushWorkspace = async (fs: FileSystem, root: string): Promise<WorkspaceInfo | null> => {
   const configPath = path.join(root, 'rush.json');
-  const existsResult = await pathExists(fs, configPath);
+  const existsResult = await checkPathExists(configPath);
 
   if (!existsResult.success || !existsResult.value) {
     return null;
@@ -113,7 +109,7 @@ const checkPackageJsonWorkspace = async (
   root: string
 ): Promise<WorkspaceInfo | null> => {
   const pkgPath = path.join(root, 'package.json');
-  const existsResult = await pathExists(fs, pkgPath);
+  const existsResult = await checkPathExists(pkgPath);
 
   if (!existsResult.success || !existsResult.value) {
     return null;
@@ -136,7 +132,7 @@ const checkPackageJsonWorkspace = async (
   }
 
   // Determine if it's npm or yarn by checking for yarn.lock
-  const yarnLockResult = await pathExists(fs, path.join(root, 'yarn.lock'));
+  const yarnLockResult = await checkPathExists(path.join(root, 'yarn.lock'));
   const isYarn = yarnLockResult.success && yarnLockResult.value;
 
   return {

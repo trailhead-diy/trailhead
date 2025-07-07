@@ -14,33 +14,12 @@ import type {
 } from './types.js';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
+import { pathExists } from './filesystem-helpers.js';
 
 // Helper functions for type checking
 const isString = (value: unknown): value is string => typeof value === 'string';
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err(
-      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
-        cause: result.error,
-      })
-    );
-  }
-};
 
 // ============================================================================
 // CONFIGURATION DETECTION (Pure Functions)
@@ -61,7 +40,7 @@ export const detectCatalystDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await pathExists(candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -70,7 +49,7 @@ export const detectCatalystDir = async (
         ? candidatePath
         : path.join(candidatePath, 'typescript');
 
-      const typescriptExistsResult = await pathExists(fs, typescriptDir);
+      const typescriptExistsResult = await pathExists(typescriptDir);
       if (typescriptExistsResult.success && typescriptExistsResult.value) {
         return Ok(typescriptDir);
       }
@@ -99,7 +78,7 @@ export const detectComponentsDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await pathExists(candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -126,7 +105,7 @@ export const detectLibDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await pathExists(candidatePath);
     if (!existsResult.success) continue;
 
     if (existsResult.value) {
@@ -267,7 +246,7 @@ export const readTrailheadConfig = async (
 ): Promise<Result<InstallationTrailheadConfig | null, InstallError>> => {
   const configPath = path.join(projectRoot, 'trailhead.config.json');
 
-  const existsResult = await pathExists(fs, configPath);
+  const existsResult = await pathExists(configPath);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -347,7 +326,7 @@ export const resolveConfiguration = async (
       destinationDir = existingConfig.destinationDir;
     } else {
       // Detect default destination directory based on project structure
-      const srcComponentsExists = await pathExists(fs, path.join(projectRoot, 'src', 'components'));
+      const srcComponentsExists = await pathExists(path.join(projectRoot, 'src', 'components'));
       if (srcComponentsExists.success && srcComponentsExists.value) {
         destinationDir = path.join('src', 'components', 'th');
       } else {
@@ -447,7 +426,7 @@ export const verifyConfiguration = async (
   config: InstallConfig
 ): Promise<Result<void, InstallError>> => {
   // Check if catalyst directory exists and contains TypeScript files
-  const catalystExistsResult = await pathExists(fs, config.catalystDir);
+  const catalystExistsResult = await pathExists(config.catalystDir);
   if (!catalystExistsResult.success) return catalystExistsResult;
 
   if (!catalystExistsResult.value) {

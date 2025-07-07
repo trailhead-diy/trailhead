@@ -6,28 +6,7 @@ import * as path from 'path';
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err(
-      createError('FILE_SYSTEM_ERROR', 'Failed to check path existence', {
-        details: `Path: ${path}`,
-        cause: result.error,
-      })
-    );
-  }
-};
+import { pathExists } from './filesystem-helpers.js';
 import {
   transformComponentContent,
   getTransformOptions,
@@ -55,8 +34,15 @@ export const installCatalystComponents = async (
   const destPaths = generateDestinationPaths(config);
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await pathExists(fs, sourcePaths.catalystDir);
-  if (!sourceCheckResult.success) return sourceCheckResult;
+  const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
+  if (!sourceCheckResult.success) {
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check source directory', {
+        details: `Path: ${sourcePaths.catalystDir}`,
+        cause: sourceCheckResult.error,
+      })
+    );
+  }
 
   if (!sourceCheckResult.value) {
     return Err(
@@ -116,7 +102,7 @@ export const installComponentWrappers = async (
 
   // Read source wrapper components directory
   const sourceWrapperDir = sourcePaths.wrapperComponentsDir;
-  const dirCheckResult = await pathExists(fs, sourceWrapperDir);
+  const dirCheckResult = await pathExists(sourceWrapperDir);
   if (!dirCheckResult.success) return dirCheckResult;
 
   if (!dirCheckResult.value) {
@@ -221,7 +207,7 @@ async function copyFile(
   dest: string,
   force: boolean
 ): Promise<Result<void, InstallError>> {
-  const existsResult = await pathExists(fs, src);
+  const existsResult = await pathExists(src);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
@@ -249,7 +235,7 @@ export const installTransformedComponents = async (
   const installedFiles: string[] = [];
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await pathExists(fs, sourcePaths.catalystDir);
+  const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
   if (!sourceCheckResult.success) return sourceCheckResult;
 
   if (!sourceCheckResult.value) {

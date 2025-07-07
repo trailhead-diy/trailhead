@@ -24,7 +24,7 @@ process.on('uncaughtException', error => {
 });
 async function main(): Promise<void> {
   try {
-    const context = createCLIContext(getScriptDir());
+    const context = await createCLIContext(getScriptDir());
 
     const cli = createCLI({
       name: 'trailhead-ui',

@@ -4,7 +4,7 @@
 
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { readFileSync, existsSync } from 'fs';
+import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import type { CLIContext } from './types.js';
 
 // Import new CLI package-based configuration
@@ -13,11 +13,16 @@ import { loadConfigSync } from '../config.js';
 /**
  * Pure function: Get package version from package.json
  */
-export const getPackageVersion = (baseDir: string): string => {
+export const getPackageVersion = async (baseDir: string): Promise<string> => {
+  const fs = createNodeFileSystem();
   try {
     const packagePath = join(baseDir, '..', '..', 'package.json');
-    const packageJson = JSON.parse(readFileSync(packagePath, 'utf-8'));
-    return packageJson.version || '1.0.0';
+    const result = await fs.readJson(packagePath);
+    if (result.success) {
+      const packageJson = result.value as { version?: string };
+      return packageJson.version || '1.0.0';
+    }
+    return '1.0.0';
   } catch {
     return '1.0.0';
   }
@@ -26,12 +31,20 @@ export const getPackageVersion = (baseDir: string): string => {
 /**
  * Pure function: Check if current directory is a Trailhead UI project
  */
-export const isTrailheadProject = (projectRoot: string): boolean => {
+export const isTrailheadProject = async (projectRoot: string): Promise<boolean> => {
+  const fs = createNodeFileSystem();
   try {
     const packageJsonPath = join(projectRoot, 'package.json');
-    if (!existsSync(packageJsonPath)) return false;
+    const accessResult = await fs.access(packageJsonPath);
+    if (!accessResult.success) return false;
 
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+    const readResult = await fs.readJson(packageJsonPath);
+    if (!readResult.success) return false;
+
+    const packageJson = readResult.value as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
     return !!(
       packageJson.dependencies?.['trailhead-ui'] || packageJson.devDependencies?.['trailhead-ui']
     );
@@ -43,7 +56,7 @@ export const isTrailheadProject = (projectRoot: string): boolean => {
 /**
  * Pure function: Create CLI context
  */
-export const createCLIContext = (baseDir: string): CLIContext => {
+export const createCLIContext = async (baseDir: string): Promise<CLIContext> => {
   const projectRoot = process.cwd();
 
   // Load configuration using simplified CLI package system
@@ -51,9 +64,9 @@ export const createCLIContext = (baseDir: string): CLIContext => {
     const configResult = loadConfigSync(projectRoot);
 
     return {
-      version: getPackageVersion(baseDir),
+      version: await getPackageVersion(baseDir),
       projectRoot,
-      isTrailheadProject: isTrailheadProject(projectRoot),
+      isTrailheadProject: await isTrailheadProject(projectRoot),
       config: {
         loaded: true,
         filepath: configResult.filepath,
@@ -62,9 +75,9 @@ export const createCLIContext = (baseDir: string): CLIContext => {
     };
   } catch (_error) {
     return {
-      version: getPackageVersion(baseDir),
+      version: await getPackageVersion(baseDir),
       projectRoot,
-      isTrailheadProject: isTrailheadProject(projectRoot),
+      isTrailheadProject: await isTrailheadProject(projectRoot),
     };
   }
 };

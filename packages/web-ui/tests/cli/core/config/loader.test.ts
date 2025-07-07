@@ -1,8 +1,24 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { loadConfig, loadConfigSync, clearConfigCache } from '../../../../src/cli/config.js';
-import { writeFileSync, mkdirSync, rmSync, existsSync } from 'fs';
-import { join } from 'path';
-import { tmpdir } from 'os';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { clearConfigCache } from '../../../../src/cli/config.js';
+
+// Mock cosmiconfig before importing config functions
+const mockSearch = vi.fn();
+const mockSearchSync = vi.fn();
+const mockClearCaches = vi.fn();
+
+vi.mock('cosmiconfig', () => ({
+  cosmiconfig: vi.fn(() => ({
+    search: mockSearch,
+    clearCaches: mockClearCaches,
+  })),
+  cosmiconfigSync: vi.fn(() => ({
+    search: mockSearchSync,
+    clearCaches: mockClearCaches,
+  })),
+}));
+
+// Import after mocking
+import { loadConfig, loadConfigSync } from '../../../../src/cli/config.js';
 
 // Default configuration for tests
 const defaultConfig = {
@@ -22,25 +38,18 @@ const defaultConfig = {
 };
 
 describe('Configuration Loader', () => {
-  let testDir: string;
+  const testDir = '/test/project';
 
   beforeEach(() => {
-    // Create a temporary directory for testing
-    testDir = join(tmpdir(), `trailhead-test-${Date.now()}`);
-    mkdirSync(testDir, { recursive: true });
-    clearConfigCache();
-  });
-
-  afterEach(() => {
-    // Clean up
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
+    vi.clearAllMocks();
     clearConfigCache();
   });
 
   describe('loadConfig', () => {
     it('should return default config when no config file exists', async () => {
+      // Mock cosmiconfig to return null (no config found)
+      mockSearch.mockResolvedValue(null);
+
       const result = await loadConfig(testDir);
 
       expect(result.config).toEqual(defaultConfig);
@@ -49,7 +58,7 @@ describe('Configuration Loader', () => {
     });
 
     it('should load config from .trailheadrc.json', async () => {
-      const configPath = join(testDir, '.trailheadrc.json');
+      const configPath = `${testDir}/.trailheadrc.json`;
       const testConfig = {
         transforms: {
           enabled: false,
@@ -59,7 +68,11 @@ describe('Configuration Loader', () => {
         verbose: true,
       };
 
-      writeFileSync(configPath, JSON.stringify(testConfig, null, 2));
+      // Mock cosmiconfig to return config file result
+      mockSearch.mockResolvedValue({
+        config: testConfig,
+        filepath: configPath,
+      });
 
       const result = await loadConfig(testDir);
 
@@ -72,30 +85,38 @@ describe('Configuration Loader', () => {
     });
 
     it('should validate config schema', async () => {
-      const configPath = join(testDir, '.trailheadrc.json');
+      const configPath = `${testDir}/.trailheadrc.json`;
       const invalidConfig = {
         transforms: {
           enabled: 'not-a-boolean', // Invalid type
         },
       };
 
-      writeFileSync(configPath, JSON.stringify(invalidConfig, null, 2));
+      // Mock cosmiconfig to return invalid config
+      mockSearch.mockResolvedValue({
+        config: invalidConfig,
+        filepath: configPath,
+      });
 
       // Should throw an error due to invalid schema
       await expect(loadConfig(testDir)).rejects.toThrow();
     });
 
     it('should cache loaded config when file unchanged', async () => {
-      const configPath = join(testDir, '.trailheadrc.json');
+      const configPath = `${testDir}/.trailheadrc.json`;
       const testConfig = { verbose: true };
 
-      writeFileSync(configPath, JSON.stringify(testConfig, null, 2));
+      // Mock cosmiconfig to return config
+      mockSearch.mockResolvedValue({
+        config: testConfig,
+        filepath: configPath,
+      });
 
       // First load
       const result1 = await loadConfig(testDir);
       expect(result1.config.verbose).toBe(true);
 
-      // Second load without file change should return cached value
+      // Second load should use cache (cosmiconfig internal caching)
       const result2 = await loadConfig(testDir);
       expect(result2.config.verbose).toBe(result1.config.verbose);
       expect(result2.config.verbose).toBe(true);
@@ -107,7 +128,7 @@ describe('Configuration Loader', () => {
       // Clear cache before sync test
       clearConfigCache();
 
-      const configPath = join(testDir, '.trailheadrc.json');
+      const configPath = `${testDir}/.trailheadrc.json`;
       const testConfig = {
         install: {
           destDir: './components/ui',
@@ -115,7 +136,11 @@ describe('Configuration Loader', () => {
         },
       };
 
-      writeFileSync(configPath, JSON.stringify(testConfig, null, 2));
+      // Mock cosmiconfig sync method
+      mockSearchSync.mockReturnValue({
+        config: testConfig,
+        filepath: configPath,
+      });
 
       const result = loadConfigSync(testDir);
 
@@ -128,17 +153,18 @@ describe('Configuration Loader', () => {
 
   describe('Config file discovery', () => {
     it('should find config in package.json', async () => {
-      const packagePath = join(testDir, 'package.json');
-      const packageJson = {
-        name: 'test-project',
-        trailhead: {
-          transforms: {
-            srcDir: './src/components',
-          },
+      const packagePath = `${testDir}/package.json`;
+      const trailheadConfig = {
+        transforms: {
+          srcDir: './src/components',
         },
       };
 
-      writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
+      // Mock cosmiconfig to return package.json config
+      mockSearch.mockResolvedValue({
+        config: trailheadConfig,
+        filepath: packagePath,
+      });
 
       const result = await loadConfig(testDir);
 
@@ -148,21 +174,13 @@ describe('Configuration Loader', () => {
     });
 
     it('should prefer .trailheadrc over package.json', async () => {
-      const rcPath = join(testDir, '.trailheadrc.json');
-      const packagePath = join(testDir, 'package.json');
+      const rcPath = `${testDir}/.trailheadrc.json`;
 
-      writeFileSync(rcPath, JSON.stringify({ verbose: true }, null, 2));
-      writeFileSync(
-        packagePath,
-        JSON.stringify(
-          {
-            name: 'test-project',
-            trailhead: { verbose: false },
-          },
-          null,
-          2
-        )
-      );
+      // Mock cosmiconfig to return .trailheadrc.json (which has higher precedence)
+      mockSearch.mockResolvedValue({
+        config: { verbose: true },
+        filepath: rcPath,
+      });
 
       const result = await loadConfig(testDir);
 

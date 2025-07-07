@@ -3,26 +3,22 @@
  * Tests the complete enhance workflow with real Catalyst components
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdtemp, rm, writeFile, readFile, mkdir } from 'fs/promises';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { mockFileSystem } from '@esteban-url/trailhead-cli/testing';
+// import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { join } from 'path';
-import { tmpdir } from 'os';
 import { runSimplifiedPipeline } from '../../src/transforms/pipelines/simplified.js';
 
 describe('Enhance Command Integration', () => {
+  let fs: ReturnType<typeof mockFileSystem>;
   let testDir: string;
   let componentsDir: string;
 
-  beforeEach(async () => {
-    // Create temporary test directory
-    testDir = await mkdtemp(join(tmpdir(), 'trailhead-enhance-test-'));
+  beforeEach(() => {
+    fs = mockFileSystem();
+    testDir = '/test/project';
     componentsDir = join(testDir, 'src', 'components', 'lib');
-    await mkdir(componentsDir, { recursive: true });
-  });
-
-  afterEach(async () => {
-    // Clean up test directory
-    await rm(testDir, { recursive: true, force: true });
+    vi.clearAllMocks();
   });
 
   it('should enhance Button component with semantic colors', async () => {
@@ -51,7 +47,11 @@ export function Button({ color = 'blue', children, ...props }) {
 }`;
 
     const buttonPath = join(componentsDir, 'catalyst-button.tsx');
-    await writeFile(buttonPath, buttonComponent);
+
+    // Create filesystem with component file
+    fs = mockFileSystem({
+      [buttonPath]: buttonComponent,
+    });
 
     // Run simplified pipeline directly
     const result = await runSimplifiedPipeline(componentsDir, {
@@ -62,7 +62,9 @@ export function Button({ color = 'blue', children, ...props }) {
     expect(result.success).toBe(true);
 
     // Verify the component was enhanced
-    const enhancedContent = await readFile(buttonPath, 'utf-8');
+    const readResult = await fs.readFile(buttonPath);
+    expect(readResult.success).toBe(true);
+    const enhancedContent = readResult.success ? readResult.value.toString() : '';
 
     // Should have semantic colors added
     expect(enhancedContent).toContain('primary:');
@@ -94,9 +96,12 @@ export function Button({ color = 'blue', children, ...props }) {
       },
     ];
 
+    // Create filesystem with multiple components
+    const fileMap: Record<string, string> = {};
     for (const comp of components) {
-      await writeFile(join(componentsDir, comp.name), comp.content);
+      fileMap[join(componentsDir, comp.name)] = comp.content;
     }
+    fs = mockFileSystem(fileMap);
 
     // Run simplified pipeline directly
     const result = await runSimplifiedPipeline(componentsDir, {
@@ -108,7 +113,9 @@ export function Button({ color = 'blue', children, ...props }) {
 
     // Verify all components were processed
     for (const comp of components) {
-      const enhanced = await readFile(join(componentsDir, comp.name), 'utf-8');
+      const readResult = await fs.readFile(join(componentsDir, comp.name));
+      expect(readResult.success).toBe(true);
+      const enhanced = readResult.success ? readResult.value.toString() : '';
       expect(enhanced).toBeDefined();
       // Basic verification that file was processed (would have semantic colors if applicable)
       expect(enhanced.length).toBeGreaterThan(comp.content.length);
@@ -118,7 +125,11 @@ export function Button({ color = 'blue', children, ...props }) {
   it('should handle dry-run mode correctly', async () => {
     const originalContent = `const styles = { colors: { blue: 'bg-blue-500' } };`;
     const buttonPath = join(componentsDir, 'catalyst-button.tsx');
-    await writeFile(buttonPath, originalContent);
+
+    // Create filesystem with component
+    fs = mockFileSystem({
+      [buttonPath]: originalContent,
+    });
 
     // Run simplified pipeline in dry-run mode
     const result = await runSimplifiedPipeline(componentsDir, {
@@ -129,7 +140,9 @@ export function Button({ color = 'blue', children, ...props }) {
     expect(result.success).toBe(true);
 
     // File should be unchanged in dry-run mode
-    const content = await readFile(buttonPath, 'utf-8');
+    const readResult = await fs.readFile(buttonPath);
+    expect(readResult.success).toBe(true);
+    const content = readResult.success ? readResult.value.toString() : '';
     expect(content).toBe(originalContent);
   });
 
