@@ -4,8 +4,24 @@ import {
   transformConfigSchema,
   installConfigSchema,
   devRefreshConfigSchema,
-  defaultConfig,
-} from '../../../../src/cli/core/config/schema.js';
+} from '../../../../src/cli/config.js';
+
+// Default configuration for tests
+const defaultConfig = {
+  install: {
+    wrappers: true,
+  },
+  transforms: {
+    enabled: true,
+    excludePatterns: [],
+    disabledTransforms: [],
+  },
+  devRefresh: {
+    prefix: 'catalyst-',
+  },
+  verbose: false,
+  dryRun: false,
+};
 
 describe('Configuration Schema', () => {
   describe('trailheadConfigSchema', () => {
@@ -35,14 +51,14 @@ describe('Configuration Schema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should provide defaults for missing fields', () => {
+    it('should accept empty config (defaults handled by loader)', () => {
       const minimalConfig = {};
       const result = trailheadConfigSchema.safeParse(minimalConfig);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.verbose).toBe(false);
-        expect(result.data.dryRun).toBe(false);
+        expect(result.data.verbose).toBeUndefined();
+        expect(result.data.dryRun).toBeUndefined();
       }
     });
 
@@ -80,15 +96,15 @@ describe('Configuration Schema', () => {
       }
     });
 
-    it('should provide defaults', () => {
+    it('should accept empty transform config', () => {
       const minimalConfig = {};
       const result = transformConfigSchema.safeParse(minimalConfig);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.enabled).toBe(true);
-        expect(result.data.excludePatterns).toEqual([]);
-        expect(result.data.disabledTransforms).toEqual([]);
+        expect(result.data.enabled).toBeUndefined();
+        expect(result.data.excludePatterns).toBeUndefined();
+        expect(result.data.disabledTransforms).toBeUndefined();
       }
     });
   });
@@ -108,13 +124,13 @@ describe('Configuration Schema', () => {
       }
     });
 
-    it('should default wrappers to true', () => {
+    it('should accept empty install config', () => {
       const minimalConfig = {};
       const result = installConfigSchema.safeParse(minimalConfig);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.wrappers).toBe(true);
+        expect(result.data.wrappers).toBeUndefined();
       }
     });
   });
@@ -136,13 +152,13 @@ describe('Configuration Schema', () => {
       }
     });
 
-    it('should default prefix to catalyst-', () => {
+    it('should accept empty devRefresh config', () => {
       const minimalConfig = {};
       const result = devRefreshConfigSchema.safeParse(minimalConfig);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.prefix).toBe('catalyst-');
+        expect(result.data.prefix).toBeUndefined();
       }
     });
   });

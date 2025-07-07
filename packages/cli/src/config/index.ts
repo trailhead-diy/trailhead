@@ -1,16 +1,10 @@
-export { defineConfig, loadConfig, loadConfigSync } from './config.js';
-export {
-  createConfigurationManager,
-  getGlobalConfigManager,
-  registerGlobalConfig,
-  loadGlobalConfig,
-  loadGlobalConfigSync,
-} from './manager.js';
+// New simplified configuration API
+export { createConfig } from './config.js';
 export type {
-  ConfigSchema,
-  LoadOptions,
-  SchemaConfigOptions,
-  ConfigurationManager,
+  CreateConfigOptions,
+  ConfigLoader,
+  ConfigLoadResult,
 } from './types.js';
 
+// Re-export z from zod for convenience
 export { z } from 'zod';

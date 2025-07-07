@@ -9,7 +9,7 @@ import {
 } from '@esteban-url/trailhead-cli/core';
 import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { runInstallationPrompts } from '../prompts/installation.js';
-import { loadConfigSync, logConfigDiscovery, type TrailheadConfig } from '../core/config/index.js';
+import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import {
   performInstallation,
   performDryRunInstallation,
@@ -146,24 +146,19 @@ async function executeInstallation(
   const logger = context.logger;
 
   try {
-    // Load new config system
+    // Load simplified config system
     const configResult = loadConfigSync(context.projectRoot);
-    let loadedConfig: TrailheadConfig | null = null;
-    let configPath: string | null = null;
+    const loadedConfig = configResult.config;
+    const configPath = configResult.filepath;
 
-    if (configResult.success) {
-      loadedConfig = configResult.value.config;
-      configPath = configResult.value.filepath;
+    // Always show when config is found
+    if (configPath) {
+      logger.info(`Configuration loaded from: ${configPath}`);
+    }
 
-      // Always show when config is found
-      if (configPath) {
-        logger.info(`Found configuration at: ${configPath}`);
-      }
-
-      // Log detailed config in verbose mode (check both CLI option and config setting)
-      if (loadedConfig && (options.verbose || loadedConfig.verbose)) {
-        logConfigDiscovery(configPath, loadedConfig, true);
-      }
+    // Log detailed config in verbose mode (check both CLI option and config setting)
+    if (options.verbose || loadedConfig.verbose) {
+      logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
     }
 
     // Step 1: Resolve configuration

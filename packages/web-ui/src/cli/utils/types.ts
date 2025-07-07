@@ -30,7 +30,7 @@ export interface CLIContext {
   readonly config?: {
     readonly loaded: boolean;
     readonly filepath: string | null;
-    readonly data: import('../core/config/index.js').TrailheadConfig;
+    readonly data: import('../config.js').TrailheadConfig;
   };
 }
 
