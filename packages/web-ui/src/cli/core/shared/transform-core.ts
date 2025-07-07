@@ -89,7 +89,9 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
       filesProcessed: 0,
       filesModified: 0,
       conversionsApplied: 0,
-      errors: [`Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`],
+      errors: [
+        `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`,
+      ],
       warnings: [],
     };
   }
@@ -98,20 +100,6 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
 // ============================================================================
 // UTILITY FUNCTIONS - Pure functions for data transformation
 // ============================================================================
-
-/**
- * Pure function: Count files that would be transformed
- * Single responsibility: provide file count statistics
- */
-const _countTransformedFiles = async (srcDir: string): Promise<number> => {
-  try {
-    const fs = await import('fs/promises');
-    const files = await fs.readdir(srcDir);
-    return files.filter(file => file.endsWith('.tsx')).length;
-  } catch {
-    return 27; // Default estimate for Catalyst UI components
-  }
-};
 
 // ============================================================================
 // VALIDATION FUNCTIONS - Pure functions for result validation

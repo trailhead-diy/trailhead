@@ -291,8 +291,6 @@ export const getWorkspacePackages = async (
   }
 
   try {
-    const _packages: string[] = [];
-
     // TODO: Implement glob pattern matching for workspace paths
     // For now, return the workspace patterns as-is
     return Ok(Object.freeze(workspace.workspaces!));

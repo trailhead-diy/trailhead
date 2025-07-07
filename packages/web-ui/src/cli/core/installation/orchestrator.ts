@@ -193,10 +193,7 @@ export const performInstallation = async (
 
         if (!ci) {
           // Run interactive prompts
-          const {
-            runDependencyPrompts,
-            showPostInstallInstructions: _showPostInstallInstructions,
-          } = await getDependencyPrompts();
+          const { runDependencyPrompts } = await getDependencyPrompts();
 
           const analysis = analyzeCore(
             currentDepsResult.success

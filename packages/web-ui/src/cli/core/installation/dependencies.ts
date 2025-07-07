@@ -474,13 +474,6 @@ export const installDependenciesSmart = async (
   config: InstallConfig,
   force: boolean
 ): Promise<Result<DependencyInstallResult, InstallError>> => {
-  // For simple test cases, create a minimal dependency update
-  const _dependencyUpdate: DependencyUpdate = {
-    added: {},
-    existing: {},
-    needsInstall: force,
-  };
-
   // For test compatibility, just return mock results without calling real package manager
   if (force) {
     logger.debug('Mock dependency installation (test mode - force)');
