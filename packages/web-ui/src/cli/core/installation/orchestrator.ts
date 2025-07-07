@@ -18,8 +18,8 @@ import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
 import {
-  analyzeDependenciesEnhanced,
-  installDependenciesSmartEnhanced,
+  analyzeDependencies,
+  installDependencies,
   type DependencyInstallResult,
 } from './dependencies.js';
 import { executeInstallationSteps } from './step-executor.js';
@@ -155,7 +155,7 @@ export const performInstallation = async (
 
     // Step 3: Analyze and update dependencies
     progressTracker.nextStep('Analyzing project dependencies...');
-    const depAnalysisResult = await analyzeDependenciesEnhanced(fs, logger, config, framework);
+    const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
     if (!depAnalysisResult.success) {
       progressTracker.stop();
       return depAnalysisResult;
@@ -240,7 +240,7 @@ export const performInstallation = async (
         progressTracker.nextStep('Installing dependencies...');
 
         // Install with selected strategy
-        installResult = await installDependenciesSmartEnhanced(
+        installResult = await installDependencies(
           fs,
           logger,
           config,
@@ -264,7 +264,7 @@ export const performInstallation = async (
           ? { type: options.dependencyStrategy }
           : { type: 'auto' as const };
 
-        installResult = await installDependenciesSmartEnhanced(
+        installResult = await installDependencies(
           fs,
           logger,
           config,
@@ -443,7 +443,7 @@ export const performDryRunInstallation = async (
   logger.info(`Component structure: ${useWrappers ? 'With wrappers' : 'Without wrappers'}`);
 
   // Check what dependencies would be installed
-  const depAnalysisResult = await analyzeDependenciesEnhanced(fs, logger, config, framework);
+  const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
   if (depAnalysisResult.success) {
     const dependencyUpdate = depAnalysisResult.value;
     const missingDeps = Object.keys(dependencyUpdate.added);

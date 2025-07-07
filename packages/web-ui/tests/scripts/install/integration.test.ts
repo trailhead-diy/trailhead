@@ -19,7 +19,7 @@ import type { InstallConfig } from '../../../src/cli/core/installation/types.js'
 // Import modules under test
 import { detectFramework } from '../../../src/cli/core/installation/framework-detection.js';
 import {
-  analyzeDependencies,
+  analyzePackageJsonDeps,
   installDependenciesSmart,
 } from '../../../src/cli/core/installation/dependencies.js';
 
@@ -155,7 +155,7 @@ describe('Installation Integration Tests', () => {
         },
       };
 
-      const result = await analyzeDependencies(fs, packageJson, '/test/project');
+      const result = await analyzePackageJsonDeps(fs, packageJson, '/test/project');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -171,7 +171,7 @@ describe('Installation Integration Tests', () => {
         version: '1.0.0',
       };
 
-      const result = await analyzeDependencies(fs, packageJson, '/test/project');
+      const result = await analyzePackageJsonDeps(fs, packageJson, '/test/project');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -240,7 +240,7 @@ describe('Installation Integration Tests', () => {
     it('should handle malformed package.json during dependency analysis', async () => {
       const invalidPackageJson = 'invalid json content';
 
-      const result = await analyzeDependencies(fs, invalidPackageJson, '/test/project');
+      const result = await analyzePackageJsonDeps(fs, invalidPackageJson, '/test/project');
 
       expect(result.success).toBe(false);
       if (!result.success) {
