@@ -56,21 +56,21 @@ export function Button({ color = 'blue', children, ...props }) {
     // Run simplified pipeline directly
     const result = await runSimplifiedPipeline(componentsDir, {
       dryRun: false,
-      verbose: false
+      verbose: false,
     });
 
     expect(result.success).toBe(true);
 
     // Verify the component was enhanced
     const enhancedContent = await readFile(buttonPath, 'utf-8');
-    
+
     // Should have semantic colors added
     expect(enhancedContent).toContain('primary:');
     expect(enhancedContent).toContain('secondary:');
     expect(enhancedContent).toContain('destructive:');
     expect(enhancedContent).toContain('accent:');
     expect(enhancedContent).toContain('muted:');
-    
+
     // Should convert clsx to cn (with different import path)
     expect(enhancedContent).toContain("import { cn } from '../utils/cn'");
     expect(enhancedContent).not.toContain("import clsx from 'clsx'");
@@ -82,16 +82,16 @@ export function Button({ color = 'blue', children, ...props }) {
     const components = [
       {
         name: 'catalyst-button.tsx',
-        content: `const styles = { colors: { blue: 'bg-blue-500' } };`
+        content: `const styles = { colors: { blue: 'bg-blue-500' } };`,
       },
       {
-        name: 'catalyst-badge.tsx', 
-        content: `const colors = { green: 'bg-green-500', yellow: 'bg-yellow-500' };`
+        name: 'catalyst-badge.tsx',
+        content: `const colors = { green: 'bg-green-500', yellow: 'bg-yellow-500' };`,
       },
       {
         name: 'catalyst-checkbox.tsx',
-        content: `const colors = { blue: 'checked:bg-blue-500' };`
-      }
+        content: `const colors = { blue: 'checked:bg-blue-500' };`,
+      },
     ];
 
     for (const comp of components) {
@@ -101,7 +101,7 @@ export function Button({ color = 'blue', children, ...props }) {
     // Run simplified pipeline directly
     const result = await runSimplifiedPipeline(componentsDir, {
       dryRun: false,
-      verbose: true
+      verbose: true,
     });
 
     expect(result.success).toBe(true);
@@ -123,7 +123,7 @@ export function Button({ color = 'blue', children, ...props }) {
     // Run simplified pipeline in dry-run mode
     const result = await runSimplifiedPipeline(componentsDir, {
       dryRun: true,
-      verbose: true
+      verbose: true,
     });
 
     expect(result.success).toBe(true);
@@ -135,10 +135,10 @@ export function Button({ color = 'blue', children, ...props }) {
 
   it('should handle missing source directory gracefully', async () => {
     const nonExistentDir = join(testDir, 'non-existent-dir');
-    
+
     const result = await runSimplifiedPipeline(nonExistentDir, {
       dryRun: false,
-      verbose: false
+      verbose: false,
     });
 
     expect(result.success).toBe(false);

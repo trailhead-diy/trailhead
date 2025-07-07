@@ -64,7 +64,7 @@ git checkout -b feature/issue-123-specific-problem
 **ANTI-PATTERNS TO AVOID**:
 
 - Future-proofing without specific requirements
-- Enterprise features for individual developers  
+- Enterprise features for individual developers
 - Over-abstraction and unnecessary complexity
 - Branch-on-branch (scope creep indicator)
 

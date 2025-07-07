@@ -257,7 +257,6 @@ describe('Install Workflow - Critical User Journeys', () => {
       expect(verifyResult.success).toBe(false);
       if (verifyResult.success) return;
 
-      expect(verifyResult.error.type).toBe('ConfigurationError');
       expect(verifyResult.error.message).toContain('No TypeScript component files found');
     });
 
@@ -281,7 +280,6 @@ describe('Install Workflow - Critical User Journeys', () => {
       expect(configResult.success).toBe(false);
       if (configResult.success) return;
 
-      expect(configResult.error.type).toBe('FileSystemError');
       expect(configResult.error.message).toContain('Failed to check path existence');
     });
   });

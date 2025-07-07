@@ -34,21 +34,21 @@ import { fileHeadersTransform } from '../components/common/formatting/file-heade
 const SIMPLIFIED_TRANSFORM_ORDER: Transform[] = [
   // 1. Import consistency first
   clsxToCnTransform,
-  
+
   // 2. Add semantic colors to components
   buttonAddSemanticColorsTransform,
   badgeAddSemanticColorsTransform,
   checkboxAddSemanticColorsTransform,
   radioAddSemanticColorsTransform,
   switchAddSemanticColorsTransform,
-  
+
   // 3. className parameter management
   addClassNameParameterTransform,
   wrapStaticClassNameTransform,
   ensureClassNameInCnTransform,
   reorderClassNameArgsTransform,
   removeUnusedClassNameTransform,
-  
+
   // 4. Final formatting
   fileHeadersTransform,
 ];
@@ -88,10 +88,10 @@ export async function runSimplifiedPipeline(
   summary: string;
 }> {
   const { verbose = false, dryRun = false, filter } = options;
-  
+
   console.log(chalk.blue(`🚀 Running simplified pipeline on ${sourceDir}`));
   console.log(chalk.gray(`Transforms: ${SIMPLIFIED_TRANSFORM_ORDER.length} essential transforms`));
-  
+
   if (dryRun) {
     console.log(chalk.yellow('🔍 DRY RUN MODE - No files will be modified'));
   }
@@ -108,7 +108,7 @@ export async function runSimplifiedPipeline(
 
     for (const file of filteredFiles) {
       const filePath = join(sourceDir, file);
-      
+
       try {
         if (verbose) {
           console.log(chalk.gray(`Processing ${file}...`));
@@ -116,16 +116,16 @@ export async function runSimplifiedPipeline(
 
         let content = await readFile(filePath, 'utf-8');
         let hasChanges = false;
-        
+
         // Apply each transform in order
         for (const transform of SIMPLIFIED_TRANSFORM_ORDER) {
           try {
             const result = transform.execute(content);
-            
+
             if (result.hasChanges) {
               content = result.content;
               hasChanges = true;
-              
+
               if (verbose && result.changes.length > 0) {
                 console.log(chalk.green(`  ✓ ${transform.name}: ${result.changes.length} changes`));
               }
@@ -141,7 +141,7 @@ export async function runSimplifiedPipeline(
         if (hasChanges && !dryRun) {
           await writeFile(filePath, content, 'utf-8');
         }
-        
+
         if (hasChanges) {
           processedFiles++;
           if (verbose) {
@@ -150,13 +150,11 @@ export async function runSimplifiedPipeline(
         } else if (verbose) {
           console.log(chalk.gray(`  - ${file} (no changes)`));
         }
-
       } catch (error: any) {
         errors.push({ file, error: error.message });
         console.error(chalk.red(`  ❌ ${file}: ${error.message}`));
       }
     }
-
   } catch (error: any) {
     errors.push({ file: sourceDir, error: error.message });
     console.error(chalk.red(`Failed to read directory: ${error.message}`));
@@ -166,8 +164,10 @@ export async function runSimplifiedPipeline(
   const summary = [
     `Processed ${processedFiles} files`,
     errors.length > 0 ? `${errors.length} errors` : 'No errors',
-    dryRun ? '(dry run)' : ''
-  ].filter(Boolean).join(', ');
+    dryRun ? '(dry run)' : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   console.log(chalk.blue(`✨ Pipeline complete: ${summary}`));
 
@@ -175,7 +175,7 @@ export async function runSimplifiedPipeline(
     success: errors.length === 0,
     processedFiles,
     errors,
-    summary
+    summary,
   };
 }
 
@@ -190,19 +190,19 @@ export function getSimplifiedPipelineInfo(): {
   const transforms = SIMPLIFIED_TRANSFORM_ORDER.map(t => ({
     name: t.name,
     description: t.description,
-    type: t.type
+    type: t.type,
   }));
 
   const categories = {
     'Semantic Colors': 5, // button, badge, checkbox, radio, switch
     'className Management': 5, // add-parameter, wrap-static, ensure-in-cn, reorder-args, remove-unused
     'Import Consistency': 1, // clsx-to-cn
-    'Formatting': 1, // file-headers
+    Formatting: 1, // file-headers
   };
 
   return {
     transformCount: SIMPLIFIED_TRANSFORM_ORDER.length,
     transforms,
-    categories
+    categories,
   };
 }

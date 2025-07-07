@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { cosmiconfig } from 'cosmiconfig';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
 
@@ -16,12 +17,12 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
       return Ok(false);
     }
     // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${path}`,
+        cause: result.error,
+      })
+    );
   }
 };
 
@@ -168,12 +169,12 @@ export const checkConfigFiles = async (
 
     return Ok(matches);
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check config files',
-      path: projectRoot,
-      cause: error,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check config files', {
+        details: `Project root: ${projectRoot}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -204,12 +205,12 @@ export const detectConfigWithCosmiconfig = async (
     const result = await explorer.search(projectRoot);
     return Ok(result !== null);
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Failed to detect ${moduleName} configuration`,
-      path: projectRoot,
-      cause: error,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', `Failed to detect ${moduleName} configuration`, {
+        details: `Project root: ${projectRoot}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -228,11 +229,11 @@ export const readPackageJson = async (
   }
 
   if (!existsResult.value) {
-    return Err({
-      type: 'FileSystemError',
-      message: 'package.json not found',
-      path: packageJsonPath,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'package.json not found', {
+        details: `Path: ${packageJsonPath}`,
+      })
+    );
   }
 
   return await fs.readJson(packageJsonPath);
@@ -309,11 +310,11 @@ export const detectFramework = async (
   if (forceFramework) {
     const targetFramework = frameworks.find(f => f.type === forceFramework);
     if (!targetFramework) {
-      return Err({
-        type: 'ConfigurationError',
-        message: `Unknown framework: ${forceFramework}`,
-        details: `Available frameworks: ${frameworks.map(f => f.type).join(', ')}`,
-      });
+      return Err(
+        createError('CONFIGURATION_ERROR', `Unknown framework: ${forceFramework}`, {
+          details: `Available frameworks: ${frameworks.map(f => f.type).join(', ')}`,
+        })
+      );
     }
 
     const result = await detectSingleFramework(fs, projectRoot, targetFramework, packageJson);
@@ -362,11 +363,11 @@ export const detectFramework = async (
       return Ok(reactResult.value);
     }
 
-    return Err({
-      type: 'ConfigurationError',
-      message: 'No supported React framework detected',
-      details: 'Make sure you have React installed or use --framework to specify manually',
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', 'No supported React framework detected', {
+        details: 'Make sure you have React installed or use --framework to specify manually',
+      })
+    );
   }
 
   // Sort by confidence and framework priority (RedwoodSDK first, then by definition order)

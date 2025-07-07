@@ -6,6 +6,10 @@
 import type { FrameworkType } from './framework-detection.js';
 export type { FrameworkType };
 
+// Import CLI framework types for error handling
+import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+export type { Result, CLIError as InstallError };
+
 // ============================================================================
 // CORE DOMAIN TYPES
 // ============================================================================
@@ -53,23 +57,6 @@ export interface InstallationSummary {
   readonly configCreated: boolean;
 }
 
-// ============================================================================
-// ERROR TYPES FOR BETTER ERROR HANDLING
-// ============================================================================
-
-// Re-export CLIError as InstallError for compatibility
-export type { CLIError as InstallError } from '@esteban-url/trailhead-cli/core';
-
-// ============================================================================
-// RESULT TYPE FOR FUNCTIONAL ERROR HANDLING
-// ============================================================================
-
-// Import Result type from framework
-import { type Result as FrameworkResult } from '@esteban-url/trailhead-cli/core';
-
-// Re-export Result type for this module
-export type Result<T, E> = FrameworkResult<T, E>;
-
 // Re-export Ok and Err from CLI package for compatibility
 export { Ok, Err } from '@esteban-url/trailhead-cli/core';
 
@@ -98,8 +85,8 @@ export interface CLIOptions {
 export type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 export interface ProcessRunner {
-  execSync(command: string, options?: ExecOptions): Promise<Result<string, InstallError>>;
-  isCommandAvailable(command: string): Promise<Result<boolean, InstallError>>;
+  execSync(command: string, options?: ExecOptions): Promise<Result<string, CLIError>>;
+  isCommandAvailable(command: string): Promise<Result<boolean, CLIError>>;
   cwd(): string;
 }
 
@@ -107,7 +94,7 @@ export interface ProcessRunner {
 export type { Logger } from '@esteban-url/trailhead-cli/core';
 
 export interface Hasher {
-  calculateFileHash(filePath: string): Promise<Result<string, InstallError>>;
+  calculateFileHash(filePath: string): Promise<Result<string, CLIError>>;
   calculateStringHash(content: string): string;
 }
 

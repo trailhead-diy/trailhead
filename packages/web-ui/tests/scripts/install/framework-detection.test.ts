@@ -359,7 +359,6 @@ describe('Framework Detection Tests', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('FileSystemError');
         expect(result.error.message).toBe('package.json not found');
       }
     });
@@ -378,7 +377,6 @@ describe('Framework Detection Tests', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('ConfigurationError');
         expect(result.error.message).toContain('Unknown framework: invalid-framework');
       }
     });

@@ -7,7 +7,7 @@ Enhanced Catalyst UI components with advanced theming system, semantic tokens, a
 @esteban-url/trailhead-web-ui provides a comprehensive UI component library built on top of Tailwind's official Catalyst components, featuring:
 
 - **26 Enhanced Components** with semantic color tokens
-- **21 Predefined Themes** using OKLCH color space for perceptual uniformity  
+- **21 Predefined Themes** using OKLCH color space for perceptual uniformity
 - **Functional Theme Builder API** for creating custom themes programmatically
 - **Runtime Theme Switching** with next-themes integration and SSR-safe theming
 - **Professional CLI** with smart framework detection and interactive setup
@@ -47,9 +47,7 @@ import { ThemeProvider } from './components/ui/theme';
 export default function App() {
   return (
     <ThemeProvider defaultTheme="zinc">
-      <Alert variant="success">
-        Welcome to Trailhead UI!
-      </Alert>
+      <Alert variant="success">Welcome to Trailhead UI!</Alert>
       <Button variant="solid" color="primary">
         Get Started
       </Button>
@@ -69,7 +67,7 @@ All 26 Catalyst UI components with enhanced TypeScript interfaces:
 **Data**: Table, Badge, Avatar, DescriptionList  
 **Navigation**: Link, Navbar, Pagination  
 **Typography**: Heading, Text  
-**Utilities**: Alert, Divider, Fieldset, Listbox, Combobox  
+**Utilities**: Alert, Divider, Fieldset, Listbox, Combobox
 
 ### Theming System
 

@@ -5,6 +5,7 @@
 import * as path from 'path';
 import type { FileSystem, Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 /**
  * Helper function to check if a path exists using access
@@ -21,12 +22,10 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
     // Other errors are actual errors
     return {
       success: false,
-      error: {
-        type: 'FileSystemError',
-        message: 'Failed to check path existence',
-        path,
+      error: createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${path}`,
         cause: result.error,
-      },
+      }),
     };
   }
 };
@@ -169,12 +168,12 @@ export const detectWorkspace = async (
     }
     return Ok(null);
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to detect workspace',
-      path: projectRoot,
-      cause: error,
-    });
+    return Err(
+      createError('WORKSPACE_DETECTION_ERROR', 'Failed to detect workspace', {
+        details: `Project root: ${projectRoot}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -272,12 +271,12 @@ export const findWorkspaceRoot = async (
 
     return Ok(null);
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to find workspace root',
-      path: startPath,
-      cause: error,
-    });
+    return Err(
+      createError('WORKSPACE_ROOT_SEARCH_ERROR', 'Failed to find workspace root', {
+        details: `Start path: ${startPath}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -311,12 +310,12 @@ export const getWorkspacePackages = async (
     // For now, return the workspace patterns as-is
     return Ok(Object.freeze(workspace.workspaces!));
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to get workspace packages',
-      path: workspace.root,
-      cause: error,
-    });
+    return Err(
+      createError('WORKSPACE_PACKAGES_ERROR', 'Failed to get workspace packages', {
+        details: `Workspace root: ${workspace.root}`,
+        cause: error,
+      })
+    );
   }
 };
 

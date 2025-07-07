@@ -20,12 +20,12 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
       return Ok(false);
     }
     // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
+    return Err(
+      createError('FILE_SYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${path}`,
+        cause: result.error,
+      })
+    );
   }
 };
 import {
@@ -55,18 +55,20 @@ export const installCatalystComponents = async (
   const destPaths = generateDestinationPaths(config);
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await fs.exists(sourcePaths.catalystDir);
+  const sourceCheckResult = await pathExists(fs, sourcePaths.catalystDir);
   if (!sourceCheckResult.success) return sourceCheckResult;
 
   if (!sourceCheckResult.value) {
-    return Err(createError(
-      'SOURCE_NOT_FOUND',
-      `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
-    ));
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
+      )
+    );
   }
 
   // Copy entire catalyst directory
-  const copyResult = await fs.copy(sourcePaths.catalystDir, destPaths.catalystDir, {
+  const copyResult = await fs.cp(sourcePaths.catalystDir, destPaths.catalystDir, {
     overwrite: force,
   });
 
@@ -75,7 +77,7 @@ export const installCatalystComponents = async (
   // Get list of files in catalyst directory
   const readDirResult = await fs.readdir(sourcePaths.catalystDir);
   if (!readDirResult.success) return readDirResult;
-  
+
   const catalystFiles = readDirResult.value.filter(isTsxFile);
 
   // Install lib/index.ts
@@ -114,20 +116,22 @@ export const installComponentWrappers = async (
 
   // Read source wrapper components directory
   const sourceWrapperDir = sourcePaths.wrapperComponentsDir;
-  const dirCheckResult = await fs.exists(sourceWrapperDir);
+  const dirCheckResult = await pathExists(fs, sourceWrapperDir);
   if (!dirCheckResult.success) return dirCheckResult;
 
   if (!dirCheckResult.value) {
-    return Err(createError(
-      'SOURCE_NOT_FOUND',
-      `Source wrapper components directory not found: ${sourceWrapperDir}`
-    ));
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source wrapper components directory not found: ${sourceWrapperDir}`
+      )
+    );
   }
 
   // Get all component wrapper files
   const readDirResult = await fs.readdir(sourceWrapperDir);
   if (!readDirResult.success) return readDirResult;
-  
+
   const wrapperFiles = readDirResult.value.filter(isWrapperComponent);
 
   for (const wrapperFile of wrapperFiles) {
@@ -221,10 +225,7 @@ async function copyFile(
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
-    return Err(createError(
-      'FILE_NOT_FOUND',
-      `Source file not found: ${src}`
-    ));
+    return Err(createError('FILE_NOT_FOUND', `Source file not found: ${src}`));
   }
 
   return fs.cp(src, dest, { overwrite: force });
@@ -248,20 +249,22 @@ export const installTransformedComponents = async (
   const installedFiles: string[] = [];
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await fs.exists(sourcePaths.catalystDir);
+  const sourceCheckResult = await pathExists(fs, sourcePaths.catalystDir);
   if (!sourceCheckResult.success) return sourceCheckResult;
 
   if (!sourceCheckResult.value) {
-    return Err(createError(
-      'SOURCE_NOT_FOUND',
-      `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
-    ));
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
+      )
+    );
   }
 
   // Get all catalyst-*.tsx files
   const readDirResult = await fs.readdir(sourcePaths.catalystDir);
   if (!readDirResult.success) return readDirResult;
-  
+
   const catalystFiles = readDirResult.value.filter(isCatalystComponent);
 
   // Transform and copy each component file

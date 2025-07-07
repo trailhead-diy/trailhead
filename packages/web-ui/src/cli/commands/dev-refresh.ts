@@ -199,12 +199,7 @@ export const createDevRefreshCommand = () => {
       );
 
       if (!copyResult.success) {
-        return Err(
-          createError(
-            'COPY_ERROR',
-            `Failed to copy files: ${copyResult.error.message}`
-          )
-        );
+        return Err(createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`));
       }
 
       const { copied, skipped, failed } = copyResult.value;

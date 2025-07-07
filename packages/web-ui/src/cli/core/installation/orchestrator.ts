@@ -13,6 +13,7 @@ import type {
   FrameworkType,
 } from './types.js';
 import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
 import {
@@ -40,12 +41,12 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
       return Ok(false);
     }
     // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${path}`,
+        cause: result.error,
+      })
+    );
   }
 };
 
@@ -134,7 +135,7 @@ export const performInstallation = async (
       // Check for existing files using CLI filesystem
       const existingFiles: string[] = [];
       for (const path of pathsToCheck) {
-        const existsResult = await fs.exists(path);
+        const existsResult = await pathExists(fs, path);
         if (existsResult.success && existsResult.value) {
           existingFiles.push(path);
         }
@@ -147,11 +148,11 @@ export const performInstallation = async (
         existingFiles.forEach((file: string) => logger.warning(`  • ${file}`));
         logger.warning('Use --force to overwrite existing files');
 
-        return Err({
-          type: 'FileSystemError',
-          message: 'Installation would overwrite existing files',
-          path: config.componentsDir,
-        });
+        return Err(
+          createError('FILESYSTEM_ERROR', 'Installation would overwrite existing files', {
+            details: `Path: ${config.componentsDir}`,
+          })
+        );
       }
     }
 
@@ -199,7 +200,8 @@ export const performInstallation = async (
           detectPackageManager(config.projectRoot),
         ]);
 
-        const _workspace = workspaceResult.success ? workspaceResult.value : null;
+        // Workspace detection for future features
+        workspaceResult.success ? workspaceResult.value : null;
         const ci = detectCIEnvironment();
         const packageManager = detected?.name || 'npm';
 
@@ -321,11 +323,7 @@ export const performInstallation = async (
       ...(failedSteps.length > 0 && { failedSteps: Object.freeze([...failedSteps]) }),
     };
 
-    const _successMessage = buildSuccessMessage(
-      allInstalledFiles.length,
-      dependenciesAdded.length,
-      failedSteps.length
-    );
+    buildSuccessMessage(allInstalledFiles.length, dependenciesAdded.length, failedSteps.length);
     progressTracker.stop();
 
     // Log detailed summary
@@ -335,15 +333,13 @@ export const performInstallation = async (
   } catch (error) {
     progressTracker.stop();
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorDetails = error instanceof Error && error.stack ? error.stack : undefined;
 
-    return Err({
-      type: 'FileSystemError',
-      message: `Installation failed: ${errorMessage}`,
-      path: config.componentsDir,
-      cause: error,
-      details: errorDetails,
-    });
+    return Err(
+      createError('INSTALLATION_ERROR', `Installation failed: ${errorMessage}`, {
+        details: `Path: ${config.componentsDir}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -413,22 +409,22 @@ export const validatePrerequisites = async (
   const rootExistsResult = await pathExists(fs, trailheadRoot);
   if (!rootExistsResult.success) return rootExistsResult;
   if (!rootExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Trailhead UI root not found: ${trailheadRoot}`,
-      details: JSON.stringify({ path: trailheadRoot }),
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', `Trailhead UI root not found: ${trailheadRoot}`, {
+        details: `Path: ${trailheadRoot}`,
+      })
+    );
   }
 
   // Check if project root exists
   const projectExistsResult = await pathExists(fs, config.projectRoot);
   if (!projectExistsResult.success) return projectExistsResult;
   if (!projectExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Project root not found: ${config.projectRoot}`,
-      details: JSON.stringify({ path: config.projectRoot }),
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', `Project root not found: ${config.projectRoot}`, {
+        details: `Path: ${config.projectRoot}`,
+      })
+    );
   }
 
   // Check write permissions
@@ -436,11 +432,11 @@ export const validatePrerequisites = async (
   const writeTestPath = `${destDirParent}/.trailhead-test-${Date.now()}`;
   const writeResult = await fs.writeFile(writeTestPath, 'test');
   if (!writeResult.success) {
-    return Err({
-      type: 'FileSystemError',
-      message: `No write permission in destination directory`,
-      path: destDirParent,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'No write permission in destination directory', {
+        details: `Path: ${destDirParent}`,
+      })
+    );
   }
 
   // Clean up test file

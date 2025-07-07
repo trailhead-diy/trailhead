@@ -17,7 +17,7 @@ import { isTsxFile } from '../shared/file-filters.js';
 
 // Helper functions for type checking
 const isString = (value: unknown): value is string => typeof value === 'string';
-const isObject = (value: unknown): value is Record<string, unknown> => 
+const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /**
@@ -33,12 +33,12 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
       return Ok(false);
     }
     // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${path}`,
+        cause: result.error,
+      })
+    );
   }
 };
 
@@ -77,13 +77,11 @@ export const detectCatalystDir = async (
     }
   }
 
-  return Err(createError(
-    'CATALYST_NOT_FOUND',
-    'Could not find catalyst-ui-kit directory',
-    {
-      details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`
-    }
-  ));
+  return Err(
+    createError('CATALYST_NOT_FOUND', 'Could not find catalyst-ui-kit directory', {
+      details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+    })
+  );
 };
 
 /**
@@ -152,44 +150,41 @@ export const validateTrailheadConfig = (
   config: unknown
 ): Result<InstallationTrailheadConfig, InstallError> => {
   if (!isObject(config)) {
-    return Err({
-      type: 'ValidationError',
-      message: 'Configuration must be an object',
-    });
+    return Err(createError('VALIDATION_ERROR', 'Configuration must be an object'));
   }
 
   const { catalystDir, destinationDir, componentsDir, libDir } = config;
 
   if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'catalystDir must be a non-empty string',
-      field: 'catalystDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'catalystDir must be a non-empty string', {
+        details: 'Field: catalystDir',
+      })
+    );
   }
 
   if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'destinationDir must be a non-empty string',
-      field: 'destinationDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'destinationDir must be a non-empty string', {
+        details: 'Field: destinationDir',
+      })
+    );
   }
 
   if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'componentsDir must be a non-empty string',
-      field: 'componentsDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'componentsDir must be a non-empty string', {
+        details: 'Field: componentsDir',
+      })
+    );
   }
 
   if (!isString(libDir) || !libDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'libDir must be a non-empty string',
-      field: 'libDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'libDir must be a non-empty string', {
+        details: 'Field: libDir',
+      })
+    );
   }
 
   return Ok({
@@ -205,52 +200,49 @@ export const validateTrailheadConfig = (
  */
 export const validateInstallConfig = (config: unknown): Result<InstallConfig, InstallError> => {
   if (!isObject(config)) {
-    return Err({
-      type: 'ValidationError',
-      message: 'Install configuration must be an object',
-    });
+    return Err(createError('VALIDATION_ERROR', 'Install configuration must be an object'));
   }
 
   const { catalystDir, destinationDir, componentsDir, libDir, projectRoot } = config;
 
   if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'catalystDir must be a non-empty string',
-      field: 'catalystDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'catalystDir must be a non-empty string', {
+        details: 'Field: catalystDir',
+      })
+    );
   }
 
   if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'destinationDir must be a non-empty string',
-      field: 'destinationDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'destinationDir must be a non-empty string', {
+        details: 'Field: destinationDir',
+      })
+    );
   }
 
   if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'componentsDir must be a non-empty string',
-      field: 'componentsDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'componentsDir must be a non-empty string', {
+        details: 'Field: componentsDir',
+      })
+    );
   }
 
   if (!isString(libDir) || !libDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'libDir must be a non-empty string',
-      field: 'libDir',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'libDir must be a non-empty string', {
+        details: 'Field: libDir',
+      })
+    );
   }
 
   if (!isString(projectRoot) || !projectRoot.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'projectRoot must be a non-empty string',
-      field: 'projectRoot',
-    });
+    return Err(
+      createError('VALIDATION_ERROR', 'projectRoot must be a non-empty string', {
+        details: 'Field: projectRoot',
+      })
+    );
   }
 
   return Ok({
@@ -392,11 +384,12 @@ export const resolveConfiguration = async (
 
     return Ok(validateResult.value);
   } catch (error) {
-    return Err({
-      type: 'ConfigurationError',
-      message: 'Failed to resolve configuration',
-      details: error instanceof Error ? error.message : 'Unknown error',
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', 'Failed to resolve configuration', {
+        details: error instanceof Error ? error.message : 'Unknown error',
+        cause: error,
+      })
+    );
   }
 };
 
@@ -458,11 +451,15 @@ export const verifyConfiguration = async (
   if (!catalystExistsResult.success) return catalystExistsResult;
 
   if (!catalystExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Catalyst UI Kit directory not found: ${config.catalystDir}`,
-      details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Point to the typescript/ directory within catalyst-ui-kit\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-    });
+    return Err(
+      createError(
+        'CONFIGURATION_ERROR',
+        `Catalyst UI Kit directory not found: ${config.catalystDir}`,
+        {
+          details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Point to the typescript/ directory within catalyst-ui-kit\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+        }
+      )
+    );
   }
 
   // Check if catalyst directory contains component files
@@ -471,11 +468,15 @@ export const verifyConfiguration = async (
 
   const hasComponents = readDirResult.value.some(isTsxFile);
   if (!hasComponents) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `No TypeScript component files found in: ${config.catalystDir}`,
-      details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx ← Missing\n       ├── input.tsx ← Missing\n       ├── alert.tsx ← Missing\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Ensure you downloaded the TypeScript version from Tailwind Plus\n2. Point to the typescript/ directory (not the root catalyst-ui-kit/)\n3. Check that component files (.tsx) are present\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-    });
+    return Err(
+      createError(
+        'CONFIGURATION_ERROR',
+        `No TypeScript component files found in: ${config.catalystDir}`,
+        {
+          details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx ← Missing\n       ├── input.tsx ← Missing\n       ├── alert.tsx ← Missing\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Ensure you downloaded the TypeScript version from Tailwind Plus\n2. Point to the typescript/ directory (not the root catalyst-ui-kit/)\n3. Check that component files (.tsx) are present\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+        }
+      )
+    );
   }
 
   return Ok(undefined);

@@ -17,6 +17,7 @@ import type {
   InstallConfig,
 } from './types.js';
 import { Ok, Err, CATALYST_COMPONENT_FILES, CATALYST_VERSION } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 /**
  * Helper function to check if a path exists using access
@@ -31,12 +32,12 @@ const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean,
       return Ok(false);
     }
     // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
+    return Err(
+      createError('FILE_SYSTEM_ERROR', 'Failed to check path existence', {
+        details: `path: ${path}`,
+        cause: result.error,
+      })
+    );
   }
 };
 
@@ -91,10 +92,9 @@ export const readCatalystHashes = async (
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
-    return Err({
-      type: 'VerificationError',
-      message: 'catalyst-hashes.json not found in scripts directory',
-    });
+    return Err(
+      createError('VERIFICATION_ERROR', 'catalyst-hashes.json not found in scripts directory')
+    );
   }
 
   const readResult = await fs.readJson<unknown>(hashFilePath);
@@ -111,26 +111,29 @@ export const readCatalystHashes = async (
  */
 export const validateCatalystHashData = (data: unknown): Result<CatalystHashData, InstallError> => {
   if (!data || typeof data !== 'object') {
-    return Err({
-      type: 'VerificationError',
-      message: 'Invalid catalyst-hashes.json format: must be an object',
-    });
+    return Err(
+      createError('VERIFICATION_ERROR', 'Invalid catalyst-hashes.json format: must be an object')
+    );
   }
 
   const hashData = data as Record<string, unknown>;
 
   if (typeof hashData.version !== 'string') {
-    return Err({
-      type: 'VerificationError',
-      message: 'Invalid catalyst-hashes.json format: version must be a string',
-    });
+    return Err(
+      createError(
+        'VERIFICATION_ERROR',
+        'Invalid catalyst-hashes.json format: version must be a string'
+      )
+    );
   }
 
   if (!hashData.files || typeof hashData.files !== 'object') {
-    return Err({
-      type: 'VerificationError',
-      message: 'Invalid catalyst-hashes.json format: files must be an object',
-    });
+    return Err(
+      createError(
+        'VERIFICATION_ERROR',
+        'Invalid catalyst-hashes.json format: files must be an object'
+      )
+    );
   }
 
   const files = hashData.files as Record<string, unknown>;
@@ -138,17 +141,21 @@ export const validateCatalystHashData = (data: unknown): Result<CatalystHashData
   // Validate that all values are strings (hashes)
   for (const [fileName, hash] of Object.entries(files)) {
     if (typeof hash !== 'string') {
-      return Err({
-        type: 'VerificationError',
-        message: `Invalid hash format for file ${fileName}: must be a string`,
-      });
+      return Err(
+        createError(
+          'VERIFICATION_ERROR',
+          `Invalid hash format for file ${fileName}: must be a string`
+        )
+      );
     }
 
     if (!hash.startsWith('sha256:')) {
-      return Err({
-        type: 'VerificationError',
-        message: `Invalid hash format for file ${fileName}: must start with 'sha256:'`,
-      });
+      return Err(
+        createError(
+          'VERIFICATION_ERROR',
+          `Invalid hash format for file ${fileName}: must start with 'sha256:'`
+        )
+      );
     }
   }
 
@@ -327,11 +334,9 @@ export const verifyCatalystFiles = async (
     return Ok(verificationResult);
   } catch (error) {
     spinner.fail('Failed to verify Catalyst files');
-    return Err({
-      type: 'VerificationError',
-      message: 'Failed to verify Catalyst files',
-      cause: error,
-    });
+    return Err(
+      createError('VERIFICATION_ERROR', 'Failed to verify Catalyst files', { cause: error })
+    );
   }
 };
 

@@ -13,6 +13,7 @@ import type {
   FrameworkType,
 } from './types.js';
 import { Ok, Err, CORE_DEPENDENCIES, FRAMEWORK_DEPENDENCIES } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 import {
   analyzeDependencies as analyzeCore,
@@ -58,11 +59,7 @@ export const readPackageJson = async (
       devDependencies: content.devDependencies as Record<string, string> | undefined,
     });
   } catch (error) {
-    return Err({
-      type: 'DependencyError',
-      message: 'Failed to read package.json',
-      cause: error,
-    });
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to read package.json', { cause: error }));
   }
 };
 
@@ -93,11 +90,7 @@ export const writePackageJson = async (
     await pkgJson.save();
     return Ok(undefined);
   } catch (error) {
-    return Err({
-      type: 'DependencyError',
-      message: 'Failed to write package.json',
-      cause: error,
-    });
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to write package.json', { cause: error }));
   }
 };
 
@@ -111,10 +104,7 @@ export const writePackageJson = async (
 export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, InstallError> => {
   // Basic type check for object
   if (!pkg || typeof pkg !== 'object') {
-    return Err({
-      type: 'ValidationError',
-      message: 'Value must be an object',
-    });
+    return Err(createError('VALIDATION_ERROR', 'Value must be an object'));
   }
 
   const validated = pkg as any;
@@ -122,18 +112,16 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
   // Validate dependencies structure if present
   if (validated.dependencies !== undefined) {
     if (typeof validated.dependencies !== 'object' || validated.dependencies === null) {
-      return Err({
-        type: 'ValidationError',
-        message: 'dependencies must be an object',
-      });
+      return Err(createError('VALIDATION_ERROR', 'dependencies must be an object'));
     }
     // Validate dependency values are strings
     for (const [key, value] of Object.entries(validated.dependencies)) {
       if (typeof value !== 'string') {
-        return Err({
-          type: 'ValidationError',
-          message: `${key} must be a string`,
-        });
+        return Err(
+          createError('VALIDATION_ERROR', `${key} must be a string`, {
+            details: `Dependency key '${key}' has invalid value type`,
+          })
+        );
       }
     }
   }
@@ -141,18 +129,16 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
   // Validate devDependencies structure if present
   if (validated.devDependencies !== undefined) {
     if (typeof validated.devDependencies !== 'object' || validated.devDependencies === null) {
-      return Err({
-        type: 'ValidationError',
-        message: 'devDependencies must be an object',
-      });
+      return Err(createError('VALIDATION_ERROR', 'devDependencies must be an object'));
     }
     // Validate devDependency values are strings
     for (const [key, value] of Object.entries(validated.devDependencies)) {
       if (typeof value !== 'string') {
-        return Err({
-          type: 'ValidationError',
-          message: `${key} must be a string`,
-        });
+        return Err(
+          createError('VALIDATION_ERROR', `${key} must be a string`, {
+            details: `DevDependency key '${key}' has invalid value type`,
+          })
+        );
       }
     }
   }
@@ -242,11 +228,7 @@ export const analyzeDependencies = async (
 
     return Ok(dependencyUpdate);
   } catch (error) {
-    return Err({
-      type: 'DependencyError',
-      message: 'Failed to analyze dependencies',
-      cause: error,
-    });
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to analyze dependencies', { cause: error }));
   }
 };
 
@@ -404,11 +386,7 @@ export const installDependenciesSmart = async (
       warnings: [...resolution.warnings, `Run "${packageManager} install" to install dependencies`],
     });
   } catch (error) {
-    return Err({
-      type: 'DependencyError',
-      message: 'Failed to install dependencies',
-      cause: error,
-    });
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to install dependencies', { cause: error }));
   }
 };
 

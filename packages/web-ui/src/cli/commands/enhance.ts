@@ -15,8 +15,11 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
 
-import { runSimplifiedPipeline, getSimplifiedPipelineInfo } from '../../transforms/pipelines/simplified.js';
-import { loadConfigSync, logConfigDiscovery } from '../core/config/index.js';
+import {
+  runSimplifiedPipeline,
+  getSimplifiedPipelineInfo,
+} from '../../transforms/pipelines/simplified.js';
+import { loadConfigSync, logConfigDiscovery } from '../config.js';
 
 // ============================================================================
 // TYPES
@@ -45,10 +48,7 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
     execute: async (config: EnhanceConfig) => {
       if (!existsSync(config.sourceDir)) {
         return Err(
-          createError(
-            'SOURCE_NOT_FOUND',
-            `Source directory not found: ${config.sourceDir}`
-          )
+          createError('SOURCE_NOT_FOUND', `Source directory not found: ${config.sourceDir}`)
         );
       }
       return Ok(config);
@@ -63,17 +63,39 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
         filter: (filename: string) => {
           // Only process Catalyst component files
           const catalystComponents = [
-            'alert', 'auth-layout', 'avatar', 'badge', 'button', 'checkbox', 
-            'combobox', 'description-list', 'dialog', 'divider', 'dropdown',
-            'fieldset', 'heading', 'input', 'link', 'listbox', 'navbar',
-            'pagination', 'radio', 'select', 'sidebar-layout', 'sidebar',
-            'stacked-layout', 'switch', 'table', 'text', 'textarea'
+            'alert',
+            'auth-layout',
+            'avatar',
+            'badge',
+            'button',
+            'checkbox',
+            'combobox',
+            'description-list',
+            'dialog',
+            'divider',
+            'dropdown',
+            'fieldset',
+            'heading',
+            'input',
+            'link',
+            'listbox',
+            'navbar',
+            'pagination',
+            'radio',
+            'select',
+            'sidebar-layout',
+            'sidebar',
+            'stacked-layout',
+            'switch',
+            'table',
+            'text',
+            'textarea',
           ];
-          
-          return catalystComponents.some(component => 
+
+          return catalystComponents.some(component =>
             filename.includes(`catalyst-${component}.tsx`)
           );
-        }
+        },
       });
 
       if (!result.success) {
@@ -85,8 +107,10 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
         );
       }
 
-      console.log(chalk.green(`✨ Enhanced ${result.processedFiles} components with semantic colors`));
-      
+      console.log(
+        chalk.green(`✨ Enhanced ${result.processedFiles} components with semantic colors`)
+      );
+
       return Ok(config);
     },
   },
@@ -139,38 +163,38 @@ export const createEnhanceCommand = () => {
       // Show pipeline info if requested
       if (options.info) {
         const info = getSimplifiedPipelineInfo();
-        
+
         console.log(chalk.blue('🔧 Enhancement Pipeline Information'));
         console.log(chalk.gray(`Total transforms: ${info.transformCount}`));
         console.log('');
-        
+
         Object.entries(info.categories).forEach(([category, count]) => {
           console.log(chalk.cyan(`${category}: ${count} transforms`));
         });
-        
+
         console.log('');
         console.log(chalk.gray('Transform details:'));
         info.transforms.forEach((transform: any) => {
           console.log(`  • ${chalk.green(transform.name)}: ${transform.description}`);
         });
-        
+
         return Ok(undefined);
       }
 
       // Load configuration
       const configResult = loadConfigSync(cmdContext.projectRoot);
-      let configPath: string | null = null;
+      const loadedConfig = configResult.config;
+      const configPath = configResult.filepath;
 
-      if (configResult.success) {
-        configPath = configResult.value.filepath;
-        if (options.verbose && configPath) {
-          logConfigDiscovery(configPath, configResult.value.config, options.verbose);
-        }
+      if (options.verbose && configPath) {
+        logConfigDiscovery(configPath, loadedConfig, options.verbose, configResult.source);
       }
 
       // Resolve source directory
-      const sourceDir = options.src 
-        ? (options.src.startsWith('/') ? options.src : join(cmdContext.projectRoot, options.src))
+      const sourceDir = options.src
+        ? options.src.startsWith('/')
+          ? options.src
+          : join(cmdContext.projectRoot, options.src)
         : join(cmdContext.projectRoot, 'src/components/lib');
 
       const config: EnhanceConfig = {
@@ -196,7 +220,10 @@ export const createEnhanceCommand = () => {
         [
           { label: 'Source Directory', value: sourceDir },
           { label: 'Mode', value: options.dryRun ? 'Dry Run' : 'Live' },
-          { label: 'Transforms Applied', value: getSimplifiedPipelineInfo().transformCount.toString() },
+          {
+            label: 'Transforms Applied',
+            value: getSimplifiedPipelineInfo().transformCount.toString(),
+          },
           ...(configPath ? [{ label: 'Config', value: configPath }] : []),
         ],
         cmdContext

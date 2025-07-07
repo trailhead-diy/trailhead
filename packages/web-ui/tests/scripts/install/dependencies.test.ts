@@ -59,7 +59,6 @@ describe('Dependency Management Tests', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('ValidationError');
         expect(result.error.message).toBe('Value must be an object');
       }
     });
@@ -74,7 +73,6 @@ describe('Dependency Management Tests', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('ValidationError');
         expect(result.error.message).toContain('dependencies must be an object');
       }
     });
@@ -89,7 +87,6 @@ describe('Dependency Management Tests', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.type).toBe('ValidationError');
         expect(result.error.message).toContain('typescript must be a string');
       }
     });

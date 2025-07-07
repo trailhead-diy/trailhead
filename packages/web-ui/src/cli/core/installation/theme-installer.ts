@@ -64,7 +64,7 @@ export const installThemeSystem = async (
   // Copy theme files using CLI filesystem
   const copiedFiles: string[] = [];
   for (const file of themeFiles) {
-    const copyResult = await fs.copy(file.src, file.dest, { overwrite: force });
+    const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
     if (!copyResult.success) return copyResult;
     copiedFiles.push(file.name);
   }
@@ -103,7 +103,7 @@ export const installThemeComponents = async (
   // Copy component files using CLI filesystem
   const copiedFiles: string[] = [];
   for (const file of componentFiles) {
-    const copyResult = await fs.copy(file.src, file.dest, { overwrite: force });
+    const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
     if (!copyResult.success) return copyResult;
     copiedFiles.push(file.name);
   }

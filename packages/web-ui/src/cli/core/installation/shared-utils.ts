@@ -4,6 +4,7 @@
 
 import type { Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // ERROR HANDLING UTILITIES
@@ -16,11 +17,12 @@ export const createSimpleError = (
   type: 'DependencyError' | 'ValidationError',
   baseMessage: string,
   error: unknown
-): InstallError => ({
-  type,
-  message: `${baseMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-  cause: error instanceof Error ? error : undefined,
-});
+): InstallError =>
+  createError(
+    type === 'DependencyError' ? 'DEPENDENCY_ERROR' : 'VALIDATION_ERROR',
+    `${baseMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    { cause: error instanceof Error ? error : undefined }
+  );
 
 /**
  * Generic async error handler with type-safe error creation
@@ -144,10 +146,9 @@ export const requiredField =
   <T extends object, K extends keyof T>(field: K, message?: string) =>
   (obj: T): Result<T, InstallError> => {
     if (!obj[field]) {
-      return Err({
-        type: 'ValidationError',
-        message: message || `Required field '${String(field)}' is missing`,
-      });
+      return Err(
+        createError('VALIDATION_ERROR', message || `Required field '${String(field)}' is missing`)
+      );
     }
     return Ok(obj);
   };
@@ -159,10 +160,7 @@ export const typeValidator =
   <T>(predicate: (value: unknown) => value is T, expectedType: string) =>
   (value: unknown): Result<T, InstallError> => {
     if (!predicate(value)) {
-      return Err({
-        type: 'ValidationError',
-        message: `Expected ${expectedType}, got ${typeof value}`,
-      });
+      return Err(createError('VALIDATION_ERROR', `Expected ${expectedType}, got ${typeof value}`));
     }
     return Ok(value);
   };
@@ -267,11 +265,11 @@ export const retryWithBackoff = async <T>(
     }
   }
 
-  return Err({
-    type: 'DependencyError',
-    message: `Failed after ${maxAttempts} attempts`,
-    cause: lastError instanceof Error ? lastError : undefined,
-  });
+  return Err(
+    createError('DEPENDENCY_ERROR', `Failed after ${maxAttempts} attempts`, {
+      cause: lastError instanceof Error ? lastError : undefined,
+    })
+  );
 };
 
 /**
@@ -289,10 +287,10 @@ export const withTimeout = <T>(
   return Promise.race([promise, timeoutPromise])
     .then(result => Ok(result))
     .catch(error =>
-      Err({
-        type: 'DependencyError',
-        message: error instanceof Error ? error.message : timeoutMessage,
-        cause: error instanceof Error ? error : undefined,
-      })
+      Err(
+        createError('DEPENDENCY_ERROR', error instanceof Error ? error.message : timeoutMessage, {
+          cause: error instanceof Error ? error : undefined,
+        })
+      )
     );
 };

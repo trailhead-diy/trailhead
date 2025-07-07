@@ -4,6 +4,7 @@
 
 import { createTaskList, createTask } from '@esteban-url/trailhead-cli/workflows';
 import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import type { Result, InstallError, Logger } from './types.js';
 import { Ok, Err } from './types.js';
 
@@ -44,13 +45,12 @@ const _executeStep = async (
 
     return result;
   } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Unexpected error during ${step.name}`,
-      path: '.',
-      cause: error,
-      details: error instanceof Error ? error.stack : undefined,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', `Unexpected error during ${step.name}`, {
+        details: error instanceof Error ? error.stack : undefined,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -154,11 +154,15 @@ export const executeInstallationSteps = async (
       logger.warning(`  rm -rf ${componentsDir}`);
     }
 
-    return Err({
-      type: 'FileSystemError',
-      message: error instanceof Error ? error.message : 'Installation step execution failed',
-      path: componentsDir,
-      cause: error,
-    });
+    return Err(
+      createError(
+        'INSTALLATION_STEP_EXECUTION_FAILED',
+        error instanceof Error ? error.message : 'Installation step execution failed',
+        {
+          details: `Failed during installation in directory: ${componentsDir}`,
+          cause: error,
+        }
+      )
+    );
   }
 };

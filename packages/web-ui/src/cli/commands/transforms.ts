@@ -165,10 +165,7 @@ export const createTransformsCommand = () => {
 
                 if (!analysisResult.success) {
                   return Err(
-                    createError(
-                      'DRY_RUN_ERROR',
-                      'Dry run analysis failed: ' + analysisResult.error
-                    )
+                    createError('DRY_RUN_ERROR', 'Dry run analysis failed: ' + analysisResult.error)
                   );
                 }
 
@@ -223,10 +220,7 @@ export const createTransformsCommand = () => {
                     cmdContext.logger.info('No files needed transformation.');
                   } else {
                     return Err(
-                      createError(
-                        'TRANSFORM_ERROR',
-                        'Transform failed: ' + transformResult.error
-                      )
+                      createError('TRANSFORM_ERROR', 'Transform failed: ' + transformResult.error)
                     );
                   }
                 }

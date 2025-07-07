@@ -348,9 +348,7 @@ async function handleInstall(
     validationResult.failed.forEach((result: ValidationResult) => {
       context.logger.error(`  • ${result.message}`);
     });
-    return CliErr(
-      createError('VALIDATION_ERROR', 'Invalid installation options')
-    );
+    return CliErr(createError('VALIDATION_ERROR', 'Invalid installation options'));
   }
 
   // Show warnings if any
