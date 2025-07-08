@@ -1,8 +1,17 @@
+/**
+ * Prettier configuration for generated projects
+ *
+ * This configuration extends the shared prettier settings to ensure consistency
+ * between the monorepo and generated projects.
+ */
+
 export default {
-  semi: false,
+  semi: true,
   singleQuote: true,
   tabWidth: 2,
   trailingComma: 'es5',
-  printWidth: 80,
+  printWidth: 100,
+  bracketSpacing: true,
   arrowParens: 'avoid',
-}
+  endOfLine: 'lf',
+};
