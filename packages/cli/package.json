@@ -75,6 +75,8 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
+    "format": "prettier --write . --ignore-path .prettierignore",
+    "format:check": "prettier --check . --ignore-path .prettierignore",
     "clean": "rm -rf dist",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test:all"
