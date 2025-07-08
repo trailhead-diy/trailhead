@@ -8,7 +8,37 @@ A functional CLI framework for building robust, testable command-line applicatio
 
 ## Overview
 
-@esteban-url/trailhead-cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
+@esteban-url/trailhead-cli is a functional CLI framework that wraps battle-tested libraries in a type-safe API with explicit error handling. Built on Rust-inspired Result types instead of exceptions, the framework provides tree-shakeable subpath exports for optimal bundle sizes and comprehensive testing utilities with built-in mocks.
+
+The architecture follows functional programming principles with pure functions, immutable data structures, and dependency injection through context. All I/O operations return Result types, making error paths explicit at compile time. Each module can be imported independently via subpath exports, allowing applications to include only the functionality they need.
+
+## Get Started in Seconds
+
+Generate a complete CLI project with TypeScript, testing, and build configuration:
+
+```bash
+pnpm create trailhead-cli my-cli
+cd my-cli
+pnpm dev
+```
+
+The generator provides project scaffolding with basic and advanced templates, including monorepo setup, CI/CD workflows, and comprehensive documentation structure.
+
+## Complete Features
+
+| Module                 | Description                                                                        | Libraries Used                                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create-trailhead-cli` | Project scaffolding with TypeScript setup, testing, and CI/CD workflows            | [Handlebars](https://handlebarsjs.com/), [fast-glob](https://github.com/mrmlnc/fast-glob), [execa](https://github.com/sindresorhus/execa)                      |
+| `/core`                | Result types for explicit error handling, validation pipelines, and retry patterns | [p-retry](https://github.com/sindresorhus/p-retry)                                                                                                             |
+| `/command`             | Type-safe CLI parsing, validation, and execution with nested subcommands           | [Commander.js](https://github.com/tj/commander.js)                                                                                                             |
+| `/filesystem`          | Reliable file operations with Result types and pattern matching                    | [Node.js fs/promises](https://nodejs.org/api/fs.html#promises-api), [glob](https://github.com/isaacs/node-glob)                                                |
+| `/config`              | Automatic configuration discovery and runtime type validation                      | [Cosmiconfig](https://github.com/davidtheclark/cosmiconfig), [Zod](https://github.com/colinhacks/zod)                                                          |
+| `/prompts`             | Interactive command line user interfaces with excellent UX                         | [@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js)                                                                                                  |
+| `/utils`               | Terminal styling with colors, loading indicators, and progress bars                | [Chalk](https://github.com/chalk/chalk), [yocto-spinner](https://github.com/sindresorhus/yocto-spinner), [cli-progress](https://github.com/npkgz/cli-progress) |
+| `/git`                 | Repository management with branch sync and workflow automation                     | Native git commands                                                                                                                                            |
+| `/workflows`           | Task orchestration with beautiful progress visualization                           | [Listr2](https://github.com/listr2/listr2)                                                                                                                     |
+| `/error-recovery`      | Circuit breakers, exponential backoff, and retry strategies                        | [p-retry](https://github.com/sindresorhus/p-retry)                                                                                                             |
+| `/testing`             | Mock filesystems, test contexts, and Result-type assertions                        | [Vitest](https://vitest.dev/)                                                                                                                                  |
 
 ## 📚 Documentation
 
@@ -16,17 +46,6 @@ A functional CLI framework for building robust, testable command-line applicatio
 - **[API Reference](./docs/api)** - Complete module documentation
 - **[Guides](./docs/guides)** - In-depth topics and patterns
 - **[Examples](./docs/examples)** - Real-world applications
-
-## Features
-
-- 🎯 **Result-based error handling** - No exceptions, explicit error propagation
-- 🔧 **Functional programming** - Pure functions, immutability, composition
-- 🧩 **Modular architecture** - Tree-shakeable subpath exports
-- 📦 **Built-in abstractions** - FileSystem, Configuration, Validation
-- 🧪 **Testing utilities** - Mocks, test contexts, runners
-- 🎨 **Beautiful output** - Chalk styling, Ora spinners, progress tracking
-- 🔍 **Full type safety** - Strict TypeScript with comprehensive types
-- 🔄 **Advanced retry patterns** - Circuit breakers, exponential backoff, jitter
 
 ## Installation
 
@@ -69,6 +88,19 @@ npm install github:esteban-url/trailhead#packages/cli
 
 ## Quick Start
 
+### Option 1: Generate a new project (Recommended)
+
+```bash
+# Create a new CLI project with scaffolding
+pnpm create trailhead-cli my-awesome-cli
+
+# Follow interactive prompts to configure your project
+cd my-awesome-cli
+pnpm dev
+```
+
+### Option 2: Add to existing project
+
 ```typescript
 // Import core utilities from the main export
 import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
@@ -108,210 +140,11 @@ const cli = createCLI({
 cli.run(process.argv);
 ```
 
-## Module Exports
-
-> **Important**: @esteban-url/trailhead-cli uses subpath exports for optimal tree-shaking. The main export contains only essential utilities (`Ok`, `Err`, `isOk`, `isErr`, `createCLI`). Import all other functionality from specific modules.
-
-### Main Export (`@esteban-url/trailhead-cli`)
-
-```typescript
-import { Ok, Err, isOk, isErr, createCLI } from '@esteban-url/trailhead-cli';
-import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli';
-```
-
-- **Result utilities**: `Ok`, `Err`, `isOk`, `isErr` - Core error handling
-- **CLI creation**: `createCLI` - Main CLI factory function
-
-### Core (`@esteban-url/trailhead-cli/core`)
-
-Result types, error handling utilities, and advanced retry patterns:
-
-```typescript
-import { Ok, Err, isOk, isErr } from '@esteban-url/trailhead-cli';
-import type { Result } from '@esteban-url/trailhead-cli';
-
-// Create results
-const success = Ok(42);
-const failure = Err(new Error('Something went wrong'));
-
-// Check results
-if (isOk(result)) {
-  console.log(result.value);
-}
-```
-
-#### Retry Patterns
-
-The framework includes comprehensive retry functionality powered by p-retry:
-
-```typescript
-import {
-  retryWithBackoff,
-  retryAdvanced,
-  RetryStrategies,
-  createCircuitBreaker,
-  retryWithTimeout,
-} from '@esteban-url/trailhead-cli/core';
-
-// Basic retry with exponential backoff
-const result = await retryWithBackoff(
-  async () => {
-    const response = await fetch('/api/data');
-    if (!response.ok) {
-      return Err({
-        code: 'API_ERROR',
-        message: 'Request failed',
-        recoverable: true,
-      });
-    }
-    return Ok(await response.json());
-  },
-  { maxRetries: 3, initialDelay: 1000 }
-);
-
-// Advanced retry with pre-configured strategies
-const apiResult = await retryAdvanced(async () => callUnreliableAPI(), {
-  ...RetryStrategies.network(), // 3 retries, 1s-10s delays, with jitter
-  onFailedAttempt: (error, attempt, retriesLeft) => {
-    logger.warn(`Attempt ${attempt} failed: ${error.message}`);
-  },
-});
-
-// Circuit breaker pattern for preventing cascading failures
-const breaker = createCircuitBreaker({
-  failureThreshold: 5,
-  resetTimeout: 60000,
-});
-
-const protectedResult = await breaker.execute(
-  async () => callProtectedService(),
-  RetryStrategies.conservative()
-);
-
-// Retry with overall timeout
-const timedResult = await retryWithTimeout(
-  async () => slowOperation(),
-  5000, // 5 second timeout
-  { retries: 10 }
-);
-```
-
-Available retry strategies:
-
-- `RetryStrategies.conservative()` - 5 retries, 2-30s delays
-- `RetryStrategies.aggressive()` - 10 retries, 100ms-5s delays
-- `RetryStrategies.network()` - 3 retries with jitter for network calls
-- `RetryStrategies.filesystem()` - 2 retries, minimal delays
-- `RetryStrategies.infinite()` - Unlimited retries (use with caution)
-
-### Command (`@esteban-url/trailhead-cli/command`)
-
-Command creation and execution patterns:
-
-```typescript
-import { createCommand, executeWithPhases } from '@esteban-url/trailhead-cli/command';
-import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command';
-
-// Phased execution
-const phases = [
-  { name: 'Validate', execute: validatePhase },
-  { name: 'Process', execute: processPhase },
-  { name: 'Complete', execute: completePhase },
-];
-
-const result = await executeWithPhases(phases, data, context);
-```
-
-### FileSystem (`@esteban-url/trailhead-cli/filesystem`)
-
-Powerful filesystem operations built on fs-extra with Result type safety:
-
-```typescript
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
-
-const fs = createFileSystem();
-
-// Basic operations
-const content = await fs.readFile('config.json');
-const writeResult = await fs.writeFile('output.txt', 'data');
-const exists = await fs.exists('some-file.txt');
-
-// Advanced operations (powered by fs-extra)
-const copyResult = await fs.copy('src', 'dest', { recursive: true });
-const moveResult = await fs.move('old-path', 'new-path');
-const removeResult = await fs.remove('temp-dir'); // Recursive removal
-const emptyResult = await fs.emptyDir('cache'); // Empty directory
-const outputResult = await fs.outputFile('deep/path/file.txt', 'content'); // Auto-create dirs
-
-// JSON operations
-const data = await fs.readJson('package.json');
-const writeJsonResult = await fs.writeJson('output.json', { name: 'test' });
-```
-
-### Configuration (`@esteban-url/trailhead-cli/config`)
-
-Type-safe configuration management:
-
-```typescript
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config';
-import { z } from 'zod';
-
-const configSchema = z.object({
-  api: z.object({
-    endpoint: z.string().url(),
-    timeout: z.number().default(30000),
-  }),
-});
-
-const config = defineConfig(configSchema);
-const result = await config.load();
-```
-
-### Prompts (`@esteban-url/trailhead-cli/prompts`)
-
-Interactive user prompts:
-
-```typescript
-import { prompt, select, confirm } from '@esteban-url/trailhead-cli/prompts';
-
-const name = await prompt({
-  message: 'What is your name?',
-  validate: value => value.length > 0 || 'Name is required',
-});
-
-const framework = await select({
-  message: 'Choose a framework',
-  choices: ['React', 'Vue', 'Angular'],
-});
-```
-
-### Testing (`@esteban-url/trailhead-cli/testing`)
-
-Comprehensive testing utilities:
-
-```typescript
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing';
-
-describe('MyCommand', () => {
-  it('should execute successfully', async () => {
-    const fs = mockFileSystem({
-      'config.json': '{"key": "value"}',
-    });
-
-    const context = createTestContext({ filesystem: fs });
-    const result = await myCommand.execute(context);
-
-    expect(result.success).toBe(true);
-  });
-});
-```
-
 ## Architecture
 
-The framework follows functional programming principles:
+Built on functional programming principles:
 
-- **No classes** - Pure functions and data
+- **Pure functions** - No classes, predictable behavior
 - **Immutable data** - All modifications return new objects
 - **Explicit errors** - Result types instead of exceptions
 - **Dependency injection** - All I/O through context
@@ -344,141 +177,9 @@ pnpm lint
 4. **Validate early** - Use validation pipelines for input
 5. **Provide rich errors** - Include context and recovery suggestions
 
-## Basic CLI Application
+## Examples
 
-```typescript
-import { createCLI, Ok, Err, createCommand, createFileSystem } from '@esteban-url/trailhead-cli';
-
-// Example: Config command
-const configCommand = createCommand({
-  name: 'config',
-  description: 'Manage configuration',
-  subcommands: [
-    createCommand({
-      name: 'get',
-      description: 'Get config value',
-      options: [
-        {
-          name: 'key',
-          alias: 'k',
-          type: 'string',
-          required: true,
-          description: 'Configuration key to get',
-        },
-      ],
-      action: async (options, context) => {
-        const fs = createFileSystem();
-        const result = await fs.readFile('./config.json');
-
-        if (!result.success) {
-          return Err(new Error('Config file not found'));
-        }
-
-        const config = JSON.parse(result.value);
-        const value = config[options.key];
-
-        if (value === undefined) {
-          return Err(new Error(`Key "${options.key}" not found`));
-        }
-
-        context.logger.info(`${options.key}: ${value}`);
-        return Ok(undefined);
-      },
-    }),
-    createCommand({
-      name: 'set',
-      description: 'Set config value',
-      options: [
-        {
-          name: 'key',
-          alias: 'k',
-          type: 'string',
-          required: true,
-          description: 'Configuration key to set',
-        },
-        {
-          name: 'value',
-          alias: 'v',
-          type: 'string',
-          required: true,
-          description: 'Configuration value to set',
-        },
-      ],
-      action: async (options, context) => {
-        const fs = createFileSystem();
-
-        // Read existing config or create new
-        const readResult = await fs.readFile('./config.json');
-        const config = readResult.success ? JSON.parse(readResult.value) : {};
-
-        // Update config
-        config[options.key] = options.value;
-
-        // Write back
-        const writeResult = await fs.writeFile('./config.json', JSON.stringify(config, null, 2));
-
-        if (!writeResult.success) {
-          return writeResult;
-        }
-
-        context.logger.success(`Set ${options.key} = ${options.value}`);
-        return Ok(undefined);
-      },
-    }),
-  ],
-});
-
-// Create init command
-const initCommand = createCommand({
-  name: 'init',
-  description: 'Initialize project',
-  options: [
-    {
-      name: 'template',
-      alias: 't',
-      type: 'string',
-      default: 'default',
-      description: 'Template to use for initialization',
-    },
-    {
-      name: 'force',
-      alias: 'f',
-      type: 'boolean',
-      default: false,
-      description: 'Force overwrite existing configuration',
-    },
-  ],
-  action: async (options, context) => {
-    const fs = createFileSystem();
-
-    const exists = await fs.exists('./config.json');
-    if (exists.success && exists.value && !options.force) {
-      return Err(new Error('Already initialized. Use --force to overwrite.'));
-    }
-
-    const config = { template: options.template, created: new Date() };
-    const result = await fs.writeFile('./config.json', JSON.stringify(config, null, 2));
-
-    if (!result.success) {
-      return Err(new Error(`Failed: ${result.error.message}`));
-    }
-
-    context.logger.success('Initialized successfully!');
-    return Ok(undefined);
-  },
-});
-
-// Create CLI with all commands
-const cli = createCLI({
-  name: 'my-app',
-  version: '1.0.0',
-  description: 'My CLI application',
-  commands: [configCommand, initCommand],
-});
-
-// Run the CLI
-cli.run(process.argv);
-```
+See the [examples directory](./examples/) for complete CLI applications and usage patterns.
 
 ## License
 
