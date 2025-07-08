@@ -5,7 +5,23 @@
     "no-console": "warn",
     "prefer-const": "error",
     "eqeqeq": ["error", "always"],
-    "no-debugger": "error"
+    "no-debugger": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-unused-prop-types": "error",
+    "react/prefer-stateless-function": "warn",
+    "react/jsx-pascal-case": "error",
+    "react/jsx-no-bind": "warn",
+    "react/no-direct-mutation-state": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-key": "error",
+    "react/no-deprecated": "warn",
+    "react/no-string-refs": "error"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "ignorePatterns": [
     "dist",
