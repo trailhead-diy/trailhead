@@ -16,13 +16,10 @@ export function createTask<T = any>(
   task: (ctx: T, task: any) => Promise<any> | any,
   options?: {
     enabled?: boolean | ((ctx: T) => boolean);
-    skip?:
-      | boolean
-      | string
-      | ((ctx: T) => boolean | string | Promise<boolean | string>);
+    skip?: boolean | string | ((ctx: T) => boolean | string | Promise<boolean | string>);
     retry?: number;
     rollback?: (ctx: T, task: any) => Promise<any> | any;
-  },
+  }
 ) {
   return {
     title,
@@ -40,7 +37,7 @@ export function createTaskList(
     concurrent?: boolean;
     exitOnError?: boolean;
     rendererOptions?: any;
-  },
+  }
 ) {
   return new Listr(tasks, {
     concurrent: options?.concurrent ?? false,

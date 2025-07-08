@@ -33,13 +33,13 @@ export function CatalystAvatar({
         square
           ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)'
           : 'rounded-full *:rounded-full',
-        className,
+        className
       )}
     >
       {initials && (
         <svg
           className={cn(
-            'size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none',
+            'size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none'
           )}
           viewBox="0 0 100 100"
           aria-hidden={alt ? undefined : 'true'}
@@ -75,38 +75,24 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
     ),
-  ref: React.ForwardedRef<HTMLElement>,
+  ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
     square ? 'rounded-[20%]' : 'rounded-full',
     'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
-    className,
+    className
   );
 
   return 'href' in props ? (
-    <CatalystLink
-      {...props}
-      className={classes}
-      ref={ref as React.ForwardedRef<HTMLAnchorElement>}
-    >
+    <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>
-        <CatalystAvatar
-          src={src}
-          square={square}
-          initials={initials}
-          alt={alt}
-        />
+        <CatalystAvatar src={src} square={square} initials={initials} alt={alt} />
       </CatalystTouchTarget>
     </CatalystLink>
   ) : (
     <Headless.Button {...props} className={classes} ref={ref}>
       <CatalystTouchTarget>
-        <CatalystAvatar
-          src={src}
-          square={square}
-          initials={initials}
-          alt={alt}
-        />
+        <CatalystAvatar src={src} square={square} initials={initials} alt={alt} />
       </CatalystTouchTarget>
     </Headless.Button>
   );

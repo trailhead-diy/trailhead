@@ -6,14 +6,10 @@ export type ButtonProps = ComponentProps<typeof CatalystButton>;
 
 export const Button = forwardRef<HTMLElement, ButtonProps>(
   ({ className, children, ...props }, ref) => (
-    <CatalystButton
-      ref={ref}
-      {...(className && { className: cn(className) })}
-      {...props}
-    >
+    <CatalystButton ref={ref} {...(className && { className: cn(className) })} {...props}>
       {children}
     </CatalystButton>
-  ),
+  )
 );
 
 Button.displayName = 'Button';

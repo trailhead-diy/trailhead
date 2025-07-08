@@ -16,21 +16,13 @@ export const Checkbox = ({ className, children, ...props }: CheckboxProps) => (
   </CatalystCheckbox>
 );
 
-export const CheckboxGroup = ({
-  className,
-  children,
-  ...props
-}: CheckboxGroupProps) => (
+export const CheckboxGroup = ({ className, children, ...props }: CheckboxGroupProps) => (
   <CatalystCheckboxGroup className={cn(className)} {...props}>
     {children}
   </CatalystCheckboxGroup>
 );
 
-export const CheckboxField = ({
-  className,
-  children,
-  ...props
-}: CheckboxFieldProps) => (
+export const CheckboxField = ({ className, children, ...props }: CheckboxFieldProps) => (
   <CatalystCheckboxField className={cn(className)} {...props}>
     {children}
   </CatalystCheckboxField>

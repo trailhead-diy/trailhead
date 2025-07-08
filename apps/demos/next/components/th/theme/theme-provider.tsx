@@ -1,17 +1,7 @@
 'use client';
 
-import {
-  useEffect,
-  useState,
-  useCallback,
-  createContext,
-  useContext,
-  type ReactNode,
-} from 'react';
-import {
-  ThemeProvider as NextThemesProvider,
-  useTheme as useNextTheme,
-} from 'next-themes';
+import { useEffect, useState, useCallback, createContext, useContext, type ReactNode } from 'react';
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'next-themes';
 import {
   createThemeMap,
   addTheme as addThemeToMap,
@@ -40,10 +30,7 @@ const ThemeContext = createContext<{
 /**
  * Parse theme name and dark mode state from next-themes format
  */
-function parseTheme(
-  theme: string | undefined,
-  systemTheme: string | undefined,
-): [string, boolean] {
+function parseTheme(theme: string | undefined, systemTheme: string | undefined): [string, boolean] {
   let currentTheme = 'zinc';
   let isDark = false;
 
@@ -116,14 +103,11 @@ export function useTheme(): ThemeContextValue {
       // Set theme with current dark mode state
       nextSetTheme(isDark ? `${name}-dark` : name);
     },
-    [themes, isDark, nextSetTheme],
+    [themes, isDark, nextSetTheme]
   );
 
   const toggleDarkMode = useCallback(() => {
-    if (
-      currentTheme === 'zinc' &&
-      (theme === 'light' || theme === 'dark' || theme === 'system')
-    ) {
+    if (currentTheme === 'zinc' && (theme === 'light' || theme === 'dark' || theme === 'system')) {
       // Toggle global dark mode
       nextSetTheme(isDark ? 'light' : 'dark');
     } else {
@@ -136,7 +120,7 @@ export function useTheme(): ThemeContextValue {
     (name: string, config: TrailheadThemeConfig) => {
       addTheme(name, config);
     },
-    [addTheme],
+    [addTheme]
   );
 
   return {
@@ -171,17 +155,12 @@ export function ThemeProvider({
 
   // Add theme function that updates state
   const addTheme = useCallback((name: string, config: TrailheadThemeConfig) => {
-    setThemes((current) => addThemeToMap(current, name, config));
+    setThemes(current => addThemeToMap(current, name, config));
   }, []);
 
   // Generate all possible theme names
   const availableThemes = getThemeNames(themes);
-  const allThemes = [
-    'light',
-    'dark',
-    ...availableThemes,
-    ...availableThemes.map((t) => `${t}-dark`),
-  ];
+  const allThemes = ['light', 'dark', ...availableThemes, ...availableThemes.map(t => `${t}-dark`)];
 
   return (
     <ThemeContext.Provider value={{ themes, addTheme }}>

@@ -1,7 +1,7 @@
 ---
 type: tutorial
-title: "Build Your First CLI Application"
-description: "Create a working CLI tool in 15 minutes using functional programming"
+title: 'Build Your First CLI Application'
+description: 'Create a working CLI tool in 15 minutes using functional programming'
 prerequisites:
   - Node.js 18+ installed
   - Basic TypeScript knowledge
@@ -74,20 +74,20 @@ Let's build a simple greeting CLI that demonstrates core concepts.
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { Ok } from "@esteban-url/trailhead-cli";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type { CommandContext } from "@esteban-url/trailhead-cli/command";
+import { Ok } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { CommandContext } from '@esteban-url/trailhead-cli/command';
 
 export const greetCommand = createCommand({
-  name: "greet",
-  description: "Greet someone",
+  name: 'greet',
+  description: 'Greet someone',
   options: [
     {
-      name: "name",
-      alias: "n",
-      description: "Name to greet",
-      type: "string",
-      default: "World",
+      name: 'name',
+      alias: 'n',
+      description: 'Name to greet',
+      type: 'string',
+      default: 'World',
     },
   ],
   action: async (options, context: CommandContext) => {
@@ -103,13 +103,13 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from "@esteban-url/trailhead-cli";
-import { greetCommand } from "./commands/greet";
+import { createCLI } from '@esteban-url/trailhead-cli';
+import { greetCommand } from './commands/greet';
 
 const cli = createCLI({
-  name: "hello-cli",
-  version: "1.0.0",
-  description: "My first CLI application",
+  name: 'hello-cli',
+  version: '1.0.0',
+  description: 'My first CLI application',
   commands: [greetCommand],
 });
 
@@ -134,13 +134,13 @@ node dist/index.js greet --name World
 @esteban-url/trailhead-cli uses Result types for explicit error handling:
 
 ```typescript
-import { Ok, Err } from "@esteban-url/trailhead-cli";
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 // Success
 return Ok(data);
 
 // Error
-return Err(new Error("Something went wrong"));
+return Err(new Error('Something went wrong'));
 ```
 
 ### Command Context
@@ -148,16 +148,16 @@ return Err(new Error("Something went wrong"));
 Every command receives a context with useful utilities:
 
 ```typescript
-import type { CommandContext } from "@esteban-url/trailhead-cli/command";
+import type { CommandContext } from '@esteban-url/trailhead-cli/command';
 
 async function myAction(options: any, context: CommandContext) {
   // Logger for output
-  context.logger.info("Processing...");
-  context.logger.success("Done!");
-  context.logger.error("Failed!");
+  context.logger.info('Processing...');
+  context.logger.success('Done!');
+  context.logger.error('Failed!');
 
   // File system access
-  const result = await context.fs.readFile("config.json");
+  const result = await context.fs.readFile('config.json');
 
   // Project root directory
   console.log(context.projectRoot);
@@ -169,20 +169,20 @@ async function myAction(options: any, context: CommandContext) {
 ### Add File Operations
 
 ```typescript
-import { Ok, Err } from "@esteban-url/trailhead-cli";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
+import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 const readCommand = createCommand({
-  name: "read",
-  description: "Read a file",
+  name: 'read',
+  description: 'Read a file',
   options: [
     {
-      name: "file",
-      alias: "f",
-      type: "string",
+      name: 'file',
+      alias: 'f',
+      type: 'string',
       required: true,
-      description: "File to read",
+      description: 'File to read',
     },
   ],
   action: async (options, context) => {
@@ -202,22 +202,22 @@ const readCommand = createCommand({
 ### Add Interactive Prompts
 
 ```typescript
-import { Ok } from "@esteban-url/trailhead-cli";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import { prompt, select } from "@esteban-url/trailhead-cli/prompts";
+import { Ok } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { prompt, select } from '@esteban-url/trailhead-cli/prompts';
 
 const initCommand = createCommand({
-  name: "init",
-  description: "Initialize a project",
+  name: 'init',
+  description: 'Initialize a project',
   action: async (options, context) => {
     const name = await prompt({
-      message: "Project name:",
-      default: "my-project",
+      message: 'Project name:',
+      default: 'my-project',
     });
 
     const template = await select({
-      message: "Choose a template:",
-      choices: ["basic", "advanced", "minimal"],
+      message: 'Choose a template:',
+      choices: ['basic', 'advanced', 'minimal'],
     });
 
     context.logger.success(`Created ${name} with ${template} template`);
@@ -229,8 +229,8 @@ const initCommand = createCommand({
 ### Add Configuration
 
 ```typescript
-import { defineConfig } from "@esteban-url/trailhead-cli/config";
-import { z } from "zod";
+import { defineConfig } from '@esteban-url/trailhead-cli/config';
+import { z } from 'zod';
 
 const configSchema = z.object({
   name: z.string(),
@@ -256,19 +256,19 @@ Here's a minimal but complete CLI application:
 
 ```typescript
 #!/usr/bin/env node
-import { Ok, Err, createCLI } from "@esteban-url/trailhead-cli";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem";
-import { prompt } from "@esteban-url/trailhead-cli/prompts";
+import { Ok, Err, createCLI } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { prompt } from '@esteban-url/trailhead-cli/prompts';
 
 const mainCommand = createCommand({
-  name: "process",
-  description: "Process a file interactively",
+  name: 'process',
+  description: 'Process a file interactively',
   action: async (options, context) => {
     // Get filename
     const filename = await prompt({
-      message: "Which file to process?",
-      validate: (input) => input.length > 0,
+      message: 'Which file to process?',
+      validate: input => input.length > 0,
     });
 
     // Read file
@@ -281,7 +281,7 @@ const mainCommand = createCommand({
     }
 
     // Process content
-    const lines = result.value.split("\n").length;
+    const lines = result.value.split('\n').length;
     context.logger.success(`Processed ${lines} lines from ${filename}`);
 
     return Ok(undefined);
@@ -289,9 +289,9 @@ const mainCommand = createCommand({
 });
 
 const cli = createCLI({
-  name: "my-cli",
-  version: "1.0.0",
-  description: "A complete example CLI",
+  name: 'my-cli',
+  version: '1.0.0',
+  description: 'A complete example CLI',
   commands: [mainCommand],
 });
 

@@ -40,16 +40,14 @@ export interface CommandConfig<T extends CommandOptions> {
  */
 export type CommandAction<T extends CommandOptions> = (
   options: T,
-  context: CommandContext,
+  context: CommandContext
 ) => Promise<Result<void>>;
 
 /**
  * Command validation function type
  * @template T - Command options type
  */
-export type CommandValidator<T extends CommandOptions> = (
-  options: T,
-) => Result<T>;
+export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T>;
 
 /**
  * Create a command object for use with createCLI
@@ -118,14 +116,12 @@ export type CommandValidator<T extends CommandOptions> = (
  * ```
  */
 export function createCommand<T extends CommandOptions>(
-  config: CommandConfig<T>,
+  config: CommandConfig<T>
 ): import('./types.js').Command<T> {
   // Validate configuration
   const validationResult = validateCommandConfigWithCache(config);
   if (!validationResult.success) {
-    throw new Error(
-      `Invalid command configuration: ${validationResult.error.message}`,
-    );
+    throw new Error(`Invalid command configuration: ${validationResult.error.message}`);
   }
 
   return {

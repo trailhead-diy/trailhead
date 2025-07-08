@@ -13,12 +13,8 @@ export const Avatar = ({ className, children, ...props }: AvatarProps) => (
 
 export const AvatarButton = forwardRef<HTMLElement, AvatarButtonProps>(
   ({ className, ...props }, ref) => (
-    <CatalystAvatarButton
-      ref={ref}
-      {...(className && { className: cn(className) })}
-      {...props}
-    />
-  ),
+    <CatalystAvatarButton ref={ref} {...(className && { className: cn(className) })} {...props} />
+  )
 );
 
 AvatarButton.displayName = 'AvatarButton';

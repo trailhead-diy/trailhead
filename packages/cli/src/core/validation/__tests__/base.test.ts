@@ -413,7 +413,7 @@ describe('Validation Base', () => {
     describe('map transformation', () => {
       it('should transform successful values', () => {
         const stringValidator = createValidator(string());
-        const upperCaseValidator = stringValidator.map((s) => s.toUpperCase());
+        const upperCaseValidator = stringValidator.map(s => s.toUpperCase());
 
         const result = upperCaseValidator.validate('hello');
         expect(result.success).toBe(true);
@@ -433,7 +433,7 @@ describe('Validation Base', () => {
 
       it('should pass through validation errors', () => {
         const stringValidator = createValidator(string());
-        const upperCaseValidator = stringValidator.map((s) => s.toUpperCase());
+        const upperCaseValidator = stringValidator.map(s => s.toUpperCase());
 
         const result = upperCaseValidator.validate(123);
         expect(result.success).toBe(false);
@@ -444,7 +444,7 @@ describe('Validation Base', () => {
     describe('mapError transformation', () => {
       it('should transform error messages', () => {
         const stringValidator = createValidator(string());
-        const customErrorValidator = stringValidator.mapError((error) => ({
+        const customErrorValidator = stringValidator.mapError(error => ({
           ...error,
           message: `Custom: ${error.message}`,
         }));
@@ -456,7 +456,7 @@ describe('Validation Base', () => {
 
       it('should pass through successful results', () => {
         const stringValidator = createValidator(string());
-        const customErrorValidator = stringValidator.mapError((error) => ({
+        const customErrorValidator = stringValidator.mapError(error => ({
           ...error,
           message: `Custom: ${error.message}`,
         }));
@@ -472,11 +472,7 @@ describe('Validation Base', () => {
     describe('pattern', () => {
       it('should validate strings matching pattern', () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const validator = pattern(
-          emailPattern,
-          'Invalid email format',
-          'email',
-        );
+        const validator = pattern(emailPattern, 'Invalid email format', 'email');
 
         const result = validator('user@example.com');
         expect(result.success).toBe(true);
@@ -485,11 +481,7 @@ describe('Validation Base', () => {
 
       it('should reject strings not matching pattern', () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const validator = pattern(
-          emailPattern,
-          'Invalid email format',
-          'email',
-        );
+        const validator = pattern(emailPattern, 'Invalid email format', 'email');
 
         const result = validator('invalid-email');
         expect(result.success).toBe(false);
@@ -521,9 +513,7 @@ describe('Validation Base', () => {
 
         const result = validator('ab');
         expect(result.success).toBe(false);
-        expect(result.error.message).toBe(
-          'username must be at least 3 characters',
-        );
+        expect(result.error.message).toBe('username must be at least 3 characters');
       });
 
       it('should reject strings too long', () => {
@@ -531,9 +521,7 @@ describe('Validation Base', () => {
 
         const result = validator('verylongusername');
         expect(result.success).toBe(false);
-        expect(result.error.message).toBe(
-          'username must be at most 10 characters',
-        );
+        expect(result.error.message).toBe('username must be at most 10 characters');
       });
 
       it('should handle min-only constraint', () => {
@@ -544,9 +532,7 @@ describe('Validation Base', () => {
 
         const invalidResult = validator('hi');
         expect(invalidResult.success).toBe(false);
-        expect(invalidResult.error.message).toBe(
-          'String must be at least 5 characters',
-        );
+        expect(invalidResult.error.message).toBe('String must be at least 5 characters');
       });
 
       it('should handle max-only constraint', () => {
@@ -557,9 +543,7 @@ describe('Validation Base', () => {
 
         const invalidResult = validator('toolong');
         expect(invalidResult.success).toBe(false);
-        expect(invalidResult.error.message).toBe(
-          'String must be at most 5 characters',
-        );
+        expect(invalidResult.error.message).toBe('String must be at most 5 characters');
       });
     });
 
@@ -616,9 +600,7 @@ describe('Validation Base', () => {
 
         const result = validator('yellow');
         expect(result.success).toBe(false);
-        expect(result.error.message).toBe(
-          'color must be one of: red, green, blue',
-        );
+        expect(result.error.message).toBe('color must be one of: red, green, blue');
       });
 
       it('should reject non-strings', () => {
@@ -751,12 +733,10 @@ describe('Validation Base', () => {
 
     it('should handle validator composition chains', () => {
       const emailValidator = createValidator(
-        pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format', 'email'),
+        pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format', 'email')
       );
 
-      const lowercaseEmailValidator = emailValidator.map((email) =>
-        email.toLowerCase(),
-      );
+      const lowercaseEmailValidator = emailValidator.map(email => email.toLowerCase());
 
       const result = lowercaseEmailValidator.validate('USER@EXAMPLE.COM');
       expect(result.success).toBe(true);
@@ -764,9 +744,7 @@ describe('Validation Base', () => {
     });
 
     it('should handle union types with or composition', () => {
-      const stringOrNumberValidator = createValidator(string()).or(
-        createValidator(number()),
-      );
+      const stringOrNumberValidator = createValidator(string()).or(createValidator(number()));
 
       const stringResult = stringOrNumberValidator.validate('hello');
       expect(stringResult.success).toBe(true);

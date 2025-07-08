@@ -47,11 +47,7 @@ export interface FileSystem {
   // Custom convenience operations (built on native fs)
   ensureDir(path: string): Promise<Result<void>>;
   readJson<T = any>(path: string): Promise<Result<T>>;
-  writeJson<T = any>(
-    path: string,
-    data: T,
-    options?: { spaces?: number },
-  ): Promise<Result<void>>;
+  writeJson<T = any>(path: string, data: T, options?: { spaces?: number }): Promise<Result<void>>;
   emptyDir(path: string): Promise<Result<void>>;
   outputFile(path: string, content: string): Promise<Result<void>>;
 

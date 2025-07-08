@@ -13,41 +13,32 @@ interface TestConfig {
 }
 
 // Risk detection logic extracted for testing
-function detectRiskLevel(
-  stagedFiles: string,
-  config: TestConfig,
-): 'high' | 'medium' | 'skip' {
+function detectRiskLevel(stagedFiles: string, config: TestConfig): 'high' | 'medium' | 'skip' {
   const files = stagedFiles
     .trim()
     .split('\n')
-    .filter((f) => f.length > 0);
+    .filter(f => f.length > 0);
 
   // Build patterns
   const highRiskPattern = config.highRiskPatterns.join('|');
   const skipPattern = config.skipPatterns.join('|');
 
   // Check for high-risk files
-  const hasHighRisk = files.some((file) =>
-    new RegExp(highRiskPattern).test(file),
-  );
+  const hasHighRisk = files.some(file => new RegExp(highRiskPattern).test(file));
 
   if (hasHighRisk) {
     return 'high';
   }
 
   // Check if all files match skip patterns first
-  const nonSkipFiles = files.filter(
-    (file) => !new RegExp(skipPattern).test(file),
-  );
+  const nonSkipFiles = files.filter(file => !new RegExp(skipPattern).test(file));
 
   if (nonSkipFiles.length === 0) {
     return 'skip';
   }
 
   // Check for package-specific changes among non-skip files
-  const hasPackageChanges = nonSkipFiles.some((file) =>
-    file.startsWith('packages/'),
-  );
+  const hasPackageChanges = nonSkipFiles.some(file => file.startsWith('packages/'));
 
   if (hasPackageChanges) {
     return 'medium';
@@ -62,11 +53,11 @@ function getAffectedPackages(stagedFiles: string): string[] {
   const files = stagedFiles
     .trim()
     .split('\n')
-    .filter((f) => f.length > 0);
+    .filter(f => f.length > 0);
 
   const packages = files
-    .filter((file) => /^packages\/([^/]+)\//.test(file))
-    .map((file) => {
+    .filter(file => /^packages\/([^/]+)\//.test(file))
+    .map(file => {
       const match = file.match(/^packages\/([^/]+)\//);
       return match ? match[1] : null;
     })
@@ -154,15 +145,13 @@ describe('Git Hooks - Risk Detection', () => {
 
   describe('Medium-Risk Detection (Package Changes)', () => {
     it('should detect package-specific non-code changes as medium-risk', () => {
-      const files =
-        'packages/cli/test-file.txt\npackages/web-ui/docs/example.md';
+      const files = 'packages/cli/test-file.txt\npackages/web-ui/docs/example.md';
       const risk = detectRiskLevel(files, defaultConfig);
       expect(risk).toBe('medium');
     });
 
     it('should detect multiple package changes as medium-risk', () => {
-      const files =
-        'packages/cli/assets/icon.png\npackages/web-ui/stories/Button.stories.tsx';
+      const files = 'packages/cli/assets/icon.png\npackages/web-ui/stories/Button.stories.tsx';
       const risk = detectRiskLevel(files, defaultConfig);
       expect(risk).toBe('high'); // .tsx is high-risk
     });
@@ -243,15 +232,13 @@ describe('Git Hooks - Package Detection', () => {
     });
 
     it('should handle duplicate packages', () => {
-      const files =
-        'packages/cli/src/index.ts\npackages/cli/src/utils.ts\npackages/cli/README.md';
+      const files = 'packages/cli/src/index.ts\npackages/cli/src/utils.ts\npackages/cli/README.md';
       const packages = getAffectedPackages(files);
       expect(packages).toEqual(['cli']);
     });
 
     it('should ignore non-package files', () => {
-      const files =
-        'README.md\nsrc/index.ts\npackages/cli/src/index.ts\ndocs/guide.md';
+      const files = 'README.md\nsrc/index.ts\npackages/cli/src/index.ts\ndocs/guide.md';
       const packages = getAffectedPackages(files);
       expect(packages).toEqual(['cli']);
     });
@@ -334,7 +321,7 @@ describe('Git Hooks - Configuration Validation', () => {
     it('should validate high-risk patterns are proper regex', () => {
       const patterns = ['\\.(ts|tsx|js|jsx)$', 'package\\.json$', 'tsconfig'];
 
-      patterns.forEach((pattern) => {
+      patterns.forEach(pattern => {
         expect(() => new RegExp(pattern)).not.toThrow();
       });
     });
@@ -342,7 +329,7 @@ describe('Git Hooks - Configuration Validation', () => {
     it('should validate skip patterns are proper regex', () => {
       const patterns = ['\\.md$', 'README', '\\.github/', 'docs/'];
 
-      patterns.forEach((pattern) => {
+      patterns.forEach(pattern => {
         expect(() => new RegExp(pattern)).not.toThrow();
       });
     });
@@ -411,8 +398,7 @@ describe('Git Hooks - Integration Scenarios', () => {
     });
 
     it('should handle documentation updates across packages', () => {
-      const files =
-        'packages/cli/README.md\npackages/web-ui/README.md\ndocs/architecture.md';
+      const files = 'packages/cli/README.md\npackages/web-ui/README.md\ndocs/architecture.md';
       const risk = detectRiskLevel(files, testConfig);
       const packages = getAffectedPackages(files);
 

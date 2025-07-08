@@ -65,14 +65,11 @@ async function askConfirmation(question) {
     output: process.stdout,
   });
 
-  return new Promise((resolve) => {
-    rl.question(
-      `${colors.yellow}${question} (y/N): ${colors.reset}`,
-      (answer) => {
-        rl.close();
-        resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
-      },
-    );
+  return new Promise(resolve => {
+    rl.question(`${colors.yellow}${question} (y/N): ${colors.reset}`, answer => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+    });
   });
 }
 
@@ -143,7 +140,7 @@ function popStash(stashMessage) {
 
   // Look for our stash message in the list
   const stashLines = stashListResult.output.split('\n');
-  const stashEntry = stashLines.find((line) => line.includes(stashMessage));
+  const stashEntry = stashLines.find(line => line.includes(stashMessage));
 
   if (!stashEntry) {
     logWarning(`Could not find stash with message: ${stashMessage}`);
@@ -162,9 +159,7 @@ function popStash(stashMessage) {
   if (popResult.success) {
     logSuccess('Stashed changes restored successfully');
   } else {
-    logWarning(
-      'Failed to restore stashed changes - you may need to resolve manually',
-    );
+    logWarning('Failed to restore stashed changes - you may need to resolve manually');
     logInfo(`To restore manually, run: git stash pop ${stashRef}`);
   }
 }
@@ -221,7 +216,7 @@ function cleanDependencies() {
       // Handle glob patterns
       const result = execCommand(
         `find . -path "./${pathPattern}" -type d -exec rm -rf {} + 2>/dev/null || true`,
-        { silent: true },
+        { silent: true }
       );
       if (result.success) {
         logInfo(`Cleaned: ${pathPattern}`);
@@ -270,9 +265,7 @@ function validateEnvironment() {
   logInfo('Checking TypeScript...');
   const tsResult = execCommand('pnpm types', { silent: true });
   if (!tsResult.success) {
-    logWarning(
-      'TypeScript validation failed - you may need to fix type errors',
-    );
+    logWarning('TypeScript validation failed - you may need to fix type errors');
   } else {
     logSuccess('TypeScript validation passed');
   }
@@ -286,10 +279,7 @@ function showSummary() {
   log('\n' + '='.repeat(60), 'bright');
   log('🎉 Fresh Start Complete!', 'green');
   log('='.repeat(60), 'bright');
-  log(
-    'Your development environment has been reset to a clean state:',
-    'bright',
-  );
+  log('Your development environment has been reset to a clean state:', 'bright');
   log('• Git: Reset to latest main branch', 'green');
   log('• Dependencies: Freshly installed', 'green');
   log('• Build: All packages rebuilt', 'green');
@@ -301,10 +291,7 @@ function showSummary() {
 async function main() {
   try {
     log('🧹 Fresh Start - Complete Development Environment Reset', 'bright');
-    log(
-      'This will reset your environment to a clean, up-to-date state.\n',
-      'yellow',
-    );
+    log('This will reset your environment to a clean, up-to-date state.\n', 'yellow');
 
     // Pre-flight checks
     const currentBranch = getCurrentBranch();
@@ -330,7 +317,7 @@ async function main() {
         '• Reset to main branch (origin/main)\n' +
         '• Clean all dependencies and caches\n' +
         '• Reinstall dependencies and rebuild\n' +
-        '\nContinue?',
+        '\nContinue?'
     );
 
     if (!confirmed) {
@@ -362,10 +349,7 @@ async function main() {
     showSummary();
   } catch (error) {
     logError(`Fresh start failed: ${error.message}`);
-    log(
-      '\nYou may need to manually resolve the issue and try again.',
-      'yellow',
-    );
+    log('\nYou may need to manually resolve the issue and try again.', 'yellow');
     process.exit(1);
   }
 }

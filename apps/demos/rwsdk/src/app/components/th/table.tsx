@@ -38,40 +38,19 @@ export const Table = ({
   </CatalystTable>
 );
 
-export const TableHead = ({
-  className,
-  children,
-  ...props
-}: TableHeadProps) => (
-  <CatalystTableHead
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const TableHead = ({ className, children, ...props }: TableHeadProps) => (
+  <CatalystTableHead {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystTableHead>
 );
 
-export const TableBody = ({
-  className,
-  children,
-  ...props
-}: TableBodyProps) => (
-  <CatalystTableBody
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const TableBody = ({ className, children, ...props }: TableBodyProps) => (
+  <CatalystTableBody {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystTableBody>
 );
 
-export const TableRow = ({
-  className,
-  children,
-  href,
-  target,
-  title,
-  ...props
-}: TableRowProps) => (
+export const TableRow = ({ className, children, href, target, title, ...props }: TableRowProps) => (
   <CatalystTableRow
     href={href}
     target={target}
@@ -83,28 +62,14 @@ export const TableRow = ({
   </CatalystTableRow>
 );
 
-export const TableHeader = ({
-  className,
-  children,
-  ...props
-}: TableHeaderProps) => (
-  <CatalystTableHeader
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const TableHeader = ({ className, children, ...props }: TableHeaderProps) => (
+  <CatalystTableHeader {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystTableHeader>
 );
 
-export const TableCell = ({
-  className,
-  children,
-  ...props
-}: TableCellProps) => (
-  <CatalystTableCell
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const TableCell = ({ className, children, ...props }: TableCellProps) => (
+  <CatalystTableCell {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystTableCell>
 );

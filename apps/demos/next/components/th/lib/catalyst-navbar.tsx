@@ -5,11 +5,7 @@ import { LayoutGroup, motion } from 'framer-motion';
 import React, { forwardRef, useId } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import {
-  SemanticColorToken,
-  isSemanticToken,
-  createSemanticStyles,
-} from '../theme/index';
+import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index';
 import { cn } from '../utils/cn';
 
 export function CatalystNavbar({
@@ -17,16 +13,11 @@ export function CatalystNavbar({
   color,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'> & { color?: SemanticColorToken }) {
-  const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticStyles(color) : '';
+  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
   return (
     <nav
       {...props}
-      className={cn(
-        'flex flex-1 items-center gap-4 py-2.5',
-        resolvedColorClasses,
-        className,
-      )}
+      className={cn('flex flex-1 items-center gap-4 py-2.5', resolvedColorClasses, className)}
     />
   );
 }
@@ -61,13 +52,7 @@ export function CatalystNavbarSpacer({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div
-      aria-hidden="true"
-      {...props}
-      className={cn('-ml-4 flex-1', className)}
-    />
-  );
+  return <div aria-hidden="true" {...props} className={cn('-ml-4 flex-1', className)} />;
 }
 
 export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
@@ -80,7 +65,7 @@ export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
   ),
-  ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
+  ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
 ) {
   let classes = cn(
     // Base
@@ -98,7 +83,7 @@ export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
     // Dark mode
     'dark:text-foreground dark:*:data-[slot=icon]:fill-muted-foreground',
     'dark:data-hover:bg-accent dark:data-hover:*:data-[slot=icon]:fill-foreground',
-    'dark:data-active:bg-accent dark:data-active:*:data-[slot=icon]:fill-foreground',
+    'dark:data-active:bg-accent dark:data-active:*:data-[slot=icon]:fill-foreground'
   );
 
   return (
@@ -106,9 +91,7 @@ export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
       {current && (
         <motion.span
           layoutId="current-indicator"
-          className={cn(
-            'absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-primary',
-          )}
+          className={cn('absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-primary')}
         />
       )}
       {'href' in props ? (

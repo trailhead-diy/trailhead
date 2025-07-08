@@ -64,7 +64,7 @@ export function CatalystBadge({
       className={cn(
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline',
         resolvedColorClasses,
-        className,
+        className
       )}
     />
   );
@@ -80,19 +80,15 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
     ),
-  ref: React.ForwardedRef<HTMLElement>,
+  ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
     'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
-    className,
+    className
   );
 
   return 'href' in props ? (
-    <CatalystLink
-      {...props}
-      className={classes}
-      ref={ref as React.ForwardedRef<HTMLAnchorElement>}
-    >
+    <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>
         <CatalystBadge color={color}>{children}</CatalystBadge>
       </CatalystTouchTarget>

@@ -22,7 +22,7 @@ describe('Testing Assertions', () => {
       });
 
       expect(() => expectResult(result)).toThrow(
-        'Expected successful result, but got error: Something went wrong',
+        'Expected successful result, but got error: Something went wrong'
       );
     });
 
@@ -75,9 +75,7 @@ describe('Testing Assertions', () => {
     it('should throw for successful results', () => {
       const result = Ok('success');
 
-      expect(() => expectError(result)).toThrow(
-        'Expected error result, but operation succeeded',
-      );
+      expect(() => expectError(result)).toThrow('Expected error result, but operation succeeded');
     });
 
     it('should work with different error types', () => {
@@ -141,10 +139,7 @@ describe('Testing Assertions', () => {
     });
 
     it('should work in conditional scenarios', () => {
-      function handleResult(
-        result: Result<number, string>,
-        expectSuccess: boolean,
-      ): number {
+      function handleResult(result: Result<number, string>, expectSuccess: boolean): number {
         if (expectSuccess) {
           expectResult(result);
           return result.value * 2;
@@ -196,7 +191,7 @@ describe('Testing Assertions', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         expect((error as Error).message).toBe(
-          'Expected successful result, but got error: Name field is required',
+          'Expected successful result, but got error: Name field is required'
         );
       }
     });

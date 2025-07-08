@@ -60,7 +60,7 @@ export default function TablePage(): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
+              {users.map(user => (
                 <TableRow key={user.email}>
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>

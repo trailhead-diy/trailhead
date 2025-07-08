@@ -16,10 +16,7 @@ export {
   validateCommandConfigWithCache,
 } from './validation.js';
 
-export {
-  processOptionWithCache,
-  processCommandOptionsWithCache,
-} from './performance.js';
+export { processOptionWithCache, processCommandOptionsWithCache } from './performance.js';
 
 export {
   executeInteractiveCommand as executeInteractive,
@@ -34,12 +31,7 @@ export {
   displaySummary, // Formatted configuration/result display
 } from './patterns.js';
 
-export type {
-  CommandOptions,
-  CommandConfig,
-  CommandAction,
-  CommandValidator,
-} from './base.js';
+export type { CommandOptions, CommandConfig, CommandAction, CommandValidator } from './base.js';
 
 export type {
   InteractiveCommandOptions,

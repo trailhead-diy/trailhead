@@ -34,9 +34,7 @@ function normalizePath(path: string): string {
  * }
  * ```
  */
-export function createMemoryFileSystem(
-  initialFiles: Record<string, string> = {},
-): FileSystem {
+export function createMemoryFileSystem(initialFiles: Record<string, string> = {}): FileSystem {
   // Normalize all initial file paths
   const files = new Map<string, string>();
   for (const [path, content] of Object.entries(initialFiles)) {
@@ -159,11 +157,7 @@ export function createMemoryFileSystem(
       }
     },
 
-    async writeJson<T = any>(
-      path: string,
-      data: T,
-      options?: { spaces?: number },
-    ) {
+    async writeJson<T = any>(path: string, data: T, options?: { spaces?: number }) {
       const spaces = options?.spaces ?? 2;
       const content = JSON.stringify(data, null, spaces);
       return this.writeFile(path, content);
@@ -238,10 +232,7 @@ export function createMemoryFileSystem(
       });
     },
 
-    async rm(
-      path: string,
-      _options?: { recursive?: boolean; force?: boolean },
-    ) {
+    async rm(path: string, _options?: { recursive?: boolean; force?: boolean }) {
       const normalizedPath = normalizePath(path);
 
       // Remove file if it exists

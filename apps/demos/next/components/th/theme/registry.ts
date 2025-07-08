@@ -43,13 +43,11 @@ export const createThemeMap = (): ThemeMap => {
 export const addTheme = (
   themes: ThemeMap,
   name: string,
-  config: TrailheadThemeConfig,
+  config: TrailheadThemeConfig
 ): ThemeMap => {
   const validation = validateTheme(config);
   if (!validation.isValid) {
-    throw new Error(
-      `Invalid theme configuration for "${name}": ${validation.errors.join(', ')}`,
-    );
+    throw new Error(`Invalid theme configuration for "${name}": ${validation.errors.join(', ')}`);
   }
 
   // Create new map with added theme
@@ -62,10 +60,7 @@ export const addTheme = (
  * Get a theme from the map
  * Pure function - no side effects
  */
-export const getTheme = (
-  themes: ThemeMap,
-  name: string,
-): TrailheadThemeConfig | undefined => {
+export const getTheme = (themes: ThemeMap, name: string): TrailheadThemeConfig | undefined => {
   return themes.get(name);
 };
 
@@ -81,11 +76,7 @@ export const getThemeNames = (themes: ThemeMap): string[] => {
  * Apply theme CSS variables to the document
  * Side effect function - clearly marked and isolated
  */
-export const applyThemeToDocument = (
-  themes: ThemeMap,
-  name: string,
-  isDark: boolean,
-): void => {
+export const applyThemeToDocument = (themes: ThemeMap, name: string, isDark: boolean): void => {
   const theme = getTheme(themes, name);
   if (!theme) {
     console.error(`Theme "${name}" is not registered`);

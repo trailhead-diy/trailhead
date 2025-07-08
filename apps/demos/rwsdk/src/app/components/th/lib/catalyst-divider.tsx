@@ -14,7 +14,7 @@ export function CatalystDivider({
         'w-full border-t',
         soft && 'border-zinc-950/5 dark:border-border',
         !soft && 'border-zinc-950/10 dark:border-border',
-        className,
+        className
       )}
     />
   );

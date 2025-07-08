@@ -8,47 +8,26 @@ import {
   CatalystComboboxDescription,
 } from './lib/catalyst-combobox';
 
-export type ComboboxProps<T = unknown> = ComponentProps<
-  typeof CatalystCombobox<T>
->;
-export type ComboboxOptionProps<T = unknown> = ComponentProps<
-  typeof CatalystComboboxOption<T>
->;
+export type ComboboxProps<T = unknown> = ComponentProps<typeof CatalystCombobox<T>>;
+export type ComboboxOptionProps<T = unknown> = ComponentProps<typeof CatalystComboboxOption<T>>;
 export type ComboboxLabelProps = ComponentProps<typeof CatalystComboboxLabel>;
-export type ComboboxDescriptionProps = ComponentProps<
-  typeof CatalystComboboxDescription
->;
+export type ComboboxDescriptionProps = ComponentProps<typeof CatalystComboboxDescription>;
 
-export const Combobox = <T,>({
-  className,
-  children,
-  ...props
-}: ComboboxProps<T>) => {
+export const Combobox = <T,>({ className, children, ...props }: ComboboxProps<T>) => {
   return (
-    <CatalystCombobox
-      {...(className && { className: cn(className) })}
-      {...props}
-    >
+    <CatalystCombobox {...(className && { className: cn(className) })} {...props}>
       {children}
     </CatalystCombobox>
   );
 };
 
-export const ComboboxOption = <T,>({
-  className,
-  children,
-  ...props
-}: ComboboxOptionProps<T>) => (
+export const ComboboxOption = <T,>({ className, children, ...props }: ComboboxOptionProps<T>) => (
   <CatalystComboboxOption className={cn(className)} {...props}>
     {children}
   </CatalystComboboxOption>
 );
 
-export const ComboboxLabel = ({
-  className,
-  children,
-  ...props
-}: ComboboxLabelProps) => (
+export const ComboboxLabel = ({ className, children, ...props }: ComboboxLabelProps) => (
   <CatalystComboboxLabel className={cn(className)} {...props}>
     {children}
   </CatalystComboboxLabel>

@@ -6,14 +6,10 @@ export type LinkProps = ComponentProps<typeof CatalystLink>;
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   ({ className, children, ...props }, ref) => (
-    <CatalystLink
-      ref={ref}
-      {...(className && { className: cn(className) })}
-      {...props}
-    >
+    <CatalystLink ref={ref} {...(className && { className: cn(className) })} {...props}>
       {children}
     </CatalystLink>
-  ),
+  )
 );
 
 Link.displayName = 'Link';

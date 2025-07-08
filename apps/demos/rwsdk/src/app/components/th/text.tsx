@@ -1,11 +1,6 @@
 import { type ComponentProps } from 'react';
 import { cn } from './utils/cn';
-import {
-  CatalystText,
-  CatalystTextLink,
-  CatalystStrong,
-  CatalystCode,
-} from './lib/catalyst-text';
+import { CatalystText, CatalystTextLink, CatalystStrong, CatalystCode } from './lib/catalyst-text';
 
 export type TextProps = ComponentProps<typeof CatalystText>;
 export type TextLinkProps = ComponentProps<typeof CatalystTextLink>;

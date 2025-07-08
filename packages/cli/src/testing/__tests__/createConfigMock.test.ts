@@ -122,9 +122,7 @@ describe('createConfigMock', () => {
         defaults: defaultConfig,
       });
 
-      await expect(configLoader.load()).rejects.toThrow(
-        'Invalid configuration schema',
-      );
+      await expect(configLoader.load()).rejects.toThrow('Invalid configuration schema');
     });
 
     it('should work synchronously', () => {

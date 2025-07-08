@@ -21,10 +21,7 @@ const REPO_ROOT = process.cwd();
  */
 function getPackageJson(packagePath) {
   try {
-    const content = readFileSync(
-      path.join(packagePath, 'package.json'),
-      'utf8',
-    );
+    const content = readFileSync(path.join(packagePath, 'package.json'), 'utf8');
     return JSON.parse(content);
   } catch (error) {
     return null;
@@ -110,7 +107,7 @@ function validateRepoPackageDependencies(packages) {
  */
 function validateWorkspaceProtocol(packages) {
   const violations = [];
-  const internalPackages = new Set(packages.map((p) => p.package.name));
+  const internalPackages = new Set(packages.map(p => p.package.name));
 
   for (const { path: pkgPath, package: pkg } of packages) {
     const allDeps = {
@@ -175,11 +172,9 @@ function detectCircularDependencies(packages) {
   const internalPackageMap = new Map(
     packages
       .filter(
-        (p) =>
-          p.package.name?.startsWith('@esteban-url/') ||
-          p.package.name?.startsWith('@repo/'),
+        p => p.package.name?.startsWith('@esteban-url/') || p.package.name?.startsWith('@repo/')
       )
-      .map((p) => [p.package.name, p]),
+      .map(p => [p.package.name, p])
   );
 
   function hasCircularDep(pkgName, targetName, visited = new Set()) {
@@ -209,11 +204,7 @@ function detectCircularDependencies(packages) {
 
   for (const { package: pkg } of packages) {
     // Only check internal packages
-    if (
-      !pkg.name?.startsWith('@esteban-url/') &&
-      !pkg.name?.startsWith('@repo/')
-    )
-      continue;
+    if (!pkg.name?.startsWith('@esteban-url/') && !pkg.name?.startsWith('@repo/')) continue;
 
     const allDeps = {
       ...pkg.dependencies,
@@ -221,10 +212,7 @@ function detectCircularDependencies(packages) {
     };
 
     for (const depName of Object.keys(allDeps)) {
-      if (
-        internalPackageMap.has(depName) &&
-        hasCircularDep(depName, pkg.name)
-      ) {
+      if (internalPackageMap.has(depName) && hasCircularDep(depName, pkg.name)) {
         violations.push({
           package: pkg.name,
           dependency: depName,
@@ -263,9 +251,7 @@ function validateDependencies() {
     } else {
       console.log(chalk.red(`❌ ${name}: ${violations.length} violation(s)`));
       for (const violation of violations) {
-        console.log(
-          chalk.yellow(`   • ${violation.package} → ${violation.dependency}`),
-        );
+        console.log(chalk.yellow(`   • ${violation.package} → ${violation.dependency}`));
         console.log(chalk.gray(`     Rule: ${violation.rule}`));
         if (violation.version) {
           console.log(chalk.gray(`     Version: ${violation.version}`));

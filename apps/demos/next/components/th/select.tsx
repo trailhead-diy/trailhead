@@ -9,7 +9,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     <CatalystSelect ref={ref} className={cn(className)} {...props}>
       {children}
     </CatalystSelect>
-  ),
+  )
 );
 
 Select.displayName = 'Select';

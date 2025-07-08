@@ -7,14 +7,11 @@ export interface InteractiveCommandOptions {
   readonly skipPrompts?: boolean;
 }
 
-export async function executeInteractiveCommand<
-  T extends InteractiveCommandOptions,
-  R,
->(
+export async function executeInteractiveCommand<T extends InteractiveCommandOptions, R>(
   options: T,
   promptFn: () => Promise<Partial<T>>,
   executeFn: (finalOptions: T) => Promise<Result<R>>,
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<R>> {
   let finalOptions = options;
 
@@ -50,7 +47,7 @@ export async function executeWithValidation<T, R>(
   data: T,
   rules: ValidationRule<T>[],
   executeFn: (validData: T) => Promise<Result<R>>,
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<R>> {
   // Run validation rules
   for (const rule of rules) {
@@ -77,7 +74,7 @@ export interface FileSystemOperation<T> {
 
 export async function executeFileSystemOperations<T>(
   operations: FileSystemOperation<T>[],
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<T[]>> {
   const results: T[] = [];
   const completedOps: FileSystemOperation<T>[] = [];
@@ -99,9 +96,7 @@ export async function executeFileSystemOperations<T>(
                 await completedOp.rollback();
                 context.logger.debug(`Rolled back: ${completedOp.name}`);
               } catch (error) {
-                context.logger.error(
-                  `Failed to rollback: ${completedOp.name}: ${error}`,
-                );
+                context.logger.error(`Failed to rollback: ${completedOp.name}: ${error}`);
               }
             }
           }
@@ -134,12 +129,12 @@ export interface SubprocessConfig {
 
 export async function executeSubprocess(
   config: SubprocessConfig,
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<string>> {
   const { spawn } = await import('child_process');
   const { command, args, cwd, env } = config;
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     context.logger.debug(`Spawning: ${command} ${args.join(' ')}`);
 
     const child = spawn(command, args, {
@@ -152,26 +147,26 @@ export async function executeSubprocess(
     let stderr = '';
 
     if (!context.verbose) {
-      child.stdout?.on('data', (data) => {
+      child.stdout?.on('data', data => {
         stdout += data.toString();
       });
-      child.stderr?.on('data', (data) => {
+      child.stderr?.on('data', data => {
         stderr += data.toString();
       });
     }
 
-    child.on('error', (error) => {
+    child.on('error', error => {
       resolve(
         Err({
           code: 'SUBPROCESS_ERROR',
           message: `Failed to spawn ${command}`,
           cause: error,
           recoverable: false,
-        }),
+        })
       );
     });
 
-    child.on('close', (code) => {
+    child.on('close', code => {
       if (code === 0) {
         resolve(Ok(stdout));
       } else {
@@ -181,7 +176,7 @@ export async function executeSubprocess(
             message: `${command} exited with code ${code}`,
             details: stderr || undefined,
             recoverable: false,
-          }),
+          })
         );
       }
     });
@@ -198,7 +193,7 @@ export async function executeBatch<T, R>(
     batchSize: number;
     onProgress?: (completed: number, total: number) => void;
   },
-  _context: CommandContext,
+  _context: CommandContext
 ): Promise<Result<R[]>> {
   const results: R[] = [];
   const { batchSize, onProgress } = options;
@@ -207,7 +202,7 @@ export async function executeBatch<T, R>(
     const batch = items.slice(i, i + batchSize);
 
     // Process batch in parallel
-    const batchPromises = batch.map((item) => processor(item));
+    const batchPromises = batch.map(item => processor(item));
     const batchResults = await Promise.all(batchPromises);
 
     // Check for failures
@@ -233,14 +228,11 @@ export interface ConfigurationOptions {
   readonly override?: Record<string, any>;
 }
 
-export async function executeWithConfiguration<
-  T extends ConfigurationOptions,
-  R,
->(
+export async function executeWithConfiguration<T extends ConfigurationOptions, R>(
   options: T,
   loadConfigFn: (path?: string) => Promise<Result<Record<string, any>>>,
   executeFn: (config: Record<string, any>) => Promise<Result<R>>,
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<R>> {
   // Load base configuration
   const configResult = await loadConfigFn(options.config);
@@ -282,7 +274,7 @@ export async function executeWithConfiguration<
 export async function executeWithPhases<T>(
   phases: CommandPhase<T>[],
   initialData: T,
-  context: CommandContext,
+  context: CommandContext
 ): Promise<Result<T>> {
   let currentData = initialData;
   const totalPhases = phases.length;
@@ -343,7 +335,7 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
   options: T,
   executeFn: (config: T) => Promise<Result<R>>,
   context: CommandContext,
-  confirmationPrompt?: string,
+  confirmationPrompt?: string
 ): Promise<Result<R>> {
   if (options.dryRun) {
     context.logger.info('🔍 DRY RUN MODE - No changes will be made');
@@ -412,7 +404,7 @@ export function displaySummary(
   title: string,
   items: Array<{ label: string; value: string | number | boolean }>,
   context: CommandContext,
-  stats?: Array<{ label: string; value: string | number }>,
+  stats?: Array<{ label: string; value: string | number }>
 ): void {
   const { chalk } = require('../utils/chalk.js');
 
@@ -429,9 +421,7 @@ export function displaySummary(
           : chalk.red('✗ No')
         : chalk.cyan(String(item.value));
 
-    context.logger.info(
-      `${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`,
-    );
+    context.logger.info(`${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`);
   }
 
   // Display statistics if provided
@@ -442,7 +432,7 @@ export function displaySummary(
 
     for (const stat of stats) {
       context.logger.info(
-        `${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`,
+        `${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`
       );
     }
   }

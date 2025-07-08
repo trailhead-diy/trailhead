@@ -32,9 +32,7 @@ export const DemoLayout = ({ children }: { children: ReactNode }) => (
               <SidebarItem href="/button">Button</SidebarItem>
               <SidebarItem href="/checkbox">Checkbox</SidebarItem>
               <SidebarItem href="/combobox">Combobox</SidebarItem>
-              <SidebarItem href="/description-list">
-                Description List
-              </SidebarItem>
+              <SidebarItem href="/description-list">Description List</SidebarItem>
               <SidebarItem href="/dialog">Dialog</SidebarItem>
               <SidebarItem href="/divider">Divider</SidebarItem>
               <SidebarItem href="/dropdown">Dropdown</SidebarItem>
@@ -72,19 +70,11 @@ export const List = ({
 }) => (
   <>
     <h2 className="mb-4 text-2xl font-bold">{title}</h2>
-    {description && (
-      <p className="mb-4 text-sm text-muted-foreground">{description}</p>
-    )}
+    {description && <p className="mb-4 text-sm text-muted-foreground">{description}</p>}
     <ul className="flex flex-col gap-4">{children}</ul>
   </>
 );
-export const Item = ({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title?: string;
-}) => (
+export const Item = ({ children, title }: { children: React.ReactNode; title?: string }) => (
   <li className="p-4 bg-card border border-border rounded-lg shadow-sm">
     {title && <h3 className="mb-2 text-lg font-semibold">{title}</h3>}
     {children}

@@ -132,7 +132,7 @@ describe('CLI Integration Tests', () => {
         verbose: false,
         fs: expect.any(Object),
         args: [],
-      }),
+      })
     );
   });
 
@@ -143,7 +143,7 @@ describe('CLI Integration Tests', () => {
           name: '',
           description: 'Test command',
           action: async () => ({ success: true, value: undefined }),
-        }),
+        })
       ).toThrow('Invalid command configuration');
     });
 
@@ -158,7 +158,7 @@ describe('CLI Integration Tests', () => {
             },
           ],
           action: async () => ({ success: true, value: undefined }),
-        }),
+        })
       ).toThrow('Invalid command configuration');
     });
 
@@ -175,7 +175,7 @@ describe('CLI Integration Tests', () => {
             },
           ],
           action: async () => ({ success: true, value: undefined }),
-        }),
+        })
       ).not.toThrow();
     });
   });

@@ -9,7 +9,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     <CatalystTextarea ref={ref} className={cn(className)} {...props}>
       {children}
     </CatalystTextarea>
-  ),
+  )
 );
 
 Textarea.displayName = 'Textarea';

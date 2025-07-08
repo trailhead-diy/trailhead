@@ -78,7 +78,7 @@ export const getCommand = createCommand({
             delay: 1000,
             backoff: 2,
           }
-        : undefined,
+        : undefined
     );
 
     if (!result.success) {
@@ -106,9 +106,7 @@ export const getCommand = createCommand({
     if (response.status >= 400) {
       context.logger.warn(`HTTP ${response.status}: ${response.statusText}`);
     } else {
-      context.logger.success(
-        `Request completed successfully (${response.status})`,
-      );
+      context.logger.success(`Request completed successfully (${response.status})`);
     }
 
     return Ok(undefined);

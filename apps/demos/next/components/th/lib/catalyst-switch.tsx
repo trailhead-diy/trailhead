@@ -17,7 +17,7 @@ export function CatalystSwitchGroup({
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className,
+        className
       )}
     />
   );
@@ -42,7 +42,7 @@ export function CatalystSwitchField({
         '*:data-[slot=description]:col-start-1 *:data-[slot=description]:row-start-2',
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className,
+        className
       )}
     />
   );
@@ -198,7 +198,7 @@ export function CatalystSwitch({
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
         resolvedColorClasses,
-        className,
+        className
       )}
     >
       <span
@@ -216,7 +216,7 @@ export function CatalystSwitch({
           'group-data-checked:bg-(--switch) group-data-checked:shadow-(--switch-shadow) group-data-checked:ring-(--switch-ring)',
           'group-data-checked:translate-x-4 sm:group-data-checked:translate-x-3',
           // Disabled
-          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-muted/50',
+          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-muted/50'
         )}
       />
     </Headless.Switch>

@@ -22,11 +22,11 @@ const projectNameSchema = z
   .min(1, 'Project name cannot be empty')
   .max(
     MAX_PROJECT_NAME_LENGTH,
-    `Project name must be ${MAX_PROJECT_NAME_LENGTH} characters or less`,
+    `Project name must be ${MAX_PROJECT_NAME_LENGTH} characters or less`
   )
   .regex(
     /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/,
-    'Project name can only contain alphanumeric characters, dots, dashes, and underscores. Must start with alphanumeric character.',
+    'Project name can only contain alphanumeric characters, dots, dashes, and underscores. Must start with alphanumeric character.'
   )
   .refine(
     (name: string) => {
@@ -58,7 +58,7 @@ const projectNameSchema = z
     },
     (name: string) => ({
       message: `"${name}" is a reserved name and cannot be used`,
-    }),
+    })
   );
 
 const packageManagerSchema = z.enum(ALLOWED_PACKAGE_MANAGERS);
@@ -69,17 +69,11 @@ const pathSchema = z
   .string()
   .min(1, 'Path cannot be empty')
   .max(MAX_PATH_LENGTH, `Path must be ${MAX_PATH_LENGTH} characters or less`)
-  .refine(
-    (path: string) => !path.includes('\u0000'),
-    'Path contains null bytes',
-  );
+  .refine((path: string) => !path.includes('\u0000'), 'Path contains null bytes');
 
 const textSchema = z
   .string()
-  .max(
-    MAX_TEXT_LENGTH,
-    `Text input must be ${MAX_TEXT_LENGTH} characters or less`,
-  )
+  .max(MAX_TEXT_LENGTH, `Text input must be ${MAX_TEXT_LENGTH} characters or less`)
   .transform((text: string) => {
     // Remove dangerous characters
     let sanitized = text;
@@ -101,7 +95,7 @@ const textSchema = z
 function zodResultToResult<T>(
   schema: z.ZodSchema<T>,
   input: unknown,
-  operation: string,
+  operation: string
 ): Result<T, CLIError> {
   try {
     const result = schema.parse(input);
@@ -118,14 +112,10 @@ function zodResultToResult<T>(
     }
     return {
       success: false,
-      error: createError(
-        'VALIDATION_FAILED',
-        `${operation} validation failed`,
-        {
-          cause: error,
-          details: error instanceof Error ? error.message : String(error),
-        },
-      ),
+      error: createError('VALIDATION_FAILED', `${operation} validation failed`, {
+        cause: error,
+        details: error instanceof Error ? error.message : String(error),
+      }),
     };
   }
 }
@@ -140,16 +130,9 @@ export function validateProjectName(name: string): Result<string, CLIError> {
 /**
  * Validate project path with directory traversal protection
  */
-export function validateProjectPath(
-  inputPath: string,
-  baseDir: string,
-): Result<string, CLIError> {
+export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CLIError> {
   // First validate the basic path schema
-  const basicValidation = zodResultToResult(
-    pathSchema,
-    inputPath,
-    'Project path',
-  );
+  const basicValidation = zodResultToResult(pathSchema, inputPath, 'Project path');
   if (!basicValidation.success) {
     return basicValidation;
   }
@@ -157,9 +140,7 @@ export function validateProjectPath(
   const trimmed = inputPath.trim();
 
   try {
-    const resolvedPath = isAbsolute(trimmed)
-      ? trimmed
-      : resolve(baseDir, trimmed);
+    const resolvedPath = isAbsolute(trimmed) ? trimmed : resolve(baseDir, trimmed);
     return { success: true, value: resolvedPath };
   } catch (error) {
     return {
@@ -175,14 +156,8 @@ export function validateProjectPath(
 /**
  * Validate package manager
  */
-export function validatePackageManager(
-  packageManager: string,
-): Result<string, CLIError> {
-  return zodResultToResult(
-    packageManagerSchema,
-    packageManager,
-    'Package manager',
-  );
+export function validatePackageManager(packageManager: string): Result<string, CLIError> {
+  return zodResultToResult(packageManagerSchema, packageManager, 'Package manager');
 }
 
 /**
@@ -197,14 +172,10 @@ export function validateTemplate(template: string): Result<string, CLIError> {
  */
 export function validateTemplatePath(
   filePath: string,
-  baseTemplateDir: string,
+  baseTemplateDir: string
 ): Result<string, CLIError> {
   // First validate basic path
-  const basicValidation = zodResultToResult(
-    pathSchema,
-    filePath,
-    'Template file path',
-  );
+  const basicValidation = zodResultToResult(pathSchema, filePath, 'Template file path');
   if (!basicValidation.success) {
     return basicValidation;
   }
@@ -240,14 +211,10 @@ export function validateTemplatePath(
  */
 export function validateOutputPath(
   filePath: string,
-  baseOutputDir: string,
+  baseOutputDir: string
 ): Result<string, CLIError> {
   // First validate basic path
-  const basicValidation = zodResultToResult(
-    pathSchema,
-    filePath,
-    'Output file path',
-  );
+  const basicValidation = zodResultToResult(pathSchema, filePath, 'Output file path');
   if (!basicValidation.success) {
     return basicValidation;
   }
@@ -259,8 +226,7 @@ export function validateOutputPath(
       return {
         success: false,
         error: createError('VALIDATION_FAILED', 'Invalid output path', {
-          details:
-            'Output path must be relative and within the project directory',
+          details: 'Output path must be relative and within the project directory',
         }),
       };
     }
@@ -294,7 +260,7 @@ export function validateOutputPath(
  */
 export function sanitizeText(
   input: string,
-  _maxLength: number = MAX_TEXT_LENGTH,
+  _maxLength: number = MAX_TEXT_LENGTH
 ): Result<string, CLIError> {
   if (!input || typeof input !== 'string') {
     return {

@@ -75,10 +75,7 @@ export const formatOKLCHColor = (color: OKLCHColorData): string => {
  * Adjust lightness by a specific amount
  * Pure function returning new color data
  */
-export const adjustLightness = (
-  color: OKLCHColorData,
-  amount: number,
-): OKLCHColorData => ({
+export const adjustLightness = (color: OKLCHColorData, amount: number): OKLCHColorData => ({
   ...color,
   l: Math.max(0, Math.min(1, color.l + amount)),
 });
@@ -87,10 +84,7 @@ export const adjustLightness = (
  * Adjust chroma (saturation) by a specific amount
  * Pure function returning new color data
  */
-export const adjustChroma = (
-  color: OKLCHColorData,
-  amount: number,
-): OKLCHColorData => ({
+export const adjustChroma = (color: OKLCHColorData, amount: number): OKLCHColorData => ({
   ...color,
   c: Math.max(0, color.c + amount),
 });
@@ -99,10 +93,7 @@ export const adjustChroma = (
  * Rotate hue by degrees
  * Pure function returning new color data
  */
-export const rotateHue = (
-  color: OKLCHColorData,
-  degrees: number,
-): OKLCHColorData => ({
+export const rotateHue = (color: OKLCHColorData, degrees: number): OKLCHColorData => ({
   ...color,
   h: ((color.h || 0) + degrees) % 360,
 });
@@ -228,9 +219,9 @@ export function generateColorPalette(baseColor: string): {
   // Create transformers for each shade with gamut mapping
   const createShade = (lightnessAdjust: number, chromaMultiplier: number) =>
     composeColorTransforms(
-      (color) => adjustLightness(color, lightnessAdjust),
-      (color) => ({ ...color, c: color.c * chromaMultiplier }),
-      ensureInGamut,
+      color => adjustLightness(color, lightnessAdjust),
+      color => ({ ...color, c: color.c * chromaMultiplier }),
+      ensureInGamut
     );
 
   return {
@@ -257,13 +248,9 @@ export function themeToCSS(
     selector?: string;
     includeComponents?: boolean;
     minify?: boolean;
-  } = {},
+  } = {}
 ): string {
-  const {
-    selector = ':root',
-    includeComponents = true,
-    minify = false,
-  } = options;
+  const { selector = ':root', includeComponents = true, minify = false } = options;
 
   const indent = minify ? '' : '  ';
   const lineEnd = minify ? '' : '\n';
@@ -431,9 +418,7 @@ export function checkShadcnCompatibility(theme: TrailheadThemeConfig): {
         // Check if it's already in OKLCH or can be converted
         const asOklch = oklch(parsed);
         if (!asOklch) {
-          issues.push(
-            `Light theme ${key} cannot be converted to OKLCH: ${value}`,
-          );
+          issues.push(`Light theme ${key} cannot be converted to OKLCH: ${value}`);
         }
       }
     } catch {
@@ -453,9 +438,7 @@ export function checkShadcnCompatibility(theme: TrailheadThemeConfig): {
       } else {
         const asOklch = oklch(parsed);
         if (!asOklch) {
-          issues.push(
-            `Dark theme ${key} cannot be converted to OKLCH: ${value}`,
-          );
+          issues.push(`Dark theme ${key} cannot be converted to OKLCH: ${value}`);
         }
       }
     } catch {
@@ -471,16 +454,12 @@ export function checkShadcnCompatibility(theme: TrailheadThemeConfig): {
 
     if (contrast < 4.5) {
       issues.push(
-        `Insufficient contrast between background and foreground in light theme (${contrast.toFixed(2)}:1)`,
+        `Insufficient contrast between background and foreground in light theme (${contrast.toFixed(2)}:1)`
       );
-      suggestions.push(
-        'Increase contrast to at least 4.5:1 for WCAG AA compliance',
-      );
+      suggestions.push('Increase contrast to at least 4.5:1 for WCAG AA compliance');
     }
   } catch {
-    issues.push(
-      'Unable to validate contrast ratios due to color format issues',
-    );
+    issues.push('Unable to validate contrast ratios due to color format issues');
   }
 
   return {
@@ -493,9 +472,7 @@ export function checkShadcnCompatibility(theme: TrailheadThemeConfig): {
 /**
  * Auto-fix common theme issues
  */
-export function autoFixTheme(
-  theme: TrailheadThemeConfig,
-): TrailheadThemeConfig {
+export function autoFixTheme(theme: TrailheadThemeConfig): TrailheadThemeConfig {
   const fixed = { ...theme };
 
   // Auto-complete missing card colors
@@ -536,20 +513,16 @@ export function autoFixTheme(
 /**
  * Example: Create a lighter variant of a color
  */
-export const createLighterVariant = createColorTransformer((color) =>
-  adjustLightness(color, 0.1),
-);
+export const createLighterVariant = createColorTransformer(color => adjustLightness(color, 0.1));
 
 /**
  * Example: Create a desaturated variant
  */
-export const createDesaturatedVariant = createColorTransformer((color) =>
-  adjustChroma(color, -color.c * 0.5),
+export const createDesaturatedVariant = createColorTransformer(color =>
+  adjustChroma(color, -color.c * 0.5)
 );
 
 /**
  * Example: Create a complementary color
  */
-export const createComplementaryColor = createColorTransformer((color) =>
-  rotateHue(color, 180),
-);
+export const createComplementaryColor = createColorTransformer(color => rotateHue(color, 180));

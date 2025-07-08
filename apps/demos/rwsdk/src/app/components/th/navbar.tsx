@@ -27,11 +27,7 @@ export const NavbarDivider = ({ className, ...props }: NavbarDividerProps) => (
   <CatalystNavbarDivider className={cn(className)} {...props} />
 );
 
-export const NavbarSection = ({
-  className,
-  children,
-  ...props
-}: NavbarSectionProps) => (
+export const NavbarSection = ({ className, children, ...props }: NavbarSectionProps) => (
   <CatalystNavbarSection className={cn(className)} {...props}>
     {children}
   </CatalystNavbarSection>
@@ -41,22 +37,17 @@ export const NavbarSpacer = ({ className, ...props }: NavbarSpacerProps) => (
   <CatalystNavbarSpacer className={cn(className)} {...props} />
 );
 
-export const NavbarItem = forwardRef<
-  HTMLAnchorElement | HTMLButtonElement,
-  NavbarItemProps
->(({ className, children, ...props }, ref) => (
-  <CatalystNavbarItem ref={ref} className={cn(className)} {...props}>
-    {children}
-  </CatalystNavbarItem>
-));
+export const NavbarItem = forwardRef<HTMLAnchorElement | HTMLButtonElement, NavbarItemProps>(
+  ({ className, children, ...props }, ref) => (
+    <CatalystNavbarItem ref={ref} className={cn(className)} {...props}>
+      {children}
+    </CatalystNavbarItem>
+  )
+);
 
 NavbarItem.displayName = 'NavbarItem';
 
-export const NavbarLabel = ({
-  className,
-  children,
-  ...props
-}: NavbarLabelProps) => (
+export const NavbarLabel = ({ className, children, ...props }: NavbarLabelProps) => (
   <CatalystNavbarLabel className={cn(className)} {...props}>
     {children}
   </CatalystNavbarLabel>

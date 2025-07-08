@@ -1,8 +1,5 @@
 import { Result, Ok, Err, map, chain, CLIError } from '../core/index.js';
-import {
-  executeGitCommandSimple,
-  validateGitEnvironment,
-} from './git-command.js';
+import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { BranchSyncStatus, GitOptions } from './types.js';
 
@@ -10,12 +7,9 @@ import type { BranchSyncStatus, GitOptions } from './types.js';
  * Get the current branch name
  */
 export async function getCurrentBranch(
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<string, CLIError>> {
-  return executeGitCommandSimple(
-    ['rev-parse', '--abbrev-ref', 'HEAD'],
-    options,
-  );
+  return executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD'], options);
 }
 
 /**
@@ -23,7 +17,7 @@ export async function getCurrentBranch(
  */
 export async function fetchRemote(
   remote = 'origin',
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<string, CLIError>> {
   return executeGitCommandSimple(['fetch', remote], options);
 }
@@ -33,12 +27,9 @@ export async function fetchRemote(
  */
 export async function branchExists(
   branch: string,
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
-  const result = await executeGitCommandSimple(
-    ['rev-parse', '--verify', branch],
-    options,
-  );
+  const result = await executeGitCommandSimple(['rev-parse', '--verify', branch], options);
   return map(result, () => true);
 }
 
@@ -47,12 +38,9 @@ export async function branchExists(
  */
 export async function remoteBranchExists(
   remoteBranch: string,
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
-  const result = await executeGitCommandSimple(
-    ['rev-parse', '--verify', remoteBranch],
-    options,
-  );
+  const result = await executeGitCommandSimple(['rev-parse', '--verify', remoteBranch], options);
   return map(result, () => true);
 }
 
@@ -62,13 +50,10 @@ export async function remoteBranchExists(
 async function getCommitCount(
   from: string,
   to: string,
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<number, CLIError>> {
-  const result = await executeGitCommandSimple(
-    ['rev-list', '--count', `${from}..${to}`],
-    options,
-  );
-  return map(result, (output) => {
+  const result = await executeGitCommandSimple(['rev-list', '--count', `${from}..${to}`], options);
+  return map(result, output => {
     const count = parseInt(output.trim(), 10);
     if (isNaN(count)) {
       throw new Error(`Invalid commit count: ${output}`);
@@ -83,11 +68,11 @@ async function getCommitCount(
 export async function isAncestor(
   ancestor: string,
   descendant: string,
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
   const result = await executeGitCommandSimple(
     ['merge-base', '--is-ancestor', ancestor, descendant],
-    options,
+    options
   );
 
   // git merge-base --is-ancestor returns 0 if ancestor, 1 if not, other codes for errors
@@ -98,18 +83,13 @@ export async function isAncestor(
   // Check if it's just "not an ancestor" vs actual error
   const commandResult = await executeGitCommandSimple(
     ['merge-base', ancestor, descendant],
-    options,
+    options
   );
   if (commandResult.success) {
     return Ok(false); // Has common ancestor but not direct ancestor
   }
 
-  return Err(
-    createGitError(
-      `Failed to determine ancestor relationship`,
-      result.error.message,
-    ),
-  );
+  return Err(createGitError(`Failed to determine ancestor relationship`, result.error.message));
 }
 
 /**
@@ -117,7 +97,7 @@ export async function isAncestor(
  */
 export async function checkBranchSync(
   remoteBranch = 'origin/main',
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<BranchSyncStatus, CLIError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
@@ -128,12 +108,7 @@ export async function checkBranchSync(
   // Get current branch
   const currentBranchResult = await getCurrentBranch(options);
   if (!currentBranchResult.success) {
-    return Err(
-      createGitError(
-        `Failed to get current branch`,
-        currentBranchResult.error.message,
-      ),
-    );
+    return Err(createGitError(`Failed to get current branch`, currentBranchResult.error.message));
   }
   const currentBranch = currentBranchResult.value;
 
@@ -142,65 +117,33 @@ export async function checkBranchSync(
     const remote = remoteBranch.split('/')[0];
     const fetchResult = await fetchRemote(remote, options);
     if (!fetchResult.success) {
-      return Err(
-        createGitError(
-          `Failed to fetch from ${remote}`,
-          fetchResult.error.message,
-        ),
-      );
+      return Err(createGitError(`Failed to fetch from ${remote}`, fetchResult.error.message));
     }
   }
 
   // Check if remote branch exists
-  const remoteBranchExistsResult = await remoteBranchExists(
-    remoteBranch,
-    options,
-  );
+  const remoteBranchExistsResult = await remoteBranchExists(remoteBranch, options);
   if (!remoteBranchExistsResult.success) {
     return Err(createGitError(`Remote branch ${remoteBranch} does not exist`));
   }
 
   // Get ahead count (local commits not in remote)
-  const aheadResult = await getCommitCount(
-    remoteBranch,
-    currentBranch,
-    options,
-  );
+  const aheadResult = await getCommitCount(remoteBranch, currentBranch, options);
   if (!aheadResult.success) {
-    return Err(
-      createGitError(
-        `Failed to count ahead commits`,
-        aheadResult.error.message,
-      ),
-    );
+    return Err(createGitError(`Failed to count ahead commits`, aheadResult.error.message));
   }
   const ahead = aheadResult.value;
 
   // Get behind count (remote commits not in local)
-  const behindResult = await getCommitCount(
-    currentBranch,
-    remoteBranch,
-    options,
-  );
+  const behindResult = await getCommitCount(currentBranch, remoteBranch, options);
   if (!behindResult.success) {
-    return Err(
-      createGitError(
-        `Failed to count behind commits`,
-        behindResult.error.message,
-      ),
-    );
+    return Err(createGitError(`Failed to count behind commits`, behindResult.error.message));
   }
   const behind = behindResult.value;
 
   // Check if can fast-forward (local is ancestor of remote)
-  const canFastForwardResult = await isAncestor(
-    currentBranch,
-    remoteBranch,
-    options,
-  );
-  const canFastForward = canFastForwardResult.success
-    ? canFastForwardResult.value
-    : false;
+  const canFastForwardResult = await isAncestor(currentBranch, remoteBranch, options);
+  const canFastForward = canFastForwardResult.success ? canFastForwardResult.value : false;
 
   const status: BranchSyncStatus = {
     currentBranch,
@@ -219,11 +162,9 @@ export async function checkBranchSync(
  */
 export async function needsSync(
   remoteBranch = 'origin/main',
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
-  return chain(await checkBranchSync(remoteBranch, options), (status) =>
-    Ok(status.behind > 0),
-  );
+  return chain(await checkBranchSync(remoteBranch, options), status => Ok(status.behind > 0));
 }
 
 /**
@@ -239,9 +180,7 @@ export function formatSyncStatus(status: BranchSyncStatus): string {
     parts.push(`${status.ahead} commit${status.ahead === 1 ? '' : 's'} ahead`);
   }
   if (status.behind > 0) {
-    parts.push(
-      `${status.behind} commit${status.behind === 1 ? '' : 's'} behind`,
-    );
+    parts.push(`${status.behind} commit${status.behind === 1 ? '' : 's'} behind`);
   }
 
   const statusText = parts.join(', ');

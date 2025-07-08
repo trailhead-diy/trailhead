@@ -31,14 +31,7 @@ export interface ValidationError extends CategorizedError {
 export interface FileSystemError extends CategorizedError {
   readonly category: 'filesystem';
   readonly path: string;
-  readonly operation:
-    | 'read'
-    | 'write'
-    | 'delete'
-    | 'create'
-    | 'copy'
-    | 'move'
-    | 'stat';
+  readonly operation: 'read' | 'write' | 'delete' | 'create' | 'copy' | 'move' | 'stat';
   readonly errno?: number;
 }
 

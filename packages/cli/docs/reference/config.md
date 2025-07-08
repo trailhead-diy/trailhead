@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Config Module API Reference"
-description: "Type-safe configuration management with schema validation and loading strategies"
+title: 'Config Module API Reference'
+description: 'Type-safe configuration management with schema validation and loading strategies'
 related:
   - /docs/reference/api/core
   - /docs/reference/api/filesystem
@@ -23,17 +23,17 @@ Type-safe configuration management with schema validation using Zod and flexible
 ## Import
 
 ```typescript
-import { defineConfig, loadConfig } from "@esteban-url/trailhead-cli/config";
-import type { ConfigSchema } from "@esteban-url/trailhead-cli/config";
-import { z } from "zod";
+import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config';
+import type { ConfigSchema } from '@esteban-url/trailhead-cli/config';
+import { z } from 'zod';
 ```
 
 ## Basic Usage
 
 ```typescript
-import { defineConfig, loadConfig } from "@esteban-url/trailhead-cli/config";
-import type { ConfigSchema } from "@esteban-url/trailhead-cli/config";
-import { z } from "zod";
+import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config';
+import type { ConfigSchema } from '@esteban-url/trailhead-cli/config';
+import { z } from 'zod';
 ```
 
 ## Defining Configuration
@@ -43,14 +43,14 @@ import { z } from "zod";
 Creates a type-safe configuration definition.
 
 ```typescript
-import { defineConfig } from "@esteban-url/trailhead-cli/config";
-import { z } from "zod";
+import { defineConfig } from '@esteban-url/trailhead-cli/config';
+import { z } from 'zod';
 
 // Define schema
 const configSchema = z.object({
   server: z.object({
     port: z.number().min(1).max(65535).default(3000),
-    host: z.string().default("localhost"),
+    host: z.string().default('localhost'),
   }),
   database: z.object({
     url: z.string().url(),
@@ -88,8 +88,8 @@ if (result.success) {
 
 // Load with options
 const result = await config.load({
-  searchFrom: "./src",
-  configName: "myapp",
+  searchFrom: './src',
+  configName: 'myapp',
 });
 ```
 
@@ -131,7 +131,7 @@ const configSchema = z.object({
   timeout: z.number().min(0).max(60000).default(5000),
 
   // Enum
-  environment: z.enum(["development", "staging", "production"]),
+  environment: z.enum(['development', 'staging', 'production']),
 
   // Array
   allowedOrigins: z.array(z.string().url()).default([]),
@@ -151,13 +151,8 @@ const configSchema = z.object({
 
   // Union types
   logLevel: z
-    .union([
-      z.literal("debug"),
-      z.literal("info"),
-      z.literal("warn"),
-      z.literal("error"),
-    ])
-    .default("info"),
+    .union([z.literal('debug'), z.literal('info'), z.literal('warn'), z.literal('error')])
+    .default('info'),
 });
 ```
 
@@ -170,16 +165,16 @@ const configSchema = z
     host: z.string(),
   })
   .refine(
-    (data) => {
+    data => {
       // Custom validation logic
-      if (data.port === 80 && data.host !== "localhost") {
+      if (data.port === 80 && data.host !== 'localhost') {
         return false;
       }
       return true;
     },
     {
-      message: "Port 80 only allowed on localhost",
-    },
+      message: 'Port 80 only allowed on localhost',
+    }
   );
 ```
 
@@ -189,9 +184,9 @@ Combine with environment variables:
 
 ```typescript
 const configSchema = z.object({
-  port: z.number().default(parseInt(process.env.PORT || "3000", 10)),
-  apiKey: z.string().default(process.env.API_KEY || ""),
-  debug: z.boolean().default(process.env.NODE_ENV === "development"),
+  port: z.number().default(parseInt(process.env.PORT || '3000', 10)),
+  apiKey: z.string().default(process.env.API_KEY || ''),
+  debug: z.boolean().default(process.env.NODE_ENV === 'development'),
 });
 ```
 
@@ -205,11 +200,11 @@ const result = await config.load();
 if (!result.success) {
   const error = result.error;
 
-  if (error.code === "VALIDATION_ERROR") {
-    console.error("Invalid configuration:");
+  if (error.code === 'VALIDATION_ERROR') {
+    console.error('Invalid configuration:');
     console.error(error.details);
-  } else if (error.code === "FILE_NOT_FOUND") {
-    console.log("No config file found, using defaults");
+  } else if (error.code === 'FILE_NOT_FOUND') {
+    console.log('No config file found, using defaults');
     // Use default configuration
   } else {
     console.error(`Config error: ${error.message}`);
@@ -244,8 +239,8 @@ const dbConfig = defineConfig(dbConfigSchema);
 
 // Load both
 const [appResult, dbResult] = await Promise.all([
-  appConfig.load({ configName: "app" }),
-  dbConfig.load({ configName: "database" }),
+  appConfig.load({ configName: 'app' }),
+  dbConfig.load({ configName: 'database' }),
 ]);
 ```
 
@@ -292,7 +287,7 @@ features:
 module.exports = {
   server: {
     port: process.env.PORT || 8080,
-    host: process.env.HOST || "0.0.0.0",
+    host: process.env.HOST || '0.0.0.0',
   },
   database: {
     url: process.env.DATABASE_URL,
@@ -300,7 +295,7 @@ module.exports = {
   },
   features: {
     auth: true,
-    rateLimit: process.env.NODE_ENV === "production",
+    rateLimit: process.env.NODE_ENV === 'production',
   },
 };
 ```
@@ -308,15 +303,15 @@ module.exports = {
 ## Testing Configuration
 
 ```typescript
-import { defineConfig } from "@esteban-url/trailhead-cli/config";
-import { createMemoryFileSystem } from "@esteban-url/trailhead-cli/filesystem";
-import { z } from "zod";
+import { defineConfig } from '@esteban-url/trailhead-cli/config';
+import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { z } from 'zod';
 
-test("config loading", async () => {
+test('config loading', async () => {
   const fs = createMemoryFileSystem({
-    "/.myapprc.json": JSON.stringify({
+    '/.myapprc.json': JSON.stringify({
       port: 4000,
-      host: "127.0.0.1",
+      host: '127.0.0.1',
     }),
   });
 
@@ -329,7 +324,7 @@ test("config loading", async () => {
 
   // Mock filesystem for testing
   const result = await config.load({
-    searchFrom: "/",
+    searchFrom: '/',
     // Use test filesystem
     fs,
   });
@@ -392,7 +387,7 @@ interface LoadOptions {
 }
 
 // Re-exported from Zod
-export { z } from "zod";
+export { z } from 'zod';
 ```
 
 ## See Also

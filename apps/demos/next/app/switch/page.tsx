@@ -10,9 +10,7 @@ export default function SwitchPage(): React.JSX.Element {
         <Item title="Default Switch">
           <SwitchField>
             <Label>Allow embedding</Label>
-            <Description>
-              Allow others to embed your event details on their own site.
-            </Description>
+            <Description>Allow others to embed your event details on their own site.</Description>
             <Switch name="allow_embedding" defaultChecked />
           </SwitchField>
         </Item>

@@ -22,9 +22,7 @@ const processCommand = createCommand({
     const [filePath] = context.args;
 
     if (!filePath) {
-      return Err(
-        new Error('File path required. Usage: file-processor process <file>'),
-      );
+      return Err(new Error('File path required. Usage: file-processor process <file>'));
     }
 
     const fs = createFileSystem();
@@ -42,7 +40,7 @@ const processCommand = createCommand({
         console.log(`Lines: ${lines}`);
         break;
       case 'word-count':
-        const words = content.split(/\s+/).filter((w) => w.length > 0).length;
+        const words = content.split(/\s+/).filter(w => w.length > 0).length;
         console.log(`Words: ${words}`);
         break;
       case 'uppercase':
@@ -78,9 +76,7 @@ const backupCommand = createCommand({
 
     if (!sourcePath) {
       return Err(
-        new Error(
-          'Source path required. Usage: file-processor backup <source> -d <destination>',
-        ),
+        new Error('Source path required. Usage: file-processor backup <source> -d <destination>')
       );
     }
 
@@ -96,9 +92,7 @@ const backupCommand = createCommand({
     const ensureResult = await fs.ensureDir(options.destination);
     if (!ensureResult.success) {
       return Err(
-        new Error(
-          `Failed to create destination directory: ${ensureResult.error.message}`,
-        ),
+        new Error(`Failed to create destination directory: ${ensureResult.error.message}`)
       );
     }
 
@@ -112,14 +106,10 @@ const backupCommand = createCommand({
       : await fs.cp(sourcePath, backupPath, { recursive: true });
 
     if (!result.success) {
-      return Err(
-        new Error(`Failed to ${operation} files: ${result.error.message}`),
-      );
+      return Err(new Error(`Failed to ${operation} files: ${result.error.message}`));
     }
 
-    console.log(
-      `✅ ${operation === 'move' ? 'Moved' : 'Copied'} ${sourcePath} to ${backupPath}`,
-    );
+    console.log(`✅ ${operation === 'move' ? 'Moved' : 'Copied'} ${sourcePath} to ${backupPath}`);
     return Ok(undefined);
   },
 });
@@ -147,9 +137,7 @@ const cleanupCommand = createCommand({
     const [targetPath] = context.args;
 
     if (!targetPath) {
-      return Err(
-        new Error('Target path required. Usage: file-processor cleanup <path>'),
-      );
+      return Err(new Error('Target path required. Usage: file-processor cleanup <path>'));
     }
 
     const fs = createFileSystem();
@@ -158,9 +146,7 @@ const cleanupCommand = createCommand({
       // Empty the directory but keep it
       const emptyResult = await fs.emptyDir(targetPath);
       if (!emptyResult.success) {
-        return Err(
-          new Error(`Failed to empty directory: ${emptyResult.error.message}`),
-        );
+        return Err(new Error(`Failed to empty directory: ${emptyResult.error.message}`));
       }
       console.log(`✅ Emptied directory: ${targetPath}`);
     } else {
@@ -170,9 +156,7 @@ const cleanupCommand = createCommand({
         force: true,
       });
       if (!removeResult.success) {
-        return Err(
-          new Error(`Failed to remove path: ${removeResult.error.message}`),
-        );
+        return Err(new Error(`Failed to remove path: ${removeResult.error.message}`));
       }
       console.log(`✅ Removed: ${targetPath}`);
     }

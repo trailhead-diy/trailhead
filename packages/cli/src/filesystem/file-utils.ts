@@ -30,7 +30,7 @@ export interface FileStats {
 export async function findFiles(
   directory: string,
   pattern: string,
-  ignorePatterns: string[] = [],
+  ignorePatterns: string[] = []
 ): Promise<Result<string[], CLIError>> {
   try {
     const fullPattern = path.join(directory, pattern);
@@ -46,7 +46,7 @@ export async function findFiles(
       createError('FILESYSTEM_ERROR', 'Failed to find files', {
         details: `Pattern: ${pattern} in ${directory}`,
         cause: error instanceof Error ? error : new Error(String(error)),
-      }),
+      })
     );
   }
 }
@@ -54,9 +54,7 @@ export async function findFiles(
 /**
  * Read file content safely with error handling
  */
-export async function readFile(
-  filePath: string,
-): Promise<Result<string, CLIError>> {
+export async function readFile(filePath: string): Promise<Result<string, CLIError>> {
   try {
     const content = await fs.readFile(filePath, 'utf8');
     return Ok(content);
@@ -64,11 +62,8 @@ export async function readFile(
     return Err(
       createError('FILESYSTEM_ERROR', 'Failed to read file', {
         details: `Path: ${filePath}`,
-        cause:
-          error instanceof Error
-            ? error
-            : new Error(`Failed to read ${filePath}`),
-      }),
+        cause: error instanceof Error ? error : new Error(`Failed to read ${filePath}`),
+      })
     );
   }
 }
@@ -78,7 +73,7 @@ export async function readFile(
  */
 export async function writeFile(
   filePath: string,
-  content: string,
+  content: string
 ): Promise<Result<void, CLIError>> {
   try {
     await fs.writeFile(filePath, content, 'utf8');
@@ -87,11 +82,8 @@ export async function writeFile(
     return Err(
       createError('FILESYSTEM_ERROR', 'Failed to write file', {
         details: `Path: ${filePath}`,
-        cause:
-          error instanceof Error
-            ? error
-            : new Error(`Failed to write ${filePath}`),
-      }),
+        cause: error instanceof Error ? error : new Error(`Failed to write ${filePath}`),
+      })
     );
   }
 }
@@ -111,9 +103,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
 /**
  * Check if path exists with Result-based error handling
  */
-export async function pathExists(
-  filePath: string,
-): Promise<Result<boolean, CLIError>> {
+export async function pathExists(filePath: string): Promise<Result<boolean, CLIError>> {
   try {
     await fs.access(filePath);
     return Ok(true);
@@ -127,10 +117,8 @@ export async function pathExists(
       createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
         details: `Path: ${filePath}`,
         cause:
-          error instanceof Error
-            ? error
-            : new Error(`Failed to check path existence: ${filePath}`),
-      }),
+          error instanceof Error ? error : new Error(`Failed to check path existence: ${filePath}`),
+      })
     );
   }
 }
@@ -138,9 +126,7 @@ export async function pathExists(
 /**
  * Create directory if it doesn't exist
  */
-export async function ensureDirectory(
-  dirPath: string,
-): Promise<Result<void, CLIError>> {
+export async function ensureDirectory(dirPath: string): Promise<Result<void, CLIError>> {
   try {
     await fs.mkdir(dirPath, { recursive: true });
     return Ok(undefined);
@@ -148,11 +134,8 @@ export async function ensureDirectory(
     return Err(
       createError('FILESYSTEM_ERROR', 'Failed to create directory', {
         details: `Path: ${dirPath}`,
-        cause:
-          error instanceof Error
-            ? error
-            : new Error(`Failed to create directory ${dirPath}`),
-      }),
+        cause: error instanceof Error ? error : new Error(`Failed to create directory ${dirPath}`),
+      })
     );
   }
 }
@@ -162,7 +145,7 @@ export async function ensureDirectory(
  */
 export async function compareFiles(
   sourcePath: string,
-  destPath: string,
+  destPath: string
 ): Promise<Result<FileComparison, CLIError>> {
   try {
     const sourceExists = await fileExists(sourcePath);
@@ -214,10 +197,8 @@ export async function compareFiles(
         cause:
           error instanceof Error
             ? error
-            : new Error(
-                `Failed to compare files: ${sourcePath} vs ${destPath}`,
-              ),
-      }),
+            : new Error(`Failed to compare files: ${sourcePath} vs ${destPath}`),
+      })
     );
   }
 }
@@ -262,7 +243,7 @@ export function createFileStats(): FileStats {
 export function updateFileStats(
   stats: FileStats,
   processed: number = 1,
-  modified: number = 0,
+  modified: number = 0
 ): FileStats {
   return {
     ...stats,

@@ -106,8 +106,7 @@ export class TemplateCompiler {
     // Array includes helper
     Handlebars.registerHelper(
       'includes',
-      (array: any[], value: any) =>
-        Array.isArray(array) && array.includes(value),
+      (array: any[], value: any) => Array.isArray(array) && array.includes(value)
     );
 
     // String helper for text manipulation with sanitization
@@ -136,10 +135,7 @@ export class TemplateCompiler {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
       if (!sanitized.success) return str;
-      return sanitized.value
-        .replace(/[A-Z]/g, '-$&')
-        .toLowerCase()
-        .replace(/^-/, '');
+      return sanitized.value.replace(/[A-Z]/g, '-$&').toLowerCase().replace(/^-/, '');
     });
 
     // Pascal case helper with sanitization
@@ -149,10 +145,7 @@ export class TemplateCompiler {
       if (!sanitized.success) return str;
       return sanitized.value
         .split(/[-_\s]+/)
-        .map(
-          (word: string) =>
-            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-        )
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('');
     });
 
@@ -163,10 +156,7 @@ export class TemplateCompiler {
       if (!sanitized.success) return str;
       const pascal = sanitized.value
         .split(/[-_\s]+/)
-        .map(
-          (word: string) =>
-            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-        )
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join('');
       return pascal.charAt(0).toLowerCase() + pascal.slice(1);
     });
@@ -194,16 +184,13 @@ export class TemplateCompiler {
     });
 
     // Conditional block helper
-    Handlebars.registerHelper(
-      'if-eq',
-      function (this: any, a: any, b: any, options: any) {
-        if (a === b) {
-          return options.fn(this);
-        } else {
-          return options.inverse(this);
-        }
-      },
-    );
+    Handlebars.registerHelper('if-eq', function (this: any, a: any, b: any, options: any) {
+      if (a === b) {
+        return options.fn(this);
+      } else {
+        return options.inverse(this);
+      }
+    });
 
     // Multiple condition helper
     Handlebars.registerHelper('if-any', function (this: any, ...args: any[]) {
@@ -218,23 +205,20 @@ export class TemplateCompiler {
     });
 
     // Array iteration with index
-    Handlebars.registerHelper(
-      'each-with-index',
-      function (this: any, array: any[], options: any) {
-        if (!Array.isArray(array)) return options.inverse(this);
+    Handlebars.registerHelper('each-with-index', function (this: any, array: any[], options: any) {
+      if (!Array.isArray(array)) return options.inverse(this);
 
-        let result = '';
-        for (let i = 0; i < array.length; i++) {
-          result += options.fn({
-            ...array[i],
-            index: i,
-            isFirst: i === 0,
-            isLast: i === array.length - 1,
-          });
-        }
-        return result;
-      },
-    );
+      let result = '';
+      for (let i = 0; i < array.length; i++) {
+        result += options.fn({
+          ...array[i],
+          index: i,
+          isFirst: i === 0,
+          isLast: i === array.length - 1,
+        });
+      }
+      return result;
+    });
 
     this.initialized = true;
   }
@@ -272,10 +256,7 @@ export class TemplateCompiler {
    * @see {@link getCachedTemplate} for cache lookup logic
    * @see {@link cacheTemplate} for cache storage logic
    */
-  async compileTemplate(
-    templatePath: string,
-    context: TemplateContext,
-  ): Promise<string> {
+  async compileTemplate(templatePath: string, context: TemplateContext): Promise<string> {
     const cached = await this.getCachedTemplate(templatePath);
     if (cached) {
       return cached(context);
@@ -284,9 +265,7 @@ export class TemplateCompiler {
     // Read and compile template
     const contentResult = await fs.readFile(templatePath, 'utf-8');
     if (!contentResult.success) {
-      throw new Error(
-        `Failed to read template file: ${contentResult.error.message}`,
-      );
+      throw new Error(`Failed to read template file: ${contentResult.error.message}`);
     }
     const templateContent = contentResult.value;
 
@@ -313,7 +292,7 @@ export class TemplateCompiler {
    * Get cached template if valid
    */
   private async getCachedTemplate(
-    templatePath: string,
+    templatePath: string
   ): Promise<HandlebarsTemplateDelegate | null> {
     const cached = this.cache.get(templatePath);
     if (!cached) return null;
@@ -344,7 +323,7 @@ export class TemplateCompiler {
    */
   private async cacheTemplate(
     templatePath: string,
-    template: HandlebarsTemplateDelegate,
+    template: HandlebarsTemplateDelegate
   ): Promise<void> {
     try {
       // Use node:fs/promises for stat since CLI filesystem doesn't expose it
@@ -356,9 +335,7 @@ export class TemplateCompiler {
         return; // Can't cache if we can't read the file
       }
 
-      const hash = createHash('sha256')
-        .update(contentResult.value)
-        .digest('hex');
+      const hash = createHash('sha256').update(contentResult.value).digest('hex');
 
       this.cache.set(templatePath, {
         template,
@@ -374,7 +351,7 @@ export class TemplateCompiler {
    * Pre-compile multiple templates for better performance
    */
   async precompileTemplates(templatePaths: string[]): Promise<void> {
-    const promises = templatePaths.map(async (templatePath) => {
+    const promises = templatePaths.map(async templatePath => {
       try {
         const contentResult = await fs.readFile(templatePath, 'utf-8');
         if (!contentResult.success) {
@@ -464,7 +441,7 @@ export class TemplateCompiler {
     }
 
     if (Array.isArray(obj)) {
-      return obj.map((item) => this.sanitizeObject(item));
+      return obj.map(item => this.sanitizeObject(item));
     }
 
     const sanitized: any = {};

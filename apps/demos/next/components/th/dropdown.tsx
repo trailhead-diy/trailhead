@@ -35,18 +35,10 @@ export type DropdownMenuProps = ComponentProps<typeof CatalystDropdownMenu>;
 export type DropdownItemProps = ComponentProps<typeof CatalystDropdownItem>;
 export type DropdownLabelProps = ComponentProps<typeof CatalystDropdownLabel>;
 export type DropdownHeaderProps = ComponentProps<typeof CatalystDropdownHeader>;
-export type DropdownSectionProps = ComponentProps<
-  typeof CatalystDropdownSection
->;
-export type DropdownHeadingProps = ComponentProps<
-  typeof CatalystDropdownHeading
->;
-export type DropdownDividerProps = ComponentProps<
-  typeof CatalystDropdownDivider
->;
-export type DropdownShortcutProps = ComponentProps<
-  typeof CatalystDropdownShortcut
->;
+export type DropdownSectionProps = ComponentProps<typeof CatalystDropdownSection>;
+export type DropdownHeadingProps = ComponentProps<typeof CatalystDropdownHeading>;
+export type DropdownDividerProps = ComponentProps<typeof CatalystDropdownDivider>;
+export type DropdownShortcutProps = ComponentProps<typeof CatalystDropdownShortcut>;
 
 export const Dropdown = ({ children, ...props }: DropdownProps) => (
   <CatalystDropdown {...props}>{children}</CatalystDropdown>
@@ -55,7 +47,7 @@ export const Dropdown = ({ children, ...props }: DropdownProps) => (
 // Function overloads for DropdownButton
 export function DropdownButton(props: DropdownButtonProps): JSX.Element;
 export function DropdownButton<T extends React.ElementType>(
-  props: DropdownButtonPropsWithAs<T>,
+  props: DropdownButtonPropsWithAs<T>
 ): JSX.Element;
 export function DropdownButton({
   className,
@@ -69,77 +61,46 @@ export function DropdownButton({
   );
 }
 
-export const DropdownMenu = ({
-  className,
-  children,
-  anchor,
-  ...props
-}: DropdownMenuProps) => (
+export const DropdownMenu = ({ className, children, anchor, ...props }: DropdownMenuProps) => (
   <CatalystDropdownMenu anchor={anchor} className={cn(className)} {...props}>
     {children}
   </CatalystDropdownMenu>
 );
 
-export const DropdownItem = ({
-  className,
-  children,
-  ...props
-}: DropdownItemProps) => (
+export const DropdownItem = ({ className, children, ...props }: DropdownItemProps) => (
   <CatalystDropdownItem className={cn(className)} {...props}>
     {children}
   </CatalystDropdownItem>
 );
 
-export const DropdownLabel = ({
-  className,
-  children,
-  ...props
-}: DropdownLabelProps) => (
+export const DropdownLabel = ({ className, children, ...props }: DropdownLabelProps) => (
   <CatalystDropdownLabel className={cn(className)} {...props}>
     {children}
   </CatalystDropdownLabel>
 );
 
-export const DropdownHeader = ({
-  className,
-  children,
-  ...props
-}: DropdownHeaderProps) => (
+export const DropdownHeader = ({ className, children, ...props }: DropdownHeaderProps) => (
   <CatalystDropdownHeader className={cn(className)} {...props}>
     {children}
   </CatalystDropdownHeader>
 );
 
-export const DropdownSection = ({
-  className,
-  children,
-  ...props
-}: DropdownSectionProps) => (
+export const DropdownSection = ({ className, children, ...props }: DropdownSectionProps) => (
   <CatalystDropdownSection className={cn(className)} {...props}>
     {children}
   </CatalystDropdownSection>
 );
 
-export const DropdownHeading = ({
-  className,
-  children,
-  ...props
-}: DropdownHeadingProps) => (
+export const DropdownHeading = ({ className, children, ...props }: DropdownHeadingProps) => (
   <CatalystDropdownHeading className={cn(className)} {...props}>
     {children}
   </CatalystDropdownHeading>
 );
 
-export const DropdownDivider = ({
-  className,
-  ...props
-}: DropdownDividerProps) => (
+export const DropdownDivider = ({ className, ...props }: DropdownDividerProps) => (
   <CatalystDropdownDivider className={cn(className)} {...props} />
 );
 
-export const DropdownShortcut = ({
-  className,
-  ...props
-}: DropdownShortcutProps) => (
+export const DropdownShortcut = ({ className, ...props }: DropdownShortcutProps) => (
   <CatalystDropdownShortcut className={cn(className)} {...props} />
 );

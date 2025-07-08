@@ -1,17 +1,11 @@
 import { cosmiconfig, cosmiconfigSync } from 'cosmiconfig';
 import type { z } from 'zod';
-import type {
-  CreateConfigOptions,
-  ConfigLoader,
-  ConfigLoadResult,
-} from './types.js';
+import type { CreateConfigOptions, ConfigLoader, ConfigLoadResult } from './types.js';
 
 /**
  * Create a simplified configuration loader
  */
-export function createConfig<T>(
-  options: CreateConfigOptions<T>,
-): ConfigLoader<T> {
+export function createConfig<T>(options: CreateConfigOptions<T>): ConfigLoader<T> {
   const { name, schema, defaults, searchPlaces } = options;
 
   // Create default search places if not provided
@@ -42,7 +36,7 @@ export function createConfig<T>(
         return processResult(result, schema, defaults);
       } catch (error) {
         throw new Error(
-          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
       }
     },
@@ -58,7 +52,7 @@ export function createConfig<T>(
         return processResult(result, schema, defaults);
       } catch (error) {
         throw new Error(
-          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
       }
     },
@@ -73,11 +67,7 @@ export function createConfig<T>(
 /**
  * Process cosmiconfig result into our standard format
  */
-function processResult<T>(
-  result: any,
-  schema: z.ZodSchema<T>,
-  defaults?: T,
-): ConfigLoadResult<T> {
+function processResult<T>(result: any, schema: z.ZodSchema<T>, defaults?: T): ConfigLoadResult<T> {
   // No config found - use defaults
   if (!result || result.isEmpty) {
     if (!defaults) {
@@ -97,13 +87,9 @@ function processResult<T>(
   // Config found - validate and merge with defaults
   const validatedConfig = schema.parse(result.config);
 
-  const finalConfig = defaults
-    ? mergeWithDefaults(defaults, validatedConfig)
-    : validatedConfig;
+  const finalConfig = defaults ? mergeWithDefaults(defaults, validatedConfig) : validatedConfig;
 
-  const source = result.filepath?.endsWith('package.json')
-    ? 'package.json'
-    : 'file';
+  const source = result.filepath?.endsWith('package.json') ? 'package.json' : 'file';
 
   return {
     config: finalConfig,

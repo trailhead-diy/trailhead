@@ -24,8 +24,8 @@ export default function DialogPage(): React.JSX.Element {
           <Dialog open={isOpen} onClose={setIsOpen}>
             <DialogTitle>Refund payment</DialogTitle>
             <DialogDescription>
-              The refund will be reflected in the customer’s bank account 2 to 3
-              business days after processing.
+              The refund will be reflected in the customer’s bank account 2 to 3 business days after
+              processing.
             </DialogDescription>
             <DialogBody>
               <Field>

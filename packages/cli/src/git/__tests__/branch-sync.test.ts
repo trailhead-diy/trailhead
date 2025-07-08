@@ -1,14 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  checkBranchSync,
-  getCurrentBranch,
-  needsSync,
-  formatSyncStatus,
-} from '../branch-sync.js';
-import {
-  executeGitCommandSimple,
-  validateGitEnvironment,
-} from '../git-command.js';
+import { checkBranchSync, getCurrentBranch, needsSync, formatSyncStatus } from '../branch-sync.js';
+import { executeGitCommandSimple, validateGitEnvironment } from '../git-command.js';
 import type { BranchSyncStatus } from '../types.js';
 import { createError } from '../../core/index.js';
 
@@ -38,7 +30,7 @@ describe('branch-sync', () => {
       }
       expect(mockExecuteGitCommandSimple).toHaveBeenCalledWith(
         ['rev-parse', '--abbrev-ref', 'HEAD'],
-        {},
+        {}
       );
     });
 
@@ -266,9 +258,7 @@ describe('branch-sync', () => {
 
       const result = formatSyncStatus(status);
 
-      expect(result).toBe(
-        "Branch 'feature' is 3 commits ahead compared to 'origin/main'",
-      );
+      expect(result).toBe("Branch 'feature' is 3 commits ahead compared to 'origin/main'");
     });
 
     it('should format behind status with fast-forward suggestion', () => {
@@ -284,7 +274,7 @@ describe('branch-sync', () => {
       const result = formatSyncStatus(status);
 
       expect(result).toBe(
-        "Branch 'main' is 2 commits behind compared to 'origin/main' (can fast-forward with: git pull --rebase origin main)",
+        "Branch 'main' is 2 commits behind compared to 'origin/main' (can fast-forward with: git pull --rebase origin main)"
       );
     });
 
@@ -301,7 +291,7 @@ describe('branch-sync', () => {
       const result = formatSyncStatus(status);
 
       expect(result).toBe(
-        "Branch 'feature' is 2 commits ahead, 1 commit behind compared to 'origin/main' (merge required)",
+        "Branch 'feature' is 2 commits ahead, 1 commit behind compared to 'origin/main' (merge required)"
       );
     });
   });

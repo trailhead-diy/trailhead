@@ -33,11 +33,7 @@ describe('Prompts', () => {
       const { confirm } = await import('@inquirer/prompts');
       vi.mocked(confirm).mockResolvedValue(false);
 
-      const promptFn = createConfirmationPrompt(
-        'Delete files?',
-        undefined,
-        false,
-      );
+      const promptFn = createConfirmationPrompt('Delete files?', undefined, false);
       const result = await promptFn();
 
       expect(confirm).toHaveBeenCalledWith({
@@ -52,15 +48,8 @@ describe('Prompts', () => {
       vi.mocked(confirm).mockResolvedValue(true);
       const consoleSpy = vi.spyOn(console, 'log');
 
-      const details = [
-        'Create new directory',
-        'Install dependencies',
-        'Setup configuration',
-      ];
-      const promptFn = createConfirmationPrompt(
-        'Continue with setup?',
-        details,
-      );
+      const details = ['Create new directory', 'Install dependencies', 'Setup configuration'];
+      const promptFn = createConfirmationPrompt('Continue with setup?', details);
 
       await promptFn();
 
@@ -160,12 +149,8 @@ describe('Prompts', () => {
         await promptFn();
 
         expect(validateFn!('')).toBe('Please enter a valid directory path');
-        expect(validateFn!(null as any)).toBe(
-          'Please enter a valid directory path',
-        );
-        expect(validateFn!(undefined as any)).toBe(
-          'Please enter a valid directory path',
-        );
+        expect(validateFn!(null as any)).toBe('Please enter a valid directory path');
+        expect(validateFn!(undefined as any)).toBe('Please enter a valid directory path');
       });
 
       it('should reject paths with .. segments', async () => {
@@ -181,10 +166,10 @@ describe('Prompts', () => {
         await promptFn();
 
         expect(validateFn!('../components')).toBe(
-          'Please enter a relative path without ".." segments',
+          'Please enter a relative path without ".." segments'
         );
         expect(validateFn!('src/../lib')).toBe(
-          'Please enter a relative path without ".." segments',
+          'Please enter a relative path without ".." segments'
         );
       });
 
@@ -201,10 +186,10 @@ describe('Prompts', () => {
         await promptFn();
 
         expect(validateFn!('/absolute/path')).toBe(
-          'Please enter a relative path without ".." segments',
+          'Please enter a relative path without ".." segments'
         );
         expect(validateFn!('/usr/local')).toBe(
-          'Please enter a relative path without ".." segments',
+          'Please enter a relative path without ".." segments'
         );
       });
     });
@@ -222,9 +207,7 @@ describe('Prompts', () => {
         const promptFn = createDirectoryPrompt('Enter directory:');
         await promptFn();
 
-        expect(transformFn!('  src\\components\\ui  ')).toBe(
-          'src/components/ui',
-        );
+        expect(transformFn!('  src\\components\\ui  ')).toBe('src/components/ui');
         expect(transformFn!('lib\\utils\\')).toBe('lib/utils/');
         expect(transformFn!(' components ')).toBe('components');
       });
@@ -254,10 +237,7 @@ describe('Prompts', () => {
       vi.mocked(input).mockResolvedValue('src/components');
       vi.mocked(confirm).mockResolvedValue(true);
 
-      const directoryPrompt = createDirectoryPrompt(
-        'Target directory:',
-        'components',
-      );
+      const directoryPrompt = createDirectoryPrompt('Target directory:', 'components');
       const confirmPrompt = createConfirmationPrompt('Install components?', [
         'Create directory structure',
         'Copy component files',

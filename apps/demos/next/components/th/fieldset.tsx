@@ -44,28 +44,14 @@ export const Label = ({ className, children, ...props }: LabelProps) => (
   </CatalystLabel>
 );
 
-export const Description = ({
-  className,
-  children,
-  ...props
-}: DescriptionProps) => (
-  <CatalystDescription
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const Description = ({ className, children, ...props }: DescriptionProps) => (
+  <CatalystDescription {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystDescription>
 );
 
-export const ErrorMessage = ({
-  className,
-  children,
-  ...props
-}: ErrorMessageProps) => (
-  <CatalystErrorMessage
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const ErrorMessage = ({ className, children, ...props }: ErrorMessageProps) => (
+  <CatalystErrorMessage {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystErrorMessage>
 );

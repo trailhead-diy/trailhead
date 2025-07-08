@@ -68,16 +68,12 @@ describe('Logger Module', () => {
 
       expect(mockConsole.log).toHaveBeenCalledWith('info message');
       expect(mockConsole.log).toHaveBeenCalledWith('green(✓ success message)');
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'yellow(⚠ warning message)',
-      );
+      expect(mockConsole.log).toHaveBeenCalledWith('yellow(⚠ warning message)');
       expect(mockConsole.log).toHaveBeenCalledWith('red(✗ error message)');
       expect(mockConsole.log).toHaveBeenCalledWith('blue(→ step message)');
 
       // Debug should not be called when verbose=false
-      expect(mockConsole.log).not.toHaveBeenCalledWith(
-        'gray(🐛 debug message)',
-      );
+      expect(mockConsole.log).not.toHaveBeenCalledWith('gray(🐛 debug message)');
       expect(mockConsole.log).toHaveBeenCalledTimes(5);
     });
 
@@ -94,9 +90,7 @@ describe('Logger Module', () => {
 
       logger.debug('debug message');
 
-      expect(mockConsole.log).not.toHaveBeenCalledWith(
-        'gray(🐛 debug message)',
-      );
+      expect(mockConsole.log).not.toHaveBeenCalledWith('gray(🐛 debug message)');
     });
 
     it('should use correct chalk colors and symbols', () => {
@@ -155,18 +149,10 @@ describe('Logger Module', () => {
       prefixedLogger.step('step message');
 
       expect(mockConsole.log).toHaveBeenCalledWith('[PREFIX] info message');
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'green(✓ [PREFIX] success message)',
-      );
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'yellow(⚠ [PREFIX] warning message)',
-      );
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'red(✗ [PREFIX] error message)',
-      );
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'blue(→ [PREFIX] step message)',
-      );
+      expect(mockConsole.log).toHaveBeenCalledWith('green(✓ [PREFIX] success message)');
+      expect(mockConsole.log).toHaveBeenCalledWith('yellow(⚠ [PREFIX] warning message)');
+      expect(mockConsole.log).toHaveBeenCalledWith('red(✗ [PREFIX] error message)');
+      expect(mockConsole.log).toHaveBeenCalledWith('blue(→ [PREFIX] step message)');
     });
 
     it('should work with silent base logger', () => {
@@ -243,9 +229,7 @@ describe('Logger Module', () => {
 
       expect(mockConsole.log).toHaveBeenCalledWith('info message');
       expect(mockConsole.log).toHaveBeenCalledWith('green(✓ success message)');
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'yellow(⚠ warning message)',
-      );
+      expect(mockConsole.log).toHaveBeenCalledWith('yellow(⚠ warning message)');
       expect(mockConsole.log).toHaveBeenCalledWith('red(✗ error message)');
       expect(mockConsole.log).toHaveBeenCalledWith('blue(→ step message)');
     });
@@ -273,16 +257,8 @@ describe('Logger Module', () => {
       logger.info('second');
       logger.success('third');
 
-      expect(logger.messages.map((m) => m.message)).toEqual([
-        'first',
-        'second',
-        'third',
-      ]);
-      expect(logger.messages.map((m) => m.level)).toEqual([
-        'error',
-        'info',
-        'success',
-      ]);
+      expect(logger.messages.map(m => m.message)).toEqual(['first', 'second', 'third']);
+      expect(logger.messages.map(m => m.level)).toEqual(['error', 'info', 'success']);
     });
   });
 
@@ -343,7 +319,7 @@ describe('Logger Module', () => {
       const formatted = formatLogMessages(messages);
 
       expect(formatted).toHaveLength(6);
-      expect(formatted.every((msg) => msg.includes('test'))).toBe(true);
+      expect(formatted.every(msg => msg.includes('test'))).toBe(true);
     });
   });
 
@@ -366,18 +342,10 @@ describe('Logger Module', () => {
     });
 
     it('should filter messages by multiple levels', () => {
-      const filtered = filterLogMessages(messages, [
-        'info',
-        'error',
-        'warning',
-      ]);
+      const filtered = filterLogMessages(messages, ['info', 'error', 'warning']);
 
       expect(filtered).toHaveLength(3);
-      expect(filtered.map((m) => m.level)).toEqual([
-        'info',
-        'warning',
-        'error',
-      ]);
+      expect(filtered.map(m => m.level)).toEqual(['info', 'warning', 'error']);
     });
 
     it('should return empty array when no levels match', () => {
@@ -404,7 +372,7 @@ describe('Logger Module', () => {
       const filtered = filterLogMessages(messages, ['warning', 'info']);
 
       // Should return info first, then warning (original order)
-      expect(filtered.map((m) => m.level)).toEqual(['info', 'warning']);
+      expect(filtered.map(m => m.level)).toEqual(['info', 'warning']);
     });
 
     it('should handle empty messages array', () => {
@@ -476,9 +444,7 @@ describe('Logger Module', () => {
       collectingLogger.debug('Collected debug');
 
       // Prefixed logger with verbose=true should output debug
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'gray(🐛 [BUILD] Debug message)',
-      );
+      expect(mockConsole.log).toHaveBeenCalledWith('gray(🐛 [BUILD] Debug message)');
 
       // Collecting logger should collect but not output debug
       expect(collectingLogger.messages).toHaveLength(1);
@@ -502,8 +468,7 @@ describe('Logger Module', () => {
 
     it('should handle logger methods with special characters', () => {
       const logger = createDefaultLogger();
-      const specialMessage =
-        'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
+      const specialMessage = 'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
 
       expect(() => {
         logger.info(specialMessage);

@@ -11,15 +11,8 @@ export const Input = ({ className, children, ...props }: InputProps) => (
   </CatalystInput>
 );
 
-export const InputGroup = ({
-  className,
-  children,
-  ...props
-}: InputGroupProps) => (
-  <CatalystInputGroup
-    {...(className && { className: cn(className) })}
-    {...props}
-  >
+export const InputGroup = ({ className, children, ...props }: InputGroupProps) => (
+  <CatalystInputGroup {...(className && { className: cn(className) })} {...props}>
     {children}
   </CatalystInputGroup>
 );

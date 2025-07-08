@@ -1,14 +1,14 @@
 ---
 type: how-to
-title: "How to Apply Functional Programming Patterns"
-description: "Implement functional programming patterns in your CLI applications for better maintainability and error handling"
+title: 'How to Apply Functional Programming Patterns'
+description: 'Implement functional programming patterns in your CLI applications for better maintainability and error handling'
 prerequisites:
-  - "@esteban-url/trailhead-cli installed"
-  - "Basic TypeScript knowledge"
-  - "Understanding of Result types"
+  - '@esteban-url/trailhead-cli installed'
+  - 'Basic TypeScript knowledge'
+  - 'Understanding of Result types'
 related:
-  - "/docs/reference/api/core"
-  - "/docs/explanation/architecture"
+  - '/docs/reference/api/core'
+  - '/docs/explanation/architecture'
 ---
 
 # How to Apply Functional Programming Patterns
@@ -60,7 +60,7 @@ const getId = (): number => ++count;
 ### Basic Error Handling
 
 ```typescript
-import { Ok, Err } from "@esteban-url/trailhead-cli";
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 
 async function readConfig(path: string): Promise<Result<Config>> {
   const result = await fs.readFile(path);
@@ -82,16 +82,16 @@ async function readConfig(path: string): Promise<Result<Config>> {
 Use `map` and `chain` for Result transformations:
 
 ```typescript
-import { map, chain } from "@esteban-url/trailhead-cli/core";
+import { map, chain } from '@esteban-url/trailhead-cli/core';
 
 // Transform successful values
-const doubled = map(Ok(21), (x) => x * 2); // Ok(42)
+const doubled = map(Ok(21), x => x * 2); // Ok(42)
 
 // Chain operations that return Results
 const result = await chain(
-  readFile("config.json"),
-  (content) => parseJSON(content),
-  (config) => validateConfig(config),
+  readFile('config.json'),
+  content => parseJSON(content),
+  config => validateConfig(config)
 );
 ```
 
@@ -110,7 +110,7 @@ async function processFile(path: string): Promise<Result<void>> {
   if (!parseResult.success) return parseResult;
 
   // Save processed content
-  return fs.writeFile(path + ".processed", parseResult.value);
+  return fs.writeFile(path + '.processed', parseResult.value);
 }
 ```
 
@@ -133,7 +133,7 @@ const trim = (s: string) => s.trim();
 const lowercase = (s: string) => s.toLowerCase();
 const normalizeEmail = compose(lowercase, trim);
 
-normalizeEmail("  USER@EXAMPLE.COM  "); // "user@example.com"
+normalizeEmail('  USER@EXAMPLE.COM  '); // "user@example.com"
 ```
 
 ### Pipeline Pattern
@@ -150,10 +150,10 @@ const pipeline =
 const processText = pipeline(
   (s: string) => s.trim(),
   (s: string) => s.toLowerCase(),
-  (s: string) => s.replace(/\s+/g, "-"),
+  (s: string) => s.replace(/\s+/g, '-')
 );
 
-processText("  Hello World  "); // "hello-world"
+processText('  Hello World  '); // "hello-world"
 ```
 
 ### Variation 2: Higher-Order Functions
@@ -183,15 +183,12 @@ Wrap functions with additional behavior:
 
 ```typescript
 // Logging middleware
-const withLogging = <T, R>(
-  fn: (arg: T) => Promise<Result<R>>,
-  logger: Logger,
-) => {
+const withLogging = <T, R>(fn: (arg: T) => Promise<Result<R>>, logger: Logger) => {
   return async (arg: T): Promise<Result<R>> => {
     logger.info(`Calling with: ${JSON.stringify(arg)}`);
     const result = await fn(arg);
     if (result.success) {
-      logger.success("Operation succeeded");
+      logger.success('Operation succeeded');
     } else {
       logger.error(`Operation failed: ${result.error.message}`);
     }
@@ -209,15 +206,14 @@ Create specialized functions by fixing some arguments:
 
 ```typescript
 // Generic file reader
-const readFileWithEncoding = (encoding: string) => (path: string) =>
-  fs.readFile(path, encoding);
+const readFileWithEncoding = (encoding: string) => (path: string) => fs.readFile(path, encoding);
 
 // Specialized readers
-const readUTF8 = readFileWithEncoding("utf8");
-const readUTF16 = readFileWithEncoding("utf16le");
+const readUTF8 = readFileWithEncoding('utf8');
+const readUTF16 = readFileWithEncoding('utf16le');
 
 // Usage
-const content = await readUTF8("config.json");
+const content = await readUTF8('config.json');
 ```
 
 ### Variation 4: Array Operations with Results
@@ -227,16 +223,16 @@ const content = await readUTF8("config.json");
 ```typescript
 // Process array of Results
 async function processFiles(paths: string[]): Promise<Result<string[]>> {
-  const results = await Promise.all(paths.map((path) => fs.readFile(path)));
+  const results = await Promise.all(paths.map(path => fs.readFile(path)));
 
   // Check if all succeeded
-  const errors = results.filter((r) => !r.success);
+  const errors = results.filter(r => !r.success);
   if (errors.length > 0) {
     return Err(new Error(`Failed to read ${errors.length} files`));
   }
 
   // Extract values
-  const contents = results.filter((r) => r.success).map((r) => r.value);
+  const contents = results.filter(r => r.success).map(r => r.value);
 
   return Ok(contents);
 }
@@ -311,7 +307,7 @@ function processData(data: any[]) {
 
 // ✅ Consistent functional style
 function processData(data: any[]): Result<TransformedData[]> {
-  const results = data.map((item) => transform(item));
+  const results = data.map(item => transform(item));
   return collectResults(results);
 }
 ```
@@ -344,9 +340,9 @@ return Ok(result.value);
 Here's a complete CLI command using functional patterns:
 
 ```typescript
-import { Ok, Err, createCLI } from "@esteban-url/trailhead-cli";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type { CommandContext } from "@esteban-url/trailhead-cli/command";
+import { Ok, Err, createCLI } from '@esteban-url/trailhead-cli';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { CommandContext } from '@esteban-url/trailhead-cli/command';
 
 // Pure function for data transformation
 const normalizeInput = (input: string): string => input.trim().toLowerCase();
@@ -354,10 +350,10 @@ const normalizeInput = (input: string): string => input.trim().toLowerCase();
 // Pure function with Result type
 const validateInput = (input: string): Result<string> => {
   if (input.length === 0) {
-    return Err(new Error("Input cannot be empty"));
+    return Err(new Error('Input cannot be empty'));
   }
   if (input.length > 100) {
-    return Err(new Error("Input too long"));
+    return Err(new Error('Input too long'));
   }
   return Ok(input);
 };
@@ -371,25 +367,25 @@ const withRetry =
       if (result.success || attempt === maxAttempts) {
         return result;
       }
-      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
     }
-    return Err(new Error("Max attempts reached"));
+    return Err(new Error('Max attempts reached'));
   };
 
 // Functional pipeline
 const processInput = pipeline(
   normalizeInput,
   validateInput,
-  (result: Result<string>) => result, // Pass through Result
+  (result: Result<string>) => result // Pass through Result
 );
 
 // Command using functional patterns
 const processCommand = createCommand({
-  name: "process",
-  description: "Process input using functional patterns",
+  name: 'process',
+  description: 'Process input using functional patterns',
   options: [
-    { name: "input", type: "string", required: true },
-    { name: "retry", type: "boolean", default: false },
+    { name: 'input', type: 'string', required: true },
+    { name: 'retry', type: 'boolean', default: false },
   ],
   async action(options, context: CommandContext) {
     // Pure function composition

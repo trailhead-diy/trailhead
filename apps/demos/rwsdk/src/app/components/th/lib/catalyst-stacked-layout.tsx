@@ -31,25 +31,22 @@ function MobileSidebar({
       <Headless.DialogBackdrop
         transition
         className={cn(
-          'fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in',
+          'fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in'
         )}
       />
       <Headless.DialogPanel
         transition
         className={cn(
-          'fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full',
+          'fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full'
         )}
       >
         <div
           className={cn(
-            'flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring',
+            'flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring'
           )}
         >
           <div className={cn('-mb-3 px-4 pt-3')}>
-            <Headless.CloseButton
-              as={CatalystNavbarItem}
-              aria-label="Close navigation"
-            >
+            <Headless.CloseButton as={CatalystNavbarItem} aria-label="Close navigation">
               <CloseMenuIcon />
             </Headless.CloseButton>
           </div>
@@ -73,7 +70,7 @@ export function CatalystStackedLayout({
   return (
     <div
       className={cn(
-        'relative isolate flex min-h-svh w-full flex-col bg-background lg:bg-accent dark:bg-card dark:lg:bg-card',
+        'relative isolate flex min-h-svh w-full flex-col bg-background lg:bg-accent dark:bg-card dark:lg:bg-card'
       )}
     >
       {/* Sidebar on mobile */}
@@ -83,10 +80,7 @@ export function CatalystStackedLayout({
       {/* Navbar */}
       <header className={cn('flex items-center px-4')}>
         <div className={cn('py-2.5 lg:hidden')}>
-          <CatalystNavbarItem
-            onClick={() => setShowSidebar(true)}
-            aria-label="Open navigation"
-          >
+          <CatalystNavbarItem onClick={() => setShowSidebar(true)} aria-label="Open navigation">
             <OpenMenuIcon />
           </CatalystNavbarItem>
         </div>
@@ -96,7 +90,7 @@ export function CatalystStackedLayout({
       <main className={cn('flex flex-1 flex-col pb-2 lg:px-2')}>
         <div
           className={cn(
-            'grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10',
+            'grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'
           )}
         >
           <div className={cn('mx-auto max-w-6xl')}>{children}</div>

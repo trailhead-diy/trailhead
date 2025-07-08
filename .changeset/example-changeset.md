@@ -1,6 +1,6 @@
 ---
-"@esteban-url/trailhead-cli": minor
-"@esteban-url/trailhead-web-ui": patch
+'@esteban-url/trailhead-cli': minor
+'@esteban-url/trailhead-web-ui': patch
 ---
 
 Added automated versioning and changelog management:

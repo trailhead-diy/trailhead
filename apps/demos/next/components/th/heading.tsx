@@ -11,11 +11,7 @@ export const Heading = ({ className, children, ...props }: HeadingProps) => (
   </CatalystHeading>
 );
 
-export const Subheading = ({
-  className,
-  children,
-  ...props
-}: SubheadingProps) => (
+export const Subheading = ({ className, children, ...props }: SubheadingProps) => (
   <CatalystSubheading className={cn(className)} {...props}>
     {children}
   </CatalystSubheading>

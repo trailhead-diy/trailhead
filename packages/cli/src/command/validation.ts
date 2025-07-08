@@ -27,10 +27,7 @@ import type { CommandOption } from './types.js';
  * }
  * ```
  */
-export function validateCommandOption(
-  option: CommandOption,
-  index: number,
-): Result<void> {
+export function validateCommandOption(option: CommandOption, index: number): Result<void> {
   // Option must have either name or flags
   if (!option.name && !option.flags) {
     return Err({
@@ -38,8 +35,7 @@ export function validateCommandOption(
       message: `Option at index ${index} must have either 'name' or 'flags' property`,
       details: JSON.stringify({ option, index }),
       recoverable: false,
-      suggestion:
-        'Add either a "name" property or a "flags" property to the option',
+      suggestion: 'Add either a "name" property or a "flags" property to the option',
     });
   }
 
@@ -55,16 +51,14 @@ export function validateCommandOption(
     }
 
     // Validate flags format (should match Commander.js patterns)
-    const flagPattern =
-      /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
+    const flagPattern = /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
     if (!flagPattern.test(option.flags)) {
       return Err({
         code: 'INVALID_OPTION_FLAGS_FORMAT',
         message: `Option at index ${index}: Invalid flags format '${option.flags}'. Expected format: '--long' or '-s, --long' with optional value placeholder`,
         details: JSON.stringify({ option, index }),
         recoverable: false,
-        suggestion:
-          'Use formats like "--output", "-o, --output", or "--output <value>"',
+        suggestion: 'Use formats like "--output", "-o, --output", or "--output <value>"',
       });
     }
   }
@@ -88,8 +82,7 @@ export function validateCommandOption(
         message: `Option at index ${index}: Invalid name format '${option.name}'. Use alphanumeric characters and hyphens only`,
         details: JSON.stringify({ option, index }),
         recoverable: false,
-        suggestion:
-          'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
+        suggestion: 'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
       });
     }
   }
@@ -106,8 +99,7 @@ export function validateCommandOption(
         message: `Option at index ${index}: 'alias' must be a single letter`,
         details: JSON.stringify({ option, index }),
         recoverable: false,
-        suggestion:
-          'Use a single letter like "o" for output or "v" for verbose',
+        suggestion: 'Use a single letter like "o" for output or "v" for verbose',
       });
     }
   }
@@ -169,7 +161,7 @@ export function validateCommandOption(
  * ```
  */
 export function validateCommandConfig<T extends CommandOptions>(
-  config: CommandConfig<T>,
+  config: CommandConfig<T>
 ): Result<void> {
   // Validate name
   if (!config.name || typeof config.name !== 'string') {
@@ -188,8 +180,7 @@ export function validateCommandConfig<T extends CommandOptions>(
       message: `Invalid command name format '${config.name}'. Use alphanumeric characters and hyphens only`,
       details: JSON.stringify({ config }),
       recoverable: false,
-      suggestion:
-        'Use kebab-case like "build-app" or single words like "build"',
+      suggestion: 'Use kebab-case like "build-app" or single words like "build"',
     });
   }
 
@@ -326,7 +317,7 @@ const validationCache = new WeakMap<CommandConfig<any>, boolean>();
  * ```
  */
 export function validateCommandConfigWithCache<T extends CommandOptions>(
-  config: CommandConfig<T>,
+  config: CommandConfig<T>
 ): Result<void> {
   // Check cache first
   if (validationCache.has(config)) {

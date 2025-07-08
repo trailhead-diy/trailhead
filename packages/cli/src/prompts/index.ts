@@ -5,12 +5,12 @@ export * from '@inquirer/prompts';
 export function createConfirmationPrompt(
   message: string,
   details?: string[],
-  defaultValue: boolean = true,
+  defaultValue: boolean = true
 ) {
   return async () => {
     if (details && details.length > 0) {
       console.log('\nThis will:');
-      details.forEach((detail) => console.log(`  • ${detail}`));
+      details.forEach(detail => console.log(`  • ${detail}`));
       console.log('');
     }
 
@@ -28,7 +28,7 @@ export function createDirectoryPrompt(message: string, defaultPath?: string) {
     return input({
       message,
       default: defaultPath,
-      validate: (answer) => {
+      validate: answer => {
         if (!answer || typeof answer !== 'string') {
           return 'Please enter a valid directory path';
         }
@@ -37,7 +37,7 @@ export function createDirectoryPrompt(message: string, defaultPath?: string) {
         }
         return true;
       },
-      transformer: (answer) => {
+      transformer: answer => {
         return String(answer).trim().replace(/\\/g, '/');
       },
     });

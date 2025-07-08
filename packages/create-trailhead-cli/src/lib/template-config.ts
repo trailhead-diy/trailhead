@@ -42,7 +42,7 @@ import type { TemplateLoaderConfig, TemplateVariant } from './types.js';
  * @see {@link TemplateLoaderConfig} for all available options
  */
 export function createTemplateConfig(
-  options: Partial<TemplateLoaderConfig> = {},
+  options: Partial<TemplateLoaderConfig> = {}
 ): TemplateLoaderConfig {
   const config: TemplateLoaderConfig = {};
 
@@ -68,7 +68,7 @@ export function createTemplateConfig(
 
   // Resolve additional directories
   if (options.additionalDirs) {
-    config.additionalDirs = options.additionalDirs.map((dir) => resolve(dir));
+    config.additionalDirs = options.additionalDirs.map(dir => resolve(dir));
   }
 
   return config;
@@ -98,7 +98,7 @@ export function createTemplateConfig(
  */
 export function createTestTemplateConfig(
   testBaseDir: string,
-  options: Partial<TemplateLoaderConfig> = {},
+  options: Partial<TemplateLoaderConfig> = {}
 ): TemplateLoaderConfig {
   const baseDir = resolve(testBaseDir);
 
@@ -131,7 +131,7 @@ export function createTestTemplateConfig(
  * ```
  */
 export function createDevTemplateConfig(
-  overrides: Partial<Record<TemplateVariant, string>>,
+  overrides: Partial<Record<TemplateVariant, string>>
 ): TemplateLoaderConfig {
   const variantDirs: Partial<Record<TemplateVariant, string>> = {};
 
@@ -169,7 +169,7 @@ export function createDevTemplateConfig(
  * ```
  */
 export async function validateTemplateConfig(
-  config: TemplateLoaderConfig,
+  config: TemplateLoaderConfig
 ): Promise<{ valid: boolean; errors: string[] }> {
   const errors: string[] = [];
 
@@ -194,9 +194,7 @@ export async function validateTemplateConfig(
           const { stat } = await import('node:fs/promises');
           const stats = await stat(path);
           if (!stats.isDirectory()) {
-            errors.push(
-              `variantDir for ${variant} is not a directory: ${path}`,
-            );
+            errors.push(`variantDir for ${variant} is not a directory: ${path}`);
           }
         } catch {
           errors.push(`variantDir for ${variant} does not exist: ${path}`);

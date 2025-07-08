@@ -15,7 +15,7 @@ export interface ValidationRule<T, C = unknown> {
   readonly required: boolean;
   readonly validate: (
     value: T,
-    context?: C,
+    context?: C
   ) => Promise<Result<T, ValidationError>> | Result<T, ValidationError>;
 }
 
@@ -48,7 +48,7 @@ export const Ok = <T>(value: T): Result<T, ValidationError> => ({
 export const Err = (
   message: string,
   field?: string,
-  cause?: unknown,
+  cause?: unknown
 ): Result<never, ValidationError> => ({
   success: false,
   error: {
@@ -67,9 +67,7 @@ export type Validator<T> = (value: unknown) => Result<T, ValidationError>;
 /**
  * Async validator function type
  */
-export type AsyncValidator<T> = (
-  value: unknown,
-) => Promise<Result<T, ValidationError>>;
+export type AsyncValidator<T> = (value: unknown) => Promise<Result<T, ValidationError>>;
 
 /**
  * Composable validator
@@ -79,7 +77,5 @@ export interface ComposableValidator<T> {
   and: <U>(other: ComposableValidator<U>) => ComposableValidator<T & U>;
   or: <U>(other: ComposableValidator<U>) => ComposableValidator<T | U>;
   map: <U>(fn: (value: T) => U) => ComposableValidator<U>;
-  mapError: (
-    fn: (error: ValidationError) => ValidationError,
-  ) => ComposableValidator<T>;
+  mapError: (fn: (error: ValidationError) => ValidationError) => ComposableValidator<T>;
 }

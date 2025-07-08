@@ -1,11 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createMemoryFileSystem } from '../memory.js';
-import {
-  isOk,
-  isErr,
-  unwrap,
-  getErrorMessage,
-} from '../../core/errors/index.js';
+import { isOk, isErr, unwrap, getErrorMessage } from '../../core/errors/index.js';
 import type { FileSystem } from '../types.js';
 
 describe('FileSystem', () => {
@@ -447,10 +442,7 @@ describe('FileSystem', () => {
 
     describe('outputFile', () => {
       it('should write file creating parent directories', async () => {
-        const result = await fs.outputFile(
-          '/deep/nested/path/file.txt',
-          'content',
-        );
+        const result = await fs.outputFile('/deep/nested/path/file.txt', 'content');
         expect(isOk(result)).toBe(true);
 
         const content = await fs.readFile('/deep/nested/path/file.txt');

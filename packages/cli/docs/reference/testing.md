@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Testing Module API Reference"
-description: "Testing utilities for CLI applications with mocked dependencies and test runners"
+title: 'Testing Module API Reference'
+description: 'Testing utilities for CLI applications with mocked dependencies and test runners'
 related:
   - /docs/reference/api/filesystem
   - /docs/reference/api/command
@@ -30,7 +30,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from "@esteban-url/trailhead-cli/testing";
+} from '@esteban-url/trailhead-cli/testing';
 ```
 
 ## Basic Usage
@@ -43,7 +43,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from "@esteban-url/trailhead-cli/testing";
+} from '@esteban-url/trailhead-cli/testing';
 ```
 
 ## Test Context
@@ -55,12 +55,12 @@ Creates a test context with mocked dependencies.
 ```typescript
 const context = createTestContext({
   filesystem: mockFileSystem({
-    "config.json": '{"name": "test"}',
-    "data.txt": "Hello, world!",
+    'config.json': '{"name": "test"}',
+    'data.txt': 'Hello, world!',
   }),
   logger: mockLogger(),
   prompts: mockPrompts({
-    "Name?": "Test User",
+    'Name?': 'Test User',
   }),
   verbose: true,
 });
@@ -89,19 +89,19 @@ Create an in-memory filesystem for testing.
 
 ```typescript
 const fs = mockFileSystem({
-  "/src/index.js": 'console.log("Hello");',
-  "/config.json": '{"port": 3000}',
-  "/data/users.csv": "id,name\n1,Alice\n2,Bob",
+  '/src/index.js': 'console.log("Hello");',
+  '/config.json': '{"port": 3000}',
+  '/data/users.csv': 'id,name\n1,Alice\n2,Bob',
 });
 
 // Test file operations
-const result = await fs.readFile("/config.json");
+const result = await fs.readFile('/config.json');
 expect(result.success).toBe(true);
 expect(JSON.parse(result.value).port).toBe(3000);
 
 // Verify writes
 await myCommand.execute({}, { fs });
-const written = await fs.readFile("/output.txt");
+const written = await fs.readFile('/output.txt');
 expect(written.success).toBe(true);
 ```
 
@@ -113,19 +113,19 @@ Capture and assert log output.
 const logger = mockLogger();
 
 // Use logger
-logger.info("Processing...");
-logger.success("Done!");
-logger.error("Failed");
+logger.info('Processing...');
+logger.success('Done!');
+logger.error('Failed');
 
 // Assert logs
 expect(logger.logs).toEqual([
-  { level: "info", message: "Processing..." },
-  { level: "success", message: "Done!" },
-  { level: "error", message: "Failed" },
+  { level: 'info', message: 'Processing...' },
+  { level: 'success', message: 'Done!' },
+  { level: 'error', message: 'Failed' },
 ]);
 
 // Check specific levels
-const errors = logger.logs.filter((l) => l.level === "error");
+const errors = logger.logs.filter(l => l.level === 'error');
 expect(errors).toHaveLength(1);
 
 // Clear logs
@@ -138,14 +138,14 @@ Provide predetermined responses to prompts.
 
 ```typescript
 const prompts = mockPrompts({
-  "What is your name?": "Alice",
-  "Choose a color": "blue",
-  "Continue?": true,
-  "Select features": ["typescript", "eslint"],
+  'What is your name?': 'Alice',
+  'Choose a color': 'blue',
+  'Continue?': true,
+  'Select features': ['typescript', 'eslint'],
 });
 
 // In your command
-const name = await prompts.prompt({ message: "What is your name?" });
+const name = await prompts.prompt({ message: 'What is your name?' });
 // Returns: "Alice"
 
 // Verify all prompts were used
@@ -159,12 +159,12 @@ expect(prompts.hasUnusedResponses()).toBe(false);
 Assert that a Result is successful and return its value.
 
 ```typescript
-const result = await processFile("data.txt");
+const result = await processFile('data.txt');
 const value = expectResult(result);
 // If result is error, throws with helpful message
 
 // With custom message
-const data = expectResult(result, "Failed to process file");
+const data = expectResult(result, 'Failed to process file');
 ```
 
 ### `expectError(result: Result<any>): Error`
@@ -174,11 +174,11 @@ Assert that a Result is an error and return it.
 ```typescript
 const result = await riskyOperation();
 const error = expectError(result);
-expect(error.message).toContain("Permission denied");
+expect(error.message).toContain('Permission denied');
 
 // With type assertion
 const fsError = expectError<FileSystemError>(result);
-expect(fsError.code).toBe("EACCES");
+expect(fsError.code).toBe('EACCES');
 ```
 
 ## Test Runners
@@ -188,14 +188,14 @@ expect(fsError.code).toBe("EACCES");
 Run a command with test context.
 
 ```typescript
-import { runCommand } from "@esteban-url/trailhead-cli/testing";
+import { runCommand } from '@esteban-url/trailhead-cli/testing';
 
-test("init command", async () => {
+test('init command', async () => {
   const result = await runCommand(initCommand, {
-    args: { template: "basic" },
+    args: { template: 'basic' },
     filesystem: mockFileSystem(),
     prompts: mockPrompts({
-      "Project name?": "my-project",
+      'Project name?': 'my-project',
     }),
   });
 
@@ -208,19 +208,19 @@ test("init command", async () => {
 Advanced test runner with fluent API.
 
 ```typescript
-import { CommandTestRunner } from "@esteban-url/trailhead-cli/testing";
+import { CommandTestRunner } from '@esteban-url/trailhead-cli/testing';
 
 const runner = new CommandTestRunner(myCommand)
-  .withArgs({ input: "test.txt" })
+  .withArgs({ input: 'test.txt' })
   .withFiles({
-    "test.txt": "content",
+    'test.txt': 'content',
   })
   .withPrompts({
-    "Confirm?": true,
+    'Confirm?': true,
   })
   .expectSuccess()
-  .expectFile("output.txt", "processed content")
-  .expectLog("info", "Processing test.txt");
+  .expectFile('output.txt', 'processed content')
+  .expectLog('info', 'Processing test.txt');
 
 await runner.run();
 ```
@@ -230,32 +230,32 @@ await runner.run();
 ### Testing File Operations
 
 ```typescript
-test("processes files correctly", async () => {
+test('processes files correctly', async () => {
   const fs = mockFileSystem({
-    "input.txt": "Hello, World!",
-    "config.json": '{"uppercase": true}',
+    'input.txt': 'Hello, World!',
+    'config.json': '{"uppercase": true}',
   });
 
   const context = createTestContext({ filesystem: fs });
 
-  const result = await processCommand.execute({ file: "input.txt" }, context);
+  const result = await processCommand.execute({ file: 'input.txt' }, context);
 
   expectResult(result);
 
   // Verify output
-  const output = await fs.readFile("output.txt");
-  expect(expectResult(output)).toBe("HELLO, WORLD!");
+  const output = await fs.readFile('output.txt');
+  expect(expectResult(output)).toBe('HELLO, WORLD!');
 });
 ```
 
 ### Testing Interactive Commands
 
 ```typescript
-test("interactive setup", async () => {
+test('interactive setup', async () => {
   const prompts = mockPrompts({
-    "Project name:": "awesome-cli",
-    "Choose template:": "typescript",
-    "Install dependencies?": true,
+    'Project name:': 'awesome-cli',
+    'Choose template:': 'typescript',
+    'Install dependencies?': true,
   });
 
   const fs = mockFileSystem();
@@ -271,16 +271,14 @@ test("interactive setup", async () => {
   expectResult(result);
 
   // Verify created files
-  expect(await fs.exists("awesome-cli/package.json")).toEqual({
+  expect(await fs.exists('awesome-cli/package.json')).toEqual({
     success: true,
     value: true,
   });
 
   // Verify logs
   expect(
-    logger.logs.some(
-      (l) => l.level === "success" && l.message.includes("Project created"),
-    ),
+    logger.logs.some(l => l.level === 'success' && l.message.includes('Project created'))
   ).toBe(true);
 });
 ```
@@ -288,31 +286,28 @@ test("interactive setup", async () => {
 ### Testing Error Cases
 
 ```typescript
-test("handles missing file", async () => {
+test('handles missing file', async () => {
   const fs = mockFileSystem(); // No files
   const context = createTestContext({ filesystem: fs });
 
-  const result = await readCommand.execute({ file: "missing.txt" }, context);
+  const result = await readCommand.execute({ file: 'missing.txt' }, context);
 
   const error = expectError(result);
-  expect(error.message).toContain("File not found");
-  expect(error.code).toBe("ENOENT");
+  expect(error.message).toContain('File not found');
+  expect(error.code).toBe('ENOENT');
 });
 ```
 
 ### Testing Validation
 
 ```typescript
-test("validates options", async () => {
+test('validates options', async () => {
   const context = createTestContext();
 
-  const result = await deployCommand.execute(
-    { environment: "invalid" },
-    context,
-  );
+  const result = await deployCommand.execute({ environment: 'invalid' }, context);
 
   const error = expectError(result);
-  expect(error.message).toContain("Invalid environment");
+  expect(error.message).toContain('Invalid environment');
 });
 ```
 
@@ -321,21 +316,17 @@ test("validates options", async () => {
 ### Path Utilities
 
 ```typescript
-import {
-  normalizePath,
-  joinPath,
-  resolvePath,
-} from "@esteban-url/trailhead-cli/testing";
+import { normalizePath, joinPath, resolvePath } from '@esteban-url/trailhead-cli/testing';
 
 // Normalize paths for consistent testing
-const path1 = normalizePath("C:\\Users\\test\\file.txt");
-const path2 = normalizePath("/Users/test/file.txt");
+const path1 = normalizePath('C:\\Users\\test\\file.txt');
+const path2 = normalizePath('/Users/test/file.txt');
 
 // Join paths safely
-const fullPath = joinPath("/base", "sub", "file.txt");
+const fullPath = joinPath('/base', 'sub', 'file.txt');
 
 // Resolve relative paths
-const absolute = resolvePath("./config.json", "/project");
+const absolute = resolvePath('./config.json', '/project');
 ```
 
 ## Test Fixtures
@@ -343,18 +334,18 @@ const absolute = resolvePath("./config.json", "/project");
 ### Creating Test Contexts with Files
 
 ```typescript
-import { createTestContextWithFiles } from "@esteban-url/trailhead-cli/testing";
+import { createTestContextWithFiles } from '@esteban-url/trailhead-cli/testing';
 
 const context = await createTestContextWithFiles({
-  "src/index.ts": 'export const hello = "world";',
-  "package.json": JSON.stringify({
-    name: "test-project",
-    version: "1.0.0",
+  'src/index.ts': 'export const hello = "world";',
+  'package.json': JSON.stringify({
+    name: 'test-project',
+    version: '1.0.0',
   }),
-  "tsconfig.json": JSON.stringify({
+  'tsconfig.json': JSON.stringify({
     compilerOptions: {
-      target: "ES2020",
-      module: "commonjs",
+      target: 'ES2020',
+      module: 'commonjs',
     },
   }),
 });
@@ -365,14 +356,11 @@ const context = await createTestContextWithFiles({
 Example test setup with Vitest:
 
 ```typescript
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  createTestContext,
-  mockFileSystem,
-} from "@esteban-url/trailhead-cli/testing";
-import { myCommand } from "../src/commands/my-command";
+import { describe, it, expect, beforeEach } from 'vitest';
+import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing';
+import { myCommand } from '../src/commands/my-command';
 
-describe("MyCommand", () => {
+describe('MyCommand', () => {
   let context: TestContext;
 
   beforeEach(() => {
@@ -381,7 +369,7 @@ describe("MyCommand", () => {
     });
   });
 
-  it("should execute successfully", async () => {
+  it('should execute successfully', async () => {
     const result = await myCommand.execute({}, context);
     expect(result.success).toBe(true);
   });

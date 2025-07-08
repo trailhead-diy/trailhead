@@ -57,11 +57,7 @@ export interface AdvancedRetryOptions<E extends CLIError = CLIError> {
   /**
    * Called after each failed attempt
    */
-  onFailedAttempt?: (
-    error: E,
-    attemptNumber: number,
-    retriesLeft: number,
-  ) => void | Promise<void>;
+  onFailedAttempt?: (error: E, attemptNumber: number, retriesLeft: number) => void | Promise<void>;
 
   /**
    * Abort signal for cancellation
@@ -161,7 +157,7 @@ export const RetryStrategies = {
  */
 export async function retryAdvanced<T, E extends CLIError = CLIError>(
   operation: () => AsyncResult<T, E>,
-  options: AdvancedRetryOptions<E> = {},
+  options: AdvancedRetryOptions<E> = {}
 ): AsyncResult<T, E> {
   const {
     retries,
@@ -210,10 +206,7 @@ export async function retryAdvanced<T, E extends CLIError = CLIError>(
         }
 
         // Throw a RetryableError to trigger retry (p-retry requires Error instances)
-        throw new RetryableError(
-          operationResult.error.message,
-          operationResult.error,
-        );
+        throw new RetryableError(operationResult.error.message, operationResult.error);
       },
       {
         retries,
@@ -221,20 +214,16 @@ export async function retryAdvanced<T, E extends CLIError = CLIError>(
         minTimeout,
         maxTimeout,
         randomize,
-        onFailedAttempt: async (error) => {
+        onFailedAttempt: async error => {
           // Add jitter if enabled
           if (jitter && minTimeout) {
             const jitterAmount = Math.random() * maxJitter;
-            await new Promise((resolve) => setTimeout(resolve, jitterAmount));
+            await new Promise(resolve => setTimeout(resolve, jitterAmount));
           }
 
           // Call user's onFailedAttempt hook
           if (onFailedAttempt && lastError) {
-            await onFailedAttempt(
-              lastError,
-              error.attemptNumber,
-              error.retriesLeft,
-            );
+            await onFailedAttempt(lastError, error.attemptNumber, error.retriesLeft);
           }
         },
         // Use custom backoff if provided
@@ -242,7 +231,7 @@ export async function retryAdvanced<T, E extends CLIError = CLIError>(
           minTimeout: customBackoff(1),
           factor: 1, // Disable built-in exponential backoff
         }),
-      },
+      }
     );
 
     return result;
@@ -301,11 +290,11 @@ export async function retryAdvanced<T, E extends CLIError = CLIError>(
  * ```
  */
 export function createRetryWrapper<E extends CLIError = CLIError>(
-  defaultOptions: AdvancedRetryOptions<E>,
+  defaultOptions: AdvancedRetryOptions<E>
 ) {
   return <T>(
     operation: () => AsyncResult<T, E>,
-    overrideOptions?: Partial<AdvancedRetryOptions<E>>,
+    overrideOptions?: Partial<AdvancedRetryOptions<E>>
   ): AsyncResult<T, E> => {
     return retryAdvanced(operation, { ...defaultOptions, ...overrideOptions });
   };
@@ -343,7 +332,7 @@ export interface CircuitBreakerOptions {
 export interface CircuitBreaker {
   execute: <T, E extends CLIError = CLIError>(
     operation: () => AsyncResult<T, E>,
-    retryOptions?: AdvancedRetryOptions<E>,
+    retryOptions?: AdvancedRetryOptions<E>
   ) => AsyncResult<T, E>;
   reset: () => void;
   getState: () => 'closed' | 'open' | 'half-open';
@@ -411,14 +400,8 @@ export interface CircuitBreaker {
  * }
  * ```
  */
-export function createCircuitBreaker(
-  options: CircuitBreakerOptions = {},
-): CircuitBreaker {
-  const {
-    failureThreshold = 5,
-    resetTimeout = 60000,
-    windowSize = 60000,
-  } = options;
+export function createCircuitBreaker(options: CircuitBreakerOptions = {}): CircuitBreaker {
+  const { failureThreshold = 5, resetTimeout = 60000, windowSize = 60000 } = options;
 
   // Internal state with optimized circular buffer for failures
   const maxFailures = failureThreshold * 2; // Keep a reasonable history
@@ -428,7 +411,7 @@ export function createCircuitBreaker(
 
   const execute = async <T, E extends CLIError = CLIError>(
     operation: () => AsyncResult<T, E>,
-    retryOptions?: AdvancedRetryOptions<E>,
+    retryOptions?: AdvancedRetryOptions<E>
   ): AsyncResult<T, E> => {
     const now = Date.now();
 
@@ -436,10 +419,7 @@ export function createCircuitBreaker(
     if (failures.length > 0) {
       const cutoff = now - windowSize;
       let firstValidIndex = 0;
-      while (
-        firstValidIndex < failures.length &&
-        failures[firstValidIndex] < cutoff
-      ) {
+      while (firstValidIndex < failures.length && failures[firstValidIndex] < cutoff) {
         firstValidIndex++;
       }
       if (firstValidIndex > 0) {
@@ -530,7 +510,7 @@ export function createCircuitBreaker(
 export async function retryWithTimeout<T, E extends CLIError = CLIError>(
   operation: () => AsyncResult<T, E>,
   timeout: number,
-  retryOptions?: AdvancedRetryOptions<E>,
+  retryOptions?: AdvancedRetryOptions<E>
 ): AsyncResult<T, E> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -566,13 +546,11 @@ export async function retryWithTimeout<T, E extends CLIError = CLIError>(
  */
 export async function retryParallel<T, E extends CLIError = CLIError>(
   operations: Array<() => AsyncResult<T, E>>,
-  options?: AdvancedRetryOptions<E>,
+  options?: AdvancedRetryOptions<E>
 ): AsyncResult<T[], E> {
-  const results = await Promise.all(
-    operations.map((op) => retryAdvanced(op, options)),
-  );
+  const results = await Promise.all(operations.map(op => retryAdvanced(op, options)));
 
-  const errors = results.filter((r) => !r.success).map((r) => r.error);
+  const errors = results.filter(r => !r.success).map(r => r.error);
 
   if (errors.length > 0) {
     return {
@@ -588,7 +566,7 @@ export async function retryParallel<T, E extends CLIError = CLIError>(
 
   return {
     success: true,
-    value: results.map((r) => (r as { success: true; value: T }).value),
+    value: results.map(r => (r as { success: true; value: T }).value),
   };
 }
 
@@ -615,15 +593,15 @@ export async function retryParallel<T, E extends CLIError = CLIError>(
  * ```
  */
 export function createProgressiveRetry<E extends CLIError = CLIError>(
-  errorDelayMap: Map<string, number>,
+  errorDelayMap: Map<string, number>
 ) {
   return async <T>(
     operation: () => AsyncResult<T, E>,
-    baseOptions?: AdvancedRetryOptions<E>,
+    baseOptions?: AdvancedRetryOptions<E>
   ): AsyncResult<T, E> => {
     return retryAdvanced(operation, {
       ...baseOptions,
-      customBackoff: (attemptNumber) => {
+      customBackoff: attemptNumber => {
         const lastErrorCode = (operation as any).lastError?.code;
         const baseDelay = errorDelayMap.get(lastErrorCode) || 1000;
         return baseDelay * Math.pow(2, attemptNumber - 1);

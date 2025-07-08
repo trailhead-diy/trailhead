@@ -21,7 +21,7 @@ export function CatalystCheckboxGroup({
         'space-y-3',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className,
+        className
       )}
     />
   );
@@ -46,7 +46,7 @@ export function CatalystCheckboxField({
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
         'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className,
+        className
       )}
     />
   );
@@ -157,7 +157,7 @@ export function CatalystCheckbox({
       <span className={cn([base, resolvedColorClasses])}>
         <svg
           className={cn(
-            'size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5',
+            'size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5'
           )}
           viewBox="0 0 14 14"
           fill="none"

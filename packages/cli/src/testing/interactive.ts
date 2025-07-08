@@ -53,9 +53,9 @@ export class InteractiveTestRunner extends EventEmitter {
       prompt: string | RegExp;
       response: string;
       delay?: number;
-    }>,
+    }>
   ): this {
-    this.responses.push(...responses.map((r) => ({ delay: 100, ...r })));
+    this.responses.push(...responses.map(r => ({ delay: 100, ...r })));
     return this;
   }
 
@@ -188,7 +188,7 @@ export async function runInteractiveTest(
     prompt: string | RegExp;
     response: string;
     delay?: number;
-  }>,
+  }>
 ): Promise<InteractiveTestResult> {
   const runner = new InteractiveTestRunner(config);
   runner.addResponses(responses);
@@ -198,10 +198,7 @@ export async function runInteractiveTest(
 /**
  * Create a test helper for common interactive patterns
  */
-export function createInteractiveTestHelper(
-  baseCommand: string,
-  baseCwd?: string,
-) {
+export function createInteractiveTestHelper(baseCommand: string, baseCwd?: string) {
   return {
     /**
      * Test a command with simple text responses
@@ -209,7 +206,7 @@ export function createInteractiveTestHelper(
     async testWithResponses(
       args: string[],
       responses: Array<{ prompt: string; response: string }>,
-      timeout = 15000,
+      timeout = 15000
     ): Promise<InteractiveTestResult> {
       return runInteractiveTest(
         {
@@ -218,7 +215,7 @@ export function createInteractiveTestHelper(
           cwd: baseCwd,
           timeout,
         },
-        responses,
+        responses
       );
     },
 
@@ -228,7 +225,7 @@ export function createInteractiveTestHelper(
     async testWithRegexResponses(
       args: string[],
       responses: Array<{ prompt: RegExp; response: string }>,
-      timeout = 15000,
+      timeout = 15000
     ): Promise<InteractiveTestResult> {
       return runInteractiveTest(
         {
@@ -237,7 +234,7 @@ export function createInteractiveTestHelper(
           cwd: baseCwd,
           timeout,
         },
-        responses,
+        responses
       );
     },
 
@@ -247,7 +244,7 @@ export function createInteractiveTestHelper(
     async testWithDefaults(
       args: string[],
       promptCount: number,
-      timeout = 15000,
+      timeout = 15000
     ): Promise<InteractiveTestResult> {
       const responses = Array.from({ length: promptCount }, () => ({
         prompt: new RegExp('.+[?:]\\s*$', 'm'), // Match lines ending with ? or :
@@ -261,7 +258,7 @@ export function createInteractiveTestHelper(
           cwd: baseCwd,
           timeout,
         },
-        responses,
+        responses
       );
     },
   };

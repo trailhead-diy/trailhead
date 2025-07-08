@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Documentation Standards - Diátaxis Framework"
-description: "Complete specification of documentation standards and Diátaxis framework implementation for Trailhead"
+title: 'Documentation Standards - Diátaxis Framework'
+description: 'Complete specification of documentation standards and Diátaxis framework implementation for Trailhead'
 related:
   - /docs/reference/writing-guide.md
   - /docs/reference/review-checklist.md

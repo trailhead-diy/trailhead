@@ -19,10 +19,5 @@
       }
     }
   ],
-  "ignorePatterns": [
-    "dist/**/*",
-    "coverage/**/*",
-    "node_modules/**/*",
-    "templates/**/*.json"
-  ]
+  "ignorePatterns": ["dist/**/*", "coverage/**/*", "node_modules/**/*", "templates/**/*.json"]
 }

@@ -1,9 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolve } from 'path';
-import {
-  createTemplateConfig,
-  createTestTemplateConfig,
-} from '../lib/template-config.js';
+import { createTemplateConfig, createTestTemplateConfig } from '../lib/template-config.js';
 
 describe('Template Configuration', () => {
   it('should create basic template config', () => {

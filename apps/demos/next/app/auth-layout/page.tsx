@@ -14,11 +14,7 @@ export default function AuthLayoutPage(): React.JSX.Element {
       <List title="Auth Layout">
         <Item title="Login Form">
           <AuthLayout>
-            <form
-              action="#"
-              method="POST"
-              className="grid w-full max-w-sm grid-cols-1 gap-8"
-            >
+            <form action="#" method="POST" className="grid w-full max-w-sm grid-cols-1 gap-8">
               {/* <Logo className="h-6 text-zinc-950 dark:text-white forced-colors:text-[CanvasText]" /> */}
               <Heading>Sign in to your account</Heading>
               <Field>

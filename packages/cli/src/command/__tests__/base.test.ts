@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  createCommand,
-  type CommandOptions,
-  type CommandConfig,
-} from '../base.js';
+import { createCommand, type CommandOptions, type CommandConfig } from '../base.js';
 import { Ok } from '../../core/errors/index.js';
 
 // Mock external dependencies
@@ -25,9 +21,7 @@ const _mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock console methods
-const _mockConsoleError = vi
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const _mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 const _mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('Command Base', () => {

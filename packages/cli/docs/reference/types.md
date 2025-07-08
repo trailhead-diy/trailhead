@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Type Reference Index"
-description: "Comprehensive index of all types exported by @esteban-url/trailhead-cli modules"
+title: 'Type Reference Index'
+description: 'Comprehensive index of all types exported by @esteban-url/trailhead-cli modules'
 related:
   - /docs/reference/api/core
   - /docs/reference/api/command
@@ -23,7 +23,7 @@ Comprehensive index of all types exported by @esteban-url/trailhead-cli modules.
 ## Import
 
 ```typescript
-import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
+import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli';
 ```
 
 ## Import by Module
@@ -31,7 +31,7 @@ import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
 ### Main Export (`@esteban-url/trailhead-cli`)
 
 ```typescript
-import type { Result, CLI, CLIConfig } from "@esteban-url/trailhead-cli";
+import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli';
 ```
 
 ### Core Types (`@esteban-url/trailhead-cli/core`)
@@ -49,7 +49,7 @@ import type {
   ValidationRule,
   ValidationPipeline,
   Validator,
-} from "@esteban-url/trailhead-cli/core";
+} from '@esteban-url/trailhead-cli/core';
 ```
 
 ### Command Types (`@esteban-url/trailhead-cli/command`)
@@ -64,7 +64,7 @@ import type {
   ParsedOptions,
   ExecutionOptions,
   ProgressOptions,
-} from "@esteban-url/trailhead-cli/command";
+} from '@esteban-url/trailhead-cli/command';
 ```
 
 ### FileSystem Types (`@esteban-url/trailhead-cli/filesystem`)
@@ -78,7 +78,7 @@ import type {
   CopyOptions,
   RemoveOptions,
   JsonOptions,
-} from "@esteban-url/trailhead-cli/filesystem";
+} from '@esteban-url/trailhead-cli/filesystem';
 ```
 
 ### Config Types (`@esteban-url/trailhead-cli/config`)
@@ -88,7 +88,7 @@ import type {
   ConfigDefinition,
   ConfigSchema,
   LoadOptions,
-} from "@esteban-url/trailhead-cli/config";
+} from '@esteban-url/trailhead-cli/config';
 ```
 
 ### Testing Types (`@esteban-url/trailhead-cli/testing`)
@@ -101,7 +101,7 @@ import type {
   MockPrompts,
   RunOptions,
   CommandTestRunner,
-} from "@esteban-url/trailhead-cli/testing";
+} from '@esteban-url/trailhead-cli/testing';
 ```
 
 ### Utils Types (`@esteban-url/trailhead-cli/utils`)
@@ -114,7 +114,7 @@ import type {
   StatsSummary,
   OptionSchema,
   StyleFunction,
-} from "@esteban-url/trailhead-cli/utils";
+} from '@esteban-url/trailhead-cli/utils';
 ```
 
 ## Core Type Definitions
@@ -167,7 +167,7 @@ interface CommandOption {
   alias?: string;
   flags?: string;
   description: string;
-  type?: "string" | "boolean" | "number";
+  type?: 'string' | 'boolean' | 'number';
   required?: boolean;
   default?: any;
   choices?: string[];
@@ -210,11 +210,7 @@ interface FileSystem {
   rm(path: string, options?: RemoveOptions): Promise<Result<void>>;
   ensureDir(path: string): Promise<Result<void>>;
   readJson<T = any>(path: string): Promise<Result<T>>;
-  writeJson<T = any>(
-    path: string,
-    data: T,
-    options?: JsonOptions,
-  ): Promise<Result<void>>;
+  writeJson<T = any>(path: string, data: T, options?: JsonOptions): Promise<Result<void>>;
 }
 
 interface FileStats {
@@ -230,7 +226,7 @@ interface FileStats {
 ### Option Types
 
 ```typescript
-type CommandOptionType = "string" | "boolean" | "number";
+type CommandOptionType = 'string' | 'boolean' | 'number';
 
 type ParsedOptions = Record<string, string | boolean | number | undefined>;
 
@@ -253,21 +249,15 @@ All types are designed to work together:
 
 ```typescript
 // Example: Command using multiple module types
-import type {
-  Command,
-  CommandContext,
-} from "@esteban-url/trailhead-cli/command";
-import type { Result } from "@esteban-url/trailhead-cli";
-import type { FileSystem } from "@esteban-url/trailhead-cli/filesystem";
-import type { Logger } from "@esteban-url/trailhead-cli/core";
+import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command';
+import type { Result } from '@esteban-url/trailhead-cli';
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import type { Logger } from '@esteban-url/trailhead-cli/core';
 
 const myCommand: Command<MyOptions> = {
-  name: "process",
-  description: "Process files",
-  execute: async (
-    options: MyOptions,
-    context: CommandContext,
-  ): Promise<Result<void>> => {
+  name: 'process',
+  description: 'Process files',
+  execute: async (options: MyOptions, context: CommandContext): Promise<Result<void>> => {
     const fs: FileSystem = context.fs;
     const logger: Logger = context.logger;
 

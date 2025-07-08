@@ -17,10 +17,7 @@ describe('Generator Structure Tests', () => {
 
   beforeEach(() => {
     // Create a unique temp directory for each test outside project directory
-    tempDir = join(
-      tmpdir(),
-      'create-trailhead-cli-structure-test-' + Date.now(),
-    );
+    tempDir = join(tmpdir(), 'create-trailhead-cli-structure-test-' + Date.now());
 
     testContext = createTestContext({
       verbose: false,
@@ -62,15 +59,9 @@ describe('Generator Structure Tests', () => {
       expect(existsSync(join(tempDir, 'src/commands/dev.ts'))).toBe(true);
 
       // Check colocated test structure
-      expect(
-        existsSync(join(tempDir, 'src/commands/__tests__/build.test.ts')),
-      ).toBe(true);
-      expect(
-        existsSync(join(tempDir, 'src/commands/__tests__/dev.test.ts')),
-      ).toBe(true);
-      expect(
-        existsSync(join(tempDir, 'src/__tests__/integration/cli.test.ts')),
-      ).toBe(true);
+      expect(existsSync(join(tempDir, 'src/commands/__tests__/build.test.ts'))).toBe(true);
+      expect(existsSync(join(tempDir, 'src/commands/__tests__/dev.test.ts'))).toBe(true);
+      expect(existsSync(join(tempDir, 'src/__tests__/integration/cli.test.ts'))).toBe(true);
 
       // Verify no old test structure
       expect(existsSync(join(tempDir, 'tests'))).toBe(false);
@@ -97,18 +88,10 @@ describe('Generator Structure Tests', () => {
       expect(existsSync(join(tempDir, 'src/commands/validate.ts'))).toBe(true);
 
       // Check colocated test structure
-      expect(
-        existsSync(join(tempDir, 'src/commands/__tests__/config.test.ts')),
-      ).toBe(true);
-      expect(
-        existsSync(join(tempDir, 'src/commands/__tests__/init.test.ts')),
-      ).toBe(true);
-      expect(
-        existsSync(join(tempDir, 'src/commands/__tests__/validate.test.ts')),
-      ).toBe(true);
-      expect(
-        existsSync(join(tempDir, 'src/__tests__/integration/cli.test.ts')),
-      ).toBe(true);
+      expect(existsSync(join(tempDir, 'src/commands/__tests__/config.test.ts'))).toBe(true);
+      expect(existsSync(join(tempDir, 'src/commands/__tests__/init.test.ts'))).toBe(true);
+      expect(existsSync(join(tempDir, 'src/commands/__tests__/validate.test.ts'))).toBe(true);
+      expect(existsSync(join(tempDir, 'src/__tests__/integration/cli.test.ts'))).toBe(true);
 
       // Check additional files
       expect(existsSync(join(tempDir, 'src/lib/performance.ts'))).toBe(true);
@@ -131,9 +114,7 @@ describe('Generator Structure Tests', () => {
       expect(result.success).toBe(true);
 
       // Check that .hbs extensions are removed
-      expect(existsSync(join(tempDir, 'src/commands/build.ts.hbs'))).toBe(
-        false,
-      );
+      expect(existsSync(join(tempDir, 'src/commands/build.ts.hbs'))).toBe(false);
       expect(existsSync(join(tempDir, 'src/commands/build.ts'))).toBe(true);
 
       // Check that bin files are executable

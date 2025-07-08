@@ -11,10 +11,7 @@ export function CatalystFieldset({
   return (
     <Headless.Fieldset
       {...props}
-      className={cn(
-        '*:data-[slot=text]:mt-1 [&>*+[data-slot=control]]:mt-6',
-        className,
-      )}
+      className={cn('*:data-[slot=text]:mt-1 [&>*+[data-slot=control]]:mt-6', className)}
     />
   );
 }
@@ -29,23 +26,14 @@ export function CatalystLegend({
       {...props}
       className={cn(
         'text-base/6 font-semibold text-foreground data-disabled:opacity-50 sm:text-sm/6 dark:text-foreground',
-        className,
+        className
       )}
     />
   );
 }
 
-export function CatalystFieldGroup({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div
-      data-slot="control"
-      {...props}
-      className={cn('space-y-8', className)}
-    />
-  );
+export function CatalystFieldGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  return <div data-slot="control" {...props} className={cn('space-y-8', className)} />;
 }
 
 export function CatalystField({
@@ -62,7 +50,7 @@ export function CatalystField({
         '[&>[data-slot=control]+[data-slot=description]]:mt-3',
         '[&>[data-slot=control]+[data-slot=error]]:mt-3',
         '*:data-[slot=label]:font-medium',
-        className,
+        className
       )}
     />
   );
@@ -78,7 +66,7 @@ export function CatalystLabel({
       {...props}
       className={cn(
         'text-base/6 text-foreground select-none data-disabled:opacity-50 sm:text-sm/6 dark:text-foreground',
-        className,
+        className
       )}
     />
   );
@@ -87,17 +75,14 @@ export function CatalystLabel({
 export function CatalystDescription({
   className,
   ...props
-}: { className?: string } & Omit<
-  Headless.DescriptionProps,
-  'as' | 'className'
->) {
+}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
       data-slot="description"
       {...props}
       className={cn(
         'text-base/6 text-muted-foreground data-disabled:opacity-50 sm:text-sm/6 dark:text-muted-foreground',
-        className,
+        className
       )}
     />
   );
@@ -106,17 +91,14 @@ export function CatalystDescription({
 export function CatalystErrorMessage({
   className,
   ...props
-}: { className?: string } & Omit<
-  Headless.DescriptionProps,
-  'as' | 'className'
->) {
+}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
       data-slot="error"
       {...props}
       className={cn(
         'text-base/6 text-destructive data-disabled:opacity-50 sm:text-sm/6 dark:text-destructive',
-        className,
+        className
       )}
     />
   );

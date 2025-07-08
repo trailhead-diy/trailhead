@@ -77,9 +77,5 @@ export type {
   Framework,
 } from './validation/index.js';
 
-export {
-  createDefaultLogger,
-  createSilentLogger,
-  createPrefixedLogger,
-} from './logger.js';
+export { createDefaultLogger, createSilentLogger, createPrefixedLogger } from './logger.js';
 export type { Logger } from './logger.js';

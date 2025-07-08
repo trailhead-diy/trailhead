@@ -41,7 +41,7 @@ async function main() {
 }
 
 // Run the CLI
-main().catch((error) => {
+main().catch(error => {
   console.error('Fatal error:', error);
   process.exit(1);
 });

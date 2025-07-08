@@ -1,13 +1,6 @@
 'use client';
 import { DemoLayout, Item, List } from '@/components/demo-layout';
-import {
-  Description,
-  Field,
-  FieldGroup,
-  Fieldset,
-  Label,
-  Legend,
-} from '@/components/th/fieldset';
+import { Description, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/th/fieldset';
 import { Input } from '@/components/th/input';
 import { Select } from '@/components/th/select';
 import { Text } from '@/components/th/text';
@@ -35,16 +28,12 @@ export default function FieldsetPage(): React.JSX.Element {
                     <option>Mexico</option>
                     <option>United States</option>
                   </Select>
-                  <Description>
-                    We currently only ship to North America.
-                  </Description>
+                  <Description>We currently only ship to North America.</Description>
                 </Field>
                 <Field>
                   <Label>Delivery notes</Label>
                   <Textarea name="notes" />
-                  <Description>
-                    If you have a tiger, we&apos;d like to know about it.
-                  </Description>
+                  <Description>If you have a tiger, we&apos;d like to know about it.</Description>
                 </Field>
               </FieldGroup>
             </Fieldset>

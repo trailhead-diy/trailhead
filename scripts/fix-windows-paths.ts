@@ -19,14 +19,12 @@ const replacements: PathReplacement[] = [
   // Replace hardcoded project paths
   {
     pattern: /['"]\/project\/([^'"]*)['"]/g,
-    replacement: (match, path) =>
-      `projectPath('${path.replace(/\//g, "', '")}')`,
+    replacement: (match, path) => `projectPath('${path.replace(/\//g, "', '")}')`,
     description: 'Replace /project/ paths with projectPath()',
   },
   {
     pattern: /['"]\/trailhead\/([^'"]*)['"]/g,
-    replacement: (match, path) =>
-      `trailheadPath('${path.replace(/\//g, "', '")}')`,
+    replacement: (match, path) => `trailheadPath('${path.replace(/\//g, "', '")}')`,
     description: 'Replace /trailhead/ paths with trailheadPath()',
   },
   {
@@ -36,14 +34,12 @@ const replacements: PathReplacement[] = [
   },
   {
     pattern: /const trailheadRoot = ['"]\/trailhead['"]/g,
-    replacement:
-      "const trailheadRoot = isWindows ? 'C:\\\\trailhead' : '/trailhead'",
+    replacement: "const trailheadRoot = isWindows ? 'C:\\\\trailhead' : '/trailhead'",
     description: 'Replace trailheadRoot assignments',
   },
   {
     pattern: /path === ['"]\/project\/([^'"]*)['"]/g,
-    replacement: (match, path) =>
-      `path === projectPath('${path.replace(/\//g, "', '")}')`,
+    replacement: (match, path) => `path === projectPath('${path.replace(/\//g, "', '")}')`,
     description: 'Replace path comparisons',
   },
   {
@@ -70,9 +66,7 @@ function processFile(filePath: string): boolean {
     for (const { pattern, replacement, description } of replacements) {
       const matches = content.match(pattern);
       if (matches && matches.length > 0) {
-        console.log(
-          `  Applying: ${description} (${matches.length} occurrences)`,
-        );
+        console.log(`  Applying: ${description} (${matches.length} occurrences)`);
         content = content.replace(pattern, replacement as any);
         modified = true;
       }
@@ -111,11 +105,7 @@ function findTestFiles(dir: string, files: string[] = []): string[] {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
 
-    if (
-      stat.isDirectory() &&
-      !entry.includes('node_modules') &&
-      !entry.includes('dist')
-    ) {
+    if (stat.isDirectory() && !entry.includes('node_modules') && !entry.includes('dist')) {
       findTestFiles(fullPath, files);
     } else if (stat.isFile() && entry.endsWith('.test.ts')) {
       files.push(fullPath);
@@ -142,9 +132,7 @@ for (const file of testFiles) {
   }
 }
 
-console.log(
-  `\n✨ Fixed ${fixedCount} files with Windows path compatibility issues`,
-);
+console.log(`\n✨ Fixed ${fixedCount} files with Windows path compatibility issues`);
 console.log('\n📝 Next steps:');
 console.log('1. Review the changes to ensure they look correct');
 console.log('2. Run tests to verify everything still works');
