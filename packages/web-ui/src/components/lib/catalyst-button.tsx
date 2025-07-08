@@ -1,7 +1,7 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import React, { forwardRef } from 'react'
-import { CatalystLink } from './catalyst-link'
+import * as Headless from '@headlessui/react';
+import React, { forwardRef } from 'react';
+import { CatalystLink } from './catalyst-link';
 import { cn } from '../utils/cn';
 
 const styles = {
@@ -209,16 +209,16 @@ const styles = {
       '[--btn-icon:var(--color-muted-foreground)]/60 data-active:[--btn-icon:var(--color-muted-foreground)]/80 data-hover:[--btn-icon:var(--color-muted-foreground)]/80',
     ],
   },
-}
+};
 
-type CatalystButtonProps = (
+export type CatalystButtonProps = (
   | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
   | { color?: never; outline: true; plain?: never }
   | { color?: never; outline?: never; plain: true }
 ) & { className?: string; children: React.ReactNode } & (
-    | Omit<Headless.CatalystButtonProps, 'as' | 'className'>
+    | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
-  )
+  );
 
 export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: CatalystButtonProps,
@@ -226,9 +226,13 @@ export const CatalystButton = forwardRef(function CatalystButton(
 ) {
   let classes = cn(
     styles.base,
-    outline ? styles.outline : plain ? styles.plain : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
+    outline
+      ? styles.outline
+      : plain
+        ? styles.plain
+        : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
     className
-  )
+  );
 
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
@@ -239,14 +243,14 @@ export const CatalystButton = forwardRef(function CatalystButton(
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
     </Headless.Button>
   );
-})
+});
 
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */
 export function CatalystTouchTarget({
   children,
-  className
+  className,
 }: {
   children: React.ReactNode;
   className?: string;

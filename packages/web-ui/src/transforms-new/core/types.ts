@@ -44,3 +44,17 @@ export interface SemanticColorDefinition {
   darkValue: string;
   description?: string;
 }
+
+// Legacy types for compatibility
+export interface Transform {
+  name: string;
+  description: string;
+  apply: (source: string) => { source: string; changes: Change[] };
+}
+
+export interface Change {
+  type: string;
+  description: string;
+  before: string;
+  after: string;
+}

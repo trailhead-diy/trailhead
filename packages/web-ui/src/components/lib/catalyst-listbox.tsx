@@ -1,8 +1,8 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import * as Headless from '@headlessui/react'
-import { Fragment } from 'react'
+import * as Headless from '@headlessui/react';
+import { Fragment } from 'react';
 import { cn } from '../utils/cn';
 
 export function CatalystListbox<T>({
@@ -13,12 +13,12 @@ export function CatalystListbox<T>({
   children: options,
   ...props
 }: {
-  className?: string
-  placeholder?: React.ReactNode
-  autoFocus?: boolean
-  'aria-label'?: string
-  children?: React.ReactNode
-} & Omit<Headless.CatalystListboxProps<typeof Fragment, T>, 'as' | 'multiple'>) {
+  className?: string;
+  placeholder?: React.ReactNode;
+  autoFocus?: boolean;
+  'aria-label'?: string;
+  children?: React.ReactNode;
+} & Omit<Headless.ListboxProps<typeof Fragment, T>, 'as' | 'multiple'>) {
   return (
     <Headless.Listbox {...props} multiple={false}>
       <Headless.ListboxButton
@@ -42,9 +42,10 @@ export function CatalystListbox<T>({
         ])}
       >
         <Headless.ListboxSelectedOption
-          as="span"
           options={options}
-          placeholder={placeholder && <span className={cn('block truncate text-zinc-500')}>{placeholder}</span>}
+          placeholder={
+            placeholder && <span className={cn('block truncate text-zinc-500')}>{placeholder}</span>
+          }
           className={cn([
             // Basic layout
             'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
@@ -64,7 +65,9 @@ export function CatalystListbox<T>({
             'group-data-disabled:border-zinc-950/20 group-data-disabled:opacity-100 dark:group-data-disabled:border-white/15 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:data-hover:border-white/15',
           ])}
         />
-        <span className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}>
+        <span
+          className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}
+        >
           <svg
             className={cn(
               'size-5 stroke-zinc-500 group-data-disabled:stroke-zinc-600 sm:size-4 dark:stroke-zinc-400 forced-colors:stroke-[CanvasText]'
@@ -73,8 +76,18 @@ export function CatalystListbox<T>({
             aria-hidden="true"
             fill="none"
           >
-            <path d="M5.75 10.75L8 13L10.25 10.75" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M10.25 5.25L8 3L5.75 5.25" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M5.75 10.75L8 13L10.25 10.75"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M10.25 5.25L8 3L5.75 5.25"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </span>
       </Headless.ListboxButton>
@@ -109,7 +122,7 @@ export function CatalystListboxOption<T>({
   className,
   ...props
 }: { className?: string; children?: React.ReactNode } & Omit<
-  Headless.CatalystListboxOptionProps<'div', T>,
+  Headless.ListboxOptionProps<'div', T>,
   'as' | 'className'
 >) {
   let sharedClasses = cn(
@@ -121,11 +134,11 @@ export function CatalystListboxOption<T>({
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  )
+  );
 
   return (
     <Headless.ListboxOption as={Fragment} {...props}>
-      {({ selectedOption }) => {
+      {({ selectedOption }: { selectedOption: boolean }) => {
         if (selectedOption) {
           return <div className={cn(sharedClasses, className)}>{children}</div>;
         }
@@ -153,7 +166,12 @@ export function CatalystListboxOption<T>({
               fill="none"
               aria-hidden="true"
             >
-              <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M4 8.5l3 3L12 4"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <span className={cn(sharedClasses, 'col-start-2', className)}>{children}</span>
           </div>
@@ -163,11 +181,23 @@ export function CatalystListboxOption<T>({
   );
 }
 
-export function CatalystListboxLabel({ className, ...props }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)} />;
+export function CatalystListboxLabel({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'span'>) {
+  return (
+    <span
+      {...props}
+      className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
+    />
+  );
 }
 
-export function CatalystListboxDescription({ className, children, ...props }: React.ComponentPropsWithoutRef<'span'>) {
+export function CatalystListboxDescription({
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       {...props}

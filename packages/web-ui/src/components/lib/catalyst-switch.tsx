@@ -1,9 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
 import { cn } from '../utils/cn';
 
-export function CatalystSwitchGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function CatalystSwitchGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       data-slot="control"
@@ -179,18 +182,18 @@ const colors = {
     '[--switch-bg-ring:var(--color-muted-foreground)]/90 [--switch-bg:var(--color-muted-foreground)] dark:[--switch-bg-ring:transparent]',
     '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-muted-foreground)]/90',
   ],
-}
+};
 
-type CatalystColor = keyof typeof colors
+type CatalystColor = keyof typeof colors;
 
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: CatalystColor
-  className?: string
-} & Omit<Headless.CatalystSwitchProps, 'as' | 'className' | 'children'>) {
+  color?: CatalystColor;
+  className?: string;
+} & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Switch
       data-slot="control"

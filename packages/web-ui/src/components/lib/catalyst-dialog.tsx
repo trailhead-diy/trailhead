@@ -1,7 +1,7 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
-import { CatalystText } from './catalyst-text'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
+import { CatalystText } from './catalyst-text';
 import { cn } from '../utils/cn';
 
 const sizes = {
@@ -14,7 +14,7 @@ const sizes = {
   '3xl': 'sm:max-w-3xl',
   '4xl': 'sm:max-w-4xl',
   '5xl': 'sm:max-w-5xl',
-}
+};
 
 export function CatalystDialog({
   size = 'lg',
@@ -22,7 +22,7 @@ export function CatalystDialog({
   children,
   ...props
 }: { size?: keyof typeof sizes; className?: string; children: React.ReactNode } & Omit<
-  Headless.CatalystDialogProps,
+  Headless.DialogProps,
   'as' | 'className'
 >) {
   return (
@@ -34,9 +34,11 @@ export function CatalystDialog({
         )}
       />
       <div className={cn('fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0')}>
-        <div className={cn(
-          'grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4'
-        )}>
+        <div
+          className={cn(
+            'grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4'
+          )}
+        >
           <Headless.DialogPanel
             transition
             className={cn(
@@ -57,11 +59,14 @@ export function CatalystDialog({
 export function CatalystDialogTitle({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystDialogTitleProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.DialogTitleProps, 'as' | 'className'>) {
   return (
     <Headless.DialogTitle
       {...props}
-      className={cn('text-lg/6 font-semibold text-balance text-zinc-950 sm:text-base/6 dark:text-white', className)}
+      className={cn(
+        'text-lg/6 font-semibold text-balance text-zinc-950 sm:text-base/6 dark:text-white',
+        className
+      )}
     />
   );
 }
@@ -69,15 +74,27 @@ export function CatalystDialogTitle({
 export function CatalystDialogDescription({
   className,
   ...props
-}: { className?: string } & Omit<Headless.DescriptionProps<typeof CatalystText>, 'as' | 'className'>) {
-  return <Headless.Description as={CatalystText} {...props} className={cn('mt-2 text-pretty', className)} />;
+}: { className?: string } & Omit<
+  Headless.DescriptionProps<typeof CatalystText>,
+  'as' | 'className'
+>) {
+  return (
+    <Headless.Description
+      as={CatalystText}
+      {...props}
+      className={cn('mt-2 text-pretty', className)}
+    />
+  );
 }
 
 export function CatalystDialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return <div {...props} className={cn('mt-6', className)} />;
 }
 
-export function CatalystDialogActions({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function CatalystDialogActions({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       {...props}

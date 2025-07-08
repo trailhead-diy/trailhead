@@ -1,12 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
 import { cn } from '../utils/cn';
 
 export function CatalystFieldset({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystFieldsetProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.FieldsetProps, 'as' | 'className'>) {
   return (
     <Headless.Fieldset
       {...props}
@@ -18,7 +18,7 @@ export function CatalystFieldset({
 export function CatalystLegend({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystLegendProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.LegendProps, 'as' | 'className'>) {
   return (
     <Headless.Legend
       data-slot="legend"
@@ -35,7 +35,10 @@ export function CatalystFieldGroup({ className, ...props }: React.ComponentProps
   return <div data-slot="control" {...props} className={cn('space-y-8', className)} />;
 }
 
-export function CatalystField({ className, ...props }: { className?: string } & Omit<Headless.CatalystFieldProps, 'as' | 'className'>) {
+export function CatalystField({
+  className,
+  ...props
+}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
       {...props}
@@ -52,7 +55,10 @@ export function CatalystField({ className, ...props }: { className?: string } & 
   );
 }
 
-export function CatalystLabel({ className, ...props }: { className?: string } & Omit<Headless.CatalystLabelProps, 'as' | 'className'>) {
+export function CatalystLabel({
+  className,
+  ...props
+}: { className?: string } & Omit<Headless.LabelProps, 'as' | 'className'>) {
   return (
     <Headless.Label
       data-slot="label"
@@ -68,12 +74,15 @@ export function CatalystLabel({ className, ...props }: { className?: string } & 
 export function CatalystDescription({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystDescriptionProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
       data-slot="description"
       {...props}
-      className={cn('text-base/6 text-zinc-500 data-disabled:opacity-50 sm:text-sm/6 dark:text-zinc-400', className)}
+      className={cn(
+        'text-base/6 text-zinc-500 data-disabled:opacity-50 sm:text-sm/6 dark:text-zinc-400',
+        className
+      )}
     />
   );
 }
@@ -81,12 +90,15 @@ export function CatalystDescription({
 export function CatalystErrorMessage({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystDescriptionProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
       data-slot="error"
       {...props}
-      className={cn('text-base/6 text-red-600 data-disabled:opacity-50 sm:text-sm/6 dark:text-red-500', className)}
+      className={cn(
+        'text-base/6 text-red-600 data-disabled:opacity-50 sm:text-sm/6 dark:text-red-500',
+        className
+      )}
     />
   );
 }

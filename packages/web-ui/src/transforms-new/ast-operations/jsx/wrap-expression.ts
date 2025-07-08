@@ -53,7 +53,9 @@ export const wrapExpression = createASTTransform(
         }
 
         // Wrap the expression
-        value.expression = j.callExpression(j.identifier(wrapperFunction), [expression]);
+        if (expression.type !== 'JSXEmptyExpression') {
+          value.expression = j.callExpression(j.identifier(wrapperFunction), [expression]);
+        }
 
         changes.push({
           type: 'wrap-jsx-expression',

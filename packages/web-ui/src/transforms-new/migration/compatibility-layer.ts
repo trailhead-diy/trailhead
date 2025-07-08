@@ -2,7 +2,7 @@
  * Compatibility layer for migrating from old transforms to atomic transforms
  */
 
-import { type Transform, type Change } from '../shared/types';
+import { type Transform, type Change } from '../core/types';
 import { type AtomicTransform } from '../core/types';
 
 // Import the old transform types

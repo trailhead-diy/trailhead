@@ -1,39 +1,42 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import React, { forwardRef } from 'react'
+import * as Headless from '@headlessui/react';
+import React, { forwardRef } from 'react';
 import { cn } from '../utils/cn';
 
 export function CatalystInputGroup({
   children,
-  className
+  className,
 }: React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       data-slot="control"
-      className={cn(cn(
-        'relative isolate block',
-        'has-[[data-slot=icon]:first-child]:[&_input]:pl-10 has-[[data-slot=icon]:last-child]:[&_input]:pr-10 sm:has-[[data-slot=icon]:first-child]:[&_input]:pl-8 sm:has-[[data-slot=icon]:last-child]:[&_input]:pr-8',
-        '*:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4',
-        '[&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5 [&>[data-slot=icon]:last-child]:right-3 sm:[&>[data-slot=icon]:last-child]:right-2.5',
-        '*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400'
-      ), className)}
+      className={cn(
+        cn(
+          'relative isolate block',
+          'has-[[data-slot=icon]:first-child]:[&_input]:pl-10 has-[[data-slot=icon]:last-child]:[&_input]:pr-10 sm:has-[[data-slot=icon]:first-child]:[&_input]:pl-8 sm:has-[[data-slot=icon]:last-child]:[&_input]:pr-8',
+          '*:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4',
+          '[&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5 [&>[data-slot=icon]:last-child]:right-3 sm:[&>[data-slot=icon]:last-child]:right-2.5',
+          '*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400'
+        ),
+        className
+      )}
     >
       {children}
     </span>
   );
 }
 
-const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week']
-type CatalystDateType = (typeof dateTypes)[number]
+const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week'];
+type CatalystDateType = (typeof dateTypes)[number];
 
 export const CatalystInput = forwardRef(function CatalystInput(
   {
     className,
     ...props
   }: {
-    className?: string
-    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | CatalystDateType
-  } & Omit<Headless.CatalystInputProps, 'as' | 'className'>,
+    className?: string;
+    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | CatalystDateType;
+  } & Omit<React.ComponentPropsWithoutRef<'input'>, 'className'>,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   return (
@@ -95,4 +98,4 @@ export const CatalystInput = forwardRef(function CatalystInput(
       />
     </span>
   );
-})
+});

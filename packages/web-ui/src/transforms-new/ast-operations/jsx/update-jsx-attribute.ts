@@ -41,16 +41,17 @@ export const updateJSXAttribute = createASTTransform(
       const openingElement = path.value.openingElement;
 
       // Find the attribute
-      const attributeIndex = openingElement.attributes.findIndex(
-        attr =>
-          attr.type === 'JSXAttribute' &&
-          attr.name.type === 'JSXIdentifier' &&
-          attr.name.name === attributeName
-      );
+      const attributeIndex =
+        openingElement.attributes?.findIndex(
+          attr =>
+            attr.type === 'JSXAttribute' &&
+            attr.name.type === 'JSXIdentifier' &&
+            attr.name.name === attributeName
+        ) ?? -1;
 
-      if (attributeIndex !== -1) {
+      if (attributeIndex !== -1 && openingElement.attributes) {
         const attribute = openingElement.attributes[attributeIndex];
-        const currentValue = attribute.value;
+        const currentValue = attribute.type === 'JSXAttribute' ? attribute.value : undefined;
 
         // Apply condition if provided
         if (condition && !condition(currentValue)) {
@@ -70,12 +71,14 @@ export const updateJSXAttribute = createASTTransform(
         }
 
         // Update the attribute
-        attribute.value = newValueNode;
+        if (attribute.type === 'JSXAttribute') {
+          attribute.value = newValueNode;
+        }
 
         changes.push({
           type: 'update-jsx-attribute',
           description: `Updated ${attributeName} attribute`,
-          location: `JSX element ${openingElement.name.name}`,
+          location: `JSX element ${openingElement.name.type === 'JSXIdentifier' ? openingElement.name.name : 'unknown'}`,
           before: currentValue ? 'existing value' : 'no value',
           after: newValue || newExpression || 'new value',
         });
@@ -93,12 +96,14 @@ export const updateJSXAttribute = createASTTransform(
 
         const newAttribute = j.jsxAttribute(j.jsxIdentifier(attributeName), newValueNode);
 
-        openingElement.attributes.push(newAttribute);
+        if (openingElement.attributes) {
+          openingElement.attributes.push(newAttribute);
+        }
 
         changes.push({
           type: 'add-jsx-attribute',
           description: `Added ${attributeName} attribute`,
-          location: `JSX element ${openingElement.name.name}`,
+          location: `JSX element ${openingElement.name.type === 'JSXIdentifier' ? openingElement.name.name : 'unknown'}`,
           after: newValue || newExpression || 'new value',
         });
       }

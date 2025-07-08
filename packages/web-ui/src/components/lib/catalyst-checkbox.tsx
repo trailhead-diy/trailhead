@@ -1,9 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
-import type React from 'react'
+import * as Headless from '@headlessui/react';
+import type React from 'react';
 import { cn } from '../utils/cn';
 
-export function CatalystCheckboxGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function CatalystCheckboxGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       data-slot="control"
@@ -70,7 +73,7 @@ const base = [
   // Forced colors mode
   'forced-colors:[--checkbox-check:HighlightText] forced-colors:[--checkbox-checked-bg:Highlight] forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
   'dark:forced-colors:[--checkbox-check:HighlightText] dark:forced-colors:[--checkbox-checked-bg:Highlight] dark:forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
-]
+];
 
 const colors = {
   'dark/zinc': [
@@ -126,23 +129,28 @@ const colors = {
 
   pink: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-pink-500)] [--checkbox-checked-border:var(--color-pink-600)]/90',
   rose: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-rose-500)] [--checkbox-checked-border:var(--color-rose-600)]/90',
-  muted: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-muted)] [--checkbox-checked-border:var(--color-muted)]/90',
-  accent: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-accent)] [--checkbox-checked-border:var(--color-accent)]/90',
-  destructive: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-destructive)] [--checkbox-checked-border:var(--color-destructive)]/90',
-  secondary: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-secondary)] [--checkbox-checked-border:var(--color-secondary)]/90',
-  primary: '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-primary)] [--checkbox-checked-border:var(--color-primary)]/90',
-}
+  muted:
+    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-muted)] [--checkbox-checked-border:var(--color-muted)]/90',
+  accent:
+    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-accent)] [--checkbox-checked-border:var(--color-accent)]/90',
+  destructive:
+    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-destructive)] [--checkbox-checked-border:var(--color-destructive)]/90',
+  secondary:
+    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-secondary)] [--checkbox-checked-border:var(--color-secondary)]/90',
+  primary:
+    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-primary)] [--checkbox-checked-border:var(--color-primary)]/90',
+};
 
-type CatalystColor = keyof typeof colors
+type CatalystColor = keyof typeof colors;
 
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: CatalystColor
-  className?: string
-} & Omit<Headless.CatalystCheckboxProps, 'as' | 'className'>) {
+  color?: CatalystColor;
+  className?: string;
+} & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   return (
     <Headless.Checkbox
       data-slot="control"

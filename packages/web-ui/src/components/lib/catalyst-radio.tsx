@@ -1,11 +1,11 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react'
+import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 
 export function CatalystRadioGroup({
   className,
   ...props
-}: { className?: string } & Omit<Headless.CatalystRadioGroupProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
   return (
     <Headless.RadioGroup
       data-slot="control"
@@ -73,7 +73,7 @@ const base = [
   'group-data-disabled:opacity-50',
   'group-data-disabled:border-zinc-950/25 group-data-disabled:bg-zinc-950/5 group-data-disabled:[--radio-checked-indicator:var(--color-zinc-950)]/50 group-data-disabled:before:bg-transparent',
   'dark:group-data-disabled:border-white/20 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:[--radio-checked-indicator:var(--color-white)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
-]
+];
 
 const colors = {
   'dark/zinc': [
@@ -129,20 +129,28 @@ const colors = {
 
   pink: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
   rose: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
-  muted: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-muted-foreground)] [--radio-checked-border:var(--color-muted-foreground)]/90',
-  accent: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-accent)] [--radio-checked-border:var(--color-accent)]/90',
-  destructive: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-destructive)] [--radio-checked-border:var(--color-destructive)]/90',
-  secondary: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-secondary)] [--radio-checked-border:var(--color-secondary)]/90',
-  primary: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-primary)] [--radio-checked-border:var(--color-primary)]/90',
-}
+  muted:
+    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-muted-foreground)] [--radio-checked-border:var(--color-muted-foreground)]/90',
+  accent:
+    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-accent)] [--radio-checked-border:var(--color-accent)]/90',
+  destructive:
+    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-destructive)] [--radio-checked-border:var(--color-destructive)]/90',
+  secondary:
+    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-secondary)] [--radio-checked-border:var(--color-secondary)]/90',
+  primary:
+    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-primary)] [--radio-checked-border:var(--color-primary)]/90',
+};
 
-type CatalystColor = keyof typeof colors
+type CatalystColor = keyof typeof colors;
 
 export function CatalystRadio({
   color = 'dark/zinc',
   className,
   ...props
-}: { color?: CatalystColor; className?: string } & Omit<Headless.CatalystRadioProps, 'as' | 'className' | 'children'>) {
+}: { color?: CatalystColor; className?: string } & Omit<
+  Headless.RadioProps,
+  'as' | 'className' | 'children'
+>) {
   return (
     <Headless.Radio
       data-slot="control"

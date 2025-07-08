@@ -61,7 +61,11 @@ export const addParameter = createASTTransform(
     // Add parameter to function declarations
     root
       .find(j.FunctionDeclaration)
-      .filter(path => !functionNames || functionNames.includes(path.value.id?.name))
+      .filter(
+        path =>
+          !functionNames ||
+          functionNames.includes(typeof path.value.id?.name === 'string' ? path.value.id.name : '')
+      )
       .forEach(path => {
         const params = path.value.params;
         const insertIndex = findInsertionPosition(params);
