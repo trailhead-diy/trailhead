@@ -1,0 +1,28 @@
+{
+  "$schema": "https://oxc-project.github.io/oxlint/schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "plugins": ["typescript"],
+  "rules": {
+    "no-console": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["templates/**/*"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "dist/**/*",
+    "coverage/**/*",
+    "node_modules/**/*",
+    "templates/**/*.json"
+  ]
+}

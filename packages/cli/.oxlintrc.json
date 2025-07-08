@@ -1,0 +1,35 @@
+{
+  "$schema": "https://oxc-project.github.io/oxlint/schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "plugins": ["typescript"],
+  "rules": {
+    "typescript/prefer-ts-expect-error": "error",
+    "typescript/consistent-generic-constructors": "error",
+    "typescript/explicit-function-return-type": "off",
+    "no-console": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts", "src/testing/mocks.ts"],
+      "rules": {
+        "no-console": "off",
+        "typescript/no-explicit-any": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    },
+    {
+      "files": ["src/testing/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["examples/**/*.ts"],
+      "rules": {
+        "no-console": "off",
+        "typescript/explicit-function-return-type": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["dist/**/*", "coverage/**/*", "node_modules/**/*"]
+}

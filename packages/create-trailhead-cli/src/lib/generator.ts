@@ -415,7 +415,7 @@ async function processTemplateFile(
       try {
         const { chmod } = await import('node:fs/promises');
         await chmod(outputPath, 0o755);
-      } catch (error) {
+      } catch {
         // Non-critical error, just log it
         if (verbose) {
           logger.debug(

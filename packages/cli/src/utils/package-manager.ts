@@ -47,7 +47,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
  * Instance-based cache to avoid global state issues
  */
 class PackageManagerCache {
-  private cache: Map<string, CacheEntry> = new Map();
+  private cache = new Map<string, CacheEntry>();
 
   get(key: string): Result<PackageManager, CLIError> | null {
     const entry = this.cache.get(key);
