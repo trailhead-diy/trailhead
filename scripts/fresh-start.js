@@ -8,12 +8,21 @@
  * - Troubleshooting build/dependency issues
  * - Post-merge cleanup
  * - Starting fresh after complex changes
+ *
+ * Usage:
+ *   node scripts/fresh-start.js          # Standard fresh start (stash changes)
+ *   node scripts/fresh-start.js --pop    # Restore stashed changes after reset
+ *   node scripts/fresh-start.js -p       # Short form of --pop
  */
 
 const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const shouldPopStash = args.includes('--pop') || args.includes('-p');
 
 // Colors for console output
 const colors = {
@@ -110,10 +119,53 @@ function stashChanges() {
   });
   if (result.success) {
     logSuccess(`Stashed uncommitted changes: "${stashMessage}"`);
-    return true;
+    return stashMessage;
   } else {
     logWarning('No changes to stash or stash failed');
-    return false;
+    return null;
+  }
+}
+
+function popStash(stashMessage) {
+  if (!stashMessage) {
+    logWarning('No stash to pop');
+    return;
+  }
+
+  logStep('Final', 'Restoring stashed changes');
+
+  // Find the stash entry by message
+  const stashListResult = execCommand('git stash list', { silent: true });
+  if (!stashListResult.success) {
+    logWarning('Failed to list stashes');
+    return;
+  }
+
+  // Look for our stash message in the list
+  const stashLines = stashListResult.output.split('\n');
+  const stashEntry = stashLines.find((line) => line.includes(stashMessage));
+
+  if (!stashEntry) {
+    logWarning(`Could not find stash with message: ${stashMessage}`);
+    return;
+  }
+
+  // Extract stash ref (e.g., "stash@{0}")
+  const stashRef = stashEntry.match(/stash@\{\d+\}/)?.[0];
+  if (!stashRef) {
+    logWarning('Could not parse stash reference');
+    return;
+  }
+
+  // Pop the specific stash
+  const popResult = execCommand(`git stash pop ${stashRef}`);
+  if (popResult.success) {
+    logSuccess('Stashed changes restored successfully');
+  } else {
+    logWarning(
+      'Failed to restore stashed changes - you may need to resolve manually',
+    );
+    logInfo(`To restore manually, run: git stash pop ${stashRef}`);
   }
 }
 
@@ -261,12 +313,20 @@ async function main() {
     log(`Current branch: ${currentBranch}`, 'blue');
     if (hasUncommittedChanges) {
       log('Uncommitted changes detected - will be stashed', 'yellow');
+      if (shouldPopStash) {
+        log('Changes will be restored after fresh start (--pop flag)', 'cyan');
+      }
     }
 
     // Confirmation
+    const stashAction =
+      shouldPopStash && hasUncommittedChanges
+        ? 'Stash changes and restore after reset'
+        : 'Stash any uncommitted changes';
+
     const confirmed = await askConfirmation(
       '\nThis will:\n' +
-        '• Stash any uncommitted changes\n' +
+        `• ${stashAction}\n` +
         '• Reset to main branch (origin/main)\n' +
         '• Clean all dependencies and caches\n' +
         '• Reinstall dependencies and rebuild\n' +
@@ -281,8 +341,9 @@ async function main() {
     // Execute fresh start
     logStep(1, 'Preparing environment');
 
+    let stashMessage = null;
     if (hasUncommittedChanges) {
-      stashChanges();
+      stashMessage = stashChanges();
     } else {
       logInfo('No uncommitted changes to stash');
     }
@@ -292,6 +353,12 @@ async function main() {
     freshInstall();
     buildPackages();
     validateEnvironment();
+
+    // Pop stash if requested and we have one
+    if (shouldPopStash && stashMessage) {
+      popStash(stashMessage);
+    }
+
     showSummary();
   } catch (error) {
     logError(`Fresh start failed: ${error.message}`);
