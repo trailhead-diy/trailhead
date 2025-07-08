@@ -20,6 +20,8 @@ import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
+import { runMainPipeline } from '../../transforms/pipelines/main.js';
+import chalk from 'chalk';
 
 // ============================================================================
 // TYPES
@@ -32,13 +34,14 @@ interface RefreshConfig {
   source: string;
   dest: string;
   clean: boolean;
+  copiedFiles: string[];
 }
 
 // ============================================================================
 // COMMAND PHASES
 // ============================================================================
 
-const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshConfig>[] => [
+const createRefreshPhases = (options: DevRefreshOptions): CommandPhase<RefreshConfig>[] => [
   {
     name: 'Validating paths',
     execute: async (config: RefreshConfig) => {
@@ -106,6 +109,85 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
       }
     },
   },
+  {
+    name: 'Copying fresh components',
+    execute: async (config: RefreshConfig) => {
+      const copyResult = await copyFreshFilesBatch(
+        config.source,
+        config.dest,
+        true, // force
+        true // addPrefix - add catalyst- prefix to component files
+      );
+
+      if (!copyResult.success) {
+        return Err(createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`));
+      }
+
+      const { copied, skipped, failed } = copyResult.value;
+
+      // Update config with copied files for transformation phase
+      config.copiedFiles = copied;
+
+      console.log(chalk.green(`✅ Copied ${copied.length} components successfully!`));
+
+      if (options.verbose) {
+        if (copied.length > 0) {
+          console.log(chalk.gray('\nCopied files:'));
+          copied.slice(0, 10).forEach((file: string) => {
+            console.log(chalk.gray(`  ✓ ${file}`));
+          });
+          if (copied.length > 10) {
+            console.log(chalk.gray(`  ... and ${copied.length - 10} more`));
+          }
+        }
+
+        if (skipped.length > 0) {
+          console.log(chalk.gray(`\nSkipped ${skipped.length} identical files`));
+        }
+
+        if (failed.length > 0) {
+          console.log(chalk.yellow(`\nFailed to copy ${failed.length} files:`));
+          failed.forEach((file: string) => {
+            console.log(chalk.yellow(`  ✗ ${file}`));
+          });
+        }
+      }
+
+      return Ok(config);
+    },
+  },
+  {
+    name: 'Applying enhancement transforms',
+    execute: async (config: RefreshConfig) => {
+      if (config.copiedFiles.length === 0) {
+        return Ok(config);
+      }
+
+      const result = await runMainPipeline(config.dest, {
+        verbose: options.verbose,
+        dryRun: false,
+        filter: (filename: string) => {
+          // Only process the files we just copied
+          return config.copiedFiles.some(copiedFile => filename.includes(copiedFile));
+        },
+      });
+
+      if (!result.success) {
+        return Err(
+          createError(
+            'ENHANCEMENT_ERROR',
+            `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
+          )
+        );
+      }
+
+      console.log(
+        chalk.green(`✨ Enhanced ${result.processedFiles} components with full transform pipeline`)
+      );
+
+      return Ok(config);
+    },
+  },
 ];
 
 // ============================================================================
@@ -118,7 +200,8 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
 export const createDevRefreshCommand = () => {
   return createCommand<DevRefreshOptions>({
     name: 'dev-refresh',
-    description: '[Dev] Copy fresh Catalyst components with catalyst- prefix for development',
+    description:
+      '[Dev] Copy fresh Catalyst components with catalyst- prefix and apply all enhancements',
 
     options: [
       {
@@ -177,6 +260,7 @@ export const createDevRefreshCommand = () => {
           options.dest || devRefreshConfig?.destDir || 'src/components/lib'
         ),
         clean: options.clean ?? true,
+        copiedFiles: [], // Will be populated after copying
       };
 
       // Display configuration
@@ -190,7 +274,7 @@ export const createDevRefreshCommand = () => {
         cmdContext
       );
 
-      // Execute phases
+      // Execute all phases (validation, preparation, copying, transformations)
       const phases = createRefreshPhases(options);
       const phaseResult = await executeWithPhases(phases, config, cmdContext);
 
@@ -198,50 +282,13 @@ export const createDevRefreshCommand = () => {
         return phaseResult;
       }
 
-      // Copy files with ADD prefix
-      cmdContext.logger.info('Copying fresh Catalyst components...');
-
-      const copyResult = await copyFreshFilesBatch(
-        config.source,
-        config.dest,
-        true, // force
-        true // addPrefix - add catalyst- prefix to component files
+      // Display final results
+      cmdContext.logger.success(
+        `✅ Refreshed and enhanced ${config.copiedFiles.length} components successfully!`
       );
 
-      if (!copyResult.success) {
-        return Err(createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`));
-      }
-
-      const { copied, skipped, failed } = copyResult.value;
-
-      // Display results
-      cmdContext.logger.success(`✅ Refreshed ${copied.length} components successfully!`);
-
-      if (cmdContext.verbose) {
-        if (copied.length > 0) {
-          cmdContext.logger.info('\nCopied files:');
-          copied.slice(0, 10).forEach((file: string) => {
-            cmdContext.logger.info(`  ✓ ${file}`);
-          });
-          if (copied.length > 10) {
-            cmdContext.logger.info(`  ... and ${copied.length - 10} more`);
-          }
-        }
-
-        if (skipped.length > 0) {
-          cmdContext.logger.info(`\nSkipped ${skipped.length} identical files`);
-        }
-
-        if (failed.length > 0) {
-          cmdContext.logger.warning(`\nFailed to copy ${failed.length} files:`);
-          failed.forEach((file: string) => {
-            cmdContext.logger.warning(`  ✗ ${file}`);
-          });
-        }
-      }
-
       cmdContext.logger.info(
-        '\nNext step: Run `trailhead-ui transforms` to transform the components'
+        '\nComponents refreshed and fully enhanced! All transforms have been applied.'
       );
 
       return Ok(undefined);

@@ -19,6 +19,7 @@ import { switchAddSemanticColorsTransform } from '../components/switch/add-seman
 
 // Essential className handling transforms
 import { addClassNameParameterTransform } from '../components/common/className/add-parameter.js';
+import { forwardClassNameToChildTransform } from '../components/common/className/forward-to-child.js';
 import { wrapStaticClassNameTransform } from '../components/common/className/wrap-static.js';
 import { ensureClassNameInCnTransform } from '../components/common/className/ensure-in-cn.js';
 import { reorderClassNameArgsTransform } from '../components/common/className/reorder-args.js';
@@ -29,32 +30,43 @@ import { clsxToCnTransform } from '../components/common/imports/clsx-to-cn.js';
 
 // Formatting
 import { fileHeadersTransform } from '../components/common/formatting/file-headers.js';
+
+// Catalyst prefix transform (unified approach)
 import { catalystPrefixTransform } from '../components/common/imports/catalyst-prefix.js';
+
+// Parameter ordering (fixes syntax errors)
+import { reorderParametersTransform } from '../components/common/parameters/reorder-parameters.js';
 
 /**
  * Simplified transform order - only essential transforms
  */
 const SIMPLIFIED_TRANSFORM_ORDER: Transform[] = [
-  // 1. Import consistency first
+  // 1. Catalyst prefix MUST be first to establish proper naming
+  catalystPrefixTransform,
+
+  // 2. Import consistency
   clsxToCnTransform,
 
-  // 2. Add semantic colors to components
+  // 3. Add semantic colors to components
   buttonAddSemanticColorsTransform,
   badgeAddSemanticColorsTransform,
   checkboxAddSemanticColorsTransform,
   radioAddSemanticColorsTransform,
   switchAddSemanticColorsTransform,
 
-  // 3. className parameter management
+  // 4. className parameter management
   addClassNameParameterTransform,
+  forwardClassNameToChildTransform,
   wrapStaticClassNameTransform,
   ensureClassNameInCnTransform,
   reorderClassNameArgsTransform,
   removeUnusedClassNameTransform,
 
-  catalystPrefixTransform,
-  // 4. Final formatting
+  // 5. Final formatting
   fileHeadersTransform,
+
+  // 6. Fix any remaining syntax errors LAST - parameter ordering
+  reorderParametersTransform,
 ];
 
 /**
@@ -249,8 +261,9 @@ export function getMainPipelineInfo(): {
   }));
 
   const categories = {
+    'Parameter Fixing': 1, // reorder-parameters
     'Semantic Colors': 5, // button, badge, checkbox, radio, switch
-    'className Management': 5, // add-parameter, wrap-static, ensure-in-cn, reorder-args, remove-unused
+    'className Management': 6, // add-parameter, forward-to-child, wrap-static, ensure-in-cn, reorder-args, remove-unused
     'Import Consistency': 1, // clsx-to-cn
     Formatting: 1, // file-headers
   };

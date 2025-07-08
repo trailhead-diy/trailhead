@@ -51,10 +51,14 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
 
     // Check if it has parameters
     if (node.params.length === 0) {
-      // Add object parameter with className
-      node.params = [
-        j.objectPattern([j.property('init', j.identifier('className'), j.identifier('className'))]),
-      ];
+      // Add object parameter with className (shorthand)
+      const classNameProp = j.property(
+        'init',
+        j.identifier('className'),
+        j.identifier('className')
+      );
+      classNameProp.shorthand = true;
+      node.params = [j.objectPattern([classNameProp])];
       changes.push({
         type: 'parameter',
         description: `Added className parameter to ${name}`,
@@ -71,10 +75,14 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
         return false;
       })
     ) {
-      // Add className to existing object pattern
-      node.params[0].properties.push(
-        j.property('init', j.identifier('className'), j.identifier('className'))
+      // Add className to existing object pattern (shorthand)
+      const classNameProp = j.property(
+        'init',
+        j.identifier('className'),
+        j.identifier('className')
       );
+      classNameProp.shorthand = true;
+      node.params[0].properties.push(classNameProp);
       changes.push({
         type: 'parameter',
         description: `Added className to ${name} parameters`,
@@ -98,10 +106,14 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
 
     // Check if it has parameters
     if (node.init.params.length === 0) {
-      // Add object parameter with className
-      node.init.params = [
-        j.objectPattern([j.property('init', j.identifier('className'), j.identifier('className'))]),
-      ];
+      // Add object parameter with className (shorthand)
+      const classNameProp = j.property(
+        'init',
+        j.identifier('className'),
+        j.identifier('className')
+      );
+      classNameProp.shorthand = true;
+      node.init.params = [j.objectPattern([classNameProp])];
       changes.push({
         type: 'parameter',
         description: `Added className parameter to ${name}`,
@@ -118,10 +130,14 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
         return false;
       })
     ) {
-      // Add className to existing object pattern
-      node.init.params[0].properties.push(
-        j.property('init', j.identifier('className'), j.identifier('className'))
+      // Add className to existing object pattern (shorthand)
+      const classNameProp = j.property(
+        'init',
+        j.identifier('className'),
+        j.identifier('className')
       );
+      classNameProp.shorthand = true;
+      node.init.params[0].properties.push(classNameProp);
       changes.push({
         type: 'parameter',
         description: `Added className to ${name} parameters`,
@@ -161,9 +177,13 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
 
             // Skip if it's a component that shouldn't have className
             if (!COMPONENTS_WITHOUT_CLASSNAME.includes(componentName)) {
-              func.params[0].properties.push(
-                j.property('init', j.identifier('className'), j.identifier('className'))
+              const classNameProp = j.property(
+                'init',
+                j.identifier('className'),
+                j.identifier('className')
               );
+              classNameProp.shorthand = true;
+              func.params[0].properties.push(classNameProp);
               changes.push({
                 type: 'parameter',
                 description: `Added className to ${componentName} forwardRef`,
@@ -173,6 +193,131 @@ function addClassNameProp(root: Collection<any>, j: JSCodeshift) {
         }
       }
     });
+
+  // Add className?: string to TypeScript type annotations in function parameters only
+  root.find(j.FunctionDeclaration).forEach(funcDecl => {
+    funcDecl.node.params.forEach(param => {
+      // Handle ObjectPattern parameters with type annotations
+      if (j.ObjectPattern.check(param) && param.typeAnnotation) {
+        const typeAnnotation = param.typeAnnotation;
+        if (
+          j.TSTypeAnnotation.check(typeAnnotation) &&
+          j.TSTypeLiteral.check(typeAnnotation.typeAnnotation)
+        ) {
+          const typeLiteral = typeAnnotation.typeAnnotation;
+          const hasClassName = typeLiteral.members.some(
+            member =>
+              j.TSPropertySignature.check(member) &&
+              j.Identifier.check(member.key) &&
+              member.key.name === 'className'
+          );
+
+          if (!hasClassName) {
+            // Check if the ObjectPattern has className parameter
+            const hasClassNameParam = param.properties.some((prop: any) => {
+              return (
+                prop.type === 'Property' &&
+                prop.key.type === 'Identifier' &&
+                prop.key.name === 'className'
+              );
+            });
+
+            if (hasClassNameParam) {
+              // Add className?: string property
+              const classNameProp = j.tsPropertySignature(
+                j.identifier('className'),
+                j.tsTypeAnnotation(j.tsStringKeyword())
+              );
+              classNameProp.optional = true;
+
+              typeLiteral.members.push(classNameProp);
+
+              changes.push({
+                type: 'type',
+                description: 'Added className?: string to function parameter type literal',
+              });
+            }
+          }
+        }
+      }
+
+      // Handle Identifier parameters with type annotations (original logic)
+      if (j.Identifier.check(param) && param.typeAnnotation) {
+        const typeAnnotation = param.typeAnnotation;
+        if (
+          j.TSTypeAnnotation.check(typeAnnotation) &&
+          j.TSTypeLiteral.check(typeAnnotation.typeAnnotation)
+        ) {
+          const typeLiteral = typeAnnotation.typeAnnotation;
+          const hasClassName = typeLiteral.members.some(
+            member =>
+              j.TSPropertySignature.check(member) &&
+              j.Identifier.check(member.key) &&
+              member.key.name === 'className'
+          );
+
+          if (!hasClassName) {
+            // Add className?: string property
+            const classNameProp = j.tsPropertySignature(
+              j.identifier('className'),
+              j.tsTypeAnnotation(j.tsStringKeyword())
+            );
+            classNameProp.optional = true;
+
+            typeLiteral.members.push(classNameProp);
+
+            changes.push({
+              type: 'type',
+              description: 'Added className?: string to function parameter type literal',
+            });
+          }
+        }
+      }
+    });
+  });
+
+  // Handle React.PropsWithChildren patterns
+  root.find(j.TSTypeReference).forEach(typeRef => {
+    // Look for React.PropsWithChildren<{...}> patterns
+    if (
+      j.TSQualifiedName.check(typeRef.node.typeName) &&
+      j.Identifier.check(typeRef.node.typeName.left) &&
+      j.Identifier.check(typeRef.node.typeName.right) &&
+      typeRef.node.typeName.left.name === 'React' &&
+      typeRef.node.typeName.right.name === 'PropsWithChildren'
+    ) {
+      // Check if it has type arguments
+      if (typeRef.node.typeParameters?.params?.[0]) {
+        const firstParam = typeRef.node.typeParameters.params[0];
+
+        if (j.TSTypeLiteral.check(firstParam)) {
+          // Check if className property already exists
+          const hasClassName = firstParam.members.some(
+            member =>
+              j.TSPropertySignature.check(member) &&
+              j.Identifier.check(member.key) &&
+              member.key.name === 'className'
+          );
+
+          if (!hasClassName) {
+            // Add className?: string property
+            const classNameProp = j.tsPropertySignature(
+              j.identifier('className'),
+              j.tsTypeAnnotation(j.tsStringKeyword())
+            );
+            classNameProp.optional = true;
+
+            firstParam.members.push(classNameProp);
+
+            changes.push({
+              type: 'type',
+              description: 'Added className?: string to React.PropsWithChildren type',
+            });
+          }
+        }
+      }
+    }
+  });
 
   return changes;
 }
