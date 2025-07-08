@@ -2,9 +2,7 @@
  * Statistics tracking interface for CLI operations
  * @template T - Type for custom data
  */
-export interface StatsTracker<
-  T extends Record<string, any> = Record<string, any>,
-> {
+export interface StatsTracker<T extends Record<string, any> = Record<string, any>> {
   /** Number of files that have been processed */
   readonly filesProcessed: number;
   /** Number of files that have been modified */
@@ -33,9 +31,9 @@ export interface StatsTracker<
  * console.log(customStats.custom?.errors); // []
  * ```
  */
-export function createStats<
-  T extends Record<string, any> = Record<string, any>,
->(custom?: T): StatsTracker<T> {
+export function createStats<T extends Record<string, any> = Record<string, any>>(
+  custom?: T
+): StatsTracker<T> {
   return {
     filesProcessed: 0,
     filesModified: 0,
@@ -64,9 +62,7 @@ export function createStats<
  * console.log(stats.operationsByType.get('read')); // 3
  * ```
  */
-export function updateStats<
-  T extends Record<string, any> = Record<string, any>,
->(
+export function updateStats<T extends Record<string, any> = Record<string, any>>(
   stats: StatsTracker<T>,
   update: {
     filesProcessed?: number;
@@ -74,7 +70,7 @@ export function updateStats<
     operations?: number;
     operationTypes?: Array<{ type: string; count?: number }>;
     custom?: Partial<T>;
-  },
+  }
 ): StatsTracker<T> {
   const newOperationsByType = new Map(stats.operationsByType);
 
@@ -92,9 +88,7 @@ export function updateStats<
     filesModified: stats.filesModified + (update.filesModified || 0),
     totalOperations: stats.totalOperations + (update.operations || 0),
     operationsByType: newOperationsByType,
-    custom: update.custom
-      ? ({ ...stats.custom, ...update.custom } as T)
-      : stats.custom,
+    custom: update.custom ? ({ ...stats.custom, ...update.custom } as T) : stats.custom,
   };
 }
 

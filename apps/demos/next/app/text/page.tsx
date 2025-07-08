@@ -8,9 +8,8 @@ export default function TextPage(): React.JSX.Element {
       <List title="Text">
         <Item title="Default Text">
           <Text>
-            This feature is only available to users on the{' '}
-            <Strong>Business Plan</Strong>. To upgrade, visit your{' '}
-            <TextLink href="#">billing settings</TextLink>.
+            This feature is only available to users on the <Strong>Business Plan</Strong>. To
+            upgrade, visit your <TextLink href="#">billing settings</TextLink>.
           </Text>
         </Item>
       </List>

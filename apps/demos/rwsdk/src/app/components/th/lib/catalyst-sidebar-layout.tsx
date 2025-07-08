@@ -31,25 +31,22 @@ function MobileSidebar({
       <Headless.DialogBackdrop
         transition
         className={cn(
-          'fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in',
+          'fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in'
         )}
       />
       <Headless.DialogPanel
         transition
         className={cn(
-          'fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full',
+          'fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full'
         )}
       >
         <div
           className={cn(
-            'flex h-full flex-col rounded-lg bg-background shadow-xs ring-1 ring-border dark:bg-card dark:ring-ring',
+            'flex h-full flex-col rounded-lg bg-background shadow-xs ring-1 ring-border dark:bg-card dark:ring-ring'
           )}
         >
           <div className={cn('-mb-3 px-4 pt-3')}>
-            <Headless.CloseButton
-              as={CatalystNavbarItem}
-              aria-label="Close navigation"
-            >
+            <Headless.CloseButton as={CatalystNavbarItem} aria-label="Close navigation">
               <CloseMenuIcon />
             </Headless.CloseButton>
           </div>
@@ -73,13 +70,11 @@ export function CatalystSidebarLayout({
   return (
     <div
       className={cn(
-        'relative isolate flex min-h-svh w-full bg-background max-lg:flex-col lg:bg-accent dark:bg-card dark:lg:bg-card',
+        'relative isolate flex min-h-svh w-full bg-background max-lg:flex-col lg:bg-accent dark:bg-card dark:lg:bg-card'
       )}
     >
       {/* Sidebar on desktop */}
-      <div className={cn('fixed inset-y-0 left-0 w-64 max-lg:hidden')}>
-        {sidebar}
-      </div>
+      <div className={cn('fixed inset-y-0 left-0 w-64 max-lg:hidden')}>{sidebar}</div>
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
         {sidebar}
@@ -87,24 +82,17 @@ export function CatalystSidebarLayout({
       {/* Navbar on mobile */}
       <header className={cn('flex items-center px-4 lg:hidden')}>
         <div className={cn('py-2.5')}>
-          <CatalystNavbarItem
-            onClick={() => setShowSidebar(true)}
-            aria-label="Open navigation"
-          >
+          <CatalystNavbarItem onClick={() => setShowSidebar(true)} aria-label="Open navigation">
             <OpenMenuIcon />
           </CatalystNavbarItem>
         </div>
         <div className={cn('min-w-0 flex-1')}>{navbar}</div>
       </header>
       {/* Content */}
-      <main
-        className={cn(
-          'flex flex-1 flex-col pb-2 lg:min-w-0 lg:pt-2 lg:pr-2 lg:pl-64',
-        )}
-      >
+      <main className={cn('flex flex-1 flex-col pb-2 lg:min-w-0 lg:pt-2 lg:pr-2 lg:pl-64')}>
         <div
           className={cn(
-            'grow p-6 lg:rounded-lg lg:bg-background lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-border dark:lg:bg-background dark:lg:ring-border',
+            'grow p-6 lg:rounded-lg lg:bg-background lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-border dark:lg:bg-background dark:lg:ring-border'
           )}
         >
           <div className={cn('mx-auto max-w-6xl')}>{children}</div>

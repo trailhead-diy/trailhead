@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Writing Documentation - Quick Reference"
-description: "Quick reference guide for writing Diátaxis-compliant documentation in Trailhead"
+title: 'Writing Documentation - Quick Reference'
+description: 'Quick reference guide for writing Diátaxis-compliant documentation in Trailhead'
 related:
   - /docs/reference/documentation-standards.md
   - /docs/reference/review-checklist.md

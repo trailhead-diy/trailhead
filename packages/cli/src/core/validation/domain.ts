@@ -1,19 +1,12 @@
 import type { Validator } from './types.js';
 import { Ok, Err } from './types.js';
-import {
-  string,
-  nonEmptyString,
-  object,
-  createValidator,
-  enumValue,
-  pattern,
-} from './base.js';
+import { string, nonEmptyString, object, createValidator, enumValue, pattern } from './base.js';
 
 export const directoryPath = (field?: string): Validator<string> =>
   createValidator(nonEmptyString(field)).validate;
 
 export const filePath = (field?: string): Validator<string> =>
-  createValidator(nonEmptyString(field)).map((path) => {
+  createValidator(nonEmptyString(field)).map(path => {
     if (!path.includes('.')) {
       throw new Error('File path should include an extension');
     }
@@ -21,7 +14,7 @@ export const filePath = (field?: string): Validator<string> =>
   }).validate;
 
 export const relativePath = (field?: string): Validator<string> =>
-  createValidator(nonEmptyString(field)).map((path) => {
+  createValidator(nonEmptyString(field)).map(path => {
     if (path.startsWith('/')) {
       throw new Error('Path must be relative');
     }
@@ -41,13 +34,12 @@ export interface SemVer {
 
 export const semver =
   (field?: string): Validator<SemVer> =>
-  (value) => {
+  value => {
     const stringResult = string(field)(value);
     if (!stringResult.success) return stringResult;
 
     const version = stringResult.value.replace(/^[~^]/, '');
-    const regex =
-      /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/;
+    const regex = /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/;
     const match = version.match(regex);
 
     if (!match) {
@@ -79,53 +71,46 @@ export interface TsConfig {
   readonly [key: string]: unknown;
 }
 
-export const tsConfig: Validator<TsConfig> = createValidator(object()).map(
-  (obj) => {
-    const config = obj as TsConfig;
+export const tsConfig: Validator<TsConfig> = createValidator(object()).map(obj => {
+  const config = obj as TsConfig;
 
-    // Validate compilerOptions if present
-    if (config.compilerOptions) {
-      const co = config.compilerOptions;
+  // Validate compilerOptions if present
+  if (config.compilerOptions) {
+    const co = config.compilerOptions;
 
-      // Validate paths
-      if (co.paths && typeof co.paths === 'object') {
-        for (const [key, value] of Object.entries(co.paths)) {
-          if (
-            !Array.isArray(value) ||
-            !value.every((v) => typeof v === 'string')
-          ) {
-            throw new Error(
-              `Path mapping for "${key}" must be an array of strings`,
-            );
-          }
-        }
-      }
-
-      // Validate string fields
-      const stringFields = ['target', 'baseUrl', 'moduleResolution'] as const;
-      for (const field of stringFields) {
-        if (co[field] !== undefined && typeof co[field] !== 'string') {
-          throw new Error(`compilerOptions.${field} must be a string`);
+    // Validate paths
+    if (co.paths && typeof co.paths === 'object') {
+      for (const [key, value] of Object.entries(co.paths)) {
+        if (!Array.isArray(value) || !value.every(v => typeof v === 'string')) {
+          throw new Error(`Path mapping for "${key}" must be an array of strings`);
         }
       }
     }
 
-    // Validate top-level arrays
-    if (config.include && !Array.isArray(config.include)) {
-      throw new Error('include must be an array');
+    // Validate string fields
+    const stringFields = ['target', 'baseUrl', 'moduleResolution'] as const;
+    for (const field of stringFields) {
+      if (co[field] !== undefined && typeof co[field] !== 'string') {
+        throw new Error(`compilerOptions.${field} must be a string`);
+      }
     }
+  }
 
-    if (config.exclude && !Array.isArray(config.exclude)) {
-      throw new Error('exclude must be an array');
-    }
+  // Validate top-level arrays
+  if (config.include && !Array.isArray(config.include)) {
+    throw new Error('include must be an array');
+  }
 
-    if (config.extends !== undefined && typeof config.extends !== 'string') {
-      throw new Error('extends must be a string');
-    }
+  if (config.exclude && !Array.isArray(config.exclude)) {
+    throw new Error('exclude must be an array');
+  }
 
-    return config;
-  },
-).validate;
+  if (config.extends !== undefined && typeof config.extends !== 'string') {
+    throw new Error('extends must be a string');
+  }
+
+  return config;
+}).validate;
 
 export interface PackageJson {
   readonly name?: string;
@@ -136,9 +121,7 @@ export interface PackageJson {
   readonly [key: string]: unknown;
 }
 
-export const packageJson: Validator<PackageJson> = createValidator(
-  object(),
-).map((obj) => {
+export const packageJson: Validator<PackageJson> = createValidator(object()).map(obj => {
   const pkg = obj as PackageJson;
 
   // Validate string fields
@@ -174,7 +157,7 @@ export type Framework = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react';
 
 export const framework = enumValue<Framework>(
   ['redwood-sdk', 'nextjs', 'vite', 'generic-react'],
-  'framework',
+  'framework'
 );
 
 export interface InstallOptions {
@@ -186,9 +169,7 @@ export interface InstallOptions {
   readonly verbose?: boolean;
 }
 
-export const installOptions: Validator<InstallOptions> = createValidator(
-  object(),
-).map((obj) => {
+export const installOptions: Validator<InstallOptions> = createValidator(object()).map(obj => {
   // Validate and build options object immutably
   const validatedFramework =
     obj.framework !== undefined
@@ -242,7 +223,7 @@ export const installOptions: Validator<InstallOptions> = createValidator(
 
 export const jsonContent =
   <T = unknown>(field?: string): Validator<T> =>
-  (value) => {
+  value => {
     const stringResult = string(field)(value);
     if (!stringResult.success) return stringResult;
 
@@ -252,7 +233,7 @@ export const jsonContent =
     } catch (error) {
       return Err(
         `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        field,
+        field
       );
     }
   };
@@ -266,11 +247,11 @@ export interface ImportStatement {
 export const importStatement = createValidator(
   pattern(
     /^\s*import\s+(?:{([^}]+)}|(\w+))\s+from\s+['"]([^'"]+)['"]\s*;?\s*$/,
-    'Invalid import statement format',
-  ),
+    'Invalid import statement format'
+  )
 ).map((statement): ImportStatement => {
   const match = statement.match(
-    /^\s*import\s+(?:{([^}]+)}|(\w+))\s+from\s+['"]([^'"]+)['"]\s*;?\s*$/,
+    /^\s*import\s+(?:{([^}]+)}|(\w+))\s+from\s+['"]([^'"]+)['"]\s*;?\s*$/
   )!;
 
   const [, namedImports, defaultImport, module] = match;
@@ -281,7 +262,7 @@ export const importStatement = createValidator(
   }
 
   if (namedImports) {
-    imports.push(...namedImports.split(',').map((imp) => imp.trim()));
+    imports.push(...namedImports.split(',').map(imp => imp.trim()));
   }
 
   return {
@@ -298,9 +279,7 @@ export interface ProjectConfig {
   readonly catalystDir?: string;
 }
 
-export const projectConfig: Validator<ProjectConfig> = createValidator(
-  object(),
-).map((obj) => {
+export const projectConfig: Validator<ProjectConfig> = createValidator(object()).map(obj => {
   // Required fields
   const projectRoot = nonEmptyString('projectRoot')(obj.projectRoot);
   if (!projectRoot.success) throw new Error(projectRoot.error.message);

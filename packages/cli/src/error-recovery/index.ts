@@ -74,14 +74,14 @@ export async function retryableOperation<T>(
     factor?: number;
     minTimeout?: number;
     maxTimeout?: number;
-  },
+  }
 ): Promise<T> {
   return pRetry(operation, {
     retries: options?.retries ?? 3,
     factor: options?.factor ?? 2,
     minTimeout: options?.minTimeout ?? 1000,
     maxTimeout: options?.maxTimeout ?? 5000,
-    onFailedAttempt: (error) => {
+    onFailedAttempt: error => {
       if (!isRetryableError(error)) {
         throw error;
       }

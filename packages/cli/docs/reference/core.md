@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Core Module API Reference"
-description: "Result types, error handling, and validation utilities"
+title: 'Core Module API Reference'
+description: 'Result types, error handling, and validation utilities'
 related:
   - /docs/reference/api/command
   - /docs/explanation/result-types
@@ -25,8 +25,8 @@ Fundamental types and utilities for error handling, validation, and logging.
 ### Basic Usage
 
 ```typescript
-import { Ok, Err, isOk, isErr } from "@esteban-url/trailhead-cli";
-import type { Result } from "@esteban-url/trailhead-cli";
+import { Ok, Err, isOk, isErr } from '@esteban-url/trailhead-cli';
+import type { Result } from '@esteban-url/trailhead-cli';
 ```
 
 ### Type Definition
@@ -56,7 +56,7 @@ const voidResult = Ok(undefined);
 Creates an error result.
 
 ```typescript
-const result = Err(new Error("Something went wrong"));
+const result = Err(new Error('Something went wrong'));
 // { success: false, error: Error }
 ```
 
@@ -86,7 +86,7 @@ Extracts the value or throws the error.
 
 ```typescript
 const value = unwrap(Ok(42)); // 42
-const error = unwrap(Err(new Error("Oops"))); // Throws Error
+const error = unwrap(Err(new Error('Oops'))); // Throws Error
 ```
 
 #### `map<T, U>(result: Result<T>, fn: (value: T) => U): Result<U>`
@@ -94,8 +94,8 @@ const error = unwrap(Err(new Error("Oops"))); // Throws Error
 Transforms a successful value.
 
 ```typescript
-const doubled = map(Ok(21), (x) => x * 2); // Ok(42)
-const error = map(Err("error"), (x) => x * 2); // Err("error")
+const doubled = map(Ok(21), x => x * 2); // Ok(42)
+const error = map(Err('error'), x => x * 2); // Err("error")
 ```
 
 #### `chain<T, U, E>(result: Result<T, E>, fn: (value: T) => Result<U, E>): Result<U, E>`
@@ -103,7 +103,7 @@ const error = map(Err("error"), (x) => x * 2); // Err("error")
 Chains operations that return Results.
 
 ```typescript
-const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err("negative"))); // Ok(20)
+const result = chain(Ok(10), x => (x > 0 ? Ok(x * 2) : Err('negative'))); // Ok(20)
 ```
 
 ## Error Handling
@@ -111,13 +111,13 @@ const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err("negative"))); // O
 ### Error Creation
 
 ```typescript
-import { createError } from "@esteban-url/trailhead-cli/core";
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 const error = createError({
-  code: "FILE_NOT_FOUND",
-  message: "Config file not found",
+  code: 'FILE_NOT_FOUND',
+  message: 'Config file not found',
   suggestion: "Run 'init' to create a default config",
-  details: { path: "./config.json" },
+  details: { path: './config.json' },
 });
 ```
 
@@ -137,24 +137,20 @@ interface CLIError extends Error {
 #### Specialized Errors
 
 ```typescript
-import {
-  fileSystemError,
-  validationError,
-  displayError,
-} from "@esteban-url/trailhead-cli/core";
+import { fileSystemError, validationError, displayError } from '@esteban-url/trailhead-cli/core';
 
 // File system error
 const fsError = fileSystemError({
-  path: "/etc/config",
-  operation: "read",
-  code: "EACCES",
+  path: '/etc/config',
+  operation: 'read',
+  code: 'EACCES',
 });
 
 // Validation error
 const valError = validationError({
-  field: "email",
-  value: "invalid",
-  message: "Must be a valid email",
+  field: 'email',
+  value: 'invalid',
+  message: 'Must be a valid email',
 });
 
 // Display formatted error
@@ -166,22 +162,21 @@ displayError(error, console.error);
 ### Validation Pipeline
 
 ```typescript
-import { createValidationPipeline } from "@esteban-url/trailhead-cli/core";
-import type { ValidationRule } from "@esteban-url/trailhead-cli/core";
+import { createValidationPipeline } from '@esteban-url/trailhead-cli/core';
+import type { ValidationRule } from '@esteban-url/trailhead-cli/core';
 
 const pipeline = createValidationPipeline([
   {
-    name: "required",
-    validate: (value) => value != null || "Value is required",
+    name: 'required',
+    validate: value => value != null || 'Value is required',
   },
   {
-    name: "email",
-    validate: (value) =>
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || "Invalid email",
+    name: 'email',
+    validate: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email',
   },
 ]);
 
-const result = await pipeline.validate("user@example.com");
+const result = await pipeline.validate('user@example.com');
 ```
 
 ### Built-in Validators
@@ -199,7 +194,7 @@ import {
   pattern,
   email,
   url,
-} from "@esteban-url/trailhead-cli/core";
+} from '@esteban-url/trailhead-cli/core';
 
 // String validation
 const nameValidator = string().pipe(minLength(2)).pipe(maxLength(50));
@@ -209,7 +204,7 @@ const ageValidator = number().pipe(min(0)).pipe(max(150));
 
 // Pattern validation
 const usernameValidator = string().pipe(
-  pattern(/^[a-zA-Z0-9_]+$/, "Only alphanumeric and underscore"),
+  pattern(/^[a-zA-Z0-9_]+$/, 'Only alphanumeric and underscore')
 );
 ```
 
@@ -234,7 +229,7 @@ import {
   createDefaultLogger,
   createSilentLogger,
   createPrefixedLogger,
-} from "@esteban-url/trailhead-cli/core";
+} from '@esteban-url/trailhead-cli/core';
 
 // Standard console logger with colors
 const logger = createDefaultLogger();
@@ -243,18 +238,18 @@ const logger = createDefaultLogger();
 const silent = createSilentLogger();
 
 // Logger with prefix
-const prefixed = createPrefixedLogger("[Server]", logger);
-prefixed.info("Started"); // [Server] Started
+const prefixed = createPrefixedLogger('[Server]', logger);
+prefixed.info('Started'); // [Server] Started
 ```
 
 ### Logger Usage
 
 ```typescript
-logger.info("Processing files...");
-logger.success("✓ Completed successfully");
-logger.warning("⚠ Deprecation warning");
-logger.error("✗ Operation failed");
-logger.debug("Debug info (only if verbose)");
+logger.info('Processing files...');
+logger.success('✓ Completed successfully');
+logger.warning('⚠ Deprecation warning');
+logger.error('✗ Operation failed');
+logger.debug('Debug info (only if verbose)');
 ```
 
 ## Type Reference

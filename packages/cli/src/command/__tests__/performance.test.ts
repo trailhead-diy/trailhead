@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  processOptionWithCache,
-  processCommandOptionsWithCache,
-} from '../performance.js';
+import { processOptionWithCache, processCommandOptionsWithCache } from '../performance.js';
 import type { CommandOption } from '../types.js';
 
 describe('Command Performance', () => {
@@ -106,7 +103,7 @@ describe('Command Performance', () => {
       };
 
       expect(() => processOptionWithCache(option, 0)).toThrow(
-        'Option at index 0 has no name or flags',
+        'Option at index 0 has no name or flags'
       );
     });
   });

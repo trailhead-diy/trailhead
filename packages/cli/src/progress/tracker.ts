@@ -1,16 +1,10 @@
 import { SingleBar, Presets } from 'cli-progress';
-import type {
-  ProgressTracker,
-  ProgressState,
-  ProgressOptions,
-} from './types.js';
+import type { ProgressTracker, ProgressState, ProgressOptions } from './types.js';
 
 /**
  * Default progress options
  */
-const DEFAULT_OPTIONS: Required<
-  Omit<ProgressOptions, 'stepWeights' | 'barOptions'>
-> = {
+const DEFAULT_OPTIONS: Required<Omit<ProgressOptions, 'stepWeights' | 'barOptions'>> = {
   totalSteps: 1,
   format: 'Progress [{bar}] {percentage}% | {step}/{total} | {stepName}',
   showStepNames: true,
@@ -19,9 +13,7 @@ const DEFAULT_OPTIONS: Required<
 /**
  * Create progress tracker with cli-progress backend
  */
-export function createProgressTracker(
-  options: ProgressOptions,
-): ProgressTracker {
+export function createProgressTracker(options: ProgressOptions): ProgressTracker {
   const config = { ...DEFAULT_OPTIONS, ...options };
 
   let state: ProgressState = createInitialState(config);
@@ -56,11 +48,7 @@ export function createProgressTracker(
       return state;
     },
 
-    setStep: (
-      step: number,
-      stepName: string,
-      metadata: Record<string, unknown> = {},
-    ) => {
+    setStep: (step: number, stepName: string, metadata: Record<string, unknown> = {}) => {
       state = updateProgress(state, {
         currentStep: Math.max(0, Math.min(step, state.totalSteps)),
         stepName,
@@ -115,7 +103,7 @@ export function createProgressTracker(
  */
 export function updateProgress(
   currentState: ProgressState,
-  updates: Partial<ProgressState>,
+  updates: Partial<ProgressState>
 ): ProgressState {
   // Calculate new progress values
   const currentStep = updates.currentStep ?? currentState.currentStep;
@@ -155,7 +143,7 @@ function createInitialState(options: ProgressOptions): ProgressState {
 function updateProgressBar(
   progressBar: SingleBar,
   state: ProgressState,
-  config: Required<Omit<ProgressOptions, 'stepWeights' | 'barOptions'>>,
+  config: Required<Omit<ProgressOptions, 'stepWeights' | 'barOptions'>>
 ): void {
   const payload = {
     step: state.currentStep,
@@ -172,7 +160,7 @@ function updateProgressBar(
 export function calculateWeightedProgress(
   currentStep: number,
   totalSteps: number,
-  weights?: number[],
+  weights?: number[]
 ): number {
   if (!weights || weights.length !== totalSteps) {
     // Fallback to equal weights
@@ -180,9 +168,7 @@ export function calculateWeightedProgress(
   }
 
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  const completedWeight = weights
-    .slice(0, currentStep)
-    .reduce((sum, weight) => sum + weight, 0);
+  const completedWeight = weights.slice(0, currentStep).reduce((sum, weight) => sum + weight, 0);
 
   return Math.round((completedWeight / totalWeight) * 100);
 }

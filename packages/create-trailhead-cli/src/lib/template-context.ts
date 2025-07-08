@@ -4,9 +4,7 @@ import type { ProjectConfig, TemplateContext } from './types.js';
 /**
  * Create template context for Handlebars processing
  */
-export async function createTemplateContext(
-  config: ProjectConfig,
-): Promise<TemplateContext> {
+export async function createTemplateContext(config: ProjectConfig): Promise<TemplateContext> {
   const isMonorepo = false; // No monorepo templates in simplified CLI generator
   const hasTypeScript = true; // All templates use TypeScript
   const isAdvanced = config.template === 'advanced';
@@ -75,9 +73,7 @@ export async function createTemplateContext(
       : undefined,
 
     LINT_COMMAND: 'oxlint',
-    TYPECHECK_COMMAND: hasTypeScript
-      ? `${config.packageManager} types`
-      : 'echo "No TypeScript"',
+    TYPECHECK_COMMAND: hasTypeScript ? `${config.packageManager} types` : 'echo "No TypeScript"',
     SMART_TEST_COMMAND: './scripts/smart-test-runner.sh',
 
     SECRETS_PRIORITY: 5,
@@ -106,10 +102,9 @@ function sanitizePackageName(projectName: string): string {
  * Get git user name with security validation
  */
 async function getGitUser(): Promise<string> {
-  const nameResult = await executeGitCommandSimple(
-    ['config', '--global', 'user.name'],
-    { timeout: 5000 },
-  );
+  const nameResult = await executeGitCommandSimple(['config', '--global', 'user.name'], {
+    timeout: 5000,
+  });
 
   if (!nameResult.success) {
     return 'Your Name';
@@ -133,10 +128,9 @@ async function getGitUser(): Promise<string> {
  * Get git user email with security validation
  */
 async function getGitEmail(): Promise<string> {
-  const emailResult = await executeGitCommandSimple(
-    ['config', '--global', 'user.email'],
-    { timeout: 5000 },
-  );
+  const emailResult = await executeGitCommandSimple(['config', '--global', 'user.email'], {
+    timeout: 5000,
+  });
 
   if (!emailResult.success) {
     return 'your.email@example.com';
@@ -153,12 +147,7 @@ async function getGitEmail(): Promise<string> {
   }
 
   // Security validation to prevent dangerous characters
-  if (
-    email.includes('\n') ||
-    email.includes('\0') ||
-    email.includes(';') ||
-    email.includes('|')
-  ) {
+  if (email.includes('\n') || email.includes('\0') || email.includes(';') || email.includes('|')) {
     console.warn('Invalid git user.email, using default');
     return 'your.email@example.com';
   }

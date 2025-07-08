@@ -19,7 +19,7 @@ import type { CLIError } from './types.js';
 export class RetryableError<E extends CLIError = CLIError> extends Error {
   constructor(
     message: string,
-    public readonly cliError: E,
+    public readonly cliError: E
   ) {
     super(message);
     this.name = 'RetryableError';

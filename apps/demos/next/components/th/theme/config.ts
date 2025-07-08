@@ -165,13 +165,9 @@ export function generateThemeCSS(
     includeBaseClass?: boolean;
     includeDarkMode?: boolean;
     includeComponents?: boolean;
-  } = {},
+  } = {}
 ): string {
-  const {
-    includeBaseClass = true,
-    includeDarkMode = true,
-    includeComponents = true,
-  } = options;
+  const { includeBaseClass = true, includeDarkMode = true, includeComponents = true } = options;
 
   let css = '';
 
@@ -219,10 +215,7 @@ export function generateThemeCSS(
       Object.entries(config.components).forEach(([component, vars]) => {
         if (vars) {
           Object.entries(vars).forEach(([key, value]) => {
-            if (
-              value !== undefined &&
-              (key.includes('dark-') || key.includes('hover'))
-            ) {
+            if (value !== undefined && (key.includes('dark-') || key.includes('hover'))) {
               css += `  --${component}-${key}: ${value};\n`;
             }
           });
@@ -272,7 +265,7 @@ export function applyTheme(config: TrailheadThemeConfig, isDark = false): void {
  */
 export function createCustomTheme(
   baseConfig: TrailheadThemeConfig,
-  overrides: Partial<TrailheadThemeConfig>,
+  overrides: Partial<TrailheadThemeConfig>
 ): TrailheadThemeConfig {
   return {
     name: overrides.name || `Custom ${baseConfig.name}`,

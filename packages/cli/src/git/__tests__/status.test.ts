@@ -1,13 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  isWorkingDirectoryClean,
-  getGitStatus,
-  formatGitStatus,
-} from '../status.js';
-import {
-  executeGitCommandSimple,
-  validateGitEnvironment,
-} from '../git-command.js';
+import { isWorkingDirectoryClean, getGitStatus, formatGitStatus } from '../status.js';
+import { executeGitCommandSimple, validateGitEnvironment } from '../git-command.js';
 import type { GitStatus } from '../types.js';
 
 // Mock the git command execution
@@ -99,8 +92,7 @@ describe('status', () => {
         // Mock git status --porcelain with mixed changes
         .mockResolvedValueOnce({
           success: true,
-          value:
-            'M  staged.txt\n M modified.txt\n?? untracked.txt\nA  added.txt',
+          value: 'M  staged.txt\n M modified.txt\n?? untracked.txt\nA  added.txt',
         });
 
       const result = await getGitStatus();
@@ -173,9 +165,7 @@ describe('status', () => {
 
       const result = formatGitStatus(status);
 
-      expect(result).toBe(
-        "On branch 'feature', 1 staged file, 1 modified file, 1 untracked file",
-      );
+      expect(result).toBe("On branch 'feature', 1 staged file, 1 modified file, 1 untracked file");
     });
 
     it('should format status with multiple file changes', () => {
@@ -190,7 +180,7 @@ describe('status', () => {
       const result = formatGitStatus(status);
 
       expect(result).toBe(
-        "On branch 'develop', 3 staged files, 2 modified files, 5 untracked files",
+        "On branch 'develop', 3 staged files, 2 modified files, 5 untracked files"
       );
     });
 
@@ -205,9 +195,7 @@ describe('status', () => {
 
       const result = formatGitStatus(status);
 
-      expect(result).toBe(
-        "On branch 'hotfix', 2 staged files, 1 untracked file",
-      );
+      expect(result).toBe("On branch 'hotfix', 2 staged files, 1 untracked file");
     });
   });
 });

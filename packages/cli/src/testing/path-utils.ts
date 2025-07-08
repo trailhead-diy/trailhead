@@ -121,9 +121,7 @@ export const testPaths = {
   // Mock paths that look native on each platform
   mockProject: isWindows ? 'C:\\test\\project' : '/test/project',
   mockHome: isWindows ? 'C:\\Users\\test' : '/home/test',
-  mockConfig: isWindows
-    ? 'C:\\test\\project\\.config'
-    : '/test/project/.config',
+  mockConfig: isWindows ? 'C:\\test\\project\\.config' : '/test/project/.config',
 
   // Path separator for the current platform
   separator: sep,

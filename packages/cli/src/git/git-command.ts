@@ -13,7 +13,7 @@ const DEFAULT_TIMEOUT = 30_000;
  */
 export async function executeGitCommand(
   args: string[],
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<GitCommandResult, CLIError>> {
   const { cwd = process.cwd(), timeout = DEFAULT_TIMEOUT } = options;
 
@@ -34,9 +34,7 @@ export async function executeGitCommand(
       if (timeout > 0) {
         timeoutId = setTimeout(() => {
           child.kill('SIGTERM');
-          reject(
-            new Error(`Git command timed out after ${timeout}ms: ${command}`),
-          );
+          reject(new Error(`Git command timed out after ${timeout}ms: ${command}`));
         }, timeout);
       }
 
@@ -51,7 +49,7 @@ export async function executeGitCommand(
       });
 
       // Handle process completion
-      child.on('close', (exitCode) => {
+      child.on('close', exitCode => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -67,7 +65,7 @@ export async function executeGitCommand(
       });
 
       // Handle process errors
-      child.on('error', (error) => {
+      child.on('error', error => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -82,7 +80,7 @@ export async function executeGitCommand(
  */
 export async function executeGitCommandSimple(
   args: string[],
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<string, CLIError>> {
   const result = await executeGitCommand(args, options);
 
@@ -93,8 +91,7 @@ export async function executeGitCommandSimple(
   const { exitCode, stdout, stderr, command } = result.value;
 
   if (exitCode !== 0) {
-    const errorMessage =
-      stderr || `Git command failed with exit code ${exitCode}`;
+    const errorMessage = stderr || `Git command failed with exit code ${exitCode}`;
     return Err(createGitError(`${command}: ${errorMessage}`));
   }
 
@@ -105,22 +102,16 @@ export async function executeGitCommandSimple(
  * Check if git is available and working directory is a git repository
  */
 export async function validateGitEnvironment(
-  options: GitOptions = {},
+  options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
   // Check if git is available
-  const gitVersionResult = await executeGitCommandSimple(
-    ['--version'],
-    options,
-  );
+  const gitVersionResult = await executeGitCommandSimple(['--version'], options);
   if (!gitVersionResult.success) {
     return Err(createGitError('Git is not available or not installed'));
   }
 
   // Check if current directory is a git repository
-  const gitDirResult = await executeGitCommandSimple(
-    ['rev-parse', '--git-dir'],
-    options,
-  );
+  const gitDirResult = await executeGitCommandSimple(['rev-parse', '--git-dir'], options);
   if (!gitDirResult.success) {
     return Err(createGitError('Current directory is not a git repository'));
   }

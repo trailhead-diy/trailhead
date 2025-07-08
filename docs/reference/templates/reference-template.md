@@ -58,7 +58,7 @@ function functionName(param1: Type1, param2: Type2): ReturnType;
 #### Example
 
 ```typescript
-const result = functionName("value1", "value2");
+const result = functionName('value1', 'value2');
 ```
 
 #### Throws
@@ -79,7 +79,7 @@ const result = functionName("value1", "value2");
 interface TypeName {
   property1: string;
   property2?: number;
-  property3: "option1" | "option2";
+  property3: 'option1' | 'option2';
 }
 ```
 
@@ -93,8 +93,8 @@ interface TypeName {
 
 ```typescript
 const example: TypeName = {
-  property1: "value",
-  property3: "option1",
+  property1: 'value',
+  property3: 'option1',
 };
 ```
 
@@ -123,7 +123,7 @@ const CONSTANT_NAME: Type = value;
 
 ```typescript
 const config = {
-  option1: "custom-value",
+  option1: 'custom-value',
   option2: true,
 };
 ```

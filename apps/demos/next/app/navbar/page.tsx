@@ -51,11 +51,7 @@ export default function NavbarPage(): React.JSX.Element {
                   <DropdownLabel>Tailwind Labs</DropdownLabel>
                 </DropdownItem>
                 <DropdownItem href="/teams/2">
-                  <Avatar
-                    slot="icon"
-                    initials="WC"
-                    className="bg-purple-500 text-white"
-                  />
+                  <Avatar slot="icon" initials="WC" className="bg-purple-500 text-white" />
                   <DropdownLabel>Workcation</DropdownLabel>
                 </DropdownItem>
                 <DropdownDivider />

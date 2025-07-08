@@ -240,7 +240,7 @@ describe('CLI Integration Tests', () => {
           code: 'TEST_ERROR',
           message: 'Test error occurred',
           suggestion: 'Try again',
-        }),
+        })
       );
 
       const mockCommand: Command = {
@@ -264,9 +264,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should exit with code 1 on command exception', async () => {
-      const mockExecute = vi
-        .fn()
-        .mockRejectedValue(new Error('Unexpected error'));
+      const mockExecute = vi.fn().mockRejectedValue(new Error('Unexpected error'));
 
       const mockCommand: Command = {
         name: 'crash',

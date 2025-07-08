@@ -11,10 +11,7 @@ import type {
 } from './types.js';
 import { RetryableError } from './retry-error.js';
 
-export function formatError(
-  error: CLIError,
-  verbose: boolean = false,
-): string[] {
+export function formatError(error: CLIError, verbose: boolean = false): string[] {
   const lines: string[] = [];
 
   // Main error message
@@ -43,7 +40,7 @@ export function formatError(
       lines.push(chalk.gray(`   ${error.cause.message}`));
       if (error.cause.stack) {
         lines.push(chalk.gray('   Stack:'));
-        error.cause.stack.split('\n').forEach((line) => {
+        error.cause.stack.split('\n').forEach(line => {
           lines.push(chalk.gray(`     ${line}`));
         });
       }
@@ -96,48 +93,37 @@ function getErrorIcon(error: CLIError): string {
 
 export function displayError(error: CLIError, verbose: boolean = false): void {
   const lines = formatError(error, verbose);
-  lines.forEach((line) => console.error(line));
+  lines.forEach(line => console.error(line));
 }
 
-export function displayErrorChain(
-  chain: ErrorChain,
-  verbose: boolean = false,
-): void {
+export function displayErrorChain(chain: ErrorChain, verbose: boolean = false): void {
   console.error(chalk.red('Error chain:'));
 
   // Display primary error
   const primaryLines = formatError(chain.error, verbose);
-  primaryLines.forEach((line) => console.error(`  ${line}`));
+  primaryLines.forEach(line => console.error(`  ${line}`));
 
   // Display chain if any
   if (chain.chain.length > 0) {
     console.error(chalk.gray('\n  Caused by:'));
     chain.chain.forEach((error, index) => {
       const lines = formatError(error, verbose);
-      lines.forEach((line) => console.error(`    ${index + 1}. ${line}`));
+      lines.forEach(line => console.error(`    ${index + 1}. ${line}`));
     });
   }
 }
 
-export type ErrorHandler<E extends CLIError = CLIError> = (
-  error: E,
-) => void | Promise<void>;
+export type ErrorHandler<E extends CLIError = CLIError> = (error: E) => void | Promise<void>;
 
-export function createExitHandler(
-  exitCode: number = 1,
-  verbose: boolean = false,
-): ErrorHandler {
-  return (error) => {
+export function createExitHandler(exitCode: number = 1, verbose: boolean = false): ErrorHandler {
+  return error => {
     displayError(error, verbose);
     process.exit(exitCode);
   };
 }
 
-export function createLogHandler(
-  prefix?: string,
-  verbose: boolean = false,
-): ErrorHandler {
-  return (error) => {
+export function createLogHandler(prefix?: string, verbose: boolean = false): ErrorHandler {
+  return error => {
     if (prefix) {
       console.error(chalk.gray(prefix));
     }
@@ -148,9 +134,9 @@ export function createLogHandler(
 export function createConditionalHandler<E extends CLIError>(
   condition: (error: E) => boolean,
   trueHandler: ErrorHandler<E>,
-  falseHandler?: ErrorHandler<E>,
+  falseHandler?: ErrorHandler<E>
 ): ErrorHandler<E> {
-  return (error) => {
+  return error => {
     if (condition(error)) {
       return trueHandler(error);
     }
@@ -163,7 +149,7 @@ export function createConditionalHandler<E extends CLIError>(
 
 export async function tryRecover<T, E extends CLIError>(
   result: Result<T, E>,
-  recovery: (error: E) => AsyncResult<T, E>,
+  recovery: (error: E) => AsyncResult<T, E>
 ): AsyncResult<T, E> {
   if (result.success) {
     return result;
@@ -210,14 +196,14 @@ export async function retryWithBackoff<T, E extends CLIError>(
     maxDelay?: number;
     factor?: number;
     shouldRetry?: (error: E) => boolean;
-  } = {},
+  } = {}
 ): AsyncResult<T, E> {
   const {
     maxRetries = 3,
     initialDelay = 1000,
     maxDelay = 30000,
     factor = 2,
-    shouldRetry = (error) => error.recoverable,
+    shouldRetry = error => error.recoverable,
   } = options;
 
   let lastError: E | undefined;
@@ -240,24 +226,21 @@ export async function retryWithBackoff<T, E extends CLIError>(
         }
 
         // Throw a RetryableError to trigger retry (p-retry requires Error instances)
-        throw new RetryableError(
-          operationResult.error.message,
-          operationResult.error,
-        );
+        throw new RetryableError(operationResult.error.message, operationResult.error);
       },
       {
         retries: maxRetries,
         minTimeout: initialDelay,
         maxTimeout: maxDelay,
         factor: factor,
-        onFailedAttempt: (error) => {
+        onFailedAttempt: error => {
           // p-retry provides attempt number and retriesLeft
           if (error.retriesLeft === 0) {
             // This is the last attempt
             return;
           }
         },
-      },
+      }
     );
 
     return result;
@@ -286,7 +269,7 @@ export async function retryWithBackoff<T, E extends CLIError>(
 
 export function mapError<T, E1 extends CLIError, E2 extends CLIError>(
   result: Result<T, E1>,
-  mapper: (error: E1) => E2,
+  mapper: (error: E1) => E2
 ): Result<T, E2> {
   if (result.success) {
     return result;
@@ -298,13 +281,9 @@ export function mapError<T, E1 extends CLIError, E2 extends CLIError>(
   };
 }
 
-export async function mapErrorAsync<
-  T,
-  E1 extends CLIError,
-  E2 extends CLIError,
->(
+export async function mapErrorAsync<T, E1 extends CLIError, E2 extends CLIError>(
   result: AsyncResult<T, E1>,
-  mapper: (error: E1) => E2 | Promise<E2>,
+  mapper: (error: E1) => E2 | Promise<E2>
 ): AsyncResult<T, E2> {
   const awaited = await result;
 
@@ -335,12 +314,12 @@ export function aggregateErrors(errors: CLIError[]): CLIError {
     code: 'MULTIPLE_ERRORS',
     message: `Multiple errors occurred (${errors.length} total)`,
     details: errors.map((e, i) => `${i + 1}. ${e.message}`).join('\n'),
-    recoverable: errors.every((e) => e.recoverable),
+    recoverable: errors.every(e => e.recoverable),
   };
 }
 
 export function collectErrors<T, E extends CLIError>(
-  results: Result<T, E>[],
+  results: Result<T, E>[]
 ): { values: T[]; errors: E[] } {
   const values: T[] = [];
   const errors: E[] = [];
@@ -374,24 +353,14 @@ export function addToChain(chain: ErrorChain, error: CLIError): ErrorChain {
   };
 }
 
-export function filterByCategory<E extends CLIError>(
-  errors: E[],
-  category: ErrorCategory,
-): E[] {
-  return errors.filter(
-    (e) => 'category' in e && (e as any).category === category,
-  );
+export function filterByCategory<E extends CLIError>(errors: E[], category: ErrorCategory): E[] {
+  return errors.filter(e => 'category' in e && (e as any).category === category);
 }
 
 export function filterRecoverable<E extends CLIError>(errors: E[]): E[] {
-  return errors.filter((e) => e.recoverable);
+  return errors.filter(e => e.recoverable);
 }
 
-export function filterBySeverity<E extends CLIError>(
-  errors: E[],
-  severity: ErrorSeverity,
-): E[] {
-  return errors.filter(
-    (e) => 'severity' in e && (e as any).severity === severity,
-  );
+export function filterBySeverity<E extends CLIError>(errors: E[], severity: ErrorSeverity): E[] {
+  return errors.filter(e => 'severity' in e && (e as any).severity === severity);
 }

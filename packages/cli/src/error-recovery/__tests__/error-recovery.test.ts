@@ -24,11 +24,7 @@ vi.mock('p-retry', () => ({
   }),
 }));
 
-import {
-  classifyError,
-  isRetryableError,
-  retryableOperation,
-} from '../index.js';
+import { classifyError, isRetryableError, retryableOperation } from '../index.js';
 
 describe('Error Recovery', () => {
   describe('classifyError', () => {
@@ -193,9 +189,7 @@ describe('Error Recovery', () => {
       const permissionError = new Error('Permission denied');
       const operation = vi.fn().mockRejectedValue(permissionError);
 
-      await expect(retryableOperation(operation)).rejects.toThrow(
-        'Permission denied',
-      );
+      await expect(retryableOperation(operation)).rejects.toThrow('Permission denied');
     });
 
     it('should handle retryable errors correctly', async () => {
@@ -213,7 +207,7 @@ describe('Error Recovery', () => {
         operation,
         expect.objectContaining({
           onFailedAttempt: expect.any(Function),
-        }),
+        })
       );
     });
   });
@@ -236,13 +230,9 @@ describe('Error Recovery', () => {
     });
 
     it('should fail fast with non-retryable error', async () => {
-      const operation = vi
-        .fn()
-        .mockRejectedValue(new Error('Validation failed'));
+      const operation = vi.fn().mockRejectedValue(new Error('Validation failed'));
 
-      await expect(retryableOperation(operation)).rejects.toThrow(
-        'Validation failed',
-      );
+      await expect(retryableOperation(operation)).rejects.toThrow('Validation failed');
       expect(operation).toHaveBeenCalledTimes(1);
     });
   });

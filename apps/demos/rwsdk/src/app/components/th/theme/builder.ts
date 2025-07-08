@@ -75,10 +75,7 @@ const adjustColorForDarkMode = (color: string): string => {
     // Fallback: simple lightness inversion
     const lightness = extractLightness(color);
     const newLightness = 1 - lightness;
-    return color.replace(
-      /oklch\(([0-9.]+)/,
-      `oklch(${newLightness.toFixed(3)}`,
-    );
+    return color.replace(/oklch\(([0-9.]+)/, `oklch(${newLightness.toFixed(3)}`);
   }
 };
 
@@ -86,7 +83,7 @@ const adjustColorForDarkMode = (color: string): string => {
  * Create a brightness adjuster with a specific amount
  */
 const createBrightnessAdjuster = (amount: number) =>
-  createColorTransformer((color) => adjustLightnessFunc(color, amount));
+  createColorTransformer(color => adjustLightnessFunc(color, amount));
 
 // ============================================================================
 // BUILDER FUNCTIONS
@@ -97,7 +94,7 @@ const createBrightnessAdjuster = (amount: number) =>
  */
 export const withPrimaryColor =
   (lightColor: string, darkColor?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -107,9 +104,7 @@ export const withPrimaryColor =
     dark: {
       ...state.dark,
       primary: darkColor || adjustColorForDarkMode(lightColor),
-      'primary-foreground': getContrastColor(
-        darkColor || adjustColorForDarkMode(lightColor),
-      ),
+      'primary-foreground': getContrastColor(darkColor || adjustColorForDarkMode(lightColor)),
     },
   });
 
@@ -118,7 +113,7 @@ export const withPrimaryColor =
  */
 export const withSecondaryColor =
   (lightColor: string, darkColor?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -128,9 +123,7 @@ export const withSecondaryColor =
     dark: {
       ...state.dark,
       secondary: darkColor || adjustColorForDarkMode(lightColor),
-      'secondary-foreground': getContrastColor(
-        darkColor || adjustColorForDarkMode(lightColor),
-      ),
+      'secondary-foreground': getContrastColor(darkColor || adjustColorForDarkMode(lightColor)),
     },
   });
 
@@ -139,7 +132,7 @@ export const withSecondaryColor =
  */
 export const withAccentColor =
   (lightColor: string, darkColor?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -149,9 +142,7 @@ export const withAccentColor =
     dark: {
       ...state.dark,
       accent: darkColor || adjustColorForDarkMode(lightColor),
-      'accent-foreground': getContrastColor(
-        darkColor || adjustColorForDarkMode(lightColor),
-      ),
+      'accent-foreground': getContrastColor(darkColor || adjustColorForDarkMode(lightColor)),
     },
   });
 
@@ -160,7 +151,7 @@ export const withAccentColor =
  */
 export const withMutedColor =
   (lightColor: string, darkColor?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -170,9 +161,7 @@ export const withMutedColor =
     dark: {
       ...state.dark,
       muted: darkColor || adjustColorForDarkMode(lightColor),
-      'muted-foreground': getContrastColor(
-        darkColor || adjustColorForDarkMode(lightColor),
-      ),
+      'muted-foreground': getContrastColor(darkColor || adjustColorForDarkMode(lightColor)),
     },
   });
 
@@ -180,13 +169,8 @@ export const withMutedColor =
  * Set background and foreground colors
  */
 export const withBackgroundColors =
-  (
-    lightBg: string,
-    lightFg: string,
-    darkBg?: string,
-    darkFg?: string,
-  ): ThemeBuilderFn =>
-  (state) => ({
+  (lightBg: string, lightFg: string, darkBg?: string, darkFg?: string): ThemeBuilderFn =>
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -205,7 +189,7 @@ export const withBackgroundColors =
  */
 export const withCardColors =
   (lightCard: string, darkCard?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -215,9 +199,7 @@ export const withCardColors =
     dark: {
       ...state.dark,
       card: darkCard || adjustColorForDarkMode(lightCard),
-      'card-foreground': getContrastColor(
-        darkCard || adjustColorForDarkMode(lightCard),
-      ),
+      'card-foreground': getContrastColor(darkCard || adjustColorForDarkMode(lightCard)),
     },
   });
 
@@ -226,7 +208,7 @@ export const withCardColors =
  */
 export const withDestructiveColor =
   (lightColor: string, darkColor?: string): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -245,7 +227,7 @@ export const withDestructiveColor =
  */
 export const withBorderColors =
   (lightBorder: string, darkBorder?: string): ThemeBuilderFn =>
-  (state) => {
+  state => {
     const darkBorderColor = darkBorder || adjustColorForDarkMode(lightBorder);
     return {
       ...state,
@@ -269,7 +251,7 @@ export const withBorderColors =
  */
 export const withChartColors =
   (colors: [string, string, string, string, string]): ThemeBuilderFn =>
-  (state) => ({
+  state => ({
     ...state,
     light: {
       ...state.light,
@@ -298,9 +280,9 @@ export const withSidebarColors =
     customColors?: {
       light: { bg: string; fg: string };
       dark: { bg: string; fg: string };
-    },
+    }
   ): ThemeBuilderFn =>
-  (state) => {
+  state => {
     let light: Partial<ShadcnTheme> = {};
     let dark: Partial<ShadcnTheme> = {};
 
@@ -364,7 +346,7 @@ export const withSidebarColors =
  */
 export const withPopoverColors =
   (sameAsCard = true): ThemeBuilderFn =>
-  (state) => {
+  state => {
     if (!sameAsCard) return state;
 
     return {
@@ -387,7 +369,7 @@ export const withPopoverColors =
  */
 export const withComponentOverrides =
   (overrides: ComponentThemeOverrides): ThemeBuilderFn =>
-  (state) => {
+  state => {
     const mergedComponents: ComponentThemeOverrides = { ...state.components };
 
     // Deep merge component overrides
@@ -407,7 +389,7 @@ export const withComponentOverrides =
 /**
  * Auto-complete missing colors based on existing ones
  */
-export const autoComplete: ThemeBuilderFn = (state) => {
+export const autoComplete: ThemeBuilderFn = state => {
   let newState = { ...state };
 
   // Auto-complete card colors if missing
@@ -453,16 +435,14 @@ export const autoComplete: ThemeBuilderFn = (state) => {
  */
 export const compose =
   (...fns: ThemeBuilderFn[]): ThemeBuilderFn =>
-  (state) =>
+  state =>
     fns.reduce((acc, fn) => fn(acc), state);
 
 /**
  * Create a pipe function for more readable composition
  */
-export const pipe = (
-  initial: ThemeBuilderState,
-  ...fns: ThemeBuilderFn[]
-): ThemeBuilderState => compose(...fns)(initial);
+export const pipe = (initial: ThemeBuilderState, ...fns: ThemeBuilderFn[]): ThemeBuilderState =>
+  compose(...fns)(initial);
 
 // ============================================================================
 // MAIN API
@@ -510,12 +490,7 @@ export const createTheme = (name: string) => {
       state = withMutedColor(lightColor, darkColor)(state);
       return builder;
     },
-    withBackgroundColors: (
-      lightBg: string,
-      lightFg: string,
-      darkBg?: string,
-      darkFg?: string,
-    ) => {
+    withBackgroundColors: (lightBg: string, lightFg: string, darkBg?: string, darkFg?: string) => {
       state = withBackgroundColors(lightBg, lightFg, darkBg, darkFg)(state);
       return builder;
     },
@@ -540,7 +515,7 @@ export const createTheme = (name: string) => {
       customColors?: {
         light: { bg: string; fg: string };
         dark: { bg: string; fg: string };
-      },
+      }
     ) => {
       state = withSidebarColors(based_on, customColors)(state);
       return builder;

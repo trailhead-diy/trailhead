@@ -1,7 +1,4 @@
-import {
-  createCommand,
-  type CommandContext,
-} from '@esteban-url/trailhead-cli/command';
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { select, confirm } from '@inquirer/prompts';
 import { resolve } from 'path';
@@ -20,11 +17,7 @@ interface GenerateCommandOptions {
   'dry-run'?: boolean;
 }
 
-import {
-  type GenerateOptions,
-  type TemplateVariant,
-  type PackageManager,
-} from '../lib/types.js';
+import { type GenerateOptions, type TemplateVariant, type PackageManager } from '../lib/types.js';
 
 /**
  * Command line options interface for the generate command
@@ -145,24 +138,18 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
         return Err(
           createError('MISSING_PROJECT_NAME', 'Project name is required', {
             suggestion: 'Provide a project name as the first argument',
-          }),
+          })
         );
       }
 
       // Check if directory exists
       const projectPath = resolve(process.cwd(), projectName);
       if (existsSync(projectPath) && !options.force) {
-        logger.error(
-          `Directory '${projectName}' already exists. Use --force to overwrite.`,
-        );
+        logger.error(`Directory '${projectName}' already exists. Use --force to overwrite.`);
         return Err(
-          createError(
-            'DIRECTORY_EXISTS',
-            `Directory '${projectName}' already exists`,
-            {
-              suggestion: 'Use --force to overwrite or choose a different name',
-            },
-          ),
+          createError('DIRECTORY_EXISTS', `Directory '${projectName}' already exists`, {
+            suggestion: 'Use --force to overwrite or choose a different name',
+          })
         );
       }
 
@@ -177,10 +164,8 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
 
       // Express mode: use provided options
       if (isExpressMode(options)) {
-        generateOptions.template =
-          (options.template as TemplateVariant) || 'basic';
-        generateOptions.packageManager =
-          (options.packageManager as PackageManager) || 'pnpm';
+        generateOptions.template = (options.template as TemplateVariant) || 'basic';
+        generateOptions.packageManager = (options.packageManager as PackageManager) || 'pnpm';
         generateOptions.includeDocs = options.docs ?? false;
         generateOptions.initGit = options.git ?? true;
         generateOptions.installDependencies = options.install ?? true;
@@ -198,7 +183,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
           ...generateOptions,
           dryRun: options.dryRun ?? false,
         },
-        { logger, fs: undefined, verbose },
+        { logger, fs: undefined, verbose }
       );
 
       if (result.success) {
@@ -222,17 +207,11 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
         return Err(result.error);
       }
     } catch (error) {
-      logger.error(
-        `Unexpected error: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
       return Err(
-        createError(
-          'UNEXPECTED_ERROR',
-          error instanceof Error ? error.message : String(error),
-          {
-            cause: error,
-          },
-        ),
+        createError('UNEXPECTED_ERROR', error instanceof Error ? error.message : String(error), {
+          cause: error,
+        })
       );
     }
   },
@@ -243,7 +222,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
  */
 async function gatherConfiguration(
   options: GenerateCommandOptions,
-  _logger: any,
+  _logger: any
 ): Promise<Partial<GenerateOptions>> {
   const config: Partial<GenerateOptions> = {};
 
@@ -308,6 +287,6 @@ function isExpressMode(options: GenerateCommandOptions): boolean {
       options.packageManager ||
       options.docs !== undefined ||
       options.git !== undefined ||
-      options.install !== undefined,
+      options.install !== undefined
   );
 }

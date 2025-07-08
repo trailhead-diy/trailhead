@@ -85,17 +85,7 @@ describe('Chalk Utilities', () => {
   // but since we're re-exporting chalk functions, we mainly test
   // that our wrapper functions exist and are functions
   describe('function signatures', () => {
-    const testFunctions = [
-      success,
-      error,
-      warning,
-      info,
-      muted,
-      bold,
-      dim,
-      italic,
-      underline,
-    ];
+    const testFunctions = [success, error, warning, info, muted, bold, dim, italic, underline];
 
     testFunctions.forEach((fn, index) => {
       it(`should export function ${index + 1} correctly`, () => {
@@ -130,8 +120,7 @@ describe('Chalk Utilities', () => {
     });
 
     it('should handle special characters', () => {
-      const specialString =
-        'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
+      const specialString = 'Special chars: !@#$%^&*()[]{}|\\:";\'<>?,./ 中文 🚀';
 
       expect(() => success(specialString)).not.toThrow();
       expect(() => error(specialString)).not.toThrow();
@@ -208,12 +197,12 @@ describe('Chalk Utilities', () => {
       const styleFunctions = [bold, dim, italic, underline];
 
       // All color functions should be functions (chalk functions have length 0)
-      colorFunctions.forEach((fn) => {
+      colorFunctions.forEach(fn => {
         expect(typeof fn).toBe('function');
       });
 
       // All style functions should be functions
-      styleFunctions.forEach((fn) => {
+      styleFunctions.forEach(fn => {
         expect(typeof fn).toBe('function');
       });
     });

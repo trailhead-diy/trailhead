@@ -68,14 +68,7 @@
     },
     "lint": {
       "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "examples/**",
-        "oxlintrc.*",
-        ".oxlintrc.*",
-        "package.json"
-      ],
+      "inputs": ["src/**", "tests/**", "examples/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
       "outputLogs": "errors-only",
       "cache": true
     },
@@ -99,34 +92,19 @@
     },
     "format": {
       "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc.*",
-        "prettier.config.*"
-      ],
+      "inputs": ["**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc.*", "prettier.config.*"],
       "outputLogs": "errors-only",
       "cache": false
     },
     "format:check": {
       "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc.*",
-        "prettier.config.*"
-      ],
+      "inputs": ["**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc.*", "prettier.config.*"],
       "outputLogs": "errors-only",
       "cache": true
     },
     "lint:fix": {
       "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "examples/**",
-        "oxlintrc.*",
-        ".oxlintrc.*",
-        "package.json"
-      ],
+      "inputs": ["src/**", "tests/**", "examples/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
       "outputLogs": "errors-only",
       "cache": false
     }

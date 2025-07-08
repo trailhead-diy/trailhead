@@ -35,9 +35,7 @@ export const ThemeSwitcher = ({
   // Get theme display names from presets
   const getThemeDisplayName = (themeName: string): string => {
     // Check if it's a preset theme
-    const presetName = Object.keys(themePresets).find(
-      (key) => key === themeName,
-    );
+    const presetName = Object.keys(themePresets).find(key => key === themeName);
     if (presetName) {
       return presetName.charAt(0).toUpperCase() + presetName.slice(1);
     }
@@ -45,7 +43,7 @@ export const ThemeSwitcher = ({
     return themeName.charAt(0).toUpperCase() + themeName.slice(1);
   };
 
-  const themeOptions = themes.map((theme) => ({
+  const themeOptions = themes.map(theme => ({
     value: theme,
     label: getThemeDisplayName(theme),
   }));
@@ -56,13 +54,11 @@ export const ThemeSwitcher = ({
       <div
         className={cn(
           'fixed top-4 right-4 z-50 flex items-center gap-3 rounded-lg bg-card/95 backdrop-blur-sm border border-border shadow-lg p-3',
-          className,
+          className
         )}
       >
         <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
-        {showDarkModeToggle && (
-          <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
-        )}
+        {showDarkModeToggle && <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />}
       </div>
     );
   }
@@ -71,7 +67,7 @@ export const ThemeSwitcher = ({
     <div
       className={cn(
         'fixed top-4 right-4 z-50 flex items-center gap-3 rounded-lg bg-card/95 backdrop-blur-sm border border-border shadow-lg p-3',
-        className,
+        className
       )}
     >
       <div className="flex items-center gap-2">
@@ -79,10 +75,10 @@ export const ThemeSwitcher = ({
 
         <Select
           value={currentTheme || 'zinc'}
-          onChange={(e) => setTheme(e.target.value)}
+          onChange={e => setTheme(e.target.value)}
           className="min-w-[120px]"
         >
-          {themeOptions.map((option) => (
+          {themeOptions.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -92,11 +88,7 @@ export const ThemeSwitcher = ({
 
       {/* Dark mode toggle */}
       {showDarkModeToggle && (
-        <Button
-          onClick={toggleDarkMode}
-          outline
-          className="px-3 py-1.5 text-xs"
-        >
+        <Button onClick={toggleDarkMode} outline className="px-3 py-1.5 text-xs">
           {isDark ? '☀️ Light' : '🌙 Dark'}
         </Button>
       )}
@@ -121,8 +113,7 @@ export const ThemePreview = () => {
           {isDark ? 'dark' : 'light'} mode)
         </p>
         <p className="text-muted-foreground">
-          All components automatically adapt to the selected theme without any
-          code changes.
+          All components automatically adapt to the selected theme without any code changes.
         </p>
       </div>
 
@@ -142,27 +133,13 @@ export const ThemePreview = () => {
       <div className="space-y-2">
         <h4 className="text-sm font-medium">Color System</h4>
         <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-          <div className="rounded bg-primary p-3 text-primary-foreground">
-            Primary
-          </div>
-          <div className="rounded bg-secondary p-3 text-secondary-foreground">
-            Secondary
-          </div>
-          <div className="rounded bg-accent p-3 text-accent-foreground">
-            Accent
-          </div>
-          <div className="rounded bg-muted p-3 text-muted-foreground">
-            Muted
-          </div>
-          <div className="rounded border bg-card p-3 text-card-foreground">
-            Card
-          </div>
-          <div className="rounded border bg-popover p-3 text-popover-foreground">
-            Popover
-          </div>
-          <div className="rounded bg-destructive p-3 text-white">
-            Destructive
-          </div>
+          <div className="rounded bg-primary p-3 text-primary-foreground">Primary</div>
+          <div className="rounded bg-secondary p-3 text-secondary-foreground">Secondary</div>
+          <div className="rounded bg-accent p-3 text-accent-foreground">Accent</div>
+          <div className="rounded bg-muted p-3 text-muted-foreground">Muted</div>
+          <div className="rounded border bg-card p-3 text-card-foreground">Card</div>
+          <div className="rounded border bg-popover p-3 text-popover-foreground">Popover</div>
+          <div className="rounded bg-destructive p-3 text-white">Destructive</div>
           <div className="rounded border-2 border-border p-3">Border</div>
         </div>
       </div>

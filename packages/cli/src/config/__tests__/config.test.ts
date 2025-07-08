@@ -167,9 +167,7 @@ describe('Config Module', () => {
         defaults,
       });
 
-      await expect(configLoader.load()).rejects.toThrow(
-        'Failed to load configuration',
-      );
+      await expect(configLoader.load()).rejects.toThrow('Failed to load configuration');
     });
 
     it('should pass options to cosmiconfig', async () => {
@@ -467,7 +465,7 @@ describe('Config Module', () => {
       });
 
       await expect(configLoader.load()).rejects.toThrow(
-        'No configuration found and no defaults provided',
+        'No configuration found and no defaults provided'
       );
     });
 
@@ -489,9 +487,7 @@ describe('Config Module', () => {
         defaults,
       });
 
-      await expect(configLoader.load()).rejects.toThrow(
-        'Failed to load configuration',
-      );
+      await expect(configLoader.load()).rejects.toThrow('Failed to load configuration');
     });
 
     it('should provide detailed validation errors', async () => {
@@ -574,9 +570,7 @@ describe('Config Module', () => {
 
       expect(result.config.app.name).toBe('myapp'); // from config (merged)
       expect(result.config.app.debug).toBe(true); // from config
-      expect(result.config.database.url).toBe(
-        'postgresql://localhost:5432/myapp_dev',
-      );
+      expect(result.config.database.url).toBe('postgresql://localhost:5432/myapp_dev');
       expect(result.filepath).toBe('/project/.myapprc.json');
       expect(result.source).toBe('file');
     });
@@ -717,9 +711,7 @@ describe('Config Module', () => {
         defaults,
       });
 
-      expect(() => configLoader.loadSync()).toThrow(
-        'Failed to load configuration',
-      );
+      expect(() => configLoader.loadSync()).toThrow('Failed to load configuration');
     });
   });
 

@@ -177,9 +177,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@esteban-url"
+          node-version: '18'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@esteban-url'
 
       - name: Install dependencies
         run: npm ci

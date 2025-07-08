@@ -35,9 +35,7 @@ const generateCommand = createCommand({
     // Create project directory
     const mkdirResult = await fs.mkdir(projectPath);
     if (!mkdirResult.success) {
-      return Err(
-        new Error(`Failed to create directory: ${mkdirResult.error.message}`),
-      );
+      return Err(new Error(`Failed to create directory: ${mkdirResult.error.message}`));
     }
 
     // Generate package.json
@@ -53,20 +51,18 @@ const generateCommand = createCommand({
 
     const writeResult = await fs.writeFile(
       join(projectPath, 'package.json'),
-      JSON.stringify(packageJson, null, 2),
+      JSON.stringify(packageJson, null, 2)
     );
 
     if (!writeResult.success) {
-      return Err(
-        new Error(`Failed to write package.json: ${writeResult.error.message}`),
-      );
+      return Err(new Error(`Failed to write package.json: ${writeResult.error.message}`));
     }
 
     // Create src directory and index file
     await fs.mkdir(join(projectPath, 'src'));
     await fs.writeFile(
       join(projectPath, 'src', 'index.js'),
-      `console.log('Hello from ${options.name}!');`,
+      `console.log('Hello from ${options.name}!');`
     );
 
     context.logger.success(`Project ${options.name} created successfully!`);

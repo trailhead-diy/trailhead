@@ -384,8 +384,8 @@ describe('Testing Mocks', () => {
       logger.error('First error');
       logger.info('Second info');
 
-      const infoLogs = logger.logs.filter((log) => log.level === 'info');
-      const errorLogs = logger.logs.filter((log) => log.level === 'error');
+      const infoLogs = logger.logs.filter(log => log.level === 'info');
+      const errorLogs = logger.logs.filter(log => log.level === 'error');
 
       expect(infoLogs).toHaveLength(2);
       expect(errorLogs).toHaveLength(1);
@@ -404,12 +404,8 @@ describe('Testing Mocks', () => {
         'Select tags:': ['typescript', 'react'],
       });
 
-      expect(await prompts.prompt({ message: 'What is your name?' })).toBe(
-        'Alice',
-      );
-      expect(await prompts.select({ message: 'Select framework:' })).toBe(
-        'React',
-      );
+      expect(await prompts.prompt({ message: 'What is your name?' })).toBe('Alice');
+      expect(await prompts.select({ message: 'Select framework:' })).toBe('React');
       expect(await prompts.confirm({ message: 'Are you sure?' })).toBe(true);
       expect(await prompts.multiselect({ message: 'Select tags:' })).toEqual([
         'typescript',
@@ -420,22 +416,20 @@ describe('Testing Mocks', () => {
     it('should throw for unmocked prompts', async () => {
       const prompts = mockPrompts();
 
-      await expect(
-        prompts.prompt({ message: 'Unmocked question?' }),
-      ).rejects.toThrow('No mock response for prompt: Unmocked question?');
+      await expect(prompts.prompt({ message: 'Unmocked question?' })).rejects.toThrow(
+        'No mock response for prompt: Unmocked question?'
+      );
 
-      await expect(
-        prompts.select({ message: 'Unmocked select?' }),
-      ).rejects.toThrow('No mock response for select: Unmocked select?');
+      await expect(prompts.select({ message: 'Unmocked select?' })).rejects.toThrow(
+        'No mock response for select: Unmocked select?'
+      );
 
-      await expect(
-        prompts.confirm({ message: 'Unmocked confirm?' }),
-      ).rejects.toThrow('No mock response for confirm: Unmocked confirm?');
+      await expect(prompts.confirm({ message: 'Unmocked confirm?' })).rejects.toThrow(
+        'No mock response for confirm: Unmocked confirm?'
+      );
 
-      await expect(
-        prompts.multiselect({ message: 'Unmocked multiselect?' }),
-      ).rejects.toThrow(
-        'No mock response for multiselect: Unmocked multiselect?',
+      await expect(prompts.multiselect({ message: 'Unmocked multiselect?' })).rejects.toThrow(
+        'No mock response for multiselect: Unmocked multiselect?'
       );
     });
 
@@ -451,9 +445,7 @@ describe('Testing Mocks', () => {
       expect(await prompts.prompt({ message: 'String response' })).toBe('text');
       expect(await prompts.prompt({ message: 'Number response' })).toBe(42);
       expect(await prompts.prompt({ message: 'Boolean response' })).toBe(false);
-      expect(await prompts.prompt({ message: 'Array response' })).toEqual([
-        1, 2, 3,
-      ]);
+      expect(await prompts.prompt({ message: 'Array response' })).toEqual([1, 2, 3]);
       expect(await prompts.prompt({ message: 'Object response' })).toEqual({
         key: 'value',
       });

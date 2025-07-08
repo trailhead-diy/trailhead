@@ -12,9 +12,7 @@ import type { Result } from './types.js';
  * }
  * ```
  */
-export function isOk<T, E = any>(
-  result: Result<T, E>,
-): result is { success: true; value: T } {
+export function isOk<T, E = any>(result: Result<T, E>): result is { success: true; value: T } {
   return result.success === true;
 }
 
@@ -30,9 +28,7 @@ export function isOk<T, E = any>(
  * }
  * ```
  */
-export function isErr<T, E = any>(
-  result: Result<T, E>,
-): result is { success: false; error: E } {
+export function isErr<T, E = any>(result: Result<T, E>): result is { success: false; error: E } {
   return result.success === false;
 }
 
@@ -89,10 +85,7 @@ export function unwrapOr<T, E = any>(result: Result<T, E>, defaultValue: T): T {
  * const mapped = map(errorResult, x => x * 2); // Err('failed')
  * ```
  */
-export function map<T, U, E = any>(
-  result: Result<T, E>,
-  fn: (value: T) => U,
-): Result<U, E> {
+export function map<T, U, E = any>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {
   if (!result.success) {
     return result;
   }
@@ -115,7 +108,7 @@ export function map<T, U, E = any>(
  */
 export function mapErr<T, E = any, F = any>(
   result: Result<T, E>,
-  fn: (error: E) => F,
+  fn: (error: E) => F
 ): Result<T, F> {
   if (result.success) {
     return result;
@@ -139,7 +132,7 @@ export function mapErr<T, E = any, F = any>(
  */
 export function chain<T, U, E = any>(
   result: Result<T, E>,
-  fn: (value: T) => Result<U, E>,
+  fn: (value: T) => Result<U, E>
 ): Result<U, E> {
   if (!result.success) {
     return result;
@@ -219,7 +212,7 @@ export function toOptional<T, E = any>(result: Result<T, E>): T | undefined {
  */
 export function getErrorMessage<T, E = any>(
   result: Result<T, E>,
-  defaultMessage: string = 'Unknown error',
+  defaultMessage: string = 'Unknown error'
 ): string {
   if (result.success) {
     return '';
@@ -247,11 +240,9 @@ export function match<T, E = any, R = any>(
   handlers: {
     ok: (value: T) => R;
     err: (error: E) => R;
-  },
+  }
 ): R {
-  return result.success
-    ? handlers.ok(result.value)
-    : handlers.err(result.error);
+  return result.success ? handlers.ok(result.value) : handlers.err(result.error);
 }
 
 /**
@@ -301,7 +292,7 @@ export function all<T extends readonly unknown[], E = any>(results: {
  */
 export function tryCatch<T, E = Error>(
   fn: () => T,
-  mapError?: (error: unknown) => E,
+  mapError?: (error: unknown) => E
 ): Result<T, E> {
   try {
     return { success: true, value: fn() };
@@ -333,7 +324,7 @@ export function tryCatch<T, E = Error>(
  */
 export async function tryCatchAsync<T, E = Error>(
   fn: () => Promise<T>,
-  mapError?: (error: unknown) => E,
+  mapError?: (error: unknown) => E
 ): Promise<Result<T, E>> {
   try {
     const value = await fn();

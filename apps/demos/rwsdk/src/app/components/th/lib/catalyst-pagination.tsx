@@ -8,13 +8,7 @@ export function CatalystPagination({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'>) {
-  return (
-    <nav
-      aria-label={ariaLabel}
-      {...props}
-      className={cn('flex gap-x-2', className)}
-    />
-  );
+  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />;
 }
 
 export function CatalystPaginationPrevious({
@@ -85,12 +79,7 @@ export function CatalystPaginationList({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return (
-    <span
-      {...props}
-      className={cn('hidden items-baseline gap-x-2 sm:flex', className)}
-    />
-  );
+  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />;
 }
 
 export function CatalystPaginationPage({
@@ -112,7 +101,7 @@ export function CatalystPaginationPage({
       className={cn(
         'min-w-9 before:absolute before:-inset-px before:rounded-lg',
         current && 'before:bg-zinc-950/5 dark:before:bg-white/10',
-        className,
+        className
       )}
     >
       <span className={cn('-mx-0.5')}>{children}</span>
@@ -131,7 +120,7 @@ export function CatalystPaginationGap({
       {...props}
       className={cn(
         'w-9 text-center text-sm/6 font-semibold text-foreground select-none dark:text-foreground',
-        className,
+        className
       )}
     >
       {children}

@@ -17,8 +17,7 @@ export default function RadioPage(): React.JSX.Element {
                 <Radio value="permit" />
                 <Label>Allow tickets to be resold</Label>
                 <Description>
-                  Customers can resell or transfer their tickets if they can’t
-                  make it to the event.
+                  Customers can resell or transfer their tickets if they can’t make it to the event.
                 </Description>
               </RadioField>
               <RadioField>

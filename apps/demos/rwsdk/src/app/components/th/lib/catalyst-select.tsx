@@ -9,7 +9,7 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
     multiple,
     ...props
   }: { className?: string } & Omit<Headless.SelectProps, 'as' | 'className'>,
-  ref: React.ForwardedRef<HTMLSelectElement>,
+  ref: React.ForwardedRef<HTMLSelectElement>
 ) {
   return (
     <span
@@ -57,13 +57,11 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
       />
       {!multiple && (
         <span
-          className={cn(
-            'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2',
-          )}
+          className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}
         >
           <svg
             className={cn(
-              'size-5 stroke-muted-foreground group-has-data-disabled:stroke-muted-foreground sm:size-4 dark:stroke-muted-foreground forced-colors:stroke-[CanvasText]',
+              'size-5 stroke-muted-foreground group-has-data-disabled:stroke-muted-foreground sm:size-4 dark:stroke-muted-foreground forced-colors:stroke-[CanvasText]'
             )}
             viewBox="0 0 16 16"
             aria-hidden="true"

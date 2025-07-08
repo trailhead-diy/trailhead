@@ -25,16 +25,9 @@ export interface ProgressState {
  */
 export interface ProgressTracker {
   /** Update progress to next step */
-  nextStep: (
-    stepName: string,
-    metadata?: Record<string, unknown>,
-  ) => ProgressState;
+  nextStep: (stepName: string, metadata?: Record<string, unknown>) => ProgressState;
   /** Update progress to specific step */
-  setStep: (
-    step: number,
-    stepName: string,
-    metadata?: Record<string, unknown>,
-  ) => ProgressState;
+  setStep: (step: number, stepName: string, metadata?: Record<string, unknown>) => ProgressState;
   /** Mark operation as complete */
   complete: () => ProgressState;
   /** Get current progress state */

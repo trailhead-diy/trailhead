@@ -4,11 +4,7 @@
 import type React from 'react';
 import { createContext, useContext, useState } from 'react';
 import { CatalystLink } from './catalyst-link';
-import {
-  SemanticColorToken,
-  isSemanticToken,
-  createSemanticTableStyles,
-} from '../theme/index';
+import { SemanticColorToken, isSemanticToken, createSemanticTableStyles } from '../theme/index';
 import { cn } from '../utils/cn';
 
 const TableContext = createContext<{
@@ -43,11 +39,7 @@ export function CatalystTable({
     color && isSemanticToken(color) ? createSemanticTableStyles(color) : '';
   return (
     <TableContext.Provider
-      value={
-        { bleed, dense, grid, striped } as React.ContextType<
-          typeof TableContext
-        >
-      }
+      value={{ bleed, dense, grid, striped } as React.ContextType<typeof TableContext>}
     >
       <div className={cn('flow-root', resolvedColorClasses)}>
         <div
@@ -55,20 +47,20 @@ export function CatalystTable({
           className={cn(
             '-mx-(--gutter) overflow-x-auto whitespace-nowrap',
             resolvedColorClasses,
-            className,
+            className
           )}
         >
           <div
             className={cn(
               'inline-block min-w-full align-middle',
               !bleed && 'sm:px-(--gutter)',
-              resolvedColorClasses,
+              resolvedColorClasses
             )}
           >
             <table
               className={cn(
                 'min-w-full text-left text-sm/6 text-foreground dark:text-foreground',
-                resolvedColorClasses,
+                resolvedColorClasses
               )}
             >
               {children}
@@ -87,17 +79,12 @@ export function CatalystTableHead({
   return (
     <thead
       {...props}
-      className={cn(
-        'text-muted-foreground dark:text-muted-foreground',
-        className,
-      )}
+      className={cn('text-muted-foreground dark:text-muted-foreground', className)}
     />
   );
 }
 
-export function CatalystTableBody(
-  props: React.ComponentPropsWithoutRef<'tbody'>,
-) {
+export function CatalystTableBody(props: React.ComponentPropsWithoutRef<'tbody'>) {
   return <tbody {...props} />;
 }
 
@@ -126,9 +113,7 @@ export function CatalystTableRow({
 
   return (
     <TableRowContext.Provider
-      value={
-        { href, target, title } as React.ContextType<typeof TableRowContext>
-      }
+      value={{ href, target, title } as React.ContextType<typeof TableRowContext>}
     >
       <tr
         {...props}
@@ -138,17 +123,14 @@ export function CatalystTableRow({
           striped && 'even:bg-muted/50',
           href && striped && 'hover:bg-muted/75',
           href && !striped && 'hover:bg-muted/50',
-          className,
+          className
         )}
       />
     </TableRowContext.Provider>
   );
 }
 
-export function CatalystTableHeader({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'th'>) {
+export function CatalystTableHeader({ className, ...props }: React.ComponentPropsWithoutRef<'th'>) {
   let { bleed, grid } = useContext(TableContext);
 
   return (
@@ -158,7 +140,7 @@ export function CatalystTableHeader({
         'border-b border-b-border px-4 py-2 font-medium first:pl-(--gutter,--spacing(2)) last:pr-(--gutter,--spacing(2)) dark:border-b-border',
         grid && 'border-l border-l-border first:border-l-0',
         !bleed && 'sm:first:pl-1 sm:last:pr-1',
-        className,
+        className
       )}
     />
   );
@@ -183,7 +165,7 @@ export function CatalystTableCell({
         grid && 'border-l border-l-border first:border-l-0',
         dense ? 'py-2.5' : 'py-4',
         !bleed && 'sm:first:pl-1 sm:last:pr-1',
-        className,
+        className
       )}
     >
       {href && (

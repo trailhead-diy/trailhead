@@ -16,7 +16,7 @@ export const BadgeButton = forwardRef<HTMLElement, BadgeButtonProps>(
     <CatalystBadgeButton ref={ref} className={cn(className)} {...props}>
       {children}
     </CatalystBadgeButton>
-  ),
+  )
 );
 
 BadgeButton.displayName = 'BadgeButton';

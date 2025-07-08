@@ -55,7 +55,7 @@ class Command extends BaseCommand {
 ```typescript
 // ✅ Functional approach
 const command: Command = {
-  name: "build",
+  name: 'build',
   execute: async (options, context) => {
     // Pure functions
     // Explicit dependencies via context
@@ -73,7 +73,7 @@ The framework treats commands as data structures with associated functions rathe
 ```typescript
 // Commands are data + functions, not stateful objects
 const command: Command = {
-  name: "build",
+  name: 'build',
   execute: async (options, context) => {
     // Pure function with explicit dependencies
   },
@@ -101,8 +101,8 @@ The framework organizes functionality into independent modules that can be impor
 
 ```typescript
 // Import only what you need
-import { readFile } from "@esteban-url/trailhead-cli/filesystem";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { readFile } from '@esteban-url/trailhead-cli/filesystem';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 // Only these modules affect your bundle size
 ```
 
@@ -131,7 +131,7 @@ The functional approach treats commands as data:
 ```typescript
 // Commands are just data + functions
 const buildCommand: Command = {
-  name: "build",
+  name: 'build',
   execute: async (options, context) => {
     // Pure function with explicit dependencies
   },
@@ -196,8 +196,8 @@ This enables:
 
 ```typescript
 // Granular imports
-import { readFile } from "@esteban-url/trailhead-cli/filesystem";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { readFile } from '@esteban-url/trailhead-cli/filesystem';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 // Only these specific modules are bundled
 ```
 
@@ -329,11 +329,11 @@ When building a CLI that processes files, the design decisions work together:
 
 ```typescript
 // Only import what you need
-import { readFile } from "@esteban-url/trailhead-cli/filesystem";
-import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { readFile } from '@esteban-url/trailhead-cli/filesystem';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 
 const processCommand: Command = {
-  name: "process",
+  name: 'process',
   execute: async (options, context) => {
     // Result types make error handling explicit
     const fileResult = await context.fs.readFile(options.input);
@@ -362,10 +362,7 @@ const ConfigSchema = z.object({
 });
 
 // Result types for composable error handling
-const loadConfig = async (
-  path: string,
-  fs: FileSystem,
-): Promise<Result<Config>> => {
+const loadConfig = async (path: string, fs: FileSystem): Promise<Result<Config>> => {
   const fileResult = await fs.readFile(path);
   if (!fileResult.success) return fileResult;
 

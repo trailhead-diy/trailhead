@@ -109,7 +109,7 @@ export class SemVer {
     public readonly major: number,
     public readonly minor: number,
     public readonly patch: number,
-    public readonly prerelease?: string,
+    public readonly prerelease?: string
   ) {}
 
   static parse(version: string): Result<SemVer, CLIError> {
@@ -125,12 +125,7 @@ export class SemVer {
 
     const [, major, minor, patch, prerelease] = match;
     return Ok(
-      new SemVer(
-        parseInt(major, 10),
-        parseInt(minor, 10),
-        parseInt(patch, 10),
-        prerelease,
-      ),
+      new SemVer(parseInt(major, 10), parseInt(minor, 10), parseInt(patch, 10), prerelease)
     );
   }
 
@@ -155,7 +150,7 @@ export class SemVer {
  * Validate and sanitize package manager name
  */
 const validatePackageManagerName = (
-  name: string,
+  name: string
 ): Result<(typeof ALLOWED_MANAGERS)[number], CLIError> => {
   // Remove any potentially dangerous characters
   const sanitized = name.toLowerCase().replace(/[^a-z]/g, '');
@@ -176,7 +171,7 @@ const validatePackageManagerName = (
  */
 const execWithTimeout = (
   command: string,
-  options: ExecSyncOptions & { timeout?: number },
+  options: ExecSyncOptions & { timeout?: number }
 ): Result<string, CLIError> => {
   try {
     const output = execSync(command, {
@@ -205,10 +200,7 @@ const execWithTimeout = (
 /**
  * Check if version meets minimum requirement
  */
-const meetsVersionRequirement = (
-  version: string,
-  required: string,
-): Result<boolean, CLIError> => {
+const meetsVersionRequirement = (version: string, required: string): Result<boolean, CLIError> => {
   const versionResult = SemVer.parse(version);
   if (!versionResult.success) {
     return Err(versionResult.error);
@@ -226,9 +218,7 @@ const meetsVersionRequirement = (
  * Detect available package manager with preference order: pnpm > npm
  * Results are cached for performance. Use FORCE_PACKAGE_MANAGER env var to override.
  */
-export const detectPackageManager = (
-  options?: DetectOptions,
-): Result<PackageManager, CLIError> => {
+export const detectPackageManager = (options?: DetectOptions): Result<PackageManager, CLIError> => {
   const cache = options?.cache ?? defaultCache;
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT_MS;
 
@@ -361,7 +351,7 @@ export const detectPackageManager = (
  * Get configuration for a specific package manager
  */
 const getManagerConfig = (
-  name: (typeof ALLOWED_MANAGERS)[number],
+  name: (typeof ALLOWED_MANAGERS)[number]
 ): Omit<PackageManager, 'version'> => {
   const configs = {
     pnpm: {
@@ -387,7 +377,7 @@ const getManagerConfig = (
 export const getRunCommand = (
   scriptName: string,
   args?: string[],
-  options?: DetectOptions,
+  options?: DetectOptions
 ): Result<string, CLIError> => {
   const managerResult = detectPackageManager(options);
   if (!managerResult.success) {
@@ -405,7 +395,7 @@ export const getRunCommand = (
 export const execPackageManagerCommand = (
   command: string,
   execOptions?: ExecSyncOptions,
-  detectOptions?: DetectOptions,
+  detectOptions?: DetectOptions
 ): Result<string, CLIError> => {
   const managerResult = detectPackageManager(detectOptions);
   if (!managerResult.success) {
@@ -415,8 +405,7 @@ export const execPackageManagerCommand = (
   return execWithTimeout(command, {
     encoding: 'utf8',
     ...execOptions,
-    timeout:
-      execOptions?.timeout ?? detectOptions?.timeout ?? DEFAULT_TIMEOUT_MS,
+    timeout: execOptions?.timeout ?? detectOptions?.timeout ?? DEFAULT_TIMEOUT_MS,
   });
 };
 
@@ -424,7 +413,7 @@ export const execPackageManagerCommand = (
  * Get information about the detected package manager
  */
 export const getPackageManagerInfo = (
-  options?: DetectOptions,
+  options?: DetectOptions
 ): Result<PackageManager, CLIError> => {
   return detectPackageManager(options);
 };

@@ -149,11 +149,7 @@ describe('git-command', () => {
 
       mockSpawn.mockReturnValue(mockChild as any);
 
-      const result = await executeGitCommandSimple([
-        'rev-parse',
-        '--abbrev-ref',
-        'HEAD',
-      ]);
+      const result = await executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD']);
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -228,9 +224,7 @@ describe('git-command', () => {
         kill: vi.fn(),
       };
 
-      mockSpawn
-        .mockReturnValueOnce(mockChild1 as any)
-        .mockReturnValueOnce(mockChild2 as any);
+      mockSpawn.mockReturnValueOnce(mockChild1 as any).mockReturnValueOnce(mockChild2 as any);
 
       const result = await validateGitEnvironment();
 
@@ -258,9 +252,7 @@ describe('git-command', () => {
 
       expect(!result.success).toBe(true);
       if (!result.success) {
-        expect(result.error.message).toBe(
-          'Git is not available or not installed',
-        );
+        expect(result.error.message).toBe('Git is not available or not installed');
       }
     });
 
@@ -301,17 +293,13 @@ describe('git-command', () => {
         kill: vi.fn(),
       };
 
-      mockSpawn
-        .mockReturnValueOnce(mockChild1 as any)
-        .mockReturnValueOnce(mockChild2 as any);
+      mockSpawn.mockReturnValueOnce(mockChild1 as any).mockReturnValueOnce(mockChild2 as any);
 
       const result = await validateGitEnvironment();
 
       expect(!result.success).toBe(true);
       if (!result.success) {
-        expect(result.error.message).toBe(
-          'Current directory is not a git repository',
-        );
+        expect(result.error.message).toBe('Current directory is not a git repository');
       }
     });
   });

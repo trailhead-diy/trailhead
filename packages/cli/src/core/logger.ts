@@ -78,10 +78,7 @@ export function createSilentLogger(): Logger {
  * logger.info('Starting'); // Outputs: [BUILD] Starting
  * ```
  */
-export function createPrefixedLogger(
-  prefix: string,
-  baseLogger: Logger,
-): Logger {
+export function createPrefixedLogger(prefix: string, baseLogger: Logger): Logger {
   return {
     info: (message: string) => baseLogger.info(`[${prefix}] ${message}`),
     success: (message: string) => baseLogger.success(`[${prefix}] ${message}`),
@@ -158,7 +155,7 @@ export interface LogMessage {
  * ```
  */
 export function formatLogMessages(messages: LogMessage[]): string[] {
-  return messages.map((msg) => {
+  return messages.map(msg => {
     const timestamp = msg.timestamp.toISOString();
     const level = msg.level.toUpperCase().padEnd(7);
     return `[${timestamp}] ${level} ${msg.message}`;
@@ -178,9 +175,9 @@ export function formatLogMessages(messages: LogMessage[]): string[] {
  */
 export function filterLogMessages(
   messages: LogMessage[],
-  levels: LogMessage['level'][],
+  levels: LogMessage['level'][]
 ): LogMessage[] {
-  return messages.filter((msg) => levels.includes(msg.level));
+  return messages.filter(msg => levels.includes(msg.level));
 }
 
 /**
@@ -199,16 +196,14 @@ export function filterLogMessages(
  */
 export function createFileLogger(
   filePath: string,
-  baseLogger: Logger = createDefaultLogger(),
+  baseLogger: Logger = createDefaultLogger()
 ): Logger {
   const fs = require('fs');
   const stream = fs.createWriteStream(filePath, { flags: 'a' });
 
   const writeToFile = (level: string, message: string) => {
     const timestamp = new Date().toISOString();
-    stream.write(
-      `[${timestamp}] ${level.toUpperCase().padEnd(7)} ${message}\n`,
-    );
+    stream.write(`[${timestamp}] ${level.toUpperCase().padEnd(7)} ${message}\n`);
   };
 
   return {

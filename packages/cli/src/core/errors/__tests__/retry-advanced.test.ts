@@ -133,9 +133,7 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const customBackoff = vi
-        .fn()
-        .mockImplementation((attempt) => attempt * 50);
+      const customBackoff = vi.fn().mockImplementation(attempt => attempt * 50);
       const operation = vi
         .fn()
         .mockResolvedValueOnce(Err(error))
@@ -273,7 +271,7 @@ describe('Advanced Retry Functionality', () => {
       expect(breaker.getState()).toBe('open');
 
       // Wait for reset timeout
-      await new Promise((resolve) => setTimeout(resolve, 110));
+      await new Promise(resolve => setTimeout(resolve, 110));
 
       // Should allow attempt in half-open state
       const result = await breaker.execute(operation);
@@ -326,7 +324,7 @@ describe('Advanced Retry Functionality', () => {
         callCount++;
         // First call takes longer than timeout
         if (callCount === 1) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
         return Ok('success');
       });
@@ -340,7 +338,7 @@ describe('Advanced Retry Functionality', () => {
 
     it('should complete within timeout', async () => {
       const operation = vi.fn().mockImplementation(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 10));
         return Ok('quick success');
       });
 
@@ -392,10 +390,7 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const op1 = vi
-        .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('op1'));
+      const op1 = vi.fn().mockResolvedValueOnce(Err(error)).mockResolvedValueOnce(Ok('op1'));
 
       const op2 = vi.fn().mockResolvedValue(Ok('op2'));
 

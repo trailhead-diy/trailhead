@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: "Understanding Trailhead's Documentation Philosophy"
-description: "The principles, structure, and quality standards that make Trailhead documentation exceptional"
+description: 'The principles, structure, and quality standards that make Trailhead documentation exceptional'
 related:
   - /docs/reference/documentation-standards.md
   - /docs/how-to/contributing.md

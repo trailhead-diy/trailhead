@@ -86,7 +86,7 @@ describe('Error Utils', () => {
   describe('map', () => {
     it('should transform successful results', () => {
       const result = Ok(5);
-      const mapped = map(result, (x) => x * 2);
+      const mapped = map(result, x => x * 2);
 
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe(10);
@@ -94,7 +94,7 @@ describe('Error Utils', () => {
 
     it('should pass through error results unchanged', () => {
       const result = Err('error');
-      const mapped = map(result, (x) => x * 2);
+      const mapped = map(result, x => x * 2);
 
       expect(mapped.success).toBe(false);
       expect(mapped.error).toBe('error');
@@ -102,7 +102,7 @@ describe('Error Utils', () => {
 
     it('should handle type transformations', () => {
       const result = Ok(42);
-      const mapped = map(result, (x) => x.toString());
+      const mapped = map(result, x => x.toString());
 
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe('42');
@@ -113,7 +113,7 @@ describe('Error Utils', () => {
   describe('mapErr', () => {
     it('should transform error results', () => {
       const result = Err('network error');
-      const mapped = mapErr(result, (e) => `Failed: ${e}`);
+      const mapped = mapErr(result, e => `Failed: ${e}`);
 
       expect(mapped.success).toBe(false);
       expect(mapped.error).toBe('Failed: network error');
@@ -121,7 +121,7 @@ describe('Error Utils', () => {
 
     it('should pass through successful results unchanged', () => {
       const result = Ok(42);
-      const mapped = mapErr(result, (e) => `Failed: ${e}`);
+      const mapped = mapErr(result, e => `Failed: ${e}`);
 
       expect(mapped.success).toBe(true);
       expect(mapped.value).toBe(42);
@@ -131,9 +131,7 @@ describe('Error Utils', () => {
   describe('chain', () => {
     it('should chain successful operations', () => {
       const result = Ok(5);
-      const chained = chain(result, (x) =>
-        x > 0 ? Ok(x * 2) : Err('negative'),
-      );
+      const chained = chain(result, x => (x > 0 ? Ok(x * 2) : Err('negative')));
 
       expect(chained.success).toBe(true);
       expect(chained.value).toBe(10);
@@ -141,9 +139,7 @@ describe('Error Utils', () => {
 
     it('should stop chain on first error', () => {
       const result = Ok(-5);
-      const chained = chain(result, (x) =>
-        x > 0 ? Ok(x * 2) : Err('negative'),
-      );
+      const chained = chain(result, x => (x > 0 ? Ok(x * 2) : Err('negative')));
 
       expect(chained.success).toBe(false);
       expect(chained.error).toBe('negative');
@@ -151,7 +147,7 @@ describe('Error Utils', () => {
 
     it('should pass through initial errors', () => {
       const result = Err('initial error');
-      const chained = chain(result, (x) => Ok(x * 2));
+      const chained = chain(result, x => Ok(x * 2));
 
       expect(chained.success).toBe(false);
       expect(chained.error).toBe('initial error');
@@ -159,7 +155,7 @@ describe('Error Utils', () => {
 
     it('should handle type transformations in chain', () => {
       const result = Ok(42);
-      const chained = chain(result, (x) => Ok(x.toString()));
+      const chained = chain(result, x => Ok(x.toString()));
 
       expect(chained.success).toBe(true);
       expect(chained.value).toBe('42');
@@ -175,9 +171,7 @@ describe('Error Utils', () => {
 
     it('should throw with custom message for error results', () => {
       const result = Err('original error');
-      expect(() => expectResult(result, 'Custom error message')).toThrow(
-        'Custom error message',
-      );
+      expect(() => expectResult(result, 'Custom error message')).toThrow('Custom error message');
     });
   });
 
@@ -241,8 +235,8 @@ describe('Error Utils', () => {
     it('should call ok handler for successful results', () => {
       const result = Ok(42);
       const message = match(result, {
-        ok: (value) => `Success: ${value}`,
-        err: (error) => `Error: ${error}`,
+        ok: value => `Success: ${value}`,
+        err: error => `Error: ${error}`,
       });
 
       expect(message).toBe('Success: 42');
@@ -251,8 +245,8 @@ describe('Error Utils', () => {
     it('should call err handler for error results', () => {
       const result = Err('failed');
       const message = match(result, {
-        ok: (value) => `Success: ${value}`,
-        err: (error) => `Error: ${error}`,
+        ok: value => `Success: ${value}`,
+        err: error => `Error: ${error}`,
       });
 
       expect(message).toBe('Error: failed');
@@ -263,12 +257,12 @@ describe('Error Utils', () => {
       const errorResult = Err('failed');
 
       const successCount = match(successResult, {
-        ok: (value) => value * 2,
+        ok: value => value * 2,
         err: () => 0,
       });
 
       const errorCount = match(errorResult, {
-        ok: (value) => value * 2,
+        ok: value => value * 2,
         err: () => 0,
       });
 
@@ -333,7 +327,7 @@ describe('Error Utils', () => {
     it('should use custom error mapper', () => {
       const result = tryCatch(
         () => JSON.parse('invalid json'),
-        (error) => `Parse failed: ${(error as Error).message}`,
+        error => `Parse failed: ${(error as Error).message}`
       );
 
       expect(result.success).toBe(false);
@@ -383,7 +377,7 @@ describe('Error Utils', () => {
         async () => {
           throw new Error('network failure');
         },
-        (error) => `Network error: ${(error as Error).message}`,
+        error => `Network error: ${(error as Error).message}`
       );
 
       expect(result.success).toBe(false);
@@ -435,10 +429,7 @@ describe('Error Utils', () => {
       expect(result.value).toBe(84);
 
       // Test failure in chain
-      const failResult = chain(
-        chain(parseNumber('-5'), validatePositive),
-        double,
-      );
+      const failResult = chain(chain(parseNumber('-5'), validatePositive), double);
 
       expect(failResult.success).toBe(false);
       expect(failResult.error).toBe('Not positive');
@@ -448,8 +439,8 @@ describe('Error Utils', () => {
       const result = Ok(10);
 
       const processed = chain(
-        map(result, (x) => x.toString()),
-        (str) => (str.length > 1 ? Ok(str) : Err('Too short')),
+        map(result, x => x.toString()),
+        str => (str.length > 1 ? Ok(str) : Err('Too short'))
       );
 
       expect(processed.success).toBe(true);
@@ -466,11 +457,7 @@ describe('Error Utils', () => {
       expect(allSuccess.success).toBe(true);
       expect(allSuccess.value).toEqual(['User 1', 'User 2', 'User 3']);
 
-      const withFailure = all([
-        getUserData(1),
-        getUserData(-1),
-        getUserData(3),
-      ]);
+      const withFailure = all([getUserData(1), getUserData(-1), getUserData(3)]);
 
       expect(withFailure.success).toBe(false);
       expect(withFailure.error).toBe('Invalid ID: -1');

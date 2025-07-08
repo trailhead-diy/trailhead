@@ -15,9 +15,7 @@ describe('git integration', () => {
     isGitAvailable = gitValidation.success;
 
     if (!isGitAvailable) {
-      console.log(
-        '⚠️ Skipping git integration tests - git not available or not in git repository',
-      );
+      console.log('⚠️ Skipping git integration tests - git not available or not in git repository');
     }
   });
 
@@ -36,9 +34,7 @@ describe('git integration', () => {
         expect(result.value).toMatch(/git version \d+\.\d+\.\d+/);
 
         // Extract version number and ensure it's 2.25+ (modern git)
-        const versionMatch = result.value.match(
-          /git version (\d+)\.(\d+)\.(\d+)/,
-        );
+        const versionMatch = result.value.match(/git version (\d+)\.(\d+)\.(\d+)/);
         if (versionMatch) {
           const [, major, minor] = versionMatch.map(Number);
           const version = major * 100 + minor;
@@ -133,11 +129,7 @@ describe('git integration', () => {
         return;
       }
 
-      const result = await executeGitCommandSimple([
-        'rev-parse',
-        '--abbrev-ref',
-        'HEAD',
-      ]);
+      const result = await executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD']);
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -198,9 +190,7 @@ describe('git integration', () => {
       // Should detect that /tmp is not a git repository or git is not available
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.message).toMatch(
-          /not a git repository|git is not available/i,
-        );
+        expect(result.error.message).toMatch(/not a git repository|git is not available/i);
       }
     });
   });

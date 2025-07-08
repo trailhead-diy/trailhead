@@ -41,11 +41,11 @@ export function withSpinner<T>(text: string, fn: () => Promise<T>): Promise<T> {
   spinner.start();
 
   return fn()
-    .then((result) => {
+    .then(result => {
       spinner.success();
       return result;
     })
-    .catch((error) => {
+    .catch(error => {
       spinner.error();
       throw error;
     });

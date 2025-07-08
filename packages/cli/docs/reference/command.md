@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Command Module API Reference"
-description: "Command creation, execution patterns, and CLI building utilities"
+title: 'Command Module API Reference'
+description: 'Command creation, execution patterns, and CLI building utilities'
 related:
   - /docs/reference/api/core
   - /docs/reference/api/types
@@ -23,21 +23,15 @@ Utilities for creating and executing CLI commands with options, subcommands, and
 ## Import
 
 ```typescript
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type {
-  Command,
-  CommandContext,
-} from "@esteban-url/trailhead-cli/command";
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command';
 ```
 
 ## Basic Usage
 
 ```typescript
-import { createCommand } from "@esteban-url/trailhead-cli/command";
-import type {
-  Command,
-  CommandContext,
-} from "@esteban-url/trailhead-cli/command";
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command';
 ```
 
 ## Command Creation
@@ -48,22 +42,22 @@ Creates a new command with the specified configuration.
 
 ```typescript
 const command = createCommand({
-  name: "deploy",
-  description: "Deploy your application",
+  name: 'deploy',
+  description: 'Deploy your application',
   options: [
     {
-      name: "environment",
-      alias: "e",
-      type: "string",
+      name: 'environment',
+      alias: 'e',
+      type: 'string',
       required: true,
-      description: "Target environment",
+      description: 'Target environment',
     },
     {
-      name: "force",
-      alias: "f",
-      type: "boolean",
+      name: 'force',
+      alias: 'f',
+      type: 'boolean',
       default: false,
-      description: "Force deployment",
+      description: 'Force deployment',
     },
   ],
   action: async (options, context) => {
@@ -96,7 +90,7 @@ interface CommandOption {
   alias?: string; // Short alias (-n)
   flags?: string; // Commander.js style flags (e.g., '-v, --verbose')
   description: string; // Help text
-  type?: "string" | "boolean" | "number";
+  type?: 'string' | 'boolean' | 'number';
   required?: boolean;
   default?: any;
   choices?: string[]; // Allowed values
@@ -120,25 +114,25 @@ interface CommandContext {
 
 ```typescript
 const command = createCommand({
-  name: "create",
-  description: "Create a new project",
+  name: 'create',
+  description: 'Create a new project',
   options: [
     {
-      name: "name",
-      type: "string",
+      name: 'name',
+      type: 'string',
       required: true,
-      description: "Project name",
+      description: 'Project name',
     },
     {
-      name: "template",
-      type: "string",
-      choices: ["basic", "advanced"],
-      description: "Project template",
+      name: 'template',
+      type: 'string',
+      choices: ['basic', 'advanced'],
+      description: 'Project template',
     },
   ],
-  validate: (options) => {
+  validate: options => {
     if (!/^[a-z0-9-]+$/.test(options.name)) {
-      return Err(new Error("Name must be lowercase with hyphens"));
+      return Err(new Error('Name must be lowercase with hyphens'));
     }
     return Ok(options);
   },
@@ -153,21 +147,21 @@ const command = createCommand({
 
 ```typescript
 const userCommand = createCommand({
-  name: "user",
-  description: "Manage users",
+  name: 'user',
+  description: 'Manage users',
   subcommands: [
     createCommand({
-      name: "list",
-      description: "List all users",
+      name: 'list',
+      description: 'List all users',
       action: async (_, context) => {
-        context.logger.info("Users: Alice, Bob");
+        context.logger.info('Users: Alice, Bob');
         return Ok(undefined);
       },
     }),
     createCommand({
-      name: "add",
-      description: "Add a user",
-      options: [{ name: "name", required: true, description: "User name" }],
+      name: 'add',
+      description: 'Add a user',
+      options: [{ name: 'name', required: true, description: 'User name' }],
       action: async (options, context) => {
         context.logger.success(`Added user: ${options.name}`);
         return Ok(undefined);
@@ -184,28 +178,28 @@ const userCommand = createCommand({
 Break complex operations into phases with progress tracking.
 
 ```typescript
-import { executeWithPhases } from "@esteban-url/trailhead-cli/command";
-import type { CommandPhase } from "@esteban-url/trailhead-cli/command";
+import { executeWithPhases } from '@esteban-url/trailhead-cli/command';
+import type { CommandPhase } from '@esteban-url/trailhead-cli/command';
 
 const phases: CommandPhase<BuildData>[] = [
   {
-    name: "Validate",
+    name: 'Validate',
     execute: async (data, context) => {
-      context.logger.info("Validating configuration...");
+      context.logger.info('Validating configuration...');
       return Ok({ ...data, validated: true });
     },
   },
   {
-    name: "Build",
+    name: 'Build',
     execute: async (data, context) => {
-      context.logger.info("Building project...");
+      context.logger.info('Building project...');
       return Ok({ ...data, built: true });
     },
   },
   {
-    name: "Deploy",
+    name: 'Deploy',
     execute: async (data, context) => {
-      context.logger.info("Deploying...");
+      context.logger.info('Deploying...');
       return Ok({ ...data, deployed: true });
     },
   },
@@ -214,7 +208,7 @@ const phases: CommandPhase<BuildData>[] = [
 const result = await executeWithPhases(
   phases,
   { validated: false, built: false, deployed: false },
-  context,
+  context
 );
 ```
 
@@ -223,7 +217,7 @@ const result = await executeWithPhases(
 Execute commands with dry-run preview capability.
 
 ```typescript
-import { executeWithDryRun } from "@esteban-url/trailhead-cli/command";
+import { executeWithDryRun } from '@esteban-url/trailhead-cli/command';
 
 interface ProcessOptions {
   dryRun?: boolean;
@@ -232,34 +226,32 @@ interface ProcessOptions {
 }
 
 const command = createCommand<ProcessOptions>({
-  name: "transform",
+  name: 'transform',
   options: [
     {
-      flags: "--dry-run",
-      description: "Preview changes without executing",
-      type: "boolean",
+      flags: '--dry-run',
+      description: 'Preview changes without executing',
+      type: 'boolean',
     },
     {
-      flags: "--input <file>",
-      description: "Input file",
-      type: "string",
+      flags: '--input <file>',
+      description: 'Input file',
+      type: 'string',
       required: true,
     },
     {
-      flags: "--output <file>",
-      description: "Output file",
-      type: "string",
+      flags: '--output <file>',
+      description: 'Output file',
+      type: 'string',
       required: true,
     },
   ],
   action: async (options, context) => {
     return executeWithDryRun(
       options,
-      async (config) => {
+      async config => {
         if (config.dryRun) {
-          context.logger.info(
-            `Would transform ${config.input} -> ${config.output}`,
-          );
+          context.logger.info(`Would transform ${config.input} -> ${config.output}`);
           return Ok(undefined);
         }
 
@@ -268,7 +260,7 @@ const command = createCommand<ProcessOptions>({
         return Ok(undefined);
       },
       context,
-      "This will overwrite the output file. Continue?",
+      'This will overwrite the output file. Continue?'
     );
   },
 });
@@ -277,17 +269,17 @@ const command = createCommand<ProcessOptions>({
 ### Interactive Execution
 
 ```typescript
-import { executeInteractive } from "@esteban-url/trailhead-cli/command";
+import { executeInteractive } from '@esteban-url/trailhead-cli/command';
 
 const result = await executeInteractive({
   context,
-  confirmMessage: "This will delete all data. Continue?",
+  confirmMessage: 'This will delete all data. Continue?',
   execute: async () => {
     // Dangerous operation
     return Ok(undefined);
   },
   onCancel: () => {
-    context.logger.info("Operation cancelled");
+    context.logger.info('Operation cancelled');
     return Ok(undefined);
   },
 });
@@ -300,27 +292,27 @@ const result = await executeInteractive({
 Show formatted results and configuration summaries.
 
 ```typescript
-import { displaySummary } from "@esteban-url/trailhead-cli/command";
+import { displaySummary } from '@esteban-url/trailhead-cli/command';
 
 const command = createCommand({
-  name: "status",
+  name: 'status',
   action: async (options, context) => {
     // Show configuration summary
     displaySummary(
-      "Project Configuration",
+      'Project Configuration',
       [
-        { label: "Project Name", value: "my-app" },
-        { label: "Version", value: "1.0.0" },
-        { label: "Environment", value: "production" },
-        { label: "Hot Reload", value: true },
-        { label: "Source Maps", value: false },
+        { label: 'Project Name', value: 'my-app' },
+        { label: 'Version', value: '1.0.0' },
+        { label: 'Environment', value: 'production' },
+        { label: 'Hot Reload', value: true },
+        { label: 'Source Maps', value: false },
       ],
       context,
       [
-        { label: "Total Files", value: 42 },
-        { label: "Bundle Size", value: "2.3 MB" },
-        { label: "Build Time", value: "1.2s" },
-      ],
+        { label: 'Total Files', value: 42 },
+        { label: 'Bundle Size', value: '2.3 MB' },
+        { label: 'Build Time', value: '1.2s' },
+      ]
     );
 
     return Ok(undefined);
@@ -355,7 +347,7 @@ interface ProgressOptions {
 ### Option Types
 
 ```typescript
-type CommandOptionType = "string" | "boolean" | "number";
+type CommandOptionType = 'string' | 'boolean' | 'number';
 
 interface ParsedOptions {
   [key: string]: string | boolean | number | undefined;
@@ -368,7 +360,7 @@ Commands should return Result types:
 
 ```typescript
 const command = createCommand({
-  name: "risky",
+  name: 'risky',
   action: async (options, context) => {
     try {
       await riskyOperation();

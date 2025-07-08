@@ -14,9 +14,7 @@ export interface TestContextOptions {
 /**
  * Create a test context for command testing
  */
-export function createTestContext(
-  options: TestContextOptions = {},
-): CommandContext {
+export function createTestContext(options: TestContextOptions = {}): CommandContext {
   return {
     projectRoot: options.projectRoot ?? '/test/project',
     logger: options.logger ?? mockLogger(),
@@ -31,7 +29,7 @@ export function createTestContext(
  */
 export function createTestContextWithFiles(
   files: Record<string, string>,
-  options: TestContextOptions = {},
+  options: TestContextOptions = {}
 ): CommandContext {
   return createTestContext({
     ...options,

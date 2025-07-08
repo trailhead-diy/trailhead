@@ -6,9 +6,7 @@ import os from 'os';
  * Create a temporary directory for testing
  */
 export async function createTestTempDir(): Promise<string> {
-  const tempDir = await fs.mkdtemp(
-    path.join(os.tmpdir(), 'esteban-url-trailhead-cli-test-'),
-  );
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'esteban-url-trailhead-cli-test-'));
   return tempDir;
 }
 
@@ -29,7 +27,7 @@ export async function cleanup(tempDir: string): Promise<void> {
 export async function createTestFile(
   tempDir: string,
   fileName: string,
-  content: string,
+  content: string
 ): Promise<string> {
   const filePath = path.join(tempDir, fileName);
   await fs.writeFile(filePath, content);
@@ -41,7 +39,7 @@ export async function createTestFile(
  */
 export async function createTestStructure(
   tempDir: string,
-  structure: Record<string, string>,
+  structure: Record<string, string>
 ): Promise<void> {
   for (const [filePath, content] of Object.entries(structure)) {
     const fullPath = path.join(tempDir, filePath);

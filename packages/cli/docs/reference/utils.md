@@ -1,7 +1,7 @@
 ---
 type: reference
-title: "Utils Module API Reference"
-description: "Styling, logging, spinners, and statistics tracking utilities for CLI applications"
+title: 'Utils Module API Reference'
+description: 'Styling, logging, spinners, and statistics tracking utilities for CLI applications'
 related:
   - /docs/reference/api/command
   - /docs/reference/api/core
@@ -30,7 +30,7 @@ import {
   warning,
   createSpinner,
   createStats,
-} from "@esteban-url/trailhead-cli/utils";
+} from '@esteban-url/trailhead-cli/utils';
 ```
 
 ## Basic Usage
@@ -43,7 +43,7 @@ import {
   warning,
   createSpinner,
   createStats,
-} from "@esteban-url/trailhead-cli/utils";
+} from '@esteban-url/trailhead-cli/utils';
 ```
 
 ## Terminal Styling
@@ -53,13 +53,13 @@ import {
 Full [chalk](https://github.com/chalk/chalk) library for terminal styling.
 
 ```typescript
-import { chalk } from "@esteban-url/trailhead-cli/utils";
+import { chalk } from '@esteban-url/trailhead-cli/utils';
 
-console.log(chalk.blue("Information"));
-console.log(chalk.red.bold("Error!"));
-console.log(chalk.green.underline("Success"));
-console.log(chalk.rgb(123, 45, 67).underline("Custom color"));
-console.log(chalk.hex("#DEADED").bgHex("#000000")("Hex colors"));
+console.log(chalk.blue('Information'));
+console.log(chalk.red.bold('Error!'));
+console.log(chalk.green.underline('Success'));
+console.log(chalk.rgb(123, 45, 67).underline('Custom color'));
+console.log(chalk.hex('#DEADED').bgHex('#000000')('Hex colors'));
 ```
 
 ### Semantic Color Functions
@@ -77,18 +77,18 @@ import {
   dim, // Dimmed text
   italic, // Italic text
   underline, // Underlined text
-} from "@esteban-url/trailhead-cli/utils";
+} from '@esteban-url/trailhead-cli/utils';
 
 // Usage
-console.log(success("✓ Operation completed"));
-console.log(error("✗ Operation failed"));
-console.log(warning("⚠ Check configuration"));
-console.log(info("ℹ Processing..."));
-console.log(muted("Debug: Internal state"));
+console.log(success('✓ Operation completed'));
+console.log(error('✗ Operation failed'));
+console.log(warning('⚠ Check configuration'));
+console.log(info('ℹ Processing...'));
+console.log(muted('Debug: Internal state'));
 
 // Combine styles
-console.log(bold(success("Important success!")));
-console.log(dim(muted("Less important info")));
+console.log(bold(success('Important success!')));
+console.log(dim(muted('Less important info')));
 ```
 
 ## Spinners
@@ -98,16 +98,16 @@ console.log(dim(muted("Less important info")));
 Create loading spinners for long-running operations.
 
 ```typescript
-import { createSpinner } from "@esteban-url/trailhead-cli/utils";
+import { createSpinner } from '@esteban-url/trailhead-cli/utils';
 
-const spinner = createSpinner("Loading data...");
+const spinner = createSpinner('Loading data...');
 
 try {
   // Long operation
   await fetchData();
-  spinner.succeed("Data loaded successfully");
+  spinner.succeed('Data loaded successfully');
 } catch (err) {
-  spinner.fail("Failed to load data");
+  spinner.fail('Failed to load data');
 }
 ```
 
@@ -132,12 +132,12 @@ interface Spinner {
 Execute async operations with automatic spinner management.
 
 ```typescript
-import { withSpinner } from "@esteban-url/trailhead-cli/utils";
+import { withSpinner } from '@esteban-url/trailhead-cli/utils';
 
 const result = await withSpinner({
-  text: "Processing files...",
-  successText: "Files processed",
-  failText: "Processing failed",
+  text: 'Processing files...',
+  successText: 'Files processed',
+  failText: 'Processing failed',
   execute: async () => {
     // Your async operation
     return await processFiles();
@@ -149,27 +149,27 @@ const result = await withSpinner({
 
 ```typescript
 // Using ora directly for more control
-import { ora } from "@esteban-url/trailhead-cli/utils";
+import { ora } from '@esteban-url/trailhead-cli/utils';
 
 const spinner = ora({
-  text: "Loading",
-  spinner: "dots",
-  color: "cyan",
+  text: 'Loading',
+  spinner: 'dots',
+  color: 'cyan',
 });
 
 spinner.start();
 
 // Update text
-spinner.text = "Loading users...";
-spinner.color = "yellow";
+spinner.text = 'Loading users...';
+spinner.color = 'yellow';
 
 // Change spinner style
-spinner.spinner = "line";
+spinner.spinner = 'line';
 
 // Stop with symbol
 spinner.stopAndPersist({
-  symbol: "🚀",
-  text: "Launched!",
+  symbol: '🚀',
+  text: 'Launched!',
 });
 ```
 
@@ -180,19 +180,19 @@ spinner.stopAndPersist({
 Track operation statistics.
 
 ```typescript
-import { createStats } from "@esteban-url/trailhead-cli/utils";
+import { createStats } from '@esteban-url/trailhead-cli/utils';
 
 const stats = createStats();
 
 // Track operations
-stats.increment("files_processed");
-stats.increment("files_processed", 5);
-stats.add("bytes_read", 1024);
+stats.increment('files_processed');
+stats.increment('files_processed', 5);
+stats.add('bytes_read', 1024);
 
 // Track timing
-stats.startTimer("processing");
+stats.startTimer('processing');
 // ... do work
-stats.endTimer("processing");
+stats.endTimer('processing');
 
 // Get statistics
 const summary = stats.getSummary();
@@ -224,7 +224,7 @@ interface StatsSummary {
 Format statistics for display.
 
 ```typescript
-import { formatStats } from "@esteban-url/trailhead-cli/utils";
+import { formatStats } from '@esteban-url/trailhead-cli/utils';
 
 const summary = stats.getSummary();
 const formatted = formatStats(summary);
@@ -242,13 +242,13 @@ console.log(formatted);
 Update statistics based on operation results.
 
 ```typescript
-import { updateStats } from "@esteban-url/trailhead-cli/utils";
+import { updateStats } from '@esteban-url/trailhead-cli/utils';
 
 const stats = createStats();
 
 for (const file of files) {
   const result = await processFile(file);
-  updateStats(stats, "file_processing", result);
+  updateStats(stats, 'file_processing', result);
 }
 
 // Automatically tracks successes and failures
@@ -264,7 +264,7 @@ console.log(`Failed: ${summary.file_processing_error}`);
 Get formatted elapsed time.
 
 ```typescript
-import { getElapsedTime } from "@esteban-url/trailhead-cli/utils";
+import { getElapsedTime } from '@esteban-url/trailhead-cli/utils';
 
 const start = Date.now();
 
@@ -281,10 +281,10 @@ console.log(`Completed in ${getElapsedTime(start)}`);
 Remove undefined values from objects.
 
 ```typescript
-import { filterUndefined } from "@esteban-url/trailhead-cli/utils";
+import { filterUndefined } from '@esteban-url/trailhead-cli/utils';
 
 const options = {
-  name: "test",
+  name: 'test',
   value: undefined,
   count: 0,
   enabled: false,
@@ -299,11 +299,11 @@ const filtered = filterUndefined(options);
 Merge options with defaults.
 
 ```typescript
-import { mergeOptionsWithDefaults } from "@esteban-url/trailhead-cli/utils";
+import { mergeOptionsWithDefaults } from '@esteban-url/trailhead-cli/utils';
 
 const defaults = {
   port: 3000,
-  host: "localhost",
+  host: 'localhost',
   verbose: false,
 };
 
@@ -321,18 +321,15 @@ const merged = mergeOptionsWithDefaults(options, defaults);
 Process and validate command options.
 
 ```typescript
-import { processCommandOptions } from "@esteban-url/trailhead-cli/utils";
+import { processCommandOptions } from '@esteban-url/trailhead-cli/utils';
 
 const schema = [
-  { name: "port", type: "number", default: 3000 },
-  { name: "host", type: "string", default: "localhost" },
-  { name: "debug", type: "boolean", default: false },
+  { name: 'port', type: 'number', default: 3000 },
+  { name: 'host', type: 'string', default: 'localhost' },
+  { name: 'debug', type: 'boolean', default: false },
 ];
 
-const processed = processCommandOptions(
-  { port: "8080", debug: "true" },
-  schema,
-);
+const processed = processCommandOptions({ port: '8080', debug: 'true' }, schema);
 // { port: 8080, host: "localhost", debug: true }
 ```
 
@@ -342,23 +339,23 @@ const processed = processCommandOptions(
 
 ```typescript
 const stats = createStats();
-const spinner = createSpinner("Processing files...");
+const spinner = createSpinner('Processing files...');
 
-stats.startTimer("total");
+stats.startTimer('total');
 
 for (const file of files) {
   spinner.text = `Processing ${file}...`;
 
   const result = await processFile(file);
-  updateStats(stats, "files", result);
+  updateStats(stats, 'files', result);
 
   if (result.success) {
-    stats.add("bytes_processed", result.value.size);
+    stats.add('bytes_processed', result.value.size);
   }
 }
 
-stats.endTimer("total");
-spinner.succeed("Processing complete");
+stats.endTimer('total');
+spinner.succeed('Processing complete');
 
 console.log(formatStats(stats.getSummary()));
 ```
@@ -368,14 +365,14 @@ console.log(formatStats(stats.getSummary()));
 ```typescript
 function displayResults(results: any[], options: DisplayOptions) {
   const processed = processCommandOptions(options, [
-    { name: "color", type: "boolean", default: true },
-    { name: "verbose", type: "boolean", default: false },
+    { name: 'color', type: 'boolean', default: true },
+    { name: 'verbose', type: 'boolean', default: false },
   ]);
 
   if (processed.color) {
     console.log(success(`✓ Found ${results.length} results`));
 
-    results.forEach((r) => {
+    results.forEach(r => {
       console.log(info(`  - ${r.name}`));
       if (processed.verbose) {
         console.log(muted(`    ${r.description}`));
@@ -384,7 +381,7 @@ function displayResults(results: any[], options: DisplayOptions) {
   } else {
     // Plain output
     console.log(`Found ${results.length} results`);
-    results.forEach((r) => console.log(`  - ${r.name}`));
+    results.forEach(r => console.log(`  - ${r.name}`));
   }
 }
 ```
@@ -426,7 +423,7 @@ interface Stats {
 // Option processing types
 interface OptionSchema {
   name: string;
-  type: "string" | "boolean" | "number";
+  type: 'string' | 'boolean' | 'number';
   default?: any;
 }
 

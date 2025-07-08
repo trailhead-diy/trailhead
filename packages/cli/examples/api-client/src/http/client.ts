@@ -4,9 +4,7 @@ import type { Result } from '@esteban-url/trailhead-cli';
 import type { RequestOptions, ResponseData, RetryOptions } from './types.js';
 
 export class HttpClient {
-  private async makeRequest(
-    options: RequestOptions,
-  ): Promise<Result<ResponseData>> {
+  private async makeRequest(options: RequestOptions): Promise<Result<ResponseData>> {
     try {
       const { method, url, headers = {}, body, timeout = 10000 } = options;
 
@@ -45,7 +43,7 @@ export class HttpClient {
 
   async request(
     options: RequestOptions,
-    retryOptions?: RetryOptions,
+    retryOptions?: RetryOptions
   ): Promise<Result<ResponseData>> {
     const maxAttempts = retryOptions?.attempts || 1;
     let delay = retryOptions?.delay || 1000;
@@ -64,7 +62,7 @@ export class HttpClient {
 
       // Don't wait after the last attempt
       if (attempt < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise(resolve => setTimeout(resolve, delay));
         delay *= backoff;
       }
     }

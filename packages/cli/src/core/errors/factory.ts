@@ -31,7 +31,7 @@ export function createError(
     cause?: unknown;
     suggestion?: string;
     recoverable?: boolean;
-  },
+  }
 ): CLIError {
   return {
     code,
@@ -43,10 +43,7 @@ export function createError(
   };
 }
 
-export function createSeverityError(
-  error: CLIError,
-  severity: ErrorSeverity,
-): SeverityError {
+export function createSeverityError(error: CLIError, severity: ErrorSeverity): SeverityError {
   return {
     ...error,
     severity,
@@ -60,7 +57,7 @@ export function validationError(
     value?: unknown;
     constraints?: Record<string, unknown>;
     suggestion?: string;
-  },
+  }
 ): ValidationError {
   return {
     category: 'validation',
@@ -84,7 +81,7 @@ export function requiredFieldError(field: string): ValidationError {
 export function invalidTypeError(
   field: string,
   expectedType: string,
-  actualValue: unknown,
+  actualValue: unknown
 ): ValidationError {
   const actualType = Array.isArray(actualValue) ? 'array' : typeof actualValue;
   return validationError(
@@ -94,24 +91,17 @@ export function invalidTypeError(
       value: actualValue,
       constraints: { expectedType, actualType },
       suggestion: `Ensure '${field}' is a ${expectedType}`,
-    },
+    }
   );
 }
 
-export function invalidFormatError(
-  field: string,
-  format: string,
-  value: unknown,
-): ValidationError {
-  return validationError(
-    `Field '${field}' has invalid format: expected ${format}`,
-    {
-      field,
-      value,
-      constraints: { format },
-      suggestion: `Check the format of '${field}'`,
-    },
-  );
+export function invalidFormatError(field: string, format: string, value: unknown): ValidationError {
+  return validationError(`Field '${field}' has invalid format: expected ${format}`, {
+    field,
+    value,
+    constraints: { format },
+    suggestion: `Check the format of '${field}'`,
+  });
 }
 
 export function fileSystemError(
@@ -122,7 +112,7 @@ export function fileSystemError(
     errno?: number;
     cause?: unknown;
     suggestion?: string;
-  },
+  }
 ): FileSystemError {
   return {
     category: 'filesystem',
@@ -153,17 +143,12 @@ export function directoryNotFoundError(path: string): FileSystemError {
 
 export function permissionError(
   operation: FileSystemError['operation'],
-  path: string,
+  path: string
 ): FileSystemError {
-  return fileSystemError(
-    operation,
-    path,
-    `Permission denied: cannot ${operation} ${path}`,
-    {
-      errno: -13, // EACCES
-      suggestion: 'Check file permissions or run with appropriate privileges',
-    },
-  );
+  return fileSystemError(operation, path, `Permission denied: cannot ${operation} ${path}`, {
+    errno: -13, // EACCES
+    suggestion: 'Check file permissions or run with appropriate privileges',
+  });
 }
 
 export function networkError(
@@ -174,7 +159,7 @@ export function networkError(
     timeout?: boolean;
     cause?: unknown;
     suggestion?: string;
-  },
+  }
 ): NetworkError {
   return {
     category: 'network',
@@ -227,7 +212,7 @@ export function configurationError(
     invalidFields?: string[];
     cause?: unknown;
     suggestion?: string;
-  },
+  }
 ): ConfigurationError {
   return {
     category: 'configuration',
@@ -244,23 +229,20 @@ export function configurationError(
 
 export function missingConfigError(
   configFile: string,
-  missingFields: string[],
+  missingFields: string[]
 ): ConfigurationError {
-  return configurationError(
-    `Missing required configuration fields in ${configFile}`,
-    {
-      configFile,
-      missingFields,
-      suggestion: `Add the following fields to ${configFile}: ${missingFields.join(', ')}`,
-    },
-  );
+  return configurationError(`Missing required configuration fields in ${configFile}`, {
+    configFile,
+    missingFields,
+    suggestion: `Add the following fields to ${configFile}: ${missingFields.join(', ')}`,
+  });
 }
 
 export function invalidConfigFieldError(
   fieldPath: string,
   expectedType: string,
   actualValue: unknown,
-  exampleValue?: unknown,
+  exampleValue?: unknown
 ): ConfigurationError {
   const actualType = Array.isArray(actualValue)
     ? 'array'
@@ -290,12 +272,12 @@ export function invalidConfigValueError(
   fieldPath: string,
   value: unknown,
   allowedValues: readonly unknown[],
-  suggestion?: string,
+  suggestion?: string
 ): ConfigurationError {
   const message = `Invalid value for '${fieldPath}': '${value}' is not one of the allowed values`;
 
   const defaultSuggestion = `Allowed values for '${fieldPath}' are: ${allowedValues
-    .map((v) => JSON.stringify(v))
+    .map(v => JSON.stringify(v))
     .join(', ')}`;
 
   return configurationError(message, {
@@ -313,7 +295,7 @@ export function executionError(
     stderr?: string;
     cause?: unknown;
     suggestion?: string;
-  },
+  }
 ): ExecutionError {
   return {
     category: 'execution',
@@ -342,7 +324,7 @@ export function userInputError(
     input?: string;
     expectedFormat?: string;
     suggestion?: string;
-  },
+  }
 ): UserInputError {
   return {
     category: 'user-input',
@@ -355,10 +337,7 @@ export function userInputError(
   };
 }
 
-export function invalidInputError(
-  input: string,
-  expectedFormat: string,
-): UserInputError {
+export function invalidInputError(input: string, expectedFormat: string): UserInputError {
   return userInputError(`Invalid input: '${input}'`, {
     input,
     expectedFormat,
@@ -374,7 +353,7 @@ export function dependencyError(
     installedVersion?: string;
     cause?: unknown;
     suggestion?: string;
-  },
+  }
 ): DependencyError {
   return {
     category: 'dependency',
@@ -391,7 +370,7 @@ export function dependencyError(
 
 export function missingDependencyError(
   packageName: string,
-  requiredVersion?: string,
+  requiredVersion?: string
 ): DependencyError {
   const version = requiredVersion ? ` (version ${requiredVersion})` : '';
   return dependencyError(`Missing dependency: ${packageName}${version}`, {
@@ -404,10 +383,7 @@ export function missingDependencyError(
 /**
  * Add context to an error
  */
-export function withContext<E extends CLIError>(
-  error: E,
-  context: Partial<ErrorContext>,
-): E {
+export function withContext<E extends CLIError>(error: E, context: Partial<ErrorContext>): E {
   return {
     ...error,
     details: [
@@ -423,10 +399,7 @@ export function withContext<E extends CLIError>(
 /**
  * Chain errors together
  */
-export function chainError<E extends CLIError>(
-  error: E,
-  cause: CLIError | Error | unknown,
-): E {
+export function chainError<E extends CLIError>(error: E, cause: CLIError | Error | unknown): E {
   return {
     ...error,
     cause,

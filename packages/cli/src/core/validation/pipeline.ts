@@ -11,10 +11,7 @@ export interface ValidationContext {
   readonly [key: string]: unknown;
 }
 
-export interface ValidationPipeline<
-  T,
-  C extends ValidationContext = ValidationContext,
-> {
+export interface ValidationPipeline<T, C extends ValidationContext = ValidationContext> {
   readonly rules: readonly ValidationRule<T, C>[];
   add(rule: ValidationRule<T, C>): ValidationPipeline<T, C>;
   validate(value: T, context?: C): Promise<ValidationSummary>;
@@ -73,9 +70,7 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
         const result = rule.validate(value, context);
 
         if (typeof result === 'object' && 'then' in result) {
-          throw new Error(
-            `Rule "${rule.name}" is async but validateSync was called`,
-          );
+          throw new Error(`Rule "${rule.name}" is async but validateSync was called`);
         }
 
         if (result.success) {
@@ -106,10 +101,7 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
     return this.createSummary(results);
   }
 
-  private getSuggestion(
-    rule: ValidationRule<T, C>,
-    error: ValidationError,
-  ): string | undefined {
+  private getSuggestion(rule: ValidationRule<T, C>, error: ValidationError): string | undefined {
     // Default suggestions based on error type
     if (error.field) {
       return `Check the value of field: ${error.field}`;
@@ -123,14 +115,14 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
   }
 
   private createSummary(results: ValidationResult[]): ValidationSummary {
-    const passed = results.filter((r) => r.passed);
-    const failed = results.filter((r) => !r.passed);
-    const requiredFailed = failed.filter((r) => {
-      const rule = this.rules.find((rule) => rule.name === r.rule);
+    const passed = results.filter(r => r.passed);
+    const failed = results.filter(r => !r.passed);
+    const requiredFailed = failed.filter(r => {
+      const rule = this.rules.find(rule => rule.name === r.rule);
       return rule?.required ?? false;
     });
-    const warnings = failed.filter((r) => {
-      const rule = this.rules.find((rule) => rule.name === r.rule);
+    const warnings = failed.filter(r => {
+      const rule = this.rules.find(rule => rule.name === r.rule);
       return !(rule?.required ?? false);
     });
 
@@ -152,10 +144,9 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
   }
 }
 
-export function createValidationPipeline<
-  T,
-  C extends ValidationContext = ValidationContext,
->(rules: ValidationRule<T, C>[] = []): ValidationPipeline<T, C> {
+export function createValidationPipeline<T, C extends ValidationContext = ValidationContext>(
+  rules: ValidationRule<T, C>[] = []
+): ValidationPipeline<T, C> {
   return new ValidationPipelineImpl(rules);
 }
 
@@ -163,24 +154,21 @@ export function createRule<T, C extends ValidationContext = ValidationContext>(
   name: string,
   description: string,
   validator: Validator<T>,
-  required: boolean = true,
+  required: boolean = true
 ): ValidationRule<T, C> {
   return {
     name,
     description,
     required,
-    validate: (value) => validator(value),
+    validate: value => validator(value),
   };
 }
 
-export function createAsyncRule<
-  T,
-  C extends ValidationContext = ValidationContext,
->(
+export function createAsyncRule<T, C extends ValidationContext = ValidationContext>(
   name: string,
   description: string,
   validator: (value: T, context?: C) => Promise<Result<T, ValidationError>>,
-  required: boolean = true,
+  required: boolean = true
 ): ValidationRule<T, C> {
   return {
     name,
@@ -190,32 +178,25 @@ export function createAsyncRule<
   };
 }
 
-export async function validateAll<
-  T,
-  C extends ValidationContext = ValidationContext,
->(
+export async function validateAll<T, C extends ValidationContext = ValidationContext>(
   pipelines: ValidationPipeline<T, C>[],
   value: T,
-  context?: C,
+  context?: C
 ): Promise<ValidationSummary[]> {
-  return Promise.all(pipelines.map((p) => p.validate(value, context)));
+  return Promise.all(pipelines.map(p => p.validate(value, context)));
 }
 
-export function combinePipelines<
-  T,
-  C extends ValidationContext = ValidationContext,
->(...pipelines: ValidationPipeline<T, C>[]): ValidationPipeline<T, C> {
-  const allRules = pipelines.flatMap((p) => p.rules);
+export function combinePipelines<T, C extends ValidationContext = ValidationContext>(
+  ...pipelines: ValidationPipeline<T, C>[]
+): ValidationPipeline<T, C> {
+  const allRules = pipelines.flatMap(p => p.rules);
   return createValidationPipeline(allRules as ValidationRule<T, C>[]);
 }
 
-export function conditionalPipeline<
-  T,
-  C extends ValidationContext = ValidationContext,
->(
+export function conditionalPipeline<T, C extends ValidationContext = ValidationContext>(
   condition: (value: T, context?: C) => boolean,
   truePipeline: ValidationPipeline<T, C>,
-  falsePipeline?: ValidationPipeline<T, C>,
+  falsePipeline?: ValidationPipeline<T, C>
 ): ValidationPipeline<T, C> {
   return {
     rules: [],
@@ -258,7 +239,7 @@ export function conditionalPipeline<
 }
 
 export function getFailedMessages(summary: ValidationSummary): string[] {
-  return [...summary.failed, ...summary.warnings].map((r) => r.message);
+  return [...summary.failed, ...summary.warnings].map(r => r.message);
 }
 
 export function isValidationPassed(summary: ValidationSummary): boolean {
@@ -282,7 +263,7 @@ export function formatValidationSummary(summary: ValidationSummary): string[] {
 
   if (summary.failed.length > 0) {
     lines.push('\nFailed:');
-    summary.failed.forEach((r) => {
+    summary.failed.forEach(r => {
       lines.push(`  ❌ ${r.message}`);
       if (r.suggestion) {
         lines.push(`     💡 ${r.suggestion}`);
@@ -292,7 +273,7 @@ export function formatValidationSummary(summary: ValidationSummary): string[] {
 
   if (summary.warnings.length > 0) {
     lines.push('\nWarnings:');
-    summary.warnings.forEach((r) => {
+    summary.warnings.forEach(r => {
       lines.push(`  ⚠️  ${r.message}`);
       if (r.suggestion) {
         lines.push(`     💡 ${r.suggestion}`);
@@ -302,7 +283,7 @@ export function formatValidationSummary(summary: ValidationSummary): string[] {
 
   if (summary.passed.length > 0) {
     lines.push('\nPassed:');
-    summary.passed.forEach((r) => {
+    summary.passed.forEach(r => {
       lines.push(`  ✅ ${r.message}`);
     });
   }

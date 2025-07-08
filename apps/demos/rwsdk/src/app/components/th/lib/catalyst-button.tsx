@@ -188,7 +188,7 @@ type ButtonProps = (
 
 export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: ButtonProps,
-  ref: React.ForwardedRef<HTMLElement>,
+  ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
     styles.base,
@@ -197,23 +197,15 @@ export const CatalystButton = forwardRef(function CatalystButton(
       : plain
         ? styles.plain
         : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
-    className,
+    className
   );
 
   return 'href' in props ? (
-    <CatalystLink
-      {...props}
-      className={classes}
-      ref={ref as React.ForwardedRef<HTMLAnchorElement>}
-    >
+    <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
     </CatalystLink>
   ) : (
-    <Headless.Button
-      {...props}
-      className={cn(classes, 'cursor-default')}
-      ref={ref}
-    >
+    <Headless.Button {...props} className={cn(classes, 'cursor-default')} ref={ref}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
     </Headless.Button>
   );
@@ -222,16 +214,12 @@ export const CatalystButton = forwardRef(function CatalystButton(
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */
-export function CatalystTouchTarget({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function CatalystTouchTarget({ children }: { children: React.ReactNode }) {
   return (
     <>
       <span
         className={cn(
-          'absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden',
+          'absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden'
         )}
         aria-hidden="true"
       />

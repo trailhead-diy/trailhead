@@ -9,9 +9,7 @@
  * const filtered = filterUndefined(options); // { name: 'test', count: 0 }
  * ```
  */
-export function filterUndefined<T extends Record<string, any>>(
-  obj: T,
-): Partial<T> {
+export function filterUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
   const result: Partial<T> = {};
 
   for (const [key, value] of Object.entries(obj)) {
@@ -39,7 +37,7 @@ export function filterUndefined<T extends Record<string, any>>(
  */
 export function mergeOptionsWithDefaults<T extends Record<string, any>>(
   defaults: T,
-  options: Partial<T>,
+  options: Partial<T>
 ): T {
   const filteredOptions = filterUndefined(options);
   return { ...defaults, ...filteredOptions };
@@ -58,10 +56,7 @@ export function mergeOptionsWithDefaults<T extends Record<string, any>>(
  * coerceOptionType('invalid', 'number'); // 'invalid' (unchanged)
  * ```
  */
-export function coerceOptionType(
-  value: any,
-  type: 'string' | 'number' | 'boolean',
-): any {
+export function coerceOptionType(value: any, type: 'string' | 'number' | 'boolean'): any {
   if (value === undefined || value === null) {
     return value;
   }
@@ -107,7 +102,7 @@ export function processCommandOptions<T extends Record<string, any>>(
   optionDefinitions?: Array<{
     name: string;
     type?: 'string' | 'number' | 'boolean';
-  }>,
+  }>
 ): T {
   const processed: Record<string, any> = {};
 
@@ -117,9 +112,7 @@ export function processCommandOptions<T extends Record<string, any>>(
       if (def.name in rawOptions) {
         const value = rawOptions[def.name];
         if (value !== undefined) {
-          processed[def.name] = def.type
-            ? coerceOptionType(value, def.type)
-            : value;
+          processed[def.name] = def.type ? coerceOptionType(value, def.type) : value;
         }
       }
     }

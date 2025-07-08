@@ -5,7 +5,7 @@ import { createTestContext } from './context.js';
 export async function runCommand<T>(
   command: Command<T>,
   options: T,
-  context?: CommandContext,
+  context?: CommandContext
 ): Promise<Result<void>> {
   const testContext = context ?? createTestContext();
   return command.execute(options, testContext);
@@ -37,9 +37,7 @@ export class CommandTestRunner<T> {
       throw new Error('Expected command to fail, but it succeeded');
     }
     if (errorCode && result.error.code !== errorCode) {
-      throw new Error(
-        `Expected error code ${errorCode}, but got ${result.error.code}`,
-      );
+      throw new Error(`Expected error code ${errorCode}, but got ${result.error.code}`);
     }
   }
 

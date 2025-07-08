@@ -55,10 +55,7 @@ const optionProcessingCache = new WeakMap<CommandOption, ProcessedOption>();
  * // Result: { flags: '-v, --verbose', name: 'verbose', type: 'boolean', required: false }
  * ```
  */
-export function processOptionWithCache(
-  option: CommandOption,
-  index: number,
-): ProcessedOption {
+export function processOptionWithCache(option: CommandOption, index: number): ProcessedOption {
   const cached = optionProcessingCache.get(option);
   if (cached) {
     return cached;
@@ -73,9 +70,7 @@ export function processOptionWithCache(
     name = option.name || (match ? match[1] : `option_${index}`);
   } else if (option.name) {
     name = option.name;
-    flags = option.alias
-      ? `-${option.alias}, --${option.name}`
-      : `--${option.name}`;
+    flags = option.alias ? `-${option.alias}, --${option.name}` : `--${option.name}`;
 
     if (option.type !== 'boolean') {
       flags += ' <value>';
@@ -115,8 +110,6 @@ export function processOptionWithCache(
  * // Returns array of ProcessedOption objects ready for Commander.js
  * ```
  */
-export function processCommandOptionsWithCache(
-  options: CommandOption[],
-): ProcessedOption[] {
+export function processCommandOptionsWithCache(options: CommandOption[]): ProcessedOption[] {
   return options.map((option, index) => processOptionWithCache(option, index));
 }

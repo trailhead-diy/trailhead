@@ -1,11 +1,6 @@
 'use client';
 import { DemoLayout, Item, List } from '@/components/demo-layout';
-import {
-  Dropdown,
-  DropdownButton,
-  DropdownItem,
-  DropdownMenu,
-} from '@/components/th/dropdown';
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/th/dropdown';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 
 export default function DropdownPage(): React.JSX.Element {

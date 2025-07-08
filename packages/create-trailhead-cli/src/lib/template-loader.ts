@@ -3,11 +3,7 @@ import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
 import fg from 'fast-glob';
 import { validateTemplatePath } from './validation.js';
-import type {
-  TemplateVariant,
-  TemplateFile,
-  TemplateLoaderConfig,
-} from './types.js';
+import type { TemplateVariant, TemplateFile, TemplateLoaderConfig } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,7 +55,7 @@ const __dirname = dirname(__filename);
  */
 export async function getTemplateFiles(
   variant: TemplateVariant,
-  config?: TemplateLoaderConfig,
+  config?: TemplateLoaderConfig
 ): Promise<TemplateFile[]> {
   const { paths, dirs } = resolveTemplatePaths(variant, config);
 
@@ -69,7 +65,7 @@ export async function getTemplateFiles(
   const variantFiles = await loadTemplateFilesFromDirectory(
     dirs.variant,
     variant,
-    paths.base, // Pass base templates directory for security validation
+    paths.base // Pass base templates directory for security validation
   );
   files.push(...variantFiles);
 
@@ -77,7 +73,7 @@ export async function getTemplateFiles(
   const sharedFiles = await loadTemplateFilesFromDirectory(
     dirs.shared,
     'shared',
-    paths.base, // Pass base templates directory for security validation
+    paths.base // Pass base templates directory for security validation
   );
   files.push(...sharedFiles);
 
@@ -87,14 +83,14 @@ export async function getTemplateFiles(
       const additionalFiles = await loadTemplateFilesFromDirectory(
         additionalDir,
         'additional',
-        paths.base, // Pass base templates directory for security validation
+        paths.base // Pass base templates directory for security validation
       );
       files.push(...additionalFiles);
     }
   }
 
   // Filter files based on template variant
-  const filteredFiles = files.filter((file) => {
+  const filteredFiles = files.filter(file => {
     const isMonorepo = false; // No monorepo support in simplified CLI generator
 
     // Skip monorepo-specific files for non-monorepo templates
@@ -106,7 +102,7 @@ export async function getTemplateFiles(
         '.changeset/config.json',
       ];
 
-      if (monorepoOnlyFiles.some((filename) => file.destination === filename)) {
+      if (monorepoOnlyFiles.some(filename => file.destination === filename)) {
         return false;
       }
     }
@@ -144,10 +140,7 @@ export async function getTemplateFiles(
  * // dirs.shared will be '/custom/templates/shared'
  * ```
  */
-export function resolveTemplatePaths(
-  variant: TemplateVariant,
-  config?: TemplateLoaderConfig,
-) {
+export function resolveTemplatePaths(variant: TemplateVariant, config?: TemplateLoaderConfig) {
   // Default built-in template directory
   // When running from dist/lib, templates are at ../templates
   // When running tests from src/lib, we need to check multiple locations
@@ -158,15 +151,13 @@ export function resolveTemplatePaths(
   ];
 
   // Find the first path that exists
-  const defaultTemplatesDir =
-    candidatePaths.find((path) => existsSync(path)) || candidatePaths[0];
+  const defaultTemplatesDir = candidatePaths.find(path => existsSync(path)) || candidatePaths[0];
 
   // Use custom base directory if provided, otherwise use built-in
   const baseTemplatesDir = config?.templatesDir || defaultTemplatesDir;
 
   // Resolve variant directory
-  const variantDir =
-    config?.variantDirs?.[variant] || join(baseTemplatesDir, variant);
+  const variantDir = config?.variantDirs?.[variant] || join(baseTemplatesDir, variant);
 
   // Resolve shared directory
   const sharedDir = config?.sharedDir || join(baseTemplatesDir, 'shared');
@@ -218,7 +209,7 @@ export function resolveTemplatePaths(
 async function loadTemplateFilesFromDirectory(
   dir: string,
   prefix: string,
-  baseTemplatesDir?: string,
+  baseTemplatesDir?: string
 ): Promise<TemplateFile[]> {
   try {
     // Only validate if baseTemplatesDir is provided
@@ -239,13 +230,10 @@ async function loadTemplateFilesFromDirectory(
     });
 
     return filePaths
-      .map((filePath) => {
+      .map(filePath => {
         // Validate each file path if baseTemplatesDir is provided
         if (baseTemplatesDir) {
-          const fileValidation = validateTemplatePath(
-            filePath,
-            baseTemplatesDir,
-          );
+          const fileValidation = validateTemplatePath(filePath, baseTemplatesDir);
           if (!fileValidation.success) {
             console.warn(`Skipping invalid template file: ${filePath}`);
             return null;
@@ -309,7 +297,7 @@ function isExecutableFile(filePath: string): boolean {
   const executablePaths = ['bin/', 'scripts/', '.husky/'];
 
   return (
-    executablePaths.some((path) => filePath.includes(path)) ||
+    executablePaths.some(path => filePath.includes(path)) ||
     filePath.endsWith('.sh') ||
     filePath.includes('lefthook')
   );

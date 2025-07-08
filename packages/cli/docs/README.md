@@ -1,7 +1,7 @@
 ---
 type: explanation
-title: "@esteban-url/trailhead-cli Documentation Overview"
-description: "Complete documentation hub for the functional CLI framework"
+title: '@esteban-url/trailhead-cli Documentation Overview'
+description: 'Complete documentation hub for the functional CLI framework'
 related:
   - /docs/tutorials/first-cli-app
   - /docs/reference/api/core
@@ -67,11 +67,11 @@ See [examples directory](../examples/README.md) for complete list and usage inst
 ### 1. Result-Based Error Handling
 
 ```typescript
-import { ok, err } from "@esteban-url/trailhead-cli/core";
+import { ok, err } from '@esteban-url/trailhead-cli/core';
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
-    return Err(new Error("Division by zero"));
+    return Err(new Error('Division by zero'));
   }
   return Ok(a / b);
 }
@@ -80,12 +80,12 @@ function divide(a: number, b: number): Result<number> {
 ### 2. Functional Command Creation
 
 ```typescript
-import { createCommand } from "@esteban-url/trailhead-cli/command";
+import { createCommand } from '@esteban-url/trailhead-cli/command';
 
 const greetCommand = createCommand({
-  name: "greet",
-  description: "Greet someone",
-  options: [{ name: "name", alias: "n", type: "string", required: true }],
+  name: 'greet',
+  description: 'Greet someone',
+  options: [{ name: 'name', alias: 'n', type: 'string', required: true }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`);
     return Ok(undefined);
@@ -96,8 +96,8 @@ const greetCommand = createCommand({
 ### 3. Type-Safe Configuration
 
 ```typescript
-import { defineConfig } from "@esteban-url/trailhead-cli/config";
-import { z } from "zod";
+import { defineConfig } from '@esteban-url/trailhead-cli/config';
+import { z } from 'zod';
 
 const schema = z.object({
   api: z.object({
@@ -112,20 +112,13 @@ const config = defineConfig(schema);
 ### 4. Composable Validation
 
 ```typescript
-import {
-  createValidationPipeline,
-  createRule,
-} from "@esteban-url/trailhead-cli/core";
+import { createValidationPipeline, createRule } from '@esteban-url/trailhead-cli/core';
 
 const pipeline = createValidationPipeline([
+  createRule('length', (value: string) => value.length >= 3 || 'Must be at least 3 characters'),
   createRule(
-    "length",
-    (value: string) => value.length >= 3 || "Must be at least 3 characters",
-  ),
-  createRule(
-    "format",
-    (value: string) =>
-      /^[a-z]+$/.test(value) || "Must contain only lowercase letters",
+    'format',
+    (value: string) => /^[a-z]+$/.test(value) || 'Must contain only lowercase letters'
   ),
 ]);
 ```
@@ -158,14 +151,14 @@ const pipeline = createValidationPipeline([
 ### Basic CLI Application
 
 ```typescript
-import { createCLI } from "@esteban-url/trailhead-cli";
-import { greetCommand } from "./commands/greet";
-import { configCommand } from "./commands/config";
+import { createCLI } from '@esteban-url/trailhead-cli';
+import { greetCommand } from './commands/greet';
+import { configCommand } from './commands/config';
 
 const cli = createCLI({
-  name: "my-app",
-  version: "1.0.0",
-  description: "My awesome CLI tool",
+  name: 'my-app',
+  version: '1.0.0',
+  description: 'My awesome CLI tool',
   commands: [greetCommand, configCommand],
 });
 
@@ -175,7 +168,7 @@ cli.run(process.argv);
 ### Error Handling Pattern
 
 ```typescript
-const result = await fs.readFile("config.json");
+const result = await fs.readFile('config.json');
 if (!result.success) {
   context.logger.error(result.error.message);
   return result; // Propagate the error
@@ -187,21 +180,18 @@ const config = JSON.parse(result.value);
 ### Testing Pattern
 
 ```typescript
-import {
-  createTestContext,
-  mockFileSystem,
-} from "@esteban-url/trailhead-cli/testing";
+import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing';
 
-it("should read configuration", async () => {
+it('should read configuration', async () => {
   const fs = mockFileSystem({
-    "config.json": '{"name": "test"}',
+    'config.json': '{"name": "test"}',
   });
 
   const context = createTestContext({ filesystem: fs });
   const result = await readConfig(context);
 
   expect(result.success).toBe(true);
-  expect(result.value.name).toBe("test");
+  expect(result.value.name).toBe('test');
 });
 ```
 

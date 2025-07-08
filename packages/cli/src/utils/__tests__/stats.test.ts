@@ -1,10 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  createStats,
-  updateStats,
-  getElapsedTime,
-  formatStats,
-} from '../stats.js';
+import { createStats, updateStats, getElapsedTime, formatStats } from '../stats.js';
 
 describe('Stats Utilities', () => {
   let mockDate: ReturnType<typeof vi.spyOn>;

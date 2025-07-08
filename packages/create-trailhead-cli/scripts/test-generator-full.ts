@@ -25,11 +25,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { createTestContext } from '@esteban-url/trailhead-cli/testing';
 import { generateProject } from '../src/lib/generator.js';
-import type {
-  ProjectConfig,
-  TemplateVariant,
-  PackageManager,
-} from '../src/lib/types.js';
+import type { ProjectConfig, TemplateVariant, PackageManager } from '../src/lib/types.js';
 
 /**
  * Test scenario configuration
@@ -138,7 +134,7 @@ function parseArgs(): TestOptions {
 async function testCombination(
   combination: TestCombination,
   options: TestOptions,
-  testBaseDir: string,
+  testBaseDir: string
 ): Promise<TestResult> {
   const startTime = Date.now();
   const projectName = `test-${combination.id}-${Date.now()}`;
@@ -210,10 +206,7 @@ async function testCombination(
       });
     } catch (error: any) {
       // Only fail for real linting errors, not missing binary
-      if (
-        !error.message.includes('not found') &&
-        !error.message.includes('ENOENT')
-      ) {
+      if (!error.message.includes('not found') && !error.message.includes('ENOENT')) {
         return {
           combination,
           success: false,
@@ -284,24 +277,20 @@ async function testCombination(
 async function runTests(
   combinations: TestCombination[],
   options: TestOptions,
-  testBaseDir: string,
+  testBaseDir: string
 ): Promise<TestResult[]> {
   console.log(chalk.blue('🧪 Running comprehensive generator tests...'));
   console.log(
-    chalk.gray(
-      `Mode: ${options.install ? 'Full E2E with installation' : 'Compilation-only'}`,
-    ),
+    chalk.gray(`Mode: ${options.install ? 'Full E2E with installation' : 'Compilation-only'}`)
   );
-  console.log(
-    chalk.gray(`Execution: ${options.parallel ? 'Parallel' : 'Sequential'}`),
-  );
+  console.log(chalk.gray(`Execution: ${options.parallel ? 'Parallel' : 'Sequential'}`));
   console.log(chalk.gray(`Combinations: ${combinations.length}`));
   console.log('');
 
   if (options.parallel) {
     // Run tests in parallel for faster execution
-    const promises = combinations.map((combination) =>
-      testCombination(combination, options, testBaseDir),
+    const promises = combinations.map(combination =>
+      testCombination(combination, options, testBaseDir)
     );
 
     const spinner = ora('Running tests in parallel...').start();
@@ -318,13 +307,9 @@ async function runTests(
       const result = await testCombination(combination, options, testBaseDir);
 
       if (result.success) {
-        spinner.succeed(
-          chalk.green(`✓ ${combination.description} (${result.duration}ms)`),
-        );
+        spinner.succeed(chalk.green(`✓ ${combination.description} (${result.duration}ms)`));
       } else {
-        spinner.fail(
-          chalk.red(`✗ ${combination.description}: ${result.error}`),
-        );
+        spinner.fail(chalk.red(`✗ ${combination.description}: ${result.error}`));
       }
 
       results.push(result);
@@ -338,25 +323,19 @@ async function runTests(
  * Print test results summary
  */
 function printResults(results: TestResult[], _options: TestOptions): void {
-  const successful = results.filter((r) => r.success);
-  const failed = results.filter((r) => !r.success);
+  const successful = results.filter(r => r.success);
+  const failed = results.filter(r => !r.success);
   const totalDuration = results.reduce((sum, r) => sum + r.duration, 0);
 
   console.log('');
   console.log(chalk.bold('📊 Test Results Summary'));
   console.log(chalk.gray('═'.repeat(50)));
 
-  console.log(
-    chalk.green(`✓ Successful: ${successful.length}/${results.length}`),
-  );
+  console.log(chalk.green(`✓ Successful: ${successful.length}/${results.length}`));
   console.log(chalk.red(`✗ Failed: ${failed.length}/${results.length}`));
+  console.log(chalk.blue(`⏱️  Total Duration: ${(totalDuration / 1000).toFixed(1)}s`));
   console.log(
-    chalk.blue(`⏱️  Total Duration: ${(totalDuration / 1000).toFixed(1)}s`),
-  );
-  console.log(
-    chalk.blue(
-      `📈 Average Duration: ${(totalDuration / results.length / 1000).toFixed(1)}s`,
-    ),
+    chalk.blue(`📈 Average Duration: ${(totalDuration / results.length / 1000).toFixed(1)}s`)
   );
 
   if (failed.length > 0) {
@@ -372,11 +351,7 @@ function printResults(results: TestResult[], _options: TestOptions): void {
     console.log('');
     console.log(chalk.green.bold('✅ Successful Tests:'));
     for (const result of successful) {
-      console.log(
-        chalk.green(
-          `  • ${result.combination.description} (${result.duration}ms)`,
-        ),
-      );
+      console.log(chalk.green(`  • ${result.combination.description} (${result.duration}ms)`));
     }
   }
 }
@@ -386,11 +361,7 @@ function printResults(results: TestResult[], _options: TestOptions): void {
  */
 function cleanup(results: TestResult[], options: TestOptions): void {
   if (!options.cleanup) {
-    console.log(
-      chalk.yellow(
-        '⚠️  Skipping cleanup - test projects remain for inspection',
-      ),
-    );
+    console.log(chalk.yellow('⚠️  Skipping cleanup - test projects remain for inspection'));
     return;
   }
 
@@ -427,13 +398,11 @@ async function main(): Promise<void> {
   if (options.install) {
     console.log(
       chalk.yellow(
-        '⚠️  Full E2E mode enabled - this will install dependencies and may take 15-30 minutes',
-      ),
+        '⚠️  Full E2E mode enabled - this will install dependencies and may take 15-30 minutes'
+      )
     );
   } else {
-    console.log(
-      chalk.green('⚡ Fast mode - compilation testing only (~3-5 minutes)'),
-    );
+    console.log(chalk.green('⚡ Fast mode - compilation testing only (~3-5 minutes)'));
   }
 
   try {
@@ -442,7 +411,7 @@ async function main(): Promise<void> {
     cleanup(results, options);
 
     // Exit with appropriate code
-    const failed = results.filter((r) => !r.success);
+    const failed = results.filter(r => !r.success);
     if (failed.length > 0) {
       console.log('');
       console.log(chalk.red.bold('❌ Some tests failed'));
@@ -467,28 +436,16 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(chalk.bold('Trailhead CLI Generator E2E Testing'));
   console.log('');
   console.log('Usage:');
-  console.log(
-    '  pnpm test:generator:full                 Fast compilation-only testing',
-  );
-  console.log(
-    '  pnpm test:generator:full --install       Full E2E with dependency installation',
-  );
-  console.log(
-    '  pnpm test:generator:full --install --ci  CI mode with parallel execution',
-  );
+  console.log('  pnpm test:generator:full                 Fast compilation-only testing');
+  console.log('  pnpm test:generator:full --install       Full E2E with dependency installation');
+  console.log('  pnpm test:generator:full --install --ci  CI mode with parallel execution');
   console.log('');
   console.log('Options:');
-  console.log(
-    '  --install       Install dependencies and test project functionality',
-  );
-  console.log(
-    '  --ci            CI mode with parallel execution and minimal output',
-  );
+  console.log('  --install       Install dependencies and test project functionality');
+  console.log('  --ci            CI mode with parallel execution and minimal output');
   console.log('  --verbose, -v   Verbose output with detailed logging');
   console.log('  --parallel      Run tests in parallel (default in CI mode)');
-  console.log(
-    '  --no-cleanup    Skip cleanup - leave test projects for inspection',
-  );
+  console.log('  --no-cleanup    Skip cleanup - leave test projects for inspection');
   console.log('  --help, -h      Show this help message');
   console.log('');
   console.log('Test Matrix:');
@@ -500,7 +457,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 }
 
 // Run the tests
-main().catch((error) => {
+main().catch(error => {
   console.error(chalk.red.bold('💥 Script failed:'), error.message);
   process.exit(1);
 });

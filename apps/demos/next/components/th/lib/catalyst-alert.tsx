@@ -2,11 +2,7 @@
 import * as Headless from '@headlessui/react';
 import type React from 'react';
 import { CatalystText } from './catalyst-text';
-import {
-  SemanticColorToken,
-  isSemanticToken,
-  createSemanticStyles,
-} from '../theme/index';
+import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index';
 import { cn } from '../utils/cn';
 
 const sizes = {
@@ -33,27 +29,23 @@ export function CatalystAlert({
   children: React.ReactNode;
   color?: SemanticColorToken;
 } & Omit<Headless.DialogProps, 'as' | 'className'>) {
-  const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticStyles(color) : '';
+  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
   return (
     <Headless.Dialog {...props}>
       <Headless.DialogBackdrop
         transition
         className={cn(
           'fixed inset-0 flex w-screen justify-center overflow-y-auto bg-card/15 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 dark:bg-card/50',
-          resolvedColorClasses,
+          resolvedColorClasses
         )}
       />
       <div
-        className={cn(
-          'fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0',
-          resolvedColorClasses,
-        )}
+        className={cn('fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0', resolvedColorClasses)}
       >
         <div
           className={cn(
             'grid min-h-full grid-rows-[1fr_auto_1fr] justify-items-center p-8 sm:grid-rows-[1fr_auto_3fr] sm:p-4',
-            resolvedColorClasses,
+            resolvedColorClasses
           )}
         >
           <Headless.DialogPanel
@@ -63,7 +55,7 @@ export function CatalystAlert({
               'row-start-2 w-full rounded-2xl bg-white p-8 shadow-lg ring-1 ring-zinc-950/10 sm:rounded-2xl sm:p-6 dark:bg-card dark:ring-ring forced-colors:outline',
               'transition duration-100 will-change-transform data-closed:opacity-0 data-enter:ease-out data-closed:data-enter:scale-95 data-leave:ease-in',
               resolvedColorClasses,
-              className,
+              className
             )}
           >
             {children}
@@ -77,16 +69,13 @@ export function CatalystAlert({
 export function CatalystAlertTitle({
   className,
   ...props
-}: { className?: string } & Omit<
-  Headless.DialogTitleProps,
-  'as' | 'className'
->) {
+}: { className?: string } & Omit<Headless.DialogTitleProps, 'as' | 'className'>) {
   return (
     <Headless.DialogTitle
       {...props}
       className={cn(
         'text-center text-base/6 font-semibold text-balance text-foreground sm:text-left sm:text-sm/6 sm:text-wrap dark:text-foreground',
-        className,
+        className
       )}
     />
   );
@@ -108,10 +97,7 @@ export function CatalystAlertDescription({
   );
 }
 
-export function CatalystAlertBody({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+export function CatalystAlertBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return <div {...props} className={cn('mt-4', className)} />;
 }
 
@@ -124,7 +110,7 @@ export function CatalystAlertActions({
       {...props}
       className={cn(
         'mt-6 flex flex-col-reverse items-center justify-end gap-3 *:w-full sm:mt-4 sm:flex-row sm:*:w-auto',
-        className,
+        className
       )}
     />
   );

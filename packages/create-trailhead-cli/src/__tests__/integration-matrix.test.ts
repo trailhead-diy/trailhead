@@ -18,11 +18,7 @@ import { join } from 'path';
 import { rmSync, existsSync } from 'fs';
 import { createTestContext } from '@esteban-url/trailhead-cli/testing';
 import { generateProject } from '../lib/generator.js';
-import type {
-  ProjectConfig,
-  TemplateVariant,
-  PackageManager,
-} from '../lib/types.js';
+import type { ProjectConfig, TemplateVariant, PackageManager } from '../lib/types.js';
 
 /**
  * Test scenario configuration
@@ -135,20 +131,14 @@ describe('Generator Integration Matrix', () => {
 
         // Verify template-specific files
         if (combination.template === 'advanced') {
-          expect(existsSync(join(projectPath, 'src/commands/config.ts'))).toBe(
-            true,
-          );
-          expect(
-            existsSync(join(projectPath, 'src/commands/validate.ts')),
-          ).toBe(true);
+          expect(existsSync(join(projectPath, 'src/commands/config.ts'))).toBe(true);
+          expect(existsSync(join(projectPath, 'src/commands/validate.ts'))).toBe(true);
         }
 
         // Verify scenario-specific files
         if (combination.scenario.docs) {
           expect(existsSync(join(projectPath, 'docs'))).toBe(true);
-          expect(
-            existsSync(join(projectPath, 'docs/tutorials/getting-started.md')),
-          ).toBe(true);
+          expect(existsSync(join(projectPath, 'docs/tutorials/getting-started.md'))).toBe(true);
         }
 
         if (combination.scenario.git) {
@@ -189,10 +179,7 @@ describe('Generator Integration Matrix', () => {
       expect(packageJsonContent.license).toBeDefined();
 
       // Verify no unresolved template variables remain
-      const packageJsonText = await require('fs').promises.readFile(
-        packageJsonPath,
-        'utf-8',
-      );
+      const packageJsonText = await require('fs').promises.readFile(packageJsonPath, 'utf-8');
       expect(packageJsonText).not.toMatch(/\{\{.*\}\}/); // No unresolved Handlebars
       expect(packageJsonText).not.toMatch(/\[object Object\]/); // No object serialization errors
     });

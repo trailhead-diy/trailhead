@@ -28,9 +28,7 @@ const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
 });
 
 // Mock console methods
-const mockConsoleError = vi
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('Error Handlers', () => {
   beforeEach(() => {
@@ -100,9 +98,9 @@ describe('Error Handlers', () => {
 
       const lines = formatError(error, true);
 
-      expect(lines.some((line) => line.includes('Caused by:'))).toBe(true);
-      expect(lines.some((line) => line.includes('Root cause'))).toBe(true);
-      expect(lines.some((line) => line.includes('Stack:'))).toBe(true);
+      expect(lines.some(line => line.includes('Caused by:'))).toBe(true);
+      expect(lines.some(line => line.includes('Root cause'))).toBe(true);
+      expect(lines.some(line => line.includes('Stack:'))).toBe(true);
     });
 
     it('should handle non-Error cause objects', () => {
@@ -115,7 +113,7 @@ describe('Error Handlers', () => {
 
       const lines = formatError(error, true);
 
-      expect(lines.some((line) => line.includes('String cause'))).toBe(true);
+      expect(lines.some(line => line.includes('String cause'))).toBe(true);
     });
 
     it('should use appropriate icons for severity levels', () => {
@@ -174,7 +172,7 @@ describe('Error Handlers', () => {
       displayError(error);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Something went wrong'),
+        expect.stringContaining('Something went wrong')
       );
     });
 
@@ -188,9 +186,7 @@ describe('Error Handlers', () => {
 
       displayError(error, true);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Extra details'),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Extra details'));
     });
   });
 
@@ -218,18 +214,10 @@ describe('Error Handlers', () => {
 
       displayErrorChain(chain);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Error chain:'),
-      );
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Primary error'),
-      );
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Caused by:'),
-      );
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('1. '),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Error chain:'));
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Primary error'));
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Caused by:'));
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('1. '));
     });
 
     it('should handle chain with no secondary errors', () => {
@@ -244,12 +232,8 @@ describe('Error Handlers', () => {
 
       displayErrorChain(chain);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Only error'),
-      );
-      expect(mockConsoleError).not.toHaveBeenCalledWith(
-        expect.stringContaining('Caused by:'),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Only error'));
+      expect(mockConsoleError).not.toHaveBeenCalledWith(expect.stringContaining('Caused by:'));
     });
   });
 
@@ -264,9 +248,7 @@ describe('Error Handlers', () => {
 
       expect(() => handler(error)).toThrow('process.exit called');
       expect(mockExit).toHaveBeenCalledWith(2);
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Fatal error'),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Fatal error'));
     });
 
     it('should use default exit code 1', () => {
@@ -293,12 +275,8 @@ describe('Error Handlers', () => {
 
       handler(error);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('PREFIX:'),
-      );
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Log this error'),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('PREFIX:'));
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Log this error'));
     });
 
     it('should work without prefix', () => {
@@ -311,9 +289,7 @@ describe('Error Handlers', () => {
 
       handler(error);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('No prefix error'),
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('No prefix error'));
     });
   });
 
@@ -322,9 +298,9 @@ describe('Error Handlers', () => {
       const trueHandler = vi.fn();
       const falseHandler = vi.fn();
       const handler = createConditionalHandler(
-        (error) => error.recoverable,
+        error => error.recoverable,
         trueHandler,
-        falseHandler,
+        falseHandler
       );
 
       const recoverableError: CLIError = {
@@ -343,9 +319,9 @@ describe('Error Handlers', () => {
       const trueHandler = vi.fn();
       const falseHandler = vi.fn();
       const handler = createConditionalHandler(
-        (error) => error.recoverable,
+        error => error.recoverable,
         trueHandler,
-        falseHandler,
+        falseHandler
       );
 
       const nonRecoverableError: CLIError = {
@@ -362,10 +338,7 @@ describe('Error Handlers', () => {
 
     it('should handle missing false handler', () => {
       const trueHandler = vi.fn();
-      const handler = createConditionalHandler(
-        (error) => error.recoverable,
-        trueHandler,
-      );
+      const handler = createConditionalHandler(error => error.recoverable, trueHandler);
 
       const nonRecoverableError: CLIError = {
         code: 'FATAL_ERROR',
@@ -642,9 +615,7 @@ describe('Error Handlers', () => {
     });
 
     it('should throw for empty array', () => {
-      expect(() => buildErrorChain([])).toThrow(
-        'Cannot build error chain from empty array',
-      );
+      expect(() => buildErrorChain([])).toThrow('Cannot build error chain from empty array');
     });
   });
 
@@ -714,7 +685,7 @@ describe('Error Handlers', () => {
         const recoverableErrors = filterRecoverable(errors);
 
         expect(recoverableErrors).toHaveLength(2);
-        expect(recoverableErrors.every((e) => e.recoverable)).toBe(true);
+        expect(recoverableErrors.every(e => e.recoverable)).toBe(true);
       });
     });
 

@@ -8,9 +8,7 @@ import { vi } from 'vitest';
 /**
  * Create a mock filesystem for testing
  */
-export function mockFileSystem(
-  initialFiles: Record<string, string> = {},
-): FileSystem {
+export function mockFileSystem(initialFiles: Record<string, string> = {}): FileSystem {
   // Normalize all initial file paths for cross-platform compatibility
   const normalizedFiles = new Map<string, string>();
   for (const [path, content] of Object.entries(initialFiles)) {
@@ -138,10 +136,7 @@ export function mockFileSystem(
       }
     },
 
-    writeJson: async <T = any>(
-      path: string,
-      data: T,
-    ): Promise<Result<void>> => {
+    writeJson: async <T = any>(path: string, data: T): Promise<Result<void>> => {
       const content = JSON.stringify(data, null, 2);
       const normalized = normalizePath(path);
       files.set(normalized, content);
@@ -197,7 +192,7 @@ export function mockFileSystem(
 
     rm: async (
       path: string,
-      _options?: { recursive?: boolean; force?: boolean },
+      _options?: { recursive?: boolean; force?: boolean }
     ): Promise<Result<void>> => {
       const normalized = normalizePath(path);
       files.delete(normalized);
@@ -205,11 +200,7 @@ export function mockFileSystem(
       return Ok(undefined);
     },
 
-    cp: async (
-      src: string,
-      dest: string,
-      _options?: any,
-    ): Promise<Result<void>> => {
+    cp: async (src: string, dest: string, _options?: any): Promise<Result<void>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
@@ -259,10 +250,7 @@ export function mockFileSystem(
       return Ok(undefined);
     },
 
-    outputFile: async (
-      path: string,
-      content: string,
-    ): Promise<Result<void>> => {
+    outputFile: async (path: string, content: string): Promise<Result<void>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
       // Add parent directories
@@ -333,7 +321,7 @@ export interface EnhancedMockFileSystem extends FileSystem {
  * ```
  */
 export function createEnhancedMockFileSystem(
-  options: MockFileSystemOptions = {},
+  options: MockFileSystemOptions = {}
 ): EnhancedMockFileSystem {
   const {
     initialFiles = {},
@@ -358,20 +346,13 @@ export function createEnhancedMockFileSystem(
   const errorSimulations = new Map<string, any>();
 
   const simulateError = (operation: string, path: string, error: any) => {
-    const normalizedPath = caseSensitive
-      ? normalizePath(path)
-      : normalizePath(path).toLowerCase();
+    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
     errorSimulations.set(`${operation}:${normalizedPath}`, error);
   };
 
-  const checkForSimulatedError = (
-    operation: string,
-    path: string,
-  ): any | null => {
+  const checkForSimulatedError = (operation: string, path: string): any | null => {
     if (!simulateErrors) return null;
-    const normalizedPath = caseSensitive
-      ? normalizePath(path)
-      : normalizePath(path).toLowerCase();
+    const normalizedPath = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
     return errorSimulations.get(`${operation}:${normalizedPath}`) || null;
   };
 
@@ -382,9 +363,7 @@ export function createEnhancedMockFileSystem(
     readFile: async (path: string): Promise<Result<string>> => {
       const error = checkForSimulatedError('readFile', path);
       if (error) return Err(error);
-      const normalized = caseSensitive
-        ? normalizePath(path)
-        : normalizePath(path).toLowerCase();
+      const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
 
       let content: string | undefined;
 
@@ -465,14 +444,12 @@ export function createEnhancedMockFileSystem(
     access: async (path: string, _mode?: number): Promise<Result<void>> => {
       const error = checkForSimulatedError('access', path);
       if (error) return Err(error);
-      const normalized = caseSensitive
-        ? normalizePath(path)
-        : normalizePath(path).toLowerCase();
+      const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
 
       if (!caseSensitive) {
         // Check if any file or directory matches case-insensitively
-        const lowerFiles = Array.from(files.keys()).map((k) => k.toLowerCase());
-        const lowerDirs = Array.from(directories).map((d) => d.toLowerCase());
+        const lowerFiles = Array.from(files.keys()).map(k => k.toLowerCase());
+        const lowerDirs = Array.from(directories).map(d => d.toLowerCase());
         if (lowerFiles.includes(normalized) || lowerDirs.includes(normalized)) {
           return Ok(undefined);
         }
@@ -512,10 +489,8 @@ export function createTestMockFileSystem(): EnhancedMockFileSystem {
         dependencies: { react: '^18.0.0' },
       }),
       'project/src/index.ts': 'console.log("Hello World");',
-      'project/src/components/button.tsx':
-        'export const Button = () => <button />;',
-      'project/README.md':
-        '# Test Project\n\nA test project for mock filesystem.',
+      'project/src/components/button.tsx': 'export const Button = () => <button />;',
+      'project/README.md': '# Test Project\n\nA test project for mock filesystem.',
     },
     initialDirectories: ['project/dist', 'project/node_modules'],
   });
@@ -533,10 +508,8 @@ export function createCLIMockFileSystem(): EnhancedMockFileSystem {
         bin: { 'test-cli': './dist/index.js' },
         dependencies: { '@esteban-url/trailhead-cli': 'workspace:*' },
       }),
-      'cli-project/src/index.ts':
-        'import { createCommand } from "@esteban-url/trailhead-cli";',
-      'cli-project/src/commands/build.ts':
-        'export const buildCommand = createCommand();',
+      'cli-project/src/index.ts': 'import { createCommand } from "@esteban-url/trailhead-cli";',
+      'cli-project/src/commands/build.ts': 'export const buildCommand = createCommand();',
       'cli-project/tsconfig.json': JSON.stringify({
         compilerOptions: { target: 'es2020' },
       }),
@@ -832,7 +805,7 @@ export function mockConfig(options: MockConfigOptions = {}) {
         config?: any;
         filepath?: string | null;
         source?: 'file' | 'package.json' | 'defaults';
-      },
+      }
     ) => {
       configurations[key] = config;
     },
@@ -964,14 +937,8 @@ export interface CreateConfigMockOptions<T = any> {
  * });
  * ```
  */
-export function createConfigMock<T = any>(
-  options: CreateConfigMockOptions<T> = {},
-) {
-  const {
-    scenarios = {},
-    defaultConfig,
-    defaultScenario = 'no-config',
-  } = options;
+export function createConfigMock<T = any>(options: CreateConfigMockOptions<T> = {}) {
+  const { scenarios = {}, defaultConfig, defaultScenario = 'no-config' } = options;
 
   // Track current scenario
   let currentScenario = defaultScenario;
@@ -1110,7 +1077,7 @@ export function createConfigMock<T = any>(
      */
     addScenario: (
       name: string,
-      scenario: NonNullable<CreateConfigMockOptions<T>['scenarios']>[string],
+      scenario: NonNullable<CreateConfigMockOptions<T>['scenarios']>[string]
     ) => {
       scenarios[name] = scenario;
     },

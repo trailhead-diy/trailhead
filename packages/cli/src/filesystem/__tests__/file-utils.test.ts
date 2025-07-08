@@ -145,9 +145,7 @@ describe('File Utils', () => {
       if (!result.success) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
-        expect((result.error.cause as Error).message).toBe(
-          'Failed to read restricted.ts',
-        );
+        expect((result.error.cause as Error).message).toBe('Failed to read restricted.ts');
       }
     });
   });
@@ -159,11 +157,7 @@ describe('File Utils', () => {
       const result = await writeFile('test.ts', 'content');
 
       expect(result.success).toBe(true);
-      expect(mockFs.writeFile).toHaveBeenCalledWith(
-        'test.ts',
-        'content',
-        'utf8',
-      );
+      expect(mockFs.writeFile).toHaveBeenCalledWith('test.ts', 'content', 'utf8');
     });
 
     it('should handle file write errors', async () => {
@@ -189,9 +183,7 @@ describe('File Utils', () => {
       if (!result.success) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to write file');
-        expect((result.error.cause as Error).message).toBe(
-          'Failed to write test.ts',
-        );
+        expect((result.error.cause as Error).message).toBe('Failed to write test.ts');
       }
     });
   });
@@ -256,9 +248,7 @@ describe('File Utils', () => {
       if (!result.success) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to create directory');
-        expect((result.error.cause as Error).message).toBe(
-          'Failed to create directory test-dir',
-        );
+        expect((result.error.cause as Error).message).toBe('Failed to create directory test-dir');
       }
     });
   });
@@ -266,9 +256,7 @@ describe('File Utils', () => {
   describe('compareFiles', () => {
     it('should detect identical files', async () => {
       mockFs.access.mockResolvedValue(undefined); // Both files exist
-      mockFs.readFile
-        .mockResolvedValueOnce('same content')
-        .mockResolvedValueOnce('same content');
+      mockFs.readFile.mockResolvedValueOnce('same content').mockResolvedValueOnce('same content');
 
       const result = await compareFiles('file1.ts', 'file2.ts');
 
@@ -286,9 +274,7 @@ describe('File Utils', () => {
 
     it('should detect different files', async () => {
       mockFs.access.mockResolvedValue(undefined); // Both files exist
-      mockFs.readFile
-        .mockResolvedValueOnce('content 1')
-        .mockResolvedValueOnce('content 2');
+      mockFs.readFile.mockResolvedValueOnce('content 1').mockResolvedValueOnce('content 2');
 
       const result = await compareFiles('file1.ts', 'file2.ts');
 
@@ -358,9 +344,7 @@ describe('File Utils', () => {
     it('should handle destination file read error', async () => {
       mockFs.access.mockResolvedValue(undefined); // Both exist
       const readError = new Error('Read failed');
-      mockFs.readFile
-        .mockResolvedValueOnce('source content')
-        .mockRejectedValueOnce(readError);
+      mockFs.readFile.mockResolvedValueOnce('source content').mockRejectedValueOnce(readError);
 
       const result = await compareFiles('file1.ts', 'error.ts');
 
@@ -395,10 +379,7 @@ describe('File Utils', () => {
       const result = getRelativePath('/full/path/src/utils/test.ts');
 
       expect(result).toBe('src/utils/test.ts');
-      expect(mockPath.relative).toHaveBeenCalledWith(
-        process.cwd(),
-        '/full/path/src/utils/test.ts',
-      );
+      expect(mockPath.relative).toHaveBeenCalledWith(process.cwd(), '/full/path/src/utils/test.ts');
     });
 
     it('should handle current directory files', () => {
@@ -581,10 +562,7 @@ describe('File Utils', () => {
       const ensureResult = await ensureDirectory('output');
       expect(ensureResult.success).toBe(true);
 
-      const writeResult = await writeFile(
-        'output/modified.ts',
-        'modified content',
-      );
+      const writeResult = await writeFile('output/modified.ts', 'modified content');
       expect(writeResult.success).toBe(true);
 
       // Verify stats tracking
@@ -610,9 +588,7 @@ describe('File Utils', () => {
       if (!result.success) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
-        expect((result.error.cause as Error).message).toBe(
-          'Destination read failed',
-        );
+        expect((result.error.cause as Error).message).toBe('Destination read failed');
       }
     });
   });

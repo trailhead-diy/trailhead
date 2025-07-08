@@ -146,9 +146,7 @@ describe('Error Factory - Core Functions', () => {
       const error = invalidTypeError('age', 'number', 'twenty');
 
       expect(error.category).toBe('validation');
-      expect(error.message).toBe(
-        "Field 'age' must be of type 'number', got 'string'",
-      );
+      expect(error.message).toBe("Field 'age' must be of type 'number', got 'string'");
       expect(error.field).toBe('age');
       expect(error.value).toBe('twenty');
       expect(error.constraints).toEqual({
@@ -169,11 +167,7 @@ describe('Error Factory - Core Functions', () => {
 
   describe('fileSystemError', () => {
     it('should create basic filesystem error', () => {
-      const error = fileSystemError(
-        'read',
-        '/test/file.txt',
-        'Cannot read file',
-      );
+      const error = fileSystemError('read', '/test/file.txt', 'Cannot read file');
 
       expect(error.category).toBe('filesystem');
       expect(error.code).toBe('FS_READ_ERROR');
@@ -295,9 +289,7 @@ describe('Error Factory - Core Functions', () => {
       expect(severityError.category).toBe('filesystem');
       expect(severityError.severity).toBe('critical');
       expect(severityError.errno).toBe(-2);
-      expect(severityError.suggestion).toBe(
-        'Check if the file exists and the path is correct',
-      );
+      expect(severityError.suggestion).toBe('Check if the file exists and the path is correct');
     });
 
     it('should handle error hierarchy', () => {

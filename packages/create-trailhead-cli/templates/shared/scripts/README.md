@@ -220,11 +220,7 @@ Add your own patterns to `.smart-test-config.json`:
 
 ```json
 {
-  "highRiskPatterns": [
-    "\\.(ts|tsx|js|jsx)$",
-    "database/migrations/",
-    "config/app\\.php$"
-  ]
+  "highRiskPatterns": ["\\.(ts|tsx|js|jsx)$", "database/migrations/", "config/app\\.php$"]
 }
 ```
 

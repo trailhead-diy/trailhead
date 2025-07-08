@@ -2,10 +2,7 @@ import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { resolve, dirname } from 'path';
 import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { fileURLToPath } from 'url';
-import {
-  executeGitCommandSimple,
-  validateGitEnvironment,
-} from '@esteban-url/trailhead-cli/git';
+import { executeGitCommandSimple, validateGitEnvironment } from '@esteban-url/trailhead-cli/git';
 import { detectPackageManager } from '@esteban-url/trailhead-cli/utils';
 import { execa } from 'execa';
 import chalk from 'chalk';
@@ -19,11 +16,7 @@ import {
 } from './validation.js';
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import type {
-  ProjectConfig,
-  TemplateContext,
-  GeneratorContext,
-} from './types.js';
+import type { ProjectConfig, TemplateContext, GeneratorContext } from './types.js';
 import { createTemplateContext } from './template-context.js';
 import { getTemplateFiles } from './template-loader.js';
 import { TemplateCompiler } from './template-compiler.js';
@@ -73,7 +66,7 @@ const templateCompiler = new TemplateCompiler();
  */
 export async function generateProject(
   config: ProjectConfig,
-  context: GeneratorContext,
+  context: GeneratorContext
 ): Promise<Result<void, CLIError>> {
   const { logger, verbose } = context;
 
@@ -84,9 +77,7 @@ export async function generateProject(
       return validationResult;
     }
 
-    logger.info(
-      `Generating ${config.template} CLI project: ${chalk.cyan(config.projectName)}`,
-    );
+    logger.info(`Generating ${config.template} CLI project: ${chalk.cyan(config.projectName)}`);
 
     if (config.dryRun) {
       logger.info(chalk.yellow('DRY RUN MODE - No files will be created'));
@@ -99,29 +90,21 @@ export async function generateProject(
     }
 
     // Phase 2: Load template files
-    const templateFiles = await getTemplateFiles(
-      config.template,
-      context.templateConfig,
-    );
+    const templateFiles = await getTemplateFiles(config.template, context.templateConfig);
     logger.info(`Found ${templateFiles.length} template files`);
 
     // Phase 2.5: Pre-compile templates for better performance
     // Get the resolved template directory from template loader
     const { resolveTemplatePaths } = await import('./template-loader.js');
-    const { paths } = resolveTemplatePaths(
-      config.template,
-      context.templateConfig,
-    );
+    const { paths } = resolveTemplatePaths(config.template, context.templateConfig);
     const templatePaths = templateFiles
-      .filter((f) => f.isTemplate)
-      .map((f) => resolve(paths.base, f.source));
+      .filter(f => f.isTemplate)
+      .map(f => resolve(paths.base, f.source));
 
     if (templatePaths.length > 0) {
       const precompileSpinner = ora('Pre-compiling templates...').start();
       await templateCompiler.precompileTemplates(templatePaths);
-      precompileSpinner.succeed(
-        `Pre-compiled ${templatePaths.length} templates`,
-      );
+      precompileSpinner.succeed(`Pre-compiled ${templatePaths.length} templates`);
     }
 
     // Phase 3: Create project directory
@@ -137,12 +120,7 @@ export async function generateProject(
     const startTime = performance.now();
 
     for (const templateFile of templateFiles) {
-      const result = await processTemplateFile(
-        templateFile,
-        templateContext,
-        config,
-        context,
-      );
+      const result = await processTemplateFile(templateFile, templateContext, config, context);
 
       if (!result.success) {
         spinner.fail(`Failed to process ${templateFile.source}`);
@@ -158,7 +136,7 @@ export async function generateProject(
     const avgTimePerFile = processingTime / templateFiles.length;
 
     spinner.succeed(
-      `Template files processed (${Math.round(processingTime)}ms, ${Math.round(avgTimePerFile)}ms avg)`,
+      `Template files processed (${Math.round(processingTime)}ms, ${Math.round(avgTimePerFile)}ms avg)`
     );
 
     if (verbose) {
@@ -168,10 +146,7 @@ export async function generateProject(
 
     // Phase 5: Initialize git repository
     if (config.initGit && !config.dryRun) {
-      const gitResult = await initializeGitRepository(
-        config.projectPath,
-        context,
-      );
+      const gitResult = await initializeGitRepository(config.projectPath, context);
       if (!gitResult.success) {
         logger.warning('Failed to initialize git repository');
       }
@@ -195,7 +170,7 @@ export async function generateProject(
       createError('GENERATOR_FAILED', 'Project generation failed', {
         cause: error,
         details: error instanceof Error ? error.message : String(error),
-      }),
+      })
     );
   }
 }
@@ -237,9 +212,7 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
   }
 
   // Validate package manager with whitelist
-  const packageManagerValidation = validatePackageManager(
-    config.packageManager,
-  );
+  const packageManagerValidation = validatePackageManager(config.packageManager);
   if (!packageManagerValidation.success) {
     return packageManagerValidation;
   }
@@ -260,20 +233,14 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
  *
  * @throws {CLIError} When directory creation fails due to permissions or filesystem issues
  */
-async function createProjectDirectory(
-  projectPath: string,
-): Promise<Result<void, CLIError>> {
+async function createProjectDirectory(projectPath: string): Promise<Result<void, CLIError>> {
   const result = await fs.ensureDir(projectPath);
   if (!result.success) {
     return Err(
-      createError(
-        'DIRECTORY_CREATE_FAILED',
-        'Failed to create project directory',
-        {
-          cause: result.error,
-          details: result.error.message,
-        },
-      ),
+      createError('DIRECTORY_CREATE_FAILED', 'Failed to create project directory', {
+        cause: result.error,
+        details: result.error.message,
+      })
     );
   }
   return Ok(undefined);
@@ -307,7 +274,7 @@ async function processTemplateFile(
   templateFile: any,
   templateContext: TemplateContext,
   config: ProjectConfig,
-  context: GeneratorContext,
+  context: GeneratorContext
 ): Promise<Result<void, CLIError>> {
   try {
     const { logger, verbose } = context;
@@ -315,24 +282,15 @@ async function processTemplateFile(
     // Validate template source path to prevent directory traversal
     // Get the resolved template directory from template loader
     const { resolveTemplatePaths } = await import('./template-loader.js');
-    const { paths } = resolveTemplatePaths(
-      config.template,
-      context.templateConfig,
-    );
+    const { paths } = resolveTemplatePaths(config.template, context.templateConfig);
     const baseTemplateDir = paths.base;
-    const templatePathValidation = validateOutputPath(
-      templateFile.source,
-      baseTemplateDir,
-    );
+    const templatePathValidation = validateOutputPath(templateFile.source, baseTemplateDir);
     if (!templatePathValidation.success) {
       return templatePathValidation;
     }
 
     // Validate output destination path to prevent directory traversal
-    const outputPathValidation = validateOutputPath(
-      templateFile.destination,
-      config.projectPath,
-    );
+    const outputPathValidation = validateOutputPath(templateFile.destination, config.projectPath);
     if (!outputPathValidation.success) {
       return outputPathValidation;
     }
@@ -355,8 +313,8 @@ async function processTemplateFile(
           {
             cause: ensureDirResult.error,
             details: ensureDirResult.error.message,
-          },
-        ),
+          }
+        )
       );
     }
 
@@ -364,27 +322,21 @@ async function processTemplateFile(
       // Process template with optimized compiler
       const processedContent = await templateCompiler.compileTemplate(
         templatePath,
-        templateContext,
+        templateContext
       );
 
       const writeResult = await fs.writeFile(outputPath, processedContent);
       if (!writeResult.success) {
         return Err(
-          createError(
-            'TEMPLATE_PROCESS_FAILED',
-            `Failed to write template file ${outputPath}`,
-            {
-              cause: writeResult.error,
-              details: writeResult.error.message,
-            },
-          ),
+          createError('TEMPLATE_PROCESS_FAILED', `Failed to write template file ${outputPath}`, {
+            cause: writeResult.error,
+            details: writeResult.error.message,
+          })
         );
       }
 
       if (verbose) {
-        logger.debug(
-          `Processed template: ${templateFile.source} -> ${templateFile.destination}`,
-        );
+        logger.debug(`Processed template: ${templateFile.source} -> ${templateFile.destination}`);
       }
     } else {
       // Copy file as-is
@@ -397,15 +349,13 @@ async function processTemplateFile(
             {
               cause: copyResult.error,
               details: copyResult.error.message,
-            },
-          ),
+            }
+          )
         );
       }
 
       if (verbose) {
-        logger.debug(
-          `Copied file: ${templateFile.source} -> ${templateFile.destination}`,
-        );
+        logger.debug(`Copied file: ${templateFile.source} -> ${templateFile.destination}`);
       }
     }
 
@@ -418,9 +368,7 @@ async function processTemplateFile(
       } catch {
         // Non-critical error, just log it
         if (verbose) {
-          logger.debug(
-            `Warning: Could not set executable permissions for ${outputPath}`,
-          );
+          logger.debug(`Warning: Could not set executable permissions for ${outputPath}`);
         }
       }
     }
@@ -434,8 +382,8 @@ async function processTemplateFile(
         {
           cause: error,
           details: error instanceof Error ? error.message : String(error),
-        },
-      ),
+        }
+      )
     );
   }
 }
@@ -463,7 +411,7 @@ async function processTemplateFile(
  */
 async function initializeGitRepository(
   projectPath: string,
-  context: GeneratorContext,
+  context: GeneratorContext
 ): Promise<Result<void, CLIError>> {
   const { logger: _logger } = context;
 
@@ -484,7 +432,7 @@ async function initializeGitRepository(
       createError('GIT_INIT_FAILED', 'Git environment validation failed', {
         cause: envCheck.error,
         details: 'Git is not installed or not available in PATH',
-      }),
+      })
     );
   }
 
@@ -496,7 +444,7 @@ async function initializeGitRepository(
       createError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
         cause: initResult.error,
         details: 'Git init command failed',
-      }),
+      })
     );
   }
 
@@ -507,30 +455,25 @@ async function initializeGitRepository(
   if (!addResult.success) {
     spinner.fail('Failed to stage files');
     return Err(
-      createError(
-        'GIT_INIT_FAILED',
-        'Failed to stage files for initial commit',
-        {
-          cause: addResult.error,
-          details: 'Git add command failed',
-        },
-      ),
+      createError('GIT_INIT_FAILED', 'Failed to stage files for initial commit', {
+        cause: addResult.error,
+        details: 'Git add command failed',
+      })
     );
   }
 
   // Create initial commit
   const commitMessage = 'feat: initial commit with trailhead-cli generator';
-  const commitResult = await executeGitCommandSimple(
-    ['commit', '-m', commitMessage],
-    { cwd: safePath },
-  );
+  const commitResult = await executeGitCommandSimple(['commit', '-m', commitMessage], {
+    cwd: safePath,
+  });
   if (!commitResult.success) {
     spinner.fail('Failed to create initial commit');
     return Err(
       createError('GIT_INIT_FAILED', 'Failed to create initial commit', {
         cause: commitResult.error,
         details: 'Git commit command failed',
-      }),
+      })
     );
   }
 
@@ -561,16 +504,13 @@ async function initializeGitRepository(
  */
 async function installDependencies(
   config: ProjectConfig,
-  context: GeneratorContext,
+  context: GeneratorContext
 ): Promise<Result<void, CLIError>> {
   const { logger: _logger } = context;
 
   try {
     // Validate project path to prevent command injection
-    const pathValidation = validateProjectPath(
-      config.projectPath,
-      process.cwd(),
-    );
+    const pathValidation = validateProjectPath(config.projectPath, process.cwd());
     if (!pathValidation.success) {
       return pathValidation;
     }
@@ -580,28 +520,20 @@ async function installDependencies(
     const packageManagerResult = detectPackageManager();
     if (!packageManagerResult.success) {
       return Err(
-        createError(
-          'PACKAGE_MANAGER_NOT_FOUND',
-          'No suitable package manager found',
-          {
-            cause: packageManagerResult.error,
-            details: packageManagerResult.error.message,
-            suggestion: packageManagerResult.error.suggestion,
-          },
-        ),
+        createError('PACKAGE_MANAGER_NOT_FOUND', 'No suitable package manager found', {
+          cause: packageManagerResult.error,
+          details: packageManagerResult.error.message,
+          suggestion: packageManagerResult.error.suggestion,
+        })
       );
     }
 
     const packageManager = packageManagerResult.value;
-    const spinner = ora(
-      `Installing dependencies with ${packageManager.name}...`,
-    ).start();
+    const spinner = ora(`Installing dependencies with ${packageManager.name}...`).start();
 
     // Use CLI package manager configuration
     const installArgs =
-      packageManager.name === 'pnpm'
-        ? ['install', '--ignore-workspace']
-        : ['install'];
+      packageManager.name === 'pnpm' ? ['install', '--ignore-workspace'] : ['install'];
 
     await execa(packageManager.command, installArgs, {
       cwd: safePath,
@@ -614,15 +546,11 @@ async function installDependencies(
     return Ok(undefined);
   } catch (error) {
     return Err(
-      createError(
-        'DEPENDENCY_INSTALL_FAILED',
-        'Failed to install dependencies',
-        {
-          cause: error,
-          details:
-            'Dependency installation failed - ensure the package manager is installed and accessible',
-        },
-      ),
+      createError('DEPENDENCY_INSTALL_FAILED', 'Failed to install dependencies', {
+        cause: error,
+        details:
+          'Dependency installation failed - ensure the package manager is installed and accessible',
+      })
     );
   }
 }

@@ -1,5 +1,5 @@
 ---
-"@esteban-url/trailhead-cli": major
+'@esteban-url/trailhead-cli': major
 ---
 
 **BREAKING CHANGE**: Remove pathExists() method from filesystem interface
@@ -9,7 +9,7 @@ The custom `pathExists()` method has been removed from the FileSystem interface.
 **Before:**
 
 ```typescript
-const exists = await fs.pathExists("/some/path");
+const exists = await fs.pathExists('/some/path');
 if (exists) {
   // path exists
 }
@@ -18,7 +18,7 @@ if (exists) {
 **After:**
 
 ```typescript
-const result = await fs.access("/some/path");
+const result = await fs.access('/some/path');
 if (result.success) {
   // path exists
 }

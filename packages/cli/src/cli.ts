@@ -1,8 +1,5 @@
 import { Command } from 'commander';
-import type {
-  Command as CommandInterface,
-  CommandContext,
-} from './command/index.js';
+import type { Command as CommandInterface, CommandContext } from './command/index.js';
 import { createDefaultLogger } from './core/logger.js';
 import { createFileSystem } from './filesystem/index.js';
 import { validateCommandOption } from './command/validation.js';
@@ -115,9 +112,7 @@ export function createCLI(config: CLIConfig): CLI {
     async run(argv: string[] = process.argv): Promise<void> {
       // Register all commands
       for (const command of commands) {
-        const cmd = program
-          .command(command.name)
-          .description(command.description);
+        const cmd = program.command(command.name).description(command.description);
 
         // Add arguments if specified
         if (command.arguments) {
@@ -126,15 +121,11 @@ export function createCLI(config: CLIConfig): CLI {
           } else {
             // Handle array of argument definitions
             const argumentsString = command.arguments
-              .map((arg) => {
+              .map(arg => {
                 if (arg.variadic) {
-                  return arg.required !== false
-                    ? `<${arg.name}...>`
-                    : `[${arg.name}...]`;
+                  return arg.required !== false ? `<${arg.name}...>` : `[${arg.name}...]`;
                 } else {
-                  return arg.required !== false
-                    ? `<${arg.name}>`
-                    : `[${arg.name}]`;
+                  return arg.required !== false ? `<${arg.name}>` : `[${arg.name}]`;
                 }
               })
               .join(' ');
@@ -145,9 +136,7 @@ export function createCLI(config: CLIConfig): CLI {
         // Add options with performance optimization
         if (command.options && command.options.length > 0) {
           // Process all options with caching for better performance
-          const processedOptions = processCommandOptionsWithCache(
-            command.options,
-          );
+          const processedOptions = processCommandOptionsWithCache(command.options);
 
           for (let i = 0; i < processedOptions.length; i++) {
             const option = command.options[i];
@@ -157,44 +146,32 @@ export function createCLI(config: CLIConfig): CLI {
             const validationResult = validateCommandOption(option, i);
             if (!validationResult.success) {
               const error = validationResult.error;
-              console.error(
-                `\n❌ CLI Configuration Error in command '${command.name}':`,
-              );
+              console.error(`\n❌ CLI Configuration Error in command '${command.name}':`);
               console.error(`   ${error.message}`);
               if (error.suggestion) {
                 console.error(`   💡 Suggestion: ${error.suggestion}`);
               }
-              console.error(
-                `   Option configuration:`,
-                JSON.stringify(option, null, 2),
-              );
+              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
               process.exit(1);
             }
 
             try {
               if (option.required) {
-                cmd.requiredOption(
-                  processed.flags,
-                  option.description,
-                  option.default,
-                );
+                cmd.requiredOption(processed.flags, option.description, option.default);
               } else {
                 cmd.option(processed.flags, option.description, option.default);
               }
             } catch (commanderError) {
               console.error(
-                `\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`,
+                `\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`
               );
               console.error(
-                `   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`,
+                `   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`
               );
               console.error(`   Flags: ${processed.flags}`);
+              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
               console.error(
-                `   Option configuration:`,
-                JSON.stringify(option, null, 2),
-              );
-              console.error(
-                `   💡 This usually indicates an invalid flags format or conflicting options`,
+                `   💡 This usually indicates an invalid flags format or conflicting options`
               );
               process.exit(1);
             }
@@ -203,8 +180,7 @@ export function createCLI(config: CLIConfig): CLI {
 
         // Add verbose flag to all commands (only if not already defined)
         const hasVerboseOption = command.options?.some(
-          (option) =>
-            option.flags?.includes('--verbose') || option.flags?.includes('-v'),
+          option => option.flags?.includes('--verbose') || option.flags?.includes('-v')
         );
 
         if (!hasVerboseOption) {
@@ -224,9 +200,7 @@ export function createCLI(config: CLIConfig): CLI {
             const arg = args[i];
             if (Array.isArray(arg)) {
               // Variadic arguments come as arrays
-              positionalArgs = positionalArgs.concat(
-                arg.filter((a) => typeof a === 'string'),
-              );
+              positionalArgs = positionalArgs.concat(arg.filter(a => typeof a === 'string'));
             } else if (typeof arg === 'string') {
               positionalArgs.push(arg);
             }
@@ -250,9 +224,7 @@ export function createCLI(config: CLIConfig): CLI {
               process.exit(1);
             }
           } catch (error) {
-            context.logger.error(
-              error instanceof Error ? error.message : 'Unknown error occurred',
-            );
+            context.logger.error(error instanceof Error ? error.message : 'Unknown error occurred');
             process.exit(1);
           }
         });

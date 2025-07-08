@@ -28,8 +28,7 @@ const DOC_TYPES = [
   {
     name: 'Tutorial - Learning-oriented (e.g., "Build Your First CLI App")',
     value: 'tutorial' as const,
-    description:
-      'Step-by-step learning experience that builds something concrete',
+    description: 'Step-by-step learning experience that builds something concrete',
   },
   {
     name: 'How-To Guide - Task-oriented (e.g., "How to Add Custom Validation")',
@@ -39,8 +38,7 @@ const DOC_TYPES = [
   {
     name: 'Reference - Information-oriented (e.g., "API Reference")',
     value: 'reference' as const,
-    description:
-      'Comprehensive technical specifications and lookup information',
+    description: 'Comprehensive technical specifications and lookup information',
   },
   {
     name: 'Explanation - Understanding-oriented (e.g., "Why We Use Result Types")',
@@ -53,21 +51,13 @@ const COMMON_DIRECTORIES = {
   tutorial: ['tutorials', 'tutorials/getting-started', 'tutorials/advanced'],
   'how-to': ['how-to', 'how-to/cli', 'how-to/ui', 'how-to/deployment'],
   reference: ['reference', 'reference/api', 'reference/config'],
-  explanation: [
-    'explanation',
-    'explanation/architecture',
-    'explanation/concepts',
-  ],
+  explanation: ['explanation', 'explanation/architecture', 'explanation/concepts'],
 };
 
 function showWelcome(): void {
   console.log(chalk.bold.blue('\n📝 Trailhead Documentation Creator\n'));
-  console.log(
-    'This tool helps you create documentation that follows Diátaxis principles.',
-  );
-  console.log(
-    'Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n',
-  );
+  console.log('This tool helps you create documentation that follows Diátaxis principles.');
+  console.log('Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n');
 }
 
 function showTypeGuidance(type: string): void {
@@ -117,11 +107,11 @@ async function getDocumentType(): Promise<DocMetadata['type']> {
 }
 
 async function getBasicInfo(
-  type: DocMetadata['type'],
+  type: DocMetadata['type']
 ): Promise<Pick<DocMetadata, 'title' | 'description'>> {
   const title = await input({
     message: 'Document title:',
-    validate: (value) => {
+    validate: value => {
       if (!value.trim()) return 'Title is required';
       if (value.length < 5) return 'Title should be at least 5 characters';
       if (value.length > 80) return 'Title should be under 80 characters';
@@ -131,12 +121,10 @@ async function getBasicInfo(
 
   const description = await input({
     message: 'One-line description:',
-    validate: (value) => {
+    validate: value => {
       if (!value.trim()) return 'Description is required';
-      if (value.length < 10)
-        return 'Description should be at least 10 characters';
-      if (value.length > 120)
-        return 'Description should be under 120 characters';
+      if (value.length < 10) return 'Description should be at least 10 characters';
+      if (value.length > 120) return 'Description should be under 120 characters';
       return true;
     },
   });
@@ -162,8 +150,7 @@ async function getPrerequisites(type: DocMetadata['type']): Promise<string[]> {
   while (addMore) {
     const prereq = await input({
       message: `Prerequisite ${prerequisites.length + 1}:`,
-      validate: (value) =>
-        value.trim() ? true : 'Prerequisite cannot be empty',
+      validate: value => (value.trim() ? true : 'Prerequisite cannot be empty'),
     });
 
     prerequisites.push(prereq.trim());
@@ -191,7 +178,7 @@ async function getRelatedDocs(): Promise<string[]> {
   while (addMore) {
     const doc = await input({
       message: `Related document path ${related.length + 1} (e.g., /docs/how-to/setup):`,
-      validate: (value) => {
+      validate: value => {
         if (!value.trim()) return 'Path cannot be empty';
         if (!value.startsWith('/docs/')) return 'Path should start with /docs/';
         return true;
@@ -210,11 +197,11 @@ async function getRelatedDocs(): Promise<string[]> {
 }
 
 async function getLocation(
-  type: DocMetadata['type'],
+  type: DocMetadata['type']
 ): Promise<{ directory: string; filename: string }> {
   const commonDirs = COMMON_DIRECTORIES[type];
   const choices = [
-    ...commonDirs.map((dir) => ({
+    ...commonDirs.map(dir => ({
       name: `${dir}/ (${type} directory)`,
       value: dir,
     })),
@@ -232,10 +219,9 @@ async function getLocation(
   if (directory === 'custom') {
     directory = await input({
       message: 'Custom directory path (relative to docs/):',
-      validate: (value) => {
+      validate: value => {
         if (!value.trim()) return 'Directory is required';
-        if (value.startsWith('/'))
-          return 'Use relative path (no leading slash)';
+        if (value.startsWith('/')) return 'Use relative path (no leading slash)';
         return true;
       },
     });
@@ -243,10 +229,9 @@ async function getLocation(
 
   const filename = await input({
     message: 'Filename (without .md extension):',
-    validate: (value) => {
+    validate: value => {
       if (!value.trim()) return 'Filename is required';
-      if (!/^[a-z0-9-]+$/.test(value))
-        return 'Use lowercase letters, numbers, and hyphens only';
+      if (!/^[a-z0-9-]+$/.test(value)) return 'Use lowercase letters, numbers, and hyphens only';
       if (value.length < 3) return 'Filename should be at least 3 characters';
       return true;
     },
@@ -265,14 +250,14 @@ function generateFrontmatter(metadata: DocMetadata): string {
 
   if (metadata.prerequisites && metadata.prerequisites.length > 0) {
     frontmatter.push('prerequisites:');
-    metadata.prerequisites.forEach((prereq) => {
+    metadata.prerequisites.forEach(prereq => {
       frontmatter.push(`  - ${prereq}`);
     });
   }
 
   if (metadata.related && metadata.related.length > 0) {
     frontmatter.push('related:');
-    metadata.related.forEach((doc) => {
+    metadata.related.forEach(doc => {
       frontmatter.push(`  - ${doc}`);
     });
   }
@@ -322,9 +307,7 @@ async function createDocument(metadata: DocMetadata): Promise<void> {
   // Create directory if it doesn't exist
   if (!existsSync(fullDir)) {
     mkdirSync(fullDir, { recursive: true });
-    console.log(
-      chalk.green(`Created directory: ${relative(process.cwd(), fullDir)}`),
-    );
+    console.log(chalk.green(`Created directory: ${relative(process.cwd(), fullDir)}`));
   }
 
   // Load and process template
@@ -334,9 +317,7 @@ async function createDocument(metadata: DocMetadata): Promise<void> {
   // Write file
   writeFileSync(fullPath, content, 'utf-8');
 
-  console.log(
-    chalk.green(`\n✅ Created: ${relative(process.cwd(), fullPath)}`),
-  );
+  console.log(chalk.green(`\n✅ Created: ${relative(process.cwd(), fullPath)}`));
   console.log(chalk.blue(`\n📝 Next steps:`));
   console.log(`1. Edit the file to add your content`);
   console.log(`2. Run: pnpm docs:validate`);
@@ -378,13 +359,9 @@ async function main(): Promise<void> {
     console.log(`Type: ${chalk.blue(metadata.type)}`);
     console.log(`Title: ${chalk.blue(metadata.title)}`);
     console.log(`Description: ${chalk.blue(metadata.description)}`);
-    console.log(
-      `Location: ${chalk.blue(`docs/${metadata.directory}/${metadata.filename}`)}`,
-    );
+    console.log(`Location: ${chalk.blue(`docs/${metadata.directory}/${metadata.filename}`)}`);
     if (metadata.prerequisites?.length) {
-      console.log(
-        `Prerequisites: ${chalk.blue(metadata.prerequisites.join(', '))}`,
-      );
+      console.log(`Prerequisites: ${chalk.blue(metadata.prerequisites.join(', '))}`);
     }
     if (metadata.related?.length) {
       console.log(`Related: ${chalk.blue(metadata.related.join(', '))}`);

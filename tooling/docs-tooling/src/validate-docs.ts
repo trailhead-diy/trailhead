@@ -75,15 +75,9 @@ const ANTI_PATTERNS = {
 // Required patterns for each type
 const REQUIRED_PATTERNS = {
   tutorial: [/you will (build|create|learn)/i, /(step|phase) \d+/i],
-  'how-to': [
-    /to (add|configure|setup|install|create)/i,
-    /(problem|issue|task)/i,
-  ],
+  'how-to': [/to (add|configure|setup|install|create)/i, /(problem|issue|task)/i],
   reference: [/(function|interface|type|api)/i, /(parameter|return|example)/i],
-  explanation: [
-    /(why|how|concept|design|architecture)/i,
-    /(because|reason|approach)/i,
-  ],
+  explanation: [/(why|how|concept|design|architecture)/i, /(because|reason|approach)/i],
 };
 
 function findMarkdownFiles(dir: string): string[] {
@@ -98,9 +92,7 @@ function findMarkdownFiles(dir: string): string[] {
 
       if (stat.isDirectory()) {
         // Skip certain directories
-        if (
-          ['.git', 'node_modules', '.vale', 'dist', 'build'].includes(entry)
-        ) {
+        if (['.git', 'node_modules', '.vale', 'dist', 'build'].includes(entry)) {
           continue;
         }
         files.push(...findMarkdownFiles(fullPath));
@@ -120,11 +112,9 @@ function validateFrontmatter(metadata: any, file: string): string[] {
 
   if (!metadata.type) {
     errors.push('Missing required "type" field in frontmatter');
-  } else if (
-    !['tutorial', 'how-to', 'reference', 'explanation'].includes(metadata.type)
-  ) {
+  } else if (!['tutorial', 'how-to', 'reference', 'explanation'].includes(metadata.type)) {
     errors.push(
-      `Invalid type "${metadata.type}". Must be: tutorial, how-to, reference, or explanation`,
+      `Invalid type "${metadata.type}". Must be: tutorial, how-to, reference, or explanation`
     );
   }
 
@@ -147,7 +137,7 @@ function validateFrontmatter(metadata: any, file: string): string[] {
 function validateContent(
   content: string,
   type: string,
-  file: string,
+  file: string
 ): { errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -156,23 +146,16 @@ function validateContent(
   const antiPatterns = ANTI_PATTERNS[type as keyof typeof ANTI_PATTERNS] || [];
   for (const pattern of antiPatterns) {
     if (pattern.test(content)) {
-      errors.push(
-        `Content violates ${type} principles. Found pattern: ${pattern.source}`,
-      );
+      errors.push(`Content violates ${type} principles. Found pattern: ${pattern.source}`);
     }
   }
 
   // Check for required patterns (warnings, not errors)
-  const requiredPatterns =
-    REQUIRED_PATTERNS[type as keyof typeof REQUIRED_PATTERNS] || [];
-  const hasRequiredPattern = requiredPatterns.some((pattern) =>
-    pattern.test(content),
-  );
+  const requiredPatterns = REQUIRED_PATTERNS[type as keyof typeof REQUIRED_PATTERNS] || [];
+  const hasRequiredPattern = requiredPatterns.some(pattern => pattern.test(content));
 
   if (requiredPatterns.length > 0 && !hasRequiredPattern) {
-    warnings.push(
-      `Content may not match ${type} type. Consider adding typical ${type} elements.`,
-    );
+    warnings.push(`Content may not match ${type} type. Consider adding typical ${type} elements.`);
   }
 
   // Check for mixed content indicators
@@ -186,7 +169,7 @@ function validateContent(
   for (const indicator of mixedContentIndicators) {
     if (indicator.pattern.test(content) && indicator.suggests !== type) {
       warnings.push(
-        `Content appears to contain ${indicator.suggests} material but is marked as ${type}`,
+        `Content appears to contain ${indicator.suggests} material but is marked as ${type}`
       );
     }
   }
@@ -213,20 +196,14 @@ function validateFile(file: string): ValidationResult {
       result.metadata = parsed.data as DocMetadata;
 
       // Validate content matches type
-      const contentValidation = validateContent(
-        parsed.content,
-        parsed.data.type,
-        file,
-      );
+      const contentValidation = validateContent(parsed.content, parsed.data.type, file);
       result.errors.push(...contentValidation.errors);
       result.warnings.push(...contentValidation.warnings);
     }
 
     // Check for empty content
     if (parsed.content.trim().length < 100) {
-      result.warnings.push(
-        'Documentation appears to be very short or incomplete',
-      );
+      result.warnings.push('Documentation appears to be very short or incomplete');
     }
   } catch (error) {
     result.errors.push(`Failed to parse file: ${error}`);
@@ -254,8 +231,7 @@ function generateCoverageReport(results: ValidationResult[]): void {
     }
 
     if (result.metadata?.type) {
-      summary.byType[result.metadata.type] =
-        (summary.byType[result.metadata.type] || 0) + 1;
+      summary.byType[result.metadata.type] = (summary.byType[result.metadata.type] || 0) + 1;
     }
   }
 
@@ -274,15 +250,9 @@ function generateCoverageReport(results: ValidationResult[]): void {
   console.log(chalk.bold(`\nOverall Quality: ${coverage.toFixed(1)}%`));
 
   if (coverage < 80) {
-    console.log(
-      chalk.red(
-        '📉 Documentation quality is below 80%. Consider improving compliance.',
-      ),
-    );
+    console.log(chalk.red('📉 Documentation quality is below 80%. Consider improving compliance.'));
   } else if (coverage < 95) {
-    console.log(
-      chalk.yellow('📈 Good documentation quality. A few improvements needed.'),
-    );
+    console.log(chalk.yellow('📈 Good documentation quality. A few improvements needed.'));
   } else {
     console.log(chalk.green('🎉 Excellent documentation quality!'));
   }
@@ -294,11 +264,11 @@ function main(): void {
   // Find all markdown files
   const allFiles = [
     ...findMarkdownFiles(DOCS_DIR),
-    ...PACKAGES_DOCS.flatMap((dir) => findMarkdownFiles(dir)),
+    ...PACKAGES_DOCS.flatMap(dir => findMarkdownFiles(dir)),
   ];
 
   // Filter out templates and other non-docs
-  const docFiles = allFiles.filter((file) => {
+  const docFiles = allFiles.filter(file => {
     const relativePath = relative(process.cwd(), file);
     const filename = basename(file);
 
@@ -343,18 +313,12 @@ function main(): void {
   generateCoverageReport(results);
 
   // Exit with error code if there are validation errors
-  const hasErrors = results.some((r) => r.errors.length > 0);
+  const hasErrors = results.some(r => r.errors.length > 0);
   if (hasErrors) {
-    console.log(
-      chalk.red(
-        '\n❌ Documentation validation failed. Please fix the errors above.',
-      ),
-    );
+    console.log(chalk.red('\n❌ Documentation validation failed. Please fix the errors above.'));
     process.exit(1);
   } else {
-    console.log(
-      chalk.green('\n✅ All documentation follows Diátaxis standards!'),
-    );
+    console.log(chalk.green('\n✅ All documentation follows Diátaxis standards!'));
   }
 }
 

@@ -11,11 +11,7 @@ import type {
 import { Ok, Err } from '../core/errors/index.js';
 
 export function createNodeFileSystem(): FileSystem {
-  const createError = (
-    operation: string,
-    filePath: string,
-    error: any,
-  ): FileSystemError => {
+  const createError = (operation: string, filePath: string, error: any): FileSystemError => {
     // Map fs-extra/Node.js error codes to more descriptive messages
     const errorCode = error.code || 'FS_ERROR';
     let message: string;
@@ -197,11 +193,7 @@ export function createNodeFileSystem(): FileSystem {
       }
     },
 
-    async writeJson<T = any>(
-      filePath: string,
-      data: T,
-      options?: { spaces?: number },
-    ) {
+    async writeJson<T = any>(filePath: string, data: T, options?: { spaces?: number }) {
       try {
         const content = JSON.stringify(data, null, options?.spaces ?? 2);
         // Ensure directory exists before writing
@@ -218,9 +210,7 @@ export function createNodeFileSystem(): FileSystem {
         // Read directory contents and remove each item
         const entries = await fs.readdir(dirPath);
         await Promise.all(
-          entries.map((entry) =>
-            fs.rm(resolve(dirPath, entry), { recursive: true, force: true }),
-          ),
+          entries.map(entry => fs.rm(resolve(dirPath, entry), { recursive: true, force: true }))
         );
         return Ok(undefined);
       } catch (error) {

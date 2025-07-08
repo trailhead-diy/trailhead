@@ -26,7 +26,7 @@ export default defineConfig({
   platform: 'node',
   outDir: 'dist',
   treeshake: true,
-  esbuildOptions: (options) => {
+  esbuildOptions: options => {
     options.conditions = ['node'];
   },
   onSuccess: async () => {
