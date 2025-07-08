@@ -11,12 +11,35 @@
         "tsconfig.json",
         "tsconfig.*.json",
         "vite.config.*",
-        "vitest.config.*"
+        "vitest.config.*",
+        "templates/**",
+        "examples/**"
       ],
       "outputLogs": "errors-only",
       "cache": true
     },
+    "clean": {
+      "outputs": [],
+      "inputs": ["package.json"],
+      "cache": false
+    },
     "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**", "test-results/**", "temp/**"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "examples/**",
+        "vitest.config.*",
+        "vitest.setup.*",
+        "c8.config.*",
+        "tsconfig.json"
+      ],
+      "cache": true,
+      "env": ["NODE_ENV", "VITEST_CONSOLE_DEBUG"],
+      "outputLogs": "errors-only"
+    },
+    "test:coverage": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**", "test-results/**"],
       "inputs": [
@@ -24,17 +47,28 @@
         "tests/**",
         "vitest.config.*",
         "vitest.setup.*",
+        "c8.config.*",
         "tsconfig.json"
       ],
       "cache": true,
-      "env": ["NODE_ENV"],
+      "env": ["NODE_ENV", "VITEST_CONSOLE_DEBUG"],
       "outputLogs": "errors-only"
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "validate": {
+      "dependsOn": ["types", "lint", "test"],
+      "outputs": [],
+      "cache": true
     },
     "lint": {
       "outputs": [],
       "inputs": [
         "src/**",
         "tests/**",
+        "examples/**",
         "oxlintrc.*",
         ".oxlintrc.*",
         "package.json"
@@ -52,6 +86,7 @@
       "inputs": [
         "src/**",
         "tests/**",
+        "examples/**",
         "tsconfig.json",
         "tsconfig.*.json",
         "package.json"
@@ -84,6 +119,7 @@
       "inputs": [
         "src/**",
         "tests/**",
+        "examples/**",
         "oxlintrc.*",
         ".oxlintrc.*",
         "package.json"
