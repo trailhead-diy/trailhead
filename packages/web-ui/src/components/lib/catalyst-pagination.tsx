@@ -1,6 +1,6 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import type React from 'react'
-import { CatalystButton } from './catalyst-button'
+import type React from 'react';
+import { CatalystButton } from './catalyst-button';
 import { cn } from '../utils/cn';
 
 export function CatalystPagination({
@@ -18,8 +18,18 @@ export function CatalystPaginationPrevious({
 }: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
   return (
     <span className={cn('grow basis-0', className)}>
-      <CatalystButton {...(href === null ? { disabled: true } : { href })} plain aria-label="Previous page">
-        <svg className={cn('stroke-current')} data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <CatalystButton
+        {...(href === null ? { disabled: true } : { href })}
+        plain
+        aria-label="Previous page"
+      >
+        <svg
+          className={cn('stroke-current')}
+          data-slot="icon"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
           <path
             d="M2.75 8H13.25M2.75 8L5.25 5.5M2.75 8L5.25 10.5"
             strokeWidth={1.5}
@@ -40,9 +50,19 @@ export function CatalystPaginationNext({
 }: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
   return (
     <span className={cn('flex grow basis-0 justify-end', className)}>
-      <CatalystButton {...(href === null ? { disabled: true } : { href })} plain aria-label="Next page">
+      <CatalystButton
+        {...(href === null ? { disabled: true } : { href })}
+        plain
+        aria-label="Next page"
+      >
         {children}
-        <svg className={cn('stroke-current')} data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <svg
+          className={cn('stroke-current')}
+          data-slot="icon"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
           <path
             d="M13.25 8L2.75 8M13.25 8L10.75 10.5M13.25 8L10.75 5.5"
             strokeWidth={1.5}
@@ -55,7 +75,10 @@ export function CatalystPaginationNext({
   );
 }
 
-export function CatalystPaginationList({ className, ...props }: React.ComponentPropsWithoutRef<'span'>) {
+export function CatalystPaginationList({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'span'>) {
   return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />;
 }
 
@@ -91,7 +114,10 @@ export function CatalystPaginationGap({
     <span
       aria-hidden="true"
       {...props}
-      className={cn('w-9 text-center text-sm/6 font-semibold text-zinc-950 select-none dark:text-white', className)}
+      className={cn(
+        'w-9 text-center text-sm/6 font-semibold text-zinc-950 select-none dark:text-white',
+        className
+      )}
     >
       {children}
     </span>

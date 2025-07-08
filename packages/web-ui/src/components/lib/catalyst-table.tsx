@@ -1,17 +1,22 @@
-'use client'
+'use client';
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import type React from 'react'
-import { createContext, useContext, useState } from 'react'
-import { CatalystLink } from './catalyst-link'
+import type React from 'react';
+import { createContext, useContext, useState } from 'react';
+import { CatalystLink } from './catalyst-link';
 import { cn } from '../utils/cn';
 
-const TableContext = createContext<{ bleed: boolean; dense: boolean; grid: boolean; striped: boolean }>({
+const TableContext = createContext<{
+  bleed: boolean;
+  dense: boolean;
+  grid: boolean;
+  striped: boolean;
+}>({
   bleed: false,
   dense: false,
   grid: false,
   striped: false,
-})
+});
 
 export function CatalystTable({
   bleed = false,
@@ -21,13 +26,25 @@ export function CatalystTable({
   className,
   children,
   ...props
-}: { bleed?: boolean; dense?: boolean; grid?: boolean; striped?: boolean } & React.ComponentPropsWithoutRef<'div'>) {
+}: {
+  bleed?: boolean;
+  dense?: boolean;
+  grid?: boolean;
+  striped?: boolean;
+} & React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <TableContext.Provider value={{ bleed, dense, grid, striped } as React.ContextType<typeof TableContext>}>
+    <TableContext.Provider
+      value={{ bleed, dense, grid, striped } as React.ContextType<typeof TableContext>}
+    >
       <div className={cn('flow-root')}>
-        <div {...props} className={cn('-mx-(--gutter) overflow-x-auto whitespace-nowrap', className)}>
+        <div
+          {...props}
+          className={cn('-mx-(--gutter) overflow-x-auto whitespace-nowrap', className)}
+        >
           <div className={cn('inline-block min-w-full align-middle', !bleed && 'sm:px-(--gutter)')}>
-            <table className={cn('min-w-full text-left text-sm/6 text-zinc-950 dark:text-white')}>{children}</table>
+            <table className={cn('min-w-full text-left text-sm/6 text-zinc-950 dark:text-white')}>
+              {children}
+            </table>
           </div>
         </div>
       </div>
@@ -35,19 +52,22 @@ export function CatalystTable({
   );
 }
 
-export function CatalystTableHead({ className, ...props }: React.ComponentPropsWithoutRef<'thead'>) {
+export function CatalystTableHead({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'thead'>) {
   return <thead {...props} className={cn('text-zinc-500 dark:text-zinc-400', className)} />;
 }
 
 export function CatalystTableBody(props: React.ComponentPropsWithoutRef<'tbody'>) {
-  return <tbody {...props} />
+  return <tbody {...props} />;
 }
 
 const TableRowContext = createContext<{ href?: string; target?: string; title?: string }>({
   href: undefined,
   target: undefined,
   title: undefined,
-})
+});
 
 export function CatalystTableRow({
   href,
@@ -56,10 +76,12 @@ export function CatalystTableRow({
   className,
   ...props
 }: { href?: string; target?: string; title?: string } & React.ComponentPropsWithoutRef<'tr'>) {
-  let { striped } = useContext(TableContext)
+  let { striped } = useContext(TableContext);
 
   return (
-    <TableRowContext.Provider value={{ href, target, title } as React.ContextType<typeof TableRowContext>}>
+    <TableRowContext.Provider
+      value={{ href, target, title } as React.ContextType<typeof TableRowContext>}
+    >
       <tr
         {...props}
         className={cn(
@@ -76,7 +98,7 @@ export function CatalystTableRow({
 }
 
 export function CatalystTableHeader({ className, ...props }: React.ComponentPropsWithoutRef<'th'>) {
-  let { bleed, grid } = useContext(TableContext)
+  let { bleed, grid } = useContext(TableContext);
 
   return (
     <th
@@ -91,10 +113,14 @@ export function CatalystTableHeader({ className, ...props }: React.ComponentProp
   );
 }
 
-export function CatalystTableCell({ className, children, ...props }: React.ComponentPropsWithoutRef<'td'>) {
-  let { bleed, dense, grid, striped } = useContext(TableContext)
-  let { href, target, title } = useContext(TableRowContext)
-  let [cellRef, setCellRef] = useState<HTMLElement | null>(null)
+export function CatalystTableCell({
+  className,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<'td'>) {
+  let { bleed, dense, grid, striped } = useContext(TableContext);
+  let { href, target, title } = useContext(TableRowContext);
+  let [cellRef, setCellRef] = useState<HTMLElement | null>(null);
 
   return (
     <td

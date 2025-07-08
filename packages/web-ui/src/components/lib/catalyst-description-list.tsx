@@ -1,7 +1,10 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 import { cn } from '../utils/cn';
 
-export function CatalystDescriptionList({ className, ...props }: React.ComponentPropsWithoutRef<'dl'>) {
+export function CatalystDescriptionList({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dl'>) {
   return (
     <dl
       {...props}
@@ -13,7 +16,10 @@ export function CatalystDescriptionList({ className, ...props }: React.Component
   );
 }
 
-export function CatalystDescriptionTerm({ className, ...props }: React.ComponentPropsWithoutRef<'dt'>) {
+export function CatalystDescriptionTerm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dt'>) {
   return (
     <dt
       {...props}
@@ -25,7 +31,10 @@ export function CatalystDescriptionTerm({ className, ...props }: React.Component
   );
 }
 
-export function CatalystDescriptionDetails({ className, ...props }: React.ComponentPropsWithoutRef<'dd'>) {
+export function CatalystDescriptionDetails({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dd'>) {
   return (
     <dd
       {...props}

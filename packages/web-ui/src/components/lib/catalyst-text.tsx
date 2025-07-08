@@ -1,5 +1,5 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import { CatalystLink } from './catalyst-link'
+import { CatalystLink } from './catalyst-link';
 import { cn } from '../utils/cn';
 
 export function CatalystText({ className, ...props }: React.ComponentPropsWithoutRef<'p'>) {
@@ -12,7 +12,10 @@ export function CatalystText({ className, ...props }: React.ComponentPropsWithou
   );
 }
 
-export function CatalystTextLink({ className, ...props }: React.ComponentPropsWithoutRef<typeof CatalystLink>) {
+export function CatalystTextLink({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof CatalystLink>) {
   return (
     <CatalystLink
       {...props}
@@ -25,7 +28,9 @@ export function CatalystTextLink({ className, ...props }: React.ComponentPropsWi
 }
 
 export function CatalystStrong({ className, ...props }: React.ComponentPropsWithoutRef<'strong'>) {
-  return <strong {...props} className={cn('font-medium text-zinc-950 dark:text-white', className)} />;
+  return (
+    <strong {...props} className={cn('font-medium text-zinc-950 dark:text-white', className)} />
+  );
 }
 
 export function CatalystCode({ className, ...props }: React.ComponentPropsWithoutRef<'code'>) {
