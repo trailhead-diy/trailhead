@@ -5,7 +5,10 @@
 import { Ok } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
+  executeWithPhases,
   executeSubprocess,
+  displaySummary,
+  type CommandPhase,
   type CommandContext,
 } from '@esteban-url/trailhead-cli/command';
 import { type StrictProfileOptions } from '../core/types/command-options.js';
@@ -16,6 +19,59 @@ import { type StrictProfileOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
 type ProfileOptions = StrictProfileOptions;
+
+interface ProfileConfig {
+  options: ProfileOptions;
+  projectRoot: string;
+  env: Record<string, string>;
+  profilingModule: string;
+  args: string[];
+}
+
+// ============================================================================
+// COMMAND PHASES
+// ============================================================================
+
+/**
+ * Create profiling phases for structured execution
+ */
+const createProfilePhases = (cmdContext: CommandContext): CommandPhase<ProfileConfig>[] => [
+  {
+    name: 'Validating environment',
+    execute: async (config: ProfileConfig) => {
+      // Check if --expose-gc is available for memory profiling
+      if (config.options.memory && !global.gc) {
+        cmdContext.logger.warning(
+          'Memory profiling requested but --expose-gc flag not detected. ' +
+            'For accurate memory measurements, run with: node --expose-gc trailhead-ui profile --memory'
+        );
+      }
+
+      return Ok(config);
+    },
+  },
+  {
+    name: 'Executing profiling',
+    execute: async (config: ProfileConfig) => {
+      const result = await executeSubprocess(
+        {
+          command: 'node',
+          args: config.args,
+          env: config.env,
+          cwd: config.projectRoot,
+        },
+        cmdContext
+      );
+
+      if (!result.success) {
+        return result;
+      }
+
+      cmdContext.logger.success('Profiling completed successfully');
+      return Ok(config);
+    },
+  },
+];
 
 // ============================================================================
 // COMMAND CONFIGURATION
@@ -86,38 +142,46 @@ export const createProfileCommand = () => {
 
       if (options.memory) {
         env.PROFILE_MEMORY = 'true';
-
-        // Check if --expose-gc is available
-        if (!global.gc) {
-          cmdContext.logger.warning(
-            'Memory profiling requested but --expose-gc flag not detected. ' +
-              'For accurate memory measurements, run with: node --expose-gc trailhead-ui profile --memory'
-          );
-        }
       }
 
-      // Delegate to the profiling system using subprocess pattern
+      // Delegate to the profiling system
       const profilingModule = `${cmdContext.projectRoot}/dist/src/transforms/profiling/main.js`;
 
       // Build args based on whether memory profiling is enabled
       const args =
         options.memory && global.gc ? ['--expose-gc', profilingModule] : [profilingModule];
 
-      const result = await executeSubprocess(
-        {
-          command: 'node',
-          args,
-          env,
-          cwd: cmdContext.projectRoot,
-        },
-        cmdContext
-      );
+      // Initialize config
+      const config: ProfileConfig = {
+        options,
+        projectRoot: cmdContext.projectRoot,
+        env,
+        profilingModule,
+        args,
+      };
+
+      // Execute profiling phases
+      const phases = createProfilePhases(cmdContext);
+      const result = await executeWithPhases(phases, config, cmdContext);
 
       if (!result.success) {
         return result;
       }
 
-      cmdContext.logger.success('Profiling completed successfully');
+      // Display final summary
+      displaySummary(
+        'Profiling Complete',
+        [
+          {
+            label: 'Mode',
+            value: options.pipeline ? 'Pipeline' : options.simple ? 'Simple' : 'Default',
+          },
+          { label: 'Memory Profiling', value: options.memory ? 'Enabled' : 'Disabled' },
+          { label: 'Verbose Output', value: options.verbose ? 'Enabled' : 'Disabled' },
+        ],
+        cmdContext
+      );
+
       return Ok(undefined);
     },
   });

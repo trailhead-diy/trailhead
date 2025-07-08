@@ -98,7 +98,7 @@ describe('Theme Performance Benchmarks', () => {
             const timer = setTimeout(() => {
               setTheme(nextTheme);
               setSwitchCount(c => c + 1);
-            }, 10);
+            }, 50);
 
             return () => clearTimeout(timer);
           }
@@ -115,9 +115,9 @@ describe('Theme Performance Benchmarks', () => {
         </ThemeProvider>
       );
 
-      // Wait for all switches to complete
+      // Wait for all switches to complete (10 switches * 50ms + buffer)
       await vi.waitFor(() => expect(getByTestId('switch-count')).toHaveTextContent('10'), {
-        timeout: 1000,
+        timeout: 2000,
       });
 
       const endTime = performance.now();

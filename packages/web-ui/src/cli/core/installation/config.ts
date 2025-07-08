@@ -2,7 +2,7 @@
  * Configuration detection and validation for Trailhead UI install script
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import type {
   InstallConfig,
   InstallationTrailheadConfig,
@@ -12,30 +12,8 @@ import type {
   Result,
   CLIOptions,
 } from './types.js';
-import { Ok, Err, isString, isObject } from './types.js';
+import { Ok, Err, createError, nonEmptyString, object } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
-  }
-};
 
 // ============================================================================
 // CONFIGURATION DETECTION (Pure Functions)
@@ -56,27 +34,25 @@ export const detectCatalystDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      // Check if it contains typescript files
-      const typescriptDir = candidatePath.endsWith('typescript')
-        ? candidatePath
-        : path.join(candidatePath, 'typescript');
+    // Check if it contains typescript files
+    const typescriptDir = candidatePath.endsWith('typescript')
+      ? candidatePath
+      : path.join(candidatePath, 'typescript');
 
-      const typescriptExistsResult = await pathExists(fs, typescriptDir);
-      if (typescriptExistsResult.success && typescriptExistsResult.value) {
-        return Ok(typescriptDir);
-      }
+    const typescriptExistsResult = await fs.access(typescriptDir);
+    if (typescriptExistsResult.success) {
+      return Ok(typescriptDir);
     }
   }
 
-  return Err({
-    type: 'ConfigurationError',
-    message: 'Could not find catalyst-ui-kit directory',
-    details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-  });
+  return Err(
+    createError('CATALYST_NOT_FOUND', 'Could not find catalyst-ui-kit directory', {
+      details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+    })
+  );
 };
 
 /**
@@ -94,12 +70,10 @@ export const detectComponentsDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      return Ok(candidatePath);
-    }
+    return Ok(candidatePath);
   }
 
   // Default to src/components if none found
@@ -121,12 +95,10 @@ export const detectLibDir = async (
   ];
 
   for (const candidatePath of candidatePaths) {
-    const existsResult = await pathExists(fs, candidatePath);
+    const existsResult = await fs.access(candidatePath);
     if (!existsResult.success) continue;
 
-    if (existsResult.value) {
-      return Ok(candidatePath);
-    }
+    return Ok(candidatePath);
   }
 
   // Default to src/lib if none found
@@ -139,119 +111,81 @@ export const detectLibDir = async (
 // ============================================================================
 
 /**
- * Pure function: Validate InstallationTrailheadConfig object
+ * Pure function: Validate InstallationTrailheadConfig object using CLI framework validation
  */
 export const validateTrailheadConfig = (
   config: unknown
 ): Result<InstallationTrailheadConfig, InstallError> => {
-  if (!isObject(config)) {
-    return Err({
-      type: 'ValidationError',
-      message: 'Configuration must be an object',
-    });
+  // Validate object structure first
+  const objectResult = object('config')(config);
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
-  const { catalystDir, destinationDir, componentsDir, libDir } = config;
+  const configObj = objectResult.value;
 
-  if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'catalystDir must be a non-empty string',
-      field: 'catalystDir',
-    });
-  }
+  // Validate each required field
+  const fields = ['catalystDir', 'destinationDir', 'componentsDir', 'libDir'];
+  const validatedFields: Record<string, string> = {};
 
-  if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'destinationDir must be a non-empty string',
-      field: 'destinationDir',
-    });
-  }
+  for (const field of fields) {
+    const fieldResult = nonEmptyString(field)(configObj[field]);
 
-  if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'componentsDir must be a non-empty string',
-      field: 'componentsDir',
-    });
-  }
+    if (!fieldResult.success) {
+      return Err(
+        createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
+          details: `Field: ${field}`,
+        })
+      );
+    }
 
-  if (!isString(libDir) || !libDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'libDir must be a non-empty string',
-      field: 'libDir',
-    });
+    validatedFields[field] = fieldResult.value.trim();
   }
 
   return Ok({
-    catalystDir: catalystDir.trim(),
-    destinationDir: destinationDir.trim(),
-    componentsDir: componentsDir.trim(),
-    libDir: libDir.trim(),
+    catalystDir: validatedFields.catalystDir,
+    destinationDir: validatedFields.destinationDir,
+    componentsDir: validatedFields.componentsDir,
+    libDir: validatedFields.libDir,
   });
 };
 
 /**
- * Pure function: Validate InstallConfig object
+ * Pure function: Validate InstallConfig object using CLI framework validation
  */
 export const validateInstallConfig = (config: unknown): Result<InstallConfig, InstallError> => {
-  if (!isObject(config)) {
-    return Err({
-      type: 'ValidationError',
-      message: 'Install configuration must be an object',
-    });
+  // Validate object structure first
+  const objectResult = object('config')(config);
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
-  const { catalystDir, destinationDir, componentsDir, libDir, projectRoot } = config;
+  const configObj = objectResult.value;
 
-  if (!isString(catalystDir) || !catalystDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'catalystDir must be a non-empty string',
-      field: 'catalystDir',
-    });
-  }
+  // Validate each required field (including projectRoot for InstallConfig)
+  const fields = ['catalystDir', 'destinationDir', 'componentsDir', 'libDir', 'projectRoot'];
+  const validatedFields: Record<string, string> = {};
 
-  if (!isString(destinationDir) || !destinationDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'destinationDir must be a non-empty string',
-      field: 'destinationDir',
-    });
-  }
+  for (const field of fields) {
+    const fieldResult = nonEmptyString(field)(configObj[field]);
 
-  if (!isString(componentsDir) || !componentsDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'componentsDir must be a non-empty string',
-      field: 'componentsDir',
-    });
-  }
+    if (!fieldResult.success) {
+      return Err(
+        createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
+          details: `Field: ${field}`,
+        })
+      );
+    }
 
-  if (!isString(libDir) || !libDir.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'libDir must be a non-empty string',
-      field: 'libDir',
-    });
-  }
-
-  if (!isString(projectRoot) || !projectRoot.trim()) {
-    return Err({
-      type: 'ValidationError',
-      message: 'projectRoot must be a non-empty string',
-      field: 'projectRoot',
-    });
+    validatedFields[field] = fieldResult.value.trim();
   }
 
   return Ok({
-    catalystDir: catalystDir.trim(),
-    destinationDir: destinationDir.trim(),
-    componentsDir: componentsDir.trim(),
-    libDir: libDir.trim(),
-    projectRoot: projectRoot.trim(),
+    catalystDir: validatedFields.catalystDir,
+    destinationDir: validatedFields.destinationDir,
+    componentsDir: validatedFields.componentsDir,
+    libDir: validatedFields.libDir,
+    projectRoot: validatedFields.projectRoot,
   });
 };
 
@@ -268,10 +202,8 @@ export const readTrailheadConfig = async (
 ): Promise<Result<InstallationTrailheadConfig | null, InstallError>> => {
   const configPath = path.join(projectRoot, 'trailhead.config.json');
 
-  const existsResult = await pathExists(fs, configPath);
-  if (!existsResult.success) return existsResult;
-
-  if (!existsResult.value) {
+  const existsResult = await fs.access(configPath);
+  if (!existsResult.success) {
     return Ok(null);
   }
 
@@ -348,8 +280,8 @@ export const resolveConfiguration = async (
       destinationDir = existingConfig.destinationDir;
     } else {
       // Detect default destination directory based on project structure
-      const srcComponentsExists = await pathExists(fs, path.join(projectRoot, 'src', 'components'));
-      if (srcComponentsExists.success && srcComponentsExists.value) {
+      const srcComponentsExists = await fs.access(path.join(projectRoot, 'src', 'components'));
+      if (srcComponentsExists.success) {
         destinationDir = path.join('src', 'components', 'th');
       } else {
         destinationDir = path.join('components', 'th');
@@ -385,11 +317,12 @@ export const resolveConfiguration = async (
 
     return Ok(validateResult.value);
   } catch (error) {
-    return Err({
-      type: 'ConfigurationError',
-      message: 'Failed to resolve configuration',
-      details: error instanceof Error ? error.message : 'Unknown error',
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', 'Failed to resolve configuration', {
+        details: error instanceof Error ? error.message : 'Unknown error',
+        cause: error,
+      })
+    );
   }
 };
 
@@ -447,15 +380,17 @@ export const verifyConfiguration = async (
   config: InstallConfig
 ): Promise<Result<void, InstallError>> => {
   // Check if catalyst directory exists and contains TypeScript files
-  const catalystExistsResult = await pathExists(fs, config.catalystDir);
-  if (!catalystExistsResult.success) return catalystExistsResult;
-
-  if (!catalystExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Catalyst UI Kit directory not found: ${config.catalystDir}`,
-      details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Point to the typescript/ directory within catalyst-ui-kit\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-    });
+  const catalystExistsResult = await fs.access(config.catalystDir);
+  if (!catalystExistsResult.success) {
+    return Err(
+      createError(
+        'CONFIGURATION_ERROR',
+        `Catalyst UI Kit directory not found: ${config.catalystDir}`,
+        {
+          details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Point to the typescript/ directory within catalyst-ui-kit\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+        }
+      )
+    );
   }
 
   // Check if catalyst directory contains component files
@@ -464,11 +399,15 @@ export const verifyConfiguration = async (
 
   const hasComponents = readDirResult.value.some(isTsxFile);
   if (!hasComponents) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `No TypeScript component files found in: ${config.catalystDir}`,
-      details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx ← Missing\n       ├── input.tsx ← Missing\n       ├── alert.tsx ← Missing\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Ensure you downloaded the TypeScript version from Tailwind Plus\n2. Point to the typescript/ directory (not the root catalyst-ui-kit/)\n3. Check that component files (.tsx) are present\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
-    });
+    return Err(
+      createError(
+        'CONFIGURATION_ERROR',
+        `No TypeScript component files found in: ${config.catalystDir}`,
+        {
+          details: `💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx ← Missing\n       ├── input.tsx ← Missing\n       ├── alert.tsx ← Missing\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Ensure you downloaded the TypeScript version from Tailwind Plus\n2. Point to the typescript/ directory (not the root catalyst-ui-kit/)\n3. Check that component files (.tsx) are present\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
+        }
+      )
+    );
   }
 
   return Ok(undefined);

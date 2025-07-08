@@ -24,7 +24,7 @@ export function CatalystLegend({
       data-slot="legend"
       {...props}
       className={cn(
-        'text-base/6 font-semibold text-foreground data-disabled:opacity-50 sm:text-sm/6 dark:text-foreground',
+        'text-base/6 font-semibold text-zinc-950 data-disabled:opacity-50 sm:text-sm/6 dark:text-white',
         className
       )}
     />
@@ -64,7 +64,7 @@ export function CatalystLabel({
       data-slot="label"
       {...props}
       className={cn(
-        'text-base/6 text-foreground select-none data-disabled:opacity-50 sm:text-sm/6 dark:text-foreground',
+        'text-base/6 text-zinc-950 select-none data-disabled:opacity-50 sm:text-sm/6 dark:text-white',
         className
       )}
     />
@@ -80,7 +80,7 @@ export function CatalystDescription({
       data-slot="description"
       {...props}
       className={cn(
-        'text-base/6 text-muted-foreground data-disabled:opacity-50 sm:text-sm/6 dark:text-muted-foreground',
+        'text-base/6 text-zinc-500 data-disabled:opacity-50 sm:text-sm/6 dark:text-zinc-400',
         className
       )}
     />
@@ -96,7 +96,7 @@ export function CatalystErrorMessage({
       data-slot="error"
       {...props}
       className={cn(
-        'text-base/6 text-destructive data-disabled:opacity-50 sm:text-sm/6 dark:text-destructive',
+        'text-base/6 text-red-600 data-disabled:opacity-50 sm:text-sm/6 dark:text-red-500',
         className
       )}
     />

@@ -21,6 +21,18 @@ export const isCatalystComponent: FileFilterPredicate = file =>
 export const isWrapperComponent: FileFilterPredicate = file =>
   file.endsWith('.tsx') && !file.startsWith('theme') && file !== 'index.tsx' && !file.includes('/');
 
+// Test file and directory filters
+export const isTestFile: FileFilterPredicate = file =>
+  file.includes('.test.') || file.includes('.spec.');
+
+export const isTestDirectory: FileFilterPredicate = file =>
+  file.includes('__tests__') || file.includes('tests/');
+
+export const isTestRelated: FileFilterPredicate = file => isTestFile(file) || isTestDirectory(file);
+
+// Exclude test files from operations
+export const isNotTestRelated: FileFilterPredicate = file => !isTestRelated(file);
+
 // Utility functions for combining filters
 export const combineFilters = <T = string>(
   ...filters: FileFilterPredicate<T>[]

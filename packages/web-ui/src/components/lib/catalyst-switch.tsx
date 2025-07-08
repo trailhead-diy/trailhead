@@ -1,7 +1,6 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 import * as Headless from '@headlessui/react';
 import type React from 'react';
-import { isSemanticToken, createSemanticSwitchStyles } from '../theme/index';
 import { cn } from '../utils/cn';
 
 export function CatalystSwitchGroup({
@@ -50,28 +49,28 @@ export function CatalystSwitchField({
 
 const colors = {
   'dark/zinc': [
-    '[--switch-bg-ring:var(--color-foreground)]/90 [--switch-bg:var(--color-foreground)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-background)]/25',
-    '[--switch-ring:var(--color-foreground)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:var(--color-muted-foreground)]/90',
+    '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-white)]/25',
+    '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:var(--color-zinc-700)]/90',
   ],
 
   'dark/white': [
-    '[--switch-bg-ring:var(--color-foreground)]/90 [--switch-bg:var(--color-foreground)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-background)]',
-    '[--switch-ring:var(--color-foreground)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:transparent] dark:[--switch:var(--color-foreground)]',
+    '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-white)]',
+    '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:transparent] dark:[--switch:var(--color-zinc-900)]',
   ],
 
   dark: [
-    '[--switch-bg-ring:var(--color-foreground)]/90 [--switch-bg:var(--color-foreground)] dark:[--switch-bg-ring:var(--color-background)]/15',
-    '[--switch-ring:var(--color-foreground)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white]',
+    '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:var(--color-white)]/15',
+    '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white]',
   ],
 
   zinc: [
-    '[--switch-bg-ring:var(--color-muted-foreground)]/90 [--switch-bg:var(--color-muted-foreground)] dark:[--switch-bg-ring:transparent]',
-    '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-muted-foreground)]/90',
+    '[--switch-bg-ring:var(--color-zinc-700)]/90 [--switch-bg:var(--color-zinc-600)] dark:[--switch-bg-ring:transparent]',
+    '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-zinc-700)]/90',
   ],
 
   white: [
     '[--switch-bg-ring:var(--color-black)]/15 [--switch-bg:white] dark:[--switch-bg-ring:transparent]',
-    '[--switch-shadow:var(--color-black)]/10 [--switch-ring:transparent] [--switch:var(--color-foreground)]',
+    '[--switch-shadow:var(--color-black)]/10 [--switch-ring:transparent] [--switch:var(--color-zinc-950)]',
   ],
 
   red: [
@@ -185,24 +184,16 @@ const colors = {
   ],
 };
 
-type Color = keyof typeof colors;
+type CatalystColor = keyof typeof colors;
 
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
+  color?: CatalystColor;
   className?: string;
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
-  const resolvedColorClasses = (() => {
-    if (color && isSemanticToken(color)) {
-      return createSemanticSwitchStyles(color);
-    }
-
-    return colors[color] || colors['dark/zinc'];
-  })();
-
   return (
     <Headless.Switch
       data-slot="control"
@@ -215,18 +206,19 @@ export function CatalystSwitch({
         // Outline and background color in forced-colors mode so switch is still visible
         'forced-colors:outline forced-colors:[--switch-bg:Highlight] dark:forced-colors:[--switch-bg:Highlight]',
         // Unchecked
-        'bg-zinc-200 ring-1 ring-black/5 ring-inset dark:bg-muted dark:ring-ring',
+        'bg-zinc-200 ring-1 ring-black/5 ring-inset dark:bg-white/5 dark:ring-white/15',
         // Checked
         'data-checked:bg-(--switch-bg) data-checked:ring-(--switch-bg-ring) dark:data-checked:bg-(--switch-bg) dark:data-checked:ring-(--switch-bg-ring)',
         // Focus
-        'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
+        'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
         // Hover
         'data-hover:ring-black/15 data-hover:data-checked:ring-(--switch-bg-ring)',
         'dark:data-hover:ring-white/25 dark:data-hover:data-checked:ring-(--switch-bg-ring)',
         // Disabled
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
-        resolvedColorClasses,
+        // Color specific styles
+        colors[color],
         className
       )}
     >
@@ -245,7 +237,7 @@ export function CatalystSwitch({
           'group-data-checked:bg-(--switch) group-data-checked:shadow-(--switch-shadow) group-data-checked:ring-(--switch-ring)',
           'group-data-checked:translate-x-4 sm:group-data-checked:translate-x-3',
           // Disabled
-          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-muted/50'
+          'group-data-checked:group-data-disabled:bg-white group-data-checked:group-data-disabled:shadow-sm group-data-checked:group-data-disabled:ring-black/5'
         )}
       />
     </Headless.Switch>

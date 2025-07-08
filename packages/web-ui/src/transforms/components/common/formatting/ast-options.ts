@@ -26,7 +26,7 @@ export const STANDARD_AST_FORMAT_OPTIONS: Options = {
   useTabs: false,
   tabWidth: 2,
   wrapColumn: 120,
-  trailingComma: false,
+  trailingComma: true,
   // Additional options to preserve traditional formatting
   objectCurlySpacing: true,
   arrayBracketSpacing: false,

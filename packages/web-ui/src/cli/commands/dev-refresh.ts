@@ -10,18 +10,18 @@ import {
   type CommandPhase,
   type CommandContext,
 } from '@esteban-url/trailhead-cli/command';
-import { existsSync } from 'fs';
-import { rm } from 'fs/promises';
 import { join } from 'path';
 
 // Import framework utilities
-import { ensureDirectory } from '@esteban-url/trailhead-cli/filesystem';
+import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
+import { runMainPipeline } from '../../transforms/pipelines/main.js';
+import chalk from 'chalk';
 
 // ============================================================================
 // TYPES
@@ -34,26 +34,27 @@ interface RefreshConfig {
   source: string;
   dest: string;
   clean: boolean;
+  copiedFiles: string[];
 }
 
 // ============================================================================
 // COMMAND PHASES
 // ============================================================================
 
-const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshConfig>[] => [
+const createRefreshPhases = (options: DevRefreshOptions): CommandPhase<RefreshConfig>[] => [
   {
     name: 'Validating paths',
     execute: async (config: RefreshConfig) => {
       // Check if source exists
-      if (!existsSync(config.source)) {
+      const sourceExistsResult = await pathExists(config.source);
+      if (!sourceExistsResult.success) {
+        return Err(sourceExistsResult.error);
+      }
+      if (!sourceExistsResult.value) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.PATH_NOT_FOUND,
-            `Source directory not found: ${config.source}`,
-            {
-              details: 'Please ensure catalyst-ui-kit is installed or provide a valid source path',
-              recoverable: true,
-            }
+          createError(
+            'SOURCE_NOT_FOUND',
+            `Source directory not found: ${config.source}. Please ensure catalyst-ui-kit is installed or provide a valid source path`
           )
         );
       }
@@ -61,10 +62,9 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
       // Source and dest cannot be the same
       if (config.source === config.dest) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.CONFIG_ERROR,
-            'Source and destination cannot be the same directory',
-            { recoverable: true }
+          createError(
+            'INVALID_CONFIGURATION',
+            'Source and destination cannot be the same directory'
           )
         );
       }
@@ -76,17 +76,24 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
     name: 'Preparing destination',
     execute: async (config: RefreshConfig) => {
       try {
-        if (config.clean && existsSync(config.dest)) {
-          await rm(config.dest, { recursive: true });
+        if (config.clean) {
+          const destExistsResult = await pathExists(config.dest);
+          if (!destExistsResult.success) {
+            return Err(destExistsResult.error);
+          }
+          if (destExistsResult.value) {
+            // Use Node.js fs for removal since CLI framework doesn't export removeDirectory
+            const { rm } = await import('fs/promises');
+            await rm(config.dest, { recursive: true });
+          }
         }
 
         const result = await ensureDirectory(config.dest);
         if (!result.success) {
           return Err(
-            createCLIError(
-              CLI_ERROR_CODES.FS_ERROR,
-              `Failed to create destination directory: ${result.error.message}`,
-              { recoverable: false }
+            createError(
+              'FILESYSTEM_ERROR',
+              `Failed to create destination directory: ${result.error.message}`
             )
           );
         }
@@ -94,13 +101,91 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
         return Ok(config);
       } catch (error) {
         return Err(
-          createCLIError(
-            CLI_ERROR_CODES.FS_ERROR,
-            `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            { recoverable: false }
+          createError(
+            'FILESYSTEM_ERROR',
+            `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`
           )
         );
       }
+    },
+  },
+  {
+    name: 'Copying fresh components',
+    execute: async (config: RefreshConfig) => {
+      const copyResult = await copyFreshFilesBatch(
+        config.source,
+        config.dest,
+        true, // force
+        true // addPrefix - add catalyst- prefix to component files
+      );
+
+      if (!copyResult.success) {
+        return Err(createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`));
+      }
+
+      const { copied, skipped, failed } = copyResult.value;
+
+      // Update config with copied files for transformation phase
+      config.copiedFiles = copied;
+
+      console.log(chalk.green(`✅ Copied ${copied.length} components successfully!`));
+
+      if (options.verbose) {
+        if (copied.length > 0) {
+          console.log(chalk.gray('\nCopied files:'));
+          copied.slice(0, 10).forEach((file: string) => {
+            console.log(chalk.gray(`  ✓ ${file}`));
+          });
+          if (copied.length > 10) {
+            console.log(chalk.gray(`  ... and ${copied.length - 10} more`));
+          }
+        }
+
+        if (skipped.length > 0) {
+          console.log(chalk.gray(`\nSkipped ${skipped.length} identical files`));
+        }
+
+        if (failed.length > 0) {
+          console.log(chalk.yellow(`\nFailed to copy ${failed.length} files:`));
+          failed.forEach((file: string) => {
+            console.log(chalk.yellow(`  ✗ ${file}`));
+          });
+        }
+      }
+
+      return Ok(config);
+    },
+  },
+  {
+    name: 'Applying enhancement transforms',
+    execute: async (config: RefreshConfig) => {
+      if (config.copiedFiles.length === 0) {
+        return Ok(config);
+      }
+
+      const result = await runMainPipeline(config.dest, {
+        verbose: options.verbose,
+        dryRun: false,
+        filter: (filename: string) => {
+          // Only process the files we just copied
+          return config.copiedFiles.some(copiedFile => filename.includes(copiedFile));
+        },
+      });
+
+      if (!result.success) {
+        return Err(
+          createError(
+            'ENHANCEMENT_ERROR',
+            `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
+          )
+        );
+      }
+
+      console.log(
+        chalk.green(`✨ Enhanced ${result.processedFiles} components with full transform pipeline`)
+      );
+
+      return Ok(config);
     },
   },
 ];
@@ -115,7 +200,8 @@ const createRefreshPhases = (_options: DevRefreshOptions): CommandPhase<RefreshC
 export const createDevRefreshCommand = () => {
   return createCommand<DevRefreshOptions>({
     name: 'dev-refresh',
-    description: '[Dev] Copy fresh Catalyst components with catalyst- prefix for development',
+    description:
+      '[Dev] Copy fresh Catalyst components with catalyst- prefix and apply all enhancements',
 
     options: [
       {
@@ -174,6 +260,7 @@ export const createDevRefreshCommand = () => {
           options.dest || devRefreshConfig?.destDir || 'src/components/lib'
         ),
         clean: options.clean ?? true,
+        copiedFiles: [], // Will be populated after copying
       };
 
       // Display configuration
@@ -187,7 +274,7 @@ export const createDevRefreshCommand = () => {
         cmdContext
       );
 
-      // Execute phases
+      // Execute all phases (validation, preparation, copying, transformations)
       const phases = createRefreshPhases(options);
       const phaseResult = await executeWithPhases(phases, config, cmdContext);
 
@@ -195,56 +282,13 @@ export const createDevRefreshCommand = () => {
         return phaseResult;
       }
 
-      // Copy files with ADD prefix
-      cmdContext.logger.info('Copying fresh Catalyst components...');
-
-      const copyResult = await copyFreshFilesBatch(
-        config.source,
-        config.dest,
-        true, // force
-        true // addPrefix - add catalyst- prefix to component files
+      // Display final results
+      cmdContext.logger.success(
+        `✅ Refreshed and enhanced ${config.copiedFiles.length} components successfully!`
       );
 
-      if (!copyResult.success) {
-        return Err(
-          createCLIError(
-            CLI_ERROR_CODES.FS_ERROR,
-            `Failed to copy files: ${copyResult.error.message}`,
-            { recoverable: false }
-          )
-        );
-      }
-
-      const { copied, skipped, failed } = copyResult.value;
-
-      // Display results
-      cmdContext.logger.success(`✅ Refreshed ${copied.length} components successfully!`);
-
-      if (cmdContext.verbose) {
-        if (copied.length > 0) {
-          cmdContext.logger.info('\nCopied files:');
-          copied.slice(0, 10).forEach((file: string) => {
-            cmdContext.logger.info(`  ✓ ${file}`);
-          });
-          if (copied.length > 10) {
-            cmdContext.logger.info(`  ... and ${copied.length - 10} more`);
-          }
-        }
-
-        if (skipped.length > 0) {
-          cmdContext.logger.info(`\nSkipped ${skipped.length} identical files`);
-        }
-
-        if (failed.length > 0) {
-          cmdContext.logger.warning(`\nFailed to copy ${failed.length} files:`);
-          failed.forEach((file: string) => {
-            cmdContext.logger.warning(`  ✗ ${file}`);
-          });
-        }
-      }
-
       cmdContext.logger.info(
-        '\nNext step: Run `trailhead-ui transforms` to transform the components'
+        '\nComponents refreshed and fully enhanced! All transforms have been applied.'
       );
 
       return Ok(undefined);

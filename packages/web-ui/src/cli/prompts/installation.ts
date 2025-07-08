@@ -2,8 +2,11 @@
  * Installation prompts for Trailhead UI CLI - migrated to use enhanced framework
  */
 
-import { input, select, confirm, checkbox } from '@inquirer/prompts';
 import {
+  input,
+  select,
+  confirm,
+  checkbox,
   createDirectoryPrompt,
   createConfirmationPrompt,
 } from '@esteban-url/trailhead-cli/prompts';

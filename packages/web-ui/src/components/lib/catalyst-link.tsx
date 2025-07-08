@@ -9,7 +9,6 @@
 
 import * as Headless from '@headlessui/react';
 import React, { forwardRef } from 'react';
-// Semantic token imports removed - not used in this component
 
 export const CatalystLink = forwardRef(function CatalystLink(
   props: { href: string } & React.ComponentPropsWithoutRef<'a'>,

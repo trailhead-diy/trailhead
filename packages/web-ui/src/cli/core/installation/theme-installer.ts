@@ -5,7 +5,6 @@
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
 import { Ok } from './types.js';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
-import { ensureDirectories, copyFiles } from '../filesystem/operations.js';
 
 // ============================================================================
 // THEME INSTALLATION
@@ -25,7 +24,7 @@ export const installThemeSystem = async (
   const destPaths = generateDestinationPaths(config);
 
   // Ensure destination theme directory exists
-  const ensureDirResult = await ensureDirectories(fs, [destPaths.themeDir]);
+  const ensureDirResult = await fs.ensureDir(destPaths.themeDir);
   if (!ensureDirResult.success) return ensureDirResult;
 
   const themeFiles = [
@@ -62,11 +61,15 @@ export const installThemeSystem = async (
     { src: sourcePaths.themeIndex, dest: destPaths.themeIndex, name: 'theme/index.ts' },
   ];
 
-  const copyResult = await copyFiles(fs, themeFiles, { overwrite: force }, logger);
+  // Copy theme files using CLI filesystem
+  const copiedFiles: string[] = [];
+  for (const file of themeFiles) {
+    const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
+    if (!copyResult.success) return copyResult;
+    copiedFiles.push(file.name);
+  }
 
-  if (!copyResult.success) return copyResult;
-
-  logger.success(`Installed ${copyResult.value.length} theme system files`);
+  logger.success(`Installed ${copiedFiles.length} theme system files`);
 
   return Ok(themeFiles.map(f => f.name));
 };
@@ -89,7 +92,7 @@ export const installThemeComponents = async (
   const destPaths = generateDestinationPaths(config);
 
   // Ensure destination components directory exists
-  const ensureDirResult = await ensureDirectories(fs, [config.componentsDir]);
+  const ensureDirResult = await fs.ensureDir(config.componentsDir);
   if (!ensureDirResult.success) return ensureDirResult;
 
   const componentFiles = [
@@ -97,16 +100,15 @@ export const installThemeComponents = async (
     { src: sourcePaths.themeSwitcher, dest: destPaths.themeSwitcher, name: 'theme-switcher.tsx' },
   ];
 
-  const copyResult = await copyFiles(
-    fs,
-    componentFiles.filter(f => f.src && f.dest), // Filter out any undefined paths
-    { overwrite: force },
-    logger
-  );
+  // Copy component files using CLI filesystem
+  const copiedFiles: string[] = [];
+  for (const file of componentFiles) {
+    const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
+    if (!copyResult.success) return copyResult;
+    copiedFiles.push(file.name);
+  }
 
-  if (!copyResult.success) return copyResult;
+  logger.success(`Installed ${copiedFiles.length} theme components`);
 
-  logger.success(`Installed ${copyResult.value.length} theme components`);
-
-  return Ok(copyResult.value);
+  return Ok(copiedFiles);
 };

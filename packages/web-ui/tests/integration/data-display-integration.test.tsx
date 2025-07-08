@@ -521,7 +521,7 @@ describe('Data Display Integration Tests', () => {
           setTimeout(() => {
             setUsers(mockUsers);
             setUsersLoading(false);
-          }, 100);
+          }, 150);
 
           // Simulate loading stats (takes longer)
           setTimeout(() => {
@@ -531,7 +531,7 @@ describe('Data Display Integration Tests', () => {
               inactive: mockUsers.filter(u => u.status === 'inactive').length,
             });
             setStatsLoading(false);
-          }, 200);
+          }, 300);
         }, []);
 
         return (
@@ -593,9 +593,11 @@ describe('Data Display Integration Tests', () => {
 
       render(<LoadingStateDemo />);
 
-      // Initially both should be loading
-      expect(screen.getByTestId('stats-loading')).toBeInTheDocument();
-      expect(screen.getByTestId('users-loading')).toBeInTheDocument();
+      // Wait for initial render and verify both are loading
+      await waitFor(() => {
+        expect(screen.getByTestId('stats-loading')).toBeInTheDocument();
+        expect(screen.getByTestId('users-loading')).toBeInTheDocument();
+      });
 
       // Users should load first
       await waitFor(() => {

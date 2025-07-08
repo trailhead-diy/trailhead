@@ -65,7 +65,7 @@ export const ThemeSwitcher = ({
 
         <Select
           value={currentTheme || 'zinc'}
-          onChange={e => setTheme(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTheme(e.target.value)}
           className="min-w-[120px]"
         >
           {themeOptions.map(option => (

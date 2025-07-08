@@ -36,38 +36,34 @@ export function CatalystListbox<T>({
           // Hide default focus styles
           'focus:outline-hidden',
           // Focus ring
-          'after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset data-focus:after:ring-2 data-focus:after:ring-primary',
+          'after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset data-focus:after:ring-2 data-focus:after:ring-blue-500',
           // Disabled state
           'data-disabled:opacity-50 data-disabled:before:bg-zinc-950/5 data-disabled:before:shadow-none',
         ])}
       >
         <Headless.ListboxSelectedOption
-          as="span"
           options={options}
           placeholder={
             placeholder && <span className={cn('block truncate text-zinc-500')}>{placeholder}</span>
           }
-          {...({
-            className: cn([
-              // Basic layout
-              'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
-              // Set minimum height for when no value is selected
-              'min-h-11 sm:min-h-9',
-              // Horizontal padding
-              'pr-[calc(--spacing(7)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pl-[calc(--spacing(3)-1px)]',
-              // Typography
-              'text-left text-base/6 text-foreground placeholder:text-zinc-500 sm:text-sm/6 dark:text-foreground forced-colors:text-[CanvasText]',
-              // Border
-              'border border-zinc-950/10 group-data-active:border-zinc-950/20 group-data-hover:border-zinc-950/20 dark:border-border dark:group-data-active:border-white/20 dark:group-data-hover:border-white/20',
-              // Background color
-              'bg-transparent dark:bg-muted',
-              // Invalid state
-              'group-data-invalid:border-red-500 group-data-hover:group-data-invalid:border-red-500 dark:group-data-invalid:border-red-600 dark:data-hover:group-data-invalid:border-red-600',
-              // Disabled state
-              'group-data-disabled:border-zinc-950/20 group-data-disabled:opacity-100 dark:group-data-disabled:border-white/15 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:data-hover:border-white/15',
-              className,
-            ]),
-          } as any)}
+          className={cn([
+            // Basic layout
+            'relative block w-full appearance-none rounded-lg py-[calc(--spacing(2.5)-1px)] sm:py-[calc(--spacing(1.5)-1px)]',
+            // Set minimum height for when no value is selected
+            'min-h-11 sm:min-h-9',
+            // Horizontal padding
+            'pr-[calc(--spacing(7)-1px)] pl-[calc(--spacing(3.5)-1px)] sm:pl-[calc(--spacing(3)-1px)]',
+            // Typography
+            'text-left text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]',
+            // Border
+            'border border-zinc-950/10 group-data-active:border-zinc-950/20 group-data-hover:border-zinc-950/20 dark:border-white/10 dark:group-data-active:border-white/20 dark:group-data-hover:border-white/20',
+            // Background color
+            'bg-transparent dark:bg-white/5',
+            // Invalid state
+            'group-data-invalid:border-red-500 group-data-hover:group-data-invalid:border-red-500 dark:group-data-invalid:border-red-600 dark:data-hover:group-data-invalid:border-red-600',
+            // Disabled state
+            'group-data-disabled:border-zinc-950/20 group-data-disabled:opacity-100 dark:group-data-disabled:border-white/15 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:data-hover:border-white/15',
+          ])}
         />
         <span
           className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}
@@ -108,9 +104,9 @@ export function CatalystListbox<T>({
           // Handle scrolling when menu won't fit in viewport
           'overflow-y-scroll overscroll-contain',
           // Popover background
-          'bg-white/75 backdrop-blur-xl dark:bg-muted/75',
+          'bg-white/75 backdrop-blur-xl dark:bg-zinc-800/75',
           // Shadows
-          'shadow-lg ring-1 ring-zinc-950/10 dark:ring-ring dark:ring-inset',
+          'shadow-lg ring-1 ring-zinc-950/10 dark:ring-white/10 dark:ring-inset',
           // Transitions
           'transition-opacity duration-100 ease-in data-closed:data-leave:opacity-0 data-transition:pointer-events-none'
         )}
@@ -134,7 +130,7 @@ export function CatalystListboxOption<T>({
     'flex min-w-0 items-center',
     // Icons
     '*:data-[slot=icon]:size-5 *:data-[slot=icon]:shrink-0 sm:*:data-[slot=icon]:size-4',
-    '*:data-[slot=icon]:text-muted-foreground group-data-focus/option:*:data-[slot=icon]:text-foreground dark:*:data-[slot=icon]:text-muted-foreground',
+    '*:data-[slot=icon]:text-zinc-500 group-data-focus/option:*:data-[slot=icon]:text-white dark:*:data-[slot=icon]:text-zinc-400',
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
@@ -153,9 +149,9 @@ export function CatalystListboxOption<T>({
               // Basic layout
               'group/option grid cursor-default grid-cols-[--spacing(5)_1fr] items-baseline gap-x-2 rounded-lg py-2.5 pr-3.5 pl-2 sm:grid-cols-[--spacing(4)_1fr] sm:py-1.5 sm:pr-3 sm:pl-1.5',
               // Typography
-              'text-base/6 text-foreground sm:text-sm/6 dark:text-foreground forced-colors:text-[CanvasText]',
+              'text-base/6 text-zinc-950 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]',
               // Focus
-              'outline-hidden data-focus:bg-primary data-focus:text-white',
+              'outline-hidden data-focus:bg-blue-500 data-focus:text-white',
               // Forced colors mode
               'forced-color-adjust-none forced-colors:data-focus:bg-[Highlight] forced-colors:data-focus:text-[HighlightText]',
               // Disabled
@@ -206,7 +202,7 @@ export function CatalystListboxDescription({
     <span
       {...props}
       className={cn(
-        'flex flex-1 overflow-hidden text-muted-foreground group-data-focus/option:text-foreground before:w-2 before:min-w-0 before:shrink dark:text-muted-foreground',
+        'flex flex-1 overflow-hidden text-zinc-500 group-data-focus/option:text-white before:w-2 before:min-w-0 before:shrink dark:text-zinc-400',
         className
       )}
     >

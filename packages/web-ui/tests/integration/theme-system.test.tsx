@@ -43,8 +43,6 @@ describe('Theme System Integration', () => {
 
   describe('Theme Persistence and Hydration', () => {
     it('should maintain theme selection across component remounts', async () => {
-      const _user = userEvent.setup();
-
       const { rerender } = render(
         <ThemeProvider defaultTheme="catalyst">
           <ThemeSwitcher />

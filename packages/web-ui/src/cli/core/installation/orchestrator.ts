@@ -13,12 +13,13 @@ import type {
   FrameworkType,
 } from './types.js';
 import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
-import { checkExistingFiles, ensureDirectories } from '../filesystem/operations.js';
 import {
   analyzeDependencies,
-  installDependenciesSmart,
+  installDependencies,
   type DependencyInstallResult,
 } from './dependencies.js';
 import { executeInstallationSteps } from './step-executor.js';
@@ -27,28 +28,6 @@ import { detectWorkspace, detectCIEnvironment, checkOfflineMode } from './worksp
 import { analyzeDependencies as analyzeCore } from './dependency-resolution.js';
 import { detectPackageManager } from 'nypm';
 import { countFilesByPattern, formatFileSummary } from './shared-utils.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
-  }
-};
 
 // ============================================================================
 // TYPES
@@ -105,10 +84,13 @@ export const performInstallation = async (
         ]
       : [config.componentsDir, `${config.componentsDir}/theme`, `${config.componentsDir}/utils`];
 
-    const ensureDirResult = await ensureDirectories(fs, directories);
-    if (!ensureDirResult.success) {
-      progressTracker.stop();
-      return ensureDirResult;
+    // Create directories using CLI filesystem
+    for (const dir of directories) {
+      const ensureDirResult = await fs.ensureDir(dir);
+      if (!ensureDirResult.success) {
+        progressTracker.stop();
+        return ensureDirResult;
+      }
     }
 
     // Step 2: Check for existing files if not forcing
@@ -129,24 +111,27 @@ export const performInstallation = async (
         destPaths.catalystDir,
       ];
 
-      const existingFilesResult = await checkExistingFiles(fs, pathsToCheck);
-      if (!existingFilesResult.success) {
-        progressTracker.stop();
-        return existingFilesResult;
+      // Check for existing files using CLI filesystem
+      const existingFiles: string[] = [];
+      for (const path of pathsToCheck) {
+        const existsResult = await pathExists(path);
+        if (existsResult.success && existsResult.value) {
+          existingFiles.push(path);
+        }
       }
 
-      if (existingFilesResult.value.length > 0) {
+      if (existingFiles.length > 0) {
         progressTracker.stop();
         logger.warning('Found existing files that would be overwritten');
         logger.warning('The following files already exist:');
-        existingFilesResult.value.forEach((file: string) => logger.warning(`  • ${file}`));
+        existingFiles.forEach((file: string) => logger.warning(`  • ${file}`));
         logger.warning('Use --force to overwrite existing files');
 
-        return Err({
-          type: 'FileSystemError',
-          message: 'Installation would overwrite existing files',
-          path: config.componentsDir,
-        });
+        return Err(
+          createError('FILESYSTEM_ERROR', 'Installation would overwrite existing files', {
+            details: `Path: ${config.componentsDir}`,
+          })
+        );
       }
     }
 
@@ -194,7 +179,8 @@ export const performInstallation = async (
           detectPackageManager(config.projectRoot),
         ]);
 
-        const _workspace = workspaceResult.success ? workspaceResult.value : null;
+        // Workspace detection for future features
+        workspaceResult.success ? workspaceResult.value : null;
         const ci = detectCIEnvironment();
         const packageManager = detected?.name || 'npm';
 
@@ -207,10 +193,7 @@ export const performInstallation = async (
 
         if (!ci) {
           // Run interactive prompts
-          const {
-            runDependencyPrompts,
-            showPostInstallInstructions: _showPostInstallInstructions,
-          } = await getDependencyPrompts();
+          const { runDependencyPrompts } = await getDependencyPrompts();
 
           const analysis = analyzeCore(
             currentDepsResult.success
@@ -254,7 +237,7 @@ export const performInstallation = async (
         progressTracker.nextStep('Installing dependencies...');
 
         // Install with selected strategy
-        installResult = await installDependenciesSmart(
+        installResult = await installDependencies(
           fs,
           logger,
           config,
@@ -278,7 +261,7 @@ export const performInstallation = async (
           ? { type: options.dependencyStrategy }
           : { type: 'auto' as const };
 
-        installResult = await installDependenciesSmart(
+        installResult = await installDependencies(
           fs,
           logger,
           config,
@@ -316,11 +299,7 @@ export const performInstallation = async (
       ...(failedSteps.length > 0 && { failedSteps: Object.freeze([...failedSteps]) }),
     };
 
-    const _successMessage = buildSuccessMessage(
-      allInstalledFiles.length,
-      dependenciesAdded.length,
-      failedSteps.length
-    );
+    buildSuccessMessage(allInstalledFiles.length, dependenciesAdded.length, failedSteps.length);
     progressTracker.stop();
 
     // Log detailed summary
@@ -330,15 +309,13 @@ export const performInstallation = async (
   } catch (error) {
     progressTracker.stop();
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const errorDetails = error instanceof Error && error.stack ? error.stack : undefined;
 
-    return Err({
-      type: 'FileSystemError',
-      message: `Installation failed: ${errorMessage}`,
-      path: config.componentsDir,
-      cause: error,
-      details: errorDetails,
-    });
+    return Err(
+      createError('INSTALLATION_ERROR', `Installation failed: ${errorMessage}`, {
+        details: `Path: ${config.componentsDir}`,
+        cause: error,
+      })
+    );
   }
 };
 
@@ -405,25 +382,25 @@ export const validatePrerequisites = async (
   trailheadRoot: string
 ): Promise<Result<void, InstallError>> => {
   // Check if Trailhead root exists
-  const rootExistsResult = await pathExists(fs, trailheadRoot);
-  if (!rootExistsResult.success) return rootExistsResult;
+  const rootExistsResult = await pathExists(trailheadRoot);
+  if (!rootExistsResult.success) return Err(rootExistsResult.error);
   if (!rootExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Trailhead UI root not found: ${trailheadRoot}`,
-      details: JSON.stringify({ path: trailheadRoot }),
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', `Trailhead UI root not found: ${trailheadRoot}`, {
+        details: `Path: ${trailheadRoot}`,
+      })
+    );
   }
 
   // Check if project root exists
-  const projectExistsResult = await pathExists(fs, config.projectRoot);
-  if (!projectExistsResult.success) return projectExistsResult;
+  const projectExistsResult = await pathExists(config.projectRoot);
+  if (!projectExistsResult.success) return Err(projectExistsResult.error);
   if (!projectExistsResult.value) {
-    return Err({
-      type: 'ConfigurationError',
-      message: `Project root not found: ${config.projectRoot}`,
-      details: JSON.stringify({ path: config.projectRoot }),
-    });
+    return Err(
+      createError('CONFIGURATION_ERROR', `Project root not found: ${config.projectRoot}`, {
+        details: `Path: ${config.projectRoot}`,
+      })
+    );
   }
 
   // Check write permissions
@@ -431,11 +408,11 @@ export const validatePrerequisites = async (
   const writeTestPath = `${destDirParent}/.trailhead-test-${Date.now()}`;
   const writeResult = await fs.writeFile(writeTestPath, 'test');
   if (!writeResult.success) {
-    return Err({
-      type: 'FileSystemError',
-      message: `No write permission in destination directory`,
-      path: destDirParent,
-    });
+    return Err(
+      createError('FILESYSTEM_ERROR', 'No write permission in destination directory', {
+        details: `Path: ${destDirParent}`,
+      })
+    );
   }
 
   // Clean up test file
@@ -519,7 +496,7 @@ export const performDryRunInstallation = async (
   const existingFiles: string[] = [];
   for (const file of plannedFiles) {
     const fullPath = `${config.componentsDir}/${file}`;
-    const existsResult = await pathExists(fs, fullPath);
+    const existsResult = await pathExists(fullPath);
     if (existsResult.success && existsResult.value) {
       existingFiles.push(file);
     }

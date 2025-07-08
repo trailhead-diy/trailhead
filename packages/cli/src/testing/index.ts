@@ -2,6 +2,8 @@ export {
   mockFileSystem,
   mockLogger,
   mockPrompts,
+  mockConfig,
+  createConfigMock,
   createEnhancedMockFileSystem,
   createTestMockFileSystem,
   createCLIMockFileSystem,
@@ -11,7 +13,12 @@ export { createTestContext, createTestContextWithFiles } from './context.js';
 export { runCommand, CommandTestRunner } from './runner.js';
 
 export type { TestContextOptions } from './context.js';
-export type { MockFileSystemOptions, EnhancedMockFileSystem } from './mocks.js';
+export type {
+  MockFileSystemOptions,
+  EnhancedMockFileSystem,
+  MockConfigOptions,
+  CreateConfigMockOptions,
+} from './mocks.js';
 
 export { expectResult, expectError } from './assertions.js';
 

@@ -3,6 +3,7 @@
 import * as Headless from '@headlessui/react';
 import React, { useState } from 'react';
 import { CatalystNavbarItem } from './catalyst-navbar';
+
 import { cn } from '../utils/cn';
 
 function OpenMenuIcon() {
@@ -25,7 +26,11 @@ function MobileSidebar({
   open,
   close,
   children,
-}: React.PropsWithChildren<{ open: boolean; close: () => void }>) {
+}: React.PropsWithChildren<{
+  open: boolean;
+  close: () => void;
+  className?: string;
+}>) {
   return (
     <Headless.Dialog open={open} onClose={close} className={cn('lg:hidden')}>
       <Headless.DialogBackdrop
@@ -42,7 +47,7 @@ function MobileSidebar({
       >
         <div
           className={cn(
-            'flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring'
+            'flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10'
           )}
         >
           <div className={cn('-mb-3 px-4 pt-3')}>
@@ -72,7 +77,7 @@ export function CatalystSidebarLayout({
   return (
     <div
       className={cn(
-        'relative isolate flex min-h-svh w-full bg-background max-lg:flex-col lg:bg-accent dark:bg-card dark:lg:bg-card',
+        'relative isolate flex min-h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950',
         className
       )}
     >

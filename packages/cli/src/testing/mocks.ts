@@ -3,6 +3,7 @@ import type { Logger } from '../core/logger.js';
 import { Ok, Err } from '../core/errors/index.js';
 import type { Result } from '../core/errors/index.js';
 import { normalizePath } from './path-utils.js';
+import { vi } from 'vitest';
 
 /**
  * Create a mock filesystem for testing
@@ -631,5 +632,505 @@ export function mockPrompts(responses: Record<string, any> = {}) {
       }
       return response;
     },
+  };
+}
+
+/**
+ * Configuration for mocking cosmiconfig
+ */
+export interface MockConfigOptions {
+  /**
+   * Mock configurations to return for different scenarios
+   * Key format: "configName:scenario" or just "configName" for default
+   */
+  configurations?: Record<
+    string,
+    {
+      config?: any;
+      filepath?: string | null;
+      source?: 'file' | 'package.json' | 'defaults';
+    }
+  >;
+
+  /**
+   * Default configuration to return when no specific mock is set
+   */
+  defaultConfig?: any;
+
+  /**
+   * Simulate errors for specific config names or scenarios
+   */
+  errors?: Record<string, Error>;
+}
+
+/**
+ * Create comprehensive mocks for the cosmiconfig system used by createConfig
+ *
+ * This utility provides a complete mocking solution for configuration testing
+ * that follows the CLI framework's established patterns.
+ *
+ * @example
+ * ```ts
+ * import { vi } from 'vitest';
+ * import { mockConfig } from '@esteban-url/trailhead-cli/testing';
+ *
+ * const configMocks = mockConfig({
+ *   configurations: {
+ *     'myapp': {
+ *       config: { verbose: true, theme: 'dark' },
+ *       filepath: '/project/.myapprc.json',
+ *       source: 'file'
+ *     },
+ *     'myapp:no-config': {
+ *       config: null,
+ *       filepath: null,
+ *       source: 'defaults'
+ *     }
+ *   },
+ *   defaultConfig: { verbose: false, theme: 'light' },
+ *   errors: {
+ *     'myapp:error': new Error('Permission denied')
+ *   }
+ * });
+ *
+ * // Apply the mocks
+ * vi.mock('cosmiconfig', () => configMocks.cosmiconfigMock);
+ *
+ * // In your tests
+ * describe('Config Tests', () => {
+ *   beforeEach(() => {
+ *     configMocks.reset();
+ *   });
+ *
+ *   it('should load config from file', async () => {
+ *     configMocks.setScenario('myapp', 'default');
+ *     const result = await loadConfig();
+ *     expect(result.config.verbose).toBe(true);
+ *   });
+ *
+ *   it('should handle no config found', async () => {
+ *     configMocks.setScenario('myapp', 'no-config');
+ *     const result = await loadConfig();
+ *     expect(result.source).toBe('defaults');
+ *   });
+ *
+ *   it('should handle errors', async () => {
+ *     configMocks.setScenario('myapp', 'error');
+ *     await expect(loadConfig()).rejects.toThrow('Permission denied');
+ *   });
+ * });
+ * ```
+ */
+export function mockConfig(options: MockConfigOptions = {}) {
+  const { configurations = {}, defaultConfig = {}, errors = {} } = options;
+
+  // Track current scenario for each config name
+  const currentScenarios = new Map<string, string>();
+
+  // Mock functions that will be used by cosmiconfig
+  const mockSearch = vi.fn();
+  const mockSearchSync = vi.fn();
+  const mockClearCaches = vi.fn();
+
+  const mockCosmiconfig = vi.fn(() => ({
+    search: mockSearch,
+    clearCaches: mockClearCaches,
+  }));
+
+  const mockCosmiconfigSync = vi.fn(() => ({
+    search: mockSearchSync,
+    clearCaches: mockClearCaches,
+  }));
+
+  // Helper to get configuration for a scenario
+  const getConfigForScenario = (configName: string, scenario?: string) => {
+    const key = scenario ? `${configName}:${scenario}` : configName;
+    const config = configurations[key] || configurations[configName];
+
+    if (!config) {
+      // Return default config if no specific configuration is set
+      return {
+        config: defaultConfig,
+        filepath: null,
+        source: 'defaults' as const,
+      };
+    }
+
+    return config;
+  };
+
+  // Helper to check for errors
+  const getErrorForScenario = (configName: string, scenario?: string) => {
+    const key = scenario ? `${configName}:${scenario}` : configName;
+    return errors[key] || errors[configName];
+  };
+
+  // Implementation for search methods
+  const searchImpl = (configName: string, isSync: boolean) => {
+    const currentScenario = currentScenarios.get(configName);
+    const error = getErrorForScenario(configName, currentScenario);
+
+    if (error) {
+      if (isSync) {
+        throw error;
+      } else {
+        return Promise.reject(error);
+      }
+    }
+
+    const result = getConfigForScenario(configName, currentScenario);
+
+    // If config is null, cosmiconfig returns null (no config found)
+    if (result.config === null || result.config === undefined) {
+      return isSync ? null : Promise.resolve(null);
+    }
+
+    // Return cosmiconfig-style result
+    const cosmiconfigResult = {
+      config: result.config,
+      filepath: result.filepath || null,
+    };
+
+    return isSync ? cosmiconfigResult : Promise.resolve(cosmiconfigResult);
+  };
+
+  // Set up the mock implementations
+  mockSearch.mockImplementation(() => searchImpl('current', false));
+  mockSearchSync.mockImplementation(() => searchImpl('current', true));
+
+  return {
+    // The mock objects to use with vi.mock()
+    cosmiconfigMock: {
+      cosmiconfig: mockCosmiconfig,
+      cosmiconfigSync: mockCosmiconfigSync,
+    },
+
+    // Mock function references for direct testing
+    mockSearch,
+    mockSearchSync,
+    mockClearCaches,
+    mockCosmiconfig,
+    mockCosmiconfigSync,
+
+    /**
+     * Set the scenario for a specific config name
+     */
+    setScenario: (configName: string, scenario?: string) => {
+      currentScenarios.set(configName, scenario || 'default');
+
+      // Update mock implementations to use the specific config name
+      mockSearch.mockImplementation(() => searchImpl(configName, false));
+      mockSearchSync.mockImplementation(() => searchImpl(configName, true));
+    },
+
+    /**
+     * Add or update a configuration scenario
+     */
+    addConfiguration: (
+      key: string,
+      config: {
+        config?: any;
+        filepath?: string | null;
+        source?: 'file' | 'package.json' | 'defaults';
+      },
+    ) => {
+      configurations[key] = config;
+    },
+
+    /**
+     * Add an error scenario
+     */
+    addError: (key: string, error: Error) => {
+      errors[key] = error;
+    },
+
+    /**
+     * Reset all mocks and scenarios
+     */
+    reset: () => {
+      vi.clearAllMocks();
+      currentScenarios.clear();
+    },
+
+    /**
+     * Get call history for debugging
+     */
+    getCallHistory: () => ({
+      search: mockSearch.mock.calls,
+      searchSync: mockSearchSync.mock.calls,
+      clearCaches: mockClearCaches.mock.calls,
+    }),
+
+    /**
+     * Helper to create a complete test setup with beforeEach/afterEach
+     */
+    createTestSetup: () => ({
+      beforeEach: () => {
+        vi.clearAllMocks();
+        currentScenarios.clear();
+      },
+      afterEach: () => {
+        vi.restoreAllMocks();
+      },
+    }),
+  };
+}
+
+/**
+ * Enhanced configuration for CLI framework createConfig testing
+ */
+export interface CreateConfigMockOptions<T = any> {
+  /**
+   * Mock configuration scenarios
+   */
+  scenarios?: Record<
+    string,
+    {
+      config?: T;
+      filepath?: string | null;
+      source?: 'file' | 'package.json' | 'defaults';
+      error?: Error;
+    }
+  >;
+
+  /**
+   * Default configuration to return when no scenario matches
+   */
+  defaultConfig?: T;
+
+  /**
+   * Default scenario to use if none specified
+   */
+  defaultScenario?: string;
+}
+
+/**
+ * Create a comprehensive mock for CLI framework's createConfig function
+ *
+ * This provides a higher-level mocking approach specifically designed for
+ * testing code that uses the CLI framework's createConfig function.
+ *
+ * @example
+ * ```ts
+ * import { vi } from 'vitest';
+ * import { createConfigMock } from '@esteban-url/trailhead-cli/testing';
+ * import { z } from 'zod';
+ *
+ * const schema = z.object({
+ *   verbose: z.boolean(),
+ *   theme: z.string(),
+ * });
+ *
+ * const defaultConfig = { verbose: false, theme: 'light' };
+ *
+ * const configMock = createConfigMock({
+ *   scenarios: {
+ *     'file-found': {
+ *       config: { verbose: true, theme: 'dark' },
+ *       filepath: '/project/.myapprc.json',
+ *       source: 'file'
+ *     },
+ *     'no-config': {
+ *       config: null,
+ *       filepath: null,
+ *       source: 'defaults'
+ *     },
+ *     'invalid-config': {
+ *       error: new Error('Invalid configuration')
+ *     }
+ *   },
+ *   defaultConfig,
+ *   defaultScenario: 'no-config'
+ * });
+ *
+ * // Mock the createConfig module
+ * vi.mock('@esteban-url/trailhead-cli/config', () => ({
+ *   createConfig: configMock.createConfig,
+ *   z: vi.fn() // re-export z if needed
+ * }));
+ *
+ * // In your tests
+ * describe('Config Tests', () => {
+ *   beforeEach(() => {
+ *     configMock.reset();
+ *   });
+ *
+ *   it('should load config from file', async () => {
+ *     configMock.setScenario('file-found');
+ *     const configLoader = createConfig({ name: 'myapp', schema, defaultConfig });
+ *     const result = await configLoader.load();
+ *     expect(result.config.verbose).toBe(true);
+ *   });
+ * });
+ * ```
+ */
+export function createConfigMock<T = any>(
+  options: CreateConfigMockOptions<T> = {},
+) {
+  const {
+    scenarios = {},
+    defaultConfig,
+    defaultScenario = 'no-config',
+  } = options;
+
+  // Track current scenario
+  let currentScenario = defaultScenario;
+
+  // Mock createConfig function
+  const mockCreateConfig = vi.fn().mockImplementation((configOptions: any) => {
+    const { schema, defaults } = configOptions;
+
+    return {
+      async load(_searchFrom?: string) {
+        const scenario = scenarios[currentScenario];
+
+        if (scenario?.error) {
+          throw scenario.error;
+        }
+
+        if (!scenario || scenario.config === null) {
+          // No config found - use defaults
+          if (!defaults && !defaultConfig) {
+            throw new Error('No configuration found and no defaults provided');
+          }
+
+          const finalDefaults = defaults || defaultConfig;
+          return {
+            config: schema ? schema.parse(finalDefaults) : finalDefaults,
+            filepath: null,
+            source: 'defaults' as const,
+          };
+        }
+
+        // Config found - merge with defaults first, then validate
+        const mergedConfig = defaults
+          ? mergeWithDefaults(defaults, scenario.config)
+          : scenario.config;
+        const finalConfig = schema ? schema.parse(mergedConfig) : mergedConfig;
+
+        return {
+          config: finalConfig,
+          filepath: scenario.filepath || null,
+          source: scenario.source || ('file' as const),
+        };
+      },
+
+      loadSync(_searchFrom?: string) {
+        const scenario = scenarios[currentScenario];
+
+        if (scenario?.error) {
+          throw scenario.error;
+        }
+
+        if (!scenario || scenario.config === null) {
+          // No config found - use defaults
+          if (!defaults && !defaultConfig) {
+            throw new Error('No configuration found and no defaults provided');
+          }
+
+          const finalDefaults = defaults || defaultConfig;
+          return {
+            config: schema ? schema.parse(finalDefaults) : finalDefaults,
+            filepath: null,
+            source: 'defaults' as const,
+          };
+        }
+
+        // Config found - merge with defaults first, then validate
+        const mergedConfig = defaults
+          ? mergeWithDefaults(defaults, scenario.config)
+          : scenario.config;
+        const finalConfig = schema ? schema.parse(mergedConfig) : mergedConfig;
+
+        return {
+          config: finalConfig,
+          filepath: scenario.filepath || null,
+          source: scenario.source || ('file' as const),
+        };
+      },
+
+      clearCache() {
+        // Mock clearCache - no-op for testing
+      },
+    };
+  });
+
+  // Helper to merge configs (simplified version of CLI framework's logic)
+  function mergeWithDefaults<T>(defaults: T, userConfig: T): T {
+    if (typeof defaults !== 'object' || defaults === null) {
+      return userConfig;
+    }
+
+    if (typeof userConfig !== 'object' || userConfig === null) {
+      return defaults;
+    }
+
+    const result = { ...defaults };
+
+    for (const key in userConfig) {
+      if (Object.prototype.hasOwnProperty.call(userConfig, key)) {
+        const userValue = userConfig[key];
+        const defaultValue = (defaults as any)[key];
+
+        if (
+          typeof defaultValue === 'object' &&
+          defaultValue !== null &&
+          !Array.isArray(defaultValue) &&
+          typeof userValue === 'object' &&
+          userValue !== null &&
+          !Array.isArray(userValue)
+        ) {
+          // Recursively merge objects
+          (result as any)[key] = mergeWithDefaults(defaultValue, userValue);
+        } else {
+          // Override with user value
+          (result as any)[key] = userValue;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  return {
+    /**
+     * Mock createConfig function to use in vi.mock()
+     */
+    createConfig: mockCreateConfig,
+
+    /**
+     * Set the current scenario for testing
+     */
+    setScenario: (scenario: string) => {
+      currentScenario = scenario;
+    },
+
+    /**
+     * Add a new scenario dynamically
+     */
+    addScenario: (
+      name: string,
+      scenario: NonNullable<CreateConfigMockOptions<T>['scenarios']>[string],
+    ) => {
+      scenarios[name] = scenario;
+    },
+
+    /**
+     * Reset the mock state
+     */
+    reset: () => {
+      currentScenario = defaultScenario;
+      vi.clearAllMocks();
+    },
+
+    /**
+     * Get call history for debugging
+     */
+    getCallHistory: () => mockCreateConfig.mock.calls,
+
+    /**
+     * Get current scenario for debugging
+     */
+    getCurrentScenario: () => currentScenario,
   };
 }

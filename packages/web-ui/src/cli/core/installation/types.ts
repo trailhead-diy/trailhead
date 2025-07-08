@@ -6,6 +6,10 @@
 import type { FrameworkType } from './framework-detection.js';
 export type { FrameworkType };
 
+// Import CLI framework types for error handling
+import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+export type { Result, CLIError as InstallError };
+
 // ============================================================================
 // CORE DOMAIN TYPES
 // ============================================================================
@@ -53,46 +57,8 @@ export interface InstallationSummary {
   readonly configCreated: boolean;
 }
 
-// ============================================================================
-// ERROR TYPES FOR BETTER ERROR HANDLING
-// ============================================================================
-
-export type InstallError =
-  | { readonly type: 'ConfigurationError'; readonly message: string; readonly details?: string }
-  | {
-      readonly type: 'VerificationError';
-      readonly message: string;
-      readonly mismatches?: readonly FileMismatch[];
-    }
-  | {
-      readonly type: 'FileSystemError';
-      readonly message: string;
-      readonly path: string;
-      readonly cause?: unknown;
-    }
-  | {
-      readonly type: 'DependencyError';
-      readonly message: string;
-      readonly packageName?: string;
-      readonly cause?: unknown;
-    }
-  | { readonly type: 'ConversionError'; readonly message: string; readonly cause?: unknown }
-  | { readonly type: 'ValidationError'; readonly message: string; readonly field?: string }
-  | { readonly type: 'UserInputError'; readonly message: string; readonly cause?: unknown };
-
-// ============================================================================
-// RESULT TYPE FOR FUNCTIONAL ERROR HANDLING
-// ============================================================================
-
-// Import Result type from framework
-import { type Result as FrameworkResult } from '@esteban-url/trailhead-cli/core';
-
-// Re-export Result type for this module
-export type Result<T, E> = FrameworkResult<T, E>;
-
-// Create Ok and Err functions that work with our types
-export const Ok = <T>(value: T): Result<T, never> => ({ success: true, value });
-export const Err = <E>(error: E): Result<never, E> => ({ success: false, error });
+// Re-export Ok and Err from CLI package for compatibility
+export { Ok, Err } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // CLI OPTIONS AND FLAGS
@@ -115,25 +81,12 @@ export interface CLIOptions {
 // DEPENDENCY INJECTION INTERFACES
 // ============================================================================
 
-// Re-export FileSystem from CLI framework and adapt error types
-export type { FileSystem as FrameworkFileSystem } from '@esteban-url/trailhead-cli/filesystem';
-
-export interface FileSystem {
-  access(path: string, mode?: number): Promise<Result<void, InstallError>>;
-  readdir(path: string): Promise<Result<string[], InstallError>>;
-  readFile(path: string): Promise<Result<string, InstallError>>;
-  writeFile(path: string, content: string): Promise<Result<void, InstallError>>;
-  readJson<T>(path: string): Promise<Result<T, InstallError>>;
-  writeJson<T>(path: string, data: T, options?: WriteOptions): Promise<Result<void, InstallError>>;
-  cp(src: string, dest: string, options?: CopyOptions): Promise<Result<void, InstallError>>;
-  ensureDir(path: string): Promise<Result<void, InstallError>>;
-  stat(path: string): Promise<Result<FileStats, InstallError>>;
-  rm(path: string): Promise<Result<void, InstallError>>;
-}
+// Re-export FileSystem from CLI package for compatibility
+export type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 export interface ProcessRunner {
-  execSync(command: string, options?: ExecOptions): Promise<Result<string, InstallError>>;
-  isCommandAvailable(command: string): Promise<Result<boolean, InstallError>>;
+  execSync(command: string, options?: ExecOptions): Promise<Result<string, CLIError>>;
+  isCommandAvailable(command: string): Promise<Result<boolean, CLIError>>;
   cwd(): string;
 }
 
@@ -141,7 +94,7 @@ export interface ProcessRunner {
 export type { Logger } from '@esteban-url/trailhead-cli/core';
 
 export interface Hasher {
-  calculateFileHash(filePath: string): Promise<Result<string, InstallError>>;
+  calculateFileHash(filePath: string): Promise<Result<string, CLIError>>;
   calculateStringHash(content: string): string;
 }
 
@@ -189,13 +142,8 @@ export interface PackageJsonDeps {
 // VALIDATION HELPERS
 // ============================================================================
 
-export const isString = (value: unknown): value is string => typeof value === 'string';
-
-export const isObject = (value: unknown): value is Record<string, unknown> =>
-  value !== null && typeof value === 'object' && !Array.isArray(value);
-
-export const isRecord = (value: unknown): value is Record<string, string> =>
-  isObject(value) && Object.values(value).every(isString);
+// Import validation utilities from CLI framework instead of duplicating
+export { string, object } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // REQUIRED DEPENDENCIES CONSTANTS

@@ -2,10 +2,9 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';
 
-// Use local Result type for file operations that returns regular Error
-export type Result<T, E = Error> =
-  | { readonly success: true; readonly value: T }
-  | { readonly success: false; readonly error: E };
+// Import CLI framework types for consistent error handling
+import type { Result, CLIError } from '../core/index.js';
+import { createError } from '../core/index.js';
 
 const Ok = <T>(value: T): Result<T, never> => ({ success: true, value });
 const Err = <E>(error: E): Result<never, E> => ({ success: false, error });
@@ -32,7 +31,7 @@ export async function findFiles(
   directory: string,
   pattern: string,
   ignorePatterns: string[] = [],
-): Promise<Result<string[], Error>> {
+): Promise<Result<string[], CLIError>> {
   try {
     const fullPattern = path.join(directory, pattern);
     const defaultIgnores = ['**/node_modules/**', '**/dist/**'];
@@ -43,7 +42,12 @@ export async function findFiles(
 
     return Ok(files);
   } catch (error) {
-    return Err(error instanceof Error ? error : new Error(String(error)));
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to find files', {
+        details: `Pattern: ${pattern} in ${directory}`,
+        cause: error instanceof Error ? error : new Error(String(error)),
+      }),
+    );
   }
 }
 
@@ -52,13 +56,19 @@ export async function findFiles(
  */
 export async function readFile(
   filePath: string,
-): Promise<Result<string, Error>> {
+): Promise<Result<string, CLIError>> {
   try {
     const content = await fs.readFile(filePath, 'utf8');
     return Ok(content);
   } catch (error) {
     return Err(
-      error instanceof Error ? error : new Error(`Failed to read ${filePath}`),
+      createError('FILESYSTEM_ERROR', 'Failed to read file', {
+        details: `Path: ${filePath}`,
+        cause:
+          error instanceof Error
+            ? error
+            : new Error(`Failed to read ${filePath}`),
+      }),
     );
   }
 }
@@ -69,13 +79,19 @@ export async function readFile(
 export async function writeFile(
   filePath: string,
   content: string,
-): Promise<Result<void, Error>> {
+): Promise<Result<void, CLIError>> {
   try {
     await fs.writeFile(filePath, content, 'utf8');
     return Ok(undefined);
   } catch (error) {
     return Err(
-      error instanceof Error ? error : new Error(`Failed to write ${filePath}`),
+      createError('FILESYSTEM_ERROR', 'Failed to write file', {
+        details: `Path: ${filePath}`,
+        cause:
+          error instanceof Error
+            ? error
+            : new Error(`Failed to write ${filePath}`),
+      }),
     );
   }
 }
@@ -93,19 +109,50 @@ export async function fileExists(filePath: string): Promise<boolean> {
 }
 
 /**
+ * Check if path exists with Result-based error handling
+ */
+export async function pathExists(
+  filePath: string,
+): Promise<Result<boolean, CLIError>> {
+  try {
+    await fs.access(filePath);
+    return Ok(true);
+  } catch (error) {
+    // If access fails with ENOENT, the file doesn't exist
+    if ((error as any).code === 'ENOENT') {
+      return Ok(false);
+    }
+    // Other errors are actual filesystem errors
+    return Err(
+      createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
+        details: `Path: ${filePath}`,
+        cause:
+          error instanceof Error
+            ? error
+            : new Error(`Failed to check path existence: ${filePath}`),
+      }),
+    );
+  }
+}
+
+/**
  * Create directory if it doesn't exist
  */
 export async function ensureDirectory(
   dirPath: string,
-): Promise<Result<void, Error>> {
+): Promise<Result<void, CLIError>> {
   try {
     await fs.mkdir(dirPath, { recursive: true });
     return Ok(undefined);
   } catch (error) {
     return Err(
-      error instanceof Error
-        ? error
-        : new Error(`Failed to create directory ${dirPath}`),
+      createError('FILESYSTEM_ERROR', 'Failed to create directory', {
+        details: `Path: ${dirPath}`,
+        cause:
+          error instanceof Error
+            ? error
+            : new Error(`Failed to create directory ${dirPath}`),
+      }),
     );
   }
 }
@@ -116,7 +163,7 @@ export async function ensureDirectory(
 export async function compareFiles(
   sourcePath: string,
   destPath: string,
-): Promise<Result<FileComparison, Error>> {
+): Promise<Result<FileComparison, CLIError>> {
   try {
     const sourceExists = await fileExists(sourcePath);
     const destExists = await fileExists(destPath);
@@ -162,9 +209,15 @@ export async function compareFiles(
     });
   } catch (error) {
     return Err(
-      error instanceof Error
-        ? error
-        : new Error(`Failed to compare files: ${sourcePath} vs ${destPath}`),
+      createError('FILESYSTEM_ERROR', 'Failed to compare files', {
+        details: `Source: ${sourcePath}, Destination: ${destPath}`,
+        cause:
+          error instanceof Error
+            ? error
+            : new Error(
+                `Failed to compare files: ${sourcePath} vs ${destPath}`,
+              ),
+      }),
     );
   }
 }

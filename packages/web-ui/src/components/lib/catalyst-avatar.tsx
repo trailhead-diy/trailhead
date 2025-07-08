@@ -5,7 +5,7 @@ import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
 import { cn } from '../utils/cn';
 
-type AvatarProps = {
+type CatalystAvatarProps = {
   src?: string | null;
   square?: boolean;
   initials?: string;
@@ -20,7 +20,7 @@ export function CatalystAvatar({
   alt = '',
   className,
   ...props
-}: AvatarProps & React.ComponentPropsWithoutRef<'span'>) {
+}: CatalystAvatarProps & React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       data-slot="avatar"
@@ -70,7 +70,7 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
     alt,
     className,
     ...props
-  }: AvatarProps &
+  }: CatalystAvatarProps &
     (
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
@@ -79,7 +79,7 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
 ) {
   let classes = cn(
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
+    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
     className
   );
 

@@ -1,5 +1,11 @@
-import { Ok as CliOk, Err as CliErr, type Result } from '@esteban-url/trailhead-cli';
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
+import { Ok as CliOk, Err as CliErr } from '@esteban-url/trailhead-cli';
+import {
+  createCommand,
+  executeWithPhases,
+  displaySummary,
+  type CommandPhase,
+  type CommandContext,
+} from '@esteban-url/trailhead-cli/command';
 import {
   createValidationPipeline,
   createRule,
@@ -17,10 +23,8 @@ import {
 } from '../core/installation/index.js';
 import { resolveConfiguration } from '../core/installation/config.js';
 import { detectFramework } from '../core/installation/framework-detection.js';
-import { adaptFrameworkToInstallFS } from '../core/filesystem/adapter.js';
-import { convertInstallResult } from './utils/error-conversion.js';
 import { getTrailheadPackageRoot } from '../utils/context.js';
-import { CLI_ERROR_CODES, createCLIError } from '../core/errors/codes.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import {
   type StrictInstallOptions,
   isValidFramework,
@@ -29,6 +33,21 @@ import {
 
 // Use strict typing for better type safety
 type InstallOptions = StrictInstallOptions;
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface InstallConfig {
+  options: InstallOptions;
+  projectRoot: string;
+  loadedConfig?: any;
+  configPath?: string | null;
+  resolvedConfig?: any;
+  framework?: any;
+  finalOptions?: InstallOptions;
+  installResult?: any;
+}
 
 // ============================================================================
 // VALIDATION
@@ -129,138 +148,168 @@ const createInstallValidation = () => {
 };
 
 // ============================================================================
-// INSTALLATION WORKFLOW
+// INSTALLATION PHASES
 // ============================================================================
 
 /**
- * Execute installation workflow using core modules
+ * Create installation phases for structured execution
  */
-async function executeInstallation(
-  options: InstallOptions,
-  context: CommandContext,
-  finalOptions?: InstallOptions
-): Promise<Result<void>> {
-  // Create dependencies
-  const nodeFS = createNodeFileSystem();
-  const fs = adaptFrameworkToInstallFS(nodeFS);
-  const logger = context.logger;
+const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallConfig>[] => [
+  {
+    name: 'Loading configuration',
+    execute: async (config: InstallConfig) => {
+      const configResult = loadConfigSync(config.projectRoot);
+      const loadedConfig = configResult.config;
+      const configPath = configResult.filepath;
 
-  try {
-    // Load simplified config system
-    const configResult = loadConfigSync(context.projectRoot);
-    const loadedConfig = configResult.config;
-    const configPath = configResult.filepath;
-
-    // Always show when config is found
-    if (configPath) {
-      logger.info(`Configuration loaded from: ${configPath}`);
-    }
-
-    // Log detailed config in verbose mode (check both CLI option and config setting)
-    if (options.verbose || loadedConfig.verbose) {
-      logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
-    }
-
-    // Step 1: Resolve configuration
-    logger.step('Resolving configuration...');
-
-    // Merge configuration: CLI options > config file > defaults
-    const installConfig = loadedConfig?.install;
-    const destinationDir = options.dest || installConfig?.destDir;
-
-    const resolveResult = await resolveConfiguration(
-      fs,
-      logger,
-      {
-        catalystDir: options.catalystDir,
-        destinationDir: destinationDir,
-        verbose: options.verbose,
-      },
-      context.projectRoot
-    );
-
-    if (!resolveResult.success) {
-      return convertInstallResult(resolveResult);
-    }
-
-    const config = resolveResult.value;
-
-    // Step 2: Detect framework
-    logger.step('Detecting framework...');
-    const frameworkResult = await detectFramework(
-      fs,
-      config.projectRoot,
-      options.framework as any // Cast since we've validated it
-    );
-
-    if (!frameworkResult.success) {
-      return convertInstallResult(frameworkResult);
-    }
-
-    const framework = frameworkResult.value;
-    logger.success(`Detected ${framework.framework.name}`);
-
-    // Step 3: Perform installation or dry run
-    if (options.dryRun) {
-      const dryRunResult = await performDryRunInstallation(
-        fs,
-        logger,
-        config,
-        getTrailheadPackageRoot(),
-        framework.framework.type,
-        options.wrappers ?? true
-      );
-
-      if (!dryRunResult.success) {
-        return convertInstallResult(dryRunResult);
+      // Always show when config is found
+      if (configPath) {
+        cmdContext.logger.info(`Configuration loaded from: ${configPath}`);
       }
 
-      logger.info('\nDry run complete. No files were installed.');
-      return CliOk(undefined);
-    }
+      // Log detailed config in verbose mode
+      if (config.options.verbose || loadedConfig.verbose) {
+        logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
+      }
 
-    // Build installation options
-    const effectiveOptions = finalOptions || options;
-    const coreOptions: CoreInstallOptions = {
-      interactive: effectiveOptions.interactive,
-      skipDependencyPrompts: false,
-      dependencyStrategy: effectiveOptions.dependencyStrategy as any,
-    };
+      return CliOk({
+        ...config,
+        loadedConfig,
+        configPath,
+      });
+    },
+  },
+  {
+    name: 'Resolving configuration',
+    execute: async (config: InstallConfig) => {
+      const nodeFS = createNodeFileSystem();
 
-    const installResult = await performInstallation(
-      fs,
-      logger,
-      config,
-      getTrailheadPackageRoot(),
-      options.force ?? false,
-      framework.framework.type,
-      options.wrappers ?? true,
-      coreOptions
-    );
+      // Merge configuration: CLI options > config file > defaults
+      const installConfig = config.loadedConfig?.install;
+      const destinationDir = config.options.dest || installConfig?.destDir;
 
-    if (!installResult.success) {
-      return convertInstallResult(installResult);
-    }
+      const resolveResult = await resolveConfiguration(
+        nodeFS,
+        cmdContext.logger,
+        {
+          catalystDir: config.options.catalystDir,
+          destinationDir: destinationDir,
+          verbose: config.options.verbose,
+        },
+        config.projectRoot
+      );
 
-    const summary = installResult.value;
+      if (!resolveResult.success) {
+        return resolveResult;
+      }
 
-    // Step 4: Display summary
-    displayInstallationSummary(logger, {
-      framework: framework.framework.name,
-      filesInstalled: summary.filesInstalled.length,
-      themes: ['red', 'rose', 'orange', 'yellow', 'green', 'blue', 'violet', 'catalyst'],
-    });
+      return CliOk({
+        ...config,
+        resolvedConfig: resolveResult.value,
+      });
+    },
+  },
+  {
+    name: 'Detecting framework',
+    execute: async (config: InstallConfig) => {
+      const nodeFS = createNodeFileSystem();
 
-    return CliOk(undefined);
-  } catch (error) {
-    return CliErr({
-      code: 'INSTALL_ERROR',
-      message: error instanceof Error ? error.message : 'Installation failed',
-      recoverable: false,
-      cause: error,
-    });
-  }
-}
+      const frameworkResult = await detectFramework(
+        nodeFS,
+        config.resolvedConfig.projectRoot,
+        config.options.framework && isValidFramework(config.options.framework)
+          ? config.options.framework
+          : undefined
+      );
+
+      if (!frameworkResult.success) {
+        return frameworkResult;
+      }
+
+      const framework = frameworkResult.value;
+      cmdContext.logger.success(`Detected ${framework.framework.name}`);
+
+      return CliOk({
+        ...config,
+        framework,
+      });
+    },
+  },
+  {
+    name: 'Executing installation',
+    execute: async (config: InstallConfig) => {
+      const nodeFS = createNodeFileSystem();
+      const effectiveOptions = config.finalOptions || config.options;
+
+      // Handle dry run
+      if (config.options.dryRun) {
+        const dryRunResult = await performDryRunInstallation(
+          nodeFS,
+          cmdContext.logger,
+          config.resolvedConfig,
+          getTrailheadPackageRoot(),
+          config.framework.framework.type,
+          config.options.wrappers ?? true
+        );
+
+        if (!dryRunResult.success) {
+          return dryRunResult;
+        }
+
+        cmdContext.logger.info('\nDry run complete. No files were installed.');
+        return CliOk(config);
+      }
+
+      // Build installation options
+      const coreOptions: CoreInstallOptions = {
+        interactive: effectiveOptions.interactive,
+        skipDependencyPrompts: false,
+        dependencyStrategy:
+          effectiveOptions.dependencyStrategy &&
+          isValidDependencyStrategy(effectiveOptions.dependencyStrategy)
+            ? effectiveOptions.dependencyStrategy
+            : 'auto',
+      };
+
+      const installResult = await performInstallation(
+        nodeFS,
+        cmdContext.logger,
+        config.resolvedConfig,
+        getTrailheadPackageRoot(),
+        config.options.force ?? false,
+        config.framework.framework.type,
+        config.options.wrappers ?? true,
+        coreOptions
+      );
+
+      if (!installResult.success) {
+        return installResult;
+      }
+
+      return CliOk({
+        ...config,
+        installResult: installResult.value,
+      });
+    },
+  },
+  {
+    name: 'Displaying summary',
+    execute: async (config: InstallConfig) => {
+      // Skip summary for dry runs
+      if (config.options.dryRun || !config.installResult) {
+        return CliOk(config);
+      }
+
+      displayInstallationSummary(cmdContext.logger, {
+        framework: config.framework.framework.name,
+        filesInstalled: config.installResult.filesInstalled.length,
+        themes: ['red', 'rose', 'orange', 'yellow', 'green', 'blue', 'violet', 'catalyst'],
+      });
+
+      return CliOk(config);
+    },
+  },
+];
 
 // ============================================================================
 // DISPLAY FUNCTIONS
@@ -329,77 +378,75 @@ function getFrameworkSteps(framework: string): string[] {
 }
 
 // ============================================================================
-// COMMAND HANDLER
+// COMMAND PHASES - INTERACTIVE & VALIDATION
 // ============================================================================
 
 /**
- * Handle install command execution
+ * Create pre-installation phases for validation and interactive prompts
  */
-async function handleInstall(
-  options: InstallOptions,
-  context: CommandContext
-): Promise<Result<void>> {
-  // Validate options
-  const validation = createInstallValidation();
-  const validationResult = validation.validateSync(options);
+const createPreInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallConfig>[] => [
+  {
+    name: 'Validating options',
+    execute: async (config: InstallConfig) => {
+      const validation = createInstallValidation();
+      const validationResult = validation.validateSync(config.options);
 
-  if (validationResult.overall === 'fail') {
-    context.logger.error('❌ Invalid options:');
-    // Simple error display until formatValidationSummary is available
-    validationResult.failed.forEach((result: ValidationResult) => {
-      context.logger.error(`  • ${result.message}`);
-    });
-    return CliErr(
-      createCLIError(CLI_ERROR_CODES.VALIDATION_ERROR, 'Invalid installation options', {
-        recoverable: true,
-      })
-    );
-  }
+      if (validationResult.overall === 'fail') {
+        cmdContext.logger.error('❌ Invalid options:');
+        validationResult.failed.forEach((result: ValidationResult) => {
+          cmdContext.logger.error(`  • ${result.message}`);
+        });
+        return CliErr(createError('VALIDATION_ERROR', 'Invalid installation options'));
+      }
 
-  // Show warnings if any
-  if (validationResult.overall === 'warning') {
-    validationResult.warnings.forEach((result: ValidationResult) => {
-      context.logger.info(`⚠ ${result.message}`);
-    });
-  }
+      // Show warnings if any
+      if (validationResult.overall === 'warning') {
+        validationResult.warnings.forEach((result: ValidationResult) => {
+          cmdContext.logger.info(`⚠ ${result.message}`);
+        });
+      }
 
-  // Run interactive prompts if needed
-  let finalOptions = options;
-  if (options.interactive || (!options.framework && !options.dryRun)) {
-    context.logger.info('🚀 Interactive Installation Mode\n');
-    const promptResults = await runInstallationPrompts();
+      return CliOk(config);
+    },
+  },
+  {
+    name: 'Running interactive prompts',
+    execute: async (config: InstallConfig) => {
+      let finalOptions = config.options;
 
-    // Merge with CLI options (only override if explicitly provided)
-    finalOptions = {
-      ...promptResults,
-      // Only include CLI options that were explicitly set
-      ...(options.dest ? { dest: options.dest } : {}),
-      ...(options.framework ? { framework: options.framework } : {}),
-      ...(options.catalystDir ? { catalystDir: options.catalystDir } : {}),
-      ...(options.force !== undefined ? { force: options.force } : {}),
-      ...(options.dryRun !== undefined ? { dryRun: options.dryRun } : {}),
-      ...(options.noConfig !== undefined ? { noConfig: options.noConfig } : {}),
-      ...(options.overwrite !== undefined ? { overwrite: options.overwrite } : {}),
-      ...(options.interactive !== undefined ? { interactive: options.interactive } : {}),
-      ...(options.verbose !== undefined ? { verbose: options.verbose } : {}),
-      ...(options.wrappers !== undefined ? { wrappers: options.wrappers } : {}),
-    };
-  }
+      // Run interactive prompts if needed
+      if (config.options.interactive || (!config.options.framework && !config.options.dryRun)) {
+        cmdContext.logger.info('🚀 Interactive Installation Mode\n');
+        const promptResults = await runInstallationPrompts();
 
-  // Execute installation
-  const result = await executeInstallation(finalOptions, context, finalOptions);
+        // Merge with CLI options (only override if explicitly provided)
+        finalOptions = {
+          ...promptResults,
+          // Only include CLI options that were explicitly set
+          ...(config.options.dest ? { dest: config.options.dest } : {}),
+          ...(config.options.framework ? { framework: config.options.framework } : {}),
+          ...(config.options.catalystDir ? { catalystDir: config.options.catalystDir } : {}),
+          ...(config.options.force !== undefined ? { force: config.options.force } : {}),
+          ...(config.options.dryRun !== undefined ? { dryRun: config.options.dryRun } : {}),
+          ...(config.options.noConfig !== undefined ? { noConfig: config.options.noConfig } : {}),
+          ...(config.options.overwrite !== undefined
+            ? { overwrite: config.options.overwrite }
+            : {}),
+          ...(config.options.interactive !== undefined
+            ? { interactive: config.options.interactive }
+            : {}),
+          ...(config.options.verbose !== undefined ? { verbose: config.options.verbose } : {}),
+          ...(config.options.wrappers !== undefined ? { wrappers: config.options.wrappers } : {}),
+        };
+      }
 
-  if (!result.success) {
-    context.logger.error('❌ Installation failed:');
-    context.logger.error(result.error.message);
-    if (options.verbose && result.error.details) {
-      context.logger.error('Details:' + result.error.details);
-    }
-    return result;
-  }
-
-  return CliOk(undefined);
-}
+      return CliOk({
+        ...config,
+        finalOptions,
+      });
+    },
+  },
+];
 
 // ============================================================================
 // COMMAND CREATION
@@ -477,7 +524,51 @@ export const createInstallCommand = () => {
     ],
 
     action: async (options: InstallOptions, cmdContext: CommandContext) => {
-      return await handleInstall(options, cmdContext);
+      // Initialize config
+      const config: InstallConfig = {
+        options,
+        projectRoot: cmdContext.projectRoot,
+      };
+
+      // Execute pre-installation phases (validation & interactive prompts)
+      const prePhases = createPreInstallPhases(cmdContext);
+      const preResult = await executeWithPhases(prePhases, config, cmdContext);
+
+      if (!preResult.success) {
+        return preResult;
+      }
+
+      // Execute main installation phases
+      const mainPhases = createInstallPhases(cmdContext);
+      const mainResult = await executeWithPhases(mainPhases, preResult.value, cmdContext);
+
+      if (!mainResult.success) {
+        cmdContext.logger.error('❌ Installation failed:');
+        cmdContext.logger.error(mainResult.error.message);
+        if (options.verbose && mainResult.error.details) {
+          cmdContext.logger.error('Details:' + mainResult.error.details);
+        }
+        return mainResult;
+      }
+
+      // Display final summary
+      displaySummary(
+        'Installation Complete',
+        [
+          { label: 'Framework', value: mainResult.value.framework?.framework.name || 'Unknown' },
+          {
+            label: 'Files Installed',
+            value: mainResult.value.installResult?.filesInstalled.length?.toString() || '0',
+          },
+          { label: 'Mode', value: options.dryRun ? 'Dry Run' : 'Live Installation' },
+          ...(mainResult.value.configPath
+            ? [{ label: 'Config', value: mainResult.value.configPath }]
+            : []),
+        ],
+        cmdContext
+      );
+
+      return CliOk(undefined);
     },
   });
 };

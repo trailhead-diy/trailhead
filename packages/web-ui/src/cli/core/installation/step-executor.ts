@@ -4,6 +4,7 @@
 
 import { createTaskList, createTask } from '@esteban-url/trailhead-cli/workflows';
 import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import type { Result, InstallError, Logger } from './types.js';
 import { Ok, Err } from './types.js';
 
@@ -27,65 +28,6 @@ export interface StepExecutionResult {
 // ============================================================================
 // STEP EXECUTION
 // ============================================================================
-
-/**
- * Execute a single installation step with proper error handling
- */
-const _executeStep = async (
-  step: InstallationStep,
-  logger: Logger
-): Promise<Result<readonly string[], InstallError>> => {
-  try {
-    const result = await step.execute();
-
-    if (result.success) {
-      logger.debug(`Completed ${step.name}: ${result.value.length} files`);
-    }
-
-    return result;
-  } catch (error) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Unexpected error during ${step.name}`,
-      path: '.',
-      cause: error,
-      details: error instanceof Error ? error.stack : undefined,
-    });
-  }
-};
-
-/**
- * Log error details for a failed step
- */
-const _logStepError = (step: InstallationStep, error: InstallError, logger: Logger): void => {
-  logger.error(
-    `Installation failed at ${step.critical ? 'critical' : 'non-critical'} step: ${step.name}`
-  );
-
-  if ('message' in error) {
-    logger.error(`Error: ${error.message}`);
-  }
-
-  if ('details' in error && error.details) {
-    logger.debug(
-      `Details: ${typeof error.details === 'string' ? error.details : JSON.stringify(error.details, null, 2)}`
-    );
-  }
-};
-
-/**
- * Handle cleanup recommendation after failure
- */
-const _suggestCleanup = (
-  installedFiles: readonly string[],
-  componentsDir: string,
-  logger: Logger
-): void => {
-  if (installedFiles.length > 0) {
-    logger.warning('\nPartially installed files remain. To clean up:');
-    logger.warning(`  rm -rf ${componentsDir}`);
-  }
-};
 
 /**
  * Execute all installation steps using enhanced CLI framework with listr2
@@ -154,11 +96,15 @@ export const executeInstallationSteps = async (
       logger.warning(`  rm -rf ${componentsDir}`);
     }
 
-    return Err({
-      type: 'FileSystemError',
-      message: error instanceof Error ? error.message : 'Installation step execution failed',
-      path: componentsDir,
-      cause: error,
-    });
+    return Err(
+      createError(
+        'INSTALLATION_STEP_EXECUTION_FAILED',
+        error instanceof Error ? error.message : 'Installation step execution failed',
+        {
+          details: `Failed during installation in directory: ${componentsDir}`,
+          cause: error,
+        }
+      )
+    );
   }
 };

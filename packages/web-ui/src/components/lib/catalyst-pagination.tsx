@@ -115,7 +115,7 @@ export function CatalystPaginationGap({
       aria-hidden="true"
       {...props}
       className={cn(
-        'w-9 text-center text-sm/6 font-semibold text-foreground select-none dark:text-foreground',
+        'w-9 text-center text-sm/6 font-semibold text-zinc-950 select-none dark:text-white',
         className
       )}
     >

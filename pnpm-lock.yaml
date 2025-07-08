@@ -296,9 +296,6 @@ importers:
       c8:
         specifier: ^10.1.3
         version: 10.1.3
-      cosmiconfig:
-        specifier: ^9.0.0
-        version: 9.0.0(typescript@5.8.3)
       diff:
         specifier: ^8.0.2
         version: 8.0.2
@@ -2933,7 +2930,6 @@ packages:
       prettier-plugin-marko: '*'
       prettier-plugin-multiline-arrays: '*'
       prettier-plugin-organize-attributes: '*'
-      prettier-plugin-organize-imports: '*'
       prettier-plugin-sort-imports: '*'
       prettier-plugin-style-order: '*'
       prettier-plugin-svelte: '*'
@@ -2961,8 +2957,6 @@ packages:
       prettier-plugin-multiline-arrays:
         optional: true
       prettier-plugin-organize-attributes:
-        optional: true
-      prettier-plugin-organize-imports:
         optional: true
       prettier-plugin-sort-imports:
         optional: true

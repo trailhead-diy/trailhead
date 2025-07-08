@@ -17,6 +17,7 @@ export {
   readFile,
   writeFile,
   fileExists,
+  pathExists,
   ensureDirectory,
   compareFiles,
   getRelativePath,

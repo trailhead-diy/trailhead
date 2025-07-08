@@ -2,8 +2,8 @@
  * Shared utilities for installation modules
  */
 
-import type { Result, InstallError } from './types.js';
-import { Ok, Err } from './types.js';
+import type { InstallError } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // ERROR HANDLING UTILITIES
@@ -16,35 +16,14 @@ export const createSimpleError = (
   type: 'DependencyError' | 'ValidationError',
   baseMessage: string,
   error: unknown
-): InstallError => ({
-  type,
-  message: `${baseMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-  cause: error instanceof Error ? error : undefined,
-});
+): InstallError =>
+  createError(
+    type === 'DependencyError' ? 'DEPENDENCY_ERROR' : 'VALIDATION_ERROR',
+    `${baseMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    { cause: error instanceof Error ? error : undefined }
+  );
 
-/**
- * Generic async error handler with type-safe error creation
- */
-export const handleAsync = <T>(
-  fn: () => Promise<T>,
-  errorType: 'DependencyError' | 'ValidationError',
-  errorMessage: string
-): Promise<Result<T, InstallError>> =>
-  fn()
-    .then(value => Ok(value))
-    .catch(error => Err(createSimpleError(errorType, errorMessage, error)));
-
-/**
- * Wrap async function with consistent error handling
- */
-export const wrapAsync =
-  <TArgs extends readonly unknown[], TResult>(
-    fn: (...args: TArgs) => Promise<TResult>,
-    errorType: 'DependencyError' | 'ValidationError',
-    errorMessage: string
-  ) =>
-  async (...args: TArgs): Promise<Result<TResult, InstallError>> =>
-    handleAsync(() => fn(...args), errorType, errorMessage);
+// Async error handling wrappers removed - use CLI framework Result patterns directly
 
 // ============================================================================
 // FILE PATTERN UTILITIES
@@ -124,48 +103,8 @@ export const appendToState = <T extends object, K extends keyof T>(
 // VALIDATION UTILITIES
 // ============================================================================
 
-/**
- * Compose multiple validators
- */
-export const composeValidators =
-  <T>(...validators: Array<(value: T) => Result<T, InstallError>>) =>
-  (value: T): Result<T, InstallError> => {
-    for (const validator of validators) {
-      const result = validator(value);
-      if (!result.success) return result;
-    }
-    return Ok(value);
-  };
-
-/**
- * Create a required field validator
- */
-export const requiredField =
-  <T extends object, K extends keyof T>(field: K, message?: string) =>
-  (obj: T): Result<T, InstallError> => {
-    if (!obj[field]) {
-      return Err({
-        type: 'ValidationError',
-        message: message || `Required field '${String(field)}' is missing`,
-      });
-    }
-    return Ok(obj);
-  };
-
-/**
- * Create a type validator
- */
-export const typeValidator =
-  <T>(predicate: (value: unknown) => value is T, expectedType: string) =>
-  (value: unknown): Result<T, InstallError> => {
-    if (!predicate(value)) {
-      return Err({
-        type: 'ValidationError',
-        message: `Expected ${expectedType}, got ${typeof value}`,
-      });
-    }
-    return Ok(value);
-  };
+// Validation utilities removed - use CLI framework validation patterns instead
+// Import from '@esteban-url/trailhead-cli/core': createValidationPipeline, createRule, etc.
 
 // ============================================================================
 // FORMATTING UTILITIES
@@ -204,95 +143,11 @@ export const formatCommand = (command: string, indent: number = 2): string =>
 // COMPARISON UTILITIES
 // ============================================================================
 
-/**
- * Check if two arrays have the same elements (order-independent)
- */
-export const arraysEqual = <T>(a: readonly T[], b: readonly T[]): boolean => {
-  if (a.length !== b.length) return false;
-  const bSet = new Set(b);
-  return a.every(item => bSet.has(item));
-};
-
-/**
- * Get unique items from array
- */
-export const unique = <T>(items: readonly T[]): readonly T[] => Array.from(new Set(items));
-
-/**
- * Partition array based on predicate
- */
-export const partition = <T>(
-  items: readonly T[],
-  predicate: (item: T) => boolean
-): [readonly T[], readonly T[]] => {
-  const pass: T[] = [];
-  const fail: T[] = [];
-
-  items.forEach(item => {
-    if (predicate(item)) {
-      pass.push(item);
-    } else {
-      fail.push(item);
-    }
-  });
-
-  return [Object.freeze(pass), Object.freeze(fail)];
-};
+// Array utility wrappers removed - use standard JavaScript Array methods directly
 
 // ============================================================================
 // TIMING UTILITIES
 // ============================================================================
 
-/**
- * Retry with exponential backoff
- */
-export const retryWithBackoff = async <T>(
-  fn: () => Promise<T>,
-  maxAttempts: number = 3,
-  baseDelay: number = 1000
-): Promise<Result<T, InstallError>> => {
-  let lastError: unknown;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const result = await fn();
-      return Ok(result);
-    } catch (error) {
-      lastError = error;
-
-      if (attempt < maxAttempts) {
-        const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), 10000);
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-  }
-
-  return Err({
-    type: 'DependencyError',
-    message: `Failed after ${maxAttempts} attempts`,
-    cause: lastError instanceof Error ? lastError : undefined,
-  });
-};
-
-/**
- * Add timeout to promise
- */
-export const withTimeout = <T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  timeoutMessage: string = 'Operation timed out'
-): Promise<Result<T, InstallError>> => {
-  const timeoutPromise = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
-  );
-
-  return Promise.race([promise, timeoutPromise])
-    .then(result => Ok(result))
-    .catch(error =>
-      Err({
-        type: 'DependencyError',
-        message: error instanceof Error ? error.message : timeoutMessage,
-        cause: error instanceof Error ? error : undefined,
-      })
-    );
-};
+// Retry and timeout utilities removed - use CLI framework error recovery instead
+// Import from '@esteban-url/trailhead-cli/error-recovery': retryableOperation, pRetry, etc.

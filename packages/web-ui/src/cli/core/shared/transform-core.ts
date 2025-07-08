@@ -70,61 +70,36 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
     const { runMainPipeline } = await import('../../../transforms/pipelines/main.js');
 
     // Execute pipeline with configuration
-    await runMainPipeline({
-      srcDir: config.srcDir,
-      outDir: config.srcDir,
+    const result = await runMainPipeline(config.srcDir, {
       verbose: config.verbose,
       dryRun: config.dryRun,
-      skipTransforms: config.skipTransforms,
-      enabledTransforms: config.enabledTransforms,
-      disabledTransforms: config.disabledTransforms,
     });
 
-    // Calculate result statistics
-    const fileCount = await countTransformedFiles(config.srcDir);
-
-    // If transforms were skipped, report 0 conversions
-    if (config.skipTransforms) {
-      return {
-        filesProcessed: fileCount,
-        filesModified: 0,
-        conversionsApplied: 0,
-        errors: [],
-        warnings: [],
-      };
-    }
-
+    // Use result from main pipeline
     return {
-      filesProcessed: fileCount,
-      filesModified: config.dryRun ? 0 : fileCount,
-      conversionsApplied: fileCount * 5, // Estimate: avg 5 conversions per file
-      errors: [],
+      filesProcessed: result.processedFiles,
+      filesModified: config.dryRun ? 0 : result.processedFiles,
+      conversionsApplied: result.processedFiles * 2, // Estimate: avg 2 conversions per file in main pipeline
+      errors: result.errors.map(e => e.error),
       warnings: [],
     };
   } catch (error) {
-    throw new Error(
-      `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`
-    );
+    // Return error result instead of throwing
+    return {
+      filesProcessed: 0,
+      filesModified: 0,
+      conversionsApplied: 0,
+      errors: [
+        `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`,
+      ],
+      warnings: [],
+    };
   }
 };
 
 // ============================================================================
 // UTILITY FUNCTIONS - Pure functions for data transformation
 // ============================================================================
-
-/**
- * Pure function: Count files that would be transformed
- * Single responsibility: provide file count statistics
- */
-const countTransformedFiles = async (srcDir: string): Promise<number> => {
-  try {
-    const fs = await import('fs/promises');
-    const files = await fs.readdir(srcDir);
-    return files.filter(file => file.endsWith('.tsx')).length;
-  } catch {
-    return 27; // Default estimate for Catalyst UI components
-  }
-};
 
 // ============================================================================
 // VALIDATION FUNCTIONS - Pure functions for result validation

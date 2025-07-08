@@ -13,6 +13,7 @@
         "vite.config.*",
         "vitest.config.*"
       ],
+      "outputLogs": "errors-only",
       "cache": true
     },
     "test": {
@@ -26,7 +27,8 @@
         "tsconfig.json"
       ],
       "cache": true,
-      "env": ["NODE_ENV"]
+      "env": ["NODE_ENV"],
+      "outputLogs": "errors-only"
     },
     "lint": {
       "outputs": [],
@@ -37,6 +39,7 @@
         ".oxlintrc.*",
         "package.json"
       ],
+      "outputLogs": "errors-only",
       "cache": true
     },
     "dev": {
@@ -53,6 +56,7 @@
         "tsconfig.*.json",
         "package.json"
       ],
+      "outputLogs": "errors-only",
       "cache": true
     },
     "format": {
@@ -62,6 +66,7 @@
         ".prettierrc.*",
         "prettier.config.*"
       ],
+      "outputLogs": "errors-only",
       "cache": false
     },
     "format:check": {
@@ -71,6 +76,7 @@
         ".prettierrc.*",
         "prettier.config.*"
       ],
+      "outputLogs": "errors-only",
       "cache": true
     },
     "lint:fix": {
@@ -82,6 +88,7 @@
         ".oxlintrc.*",
         "package.json"
       ],
+      "outputLogs": "errors-only",
       "cache": false
     }
   }

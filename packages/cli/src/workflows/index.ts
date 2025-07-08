@@ -34,7 +34,7 @@ export function createTask<T = any>(
   };
 }
 
-export function createTaskList<T = any>(
+export function createTaskList(
   tasks: Array<ReturnType<typeof createTask>>,
   options?: {
     concurrent?: boolean;

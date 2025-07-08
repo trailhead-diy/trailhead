@@ -4,6 +4,7 @@
 
 import type { Result, InstallError } from './types.js';
 import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // TYPES
@@ -200,7 +201,10 @@ const applyTransformation = (
   transformations: string[]
 ): string => {
   const before = content;
-  const after = content.replace(pattern.regex, pattern.replacement as any);
+  const after =
+    typeof pattern.replacement === 'string'
+      ? content.replace(pattern.regex, pattern.replacement)
+      : content.replace(pattern.regex, pattern.replacement);
 
   if (before !== after) {
     transformations.push(pattern.description);
@@ -350,22 +354,22 @@ export const validateTransformResult = (
 ): Result<TransformResult, InstallError> => {
   // Check for empty content
   if (!result.content || result.content.trim().length === 0) {
-    return Err({
-      type: 'ValidationError',
-      message: `Transformation resulted in empty content for ${fileName}`,
-      field: fileName,
-    });
+    return Err(
+      createError('VALIDATION_ERROR', `Transformation resulted in empty content for ${fileName}`, {
+        details: `Empty content detected for file: ${fileName}`,
+      })
+    );
   }
 
   // Check for basic syntax integrity - only validate if it's not an index file
   // Index files might have different export patterns
   const exportCount = (result.content.match(/export/g) || []).length;
   if (exportCount === 0 && !fileName.includes('index')) {
-    return Err({
-      type: 'ValidationError',
-      message: `No exports found in transformed ${fileName}`,
-      field: fileName,
-    });
+    return Err(
+      createError('VALIDATION_ERROR', `No exports found in transformed ${fileName}`, {
+        details: `No exports detected in transformed file: ${fileName}`,
+      })
+    );
   }
 
   return Ok(result);

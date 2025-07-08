@@ -2,37 +2,11 @@
  * Component installation module
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
-import { Ok, Err } from './types.js';
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
-
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return Ok(true);
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return Ok(false);
-    }
-    // Other errors are actual errors
-    return Err({
-      type: 'FileSystemError',
-      message: 'Failed to check path existence',
-      path,
-      cause: result.error,
-    });
-  }
-};
-import {
-  copyDirectory,
-  writeFileWithBackup,
-  checkDirectoryContents,
-} from '../filesystem/operations.js';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import {
   transformComponentContent,
   getTransformOptions,
@@ -60,29 +34,32 @@ export const installCatalystComponents = async (
   const destPaths = generateDestinationPaths(config);
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await checkDirectoryContents(fs, sourcePaths.catalystDir);
-  if (!sourceCheckResult.success) return sourceCheckResult;
+  const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
+  if (!sourceCheckResult.success) {
+    return Err(sourceCheckResult.error);
+  }
 
-  if (!sourceCheckResult.value.exists) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Source Catalyst directory not found: ${sourcePaths.catalystDir}`,
-      path: sourcePaths.catalystDir,
-    });
+  if (!sourceCheckResult.value) {
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
+      )
+    );
   }
 
   // Copy entire catalyst directory
-  const copyResult = await copyDirectory(fs, sourcePaths.catalystDir, destPaths.catalystDir, {
+  const copyResult = await fs.cp(sourcePaths.catalystDir, destPaths.catalystDir, {
     overwrite: force,
-    filter: (src: string) => {
-      // Only copy .tsx files
-      return src.endsWith('.tsx') || !path.extname(src);
-    },
   });
 
   if (!copyResult.success) return copyResult;
 
-  const catalystFiles = copyResult.value.filter(isTsxFile);
+  // Get list of files in catalyst directory
+  const readDirResult = await fs.readdir(sourcePaths.catalystDir);
+  if (!readDirResult.success) return readDirResult;
+
+  const catalystFiles = readDirResult.value.filter(isTsxFile);
 
   // Install lib/index.ts
   const libIndexResult = await copyFile(fs, sourcePaths.libIndex, destPaths.libIndex, force);
@@ -97,12 +74,7 @@ export const installCatalystComponents = async (
 // COMPONENT WRAPPER GENERATION
 // ============================================================================
 
-/**
- * Pure function: Generate wrapper component content
- */
-export const generateWrapperComponent = (componentName: string): string => {
-  return `export * from './lib/${componentName}.js'\n`;
-};
+// generateWrapperComponent removed - was unused utility function
 
 /**
  * Install component wrapper files by copying from Trailhead UI source
@@ -120,19 +92,23 @@ export const installComponentWrappers = async (
 
   // Read source wrapper components directory
   const sourceWrapperDir = sourcePaths.wrapperComponentsDir;
-  const dirCheckResult = await checkDirectoryContents(fs, sourceWrapperDir);
+  const dirCheckResult = await pathExists(sourceWrapperDir);
   if (!dirCheckResult.success) return dirCheckResult;
 
-  if (!dirCheckResult.value.exists) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Source wrapper components directory not found: ${sourceWrapperDir}`,
-      path: sourceWrapperDir,
-    });
+  if (!dirCheckResult.value) {
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source wrapper components directory not found: ${sourceWrapperDir}`
+      )
+    );
   }
 
-  // Get all component wrapper files (excluding theme-related and index files)
-  const wrapperFiles = dirCheckResult.value.files.filter(isWrapperComponent);
+  // Get all component wrapper files
+  const readDirResult = await fs.readdir(sourceWrapperDir);
+  if (!readDirResult.success) return readDirResult;
+
+  const wrapperFiles = readDirResult.value.filter(isWrapperComponent);
 
   for (const wrapperFile of wrapperFiles) {
     const sourcePath = path.join(sourceWrapperDir, wrapperFile);
@@ -221,15 +197,11 @@ async function copyFile(
   dest: string,
   force: boolean
 ): Promise<Result<void, InstallError>> {
-  const existsResult = await pathExists(fs, src);
+  const existsResult = await pathExists(src);
   if (!existsResult.success) return existsResult;
 
   if (!existsResult.value) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Source file not found: ${src}`,
-      path: src,
-    });
+    return Err(createError('FILE_NOT_FOUND', `Source file not found: ${src}`));
   }
 
   return fs.cp(src, dest, { overwrite: force });
@@ -247,25 +219,29 @@ export const installTransformedComponents = async (
   logger: Logger,
   trailheadRoot: string,
   config: InstallConfig,
-  force: boolean = false
+  _force: boolean = false
 ): Promise<Result<string[], InstallError>> => {
   const sourcePaths = generateSourcePaths(trailheadRoot);
   const installedFiles: string[] = [];
 
   // Check if source catalyst directory exists
-  const sourceCheckResult = await checkDirectoryContents(fs, sourcePaths.catalystDir);
+  const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
   if (!sourceCheckResult.success) return sourceCheckResult;
 
-  if (!sourceCheckResult.value.exists) {
-    return Err({
-      type: 'FileSystemError',
-      message: `Source Catalyst directory not found: ${sourcePaths.catalystDir}`,
-      path: sourcePaths.catalystDir,
-    });
+  if (!sourceCheckResult.value) {
+    return Err(
+      createError(
+        'SOURCE_NOT_FOUND',
+        `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
+      )
+    );
   }
 
   // Get all catalyst-*.tsx files
-  const catalystFiles = sourceCheckResult.value.files.filter(isCatalystComponent);
+  const readDirResult = await fs.readdir(sourcePaths.catalystDir);
+  if (!readDirResult.success) return readDirResult;
+
+  const catalystFiles = readDirResult.value.filter(isCatalystComponent);
 
   // Transform and copy each component file
   for (const fileName of catalystFiles) {
@@ -294,9 +270,7 @@ export const installTransformedComponents = async (
     }
 
     // Write transformed file
-    const writeResult = force
-      ? await fs.writeFile(destPath, transformResult.content)
-      : await writeFileWithBackup(fs, destPath, transformResult.content);
+    const writeResult = await fs.writeFile(destPath, transformResult.content);
     if (!writeResult.success) return writeResult;
 
     installedFiles.push(newFileName);
@@ -322,9 +296,7 @@ export const installTransformedComponents = async (
     transformedIndexResult.transformations.forEach(t => logger.debug(`  - ${t}`));
   }
 
-  const indexWriteResult = force
-    ? await fs.writeFile(destIndexPath, transformedIndexResult.content)
-    : await writeFileWithBackup(fs, destIndexPath, transformedIndexResult.content);
+  const indexWriteResult = await fs.writeFile(destIndexPath, transformedIndexResult.content);
   if (!indexWriteResult.success) return indexWriteResult;
 
   installedFiles.push('index.ts');

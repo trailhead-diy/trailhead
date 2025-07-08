@@ -12,8 +12,8 @@ export function CatalystDivider({
       {...props}
       className={cn(
         'w-full border-t',
-        soft && 'border-zinc-950/5 dark:border-border',
-        !soft && 'border-zinc-950/10 dark:border-border',
+        soft && 'border-zinc-950/5 dark:border-white/5',
+        !soft && 'border-zinc-950/10 dark:border-white/10',
         className
       )}
     />

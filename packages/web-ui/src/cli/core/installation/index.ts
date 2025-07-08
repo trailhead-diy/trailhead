@@ -20,5 +20,4 @@ export {
   installCatalystComponents,
   installComponentWrappers,
   installUtilityFiles,
-  generateWrapperComponent,
 } from './component-installer.js';

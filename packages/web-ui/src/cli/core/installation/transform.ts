@@ -3,36 +3,13 @@
  * Uses shared transform-core for consistent behavior across CLI and install
  */
 
-import * as path from 'path';
+import * as path from 'node:path';
 import ora from 'ora';
 import type { InstallError, FileSystem, Logger, Result, InstallConfig } from './types.js';
-import { Ok, Err } from './types.js';
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
+import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
-/**
- * Helper function to check if a path exists using access
- */
-const pathExists = async (fs: FileSystem, path: string): Promise<Result<boolean, InstallError>> => {
-  const result = await fs.access(path);
-  if (result.success) {
-    return { success: true, value: true };
-  } else {
-    // If access fails with ENOENT, the file doesn't exist
-    if ((result.error as any).code === 'ENOENT') {
-      return { success: true, value: false };
-    }
-    // Other errors are actual errors
-    return {
-      success: false,
-      error: {
-        type: 'FileSystemError',
-        message: 'Failed to check path existence',
-        path,
-        cause: result.error,
-      },
-    };
-  }
-};
 import type { TransformResult } from '../shared/transform-core.js';
 import {
   executeTransforms,
@@ -77,22 +54,21 @@ export const runColorConversions = async (
     // Verify that the catalyst directory exists
     spinner.text = 'Verifying catalyst directory...';
 
-    const existsResult = await pathExists(fs, catalystDir);
+    const existsResult = await pathExists(catalystDir);
     if (!existsResult.success) {
       spinner.fail('Failed to check catalyst directory');
-      return Err({
-        type: 'ConversionError',
-        message: 'Failed to check catalyst directory',
-        cause: (existsResult as any).error,
-      });
+      return Err(
+        createError('CONVERSION_ERROR', 'Failed to check catalyst directory', {
+          cause: existsResult.error,
+        })
+      );
     }
 
     if (!existsResult.value) {
       spinner.fail('Catalyst components directory not found');
-      return Err({
-        type: 'ConversionError',
-        message: `Catalyst components directory not found: ${catalystDir}`,
-      });
+      return Err(
+        createError('CONVERSION_ERROR', `Catalyst components directory not found: ${catalystDir}`)
+      );
     }
 
     // Create transform configuration
@@ -107,10 +83,9 @@ export const runColorConversions = async (
     const validation = validateTransformConfig(transformConfig);
     if (!validation.success) {
       spinner.fail('Invalid transform configuration');
-      return Err({
-        type: 'ConversionError',
-        message: `Invalid transform configuration: ${validation.error}`,
-      });
+      return Err(
+        createError('CONVERSION_ERROR', `Invalid transform configuration: ${validation.error}`)
+      );
     }
 
     // Execute transforms using shared core
@@ -149,11 +124,13 @@ export const runColorConversions = async (
     return Ok(stats);
   } catch (error) {
     spinner.fail('Transform pipeline failed');
-    return Err({
-      type: 'ConversionError',
-      message: `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`,
-      cause: error,
-    });
+    return Err(
+      createError(
+        'CONVERSION_ERROR',
+        `Transform pipeline failed: ${error instanceof Error ? error.message : String(error)}`,
+        { cause: error }
+      )
+    );
   }
 };
 
@@ -200,7 +177,7 @@ export const validateConversions = async (
     for (const fileName of sampleFiles) {
       const filePath = path.join(catalystDir, fileName);
 
-      const existsResult = await pathExists(fs, filePath);
+      const existsResult = await pathExists(filePath);
       if (!existsResult.success) continue;
 
       if (existsResult.value) {
@@ -232,11 +209,7 @@ export const validateConversions = async (
     return Ok(hasSemanticTokens);
   } catch (error) {
     spinner.fail('Failed to validate conversions');
-    return Err({
-      type: 'ConversionError',
-      message: 'Failed to validate conversions',
-      cause: error,
-    });
+    return Err(createError('CONVERSION_ERROR', 'Failed to validate conversions', { cause: error }));
   }
 };
 
@@ -253,11 +226,11 @@ export const needsConversion = async (
 ): Promise<Result<boolean, InstallError>> => {
   const readResult = await fs.readFile(filePath);
   if (!readResult.success) {
-    return Err({
-      type: 'ConversionError',
-      message: 'Failed to read file for conversion check',
-      cause: (readResult as any).error,
-    });
+    return Err(
+      createError('CONVERSION_ERROR', 'Failed to read file for conversion check', {
+        cause: readResult.error,
+      })
+    );
   }
 
   const content = readResult.value;
