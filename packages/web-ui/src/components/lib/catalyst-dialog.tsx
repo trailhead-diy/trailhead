@@ -1,8 +1,7 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import type React from 'react';
-import { CatalystText } from './catalyst-text';
-import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index';
+import * as Headless from '@headlessui/react'
+import type React from 'react'
+import { CatalystText } from './catalyst-text'
 import { cn } from '../utils/cn';
 
 const sizes = {
@@ -15,46 +14,35 @@ const sizes = {
   '3xl': 'sm:max-w-3xl',
   '4xl': 'sm:max-w-4xl',
   '5xl': 'sm:max-w-5xl',
-};
+}
 
 export function CatalystDialog({
   size = 'lg',
   className,
   children,
-  color,
   ...props
-}: {
-  size?: keyof typeof sizes;
-  className?: string;
-  children: React.ReactNode;
-  color?: SemanticColorToken;
-} & Omit<Headless.DialogProps, 'as' | 'className'>) {
-  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
+}: { size?: keyof typeof sizes; className?: string; children: React.ReactNode } & Omit<
+  Headless.CatalystDialogProps,
+  'as' | 'className'
+>) {
   return (
     <Headless.Dialog {...props}>
       <Headless.DialogBackdrop
         transition
         className={cn(
-          'fixed inset-0 flex w-screen justify-center overflow-y-auto bg-card/25 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 dark:bg-background/50',
-          resolvedColorClasses
+          'fixed inset-0 flex w-screen justify-center overflow-y-auto bg-zinc-950/25 px-2 py-2 transition duration-100 focus:outline-0 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:px-6 sm:py-8 lg:px-8 lg:py-16 dark:bg-zinc-950/50'
         )}
       />
-      <div
-        className={cn('fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0', resolvedColorClasses)}
-      >
-        <div
-          className={cn(
-            'grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4',
-            resolvedColorClasses
-          )}
-        >
+      <div className={cn('fixed inset-0 w-screen overflow-y-auto pt-6 sm:pt-0')}>
+        <div className={cn(
+          'grid min-h-full grid-rows-[1fr_auto] justify-items-center sm:grid-rows-[1fr_auto_3fr] sm:p-4'
+        )}>
           <Headless.DialogPanel
             transition
             className={cn(
               sizes[size],
-              'row-start-2 w-full min-w-0 rounded-t-3xl bg-white p-(--gutter) shadow-lg ring-1 ring-zinc-950/10 [--gutter:--spacing(8)] sm:mb-auto sm:rounded-2xl dark:bg-card dark:ring-ring forced-colors:outline',
+              'row-start-2 w-full min-w-0 rounded-t-3xl bg-white p-(--gutter) shadow-lg ring-1 ring-zinc-950/10 [--gutter:--spacing(8)] sm:mb-auto sm:rounded-2xl dark:bg-zinc-900 dark:ring-white/10 forced-colors:outline',
               'transition duration-100 will-change-transform data-closed:translate-y-12 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in sm:data-closed:translate-y-0 sm:data-closed:data-enter:scale-95',
-              resolvedColorClasses,
               className
             )}
           >
@@ -69,14 +57,11 @@ export function CatalystDialog({
 export function CatalystDialogTitle({
   className,
   ...props
-}: { className?: string } & Omit<Headless.DialogTitleProps, 'as' | 'className'>) {
+}: { className?: string } & Omit<Headless.CatalystDialogTitleProps, 'as' | 'className'>) {
   return (
     <Headless.DialogTitle
       {...props}
-      className={cn(
-        'text-lg/6 font-semibold text-balance text-foreground sm:text-base/6 dark:text-foreground',
-        className
-      )}
+      className={cn('text-lg/6 font-semibold text-balance text-zinc-950 sm:text-base/6 dark:text-white', className)}
     />
   );
 }
@@ -84,27 +69,15 @@ export function CatalystDialogTitle({
 export function CatalystDialogDescription({
   className,
   ...props
-}: { className?: string } & Omit<
-  Headless.DescriptionProps<typeof CatalystText>,
-  'as' | 'className'
->) {
-  return (
-    <Headless.Description
-      as={CatalystText}
-      {...props}
-      className={cn('mt-2 text-pretty', className)}
-    />
-  );
+}: { className?: string } & Omit<Headless.DescriptionProps<typeof CatalystText>, 'as' | 'className'>) {
+  return <Headless.Description as={CatalystText} {...props} className={cn('mt-2 text-pretty', className)} />;
 }
 
 export function CatalystDialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return <div {...props} className={cn('mt-6', className)} />;
 }
 
-export function CatalystDialogActions({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+export function CatalystDialogActions({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       {...props}

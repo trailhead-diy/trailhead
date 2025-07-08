@@ -1,17 +1,17 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
-import { CatalystTouchTarget } from './catalyst-button';
-import { CatalystLink } from './catalyst-link';
+import * as Headless from '@headlessui/react'
+import React, { forwardRef } from 'react'
+import { CatalystTouchTarget } from './catalyst-button'
+import { CatalystLink } from './catalyst-link'
 import { cn } from '../utils/cn';
 
-type AvatarProps = {
-  src?: string | null;
-  square?: boolean;
-  initials?: string;
-  alt?: string;
-  className?: string;
-};
+type CatalystAvatarProps = {
+  src?: string | null
+  square?: boolean
+  initials?: string
+  alt?: string
+  className?: string
+}
 
 export function CatalystAvatar({
   src = null,
@@ -20,7 +20,7 @@ export function CatalystAvatar({
   alt = '',
   className,
   ...props
-}: AvatarProps & React.ComponentPropsWithoutRef<'span'>) {
+}: CatalystAvatarProps & React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       data-slot="avatar"
@@ -30,9 +30,7 @@ export function CatalystAvatar({
         'inline-grid shrink-0 align-middle [--avatar-radius:20%] *:col-start-1 *:row-start-1',
         'outline -outline-offset-1 outline-black/10 dark:outline-white/10',
         // Border radius
-        square
-          ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)'
-          : 'rounded-full *:rounded-full',
+        square ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)' : 'rounded-full *:rounded-full',
         className
       )}
     >
@@ -45,14 +43,7 @@ export function CatalystAvatar({
           aria-hidden={alt ? undefined : 'true'}
         >
           {alt && <title>{alt}</title>}
-          <text
-            x="50%"
-            y="50%"
-            alignmentBaseline="middle"
-            dominantBaseline="middle"
-            textAnchor="middle"
-            dy=".125em"
-          >
+          <text x="50%" y="50%" alignmentBaseline="middle" dominantBaseline="middle" textAnchor="middle" dy=".125em">
             {initials}
           </text>
         </svg>
@@ -70,18 +61,15 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
     alt,
     className,
     ...props
-  }: AvatarProps &
-    (
-      | Omit<Headless.ButtonProps, 'as' | 'className'>
-      | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
-    ),
+  }: CatalystAvatarProps &
+    (Omit<Headless.ButtonProps, 'as' | 'className'> | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>),
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
+    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
     className
-  );
+  )
 
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
@@ -96,4 +84,4 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
       </CatalystTouchTarget>
     </Headless.Button>
   );
-});
+})

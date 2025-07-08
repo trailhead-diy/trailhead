@@ -1,14 +1,10 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
+import * as Headless from '@headlessui/react'
+import React, { forwardRef } from 'react'
 import { cn } from '../utils/cn';
 
 export const CatalystSelect = forwardRef(function CatalystSelect(
-  {
-    className,
-    multiple,
-    ...props
-  }: { className?: string } & Omit<Headless.SelectProps, 'as' | 'className'>,
+  { className, multiple, ...props }: { className?: string } & Omit<Headless.CatalystSelectProps, 'as' | 'className'>,
   ref: React.ForwardedRef<HTMLSelectElement>
 ) {
   return (
@@ -23,7 +19,7 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
         // Background color is moved to control and shadow is removed in dark mode so hide `before` pseudo
         'dark:before:hidden',
         // Focus ring
-        'after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset has-data-focus:after:ring-2 has-data-focus:after:ring-primary',
+        'after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-transparent after:ring-inset has-data-focus:after:ring-2 has-data-focus:after:ring-blue-500',
         // Disabled state
         'has-data-disabled:opacity-50 has-data-disabled:before:bg-zinc-950/5 has-data-disabled:before:shadow-none',
       ])}
@@ -42,11 +38,11 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
           // Options (multi-select)
           '[&_optgroup]:font-semibold',
           // Typography
-          'text-base/6 text-foreground placeholder:text-zinc-500 sm:text-sm/6 dark:text-foreground dark:*:text-white',
+          'text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white dark:*:text-white',
           // Border
-          'border border-zinc-950/10 data-hover:border-zinc-950/20 dark:border-border dark:data-hover:border-white/20',
+          'border border-zinc-950/10 data-hover:border-zinc-950/20 dark:border-white/10 dark:data-hover:border-white/20',
           // Background color
-          'bg-transparent dark:bg-muted dark:*:bg-zinc-800',
+          'bg-transparent dark:bg-white/5 dark:*:bg-zinc-800',
           // Hide default focus styles
           'focus:outline-hidden',
           // Invalid state
@@ -56,9 +52,7 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
         ])}
       />
       {!multiple && (
-        <span
-          className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}
-        >
+        <span className={cn('pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2')}>
           <svg
             className={cn(
               'size-5 stroke-zinc-500 group-has-data-disabled:stroke-zinc-600 sm:size-4 dark:stroke-zinc-400 forced-colors:stroke-[CanvasText]'
@@ -67,21 +61,11 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
             aria-hidden="true"
             fill="none"
           >
-            <path
-              d="M5.75 10.75L8 13L10.25 10.75"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M10.25 5.25L8 3L5.75 5.25"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <path d="M5.75 10.75L8 13L10.25 10.75" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M10.25 5.25L8 3L5.75 5.25" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       )}
     </span>
   );
-});
+})
