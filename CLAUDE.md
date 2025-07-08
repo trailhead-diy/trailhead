@@ -88,7 +88,7 @@ Focus on high-ROI (Return on Investment) tests:
 - **Framework Behavior Tests**: Testing React/library internals
 - **Implementation Details**: data-testid checks, internal state structure
 - **Type Checking at Runtime**: Testing TypeScript types
-- **Snapshot Tests**: Brittle tests that break with any UI change
+- **Snapshot Tests**: Brittle tests that break with any UI changes
 - **Style/CSS Tests**: Testing exact class names or inline styles
 
 ### Working with Claude Code
@@ -421,8 +421,9 @@ pnpm build                  # Production build
 - `qcu` = Ultra-deep quality check: Requirements audit, security review, architecture impact, future-proofing, code excellence, hidden complexities, testing gaps.
 - `fixlint` = Fix all TypeScript errors and lint warnings. Remove unused imports, prefix unused variables with underscore.
 - `write-tests` = Write high-ROI tests following project principles (no low-ROI rendering/prop tests).
-- `gcwm` = Fix lint/TS errors. Git commit with meaningful message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
-- `gbcp` = Git branch, commit, push/PR workflow. Include "Closes #[issue]" in commit/PR for auto-linking.
+- `gcwm` = Fix lint/TS errors. Git commit with meaningful but concise message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
+- `gbcp` = Git branch, commit, push/PR workflow with a concise PR description. Include "Closes #[issue]" in commit/PR for auto-linking.
+- `gpr` = Git push and create PR with concise description. Include "Closes #[issue]" in commit/PR for auto-linking.
 - `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, apply principles, create TodoWrite plan.
 
 # important-instruction-reminders
