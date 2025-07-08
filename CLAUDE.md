@@ -422,8 +422,8 @@ pnpm build                  # Production build
 - `fixlint` = Fix all TypeScript errors and lint warnings. Remove unused imports, prefix unused variables with underscore.
 - `write-tests` = Write high-ROI tests following project principles (no low-ROI rendering/prop tests).
 - `gcwm` = Fix lint/TS errors. Git commit with meaningful but concise message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages.
-- `gbcp` = Git branch, commit, push/PR workflow with a concise PR description. Include "Closes #[issue]" in commit/PR for auto-linking.
-- `gpr` = Git push and create PR with concise description. Include "Closes #[issue]" in commit/PR for auto-linking.
+- `gbcp` = Git branch, commit, push/PR workflow with a concise PR body. Include "Closes #[issue]" in commit/PR for auto-linking.
+- `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking.
 - `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, apply principles, create TodoWrite plan.
 
 # important-instruction-reminders
