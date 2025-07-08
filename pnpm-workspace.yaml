@@ -2,3 +2,4 @@ packages:
   - 'packages/*'
   - 'apps/*'
   - 'tooling/*'
+  - '!packages/web-ui/catalyst-ui-kit/**'

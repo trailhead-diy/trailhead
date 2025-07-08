@@ -1,10 +1,13 @@
-node_modules
-.vscode
-dist
-catalyst-ui-kit/
-**/catalyst-ui-kit/**
-coverage/
-scripts/prepare-demo-files/
-demo/
-demos/
+# Exclude external Catalyst UI Kit demo and components
+packages/web-ui/catalyst-ui-kit/
+
+# Exclude generated/built files
+dist/
+build/
+.next/
+node_modules/
+
+# Exclude lock files
 pnpm-lock.yaml
+package-lock.json
+yarn.lock
