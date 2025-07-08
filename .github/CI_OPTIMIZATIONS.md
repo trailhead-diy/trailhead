@@ -131,7 +131,7 @@ pnpm lint types test --filter=@esteban-url/trailhead-web-ui
 ```yaml
 env:
   NODE_VERSION: 20.11.0
-  PNPM_VERSION: 10.12.1
+  PNPM_VERSION: 10.12.4
   FORCE_COLOR: 3
   CI: true
   # Turborepo Remote Cache
