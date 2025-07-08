@@ -2,17 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { join, dirname } from 'path';
 import { tmpdir } from 'os';
 import { fileURLToPath } from 'url';
-import { rmSync, existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { rmSync, existsSync, readFileSync, statSync } from 'fs';
 import { generateProject } from '../lib/generator.js';
-import {
-  createTestContext,
-  mockFileSystem,
-} from '@esteban-url/trailhead-cli/testing';
-import {
-  validateTemplateStructure,
-  validateAllTemplates,
-  formatValidationReport,
-} from '../lib/template-validator.js';
+import { createTestContext } from '@esteban-url/trailhead-cli/testing';
+
 import type { ProjectConfig, GeneratorContext } from '../lib/types.js';
 
 const __filename = fileURLToPath(import.meta.url);

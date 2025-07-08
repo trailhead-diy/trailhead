@@ -271,7 +271,7 @@ async function loadTemplateFilesFromDirectory(
         return templateFile;
       })
       .filter((file): file is NonNullable<typeof file> => file !== null);
-  } catch (_error) {
+  } catch {
     // Directory doesn't exist, return empty array
     return [];
   }

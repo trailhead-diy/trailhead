@@ -1,5 +1,15 @@
 {
   "$schema": "https://oxc-project.github.io/oxlint/schema.json",
+  "plugins": ["react", "typescript", "unicorn"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
   "rules": {
     "no-unused-vars": "error",
     "no-console": "warn",
@@ -23,11 +33,24 @@
       "jsx": true
     }
   },
+  "settings": {
+    "react": {
+      "linkComponents": [
+        {
+          "name": "Link",
+          "linkAttribute": "to"
+        }
+      ]
+    }
+  },
   "ignorePatterns": [
-    "dist",
-    "node_modules",
-    "coverage",
+    "dist/**/*",
+    "node_modules/**/*",
+    "coverage/**/*",
     "*.config.js",
-    "*.config.ts"
+    "*.config.ts",
+    "*.config.mjs",
+    ".turbo/**/*",
+    "build/**/*"
   ]
 }

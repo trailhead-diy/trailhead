@@ -402,7 +402,7 @@ function cleanup(results: TestResult[], options: TestOptions): void {
       try {
         rmSync(result.projectPath, { recursive: true, force: true });
         cleanedCount++;
-      } catch (_error) {
+      } catch {
         // Continue cleanup even if one fails
       }
     }
