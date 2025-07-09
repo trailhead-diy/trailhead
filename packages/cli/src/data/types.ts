@@ -71,9 +71,7 @@ export interface CSVProcessor {
     options?: CSVProcessingOptions
   ): Promise<Result<void, CLIError>>;
   validate(data: string): Result<boolean, CLIError>;
-  detectFormat(
-    data: string
-  ): Result<
+  detectFormat(data: string): Result<
     {
       delimiter: string;
       quoteChar: string;
