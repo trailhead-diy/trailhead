@@ -29,6 +29,7 @@ export const createThemeMap = (): ThemeMap => {
       const theme = getPresetTheme(name);
       themes.set(name, theme);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn(`Failed to load preset theme "${name}":`, error);
     }
   }
@@ -79,6 +80,7 @@ export const getThemeNames = (themes: ThemeMap): string[] => {
 export const applyThemeToDocument = (themes: ThemeMap, name: string, isDark: boolean): void => {
   const theme = getTheme(themes, name);
   if (!theme) {
+    // eslint-disable-next-line no-console
     console.error(`Theme "${name}" is not registered`);
     return;
   }
