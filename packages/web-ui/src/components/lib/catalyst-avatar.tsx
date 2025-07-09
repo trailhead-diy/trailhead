@@ -1,11 +1,13 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
 
-type CatalystAvatarProps = {
+export type CatalystAvatarProps = {
   src?: string | null;
   square?: boolean;
   initials?: string;
@@ -26,21 +28,19 @@ export function CatalystAvatar({
       data-slot="avatar"
       {...props}
       className={cn(
+        className,
         // Basic layout
         'inline-grid shrink-0 align-middle [--avatar-radius:20%] *:col-start-1 *:row-start-1',
         'outline -outline-offset-1 outline-black/10 dark:outline-white/10',
         // Border radius
         square
           ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)'
-          : 'rounded-full *:rounded-full',
-        className
+          : 'rounded-full *:rounded-full'
       )}
     >
       {initials && (
         <svg
-          className={cn(
-            'size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none'
-          )}
+          className="size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none"
           viewBox="0 0 100 100"
           aria-hidden={alt ? undefined : 'true'}
         >
@@ -57,7 +57,7 @@ export function CatalystAvatar({
           </text>
         </svg>
       )}
-      {src && <img className={cn('size-full')} src={src} alt={alt} />}
+      {src && <img className="size-full" src={src} alt={alt} />}
     </span>
   );
 }
@@ -78,9 +78,9 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
+    className,
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
-    className
+    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'
   );
 
   return 'href' in props ? (

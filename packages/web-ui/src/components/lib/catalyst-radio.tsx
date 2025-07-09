@@ -1,4 +1,6 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 
@@ -11,11 +13,11 @@ export function CatalystRadioGroup({
       data-slot="control"
       {...props}
       className={cn(
+        className,
         // Basic groups
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -30,6 +32,7 @@ export function CatalystRadioField({
       data-slot="field"
       {...props}
       className={cn(
+        className,
         // Base layout
         'grid grid-cols-[1.125rem_1fr] gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
         // Control layout
@@ -39,8 +42,7 @@ export function CatalystRadioField({
         // Description layout
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -80,65 +82,51 @@ const colors = {
     '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
     'dark:[--radio-checked-bg:var(--color-zinc-600)]',
   ],
-
   'dark/white': [
     '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
     'dark:[--radio-checked-bg:var(--color-white)] dark:[--radio-checked-border:var(--color-zinc-950)]/15 dark:[--radio-checked-indicator:var(--color-zinc-900)]',
   ],
-
   white:
     '[--radio-checked-bg:var(--color-white)] [--radio-checked-border:var(--color-zinc-950)]/15 [--radio-checked-indicator:var(--color-zinc-900)]',
-
   dark: '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
   zinc: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-zinc-600)] [--radio-checked-border:var(--color-zinc-700)]/90',
   red: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',
-
   orange:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-orange-500)] [--radio-checked-border:var(--color-orange-600)]/90',
-
   amber:
     '[--radio-checked-bg:var(--color-amber-400)] [--radio-checked-border:var(--color-amber-500)]/80 [--radio-checked-indicator:var(--color-amber-950)]',
-
   yellow:
     '[--radio-checked-bg:var(--color-yellow-300)] [--radio-checked-border:var(--color-yellow-400)]/80 [--radio-checked-indicator:var(--color-yellow-950)]',
-
   lime: '[--radio-checked-bg:var(--color-lime-300)] [--radio-checked-border:var(--color-lime-400)]/80 [--radio-checked-indicator:var(--color-lime-950)]',
-
   green:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-green-600)] [--radio-checked-border:var(--color-green-700)]/90',
-
   emerald:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-emerald-600)] [--radio-checked-border:var(--color-emerald-700)]/90',
-
   teal: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-teal-600)] [--radio-checked-border:var(--color-teal-700)]/90',
   cyan: '[--radio-checked-bg:var(--color-cyan-300)] [--radio-checked-border:var(--color-cyan-400)]/80 [--radio-checked-indicator:var(--color-cyan-950)]',
   sky: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-sky-500)] [--radio-checked-border:var(--color-sky-600)]/80',
   blue: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
-
   indigo:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-indigo-500)] [--radio-checked-border:var(--color-indigo-600)]/90',
-
   violet:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-violet-500)] [--radio-checked-border:var(--color-violet-600)]/90',
-
   purple:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-500)] [--radio-checked-border:var(--color-purple-600)]/90',
-
   fuchsia:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-fuchsia-500)] [--radio-checked-border:var(--color-fuchsia-600)]/90',
-
   pink: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
   rose: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
-  muted:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-muted-foreground)] [--radio-checked-border:var(--color-muted-foreground)]/90',
-  accent:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-accent)] [--radio-checked-border:var(--color-accent)]/90',
-  destructive:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-destructive)] [--radio-checked-border:var(--color-destructive)]/90',
-  secondary:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-secondary)] [--radio-checked-border:var(--color-secondary)]/90',
+
   primary:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-primary)] [--radio-checked-border:var(--color-primary)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
+  secondary:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-zinc-600)] [--radio-checked-border:var(--color-zinc-700)]/90',
+  destructive:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',
+  accent:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-600)] [--radio-checked-border:var(--color-purple-700)]/90',
+  muted:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',
 };
 
 type CatalystColor = keyof typeof colors;
@@ -155,7 +143,7 @@ export function CatalystRadio({
     <Headless.Radio
       data-slot="control"
       {...props}
-      className={cn('group inline-flex focus:outline-hidden', className)}
+      className={cn(className, 'group inline-flex focus:outline-hidden')}
     >
       <span className={cn([base, colors[color]])}>
         <span

@@ -1,7 +1,9 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
-import type React from 'react';
 import { cn } from '../utils/cn';
+import type React from 'react';
 
 export function CatalystCheckboxGroup({
   className,
@@ -12,11 +14,11 @@ export function CatalystCheckboxGroup({
       data-slot="control"
       {...props}
       className={cn(
+        className,
         // Basic groups
         'space-y-3',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -31,6 +33,7 @@ export function CatalystCheckboxField({
       data-slot="field"
       {...props}
       className={cn(
+        className,
         // Base layout
         'grid grid-cols-[1.125rem_1fr] gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
         // Control layout
@@ -40,8 +43,7 @@ export function CatalystCheckboxField({
         // Description layout
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -80,65 +82,51 @@ const colors = {
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-900)] [--checkbox-checked-border:var(--color-zinc-950)]/90',
     'dark:[--checkbox-checked-bg:var(--color-zinc-600)]',
   ],
-
   'dark/white': [
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-900)] [--checkbox-checked-border:var(--color-zinc-950)]/90',
     'dark:[--checkbox-check:var(--color-zinc-900)] dark:[--checkbox-checked-bg:var(--color-white)] dark:[--checkbox-checked-border:var(--color-zinc-950)]/15',
   ],
-
   white:
     '[--checkbox-check:var(--color-zinc-900)] [--checkbox-checked-bg:var(--color-white)] [--checkbox-checked-border:var(--color-zinc-950)]/15',
-
   dark: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-900)] [--checkbox-checked-border:var(--color-zinc-950)]/90',
   zinc: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-600)] [--checkbox-checked-border:var(--color-zinc-700)]/90',
   red: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-red-600)] [--checkbox-checked-border:var(--color-red-700)]/90',
-
   orange:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-orange-500)] [--checkbox-checked-border:var(--color-orange-600)]/90',
-
   amber:
     '[--checkbox-check:var(--color-amber-950)] [--checkbox-checked-bg:var(--color-amber-400)] [--checkbox-checked-border:var(--color-amber-500)]/80',
-
   yellow:
     '[--checkbox-check:var(--color-yellow-950)] [--checkbox-checked-bg:var(--color-yellow-300)] [--checkbox-checked-border:var(--color-yellow-400)]/80',
-
   lime: '[--checkbox-check:var(--color-lime-950)] [--checkbox-checked-bg:var(--color-lime-300)] [--checkbox-checked-border:var(--color-lime-400)]/80',
-
   green:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-green-600)] [--checkbox-checked-border:var(--color-green-700)]/90',
-
   emerald:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-emerald-600)] [--checkbox-checked-border:var(--color-emerald-700)]/90',
-
   teal: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-teal-600)] [--checkbox-checked-border:var(--color-teal-700)]/90',
   cyan: '[--checkbox-check:var(--color-cyan-950)] [--checkbox-checked-bg:var(--color-cyan-300)] [--checkbox-checked-border:var(--color-cyan-400)]/80',
   sky: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-sky-500)] [--checkbox-checked-border:var(--color-sky-600)]/80',
   blue: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-blue-600)] [--checkbox-checked-border:var(--color-blue-700)]/90',
-
   indigo:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-indigo-500)] [--checkbox-checked-border:var(--color-indigo-600)]/90',
-
   violet:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-violet-500)] [--checkbox-checked-border:var(--color-violet-600)]/90',
-
   purple:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-purple-500)] [--checkbox-checked-border:var(--color-purple-600)]/90',
-
   fuchsia:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-fuchsia-500)] [--checkbox-checked-border:var(--color-fuchsia-600)]/90',
-
   pink: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-pink-500)] [--checkbox-checked-border:var(--color-pink-600)]/90',
   rose: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-rose-500)] [--checkbox-checked-border:var(--color-rose-600)]/90',
-  muted:
-    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-muted)] [--checkbox-checked-border:var(--color-muted)]/90',
-  accent:
-    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-accent)] [--checkbox-checked-border:var(--color-accent)]/90',
-  destructive:
-    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-destructive)] [--checkbox-checked-border:var(--color-destructive)]/90',
-  secondary:
-    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-secondary)] [--checkbox-checked-border:var(--color-secondary)]/90',
+
   primary:
-    '[--checkbox-check:var(--color-background)] [--checkbox-checked-bg:var(--color-primary)] [--checkbox-checked-border:var(--color-primary)]/90',
+    '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-blue-600)] [--checkbox-checked-border:var(--color-blue-700)]/90',
+  secondary:
+    '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-600)] [--checkbox-checked-border:var(--color-zinc-700)]/90',
+  destructive:
+    '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-red-600)] [--checkbox-checked-border:var(--color-red-700)]/90',
+  accent:
+    '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-purple-600)] [--checkbox-checked-border:var(--color-purple-700)]/90',
+  muted:
+    '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-gray-600)] [--checkbox-checked-border:var(--color-gray-700)]/90',
 };
 
 type CatalystColor = keyof typeof colors;
@@ -155,19 +143,17 @@ export function CatalystCheckbox({
     <Headless.Checkbox
       data-slot="control"
       {...props}
-      className={cn('group inline-flex focus:outline-hidden', className)}
+      className={cn(className, 'group inline-flex focus:outline-hidden')}
     >
       <span className={cn([base, colors[color]])}>
         <svg
-          className={cn(
-            'size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5'
-          )}
+          className="size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5"
           viewBox="0 0 14 14"
           fill="none"
         >
           {/* Checkmark icon */}
           <path
-            className={cn('opacity-100 group-data-indeterminate:opacity-0')}
+            className="opacity-100 group-data-indeterminate:opacity-0"
             d="M3 8L6 11L11 3.5"
             strokeWidth={2}
             strokeLinecap="round"
@@ -175,7 +161,7 @@ export function CatalystCheckbox({
           />
           {/* Indeterminate icon */}
           <path
-            className={cn('opacity-0 group-data-indeterminate:opacity-100')}
+            className="opacity-0 group-data-indeterminate:opacity-100"
             d="M3 7H11"
             strokeWidth={2}
             strokeLinecap="round"

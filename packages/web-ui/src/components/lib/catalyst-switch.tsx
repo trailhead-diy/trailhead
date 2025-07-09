@@ -1,7 +1,9 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
-import type React from 'react';
 import { cn } from '../utils/cn';
+import type React from 'react';
 
 export function CatalystSwitchGroup({
   className,
@@ -12,11 +14,11 @@ export function CatalystSwitchGroup({
       data-slot="control"
       {...props}
       className={cn(
+        className,
         // Basic groups
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -31,6 +33,7 @@ export function CatalystSwitchField({
       data-slot="field"
       {...props}
       className={cn(
+        className,
         // Base layout
         'grid grid-cols-[1fr_auto] gap-x-8 gap-y-1 sm:grid-cols-[1fr_auto]',
         // Control layout
@@ -40,8 +43,7 @@ export function CatalystSwitchField({
         // Description layout
         '*:data-[slot=description]:col-start-1 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
-        className
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
     />
   );
@@ -52,135 +54,110 @@ const colors = {
     '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-white)]/25',
     '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:var(--color-zinc-700)]/90',
   ],
-
   'dark/white': [
     '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-white)]',
     '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white] dark:[--switch-ring:transparent] dark:[--switch:var(--color-zinc-900)]',
   ],
-
   dark: [
     '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:var(--color-white)]/15',
     '[--switch-ring:var(--color-zinc-950)]/90 [--switch-shadow:var(--color-black)]/10 [--switch:white]',
   ],
-
   zinc: [
     '[--switch-bg-ring:var(--color-zinc-700)]/90 [--switch-bg:var(--color-zinc-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-zinc-700)]/90',
   ],
-
   white: [
     '[--switch-bg-ring:var(--color-black)]/15 [--switch-bg:white] dark:[--switch-bg-ring:transparent]',
     '[--switch-shadow:var(--color-black)]/10 [--switch-ring:transparent] [--switch:var(--color-zinc-950)]',
   ],
-
   red: [
     '[--switch-bg-ring:var(--color-red-700)]/90 [--switch-bg:var(--color-red-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-red-700)]/90 [--switch-shadow:var(--color-red-900)]/20',
   ],
-
   orange: [
     '[--switch-bg-ring:var(--color-orange-600)]/90 [--switch-bg:var(--color-orange-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-orange-600)]/90 [--switch-shadow:var(--color-orange-900)]/20',
   ],
-
   amber: [
     '[--switch-bg-ring:var(--color-amber-500)]/80 [--switch-bg:var(--color-amber-400)] dark:[--switch-bg-ring:transparent]',
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:var(--color-amber-950)]',
   ],
-
   yellow: [
     '[--switch-bg-ring:var(--color-yellow-400)]/80 [--switch-bg:var(--color-yellow-300)] dark:[--switch-bg-ring:transparent]',
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:var(--color-yellow-950)]',
   ],
-
   lime: [
     '[--switch-bg-ring:var(--color-lime-400)]/80 [--switch-bg:var(--color-lime-300)] dark:[--switch-bg-ring:transparent]',
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:var(--color-lime-950)]',
   ],
-
   green: [
     '[--switch-bg-ring:var(--color-green-700)]/90 [--switch-bg:var(--color-green-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-green-700)]/90 [--switch-shadow:var(--color-green-900)]/20',
   ],
-
   emerald: [
     '[--switch-bg-ring:var(--color-emerald-600)]/90 [--switch-bg:var(--color-emerald-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-emerald-600)]/90 [--switch-shadow:var(--color-emerald-900)]/20',
   ],
-
   teal: [
     '[--switch-bg-ring:var(--color-teal-700)]/90 [--switch-bg:var(--color-teal-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-teal-700)]/90 [--switch-shadow:var(--color-teal-900)]/20',
   ],
-
   cyan: [
     '[--switch-bg-ring:var(--color-cyan-400)]/80 [--switch-bg:var(--color-cyan-300)] dark:[--switch-bg-ring:transparent]',
     '[--switch-ring:transparent] [--switch-shadow:transparent] [--switch:var(--color-cyan-950)]',
   ],
-
   sky: [
     '[--switch-bg-ring:var(--color-sky-600)]/80 [--switch-bg:var(--color-sky-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-sky-600)]/80 [--switch-shadow:var(--color-sky-900)]/20',
   ],
-
   blue: [
     '[--switch-bg-ring:var(--color-blue-700)]/90 [--switch-bg:var(--color-blue-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-blue-700)]/90 [--switch-shadow:var(--color-blue-900)]/20',
   ],
-
   indigo: [
     '[--switch-bg-ring:var(--color-indigo-600)]/90 [--switch-bg:var(--color-indigo-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-indigo-600)]/90 [--switch-shadow:var(--color-indigo-900)]/20',
   ],
-
   violet: [
     '[--switch-bg-ring:var(--color-violet-600)]/90 [--switch-bg:var(--color-violet-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-violet-600)]/90 [--switch-shadow:var(--color-violet-900)]/20',
   ],
-
   purple: [
     '[--switch-bg-ring:var(--color-purple-600)]/90 [--switch-bg:var(--color-purple-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-purple-600)]/90 [--switch-shadow:var(--color-purple-900)]/20',
   ],
-
   fuchsia: [
     '[--switch-bg-ring:var(--color-fuchsia-600)]/90 [--switch-bg:var(--color-fuchsia-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-fuchsia-600)]/90 [--switch-shadow:var(--color-fuchsia-900)]/20',
   ],
-
   pink: [
     '[--switch-bg-ring:var(--color-pink-600)]/90 [--switch-bg:var(--color-pink-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-pink-600)]/90 [--switch-shadow:var(--color-pink-900)]/20',
   ],
-
   rose: [
     '[--switch-bg-ring:var(--color-rose-600)]/90 [--switch-bg:var(--color-rose-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-rose-600)]/90 [--switch-shadow:var(--color-rose-900)]/20',
   ],
 
   primary: [
-    '[--switch-bg-ring:var(--color-primary)]/90 [--switch-bg:var(--color-primary)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:var(--color-primary)]/90 [--switch-shadow:var(--color-primary)]/20',
+    '[--switch-bg-ring:var(--color-blue-600)]/90 [--switch-bg:var(--color-blue-500)] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:var(--color-blue-600)]/90 [--switch-shadow:var(--color-blue-900)]/20',
   ],
-
   secondary: [
-    '[--switch-bg-ring:var(--color-secondary)]/90 [--switch-bg:var(--color-secondary)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:var(--color-secondary)]/90 [--switch-shadow:var(--color-secondary)]/20',
+    '[--switch-bg-ring:var(--color-zinc-700)]/90 [--switch-bg:var(--color-zinc-600)] dark:[--switch-bg-ring:transparent]',
+    '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-zinc-700)]/90',
   ],
-
   destructive: [
-    '[--switch-bg-ring:var(--color-destructive)]/90 [--switch-bg:var(--color-destructive)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:var(--color-destructive)]/90 [--switch-shadow:var(--color-destructive)]/20',
+    '[--switch-bg-ring:var(--color-red-700)]/90 [--switch-bg:var(--color-red-600)] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:var(--color-red-700)]/90 [--switch-shadow:var(--color-red-900)]/20',
   ],
-
   accent: [
-    '[--switch-bg-ring:var(--color-accent)]/90 [--switch-bg:var(--color-accent)] dark:[--switch-bg-ring:transparent]',
-    '[--switch:white] [--switch-ring:var(--color-accent)]/90 [--switch-shadow:var(--color-accent)]/20',
+    '[--switch-bg-ring:var(--color-purple-600)]/90 [--switch-bg:var(--color-purple-500)] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:var(--color-purple-600)]/90 [--switch-shadow:var(--color-purple-900)]/20',
   ],
-
   muted: [
-    '[--switch-bg-ring:var(--color-muted-foreground)]/90 [--switch-bg:var(--color-muted-foreground)] dark:[--switch-bg-ring:transparent]',
-    '[--switch-shadow:var(--color-black)]/10 [--switch:white] [--switch-ring:var(--color-muted-foreground)]/90',
+    '[--switch-bg-ring:var(--color-gray-700)]/90 [--switch-bg:var(--color-gray-600)] dark:[--switch-bg-ring:transparent]',
+    '[--switch:white] [--switch-ring:var(--color-gray-700)]/90 [--switch-shadow:var(--color-gray-900)]/20',
   ],
 };
 
@@ -199,6 +176,7 @@ export function CatalystSwitch({
       data-slot="control"
       {...props}
       className={cn(
+        className,
         // Base styles
         'group relative isolate inline-flex h-6 w-10 cursor-default rounded-full p-[3px] sm:h-5 sm:w-8',
         // Transitions
@@ -218,8 +196,7 @@ export function CatalystSwitch({
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
         // Color specific styles
-        colors[color],
-        className
+        colors[color]
       )}
     >
       <span

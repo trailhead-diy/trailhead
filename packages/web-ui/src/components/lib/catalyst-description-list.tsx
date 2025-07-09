@@ -1,4 +1,6 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import { cn } from '../utils/cn';
 
 export function CatalystDescriptionList({
@@ -9,8 +11,8 @@ export function CatalystDescriptionList({
     <dl
       {...props}
       className={cn(
-        'grid grid-cols-1 text-base/6 sm:grid-cols-[min(50%,--spacing(80))_auto] sm:text-sm/6',
-        className
+        className,
+        'grid grid-cols-1 text-base/6 sm:grid-cols-[min(50%,--spacing(80))_auto] sm:text-sm/6'
       )}
     />
   );
@@ -24,8 +26,8 @@ export function CatalystDescriptionTerm({
     <dt
       {...props}
       className={cn(
-        'col-start-1 border-t border-zinc-950/5 pt-3 text-zinc-500 first:border-none sm:border-t sm:border-zinc-950/5 sm:py-3 dark:border-white/5 dark:text-zinc-400 sm:dark:border-white/5',
-        className
+        className,
+        'col-start-1 border-t border-zinc-950/5 pt-3 text-zinc-500 first:border-none sm:border-t sm:border-zinc-950/5 sm:py-3 dark:border-white/5 dark:text-zinc-400 sm:dark:border-white/5'
       )}
     />
   );
@@ -39,8 +41,8 @@ export function CatalystDescriptionDetails({
     <dd
       {...props}
       className={cn(
-        'pt-1 pb-3 text-zinc-950 sm:border-t sm:border-zinc-950/5 sm:py-3 sm:nth-2:border-none dark:text-white dark:sm:border-white/5',
-        className
+        className,
+        'pt-1 pb-3 text-zinc-950 sm:border-t sm:border-zinc-950/5 sm:py-3 sm:nth-2:border-none dark:text-white dark:sm:border-white/5'
       )}
     />
   );
