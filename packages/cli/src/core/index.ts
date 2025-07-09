@@ -79,3 +79,20 @@ export type {
 
 export { createDefaultLogger, createSilentLogger, createPrefixedLogger } from './logger.js';
 export type { Logger } from './logger.js';
+
+// Flow Control & Error Handling - GitHub issue #113
+export { pipeline, parallel, parallelSettled, retryPipeline } from './pipeline.js';
+export type { Pipeline, PipelineStep, ConditionalStep, ErrorHandler } from './pipeline.js';
+
+export {
+  errorTemplates,
+  errors,
+  createErrorTemplate,
+  createErrorTemplateRegistry,
+  globalErrorTemplates,
+} from './error-templates.js';
+export type {
+  ErrorTemplate,
+  ErrorTemplateRegistry,
+  ErrorTemplateRegistryState,
+} from './error-templates.js';
