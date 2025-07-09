@@ -424,7 +424,7 @@ pnpm build                  # Production build
 - `gcwm` = Run the format script. Fix lint/TS errors. Break changes into atomic commits: one logical change per commit. Git commit with meaningful but concise message. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages. Keep messages concise and meaningful - avoid verbose explanations.
 - `gbcp` = Git branch, commit, push/PR workflow with concise PR body. Include "Closes #[issue]" in commit/PR for auto-linking. PR body should be succinct yet meaningful: brief summary, key changes (3-7 bullet points max), testing validation, issue reference.
 - `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking. Focus on essential information: what changed, why it matters. Avoid verbose explanations.
-- `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, apply principles, create TodoWrite plan.
+- `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, Read CLAUDE.md and project principles to apply, create TodoWrite plan.
 
 # important-instruction-reminders
 

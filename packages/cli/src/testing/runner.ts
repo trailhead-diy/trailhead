@@ -2,6 +2,9 @@ import type { Command, CommandContext } from '../command/index.js';
 import type { Result } from '../core/errors/index.js';
 import { createTestContext } from './context.js';
 
+/**
+ * Run command with options and context
+ */
 export async function runCommand<T>(
   command: Command<T>,
   options: T,
@@ -11,47 +14,88 @@ export async function runCommand<T>(
   return command.execute(options, testContext);
 }
 
-export class CommandTestRunner<T> {
-  private context: CommandContext;
-  private command: Command<T>;
+/**
+ * Command test runner state
+ */
+export interface CommandTestRunnerState<T> {
+  readonly context: CommandContext;
+  readonly command: Command<T>;
+}
 
-  constructor(command: Command<T>, context?: CommandContext) {
-    this.command = command;
-    this.context = context ?? createTestContext();
-  }
+/**
+ * Create command test runner
+ */
+export function createCommandTestRunner<T>(
+  command: Command<T>,
+  context?: CommandContext
+): CommandTestRunnerState<T> {
+  return {
+    command,
+    context: context ?? createTestContext(),
+  };
+}
 
-  async run(options: T): Promise<Result<void>> {
-    return this.command.execute(options, this.context);
-  }
+/**
+ * Run command with test runner
+ */
+export async function runTestCommand<T>(
+  state: CommandTestRunnerState<T>,
+  options: T
+): Promise<Result<void>> {
+  return state.command.execute(options, state.context);
+}
 
-  async runExpectSuccess(options: T): Promise<void> {
-    const result = await this.run(options);
-    if (!result.success) {
-      throw new Error(`Command failed: ${result.error.message}`);
-    }
+/**
+ * Run command expecting success
+ */
+export async function runTestCommandExpectSuccess<T>(
+  state: CommandTestRunnerState<T>,
+  options: T
+): Promise<void> {
+  const result = await runTestCommand(state, options);
+  if (!result.success) {
+    throw new Error(`Command failed: ${result.error.message}`);
   }
+}
 
-  async runExpectError(options: T, errorCode?: string): Promise<void> {
-    const result = await this.run(options);
-    if (result.success) {
-      throw new Error('Expected command to fail, but it succeeded');
-    }
-    if (errorCode && result.error.code !== errorCode) {
-      throw new Error(`Expected error code ${errorCode}, but got ${result.error.code}`);
-    }
+/**
+ * Run command expecting error
+ */
+export async function runTestCommandExpectError<T>(
+  state: CommandTestRunnerState<T>,
+  options: T,
+  errorCode?: string
+): Promise<void> {
+  const result = await runTestCommand(state, options);
+  if (result.success) {
+    throw new Error('Expected command to fail, but it succeeded');
   }
+  if (errorCode && result.error.code !== errorCode) {
+    throw new Error(`Expected error code ${errorCode}, but got ${result.error.code}`);
+  }
+}
 
-  getContext(): CommandContext {
-    return this.context;
-  }
+/**
+ * Get test context from runner
+ */
+export function getTestContext<T>(state: CommandTestRunnerState<T>): CommandContext {
+  return state.context;
+}
 
-  getFiles(): Map<string, string> | undefined {
-    const fs = this.context.fs as any;
-    return fs.getFiles?.();
-  }
+/**
+ * Get files from test runner filesystem
+ */
+export function getTestFiles<T>(state: CommandTestRunnerState<T>): Map<string, string> | undefined {
+  const fs = state.context.fs as any;
+  return fs.getFiles?.();
+}
 
-  getLogs(): Array<{ level: string; message: string }> | undefined {
-    const logger = this.context.logger as any;
-    return logger.logs;
-  }
+/**
+ * Get logs from test runner logger
+ */
+export function getTestLogs<T>(
+  state: CommandTestRunnerState<T>
+): Array<{ level: string; message: string }> | undefined {
+  const logger = state.context.logger as any;
+  return logger.logs;
 }
