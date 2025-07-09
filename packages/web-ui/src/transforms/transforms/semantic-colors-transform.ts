@@ -1,0 +1,132 @@
+/**
+ * Core transformation logic for semantic colors transform
+ *
+ * Handles the main transformation phases including pattern detection,
+ * semantic color injection, and content modification. Works with the
+ * mappings module to apply component-specific color tokens.
+ */
+
+import { getSemanticColorsForComponent } from './semantic-colors-mappings.js';
+
+/**
+ * Core semantic colors transformation logic
+ */
+export function executeSemanticColorsTransform(input: string): {
+  content: string;
+  changed: boolean;
+  warnings: string[];
+} {
+  let content = input;
+  const warnings: string[] = [];
+  let changed = false;
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // Phase 1: Detect Colors Object Patterns
+  // Finds:
+  //        const colors = {...}    (direct colors object)
+  //        colors: {...}          (nested colors object in styles)
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  const directColorsObject = /const colors = \{/.test(content);
+  const nestedColorsObject = /colors:\s*\{/.test(content);
+  const stylesColorsObject = /const styles = \{[\s\S]*?colors:\s*\{/.test(content);
+
+  if (!directColorsObject && !nestedColorsObject && !stylesColorsObject) {
+    warnings.push('No colors object found in component');
+    return { content, changed: false, warnings };
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // Phase 2: Component Type Detection and Semantic Color Generation
+  // Analyzes function signatures and CSS patterns to determine component type
+  // Finds:
+  //        export function CatalystBadge + inline-flex items-center gap-x-1.5
+  //        export const CatalystButton + --btn-
+  //        export function CatalystSwitch + --switch-
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  const semanticColors = getSemanticColorsForComponent(content);
+
+  if (semanticColors.length === 0) {
+    warnings.push('Unknown component type, no semantic colors available');
+    return { content, changed: false, warnings };
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // Phase 3: Check for Existing Semantic Colors
+  // Verifies if semantic colors are already present with correct format
+  // Finds:
+  //        primary: 'bg-primary-500/15 text-primary-700...'
+  //        secondary: ['text-white [--btn-bg:var(--color-zinc-600)]...']
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  const hasSemanticColors = semanticColors.some(colorLine => {
+    const parts = colorLine.split(':');
+    if (parts.length < 2) return false;
+
+    const colorKey = parts[0].trim();
+
+    // Check if the color key exists (simpler check)
+    return content.includes(`${colorKey}:`);
+  });
+
+  if (!hasSemanticColors) {
+    let patternFound = false;
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Phase 4: Apply Semantic Colors to Direct Colors Object
+    // Finds:
+    //        const colors = { zinc: '...', blue: '...' }
+    //
+    /////////////////////////////////////////////////////////////////////////////////
+    if (directColorsObject) {
+      // More flexible pattern that captures the entire colors object
+      const colorsObjectPattern = /(const colors = \{[\s\S]*?)(})/;
+      const match = content.match(colorsObjectPattern);
+
+      if (match) {
+        const beforeClosing = match[1];
+        const closing = match[2];
+
+        // Add semantic colors before the closing brace with proper indentation
+        const semanticColorsBlock = semanticColors.map(color => `  ${color}`).join('\n');
+        const newColorsObject = `${beforeClosing},\n  ${semanticColorsBlock}\n${closing}`;
+
+        content = content.replace(colorsObjectPattern, newColorsObject);
+        changed = true;
+        patternFound = true;
+      }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    // Phase 5: Apply Semantic Colors to Nested Colors Object
+    // Finds:
+    //        colors: { zinc: [...], blue: [...] }
+    //
+    /////////////////////////////////////////////////////////////////////////////////
+    if (!patternFound && (nestedColorsObject || stylesColorsObject)) {
+      // More flexible pattern for nested colors objects
+      const colorsObjectPattern = /(colors:\s*\{[\s\S]*?)(\n\s*})/;
+      const match = content.match(colorsObjectPattern);
+
+      if (match) {
+        const beforeClosing = match[1];
+        const closing = match[2];
+
+        // Add semantic colors before the closing brace with proper indentation
+        const semanticColorsBlock = semanticColors.map(color => `    ${color}`).join('\n');
+        const newColorsObject = `${beforeClosing},\n    ${semanticColorsBlock}${closing}`;
+
+        content = content.replace(colorsObjectPattern, newColorsObject);
+        changed = true;
+        patternFound = true;
+      }
+    }
+
+    if (!patternFound) {
+      warnings.push('Could not find colors object pattern to add semantic colors');
+    }
+  }
+
+  return { content, changed, warnings };
+}
