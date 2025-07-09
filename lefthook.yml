@@ -4,15 +4,12 @@
 # Skip hooks with SKIP_HOOKS=1 or LEFTHOOK=0
 skip_output:
   - meta
+  - execution_info
 
-# Show execution time for performance monitoring
+# Only show essential output: summary and failures
 output:
   - summary
-  - success
   - failure
-  - execution
-  - execution_out
-  - execution_info
 
 colors: true
 
@@ -47,7 +44,7 @@ pre-commit:
         staged_docs=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md)$' | grep -E '(docs/|packages/.*/docs/)' || true)
         if [ -n "$staged_docs" ]; then
           for file in $staged_docs; do
-            pnpm docs:validate "$file"
+            pnpm docs:validate "$file" > /dev/null || exit 1
           done
         fi
 
@@ -80,13 +77,11 @@ pre-commit:
       priority: 7
       glob: "**/*.{ts,tsx,js,jsx,json}"
       run: |
-        echo "🔨 Building affected packages..."
         # Use Turborepo's affected detection with caching
-        pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo || {
+        pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo > /dev/null || {
           echo "❌ Build failed - this would fail in CI"
           exit 1
         }
-        echo "✅ Build validation passed"
 
     # 8. Workspace dependency validation
     workspace-check:
@@ -94,7 +89,6 @@ pre-commit:
       run: |
         # Only run when package.json files change
         if git diff --cached --name-only | grep -q 'package\.json$'; then
-          echo "📦 Validating workspace dependencies..."
           node -e "
             const fs = require('fs');
             const path = require('path');
@@ -128,22 +122,17 @@ pre-commit:
                 console.error('❌ Workspace dependency validation failed:');
                 errors.forEach(err => console.error('  ' + err));
                 process.exit(1);
-              } else {
-                console.log('✅ Workspace dependencies validated');
               }
             } catch (err) {
               console.log('⚠️ Workspace validation skipped:', err.message);
             }
           " || exit 1
-        else
-          echo "ℹ️ No package.json changes, skipping workspace validation"
         fi
         
     # 9. Environment parity check
     env-check:
       priority: 9
       run: |
-        echo "🌍 Checking environment parity..."
         node -e "
           const fs = require('fs');
           // Use built-in version comparison instead of semver
@@ -194,7 +183,7 @@ pre-commit:
               }
             }
             
-            console.log('✅ Environment parity check passed');
+            // Silent success
           } catch (err) {
             console.log('⚠️ Environment check skipped:', err.message);
           }
@@ -206,7 +195,6 @@ pre-commit:
       run: |
         # Only run when package.json files change
         if git diff --cached --name-only | grep -q 'package\.json$'; then
-          echo "📋 Validating package.json files..."
           node -e '
             const fs = require("fs");
             const path = require("path");
@@ -269,15 +257,11 @@ pre-commit:
                 console.error("❌ Package.json validation failed:");
                 errors.forEach(err => console.error("  " + err));
                 process.exit(1);
-              } else {
-                console.log("✅ Package.json validation passed");
               }
             } catch (err) {
               console.log("⚠️ Package.json validation skipped:", err.message);
             }
           ' || exit 1
-        else
-          echo "ℹ️ No package.json changes, skipping validation"
         fi
 
 prepare-commit-msg:
@@ -304,18 +288,15 @@ pre-push:
     lockfile-check:
       priority: 1
       run: |
-        echo "🔒 Checking if pnpm-lock.yaml is up to date..."
-        pnpm install --lockfile-only --frozen-lockfile || {
+        pnpm install --lockfile-only --frozen-lockfile > /dev/null || {
           echo "❌ pnpm-lock.yaml is out of date! Run 'pnpm install' and commit the updated lockfile"
           exit 1
         }
-        echo "✅ Lockfile is up to date"
 
     # Check branch sync status (warning only)
     branch-sync-check:
       priority: 2
       run: |
-        echo "🌿 Checking branch sync status..."
         cd packages/cli && pnpm build > /dev/null 2>&1
         node --input-type=module -e "
           import { checkBranchSync, formatSyncStatus } from './dist/git/index.js';
@@ -332,8 +313,6 @@ pre-push:
                 console.log('❌ Branch is significantly behind. Please sync before pushing.');
                 process.exit(1);
               }
-            } else {
-              console.log('✅ Branch is up to date with origin/main');
             }
           })().catch(err => {
             console.log('ℹ️ Branch sync check failed:', err.message);
