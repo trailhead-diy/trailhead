@@ -1,94 +1,22 @@
 /**
- * Simplified pipeline for essential Catalyst enhancements
- * Focuses on semantic colors and className handling only
+ * New functional transform pipeline using CLI framework architecture
  */
 
 import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import chalk from 'chalk';
-import type { Transform } from '../shared/types.js';
-import type { FileSystem } from '../../cli/core/installation/types.js';
+import type { Logger } from '@esteban-url/trailhead-cli/core';
 import { isNotTestRelated } from '../../cli/core/shared/file-filters.js';
+import type { FileSystem } from '../../cli/core/installation/types.js';
 
-// Essential semantic color transforms (per component)
-import { buttonAddSemanticColorsTransform } from '../components/button/add-semantic-colors.js';
-import { badgeAddSemanticColorsTransform } from '../components/badge/add-semantic-colors.js';
-import { checkboxAddSemanticColorsTransform } from '../components/checkbox/add-semantic-colors.js';
-import { radioAddSemanticColorsTransform } from '../components/radio/add-semantic-colors.js';
-import { switchAddSemanticColorsTransform } from '../components/switch/add-semantic-colors.js';
-
-// Essential className handling transforms
-import { addClassNameParameterTransform } from '../components/common/className/add-parameter.js';
-import { forwardClassNameToChildTransform } from '../components/common/className/forward-to-child.js';
-import { wrapStaticClassNameTransform } from '../components/common/className/wrap-static.js';
-import { ensureClassNameInCnTransform } from '../components/common/className/ensure-in-cn.js';
-import { reorderClassNameArgsTransform } from '../components/common/className/reorder-args.js';
-import { removeUnusedClassNameTransform } from '../components/common/className/remove-unused.js';
-
-// Import consistency
-import { clsxToCnTransform } from '../components/common/imports/clsx-to-cn.js';
-
-// Formatting
-import { fileHeadersTransform } from '../components/common/formatting/file-headers.js';
-
-// Catalyst prefix transform (unified approach)
-import { catalystPrefixTransform } from '../components/common/imports/catalyst-prefix.js';
-
-// Parameter ordering (fixes syntax errors)
-import { reorderParametersTransform } from '../components/common/parameters/reorder-parameters.js';
+// Import functional transforms
+import { transformClsxToCn, clsxToCnTransform } from '../transforms/clsx-to-cn.js';
+import { transformCatalystPrefix, catalystPrefixTransform } from '../transforms/catalyst-prefix.js';
+import { transformSemanticColors, semanticColorsTransform } from '../transforms/semantic-colors.js';
+import { transformFileHeaders, fileHeadersTransform } from '../transforms/file-headers.js';
+import { transformTsNocheck, tsNocheckTransform } from '../transforms/ts-nocheck.js';
 
 /**
- * Simplified transform order - only essential transforms
- */
-const SIMPLIFIED_TRANSFORM_ORDER: Transform[] = [
-  // 1. Catalyst prefix MUST be first to establish proper naming
-  catalystPrefixTransform,
-
-  // 2. Import consistency
-  clsxToCnTransform,
-
-  // 3. Add semantic colors to components
-  buttonAddSemanticColorsTransform,
-  badgeAddSemanticColorsTransform,
-  checkboxAddSemanticColorsTransform,
-  radioAddSemanticColorsTransform,
-  switchAddSemanticColorsTransform,
-
-  // 4. className parameter management
-  addClassNameParameterTransform,
-  forwardClassNameToChildTransform,
-  wrapStaticClassNameTransform,
-  ensureClassNameInCnTransform,
-  reorderClassNameArgsTransform,
-  removeUnusedClassNameTransform,
-
-  // 5. Final formatting
-  fileHeadersTransform,
-
-  // 6. Fix any remaining syntax errors LAST - parameter ordering
-  reorderParametersTransform,
-];
-
-/**
- * Check if an error is a non-critical AST parsing warning that should be suppressed
- */
-function isNonCriticalASTError(error: any): boolean {
-  if (!(error instanceof Error)) return false;
-
-  const message = error.message;
-
-  // Suppress specific AST parsing warnings that don't affect functionality
-  const suppressedPatterns = [
-    'Rest element must be last element',
-    'SyntaxError: Rest element must be last element',
-    'ElementAfterRest',
-  ];
-
-  return suppressedPatterns.some(pattern => message.includes(pattern));
-}
-
-/**
- * Execute the main pipeline on a directory of files (Node.js filesystem)
+ * Execute the new functional pipeline on a directory of files
  */
 export async function runMainPipeline(
   sourceDir: string,
@@ -96,6 +24,7 @@ export async function runMainPipeline(
     verbose?: boolean;
     dryRun?: boolean;
     filter?: (filename: string) => boolean;
+    logger?: Logger;
   } = {}
 ): Promise<{
   success: boolean;
@@ -107,7 +36,7 @@ export async function runMainPipeline(
 }
 
 /**
- * Execute the main pipeline with injectable filesystem
+ * Execute the new functional pipeline with injectable filesystem
  */
 export async function runMainPipelineWithFs(
   fs: FileSystem | null,
@@ -116,6 +45,7 @@ export async function runMainPipelineWithFs(
     verbose?: boolean;
     dryRun?: boolean;
     filter?: (filename: string) => boolean;
+    logger?: Logger;
   } = {}
 ): Promise<{
   success: boolean;
@@ -123,13 +53,23 @@ export async function runMainPipelineWithFs(
   errors: Array<{ file: string; error: string }>;
   summary: string;
 }> {
-  const { verbose = false, dryRun = false, filter } = options;
+  const { verbose = false, dryRun = false, filter, logger } = options;
 
-  console.log(chalk.blue(`🚀 Running main pipeline on ${sourceDir}`));
-  console.log(chalk.gray(`Transforms: ${SIMPLIFIED_TRANSFORM_ORDER.length} essential transforms`));
+  // Create a basic logger if none provided
+  const defaultLogger = {
+    info: (msg: string) => console.log(msg),
+    warn: (msg: string) => console.warn(msg),
+    error: (msg: string) => console.error(msg),
+    debug: (msg: string) => verbose && console.log(msg),
+    success: (msg: string) => console.log(msg),
+  };
+
+  const effectiveLogger = logger || defaultLogger;
+
+  effectiveLogger.info(`🚀 Running pipeline on ${sourceDir}`);
 
   if (dryRun) {
-    console.log(chalk.yellow('🔍 DRY RUN MODE - No files will be modified'));
+    effectiveLogger.info('🔍 DRY RUN MODE - No files will be modified');
   }
 
   const errors: Array<{ file: string; error: string }> = [];
@@ -157,14 +97,23 @@ export async function runMainPipelineWithFs(
     const tsxFiles = files.filter(f => f.endsWith('.tsx') && isNotTestRelated(f));
     const filteredFiles = filter ? tsxFiles.filter(filter) : tsxFiles;
 
-    console.log(chalk.gray(`Found ${filteredFiles.length} component files to process`));
+    // effectiveLogger.info(`Found ${filteredFiles.length} component files to process`);
+
+    // Define functional transforms to apply
+    const transforms = [
+      { ...clsxToCnTransform, transform: transformClsxToCn },
+      { ...catalystPrefixTransform, transform: transformCatalystPrefix },
+      { ...semanticColorsTransform, transform: transformSemanticColors },
+      { ...fileHeadersTransform, transform: transformFileHeaders },
+      { ...tsNocheckTransform, transform: transformTsNocheck },
+    ];
 
     for (const file of filteredFiles) {
       const filePath = join(sourceDir, file);
 
       try {
         if (verbose) {
-          console.log(chalk.gray(`Processing ${file}...`));
+          effectiveLogger.info(`Processing ${file}...`);
         }
 
         // Use injected filesystem if available
@@ -179,52 +128,74 @@ export async function runMainPipelineWithFs(
 
         let content = contentResult.value;
         let hasChanges = false;
+        const allWarnings: string[] = [];
 
-        // Apply each transform in order
-        for (const transform of SIMPLIFIED_TRANSFORM_ORDER) {
-          try {
-            const result = transform.execute(content);
+        // Apply all transforms in sequence
+        for (const transform of transforms) {
+          // Pass filename to transforms that need it (like ts-nocheck)
+          const result =
+            transform.name === 'ts-nocheck'
+              ? transform.transform(content, file)
+              : transform.transform(content);
 
-            if (result.hasChanges) {
-              content = result.content;
+          if (result.success) {
+            const transformResult = result.value;
+            if (transformResult.changed) {
+              content = transformResult.content;
               hasChanges = true;
-
-              if (verbose && result.changes.length > 0) {
-                console.log(chalk.green(`  ✓ ${transform.name}: ${result.changes.length} changes`));
+              if (verbose) {
+                effectiveLogger.info(`  ✓ ${transform.name}: applied`);
               }
+            } else if (verbose) {
+              effectiveLogger.debug(`  - ${transform.name}: no changes`);
             }
-          } catch (error: any) {
-            if (!isNonCriticalASTError(error)) {
-              console.warn(chalk.yellow(`  ⚠ ${transform.name} failed: ${error.message}`));
-            }
+
+            // Collect warnings
+            allWarnings.push(...transformResult.warnings);
+          } else {
+            const errorMessage = result.error?.message || String(result.error);
+            errors.push({ file, error: `${transform.name}: ${errorMessage}` });
+            effectiveLogger.error(`❌ ${file} (${transform.name}): ${errorMessage}`);
           }
         }
 
         // Write file if changes were made and not in dry run mode
         if (hasChanges && !dryRun) {
-          if (fs) {
-            await fs.writeFile(filePath, content);
-          } else {
-            await writeFile(filePath, content, 'utf-8');
+          const writeResult = fs
+            ? await fs.writeFile(filePath, content)
+            : { success: true, value: await writeFile(filePath, content, 'utf-8') };
+
+          if (!writeResult.success) {
+            errors.push({ file, error: 'Failed to write file' });
+            continue;
+          }
+        }
+
+        // Log warnings if any
+        if (allWarnings.length > 0 && verbose) {
+          for (const warning of allWarnings) {
+            effectiveLogger.info(`  ⚠️  ${warning}`);
           }
         }
 
         if (hasChanges) {
           processedFiles++;
           if (verbose) {
-            console.log(chalk.green(`  ✓ ${file} ${dryRun ? '(would be updated)' : 'updated'}`));
+            effectiveLogger.info(
+              `✅ ${file} (${hasChanges ? 'modified' : 'unchanged'})${dryRun ? ' (dry run)' : ''}`
+            );
           }
         } else if (verbose) {
-          console.log(chalk.gray(`  - ${file} (no changes)`));
+          effectiveLogger.info(`- ${file} (no changes)`);
         }
       } catch (error: any) {
         errors.push({ file, error: error.message });
-        console.error(chalk.red(`  ❌ ${file}: ${error.message}`));
+        effectiveLogger.error(`❌ ${file}: ${error.message}`);
       }
     }
   } catch (error: any) {
     errors.push({ file: sourceDir, error: error.message });
-    console.error(chalk.red(`Failed to read directory: ${error.message}`));
+    effectiveLogger.error(`Failed to read directory: ${error.message}`);
   }
 
   // Generate summary
@@ -236,7 +207,7 @@ export async function runMainPipelineWithFs(
     .filter(Boolean)
     .join(', ');
 
-  console.log(chalk.blue(`✨ Pipeline complete: ${summary}`));
+  // effectiveLogger.info(`✨ New pipeline complete: ${summary}`);
 
   return {
     success: errors.length === 0,
@@ -247,29 +218,51 @@ export async function runMainPipelineWithFs(
 }
 
 /**
- * Get information about the main pipeline
+ * Get information about the new functional pipeline
  */
 export function getMainPipelineInfo(): {
   transformCount: number;
   transforms: Array<{ name: string; description: string; type: string }>;
   categories: Record<string, number>;
 } {
-  const transforms = SIMPLIFIED_TRANSFORM_ORDER.map(t => ({
-    name: t.name,
-    description: t.description,
-    type: t.type,
-  }));
+  const transforms = [
+    {
+      name: clsxToCnTransform.name,
+      description: clsxToCnTransform.description,
+      type: clsxToCnTransform.category,
+    },
+    {
+      name: catalystPrefixTransform.name,
+      description: catalystPrefixTransform.description,
+      type: catalystPrefixTransform.category,
+    },
+    {
+      name: semanticColorsTransform.name,
+      description: semanticColorsTransform.description,
+      type: semanticColorsTransform.category,
+    },
+    {
+      name: fileHeadersTransform.name,
+      description: fileHeadersTransform.description,
+      type: fileHeadersTransform.category,
+    },
+    {
+      name: tsNocheckTransform.name,
+      description: tsNocheckTransform.description,
+      type: tsNocheckTransform.category,
+    },
+  ];
 
-  const categories = {
-    'Parameter Fixing': 1, // reorder-parameters
-    'Semantic Colors': 5, // button, badge, checkbox, radio, switch
-    'className Management': 6, // add-parameter, forward-to-child, wrap-static, ensure-in-cn, reorder-args, remove-unused
-    'Import Consistency': 1, // clsx-to-cn
-    Formatting: 1, // file-headers
-  };
+  const categories = transforms.reduce(
+    (acc, transform) => {
+      acc[transform.type] = (acc[transform.type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return {
-    transformCount: SIMPLIFIED_TRANSFORM_ORDER.length,
+    transformCount: transforms.length,
     transforms,
     categories,
   };
