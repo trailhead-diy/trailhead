@@ -44,23 +44,15 @@ export interface StrictTransformsOptions extends CommandOptions {
 }
 
 /**
- * Enhanced profile command options with strict typing
- */
-export interface StrictProfileOptions extends CommandOptions {
-  readonly pipeline?: boolean;
-  readonly simple?: boolean;
-  readonly memory?: boolean;
-  readonly verbose?: boolean;
-}
-
-/**
  * Enhanced dev refresh command options with strict typing
  */
 export interface StrictDevRefreshOptions extends CommandOptions {
   readonly src?: string;
   readonly dest?: string;
   readonly clean?: boolean;
+  readonly skipTransforms?: boolean;
   readonly verbose?: boolean;
+  readonly legacy?: boolean;
 }
 
 /**
