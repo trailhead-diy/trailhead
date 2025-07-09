@@ -128,7 +128,7 @@ jobs:
         shell: bash
         run: |
           cd packages/cli
-          node dist/src/index.js --help
+          node dist/index.js --help
           echo "✅ CLI works on ${{ matrix.os }} with Node ${{ matrix.node }}"
 
       - name: Test generator
@@ -224,7 +224,7 @@ jobs:
           # Measure CLI startup time
           echo "Testing CLI startup performance..."
           START=$(date +%s%N)
-          node dist/src/index.js --help >/dev/null 2>&1
+          node dist/index.js --help >/dev/null 2>&1
           END=$(date +%s%N)
           STARTUP_TIME=$(( (END - START) / 1000000 ))
           echo "CLI startup time: ${STARTUP_TIME}ms"
