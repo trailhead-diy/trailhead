@@ -302,7 +302,9 @@ execute_tests() {
   local description="$2"
   local max_retries=${3:-1}
   
-  log_info "$description"
+  if [[ "$VERBOSE" == "true" ]]; then
+    log_info "$description"
+  fi
   
   if [[ "$DRY_RUN" == "true" ]]; then
     log_info "DRY RUN: Would execute: $test_command"
@@ -323,7 +325,7 @@ execute_tests() {
   
   local attempt=1
   while [[ $attempt -le $max_retries ]]; do
-    if [[ $max_retries -gt 1 ]]; then
+    if [[ $max_retries -gt 1 && "$VERBOSE" == "true" ]]; then
       log_info "🔄 Attempt $attempt of $max_retries"
     fi
     
@@ -344,13 +346,12 @@ execute_tests() {
             timeout_cmd="gtimeout"
         else
             log_warning "Neither 'timeout' nor 'gtimeout' found. Install coreutils for timeout support."
-            log_info "Running tests without timeout..."
+            log_verbose "Running tests without timeout..."
             if bash -c "$test_command"; then
                 if [[ -n "$progress_pid" ]]; then
                     kill $progress_pid 2>/dev/null || true
                     echo # New line after progress
                 fi
-                log_success "Tests completed successfully"
                 return 0
             else
                 exit_code=$?
@@ -370,7 +371,6 @@ execute_tests() {
             kill $progress_pid 2>/dev/null || true
             echo # New line after progress
         fi
-        log_success "Tests completed successfully"
         return 0
     else
         exit_code=$?
@@ -423,8 +423,6 @@ show_progress() {
 
 # Main execution logic
 main() {
-  log_info "Smart Test Runner v$SCRIPT_VERSION"
-  
   # Check for skip flag
   if [[ "$SKIP_TESTS" == "true" ]]; then
     log_warning "Skipping all tests (SKIP_TESTS=1 or --skip)"
@@ -469,12 +467,9 @@ main() {
       affected_packages=$(get_affected_packages "$staged_files")
       
       if [[ -z "$affected_packages" ]]; then
-        log_warning "Package changes detected but no packages identified, running full test suite"
         execute_tests "$test_command" "🟡 Running full test suite (package detection failed)"
         return $?
       fi
-      
-      log_info "🟡 Package changes detected - running affected tests"
       
       # Check if parallel testing is supported and enabled
       local enable_parallel_testing
@@ -487,7 +482,6 @@ main() {
       
       if [[ "$enable_parallel_testing" == "true" && "$pm" == "pnpm" ]]; then
         # Parallel execution for pnpm (supports workspace concurrency)
-        log_info "🔄 Running tests in parallel for affected packages"
         
         local package_filters=()
         while IFS= read -r package; do
@@ -513,11 +507,6 @@ main() {
         fi
       else
         # Sequential execution (fallback or explicitly disabled)
-        if [[ "$enable_parallel_testing" != "true" ]]; then
-          log_info "🔄 Running tests sequentially (parallel testing disabled)"
-        else
-          log_info "🔄 Running tests sequentially (parallel testing not supported for $pm)"
-        fi
         
         local max_retries
         max_retries=$(get_config_value '.maxRetries' '2')
