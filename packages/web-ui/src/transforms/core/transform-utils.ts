@@ -24,41 +24,6 @@ export type TransformMetadata = {
 };
 
 /**
- * Create a successful transform result
- */
-export function createTransformResult(
-  content: string,
-  changed: boolean,
-  warnings: string[] = []
-): Result<TransformResult, CLIError> {
-  return Ok({ content, changed, warnings });
-}
-
-/**
- * Create a no-change transform result
- */
-export function createNoChangeResult(
-  content: string,
-  warnings: string[] = []
-): Result<TransformResult, CLIError> {
-  return Ok({ content, changed: false, warnings });
-}
-
-/**
- * Create a transform error
- */
-export function createTransformError(
-  message: string,
-  code: string = 'TRANSFORM_ERROR'
-): Result<TransformResult, CLIError> {
-  return Err({
-    code,
-    message,
-    recoverable: true,
-  });
-}
-
-/**
  * Create transform metadata
  */
 export function createTransformMetadata(
