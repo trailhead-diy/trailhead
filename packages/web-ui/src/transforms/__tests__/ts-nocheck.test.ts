@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
+<<<<<<< HEAD
 import { transformTsNocheck } from '../format/ts-nocheck.js';
+=======
+import { transformTsNocheck } from '../transforms/ts-nocheck.js';
+>>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
 
 describe('transformTsNocheck', () => {
   it('should add @ts-nocheck directive to target file without it', () => {
@@ -134,4 +138,24 @@ export function Component() {
 'use client'`);
     }
   });
+<<<<<<< HEAD
+=======
+
+  it('should handle all three target files', () => {
+    const input = `export function Component() { return <div>Hello</div>; }`;
+
+    const targetFiles = ['catalyst-combobox.tsx', 'catalyst-dropdown.tsx', 'catalyst-listbox.tsx'];
+
+    for (const filename of targetFiles) {
+      const result = transformTsNocheck(input, filename);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.changed).toBe(true);
+        expect(result.value.content).toBe(`// @ts-nocheck
+export function Component() { return <div>Hello</div>; }`);
+      }
+    }
+  });
+>>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
 });
