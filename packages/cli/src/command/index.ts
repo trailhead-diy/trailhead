@@ -31,6 +31,9 @@ export {
   displaySummary, // Formatted configuration/result display
 } from './patterns.js';
 
+// Command Enhancement Suite - GitHub issue #112
+export { createFileProcessingCommand, commonOptions, defineOptions } from './builders.js';
+
 export type { CommandOptions, CommandConfig, CommandAction, CommandValidator } from './base.js';
 
 export type {
@@ -39,3 +42,10 @@ export type {
   SubprocessConfig,
   ConfigurationOptions,
 } from './patterns.js';
+
+export type {
+  FileProcessingOptions,
+  FileProcessingContext,
+  FileProcessingConfig,
+  OptionsBuilder,
+} from './builders.js';
