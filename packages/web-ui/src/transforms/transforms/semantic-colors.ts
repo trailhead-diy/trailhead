@@ -70,11 +70,7 @@
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import {
-  createTransformMetadata,
-  executeTransform,
-  type TransformResult,
-} from '../core/transform-utils.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
 
 /**
  * Transform metadata

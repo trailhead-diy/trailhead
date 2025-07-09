@@ -10,20 +10,19 @@ The transform system provides a pipeline for applying code transformations to Ca
 
 ```
 src/transforms/
-├── core/
-│   └── transform-utils.ts      # Shared utility functions
+├── index.ts                    # Main transform pipeline and exports
+├── utils.ts                    # Shared utility functions
 ├── transforms/                 # Individual transform implementations
 │   ├── catalyst-prefix.ts      # Add Catalyst prefix to components
 │   ├── clsx-to-cn.ts          # Convert clsx to cn utility
 │   ├── file-headers.ts        # Add/update file headers
 │   ├── semantic-colors.ts     # Add semantic color tokens
 │   └── ts-nocheck.ts         # Add TypeScript nocheck directives
-├── pipelines/
-│   └── main.ts               # Main transform pipeline
-└── __tests__/                # Transform tests
-    ├── pipeline-integration.test.ts
-    ├── semantic-colors.test.ts
-    └── ts-nocheck.test.ts
+├── __tests__/                # Transform tests
+│   ├── pipeline-integration.test.ts
+│   ├── semantic-colors.test.ts
+│   └── ts-nocheck.test.ts
+└── README.md
 ```
 
 ## Core Concepts
@@ -110,7 +109,7 @@ trailhead-ui enhance
 ### Programmatic Usage
 
 ```typescript
-import { runMainPipeline } from './pipelines/main.js';
+import { runMainPipeline } from './index.js';
 
 const result = await runMainPipeline('./src/components', {
   verbose: true,
@@ -149,5 +148,5 @@ if (result.success) {
 The transform system integrates with these CLI commands:
 
 - `src/cli/commands/transforms.ts` - Main transforms command
-- `src/cli/commands/enhance.ts` - Simplified transforms
-- `src/cli/commands/dev-refresh.ts` - Development refresh with transforms
+- `src/cli/commands/enhance.ts` - Simplified transforms (uses `src/transforms/index.ts`)
+- `src/cli/commands/dev-refresh.ts` - Development refresh with transforms (uses `src/transforms/index.ts`)

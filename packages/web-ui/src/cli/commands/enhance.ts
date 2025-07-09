@@ -15,7 +15,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
 
-import { runMainPipeline, getMainPipelineInfo } from '../../transforms/pipelines/main.js';
+import { runMainPipeline, getMainPipelineInfo } from '../../transforms/index.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 
 // ============================================================================

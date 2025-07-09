@@ -5,15 +5,15 @@
 import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
-import { isNotTestRelated } from '../../cli/core/shared/file-filters.js';
-import type { FileSystem } from '../../cli/core/installation/types.js';
+import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
+import type { FileSystem } from '../cli/core/installation/types.js';
 
 // Import functional transforms
-import { transformClsxToCn, clsxToCnTransform } from '../transforms/clsx-to-cn.js';
-import { transformCatalystPrefix, catalystPrefixTransform } from '../transforms/catalyst-prefix.js';
-import { transformSemanticColors, semanticColorsTransform } from '../transforms/semantic-colors.js';
-import { transformFileHeaders, fileHeadersTransform } from '../transforms/file-headers.js';
-import { transformTsNocheck, tsNocheckTransform } from '../transforms/ts-nocheck.js';
+import { transformClsxToCn, clsxToCnTransform } from './transforms/clsx-to-cn.js';
+import { transformCatalystPrefix, catalystPrefixTransform } from './transforms/catalyst-prefix.js';
+import { transformSemanticColors, semanticColorsTransform } from './transforms/semantic-colors.js';
+import { transformFileHeaders, fileHeadersTransform } from './transforms/file-headers.js';
+import { transformTsNocheck, tsNocheckTransform } from './transforms/ts-nocheck.js';
 
 /**
  * Execute the new functional pipeline on a directory of files

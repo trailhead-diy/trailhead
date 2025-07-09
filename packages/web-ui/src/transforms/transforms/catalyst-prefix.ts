@@ -57,11 +57,7 @@
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 import { createRequire } from 'module';
-import {
-  createTransformMetadata,
-  executeTransform,
-  type TransformResult,
-} from '../core/transform-utils.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
 
 // Create require function for ESM compatibility
 const require = createRequire(import.meta.url);

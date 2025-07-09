@@ -20,7 +20,7 @@ import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
-import { runMainPipeline as runNewPipeline } from '../../transforms/pipelines/main.js';
+import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
 import chalk from 'chalk';
 
 // ============================================================================
