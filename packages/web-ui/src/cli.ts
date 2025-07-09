@@ -6,7 +6,6 @@ import { createCLIContext, getScriptDir } from './cli/utils/context.js';
 import { createInstallCommand } from './cli/commands/install.js';
 import { createEnhanceCommand } from './cli/commands/enhance.js';
 import { createTransformsCommand } from './cli/commands/transforms.js';
-import { createProfileCommand } from './cli/commands/profile.js';
 import { createDevRefreshCommand } from './cli/commands/dev-refresh.js';
 import { createInitCommand } from './cli/commands/init.js';
 import { createAddCommand } from './cli/commands/add.js';
@@ -34,7 +33,6 @@ async function main(): Promise<void> {
         createInstallCommand(),
         createEnhanceCommand(),
         createTransformsCommand(),
-        createProfileCommand(),
         createDevRefreshCommand(),
         createInitCommand(),
         createAddCommand(),
