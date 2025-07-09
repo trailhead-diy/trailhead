@@ -1,11 +1,13 @@
+// @ts-nocheck
 'use client';
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
 
 import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 import type React from 'react';
 import { CatalystButton } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
 
 export function CatalystDropdown(props: Headless.MenuProps) {
   return <Headless.Menu {...props} />;
@@ -13,10 +15,9 @@ export function CatalystDropdown(props: Headless.MenuProps) {
 
 export function CatalystDropdownButton<T extends React.ElementType = typeof CatalystButton>({
   as = CatalystButton,
-  className,
   ...props
 }: { className?: string } & Omit<Headless.MenuButtonProps<T>, 'className'>) {
-  return <Headless.MenuButton as={as} className={cn(className)} {...props} />;
+  return <Headless.MenuButton as={as} {...props} />;
 }
 
 export function CatalystDropdownMenu({
@@ -55,7 +56,10 @@ export function CatalystDropdownMenu({
 export function CatalystDropdownItem({
   className,
   ...props
-}: { className?: string } & Omit<Headless.MenuItemProps, 'className'>) {
+}: { className?: string } & (
+  | Omit<Headless.MenuItemProps<'button'>, 'as' | 'className'>
+  | Omit<Headless.MenuItemProps<typeof CatalystLink>, 'as' | 'className'>
+)) {
   let classes = cn(
     className,
     // Base styles
@@ -78,9 +82,9 @@ export function CatalystDropdownItem({
   );
 
   return 'href' in props ? (
-    <Headless.MenuItem as={CatalystLink} {...(props as any)} className={classes} />
+    <Headless.MenuItem as={CatalystLink} {...props} className={classes} />
   ) : (
-    <Headless.MenuItem {...(props as any)} className={classes} />
+    <Headless.MenuItem as="button" type="button" {...props} className={classes} />
   );
 }
 
@@ -171,7 +175,7 @@ export function CatalystDropdownShortcut({
   return (
     <Headless.Description
       as="kbd"
-      {...(props as any)}
+      {...props}
       className={cn(className, 'col-start-5 row-start-1 flex justify-self-end')}
     >
       {(Array.isArray(keys) ? keys : keys.split('')).map((char, index) => (

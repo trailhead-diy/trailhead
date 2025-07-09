@@ -1,4 +1,6 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 /**
  * TODO: Update this component to use your client-side framework's link
  * component. We've provided examples of how to do this for Next.js, Remix, and

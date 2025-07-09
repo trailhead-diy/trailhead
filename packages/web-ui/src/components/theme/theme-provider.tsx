@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState, useCallback, createContext, useContext, type ReactNode } from 'react';
 import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'next-themes';
 import {
@@ -97,6 +96,7 @@ export function useTheme(): ThemeContextValue {
     (name: string) => {
       // Validate theme exists
       if (!getTheme(themes, name)) {
+        // eslint-disable-next-line no-console
         console.error(`Theme "${name}" is not registered`);
         return;
       }

@@ -1,8 +1,10 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
 
 const styles = {
   base: [
@@ -63,150 +65,118 @@ const styles = {
       'dark:text-white dark:[--btn-bg:var(--color-zinc-600)] dark:[--btn-hover-overlay:var(--color-white)]/5',
       '[--btn-icon:var(--color-zinc-400)] data-active:[--btn-icon:var(--color-zinc-300)] data-hover:[--btn-icon:var(--color-zinc-300)]',
     ],
-
     light: [
       'text-zinc-950 [--btn-bg:white] [--btn-border:var(--color-zinc-950)]/10 [--btn-hover-overlay:var(--color-zinc-950)]/2.5 data-active:[--btn-border:var(--color-zinc-950)]/15 data-hover:[--btn-border:var(--color-zinc-950)]/15',
       'dark:text-white dark:[--btn-hover-overlay:var(--color-white)]/5 dark:[--btn-bg:var(--color-zinc-800)]',
       '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)] data-hover:[--btn-icon:var(--color-zinc-700)] dark:[--btn-icon:var(--color-zinc-500)] dark:data-active:[--btn-icon:var(--color-zinc-400)] dark:data-hover:[--btn-icon:var(--color-zinc-400)]',
     ],
-
     'dark/white': [
       'text-white [--btn-bg:var(--color-zinc-900)] [--btn-border:var(--color-zinc-950)]/90 [--btn-hover-overlay:var(--color-white)]/10',
       'dark:text-zinc-950 dark:[--btn-bg:white] dark:[--btn-hover-overlay:var(--color-zinc-950)]/5',
       '[--btn-icon:var(--color-zinc-400)] data-active:[--btn-icon:var(--color-zinc-300)] data-hover:[--btn-icon:var(--color-zinc-300)] dark:[--btn-icon:var(--color-zinc-500)] dark:data-active:[--btn-icon:var(--color-zinc-400)] dark:data-hover:[--btn-icon:var(--color-zinc-400)]',
     ],
-
     dark: [
       'text-white [--btn-bg:var(--color-zinc-900)] [--btn-border:var(--color-zinc-950)]/90 [--btn-hover-overlay:var(--color-white)]/10',
       'dark:[--btn-hover-overlay:var(--color-white)]/5 dark:[--btn-bg:var(--color-zinc-800)]',
       '[--btn-icon:var(--color-zinc-400)] data-active:[--btn-icon:var(--color-zinc-300)] data-hover:[--btn-icon:var(--color-zinc-300)]',
     ],
-
     white: [
       'text-zinc-950 [--btn-bg:white] [--btn-border:var(--color-zinc-950)]/10 [--btn-hover-overlay:var(--color-zinc-950)]/2.5 data-active:[--btn-border:var(--color-zinc-950)]/15 data-hover:[--btn-border:var(--color-zinc-950)]/15',
       'dark:[--btn-hover-overlay:var(--color-zinc-950)]/5',
       '[--btn-icon:var(--color-zinc-400)] data-active:[--btn-icon:var(--color-zinc-500)] data-hover:[--btn-icon:var(--color-zinc-500)]',
     ],
-
     zinc: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
       'dark:[--btn-hover-overlay:var(--color-white)]/5',
       '[--btn-icon:var(--color-zinc-400)] data-active:[--btn-icon:var(--color-zinc-300)] data-hover:[--btn-icon:var(--color-zinc-300)]',
     ],
-
     indigo: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-indigo-500)] [--btn-border:var(--color-indigo-600)]/90',
       '[--btn-icon:var(--color-indigo-300)] data-active:[--btn-icon:var(--color-indigo-200)] data-hover:[--btn-icon:var(--color-indigo-200)]',
     ],
-
     cyan: [
       'text-cyan-950 [--btn-bg:var(--color-cyan-300)] [--btn-border:var(--color-cyan-400)]/80 [--btn-hover-overlay:var(--color-white)]/25',
       '[--btn-icon:var(--color-cyan-500)]',
     ],
-
     red: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-red-600)] [--btn-border:var(--color-red-700)]/90',
       '[--btn-icon:var(--color-red-300)] data-active:[--btn-icon:var(--color-red-200)] data-hover:[--btn-icon:var(--color-red-200)]',
     ],
-
     orange: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-orange-500)] [--btn-border:var(--color-orange-600)]/90',
       '[--btn-icon:var(--color-orange-300)] data-active:[--btn-icon:var(--color-orange-200)] data-hover:[--btn-icon:var(--color-orange-200)]',
     ],
-
     amber: [
       'text-amber-950 [--btn-hover-overlay:var(--color-white)]/25 [--btn-bg:var(--color-amber-400)] [--btn-border:var(--color-amber-500)]/80',
       '[--btn-icon:var(--color-amber-600)]',
     ],
-
     yellow: [
       'text-yellow-950 [--btn-hover-overlay:var(--color-white)]/25 [--btn-bg:var(--color-yellow-300)] [--btn-border:var(--color-yellow-400)]/80',
       '[--btn-icon:var(--color-yellow-600)] data-active:[--btn-icon:var(--color-yellow-700)] data-hover:[--btn-icon:var(--color-yellow-700)]',
     ],
-
     lime: [
       'text-lime-950 [--btn-hover-overlay:var(--color-white)]/25 [--btn-bg:var(--color-lime-300)] [--btn-border:var(--color-lime-400)]/80',
       '[--btn-icon:var(--color-lime-600)] data-active:[--btn-icon:var(--color-lime-700)] data-hover:[--btn-icon:var(--color-lime-700)]',
     ],
-
     green: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-green-600)] [--btn-border:var(--color-green-700)]/90',
       '[--btn-icon:var(--color-white)]/60 data-active:[--btn-icon:var(--color-white)]/80 data-hover:[--btn-icon:var(--color-white)]/80',
     ],
-
     emerald: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-emerald-600)] [--btn-border:var(--color-emerald-700)]/90',
       '[--btn-icon:var(--color-white)]/60 data-active:[--btn-icon:var(--color-white)]/80 data-hover:[--btn-icon:var(--color-white)]/80',
     ],
-
     teal: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-teal-600)] [--btn-border:var(--color-teal-700)]/90',
       '[--btn-icon:var(--color-white)]/60 data-active:[--btn-icon:var(--color-white)]/80 data-hover:[--btn-icon:var(--color-white)]/80',
     ],
-
     sky: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-sky-500)] [--btn-border:var(--color-sky-600)]/80',
       '[--btn-icon:var(--color-white)]/60 data-active:[--btn-icon:var(--color-white)]/80 data-hover:[--btn-icon:var(--color-white)]/80',
     ],
-
     blue: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
       '[--btn-icon:var(--color-blue-400)] data-active:[--btn-icon:var(--color-blue-300)] data-hover:[--btn-icon:var(--color-blue-300)]',
     ],
-
     violet: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-violet-500)] [--btn-border:var(--color-violet-600)]/90',
       '[--btn-icon:var(--color-violet-300)] data-active:[--btn-icon:var(--color-violet-200)] data-hover:[--btn-icon:var(--color-violet-200)]',
     ],
-
     purple: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-purple-500)] [--btn-border:var(--color-purple-600)]/90',
       '[--btn-icon:var(--color-purple-300)] data-active:[--btn-icon:var(--color-purple-200)] data-hover:[--btn-icon:var(--color-purple-200)]',
     ],
-
     fuchsia: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-fuchsia-500)] [--btn-border:var(--color-fuchsia-600)]/90',
       '[--btn-icon:var(--color-fuchsia-300)] data-active:[--btn-icon:var(--color-fuchsia-200)] data-hover:[--btn-icon:var(--color-fuchsia-200)]',
     ],
-
     pink: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-pink-500)] [--btn-border:var(--color-pink-600)]/90',
       '[--btn-icon:var(--color-pink-300)] data-active:[--btn-icon:var(--color-pink-200)] data-hover:[--btn-icon:var(--color-pink-200)]',
     ],
-
     rose: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
       '[--btn-icon:var(--color-rose-300)] data-active:[--btn-icon:var(--color-rose-200)] data-hover:[--btn-icon:var(--color-rose-200)]',
     ],
-
     primary: [
-      'text-primary-foreground [--btn-bg:var(--color-primary)] [--btn-border:var(--color-primary)] [--btn-hover-overlay:var(--color-primary-foreground)]/10',
-      'dark:text-primary-foreground dark:[--btn-hover-overlay:var(--color-primary-foreground)]/5',
-      '[--btn-icon:var(--color-primary-foreground)]/60 data-active:[--btn-icon:var(--color-primary-foreground)]/80 data-hover:[--btn-icon:var(--color-primary-foreground)]/80',
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
+      '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',
     ],
-
     secondary: [
-      'text-secondary-foreground [--btn-bg:var(--color-secondary)] [--btn-border:var(--color-secondary)] [--btn-hover-overlay:var(--color-secondary-foreground)]/10',
-      'dark:text-secondary-foreground dark:[--btn-hover-overlay:var(--color-secondary-foreground)]/5',
-      '[--btn-icon:var(--color-secondary-foreground)]/60 data-active:[--btn-icon:var(--color-secondary-foreground)]/80 data-hover:[--btn-icon:var(--color-secondary-foreground)]/80',
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
+      '[--btn-icon:var(--color-zinc-300)] data-active:[--btn-icon:var(--color-zinc-200)] data-hover:[--btn-icon:var(--color-zinc-200)]',
     ],
-
     destructive: [
-      'text-destructive-foreground [--btn-bg:var(--color-destructive)] [--btn-border:var(--color-destructive)] [--btn-hover-overlay:var(--color-destructive-foreground)]/10',
-      'dark:text-destructive-foreground dark:[--btn-hover-overlay:var(--color-destructive-foreground)]/5',
-      '[--btn-icon:var(--color-destructive-foreground)]/60 data-active:[--btn-icon:var(--color-destructive-foreground)]/80 data-hover:[--btn-icon:var(--color-destructive-foreground)]/80',
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-red-600)] [--btn-border:var(--color-red-700)]/90',
+      '[--btn-icon:var(--color-red-300)] data-active:[--btn-icon:var(--color-red-200)] data-hover:[--btn-icon:var(--color-red-200)]',
     ],
-
     accent: [
-      'text-accent-foreground [--btn-bg:var(--color-accent)] [--btn-border:var(--color-accent)] [--btn-hover-overlay:var(--color-accent-foreground)]/10',
-      'dark:text-accent-foreground dark:[--btn-hover-overlay:var(--color-accent-foreground)]/5',
-      '[--btn-icon:var(--color-accent-foreground)]/60 data-active:[--btn-icon:var(--color-accent-foreground)]/80 data-hover:[--btn-icon:var(--color-accent-foreground)]/80',
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-purple-600)] [--btn-border:var(--color-purple-700)]/90',
+      '[--btn-icon:var(--color-purple-300)] data-active:[--btn-icon:var(--color-purple-200)] data-hover:[--btn-icon:var(--color-purple-200)]',
     ],
-
     muted: [
-      'text-muted-foreground [--btn-bg:var(--color-muted)] [--btn-border:var(--color-muted)] [--btn-hover-overlay:var(--color-muted-foreground)]/10',
-      'dark:text-muted-foreground dark:[--btn-hover-overlay:var(--color-muted-foreground)]/5',
-      '[--btn-icon:var(--color-muted-foreground)]/60 data-active:[--btn-icon:var(--color-muted-foreground)]/80 data-hover:[--btn-icon:var(--color-muted-foreground)]/80',
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-gray-600)] [--btn-border:var(--color-gray-700)]/90',
+      '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',
     ],
   },
 };
@@ -225,13 +195,13 @@ export const CatalystButton = forwardRef(function CatalystButton(
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
+    className,
     styles.base,
     outline
       ? styles.outline
       : plain
         ? styles.plain
-        : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
-    className
+        : cn(styles.solid, styles.colors[color ?? 'dark/zinc'])
   );
 
   return 'href' in props ? (
@@ -248,20 +218,11 @@ export const CatalystButton = forwardRef(function CatalystButton(
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */
-export function CatalystTouchTarget({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export function CatalystTouchTarget({ children }: { children: React.ReactNode }) {
   return (
     <>
       <span
-        className={cn(
-          'absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden',
-          className
-        )}
+        className="absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden"
         aria-hidden="true"
       />
       {children}

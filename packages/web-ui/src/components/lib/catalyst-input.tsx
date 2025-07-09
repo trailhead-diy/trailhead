@@ -1,24 +1,20 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
-import { cn } from '../utils/cn';
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
 
-export function CatalystInputGroup({
-  children,
-  className,
-}: React.ComponentPropsWithoutRef<'span'>) {
+import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
+import React, { forwardRef } from 'react';
+
+export function CatalystInputGroup({ children }: React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       data-slot="control"
       className={cn(
-        cn(
-          'relative isolate block',
-          'has-[[data-slot=icon]:first-child]:[&_input]:pl-10 has-[[data-slot=icon]:last-child]:[&_input]:pr-10 sm:has-[[data-slot=icon]:first-child]:[&_input]:pl-8 sm:has-[[data-slot=icon]:last-child]:[&_input]:pr-8',
-          '*:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4',
-          '[&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5 [&>[data-slot=icon]:last-child]:right-3 sm:[&>[data-slot=icon]:last-child]:right-2.5',
-          '*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400'
-        ),
-        className
+        'relative isolate block',
+        'has-[[data-slot=icon]:first-child]:[&_input]:pl-10 has-[[data-slot=icon]:last-child]:[&_input]:pr-10 sm:has-[[data-slot=icon]:first-child]:[&_input]:pl-8 sm:has-[[data-slot=icon]:last-child]:[&_input]:pr-8',
+        '*:data-[slot=icon]:pointer-events-none *:data-[slot=icon]:absolute *:data-[slot=icon]:top-3 *:data-[slot=icon]:z-10 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:top-2.5 sm:*:data-[slot=icon]:size-4',
+        '[&>[data-slot=icon]:first-child]:left-3 sm:[&>[data-slot=icon]:first-child]:left-2.5 [&>[data-slot=icon]:last-child]:right-3 sm:[&>[data-slot=icon]:last-child]:right-2.5',
+        '*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400'
       )}
     >
       {children}
@@ -36,7 +32,7 @@ export const CatalystInput = forwardRef(function CatalystInput(
   }: {
     className?: string;
     type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | CatalystDateType;
-  } & Omit<React.ComponentPropsWithoutRef<'input'>, 'className'>,
+  } & Omit<Headless.InputProps, 'as' | 'className'>,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   return (
