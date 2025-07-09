@@ -76,3 +76,22 @@ export function createTaskList(
     rendererOptions: options?.rendererOptions,
   });
 }
+
+// Advanced workflow builder exports - addresses issue #116 items 7 & 13
+export {
+  createWorkflow,
+  type WorkflowAPI,
+  type WorkflowStep,
+  type WorkflowContext,
+  type WorkflowOptions,
+  type WorkflowResult,
+} from './builder.js';
+
+export {
+  createAdvancedWorkflow,
+  type AdvancedWorkflowAPI,
+  type AdvancedWorkflowStep,
+  type AdvancedWorkflowContext,
+  type AdvancedWorkflowOptions,
+  type AdvancedWorkflowResult,
+} from './advanced-builder.js';
