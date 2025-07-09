@@ -78,7 +78,6 @@
     "test:future": "vitest tests/scripts/install/future --config vitest.future.config.ts",
     "test:install": "vitest tests/scripts/install --exclude '**/future/**'",
     "run-transforms": "tsx src/cli.ts transforms",
-    "profile": "tsx src/cli.ts profile",
     "doctor": "tsx scripts/doctor.ts",
     "deps:check": "pnpm outdated",
     "deps:update": "pnpm update --interactive",
