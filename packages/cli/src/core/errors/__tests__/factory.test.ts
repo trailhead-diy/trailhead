@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { ok, err } from 'neverthrow';
 import {
-  Ok,
-  Err,
   createError,
   createSeverityError,
   validationError,
@@ -17,34 +16,34 @@ import {
 
 describe('Error Factory - Core Functions', () => {
   describe('Result constructors', () => {
-    describe('Ok', () => {
+    describe('ok', () => {
       it('should create successful result', () => {
-        const result = Ok(42);
+        const result = ok(42);
 
-        expect(result.success).toBe(true);
-        if (result.success) {
+        expect(result.isOk()).toBe(true);
+        if (result.isOk()) {
           expect(result.value).toBe(42);
         }
       });
 
       it('should handle different value types', () => {
-        const stringResult = Ok('test');
-        const objectResult = Ok({ foo: 'bar' });
-        const nullResult = Ok(null);
+        const stringResult = ok('test');
+        const objectResult = ok({ foo: 'bar' });
+        const nullResult = ok(null);
 
-        expect(stringResult.success).toBe(true);
-        expect(objectResult.success).toBe(true);
-        expect(nullResult.success).toBe(true);
+        expect(stringResult.isOk()).toBe(true);
+        expect(objectResult.isOk()).toBe(true);
+        expect(nullResult.isOk()).toBe(true);
       });
     });
 
-    describe('Err', () => {
+    describe('err', () => {
       it('should create error result', () => {
         const error = createError('TEST_ERROR', 'Test error message');
-        const result = Err(error);
+        const result = err(error);
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
+        expect(result.isErr()).toBe(true);
+        if (result.isErr()) {
           expect(result.error).toBe(error);
         }
       });
@@ -272,10 +271,10 @@ describe('Error Factory - Core Functions', () => {
       const severityErr = createSeverityError(validationErr, 'error');
 
       // Wrap in Result
-      const result = Err(severityErr);
+      const result = err(severityErr);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
         expect(result.error.category).toBe('validation');
         expect(result.error.severity).toBe('error');
         expect(result.error.field).toBe('port');
