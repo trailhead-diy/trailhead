@@ -5,7 +5,7 @@
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
-import { Ok, Err } from '@esteban-url/trailhead-cli/core';
+import { ok, err } from '@esteban-url/trailhead-cli/core';
 
 /**
  * Transform execution context
@@ -79,9 +79,9 @@ export abstract class ImmutableTransform implements Transform {
         context.logger.error(`[${this.name}] ${warning}`);
       }
 
-      return Ok(result);
+      return ok(result);
     } catch (error) {
-      const cliError: CLIError = {
+      const clierror: CLIError = {
         code: 'TRANSFORM_ERROR',
         message: `Transform ${this.name} failed: ${error instanceof Error ? error.message : String(error)}`,
         details: error instanceof Error ? error.stack : undefined,
@@ -90,13 +90,13 @@ export abstract class ImmutableTransform implements Transform {
       };
 
       if (context.debug) {
-        context.logger.error(`[${this.name}] Error: ${cliError.message}`);
-        if (cliError.details) {
-          context.logger.error(`[${this.name}] Stack: ${cliError.details}`);
+        context.logger.error(`[${this.name}] error: ${clierror.message}`);
+        if (clierror.details) {
+          context.logger.error(`[${this.name}] Stack: ${clierror.details}`);
         }
       }
 
-      return Err(cliError);
+      return err(clierror);
     }
   }
 

@@ -19,8 +19,8 @@ export function Button() {
 
       const result = transformClsxToCn(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain("import { cn } from '../utils/cn';");
         expect(result.value.content).toContain('cn(');
@@ -41,8 +41,8 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('primary:');
         expect(result.value.content).toContain('secondary:');
@@ -57,8 +57,8 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(false);
         expect(result.value.warnings).toContain('No colors object found in component');
       }
@@ -73,8 +73,8 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformFileHeaders(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('WARNING: This file is auto-generated');
         expect(result.value.content).toContain('Auto generated on');
@@ -90,8 +90,8 @@ export function Button() {
 
       const result = transformFileHeaders(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content.startsWith("'use client'")).toBe(true);
         expect(result.value.content).toContain('WARNING: This file is auto-generated');
@@ -107,8 +107,8 @@ export function Button() {
 
       const result = transformCatalystPrefix(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('CatalystButton');
       }
@@ -121,8 +121,8 @@ export function Button() {
 
       const result = transformCatalystPrefix(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(false);
       }
     });

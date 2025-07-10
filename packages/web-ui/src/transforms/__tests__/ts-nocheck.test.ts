@@ -15,8 +15,8 @@ export function Component() {
 
     const result = transformTsNocheck(input, 'catalyst-combobox.tsx');
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(true);
       expect(result.value.content).toBe(`// @ts-nocheck
 'use client'
@@ -43,8 +43,8 @@ export function Component() {
 
     const result = transformTsNocheck(input, 'catalyst-dropdown.tsx');
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(true);
       expect(result.value.content).toBe(`// @ts-nocheck
 // WARNING: This file is auto-generated and will be overwritten.
@@ -72,8 +72,8 @@ export function Component() {
 
     const result = transformTsNocheck(input, 'catalyst-listbox.tsx');
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(false);
       expect(result.value.warnings).toContain('File already has @ts-nocheck directive');
       expect(result.value.content).toBe(input);
@@ -93,8 +93,8 @@ export function Component() {
 
     const result = transformTsNocheck(input, 'catalyst-button.tsx');
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(false);
       expect(result.value.warnings).toHaveLength(0);
       expect(result.value.content).toBe(input);
@@ -114,8 +114,8 @@ export function Component() {
 
     const result = transformTsNocheck(input);
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(false);
       expect(result.value.warnings).toHaveLength(0);
       expect(result.value.content).toBe(input);
@@ -127,8 +127,8 @@ export function Component() {
 
     const result = transformTsNocheck(input, 'src/components/lib/catalyst-combobox.tsx');
 
-    expect(result.success).toBe(true);
-    if (result.success) {
+    expect(result.isOk()).toBe(true);
+    if (result.isOk()) {
       expect(result.value.changed).toBe(true);
       expect(result.value.content).toBe(`// @ts-nocheck
 'use client'`);
@@ -143,8 +143,8 @@ export function Component() {
     for (const filename of targetFiles) {
       const result = transformTsNocheck(input, filename);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toBe(`// @ts-nocheck
 export function Component() { return <div>Hello</div>; }`);

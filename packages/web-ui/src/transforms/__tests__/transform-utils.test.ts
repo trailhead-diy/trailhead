@@ -19,8 +19,8 @@ describe('Transform Utils', () => {
     it('should create a successful transform result', () => {
       const result = createTransformResult('transformed content', true, ['warning']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.content).toBe('transformed content');
         expect(result.value.changed).toBe(true);
         expect(result.value.warnings).toEqual(['warning']);
@@ -30,8 +30,8 @@ describe('Transform Utils', () => {
     it('should create result with default empty warnings', () => {
       const result = createTransformResult('content', false);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.warnings).toEqual([]);
       }
     });
@@ -41,8 +41,8 @@ describe('Transform Utils', () => {
     it('should create a no-change result', () => {
       const result = createNoChangeResult('original content', ['info']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.content).toBe('original content');
         expect(result.value.changed).toBe(false);
         expect(result.value.warnings).toEqual(['info']);
@@ -54,8 +54,8 @@ describe('Transform Utils', () => {
     it('should create a transform error', () => {
       const result = createTransformError('Something went wrong', 'CUSTOM_ERROR');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.message).toBe('Something went wrong');
         expect(result.error.code).toBe('CUSTOM_ERROR');
         expect(result.error.recoverable).toBe(true);
@@ -65,8 +65,8 @@ describe('Transform Utils', () => {
     it('should use default error code', () => {
       const result = createTransformError('Error message');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('TRANSFORM_ERROR');
       }
     });
@@ -107,8 +107,8 @@ describe('Transform Utils', () => {
 
       const result = executeTransform(transformFn);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.content).toBe('transformed');
         expect(result.value.changed).toBe(true);
       }
@@ -121,8 +121,8 @@ describe('Transform Utils', () => {
 
       const result = executeTransform(transformFn);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.message).toContain('Transform failed');
         expect(result.error.code).toBe('TRANSFORM_ERROR');
       }
@@ -135,8 +135,8 @@ describe('Transform Utils', () => {
 
       const result = executeTransform(transformFn);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.message).toContain('String error');
       }
     });

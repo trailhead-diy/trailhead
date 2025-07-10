@@ -4,9 +4,8 @@
 
 import { createTaskList, createTask } from '@esteban-url/trailhead-cli/workflows';
 import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { createError, ok, err } from '@esteban-url/trailhead-cli/core';
 import type { Result, InstallError, Logger } from './types.js';
-import { Ok, Err } from './types.js';
 
 // ============================================================================
 // TYPES
@@ -44,22 +43,22 @@ export const executeInstallationSteps = async (
   try {
     // Convert installation steps to listr2 tasks
     const tasks = steps.map(step =>
-      createTask(
-        step.name,
-        async () => {
+      createTask({
+        title: step.name,
+        task: async () => {
           // Use retry for retryable steps
           const executeWithRetry = step.retryable
             ? () =>
                 retryableOperation(async () => {
                   const result = await step.execute();
-                  if (!result.success) {
+                  if (!result.isOk()) {
                     throw new Error(result.error.message);
                   }
                   return result.value;
                 })
             : async () => {
                 const result = await step.execute();
-                if (!result.success) {
+                if (!result.isOk()) {
                   throw new Error(result.error.message);
                 }
                 return result.value;
@@ -70,11 +69,9 @@ export const executeInstallationSteps = async (
           logger.debug(`Completed ${step.name}: ${files.length} files`);
           return files;
         },
-        {
-          skip: () => false,
-          retry: step.retryable ? 3 : 0,
-        }
-      )
+        skip: () => false,
+        retry: step.retryable ? 3 : 0,
+      })
     );
 
     // Create and run task list
@@ -85,7 +82,7 @@ export const executeInstallationSteps = async (
 
     await taskList.run();
 
-    return Ok({
+    return ok({
       installedFiles: Object.freeze([...allInstalledFiles]),
       failedSteps: Object.freeze([...failedSteps]),
     });
@@ -96,7 +93,7 @@ export const executeInstallationSteps = async (
       logger.warning(`  rm -rf ${componentsDir}`);
     }
 
-    return Err(
+    return err(
       createError(
         'INSTALLATION_STEP_EXECUTION_FAILED',
         error instanceof Error ? error.message : 'Installation step execution failed',

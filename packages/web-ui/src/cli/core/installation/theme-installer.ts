@@ -3,7 +3,7 @@
  */
 
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
-import { Ok } from './types.js';
+import { ok, err } from '@esteban-url/trailhead-cli/core';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
 
 // ============================================================================
@@ -25,7 +25,7 @@ export const installThemeSystem = async (
 
   // Ensure destination theme directory exists
   const ensureDirResult = await fs.ensureDir(destPaths.themeDir);
-  if (!ensureDirResult.success) return ensureDirResult;
+  if (!ensureDirResult.isOk()) return err(ensureDirResult.error);
 
   const themeFiles = [
     { src: sourcePaths.themeConfig, dest: destPaths.themeConfig, name: 'theme/config.ts' },
@@ -65,13 +65,13 @@ export const installThemeSystem = async (
   const copiedFiles: string[] = [];
   for (const file of themeFiles) {
     const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
-    if (!copyResult.success) return copyResult;
+    if (!copyResult.isOk()) return err(copyResult.error);
     copiedFiles.push(file.name);
   }
 
   logger.success(`Installed ${copiedFiles.length} theme system files`);
 
-  return Ok(themeFiles.map(f => f.name));
+  return ok(themeFiles.map(f => f.name));
 };
 
 // ============================================================================
@@ -93,7 +93,7 @@ export const installThemeComponents = async (
 
   // Ensure destination components directory exists
   const ensureDirResult = await fs.ensureDir(config.componentsDir);
-  if (!ensureDirResult.success) return ensureDirResult;
+  if (!ensureDirResult.isOk()) return err(ensureDirResult.error);
 
   const componentFiles = [
     { src: sourcePaths.themeProvider, dest: destPaths.themeProvider, name: 'theme-provider.tsx' },
@@ -104,11 +104,11 @@ export const installThemeComponents = async (
   const copiedFiles: string[] = [];
   for (const file of componentFiles) {
     const copyResult = await fs.cp(file.src, file.dest, { overwrite: force });
-    if (!copyResult.success) return copyResult;
+    if (!copyResult.isOk()) return err(copyResult.error);
     copiedFiles.push(file.name);
   }
 
   logger.success(`Installed ${copiedFiles.length} theme components`);
 
-  return Ok(copiedFiles);
+  return ok(copiedFiles);
 };

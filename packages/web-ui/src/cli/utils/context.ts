@@ -18,7 +18,7 @@ const getPackageVersion = async (baseDir: string): Promise<string> => {
   try {
     const packagePath = join(baseDir, '..', '..', 'package.json');
     const result = await fs.readJson(packagePath);
-    if (result.success) {
+    if (result.isOk()) {
       const packageJson = result.value as { version?: string };
       return packageJson.version || '1.0.0';
     }
@@ -36,10 +36,10 @@ export const isTrailheadProject = async (projectRoot: string): Promise<boolean> 
   try {
     const packageJsonPath = join(projectRoot, 'package.json');
     const accessResult = await fs.access(packageJsonPath);
-    if (!accessResult.success) return false;
+    if (!accessResult.isOk()) return false;
 
     const readResult = await fs.readJson(packageJsonPath);
-    if (!readResult.success) return false;
+    if (!readResult.isOk()) return false;
 
     const packageJson = readResult.value as {
       dependencies?: Record<string, string>;

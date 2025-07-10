@@ -80,7 +80,7 @@ export async function runMainPipelineWithFs(
     let files: string[];
     if (fs) {
       const readdirResult = await fs.readdir(sourceDir);
-      if (!readdirResult.success) {
+      if (readdirResult.isErr()) {
         errors.push({ file: sourceDir, error: 'Failed to read directory' });
         return {
           success: false,
@@ -117,16 +117,22 @@ export async function runMainPipelineWithFs(
         }
 
         // Use injected filesystem if available
-        const contentResult = fs
-          ? await fs.readFile(filePath)
-          : { success: true, value: await readFile(filePath, 'utf-8') };
-
-        if (!contentResult.success) {
-          errors.push({ file, error: 'Failed to read file' });
-          continue;
+        let content: string;
+        if (fs) {
+          const contentResult = await fs.readFile(filePath);
+          if (contentResult.isErr()) {
+            errors.push({ file, error: 'Failed to read file' });
+            continue;
+          }
+          content = contentResult.value.toString();
+        } else {
+          try {
+            content = await readFile(filePath, 'utf-8');
+          } catch (_error) {
+            errors.push({ file, error: 'Failed to read file' });
+            continue;
+          }
         }
-
-        let content = contentResult.value;
         let hasChanges = false;
         const allWarnings: string[] = [];
 
@@ -138,7 +144,7 @@ export async function runMainPipelineWithFs(
               ? transform.transform(content, file)
               : transform.transform(content);
 
-          if (result.success) {
+          if (result.isOk()) {
             const transformResult = result.value;
             if (transformResult.changed) {
               content = transformResult.content;
@@ -161,13 +167,19 @@ export async function runMainPipelineWithFs(
 
         // Write file if changes were made and not in dry run mode
         if (hasChanges && !dryRun) {
-          const writeResult = fs
-            ? await fs.writeFile(filePath, content)
-            : { success: true, value: await writeFile(filePath, content, 'utf-8') };
-
-          if (!writeResult.success) {
-            errors.push({ file, error: 'Failed to write file' });
-            continue;
+          if (fs) {
+            const writeResult = await fs.writeFile(filePath, content);
+            if (writeResult.isErr()) {
+              errors.push({ file, error: 'Failed to write file' });
+              continue;
+            }
+          } else {
+            try {
+              await writeFile(filePath, content, 'utf-8');
+            } catch (_error) {
+              errors.push({ file, error: 'Failed to write file' });
+              continue;
+            }
           }
         }
 

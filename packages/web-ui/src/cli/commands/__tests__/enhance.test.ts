@@ -67,8 +67,8 @@ export function CatalystButton({ color = 'blue', children, ...props }) {
 
     // Verify the component was enhanced
     const readResult = await fs.readFile(buttonPath);
-    expect(readResult.success).toBe(true);
-    const enhancedContent = readResult.success ? readResult.value.toString() : '';
+    expect(readResult.isOk()).toBe(true);
+    const enhancedContent = readResult.isOk() ? readResult.value.toString() : '';
 
     // Should have semantic colors added
     expect(enhancedContent).toContain('primary:');
@@ -118,8 +118,8 @@ export function CatalystButton({ color = 'blue', children, ...props }) {
     // Verify all components were processed
     for (const comp of components) {
       const readResult = await fs.readFile(join(componentsDir, comp.name));
-      expect(readResult.success).toBe(true);
-      const enhanced = readResult.success ? readResult.value.toString() : '';
+      expect(readResult.isOk()).toBe(true);
+      const enhanced = readResult.isOk() ? readResult.value.toString() : '';
       expect(enhanced).toBeDefined();
       // Basic verification that file was processed (would have semantic colors if applicable)
       expect(enhanced.length).toBeGreaterThan(comp.content.length);
@@ -145,8 +145,8 @@ export function CatalystButton({ color = 'blue', children, ...props }) {
 
     // File should be unchanged in dry-run mode
     const readResult = await fs.readFile(buttonPath);
-    expect(readResult.success).toBe(true);
-    const content = readResult.success ? readResult.value.toString() : '';
+    expect(readResult.isOk()).toBe(true);
+    const content = readResult.isOk() ? readResult.value.toString() : '';
     expect(content).toBe(originalContent);
   });
 

@@ -1,4 +1,4 @@
-import { Ok, Err } from '@esteban-url/trailhead-cli';
+import { ok, err } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeWithPhases,
@@ -57,7 +57,7 @@ const createSetupPhases = (cmdContext: CommandContext): CommandPhase<TransformsC
         logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
       }
 
-      return Ok({
+      return ok({
         ...config,
         loadedConfig,
         configPath,
@@ -91,7 +91,7 @@ const createSetupPhases = (cmdContext: CommandContext): CommandPhase<TransformsC
         };
       }
 
-      return Ok({
+      return ok({
         ...config,
         finalOptions,
       });
@@ -114,8 +114,8 @@ const createSetupPhases = (cmdContext: CommandContext): CommandPhase<TransformsC
 
       // Validate transform configuration
       const validationResult = validateTransformConfig(transformConfig);
-      if (!validationResult.success) {
-        return Err(
+      if (validationResult.isErr()) {
+        return err(
           createError(
             'VALIDATION_ERROR',
             'Invalid transform configuration: ' + validationResult.error
@@ -134,7 +134,7 @@ const createSetupPhases = (cmdContext: CommandContext): CommandPhase<TransformsC
         cmdContext
       );
 
-      return Ok({
+      return ok({
         ...config,
         transformConfig,
       });
@@ -150,7 +150,7 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
     name: 'Executing transformations',
     execute: async (config: TransformsConfig) => {
       if (!config.transformConfig) {
-        return Err(createError('CONFIG_ERROR', 'Transform configuration not found'));
+        return err(createError('CONFIG_ERROR', 'Transform configuration not found'));
       }
 
       if (config.transformConfig.dryRun) {
@@ -159,8 +159,8 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
 
         const analysisResult = await coreExecuteTransforms(config.transformConfig);
 
-        if (!analysisResult.success) {
-          return Err(
+        if (analysisResult.isErr()) {
+          return err(
             createError('DRY_RUN_ERROR', 'Dry run analysis failed: ' + analysisResult.error)
           );
         }
@@ -185,13 +185,13 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
           cmdContext.logger.info('No files found to transform.');
         }
 
-        return Ok(config);
+        return ok(config);
       } else {
         // Live execution
         const transformResult = await coreExecuteTransforms(config.transformConfig);
 
-        if (!transformResult.success) {
-          return Err(createError('TRANSFORM_ERROR', 'Transform failed: ' + transformResult.error));
+        if (transformResult.isErr()) {
+          return err(createError('TRANSFORM_ERROR', 'Transform failed: ' + transformResult.error));
         }
 
         if (transformResult.value.filesModified > 0) {
@@ -206,7 +206,7 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
             const fs = await import('@esteban-url/trailhead-cli/filesystem');
             const fileSystem = fs.createFileSystem();
             const readResult = await fileSystem.readdir(config.transformConfig.srcDir);
-            if (readResult.success) {
+            if (readResult.isOk()) {
               const tsxFiles = readResult.value.filter((f: string) => f.endsWith('.tsx')).sort();
               tsxFiles.forEach((file: string) => {
                 cmdContext.logger.info(`  ✓ ${file}`);
@@ -217,7 +217,7 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
           cmdContext.logger.info('No files needed transformation.');
         }
 
-        return Ok(config);
+        return ok(config);
       }
     },
   },
@@ -272,8 +272,8 @@ export const createTransformsCommand = () => {
       const setupPhases = createSetupPhases(cmdContext);
       const setupResult = await executeWithPhases(setupPhases, config, cmdContext);
 
-      if (!setupResult.success) {
-        return setupResult;
+      if (setupResult.isErr()) {
+        return err(setupResult.error);
       }
 
       // Execute transformation phases
@@ -284,8 +284,8 @@ export const createTransformsCommand = () => {
         cmdContext
       );
 
-      if (!executionResult.success) {
-        return executionResult;
+      if (executionResult.isErr()) {
+        return err(executionResult.error);
       }
 
       // Display final summary
@@ -303,7 +303,7 @@ export const createTransformsCommand = () => {
         cmdContext
       );
 
-      return Ok(undefined);
+      return ok(undefined);
     },
   });
 };

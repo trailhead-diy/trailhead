@@ -3,7 +3,7 @@
  * Eliminates duplication across transform files
  */
 
-import { Ok, Err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
 
 /**
  * Transform result type
@@ -31,7 +31,7 @@ export function createTransformResult(
   changed: boolean,
   warnings: string[] = []
 ): Result<TransformResult, CLIError> {
-  return Ok({ content, changed, warnings });
+  return ok({ content, changed, warnings });
 }
 
 /**
@@ -41,7 +41,7 @@ export function createNoChangeResult(
   content: string,
   warnings: string[] = []
 ): Result<TransformResult, CLIError> {
-  return Ok({ content, changed: false, warnings });
+  return ok({ content, changed: false, warnings });
 }
 
 /**
@@ -51,7 +51,7 @@ export function createTransformError(
   message: string,
   code: string = 'TRANSFORM_ERROR'
 ): Result<TransformResult, CLIError> {
-  return Err({
+  return err({
     code,
     message,
     recoverable: true,
@@ -77,9 +77,9 @@ export function executeTransform(
 ): Result<TransformResult, CLIError> {
   try {
     const result = transformFn();
-    return Ok(result);
+    return ok(result);
   } catch (error) {
-    return Err({
+    return err({
       code: 'TRANSFORM_ERROR',
       message: `Transform execution failed: ${error instanceof Error ? error.message : String(error)}`,
       recoverable: true,

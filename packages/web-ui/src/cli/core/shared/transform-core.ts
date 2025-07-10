@@ -7,6 +7,7 @@
  */
 
 import type { Result } from './types.js';
+import { ok, err } from '@esteban-url/trailhead-cli/core';
 import { join } from 'path';
 
 // ============================================================================
@@ -53,10 +54,10 @@ export const executeTransforms = async (
   try {
     // Execute transforms pipeline
     const transformResult = await executeTransformPipeline(config);
-    return { success: true, value: transformResult };
+    return ok(transformResult);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return { success: false, error: errorMessage };
+    return err(errorMessage);
   }
 };
 
@@ -111,10 +112,10 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
  */
 export const validateTransformConfig = (config: TransformConfig): Result<void, string> => {
   if (!config.srcDir) {
-    return { success: false, error: 'srcDir is required' };
+    return err('srcDir is required');
   }
 
-  return { success: true, value: undefined };
+  return ok(undefined);
 };
 
 /**
