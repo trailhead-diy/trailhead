@@ -4,22 +4,23 @@
 import { cn } from '../utils/cn';
 import type React from 'react';
 import { CatalystButton } from './catalyst-button';
-
 export function CatalystPagination({
   'aria-label': ariaLabel = 'Page navigation',
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'>) {
-  return <nav aria-label={ariaLabel} {...props} className={cn(className, 'flex gap-x-2')} />;
+  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />;
 }
-
 export function CatalystPaginationPrevious({
   href = null,
   className,
   children = 'Previous',
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+}: React.PropsWithChildren<{
+  href?: string | null;
+  className?: string;
+}>) {
   return (
-    <span className={cn(className, 'grow basis-0')}>
+    <span className={cn('grow basis-0', className)}>
       <CatalystButton
         {...(href === null ? { disabled: true } : { href })}
         plain
@@ -44,14 +45,16 @@ export function CatalystPaginationPrevious({
     </span>
   );
 }
-
 export function CatalystPaginationNext({
   href = null,
   className,
   children = 'Next',
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+}: React.PropsWithChildren<{
+  href?: string | null;
+  className?: string;
+}>) {
   return (
-    <span className={cn(className, 'flex grow basis-0 justify-end')}>
+    <span className={cn('flex grow basis-0 justify-end', className)}>
       <CatalystButton
         {...(href === null ? { disabled: true } : { href })}
         plain
@@ -76,20 +79,22 @@ export function CatalystPaginationNext({
     </span>
   );
 }
-
 export function CatalystPaginationList({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn(className, 'hidden items-baseline gap-x-2 sm:flex')} />;
+  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />;
 }
-
 export function CatalystPaginationPage({
   href,
   className,
   current = false,
   children,
-}: React.PropsWithChildren<{ href: string; className?: string; current?: boolean }>) {
+}: React.PropsWithChildren<{
+  href: string;
+  className?: string;
+  current?: boolean;
+}>) {
   return (
     <CatalystButton
       href={href}
@@ -97,16 +102,15 @@ export function CatalystPaginationPage({
       aria-label={`Page ${children}`}
       aria-current={current ? 'page' : undefined}
       className={cn(
-        className,
         'min-w-9 before:absolute before:-inset-px before:rounded-lg',
-        current && 'before:bg-zinc-950/5 dark:before:bg-white/10'
+        current && 'before:bg-zinc-950/5 dark:before:bg-white/10',
+        className
       )}
     >
       <span className="-mx-0.5">{children}</span>
     </CatalystButton>
   );
 }
-
 export function CatalystPaginationGap({
   className,
   children = <>&hellip;</>,
@@ -117,8 +121,8 @@ export function CatalystPaginationGap({
       aria-hidden="true"
       {...props}
       className={cn(
-        className,
-        'w-9 text-center text-sm/6 font-semibold text-zinc-950 select-none dark:text-white'
+        'w-9 text-center text-sm/6 font-semibold text-zinc-950 select-none dark:text-white',
+        className
       )}
     >
       {children}

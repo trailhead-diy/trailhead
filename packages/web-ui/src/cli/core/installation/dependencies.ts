@@ -11,8 +11,8 @@ import type {
   InstallConfig,
   FrameworkType,
 } from './types.js';
-import { CORE_DEPENDENCIES, FRAMEWORK_DEPENDENCIES } from './types.js';
-import { createError, ok, err } from '@esteban-url/trailhead-cli/core';
+import { Ok, Err, CORE_DEPENDENCIES, FRAMEWORK_DEPENDENCIES } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 
 import {
   analyzeDependencies as analyzeCore,
@@ -52,14 +52,14 @@ export const readPackageJson = async (
   const packageJsonPath = path.join(projectRoot, 'package.json');
   const readResult = await fs.readJson<Record<string, unknown>>(packageJsonPath);
 
-  if (readResult.isErr()) {
-    return err(
+  if (!readResult.success) {
+    return Err(
       createError('DEPENDENCY_ERROR', 'Failed to read package.json', { cause: readResult.error })
     );
   }
 
   const content = readResult.value;
-  return ok({
+  return Ok({
     dependencies: content.dependencies as Record<string, string> | undefined,
     devDependencies: content.devDependencies as Record<string, string> | undefined,
   });
@@ -91,13 +91,13 @@ export const writePackageJson = async (
 
   const writeResult = await fs.writeJson(packageJsonPath, updatedContent, { spaces: 2 });
 
-  if (writeResult.isErr()) {
-    return err(
+  if (!writeResult.success) {
+    return Err(
       createError('DEPENDENCY_ERROR', 'Failed to write package.json', { cause: writeResult.error })
     );
   }
 
-  return ok(undefined);
+  return Ok(undefined);
 };
 
 // ============================================================================
@@ -110,7 +110,7 @@ export const writePackageJson = async (
 export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, InstallError> => {
   // Basic type check for object - keep simple since this is validation logic
   if (!pkg || typeof pkg !== 'object') {
-    return err(createError('VALIDATION_ERROR', 'Value must be an object'));
+    return Err(createError('VALIDATION_ERROR', 'Value must be an object'));
   }
 
   const validated = pkg as Record<string, unknown>;
@@ -118,12 +118,12 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
   // Validate dependencies structure if present
   if (validated.dependencies !== undefined) {
     if (typeof validated.dependencies !== 'object' || validated.dependencies === null) {
-      return err(createError('VALIDATION_ERROR', 'dependencies must be an object'));
+      return Err(createError('VALIDATION_ERROR', 'dependencies must be an object'));
     }
     // Validate dependency values are strings
     for (const [key, value] of Object.entries(validated.dependencies)) {
       if (typeof value !== 'string') {
-        return err(
+        return Err(
           createError('VALIDATION_ERROR', `${key} must be a string`, {
             details: `Dependency key '${key}' has invalid value type`,
           })
@@ -135,12 +135,12 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
   // Validate devDependencies structure if present
   if (validated.devDependencies !== undefined) {
     if (typeof validated.devDependencies !== 'object' || validated.devDependencies === null) {
-      return err(createError('VALIDATION_ERROR', 'devDependencies must be an object'));
+      return Err(createError('VALIDATION_ERROR', 'devDependencies must be an object'));
     }
     // Validate devDependency values are strings
     for (const [key, value] of Object.entries(validated.devDependencies)) {
       if (typeof value !== 'string') {
-        return err(
+        return Err(
           createError('VALIDATION_ERROR', `${key} must be a string`, {
             details: `DevDependency key '${key}' has invalid value type`,
           })
@@ -149,7 +149,7 @@ export const validatePackageJsonDeps = (pkg: unknown): Result<PackageJsonDeps, I
     }
   }
 
-  return ok({
+  return Ok({
     dependencies: validated.dependencies as Record<string, string> | undefined,
     devDependencies: validated.devDependencies as Record<string, string> | undefined,
   });
@@ -194,7 +194,7 @@ export const analyzeDependencies = async (
 
     // Read current package.json
     const currentDepsResult = await readPackageJson(fs, config.projectRoot);
-    if (currentDepsResult.isErr()) return err(currentDepsResult.error);
+    if (!currentDepsResult.success) return currentDepsResult;
 
     const currentDeps = currentDepsResult.value;
     const requiredDeps = getFrameworkDependencies(framework);
@@ -232,9 +232,9 @@ export const analyzeDependencies = async (
       needsInstall: Object.keys(analysis.missing).length > 0 || analysis.conflicts.length > 0,
     };
 
-    return ok(dependencyUpdate);
+    return Ok(dependencyUpdate);
   } catch (error) {
-    return err(createError('DEPENDENCY_ERROR', 'Failed to analyze dependencies', { cause: error }));
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to analyze dependencies', { cause: error }));
   }
 };
 
@@ -260,7 +260,7 @@ export const installDependencies = async (
       checkOfflineMode(),
     ]);
 
-    const workspace = workspaceResult.isOk() ? workspaceResult.value : null;
+    const workspace = workspaceResult.success ? workspaceResult.value : null;
     const ci = detectCIEnvironment();
 
     // Detect package manager
@@ -278,7 +278,7 @@ export const installDependencies = async (
 
     // Analyze dependencies for conflicts
     const currentDepsResult = await readPackageJson(fs, config.projectRoot);
-    if (currentDepsResult.isErr()) return err(currentDepsResult.error);
+    if (!currentDepsResult.success) return currentDepsResult;
 
     const requiredDeps = getFrameworkDependencies(framework);
     const analysis = analyzeCore(currentDepsResult.value, requiredDeps);
@@ -296,7 +296,7 @@ export const installDependencies = async (
     const strategy = userStrategy || recommendStrategy(context);
 
     if (strategy.type === 'skip') {
-      return ok({
+      return Ok({
         installed: false,
         strategy,
         warnings: ['Dependency management skipped'],
@@ -322,7 +322,7 @@ export const installDependencies = async (
       const fullPackageJsonResult = await fs.readJson<Record<string, unknown>>(
         path.join(config.projectRoot, 'package.json')
       );
-      if (fullPackageJsonResult.isErr()) return err(fullPackageJsonResult.error);
+      if (!fullPackageJsonResult.success) return fullPackageJsonResult;
 
       const updateResult = await writePackageJson(
         fs,
@@ -334,7 +334,7 @@ export const installDependencies = async (
         }
       );
 
-      if (updateResult.isErr()) return err(updateResult.error);
+      if (!updateResult.success) return updateResult;
     }
 
     // Apply overrides if needed
@@ -343,8 +343,8 @@ export const installDependencies = async (
 
       const packageJsonPath = path.join(config.projectRoot, 'package.json');
       const readResult = await fs.readJson<Record<string, unknown>>(packageJsonPath);
-      if (readResult.isErr()) {
-        return err(
+      if (!readResult.success) {
+        return Err(
           createError('DEPENDENCY_ERROR', 'Failed to read package.json for overrides', {
             cause: readResult.error,
           })
@@ -357,8 +357,8 @@ export const installDependencies = async (
       };
 
       const writeResult = await fs.writeJson(packageJsonPath, updatedContent, { spaces: 2 });
-      if (writeResult.isErr()) {
-        return err(
+      if (!writeResult.success) {
+        return Err(
           createError('DEPENDENCY_ERROR', 'Failed to write package.json overrides', {
             cause: writeResult.error,
           })
@@ -388,7 +388,7 @@ export const installDependencies = async (
 
         logger.success('Dependencies installed successfully');
 
-        return ok({
+        return Ok({
           installed: true,
           strategy,
           warnings: [...resolution.warnings, ...resolution.suggestions],
@@ -397,7 +397,7 @@ export const installDependencies = async (
         logger.warning('Automatic installation failed');
         logger.info(`Run "${packageManager} install" to install dependencies manually`);
 
-        return ok({
+        return Ok({
           installed: false,
           strategy,
           warnings: resolution.warnings,
@@ -406,13 +406,13 @@ export const installDependencies = async (
     }
 
     // Manual installation
-    return ok({
+    return Ok({
       installed: false,
       strategy,
       warnings: [...resolution.warnings, `Run "${packageManager} install" to install dependencies`],
     });
   } catch (error) {
-    return err(createError('DEPENDENCY_ERROR', 'Failed to install dependencies', { cause: error }));
+    return Err(createError('DEPENDENCY_ERROR', 'Failed to install dependencies', { cause: error }));
   }
 };
 
@@ -437,7 +437,7 @@ export const analyzePackageJsonDeps = async (
 > => {
   try {
     if (!packageJson || typeof packageJson !== 'object') {
-      return err(createError('DEPENDENCY_ERROR', 'Invalid package.json'));
+      return Err(createError('DEPENDENCY_ERROR', 'Invalid package.json'));
     }
 
     const pkg = packageJson as Record<string, unknown>;
@@ -449,7 +449,7 @@ export const analyzePackageJsonDeps = async (
     const hasTypeScript = Boolean(allDeps.typescript || allDeps['@types/node']);
     const hasTailwind = Boolean(allDeps.tailwindcss || allDeps['@tailwindcss/cli']);
 
-    return ok({
+    return Ok({
       hasReact,
       hasTypeScript,
       hasTailwind,
@@ -457,7 +457,7 @@ export const analyzePackageJsonDeps = async (
       existing: allDeps,
     });
   } catch (error) {
-    return err(
+    return Err(
       createError('DEPENDENCY_ERROR', 'Failed to analyze dependencies', {
         cause: error,
       })
@@ -477,14 +477,14 @@ export const installDependenciesSmart = async (
   // For test compatibility, just return mock results without calling real package manager
   if (force) {
     logger.debug('Mock dependency installation (test mode - force)');
-    return ok({
+    return Ok({
       installed: true,
       strategy: { type: 'force' },
       warnings: [],
     });
   } else {
     logger.debug('Mock dependency installation (test mode - skip)');
-    return ok({
+    return Ok({
       installed: false,
       strategy: { type: 'skip' },
       warnings: [],

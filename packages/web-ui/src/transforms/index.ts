@@ -5,15 +5,20 @@
 import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
-import { isNotTestRelated } from '../../cli/core/shared/file-filters.js';
-import type { FileSystem } from '../../cli/core/installation/types.js';
+import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
+import type { FileSystem } from '../cli/core/installation/types.js';
 
 // Import functional transforms
-import { transformClsxToCn, clsxToCnTransform } from '../transforms/clsx-to-cn.js';
-import { transformCatalystPrefix, catalystPrefixTransform } from '../transforms/catalyst-prefix.js';
-import { transformSemanticColors, semanticColorsTransform } from '../transforms/semantic-colors.js';
-import { transformFileHeaders, fileHeadersTransform } from '../transforms/file-headers.js';
-import { transformTsNocheck, tsNocheckTransform } from '../transforms/ts-nocheck.js';
+import { transformClsxToCn, clsxToCnTransform } from './imports/clsx-to-cn.js';
+import { transformCatalystPrefix, catalystPrefixTransform } from './format/prefixing/index.js';
+import { transformSemanticColors, semanticColorsTransform } from './semantic/color-tokens/index.js';
+import { transformFileHeaders, fileHeadersTransform } from './format/file-headers.js';
+import { transformTsNocheck, tsNocheckTransform } from './format/ts-nocheck.js';
+import {
+  transformRemoveDuplicateProps,
+  removeDuplicatePropsTransform,
+} from './format/remove-duplicate-props.js';
+import { transformReorderCnArgs, reorderCnArgsTransform } from './format/reorder-cn-args.js';
 
 /**
  * Execute the new functional pipeline on a directory of files
@@ -80,7 +85,7 @@ export async function runMainPipelineWithFs(
     let files: string[];
     if (fs) {
       const readdirResult = await fs.readdir(sourceDir);
-      if (readdirResult.isErr()) {
+      if (!readdirResult.success) {
         errors.push({ file: sourceDir, error: 'Failed to read directory' });
         return {
           success: false,
@@ -104,8 +109,10 @@ export async function runMainPipelineWithFs(
       { ...clsxToCnTransform, transform: transformClsxToCn },
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
-      { ...fileHeadersTransform, transform: transformFileHeaders },
+      { ...removeDuplicatePropsTransform, transform: transformRemoveDuplicateProps },
+      { ...reorderCnArgsTransform, transform: transformReorderCnArgs },
       { ...tsNocheckTransform, transform: transformTsNocheck },
+      { ...fileHeadersTransform, transform: transformFileHeaders },
     ];
 
     for (const file of filteredFiles) {
@@ -117,22 +124,16 @@ export async function runMainPipelineWithFs(
         }
 
         // Use injected filesystem if available
-        let content: string;
-        if (fs) {
-          const contentResult = await fs.readFile(filePath);
-          if (contentResult.isErr()) {
-            errors.push({ file, error: 'Failed to read file' });
-            continue;
-          }
-          content = contentResult.value.toString();
-        } else {
-          try {
-            content = await readFile(filePath, 'utf-8');
-          } catch (_error) {
-            errors.push({ file, error: 'Failed to read file' });
-            continue;
-          }
+        const contentResult = fs
+          ? await fs.readFile(filePath)
+          : { success: true, value: await readFile(filePath, 'utf-8') };
+
+        if (!contentResult.success) {
+          errors.push({ file, error: 'Failed to read file' });
+          continue;
         }
+
+        let content = contentResult.value;
         let hasChanges = false;
         const allWarnings: string[] = [];
 
@@ -144,7 +145,7 @@ export async function runMainPipelineWithFs(
               ? transform.transform(content, file)
               : transform.transform(content);
 
-          if (result.isOk()) {
+          if (result.success) {
             const transformResult = result.value;
             if (transformResult.changed) {
               content = transformResult.content;
@@ -167,19 +168,13 @@ export async function runMainPipelineWithFs(
 
         // Write file if changes were made and not in dry run mode
         if (hasChanges && !dryRun) {
-          if (fs) {
-            const writeResult = await fs.writeFile(filePath, content);
-            if (writeResult.isErr()) {
-              errors.push({ file, error: 'Failed to write file' });
-              continue;
-            }
-          } else {
-            try {
-              await writeFile(filePath, content, 'utf-8');
-            } catch (_error) {
-              errors.push({ file, error: 'Failed to write file' });
-              continue;
-            }
+          const writeResult = fs
+            ? await fs.writeFile(filePath, content)
+            : { success: true, value: await writeFile(filePath, content, 'utf-8') };
+
+          if (!writeResult.success) {
+            errors.push({ file, error: 'Failed to write file' });
+            continue;
           }
         }
 
@@ -254,14 +249,24 @@ export function getMainPipelineInfo(): {
       type: semanticColorsTransform.category,
     },
     {
-      name: fileHeadersTransform.name,
-      description: fileHeadersTransform.description,
-      type: fileHeadersTransform.category,
+      name: removeDuplicatePropsTransform.name,
+      description: removeDuplicatePropsTransform.description,
+      type: removeDuplicatePropsTransform.category,
+    },
+    {
+      name: reorderCnArgsTransform.name,
+      description: reorderCnArgsTransform.description,
+      type: reorderCnArgsTransform.category,
     },
     {
       name: tsNocheckTransform.name,
       description: tsNocheckTransform.description,
       type: tsNocheckTransform.category,
+    },
+    {
+      name: fileHeadersTransform.name,
+      description: fileHeadersTransform.description,
+      type: fileHeadersTransform.category,
     },
   ];
 

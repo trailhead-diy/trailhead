@@ -20,7 +20,7 @@ import type {
   Result,
   AsyncResult,
 } from './types.js';
-import { createError, ok, err } from '@esteban-url/trailhead-cli/core';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { isNotTestRelated } from './file-filters.js';
 
 // ============================================================================
@@ -96,7 +96,7 @@ export async function findComponentFiles(
     ...skipFiles.map(f => `**/${f}`),
   ]);
 
-  if (!result.isOk()) {
+  if (!result.success) {
     return [];
   }
 
@@ -144,7 +144,7 @@ export async function copyFreshFilesBatch(
       // Check if destination exists and compare
       const comparisonResult = await frameworkCompareFiles(sourceFile, destFile);
 
-      if (!comparisonResult.isOk()) {
+      if (!comparisonResult.success) {
         failed.push(destFileName);
         continue;
       }
@@ -154,9 +154,9 @@ export async function copyFreshFilesBatch(
       if (!comparison.destExists) {
         // File doesn't exist at destination, copy it
         const sourceResult = await readFile(sourceFile);
-        if (sourceResult.isOk()) {
+        if (sourceResult.success) {
           const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-          if (writeResult.isOk()) {
+          if (writeResult.success) {
             copied.push(destFileName);
           } else {
             failed.push(destFileName);
@@ -175,9 +175,9 @@ export async function copyFreshFilesBatch(
       // Destination exists and is different
       if (force) {
         const sourceResult = await readFile(sourceFile);
-        if (sourceResult.isOk()) {
+        if (sourceResult.success) {
           const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-          if (writeResult.isOk()) {
+          if (writeResult.success) {
             copied.push(destFileName);
           } else {
             failed.push(destFileName);
@@ -191,13 +191,17 @@ export async function copyFreshFilesBatch(
       }
     }
 
-    return ok({ copied, skipped, failed, filesToConfirm });
+    return {
+      success: true,
+      value: { copied, skipped, failed, filesToConfirm },
+    };
   } catch (error) {
-    return err(
-      createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+    return {
+      success: false,
+      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
-      })
-    );
+      }),
+    };
   }
 }
 
@@ -214,7 +218,7 @@ export async function copyFreshFiles(
   try {
     const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix);
 
-    if (!batchResult.isOk()) {
+    if (!batchResult.success) {
       return batchResult;
     }
 
@@ -228,9 +232,9 @@ export async function copyFreshFiles(
         const shouldOverwrite = await onConfirmOverwrite(destFile, comparison);
         if (shouldOverwrite) {
           const sourceResult = await readFile(sourceFile);
-          if (sourceResult.isOk()) {
+          if (sourceResult.success) {
             const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-            if (writeResult.isOk()) {
+            if (writeResult.success) {
               finalCopied.push(fileName);
             }
           }
@@ -242,27 +246,37 @@ export async function copyFreshFiles(
       }
     }
 
-    return ok({ copied: finalCopied, skipped: finalSkipped });
+    return {
+      success: true,
+      value: { copied: finalCopied, skipped: finalSkipped },
+    };
   } catch (error) {
-    return err(
-      createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+    return {
+      success: false,
+      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
-      })
-    );
+      }),
+    };
   }
 }
 
 /**
  * Validate UI converter configuration
  */
-export function validateConfig(config: ConverterConfig): Result<ConverterConfig, any> {
+export function validateConfig(config: ConverterConfig): Result<ConverterConfig> {
   if (!config.name || config.name.trim().length === 0) {
-    return err(createError('VALIDATION_ERROR', 'Converter name is required'));
+    return {
+      success: false,
+      error: createError('VALIDATION_ERROR', 'Converter name is required'),
+    };
   }
 
   if (!config.description || config.description.trim().length === 0) {
-    return err(createError('VALIDATION_ERROR', 'Converter description is required'));
+    return {
+      success: false,
+      error: createError('VALIDATION_ERROR', 'Converter description is required'),
+    };
   }
 
-  return ok(config);
+  return { success: true, value: config };
 }

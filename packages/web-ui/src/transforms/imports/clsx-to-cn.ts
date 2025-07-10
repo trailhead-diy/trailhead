@@ -47,11 +47,7 @@
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import {
-  createTransformMetadata,
-  executeTransform,
-  type TransformResult,
-} from '../core/transform-utils.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
 
 /**
  * Transform metadata
@@ -83,9 +79,9 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Replace clsx Import Statements
-    // Finds:
-    //        import clsx from 'clsx'
-    //        import clsx from "clsx"
+    //
+    // From:  import clsx from 'clsx'
+    // To:    import { cn } from '../utils/cn';
     //
     /////////////////////////////////////////////////////////////////////////////////
     const clsxImportPattern = /import\s+clsx\s+from\s+['"]clsx['"]/g;
@@ -96,10 +92,9 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 2: Replace clsx Function Calls
-    // Finds:
-    //        clsx('class1', 'class2')
-    //        clsx({ active: isActive })
-    //        clsx(baseClasses, conditionalClass)
+    //
+    // From:  clsx('flex items-center', className)
+    // To:    cn('flex items-center', className)
     //
     /////////////////////////////////////////////////////////////////////////////////
     const clsxUsagePattern = /\bclsx\(/g;
@@ -110,9 +105,9 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 3: Validation - Check for Remaining clsx References
-    // Detects any remaining 'clsx' tokens that may need manual review
     // Finds:
     //        any remaining 'clsx' references not caught by patterns above
+    //        such as dynamic imports, comments, or complex patterns
     //
     /////////////////////////////////////////////////////////////////////////////////
     const remainingClsxPattern = /\bclsx\b/g;

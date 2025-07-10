@@ -1,37 +1,37 @@
-// @ts-nocheck
-'use client';
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
+// @ts-nocheck
+'use client';
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
 import { CatalystButton } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-
 export function CatalystDropdown(props: Headless.MenuProps) {
   return <Headless.Menu {...props} />;
 }
-
 export function CatalystDropdownButton<T extends React.ElementType = typeof CatalystButton>({
   as = CatalystButton,
   ...props
-}: { className?: string } & Omit<Headless.MenuButtonProps<T>, 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.MenuButtonProps<T>, 'className'>) {
   return <Headless.MenuButton as={as} {...props} />;
 }
-
 export function CatalystDropdownMenu({
   anchor = 'bottom',
   className,
   ...props
-}: { className?: string } & Omit<Headless.MenuItemsProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.MenuItemsProps, 'as' | 'className'>) {
   return (
     <Headless.MenuItems
       {...props}
       transition
       anchor={anchor}
       className={cn(
-        className,
         // Anchor positioning
         '[--anchor-gap:--spacing(2)] [--anchor-padding:--spacing(1)] data-[anchor~=end]:[--anchor-offset:6px] data-[anchor~=start]:[--anchor-offset:-6px] sm:data-[anchor~=end]:[--anchor-offset:4px] sm:data-[anchor~=start]:[--anchor-offset:-4px]',
         // Base styles
@@ -47,21 +47,22 @@ export function CatalystDropdownMenu({
         // Define grid at the menu level if subgrid is supported
         'supports-[grid-template-columns:subgrid]:grid supports-[grid-template-columns:subgrid]:grid-cols-[auto_1fr_1.5rem_0.5rem_auto]',
         // Transitions
-        'transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0'
+        'transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0',
+        className
       )}
     />
   );
 }
-
 export function CatalystDropdownItem({
   className,
   ...props
-}: { className?: string } & (
+}: {
+  className?: string;
+} & (
   | Omit<Headless.MenuItemProps<'button'>, 'as' | 'className'>
   | Omit<Headless.MenuItemProps<typeof CatalystLink>, 'as' | 'className'>
 )) {
   let classes = cn(
-    className,
     // Base styles
     'group cursor-default rounded-lg px-3.5 py-2.5 focus:outline-hidden sm:px-3 sm:py-1.5',
     // Text styles
@@ -78,105 +79,106 @@ export function CatalystDropdownItem({
     '*:data-[slot=icon]:col-start-1 *:data-[slot=icon]:row-start-1 *:data-[slot=icon]:mr-2.5 *:data-[slot=icon]:-ml-0.5 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:mr-2 sm:*:data-[slot=icon]:size-4',
     '*:data-[slot=icon]:text-zinc-500 data-focus:*:data-[slot=icon]:text-white dark:*:data-[slot=icon]:text-zinc-400 dark:data-focus:*:data-[slot=icon]:text-white',
     // Avatar
-    '*:data-[slot=avatar]:mr-2.5 *:data-[slot=avatar]:-ml-1 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:mr-2 sm:*:data-[slot=avatar]:size-5'
+    '*:data-[slot=avatar]:mr-2.5 *:data-[slot=avatar]:-ml-1 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:mr-2 sm:*:data-[slot=avatar]:size-5',
+    className
   );
-
   return 'href' in props ? (
     <Headless.MenuItem as={CatalystLink} {...props} className={classes} />
   ) : (
     <Headless.MenuItem as="button" type="button" {...props} className={classes} />
   );
 }
-
 export function CatalystDropdownHeader({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn(className, 'col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3')} />;
+  return <div {...props} className={cn('col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3', className)} />;
 }
-
 export function CatalystDropdownSection({
   className,
   ...props
-}: { className?: string } & Omit<Headless.MenuSectionProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.MenuSectionProps, 'as' | 'className'>) {
   return (
     <Headless.MenuSection
       {...props}
       className={cn(
-        className,
         // Define grid at the section level instead of the item level if subgrid is supported
-        'col-span-full supports-[grid-template-columns:subgrid]:grid supports-[grid-template-columns:subgrid]:grid-cols-[auto_1fr_1.5rem_0.5rem_auto]'
+        'col-span-full supports-[grid-template-columns:subgrid]:grid supports-[grid-template-columns:subgrid]:grid-cols-[auto_1fr_1.5rem_0.5rem_auto]',
+        className
       )}
     />
   );
 }
-
 export function CatalystDropdownHeading({
   className,
   ...props
-}: { className?: string } & Omit<Headless.MenuHeadingProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.MenuHeadingProps, 'as' | 'className'>) {
   return (
     <Headless.MenuHeading
       {...props}
       className={cn(
-        className,
-        'col-span-full grid grid-cols-[1fr_auto] gap-x-12 px-3.5 pt-2 pb-1 text-sm/5 font-medium text-zinc-500 sm:px-3 sm:text-xs/5 dark:text-zinc-400'
+        'col-span-full grid grid-cols-[1fr_auto] gap-x-12 px-3.5 pt-2 pb-1 text-sm/5 font-medium text-zinc-500 sm:px-3 sm:text-xs/5 dark:text-zinc-400',
+        className
       )}
     />
   );
 }
-
 export function CatalystDropdownDivider({
   className,
   ...props
-}: { className?: string } & Omit<Headless.MenuSeparatorProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.MenuSeparatorProps, 'as' | 'className'>) {
   return (
     <Headless.MenuSeparator
       {...props}
       className={cn(
-        className,
-        'col-span-full mx-3.5 my-1 h-px border-0 bg-zinc-950/5 sm:mx-3 dark:bg-white/10 forced-colors:bg-[CanvasText]'
+        'col-span-full mx-3.5 my-1 h-px border-0 bg-zinc-950/5 sm:mx-3 dark:bg-white/10 forced-colors:bg-[CanvasText]',
+        className
       )}
     />
   );
 }
-
 export function CatalystDropdownLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div data-slot="label" className={cn(className, 'col-start-2 row-start-1')} {...props} />;
+  return <div data-slot="label" className={cn('col-start-2 row-start-1', className)} {...props} />;
 }
-
 export function CatalystDropdownDescription({
   className,
   ...props
-}: { className?: string } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
       data-slot="description"
       {...props}
       className={cn(
-        className,
-        'col-span-2 col-start-2 row-start-2 text-sm/5 text-zinc-500 group-data-focus:text-white sm:text-xs/5 dark:text-zinc-400 forced-colors:group-data-focus:text-[HighlightText]'
+        'col-span-2 col-start-2 row-start-2 text-sm/5 text-zinc-500 group-data-focus:text-white sm:text-xs/5 dark:text-zinc-400 forced-colors:group-data-focus:text-[HighlightText]',
+        className
       )}
     />
   );
 }
-
 export function CatalystDropdownShortcut({
   keys,
   className,
   ...props
-}: { keys: string | string[]; className?: string } & Omit<
-  Headless.DescriptionProps<'kbd'>,
-  'as' | 'className'
->) {
+}: {
+  keys: string | string[];
+  className?: string;
+} & Omit<Headless.DescriptionProps<'kbd'>, 'as' | 'className'>) {
   return (
     <Headless.Description
       as="kbd"
       {...props}
-      className={cn(className, 'col-start-5 row-start-1 flex justify-self-end')}
+      className={cn('col-start-5 row-start-1 flex justify-self-end', className)}
     >
       {(Array.isArray(keys) ? keys : keys.split('')).map((char, index) => (
         <kbd

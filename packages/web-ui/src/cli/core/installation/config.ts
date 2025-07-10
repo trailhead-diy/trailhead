@@ -12,7 +12,7 @@ import type {
   Result,
   CLIOptions,
 } from './types.js';
-import { ok, err, createError, nonEmptyString, object } from '@esteban-url/trailhead-cli/core';
+import { Ok, Err, createError, nonEmptyString, object } from '@esteban-url/trailhead-cli/core';
 import { isTsxFile } from '../shared/file-filters.js';
 
 // ============================================================================
@@ -35,7 +35,7 @@ export const detectCatalystDir = async (
 
   for (const candidatePath of candidatePaths) {
     const existsResult = await fs.access(candidatePath);
-    if (existsResult.isErr()) continue;
+    if (!existsResult.success) continue;
 
     // Check if it contains typescript files
     const typescriptDir = candidatePath.endsWith('typescript')
@@ -43,12 +43,12 @@ export const detectCatalystDir = async (
       : path.join(candidatePath, 'typescript');
 
     const typescriptExistsResult = await fs.access(typescriptDir);
-    if (typescriptExistsResult.isOk()) {
-      return ok(typescriptDir);
+    if (typescriptExistsResult.success) {
+      return Ok(typescriptDir);
     }
   }
 
-  return err(
+  return Err(
     createError('CATALYST_NOT_FOUND', 'Could not find catalyst-ui-kit directory', {
       details: `Searched in: ${candidatePaths.join(', ')}\n\n💡 Expected Catalyst UI Kit structure:\n   catalyst-ui-kit/\n   └── typescript/\n       ├── button.tsx\n       ├── input.tsx\n       ├── alert.tsx\n       └── ... (27 component files)\n\n📋 To fix this:\n1. Download Catalyst UI Kit from Tailwind Plus\n2. Extract the ZIP file to your project directory\n3. Ensure you're using the TypeScript version\n\n🔍 Try running with:\n   npx tsx scripts/install.ts --catalyst-dir /path/to/catalyst-ui-kit/typescript\n\n💻 Or use the interactive CLI:\n   pnpm trailhead-ui install`,
     })
@@ -71,14 +71,14 @@ export const detectComponentsDir = async (
 
   for (const candidatePath of candidatePaths) {
     const existsResult = await fs.access(candidatePath);
-    if (!existsResult.isOk()) continue;
+    if (!existsResult.success) continue;
 
-    return ok(candidatePath);
+    return Ok(candidatePath);
   }
 
   // Default to src/components if none found
   const defaultPath = path.join(startDir, 'src', 'components');
-  return ok(defaultPath);
+  return Ok(defaultPath);
 };
 
 /**
@@ -96,14 +96,14 @@ export const detectLibDir = async (
 
   for (const candidatePath of candidatePaths) {
     const existsResult = await fs.access(candidatePath);
-    if (!existsResult.isOk()) continue;
+    if (!existsResult.success) continue;
 
-    return ok(candidatePath);
+    return Ok(candidatePath);
   }
 
   // Default to src/lib if none found
   const defaultPath = path.join(startDir, 'src', 'lib');
-  return ok(defaultPath);
+  return Ok(defaultPath);
 };
 
 // ============================================================================
@@ -118,8 +118,8 @@ export const validateTrailheadConfig = (
 ): Result<InstallationTrailheadConfig, InstallError> => {
   // Validate object structure first
   const objectResult = object('config')(config);
-  if (!objectResult.isOk()) {
-    return err(createError('VALIDATION_ERROR', objectResult.error.message));
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
   const configObj = objectResult.value;
@@ -131,8 +131,8 @@ export const validateTrailheadConfig = (
   for (const field of fields) {
     const fieldResult = nonEmptyString(field)(configObj[field]);
 
-    if (!fieldResult.isOk()) {
-      return err(
+    if (!fieldResult.success) {
+      return Err(
         createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
           details: `Field: ${field}`,
         })
@@ -142,7 +142,7 @@ export const validateTrailheadConfig = (
     validatedFields[field] = fieldResult.value.trim();
   }
 
-  return ok({
+  return Ok({
     catalystDir: validatedFields.catalystDir,
     destinationDir: validatedFields.destinationDir,
     componentsDir: validatedFields.componentsDir,
@@ -156,8 +156,8 @@ export const validateTrailheadConfig = (
 export const validateInstallConfig = (config: unknown): Result<InstallConfig, InstallError> => {
   // Validate object structure first
   const objectResult = object('config')(config);
-  if (!objectResult.isOk()) {
-    return err(createError('VALIDATION_ERROR', objectResult.error.message));
+  if (!objectResult.success) {
+    return Err(createError('VALIDATION_ERROR', objectResult.error.message));
   }
 
   const configObj = objectResult.value;
@@ -169,8 +169,8 @@ export const validateInstallConfig = (config: unknown): Result<InstallConfig, In
   for (const field of fields) {
     const fieldResult = nonEmptyString(field)(configObj[field]);
 
-    if (!fieldResult.isOk()) {
-      return err(
+    if (!fieldResult.success) {
+      return Err(
         createError('VALIDATION_ERROR', `${field} must be a non-empty string`, {
           details: `Field: ${field}`,
         })
@@ -180,7 +180,7 @@ export const validateInstallConfig = (config: unknown): Result<InstallConfig, In
     validatedFields[field] = fieldResult.value.trim();
   }
 
-  return ok({
+  return Ok({
     catalystDir: validatedFields.catalystDir,
     destinationDir: validatedFields.destinationDir,
     componentsDir: validatedFields.componentsDir,
@@ -203,17 +203,17 @@ export const readTrailheadConfig = async (
   const configPath = path.join(projectRoot, 'trailhead.config.json');
 
   const existsResult = await fs.access(configPath);
-  if (!existsResult.isOk()) {
-    return ok(null);
+  if (!existsResult.success) {
+    return Ok(null);
   }
 
   const readResult = await fs.readJson<unknown>(configPath);
-  if (!readResult.isOk()) return err(readResult.error);
+  if (!readResult.success) return readResult;
 
   const validateResult = validateTrailheadConfig(readResult.value);
-  if (!validateResult.isOk()) return err(validateResult.error);
+  if (!validateResult.success) return validateResult;
 
-  return ok(validateResult.value);
+  return Ok(validateResult.value);
 };
 
 /**
@@ -250,7 +250,7 @@ export const resolveConfiguration = async (
 
     // Read existing config file
     const existingConfigResult = await readTrailheadConfig(fs, projectRoot);
-    if (!existingConfigResult.isOk()) return err(existingConfigResult.error);
+    if (!existingConfigResult.success) return existingConfigResult;
 
     const existingConfig = existingConfigResult.value;
 
@@ -267,8 +267,8 @@ export const resolveConfiguration = async (
       catalystDir = existingConfig.catalystDir;
     } else {
       const catalystDirResult = await detectCatalystDir(fs, projectRoot);
-      if (!catalystDirResult.isOk()) {
-        return err(catalystDirResult.error);
+      if (!catalystDirResult.success) {
+        return catalystDirResult;
       }
       catalystDir = catalystDirResult.value;
     }
@@ -281,7 +281,7 @@ export const resolveConfiguration = async (
     } else {
       // Detect default destination directory based on project structure
       const srcComponentsExists = await fs.access(path.join(projectRoot, 'src', 'components'));
-      if (srcComponentsExists.isOk()) {
+      if (srcComponentsExists.success) {
         destinationDir = path.join('src', 'components', 'th');
       } else {
         destinationDir = path.join('components', 'th');
@@ -303,7 +303,7 @@ export const resolveConfiguration = async (
 
     // Validate the resolved configuration
     const validateResult = validateInstallConfig(resolvedConfig);
-    if (!validateResult.isOk()) return validateResult;
+    if (!validateResult.success) return validateResult;
 
     // Log what was resolved
     if (options.verbose) {
@@ -315,9 +315,9 @@ export const resolveConfiguration = async (
       logger.debug(`  Lib dir: ${resolvedConfig.libDir}`);
     }
 
-    return ok(validateResult.value);
+    return Ok(validateResult.value);
   } catch (error) {
-    return err(
+    return Err(
       createError('CONFIGURATION_ERROR', 'Failed to resolve configuration', {
         details: error instanceof Error ? error.message : 'Unknown error',
         cause: error,
@@ -381,8 +381,8 @@ export const verifyConfiguration = async (
 ): Promise<Result<void, InstallError>> => {
   // Check if catalyst directory exists and contains TypeScript files
   const catalystExistsResult = await fs.access(config.catalystDir);
-  if (!catalystExistsResult.isOk()) {
-    return err(
+  if (!catalystExistsResult.success) {
+    return Err(
       createError(
         'CONFIGURATION_ERROR',
         `Catalyst UI Kit directory not found: ${config.catalystDir}`,
@@ -395,11 +395,11 @@ export const verifyConfiguration = async (
 
   // Check if catalyst directory contains component files
   const readDirResult = await fs.readdir(config.catalystDir);
-  if (!readDirResult.isOk()) return err(readDirResult.error);
+  if (!readDirResult.success) return readDirResult;
 
   const hasComponents = readDirResult.value.some(isTsxFile);
   if (!hasComponents) {
-    return err(
+    return Err(
       createError(
         'CONFIGURATION_ERROR',
         `No TypeScript component files found in: ${config.catalystDir}`,
@@ -410,5 +410,5 @@ export const verifyConfiguration = async (
     );
   }
 
-  return ok(undefined);
+  return Ok(undefined);
 };

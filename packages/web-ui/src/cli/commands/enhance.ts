@@ -3,7 +3,7 @@
  * Simplified alternative to the complex transforms command
  */
 
-import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
 import {
   createCommand,
   executeWithPhases,
@@ -15,7 +15,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
 
-import { runMainPipeline, getMainPipelineInfo } from '../../transforms/pipelines/main.js';
+import { runMainPipeline, getMainPipelineInfo } from '../../transforms/index.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 
 // ============================================================================
@@ -44,11 +44,11 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
     name: 'Validating source directory',
     execute: async (config: EnhanceConfig) => {
       if (!existsSync(config.sourceDir)) {
-        return err(
+        return Err(
           createError('SOURCE_NOT_FOUND', `Source directory not found: ${config.sourceDir}`)
         );
       }
-      return ok(config);
+      return Ok(config);
     },
   },
   {
@@ -96,7 +96,7 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
       });
 
       if (!result.success) {
-        return err(
+        return Err(
           createError(
             'ENHANCEMENT_ERROR',
             `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
@@ -108,7 +108,7 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
         chalk.green(`✨ Enhanced ${result.processedFiles} components with semantic colors`)
       );
 
-      return ok(config);
+      return Ok(config);
     },
   },
 ];
@@ -175,7 +175,7 @@ export const createEnhanceCommand = () => {
           console.log(`  • ${chalk.green(transform.name)}: ${transform.description}`);
         });
 
-        return ok(undefined);
+        return Ok(undefined);
       }
 
       // Load configuration
@@ -207,8 +207,8 @@ export const createEnhanceCommand = () => {
         cmdContext
       );
 
-      if (phasesResult.isErr()) {
-        return err(phasesResult.error);
+      if (!phasesResult.success) {
+        return phasesResult;
       }
 
       // Display summary
@@ -226,7 +226,7 @@ export const createEnhanceCommand = () => {
         cmdContext
       );
 
-      return ok(undefined);
+      return Ok(undefined);
     },
   });
 };

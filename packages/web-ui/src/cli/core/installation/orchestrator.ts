@@ -12,7 +12,8 @@ import type {
   Result,
   FrameworkType,
 } from './types.js';
-import { createError, ok, err } from '@esteban-url/trailhead-cli/core';
+import { Ok, Err } from './types.js';
+import { createError } from '@esteban-url/trailhead-cli/core';
 import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import { isTsxFile } from '../shared/file-filters.js';
 import { generateDestinationPaths } from '../filesystem/paths.js';
@@ -86,9 +87,9 @@ export const performInstallation = async (
     // Create directories using CLI filesystem
     for (const dir of directories) {
       const ensureDirResult = await fs.ensureDir(dir);
-      if (ensureDirResult.isErr()) {
+      if (!ensureDirResult.success) {
         progressTracker.stop();
-        return err(ensureDirResult.error);
+        return ensureDirResult;
       }
     }
 
@@ -114,7 +115,7 @@ export const performInstallation = async (
       const existingFiles: string[] = [];
       for (const path of pathsToCheck) {
         const existsResult = await pathExists(path);
-        if (existsResult.isOk() && existsResult.value) {
+        if (existsResult.success && existsResult.value) {
           existingFiles.push(path);
         }
       }
@@ -126,7 +127,7 @@ export const performInstallation = async (
         existingFiles.forEach((file: string) => logger.warning(`  • ${file}`));
         logger.warning('Use --force to overwrite existing files');
 
-        return err(
+        return Err(
           createError('FILESYSTEM_ERROR', 'Installation would overwrite existing files', {
             details: `Path: ${config.componentsDir}`,
           })
@@ -146,9 +147,8 @@ export const performInstallation = async (
       config.componentsDir
     );
 
-    if (!executionResult.isOk()) {
-      progressTracker.stop();
-      return err(executionResult.error);
+    if (!executionResult.success) {
+      return executionResult;
     }
 
     const { installedFiles: allInstalledFiles, failedSteps } = executionResult.value;
@@ -156,9 +156,9 @@ export const performInstallation = async (
     // Step 3: Analyze and update dependencies
     progressTracker.nextStep('Analyzing project dependencies...');
     const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
-    if (!depAnalysisResult.isOk()) {
+    if (!depAnalysisResult.success) {
       progressTracker.stop();
-      return err(depAnalysisResult.error);
+      return depAnalysisResult;
     }
 
     const dependencyUpdate = depAnalysisResult.value;
@@ -180,7 +180,7 @@ export const performInstallation = async (
         ]);
 
         // Workspace detection for future features
-        workspaceResult.isOk() ? workspaceResult.value : null;
+        workspaceResult.success ? workspaceResult.value : null;
         const ci = detectCIEnvironment();
         const packageManager = detected?.name || 'npm';
 
@@ -196,7 +196,7 @@ export const performInstallation = async (
           const { runDependencyPrompts } = await getDependencyPrompts();
 
           const analysis = analyzeCore(
-            currentDepsResult.isOk()
+            currentDepsResult.success
               ? {
                   dependencies:
                     (currentDepsResult.value.dependencies as Record<string, string>) || {},
@@ -213,7 +213,7 @@ export const performInstallation = async (
               outdated: [], // Not used in current implementation
               hasConflicts: analysis.hasConflicts,
             },
-            currentDependencies: currentDepsResult.isOk()
+            currentDependencies: currentDepsResult.success
               ? (currentDepsResult.value.dependencies as Record<string, string>) || {}
               : {},
             existingDependencies: analysis.existing,
@@ -247,7 +247,7 @@ export const performInstallation = async (
         );
 
         // Show post-install instructions if needed
-        if (installResult.isOk() && !installResult.value.installed) {
+        if (installResult.success && !installResult.value.installed) {
           progressTracker.stop();
           const { showPostInstallInstructions } = await getDependencyPrompts();
           showPostInstallInstructions(packageManager, strategy);
@@ -271,9 +271,9 @@ export const performInstallation = async (
         );
       }
 
-      if (!installResult.isOk()) {
+      if (!installResult.success) {
         progressTracker.stop();
-        return err(installResult.error);
+        return installResult;
       }
 
       const installData = installResult.value;
@@ -305,12 +305,12 @@ export const performInstallation = async (
     // Log detailed summary
     logInstallationSummary(logger, allInstalledFiles, dependenciesAdded, failedSteps);
 
-    return ok(summary);
+    return Ok(summary);
   } catch (error) {
     progressTracker.stop();
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-    return err(
+    return Err(
       createError('INSTALLATION_ERROR', `Installation failed: ${errorMessage}`, {
         details: `Path: ${config.componentsDir}`,
         cause: error,
@@ -383,9 +383,9 @@ export const validatePrerequisites = async (
 ): Promise<Result<void, InstallError>> => {
   // Check if Trailhead root exists
   const rootExistsResult = await pathExists(trailheadRoot);
-  if (!rootExistsResult.isOk()) return err(rootExistsResult.error);
+  if (!rootExistsResult.success) return Err(rootExistsResult.error);
   if (!rootExistsResult.value) {
-    return err(
+    return Err(
       createError('CONFIGURATION_ERROR', `Trailhead UI root not found: ${trailheadRoot}`, {
         details: `Path: ${trailheadRoot}`,
       })
@@ -394,9 +394,9 @@ export const validatePrerequisites = async (
 
   // Check if project root exists
   const projectExistsResult = await pathExists(config.projectRoot);
-  if (!projectExistsResult.isOk()) return err(projectExistsResult.error);
+  if (!projectExistsResult.success) return Err(projectExistsResult.error);
   if (!projectExistsResult.value) {
-    return err(
+    return Err(
       createError('CONFIGURATION_ERROR', `Project root not found: ${config.projectRoot}`, {
         details: `Path: ${config.projectRoot}`,
       })
@@ -407,8 +407,8 @@ export const validatePrerequisites = async (
   const destDirParent = config.componentsDir.split('/').slice(0, -1).join('/');
   const writeTestPath = `${destDirParent}/.trailhead-test-${Date.now()}`;
   const writeResult = await fs.writeFile(writeTestPath, 'test');
-  if (!writeResult.isOk()) {
-    return err(
+  if (!writeResult.success) {
+    return Err(
       createError('FILESYSTEM_ERROR', 'No write permission in destination directory', {
         details: `Path: ${destDirParent}`,
       })
@@ -418,7 +418,7 @@ export const validatePrerequisites = async (
   // Clean up test file
   await fs.rm(writeTestPath);
 
-  return ok(undefined);
+  return Ok(undefined);
 };
 
 // ============================================================================
@@ -441,7 +441,7 @@ export const performDryRunInstallation = async (
 
   // Check what dependencies would be installed
   const depAnalysisResult = await analyzeDependencies(fs, logger, config, framework);
-  if (depAnalysisResult.isOk()) {
+  if (depAnalysisResult.success) {
     const dependencyUpdate = depAnalysisResult.value;
     const missingDeps = Object.keys(dependencyUpdate.added);
 
@@ -478,7 +478,7 @@ export const performDryRunInstallation = async (
   // Check for Catalyst components
   const catalystDir = `${trailheadRoot}/src/components/lib`;
   const dirCheckResult = await fs.readdir(catalystDir);
-  if (dirCheckResult.isOk()) {
+  if (dirCheckResult.success) {
     const catalystFiles = dirCheckResult.value
       .filter(isTsxFile)
       .map((file: string) => `lib/${file}`);
@@ -497,7 +497,7 @@ export const performDryRunInstallation = async (
   for (const file of plannedFiles) {
     const fullPath = `${config.componentsDir}/${file}`;
     const existsResult = await pathExists(fullPath);
-    if (existsResult.isOk() && existsResult.value) {
+    if (existsResult.success && existsResult.value) {
       existingFiles.push(file);
     }
   }
@@ -520,5 +520,5 @@ export const performDryRunInstallation = async (
     }
   }
 
-  return ok(plannedFiles);
+  return Ok(plannedFiles);
 };

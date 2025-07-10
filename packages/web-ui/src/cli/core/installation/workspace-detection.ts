@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import { retryableOperation, classifyError } from '@esteban-url/trailhead-cli/error-recovery';
 import type { FileSystem, Result, InstallError } from './types.js';
-import { ok, err } from './types.js';
+import { Ok, Err } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
@@ -37,7 +37,7 @@ const checkPnpmWorkspace = async (fs: FileSystem, root: string): Promise<Workspa
   const configPath = path.join(root, 'pnpm-workspace.yaml');
   const existsResult = await pathExists(configPath);
 
-  if (!existsResult.isOk() || !existsResult.value) {
+  if (!existsResult.success || !existsResult.value) {
     return null;
   }
 
@@ -55,7 +55,7 @@ const checkLernaWorkspace = async (fs: FileSystem, root: string): Promise<Worksp
   const configPath = path.join(root, 'lerna.json');
   const existsResult = await pathExists(configPath);
 
-  if (!existsResult.isOk() || !existsResult.value) {
+  if (!existsResult.success || !existsResult.value) {
     return null;
   }
 
@@ -73,7 +73,7 @@ const checkRushWorkspace = async (fs: FileSystem, root: string): Promise<Workspa
   const configPath = path.join(root, 'rush.json');
   const existsResult = await pathExists(configPath);
 
-  if (!existsResult.isOk() || !existsResult.value) {
+  if (!existsResult.success || !existsResult.value) {
     return null;
   }
 
@@ -94,7 +94,7 @@ const checkPackageJsonWorkspace = async (
   const pkgPath = path.join(root, 'package.json');
   const existsResult = await pathExists(pkgPath);
 
-  if (!existsResult.isOk() || !existsResult.value) {
+  if (!existsResult.success || !existsResult.value) {
     return null;
   }
 
@@ -102,7 +102,7 @@ const checkPackageJsonWorkspace = async (
     workspaces?: string[] | { packages?: string[] };
   }>(pkgPath);
 
-  if (!readResult.isOk() || !readResult.value.workspaces) {
+  if (!readResult.success || !readResult.value.workspaces) {
     return null;
   }
 
@@ -116,7 +116,7 @@ const checkPackageJsonWorkspace = async (
 
   // Determine if it's npm or yarn by checking for yarn.lock
   const yarnLockResult = await pathExists(path.join(root, 'yarn.lock'));
-  const isYarn = yarnLockResult.isOk() && yarnLockResult.value;
+  const isYarn = yarnLockResult.success && yarnLockResult.value;
 
   return {
     type: isYarn ? 'yarn' : 'npm',
@@ -143,11 +143,11 @@ export const detectWorkspace = async (
   try {
     for (const detector of detectors) {
       const result = await detector(fs, projectRoot);
-      if (result) return ok(result);
+      if (result) return Ok(result);
     }
-    return ok(null);
+    return Ok(null);
   } catch (error) {
-    return err(
+    return Err(
       createError('WORKSPACE_DETECTION_ERROR', 'Failed to detect workspace', {
         details: `Project root: ${projectRoot}`,
         cause: error,
@@ -249,16 +249,16 @@ export const findWorkspaceRoot = async (
     while (currentPath !== root) {
       const workspaceResult = await detectWorkspace(fs, currentPath);
 
-      if (workspaceResult.isOk() && workspaceResult.value) {
-        return ok(currentPath);
+      if (workspaceResult.success && workspaceResult.value) {
+        return Ok(currentPath);
       }
 
       currentPath = path.dirname(currentPath);
     }
 
-    return ok(null);
+    return Ok(null);
   } catch (error) {
-    return err(
+    return Err(
       createError('WORKSPACE_ROOT_SEARCH_ERROR', 'Failed to find workspace root', {
         details: `Start path: ${startPath}`,
         cause: error,
@@ -272,7 +272,7 @@ export const findWorkspaceRoot = async (
  */
 export const isInWorkspace = async (fs: FileSystem, projectPath: string): Promise<boolean> => {
   const rootResult = await findWorkspaceRoot(fs, projectPath);
-  return rootResult.isOk() && rootResult.value !== null;
+  return rootResult.success && rootResult.value !== null;
 };
 
 // ============================================================================
@@ -287,15 +287,15 @@ export const getWorkspacePackages = async (
   workspace: WorkspaceInfo
 ): Promise<Result<readonly string[], InstallError>> => {
   if (!workspace.workspaces) {
-    return ok([]);
+    return Ok([]);
   }
 
   try {
     // TODO: Implement glob pattern matching for workspace paths
     // For now, return the workspace patterns as-is
-    return ok(Object.freeze(workspace.workspaces!));
+    return Ok(Object.freeze(workspace.workspaces!));
   } catch (error) {
-    return err(
+    return Err(
       createError('WORKSPACE_PACKAGES_ERROR', 'Failed to get workspace packages', {
         details: `Workspace root: ${workspace.root}`,
         cause: error,

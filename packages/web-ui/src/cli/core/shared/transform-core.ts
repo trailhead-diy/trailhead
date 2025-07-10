@@ -7,7 +7,6 @@
  */
 
 import type { Result } from './types.js';
-import { ok, err } from '@esteban-url/trailhead-cli/core';
 import { join } from 'path';
 
 // ============================================================================
@@ -54,10 +53,10 @@ export const executeTransforms = async (
   try {
     // Execute transforms pipeline
     const transformResult = await executeTransformPipeline(config);
-    return ok(transformResult);
+    return { success: true, value: transformResult };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return err(errorMessage);
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -68,7 +67,7 @@ export const executeTransforms = async (
 const executeTransformPipeline = async (config: TransformConfig): Promise<TransformResult> => {
   try {
     // Import the main pipeline (dependency injection pattern)
-    const { runMainPipeline } = await import('../../../transforms/pipelines/main.js');
+    const { runMainPipeline } = await import('../../../transforms/index.js');
 
     // Execute pipeline with configuration
     const result = await runMainPipeline(config.srcDir, {
@@ -81,7 +80,7 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
       filesProcessed: result.processedFiles,
       filesModified: config.dryRun ? 0 : result.processedFiles,
       conversionsApplied: result.processedFiles * 2, // Estimate: avg 2 conversions per file in main pipeline
-      errors: result.errors.map(e => e.error),
+      errors: result.errors.map((e: any) => e.error),
       warnings: [],
     };
   } catch (error) {
@@ -112,10 +111,10 @@ const executeTransformPipeline = async (config: TransformConfig): Promise<Transf
  */
 export const validateTransformConfig = (config: TransformConfig): Result<void, string> => {
   if (!config.srcDir) {
-    return err('srcDir is required');
+    return { success: false, error: 'srcDir is required' };
   }
 
-  return ok(undefined);
+  return { success: true, value: undefined };
 };
 
 /**

@@ -2,7 +2,7 @@
  * Add Command - Add individual components
  */
 
-import { ok } from '@esteban-url/trailhead-cli';
+import { Ok } from '@esteban-url/trailhead-cli';
 import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
 import { type StrictAddOptions } from '../core/types/command-options.js';
 
@@ -32,7 +32,7 @@ export const createAddCommand = () => {
     action: async (_options: AddOptions, context: CommandContext) => {
       context.logger.info('🚧 Add command coming soon!');
       context.logger.info('For now, use: trailhead-ui install');
-      return ok(undefined);
+      return Ok(undefined);
     },
   });
 };

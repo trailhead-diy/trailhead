@@ -47,11 +47,7 @@
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import {
-  createTransformMetadata,
-  executeTransform,
-  type TransformResult,
-} from '../core/transform-utils.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
 
 /**
  * Transform metadata
@@ -89,8 +85,9 @@ export function transformTsNocheck(
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Check if File Should Be Processed
-    // Only process files that have known TypeScript issues
-    // Target files: catalyst-combobox.tsx, catalyst-dropdown.tsx, catalyst-listbox.tsx
+    // Finds:
+    //        catalyst-combobox.tsx, catalyst-dropdown.tsx, catalyst-listbox.tsx
+    //        (only these files need @ts-nocheck due to complex Headless UI types)
     //
     /////////////////////////////////////////////////////////////////////////////////
     const targetFiles = ['catalyst-combobox.tsx', 'catalyst-dropdown.tsx', 'catalyst-listbox.tsx'];
@@ -104,7 +101,8 @@ export function transformTsNocheck(
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 2: Check for Existing @ts-nocheck Directive
     // Finds:
-    //        // @ts-nocheck
+    //        '// @ts-nocheck' at the beginning of file
+    //        to avoid adding duplicate directives
     //
     /////////////////////////////////////////////////////////////////////////////////
     const hasNocheckDirective = content.includes('// @ts-nocheck');
@@ -116,8 +114,9 @@ export function transformTsNocheck(
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 3: Add @ts-nocheck at Beginning of File
-    // Adds @ts-nocheck as the very first line to ensure it takes effect
-    // This placement is required for TypeScript to recognize the directive
+    //
+    // From:  'use client'\n// WARNING: This file is auto-generated...
+    // To:    // @ts-nocheck\n'use client'\n// WARNING: This file is auto-generated...
     //
     /////////////////////////////////////////////////////////////////////////////////
     content = `// @ts-nocheck\n${content}`;

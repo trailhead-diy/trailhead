@@ -1,4 +1,4 @@
-import { ok as CliOk, err as CliErr } from '@esteban-url/trailhead-cli';
+import { Ok as CliOk, Err as CliErr } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeWithPhases,
@@ -199,8 +199,8 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
         config.projectRoot
       );
 
-      if (resolveResult.isErr()) {
-        return CliErr(resolveResult.error);
+      if (!resolveResult.success) {
+        return resolveResult;
       }
 
       return CliOk({
@@ -222,8 +222,8 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
           : undefined
       );
 
-      if (frameworkResult.isErr()) {
-        return CliErr(frameworkResult.error);
+      if (!frameworkResult.success) {
+        return frameworkResult;
       }
 
       const framework = frameworkResult.value;
@@ -252,8 +252,8 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
           config.options.wrappers ?? true
         );
 
-        if (dryRunResult.isErr()) {
-          return CliErr(dryRunResult.error);
+        if (!dryRunResult.success) {
+          return dryRunResult;
         }
 
         cmdContext.logger.info('\nDry run complete. No files were installed.');
@@ -282,8 +282,8 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
         coreOptions
       );
 
-      if (installResult.isErr()) {
-        return CliErr(installResult.error);
+      if (!installResult.success) {
+        return installResult;
       }
 
       return CliOk({
@@ -534,21 +534,21 @@ export const createInstallCommand = () => {
       const prePhases = createPreInstallPhases(cmdContext);
       const preResult = await executeWithPhases(prePhases, config, cmdContext);
 
-      if (preResult.isErr()) {
-        return CliErr(preResult.error);
+      if (!preResult.success) {
+        return preResult;
       }
 
       // Execute main installation phases
       const mainPhases = createInstallPhases(cmdContext);
       const mainResult = await executeWithPhases(mainPhases, preResult.value, cmdContext);
 
-      if (mainResult.isErr()) {
+      if (!mainResult.success) {
         cmdContext.logger.error('❌ Installation failed:');
         cmdContext.logger.error(mainResult.error.message);
         if (options.verbose && mainResult.error.details) {
           cmdContext.logger.error('Details:' + mainResult.error.details);
         }
-        return CliErr(mainResult.error);
+        return mainResult;
       }
 
       // Display final summary

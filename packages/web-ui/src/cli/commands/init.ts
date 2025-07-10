@@ -2,7 +2,7 @@
  * Init Command - Initialize a new Trailhead UI project
  */
 
-import { ok } from '@esteban-url/trailhead-cli';
+import { Ok } from '@esteban-url/trailhead-cli';
 import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
 import { type StrictInitOptions } from '../core/types/command-options.js';
 
@@ -34,7 +34,7 @@ export const createInitCommand = () => {
     action: async (_options: InitOptions, context: CommandContext) => {
       context.logger.info('🚧 Init command coming soon!');
       context.logger.info('For now, use: trailhead-ui install');
-      return ok(undefined);
+      return Ok(undefined);
     },
   });
 };

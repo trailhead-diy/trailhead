@@ -2,7 +2,7 @@
  * Dev Refresh Command - Copy fresh Catalyst components for development
  */
 
-import { ok, err } from '@esteban-url/trailhead-cli';
+import { Ok, Err } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeWithPhases,
@@ -20,7 +20,7 @@ import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
-import { runMainPipeline as runNewPipeline } from '../../transforms/pipelines/main.js';
+import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
 import chalk from 'chalk';
 
 // ============================================================================
@@ -51,11 +51,11 @@ const createRefreshPhases = (
       execute: async (config: RefreshConfig) => {
         // Check if source exists
         const sourceExistsResult = await pathExists(config.source);
-        if (sourceExistsResult.isErr()) {
-          return err(sourceExistsResult.error);
+        if (!sourceExistsResult.success) {
+          return Err(sourceExistsResult.error);
         }
         if (!sourceExistsResult.value) {
-          return err(
+          return Err(
             createError(
               'SOURCE_NOT_FOUND',
               `Source directory not found: ${config.source}. Please ensure catalyst-ui-kit is installed or provide a valid source path`
@@ -65,7 +65,7 @@ const createRefreshPhases = (
 
         // Source and dest cannot be the same
         if (config.source === config.dest) {
-          return err(
+          return Err(
             createError(
               'INVALID_CONFIGURATION',
               'Source and destination cannot be the same directory'
@@ -73,7 +73,7 @@ const createRefreshPhases = (
           );
         }
 
-        return ok(config);
+        return Ok(config);
       },
     },
     {
@@ -82,8 +82,8 @@ const createRefreshPhases = (
         try {
           if (config.clean) {
             const destExistsResult = await pathExists(config.dest);
-            if (destExistsResult.isErr()) {
-              return err(destExistsResult.error);
+            if (!destExistsResult.success) {
+              return Err(destExistsResult.error);
             }
             if (destExistsResult.value) {
               // Use Node.js fs for removal since CLI framework doesn't export removeDirectory
@@ -93,8 +93,8 @@ const createRefreshPhases = (
           }
 
           const result = await ensureDirectory(config.dest);
-          if (result.isErr()) {
-            return err(
+          if (!result.success) {
+            return Err(
               createError(
                 'FILESYSTEM_ERROR',
                 `Failed to create destination directory: ${result.error.message}`
@@ -102,9 +102,9 @@ const createRefreshPhases = (
             );
           }
 
-          return ok(config);
+          return Ok(config);
         } catch (error) {
-          return err(
+          return Err(
             createError(
               'FILESYSTEM_ERROR',
               `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -123,8 +123,8 @@ const createRefreshPhases = (
           true // addPrefix - add catalyst- prefix to component files
         );
 
-        if (copyResult.isErr()) {
-          return err(
+        if (!copyResult.success) {
+          return Err(
             createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`)
           );
         }
@@ -159,7 +159,7 @@ const createRefreshPhases = (
           }
         }
 
-        return ok(config);
+        return Ok(config);
       },
     },
   ];
@@ -170,7 +170,7 @@ const createRefreshPhases = (
       name: 'Applying enhancement transforms',
       execute: async (config: RefreshConfig) => {
         if (config.copiedFiles.length === 0) {
-          return ok(config);
+          return Ok(config);
         }
 
         const result = await runNewPipeline(config.dest, {
@@ -184,7 +184,7 @@ const createRefreshPhases = (
         });
 
         if (!result.success) {
-          return err(
+          return Err(
             createError(
               'ENHANCEMENT_ERROR',
               `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
@@ -196,7 +196,7 @@ const createRefreshPhases = (
           console.log(chalk.green(`✨ Enhanced ${result.processedFiles} components`));
         }
 
-        return ok(config);
+        return Ok(config);
       },
     });
   }
@@ -311,8 +311,8 @@ export const createDevRefreshCommand = () => {
         verbose: options.verbose || loadedConfig.verbose || false,
       });
 
-      if (phaseResult.isErr()) {
-        return err(phaseResult.error);
+      if (!phaseResult.success) {
+        return phaseResult;
       }
 
       // Display final results
@@ -341,7 +341,7 @@ export const createDevRefreshCommand = () => {
         }
       }
 
-      return ok(undefined);
+      return Ok(undefined);
     },
   });
 };

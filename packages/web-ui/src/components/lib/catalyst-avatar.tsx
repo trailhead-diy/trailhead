@@ -6,7 +6,6 @@ import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-
 export type CatalystAvatarProps = {
   src?: string | null;
   square?: boolean;
@@ -14,7 +13,6 @@ export type CatalystAvatarProps = {
   alt?: string;
   className?: string;
 };
-
 export function CatalystAvatar({
   src = null,
   square = false,
@@ -28,14 +26,14 @@ export function CatalystAvatar({
       data-slot="avatar"
       {...props}
       className={cn(
-        className,
         // Basic layout
         'inline-grid shrink-0 align-middle [--avatar-radius:20%] *:col-start-1 *:row-start-1',
         'outline -outline-offset-1 outline-black/10 dark:outline-white/10',
         // Border radius
         square
           ? 'rounded-(--avatar-radius) *:rounded-(--avatar-radius)'
-          : 'rounded-full *:rounded-full'
+          : 'rounded-full *:rounded-full',
+        className
       )}
     >
       {initials && (
@@ -61,7 +59,6 @@ export function CatalystAvatar({
     </span>
   );
 }
-
 export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
   {
     src,
@@ -78,11 +75,10 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
-    className,
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'
+    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
+    className
   );
-
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>

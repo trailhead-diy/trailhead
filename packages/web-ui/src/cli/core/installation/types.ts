@@ -57,8 +57,8 @@ export interface InstallationSummary {
   readonly configCreated: boolean;
 }
 
-// Re-export ok and err from CLI package for compatibility
-export { ok, err } from '@esteban-url/trailhead-cli/core';
+// Re-export Ok and Err from CLI package for compatibility
+export { Ok, Err } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // CLI OPTIONS AND FLAGS
