@@ -135,7 +135,25 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       expectResult(result);
       expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('className="test"\n  {...props}');
+      expect(result.value.content).toContain('className="test"');
+      expect(result.value.content).toContain('{...props}');
+    });
+
+    it('should maintain proper spacing between tag name and attributes', () => {
+      const input = `<div
+  {...props}
+  data-slot="label"
+  {...props}
+/>`;
+
+      const result = transformRemoveDuplicateProps(input);
+
+      expectResult(result);
+      expect(result.value.changed).toBe(true);
+      // Should not have the tag name run into the attribute
+      expect(result.value.content).not.toContain('<divdata-slot');
+      // Should have proper space before attributes
+      expect(result.value.content).toContain('<div data-slot="label"');
     });
   });
 });

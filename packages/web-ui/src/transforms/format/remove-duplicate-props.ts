@@ -161,7 +161,15 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
         );
       }
 
-      return `<${tagName}${modifiedAttributes}>`;
+      // Ensure proper spacing - if we have attributes, there should be a space after tag name
+      if (modifiedAttributes.trim()) {
+        // If the modified attributes don't start with whitespace, add a space
+        const needsSpace = !modifiedAttributes.match(/^\s/);
+        const finalAttributes = needsSpace ? ' ' + modifiedAttributes : modifiedAttributes;
+        return `<${tagName}${finalAttributes}>`;
+      } else {
+        return `<${tagName}>`;
+      }
     });
 
     return { content, changed, warnings };
