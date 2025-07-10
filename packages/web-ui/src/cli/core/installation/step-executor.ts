@@ -44,9 +44,9 @@ export const executeInstallationSteps = async (
   try {
     // Convert installation steps to listr2 tasks
     const tasks = steps.map(step =>
-      createTask(
-        step.name,
-        async () => {
+      createTask({
+        title: step.name,
+        task: async () => {
           // Use retry for retryable steps
           const executeWithRetry = step.retryable
             ? () =>
@@ -70,11 +70,9 @@ export const executeInstallationSteps = async (
           logger.debug(`Completed ${step.name}: ${files.length} files`);
           return files;
         },
-        {
-          skip: () => false,
-          retry: step.retryable ? 3 : 0,
-        }
-      )
+        skip: () => false,
+        retry: step.retryable ? 3 : 0,
+      })
     );
 
     // Create and run task list

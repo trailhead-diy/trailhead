@@ -1,12 +1,13 @@
 <<<<<<< HEAD
+
 # Transform System
 
 A functional transform system for code modifications built on @esteban-url/trailhead-cli framework.
 
 ## Overview
 
-The transform system provides a pipeline for applying code transformations to Catalyst UI components. It uses Result-based error handling and functional programming patterns for reliable, composable transformations.
-=======
+# The transform system provides a pipeline for applying code transformations to Catalyst UI components. It uses Result-based error handling and functional programming patterns for reliable, composable transformations.
+
 # Transform System Architecture
 
 A comprehensive, maintainable transform system built on top of the @esteban-url/trailhead-cli framework.
@@ -21,7 +22,7 @@ This transform system provides a robust foundation for code transformations with
 - **Atomic operations** using Strategy pattern for composability
 - **Built-in debugging** and profiling capabilities
 - **High-ROI testing** with specialized transform test utilities
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
+  > > > > > > > cef6dae (fix: resolve failing tests and enhance transform system (#125))
 
 ## Architecture
 
@@ -194,14 +195,15 @@ if (result.success) {
 ```
 
 <<<<<<< HEAD
+
 ## CLI Integration
 
 The transform system integrates with these CLI commands:
 
 - `src/cli/commands/transforms.ts` - Main transforms command
 - `src/cli/commands/enhance.ts` - Simplified transforms (uses `src/transforms/index.ts`)
-- `src/cli/commands/dev-refresh.ts` - Development refresh with transforms (uses `src/transforms/index.ts`)
-=======
+- # `src/cli/commands/dev-refresh.ts` - Development refresh with transforms (uses `src/transforms/index.ts`)
+
 ### 2. Phase-Based Execution
 
 Transform runner supports multiple execution phases:
@@ -446,4 +448,4 @@ See [transform-framework-improvements.md](./transform-framework-improvements.md)
 - Enhanced caching capabilities
 - Plugin architecture
 - Advanced composition patterns
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
+  > > > > > > > cef6dae (fix: resolve failing tests and enhance transform system (#125))

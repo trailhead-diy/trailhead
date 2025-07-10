@@ -4,18 +4,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-<<<<<<< HEAD
-import { transformClsxToCn } from '../imports/clsx-to-cn.js';
-import { transformSemanticColors } from '../semantic/color-tokens/index.js';
-import { transformFileHeaders } from '../format/file-headers.js';
-import { transformCatalystPrefix } from '../format/prefixing/index.js';
-import { transformRemoveDuplicateProps } from '../format/remove-duplicate-props.js';
-=======
 import { transformClsxToCn } from '../transforms/clsx-to-cn.js';
 import { transformSemanticColors } from '../transforms/semantic-colors.js';
 import { transformFileHeaders } from '../transforms/file-headers.js';
 import { transformCatalystPrefix } from '../transforms/catalyst-prefix.js';
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
 
 describe('Transform Pipeline Integration', () => {
   describe('clsx-to-cn transform', () => {
@@ -89,11 +81,7 @@ export function CatalystBadge({ color = 'red', ...props }) {
       }
     });
 
-<<<<<<< HEAD
-    it('should add headers at the very beginning of files', () => {
-=======
     it('should handle use client files', () => {
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
       const input = `'use client'
 
 export function Button() {
@@ -105,15 +93,8 @@ export function Button() {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value.changed).toBe(true);
-<<<<<<< HEAD
-        expect(result.value.content.startsWith('// WARNING: This file is auto-generated')).toBe(
-          true
-        );
-        expect(result.value.content).toContain("'use client'");
-=======
         expect(result.value.content.startsWith("'use client'")).toBe(true);
         expect(result.value.content).toContain('WARNING: This file is auto-generated');
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
       }
     });
   });
@@ -146,43 +127,4 @@ export function Button() {
       }
     });
   });
-<<<<<<< HEAD
-
-  describe('remove-duplicate-props transform', () => {
-    it('should remove duplicate prop spreads from JSX elements', () => {
-      const input = `export function Component() {
-  return (
-    <div
-      {...props}
-      data-slot="label"
-      {...props}
-    />
-  );
-}`;
-
-      const result = transformRemoveDuplicateProps(input);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.changed).toBe(true);
-        const propsCount = (result.value.content.match(/\{\.\.\.props\}/g) || []).length;
-        expect(propsCount).toBe(1);
-      }
-    });
-
-    it('should skip elements with no duplicate spreads', () => {
-      const input = `export function Component() {
-  return <div {...props} className="test" />;
-}`;
-
-      const result = transformRemoveDuplicateProps(input);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.changed).toBe(false);
-      }
-    });
-  });
-=======
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
 });

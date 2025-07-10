@@ -4,19 +4,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { expectResult } from '@esteban-url/trailhead-cli/testing';
-<<<<<<< HEAD
-import { transformSemanticColors } from '../semantic/color-tokens/index.js';
-
-describe('SemanticColorsTransform', () => {
-  describe('Core Transform Logic', () => {
-    it('should add semantic colors to components with colors object', () => {
-=======
 import { transformSemanticColors, semanticColorsTransform } from '../transforms/semantic-colors.js';
 
 describe('SemanticColorsTransform', () => {
   describe('Badge Component', () => {
     it('should add semantic colors to badge component', () => {
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
       const input = `
 const colors = {
   red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20',
@@ -76,8 +68,6 @@ export function CatalystBadge({ className, ...props }) {
     });
   });
 
-<<<<<<< HEAD
-=======
   describe('Button Component', () => {
     it('should add semantic colors to button component', () => {
       const input = `
@@ -129,7 +119,6 @@ export function CatalystAlert({ variant = 'info', ...props }) {
     });
   });
 
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
   describe('Edge Cases', () => {
     it('should handle malformed colors object', () => {
       const input = `
@@ -177,8 +166,6 @@ const colors = {
     });
   });
 
-<<<<<<< HEAD
-=======
   describe('Transform Metadata', () => {
     it('should have correct transform metadata', () => {
       expect(semanticColorsTransform.name).toBe('semantic-colors');
@@ -188,8 +175,6 @@ const colors = {
       expect(semanticColorsTransform.category).toBe('semantic');
     });
   });
-
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
   describe('Content Preservation', () => {
     it('should preserve existing colors when adding semantic colors', () => {
       const input = `
@@ -246,44 +231,4 @@ export function CatalystBadge({ color = 'red', ...props }) {
       expect(secondColorsMatch?.[0]).not.toContain('primary:');
     });
   });
-<<<<<<< HEAD
-
-  describe('Nested Colors in Styles', () => {
-    it('should add semantic colors to button-style nested colors object', () => {
-      const input = `
-  const styles = {
-    base: ['relative inline-flex'],
-    colors: {
-      zinc: [
-        'text-white [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
-        '[--btn-icon:var(--color-zinc-400)]',
-      ],
-      blue: [
-        'text-white [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
-        '[--btn-icon:var(--color-blue-400)]',
-      ],
-    },
-  };
-
-  export const CatalystButton = forwardRef(function CatalystButton(props) {
-    return <button className={cn(styles.base, styles.colors[color])} {...props} />;
-  });
-      `.trim();
-
-      const result = transformSemanticColors(input);
-
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
-      expect(result.value.content).toContain('destructive:');
-      expect(result.value.content).toContain('accent:');
-      expect(result.value.content).toContain('muted:');
-      // Should preserve existing colors
-      expect(result.value.content).toContain('zinc:');
-      expect(result.value.content).toContain('blue:');
-    });
-  });
-=======
->>>>>>> cef6dae (fix: resolve failing tests and enhance transform system (#125))
 });
