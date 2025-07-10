@@ -1,4 +1,4 @@
-import type { Result, ValidationError, Validator, ComposableValidator } from './types.js';
+import type { ValidationError, Validator, ComposableValidator } from './types.js';
 import { Ok, Err } from './types.js';
 
 export const isString = (value: unknown): value is string => typeof value === 'string';
@@ -96,7 +96,7 @@ export const array =
     const results: T[] = [];
     for (let i = 0; i < value.length; i++) {
       const result = itemValidator(value[i]);
-      if (!result.success) {
+      if (result.isErr()) {
         return Err(
           `${field || 'Array'}[${i}]: ${result.error.message}`,
           `${field || 'array'}[${i}]`
@@ -124,11 +124,11 @@ export const field =
   ): Validator<T> =>
   value => {
     if (!isObject(value)) {
-      return Err(`Value must be an object to validate field ${fieldName}`);
+      return Err<T>(`Value must be an object to validate field ${fieldName}`);
     }
     const fieldResult = validator(value[fieldName]);
-    if (!fieldResult.success) {
-      return fieldResult;
+    if (fieldResult.isErr()) {
+      return Err<T>(fieldResult.error.message, fieldResult.error.field, fieldResult.error.cause);
     }
     return Ok(value as T);
   };
@@ -143,10 +143,12 @@ export function createValidator<T>(validator: Validator<T>): ComposableValidator
     and<U>(other: ComposableValidator<U>): ComposableValidator<T & U> {
       return createValidator(value => {
         const result1 = validator(value);
-        if (!result1.success) return result1;
+        if (result1.isErr())
+          return Err<T & U>(result1.error.message, result1.error.field, result1.error.cause);
 
         const result2 = other.validate(value);
-        if (!result2.success) return result2;
+        if (result2.isErr())
+          return Err<T & U>(result2.error.message, result2.error.field, result2.error.cause);
 
         return Ok({ ...result1.value, ...result2.value } as T & U);
       });
@@ -155,12 +157,12 @@ export function createValidator<T>(validator: Validator<T>): ComposableValidator
     or<U>(other: ComposableValidator<U>): ComposableValidator<T | U> {
       return createValidator(value => {
         const result1 = validator(value);
-        if (result1.success) return result1 as Result<T | U, ValidationError>;
+        if (result1.isOk()) return Ok(result1.value as T | U);
 
         const result2 = other.validate(value);
-        if (result2.success) return result2 as Result<T | U, ValidationError>;
+        if (result2.isOk()) return Ok(result2.value as T | U);
 
-        return Err(
+        return Err<T | U>(
           `Neither validation passed: ${result1.error.message} OR ${result2.error.message}`
         );
       });
@@ -169,12 +171,15 @@ export function createValidator<T>(validator: Validator<T>): ComposableValidator
     map<U>(fn: (value: T) => U): ComposableValidator<U> {
       return createValidator(value => {
         const result = validator(value);
-        if (!result.success) return result;
+        if (result.isErr())
+          return Err<U>(result.error.message, result.error.field, result.error.cause);
 
         try {
           return Ok(fn(result.value));
         } catch (error) {
-          return Err(`Mapping failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          return Err<U>(
+            `Mapping failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
         }
       });
     },
@@ -182,9 +187,10 @@ export function createValidator<T>(validator: Validator<T>): ComposableValidator
     mapError(fn: (error: ValidationError) => ValidationError): ComposableValidator<T> {
       return createValidator(value => {
         const result = validator(value);
-        if (result.success) return result;
+        if (result.isOk()) return result;
 
-        return { success: false, error: fn(result.error) };
+        const newError = fn(result.error);
+        return Err(newError.message, newError.field, newError.cause);
       });
     },
   };
@@ -197,7 +203,7 @@ export const pattern =
   (regex: RegExp, message: string, field?: string): Validator<string> =>
   value => {
     const stringResult = string(field)(value);
-    if (!stringResult.success) return stringResult;
+    if (stringResult.isErr()) return stringResult;
 
     if (!regex.test(stringResult.value)) {
       return Err(message, field);
@@ -213,7 +219,7 @@ export const stringLength =
   (min?: number, max?: number, field?: string): Validator<string> =>
   value => {
     const stringResult = string(field)(value);
-    if (!stringResult.success) return stringResult;
+    if (stringResult.isErr()) return stringResult;
 
     const str = stringResult.value;
 
@@ -235,7 +241,7 @@ export const numberRange =
   (min?: number, max?: number, field?: string): Validator<number> =>
   value => {
     const numberResult = number(field)(value);
-    if (!numberResult.success) return numberResult;
+    if (numberResult.isErr()) return numberResult;
 
     const num = numberResult.value;
 
@@ -257,10 +263,11 @@ export const enumValue =
   <T extends string>(values: readonly T[], field?: string): Validator<T> =>
   value => {
     const stringResult = string(field)(value);
-    if (!stringResult.success) return stringResult;
+    if (stringResult.isErr())
+      return Err<T>(stringResult.error.message, stringResult.error.field, stringResult.error.cause);
 
     if (!values.includes(stringResult.value as T)) {
-      return Err(`${field || 'Value'} must be one of: ${values.join(', ')}`, field);
+      return Err<T>(`${field || 'Value'} must be one of: ${values.join(', ')}`, field);
     }
 
     return Ok(stringResult.value as T);
@@ -290,7 +297,7 @@ export const withDefault =
     }
 
     const result = validator(value);
-    if (!result.success) {
+    if (result.isErr()) {
       return Ok(defaultValue);
     }
 

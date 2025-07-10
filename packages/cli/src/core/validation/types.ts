@@ -1,13 +1,14 @@
+import type { Result as NeverthrowResult } from 'neverthrow';
+import { ok, err } from 'neverthrow';
+
+export type Result<T, E = ValidationError> = NeverthrowResult<T, E>;
+
 export interface ValidationError {
   readonly type: 'ValidationError';
   readonly message: string;
   readonly field?: string;
   readonly cause?: unknown;
 }
-
-export type Result<T, E = ValidationError> =
-  | { readonly success: true; readonly value: T }
-  | { readonly success: false; readonly error: E };
 
 export interface ValidationRule<T, C = unknown> {
   readonly name: string;
@@ -40,24 +41,19 @@ export interface ValidationSummary {
   readonly overall: 'pass' | 'fail' | 'warning';
 }
 
-export const Ok = <T>(value: T): Result<T, ValidationError> => ({
-  success: true,
-  value,
-});
+export const Ok = <T>(value: T): Result<T, ValidationError> => ok(value);
 
-export const Err = (
+export const Err = <T = never>(
   message: string,
   field?: string,
   cause?: unknown
-): Result<never, ValidationError> => ({
-  success: false,
-  error: {
+): Result<T, ValidationError> =>
+  err({
     type: 'ValidationError',
     message,
     field,
     cause,
-  },
-});
+  }) as Result<T, ValidationError>;
 
 /**
  * Validator function type

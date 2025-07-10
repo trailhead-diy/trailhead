@@ -36,14 +36,19 @@ export const semver =
   (field?: string): Validator<SemVer> =>
   value => {
     const stringResult = string(field)(value);
-    if (!stringResult.success) return stringResult;
+    if (stringResult.isErr())
+      return Err<SemVer>(
+        stringResult.error.message,
+        stringResult.error.field,
+        stringResult.error.cause
+      );
 
     const version = stringResult.value.replace(/^[~^]/, '');
     const regex = /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.-]+))?(?:\+([a-zA-Z0-9.-]+))?$/;
     const match = version.match(regex);
 
     if (!match) {
-      return Err(`Invalid semantic version format: ${version}`, field);
+      return Err<SemVer>(`Invalid semantic version format: ${version}`, field);
     }
 
     const [, major, minor, patch, prerelease, build] = match;
@@ -175,7 +180,7 @@ export const installOptions: Validator<InstallOptions> = createValidator(object(
     obj.framework !== undefined
       ? (() => {
           const result = framework(obj.framework);
-          if (!result.success) throw new Error(result.error.message);
+          if (result.isErr()) throw new Error(result.error.message);
           return result.value;
         })()
       : undefined;
@@ -184,7 +189,7 @@ export const installOptions: Validator<InstallOptions> = createValidator(object(
     obj.destinationDir !== undefined
       ? (() => {
           const result = directoryPath('destinationDir')(obj.destinationDir);
-          if (!result.success) throw new Error(result.error.message);
+          if (result.isErr()) throw new Error(result.error.message);
           return result.value;
         })()
       : undefined;
@@ -193,7 +198,7 @@ export const installOptions: Validator<InstallOptions> = createValidator(object(
     obj.catalystDir !== undefined
       ? (() => {
           const result = directoryPath('catalystDir')(obj.catalystDir);
-          if (!result.success) throw new Error(result.error.message);
+          if (result.isErr()) throw new Error(result.error.message);
           return result.value;
         })()
       : undefined;
@@ -225,13 +230,14 @@ export const jsonContent =
   <T = unknown>(field?: string): Validator<T> =>
   value => {
     const stringResult = string(field)(value);
-    if (!stringResult.success) return stringResult;
+    if (stringResult.isErr())
+      return Err<T>(stringResult.error.message, stringResult.error.field, stringResult.error.cause);
 
     try {
       const parsed = JSON.parse(stringResult.value);
       return Ok(parsed as T);
     } catch (error) {
-      return Err(
+      return Err<T>(
         `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
         field
       );
@@ -282,19 +288,19 @@ export interface ProjectConfig {
 export const projectConfig: Validator<ProjectConfig> = createValidator(object()).map(obj => {
   // Required fields
   const projectRoot = nonEmptyString('projectRoot')(obj.projectRoot);
-  if (!projectRoot.success) throw new Error(projectRoot.error.message);
+  if (projectRoot.isErr()) throw new Error(projectRoot.error.message);
 
   const componentsDir = nonEmptyString('componentsDir')(obj.componentsDir);
-  if (!componentsDir.success) throw new Error(componentsDir.error.message);
+  if (componentsDir.isErr()) throw new Error(componentsDir.error.message);
 
   const libDir = nonEmptyString('libDir')(obj.libDir);
-  if (!libDir.success) throw new Error(libDir.error.message);
+  if (libDir.isErr()) throw new Error(libDir.error.message);
 
   // Optional fields
   let catalystDir: string | undefined;
   if (obj.catalystDir !== undefined) {
     const result = nonEmptyString('catalystDir')(obj.catalystDir);
-    if (!result.success) throw new Error(result.error.message);
+    if (result.isErr()) throw new Error(result.error.message);
     catalystDir = result.value;
   }
 

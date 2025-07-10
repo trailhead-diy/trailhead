@@ -6,9 +6,10 @@
  */
 
 import { z } from 'zod';
-import type { Result } from '../core/errors/types.js';
+import type { Result } from 'neverthrow';
+import { ok, err } from 'neverthrow';
 import type { ValidationError } from '../core/errors/types.js';
-import { Ok, Err, validationError } from '../core/errors/factory.js';
+import { validationError } from '../core/errors/factory.js';
 
 /**
  * Convert Zod error to ValidationError
@@ -24,17 +25,17 @@ function zodErrorToValidationError(error: z.ZodError): ValidationError {
 export function validateEmail(email: string): Result<string, ValidationError> {
   // Check for empty string first
   if (!email || email.trim().length === 0) {
-    return Err(validationError('Email is required'));
+    return err(validationError('Email is required'));
   }
 
   const schema = z.string().email('Invalid email format');
   const result = schema.safeParse(email);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -43,7 +44,7 @@ export function validateEmail(email: string): Result<string, ValidationError> {
 export function validatePhoneNumber(phone: string): Result<string, ValidationError> {
   // Check for empty string first
   if (!phone || phone.trim().length === 0) {
-    return Err(validationError('Phone number is required'));
+    return err(validationError('Phone number is required'));
   }
 
   const schema = z
@@ -52,10 +53,10 @@ export function validatePhoneNumber(phone: string): Result<string, ValidationErr
   const result = schema.safeParse(phone);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -64,17 +65,17 @@ export function validatePhoneNumber(phone: string): Result<string, ValidationErr
 export function validateUrl(url: string): Result<string, ValidationError> {
   // Check for empty string first
   if (!url || url.trim().length === 0) {
-    return Err(validationError('URL is required'));
+    return err(validationError('URL is required'));
   }
 
   const schema = z.string().url('Invalid URL format');
   const result = schema.safeParse(url);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -94,10 +95,10 @@ export function validateStringLength(
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -121,10 +122,10 @@ export function validateNumberRange(
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -137,10 +138,10 @@ export function validateRequired<T>(value: T | null | undefined): Result<T, Vali
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -158,10 +159,10 @@ export function validateCurrency(value: number): Result<number, ValidationError>
   const result = schema.safeParse(value);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
-  return Ok(result.data);
+  return ok(result.data);
 }
 
 /**
@@ -170,7 +171,7 @@ export function validateCurrency(value: number): Result<number, ValidationError>
 export function validateDate(dateString: string): Result<Date, ValidationError> {
   // Check for empty string first
   if (!dateString || dateString.trim().length === 0) {
-    return Err(validationError('Date is required'));
+    return err(validationError('Date is required'));
   }
 
   const schema = z
@@ -180,15 +181,15 @@ export function validateDate(dateString: string): Result<Date, ValidationError> 
   const result = schema.safeParse(dateString);
 
   if (!result.success) {
-    return Err(zodErrorToValidationError(result.error));
+    return err(zodErrorToValidationError(result.error));
   }
 
   const date = new Date(result.data);
   if (isNaN(date.getTime())) {
-    return Err(validationError('Invalid date format'));
+    return err(validationError('Invalid date format'));
   }
 
-  return Ok(date);
+  return ok(date);
 }
 
 /**
@@ -202,20 +203,20 @@ export function validateArray<T>(
   const arrayResult = schema.safeParse(items);
 
   if (!arrayResult.success) {
-    return Err(zodErrorToValidationError(arrayResult.error));
+    return err(zodErrorToValidationError(arrayResult.error));
   }
 
   const validatedItems: T[] = [];
 
   for (let i = 0; i < items.length; i++) {
     const result = validator(items[i]);
-    if (!result.success) {
-      return Err(validationError(`Item at index ${i}: ${result.error.message}`));
+    if (result.isErr()) {
+      return err(validationError(`Item at index ${i}: ${result.error.message}`));
     }
     validatedItems.push(result.value);
   }
 
-  return Ok(validatedItems);
+  return ok(validatedItems);
 }
 
 /**
@@ -229,7 +230,7 @@ export function validateObject<T extends Record<string, any>>(
   const objectResult = schema.safeParse(obj);
 
   if (!objectResult.success) {
-    return Err(zodErrorToValidationError(objectResult.error));
+    return err(zodErrorToValidationError(objectResult.error));
   }
 
   const validatedObj = { ...obj };
@@ -238,18 +239,18 @@ export function validateObject<T extends Record<string, any>>(
     const fieldValue = obj[field as keyof T];
     const result = validator(fieldValue);
 
-    if (!result.success) {
-      return Err(validationError(`Field ${field}: ${result.error.message}`));
+    if (result.isErr()) {
+      return err(validationError(`Field ${field}: ${result.error.message}`));
     }
 
     validatedObj[field as keyof T] = result.value;
   }
 
-  return Ok(validatedObj);
+  return ok(validatedObj);
 }
 
-// Re-export core utilities for convenience
-export { isOk, isErr, unwrap, unwrapOr, map, chain, Ok, Err } from '../core/errors/index.js';
+// Re-export neverthrow utilities for convenience
+export { ok, err } from 'neverthrow';
 
 export type { Result, ValidationError } from '../core/errors/types.js';
 
