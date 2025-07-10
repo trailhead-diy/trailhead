@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createCLI } from '../cli.js';
 import type { Command, CommandContext } from '../command/types.js';
-import { Ok, Err } from '../core/errors/index.js';
+import { ok, err } from 'neverthrow';
 
 // Mock process.exit to prevent test suite from exiting
 const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
@@ -36,7 +36,7 @@ describe('CLI Integration Tests', () => {
       const mockCommand: Command = {
         name: 'test',
         description: 'Test command',
-        execute: vi.fn().mockResolvedValue(Ok(undefined)),
+        execute: vi.fn().mockResolvedValue(ok(undefined)),
       };
 
       const cli = createCLI({
@@ -52,7 +52,7 @@ describe('CLI Integration Tests', () => {
 
   describe('run', () => {
     it('should execute simple command successfully', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'build',
         description: 'Build command',
@@ -80,7 +80,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should handle command with options', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'build',
         description: 'Build command',
@@ -120,7 +120,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should handle required options', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'deploy',
         description: 'Deploy command',
@@ -152,7 +152,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should handle verbose flag', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'build',
         description: 'Build command',
@@ -176,7 +176,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should handle positional arguments', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'process',
         description: 'Process files',
@@ -208,7 +208,7 @@ describe('CLI Integration Tests', () => {
       let capturedContext: CommandContext | undefined;
       const mockExecute = vi.fn().mockImplementation((options, context) => {
         capturedContext = context;
-        return Promise.resolve(Ok(undefined));
+        return Promise.resolve(ok(undefined));
       });
 
       const mockCommand: Command = {
@@ -236,7 +236,7 @@ describe('CLI Integration Tests', () => {
 
     it('should exit with code 1 on command error', async () => {
       const mockExecute = vi.fn().mockResolvedValue(
-        Err({
+        err({
           code: 'TEST_ERROR',
           message: 'Test error occurred',
           suggestion: 'Try again',
@@ -310,7 +310,7 @@ describe('CLI Integration Tests', () => {
     });
 
     it('should handle command with default option values', async () => {
-      const mockExecute = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockExecute = vi.fn().mockResolvedValue(ok(undefined));
       const mockCommand: Command = {
         name: 'build',
         description: 'Build command',

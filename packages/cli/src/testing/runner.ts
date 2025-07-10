@@ -1,5 +1,6 @@
 import type { Command, CommandContext } from '../command/index.js';
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 import { createTestContext } from './context.js';
 
 /**
@@ -9,7 +10,7 @@ export async function runCommand<T>(
   command: Command<T>,
   options: T,
   context?: CommandContext
-): Promise<Result<void>> {
+): Promise<Result<void, CLIError>> {
   const testContext = context ?? createTestContext();
   return command.execute(options, testContext);
 }
@@ -41,7 +42,7 @@ export function createCommandTestRunner<T>(
 export async function runTestCommand<T>(
   state: CommandTestRunnerState<T>,
   options: T
-): Promise<Result<void>> {
+): Promise<Result<void, CLIError>> {
   return state.command.execute(options, state.context);
 }
 
@@ -53,7 +54,7 @@ export async function runTestCommandExpectSuccess<T>(
   options: T
 ): Promise<void> {
   const result = await runTestCommand(state, options);
-  if (!result.success) {
+  if (result.isErr()) {
     throw new Error(`Command failed: ${result.error.message}`);
   }
 }
@@ -67,7 +68,7 @@ export async function runTestCommandExpectError<T>(
   errorCode?: string
 ): Promise<void> {
   const result = await runTestCommand(state, options);
-  if (result.success) {
+  if (result.isOk()) {
     throw new Error('Expected command to fail, but it succeeded');
   }
   if (errorCode && result.error.code !== errorCode) {

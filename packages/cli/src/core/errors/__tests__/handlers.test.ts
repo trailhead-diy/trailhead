@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { err as neverthrowErr } from 'neverthrow';
 import chalk from 'chalk';
 import {
   formatError,
@@ -20,7 +21,7 @@ import {
   filterBySeverity,
 } from '../handlers.js';
 import type { CLIError, ErrorChain, SeverityError } from '../types.js';
-import { Ok, Err } from '../factory.js';
+import { ok, err, errAsync } from '../utils.js';
 
 // Mock process.exit
 const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
@@ -355,12 +356,15 @@ describe('Error Handlers', () => {
 
   describe('tryRecover', () => {
     it('should return original result if successful', async () => {
-      const result = Ok('success');
+      const result = ok('success');
       const recovery = vi.fn();
 
       const recovered = await tryRecover(result, recovery);
 
-      expect(recovered).toBe(result);
+      expect(recovered.isOk()).toBe(true);
+      if (recovered.isOk()) {
+        expect(recovered.value).toBe('success');
+      }
       expect(recovery).not.toHaveBeenCalled();
     });
 
@@ -370,14 +374,16 @@ describe('Error Handlers', () => {
         message: 'Recoverable',
         recoverable: true,
       };
-      const result = Err(error);
-      const recovery = vi.fn().mockResolvedValue(Ok('recovered'));
+      const result = err(error);
+      const recovery = vi.fn().mockResolvedValue(ok('recovered'));
 
       const recovered = await tryRecover(result, recovery);
 
       expect(recovery).toHaveBeenCalledWith(error);
-      expect(recovered.success).toBe(true);
-      expect(recovered.value).toBe('recovered');
+      expect(recovered.isOk()).toBe(true);
+      if (recovered.isOk()) {
+        expect(recovered.value).toBe('recovered');
+      }
     });
 
     it('should not attempt recovery for non-recoverable errors', async () => {
@@ -386,13 +392,13 @@ describe('Error Handlers', () => {
         message: 'Fatal',
         recoverable: false,
       };
-      const result = Err(error);
+      const result = err(error);
       const recovery = vi.fn();
 
       const recovered = await tryRecover(result, recovery);
 
       expect(recovery).not.toHaveBeenCalled();
-      expect(recovered).toBe(result);
+      expect(recovered.isErr()).toBe(true);
     });
   });
 
@@ -406,12 +412,14 @@ describe('Error Handlers', () => {
     });
 
     it('should return successful result immediately', async () => {
-      const operation = vi.fn().mockResolvedValue(Ok('success'));
+      const operation = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await retryWithBackoff(operation);
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('success');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('success');
+      }
       expect(operation).toHaveBeenCalledTimes(1);
     });
 
@@ -424,17 +432,19 @@ describe('Error Handlers', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       const result = await retryWithBackoff(operation, {
         maxRetries: 3,
         initialDelay: 10, // Use smaller delays for testing
       });
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('success');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('success');
+      }
       expect(operation).toHaveBeenCalledTimes(3);
     });
 
@@ -445,11 +455,11 @@ describe('Error Handlers', () => {
         recoverable: false,
       };
 
-      const operation = vi.fn().mockResolvedValue(Err(error));
+      const operation = vi.fn().mockResolvedValue(err(error));
 
       const result = await retryWithBackoff(operation);
 
-      expect(result.success).toBe(false);
+      expect(result.isErr()).toBe(true);
       expect(operation).toHaveBeenCalledTimes(1);
     });
 
@@ -460,14 +470,14 @@ describe('Error Handlers', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn().mockResolvedValue(Err(error));
+      const operation = vi.fn().mockResolvedValue(err(error));
 
       const result = await retryWithBackoff(operation, {
         maxRetries: 2,
         initialDelay: 10,
       });
 
-      expect(result.success).toBe(false);
+      expect(result.isErr()).toBe(true);
       expect(operation).toHaveBeenCalledTimes(3); // Initial + 2 retries
     });
 
@@ -478,7 +488,7 @@ describe('Error Handlers', () => {
         recoverable: true,
       };
 
-      const _operation = vi.fn().mockResolvedValue(Err(error));
+      const _operation = vi.fn().mockResolvedValue(neverthrowErr(error));
       const _delays: number[] = [];
 
       // Skip this test as p-retry handles backoff internally
@@ -488,12 +498,15 @@ describe('Error Handlers', () => {
 
   describe('mapError', () => {
     it('should return successful result unchanged', () => {
-      const result = Ok('success');
+      const result = ok('success');
       const mapper = vi.fn();
 
       const mapped = mapError(result, mapper);
 
-      expect(mapped).toBe(result);
+      expect(mapped.isOk()).toBe(true);
+      if (mapped.isOk()) {
+        expect(mapped.value).toBe('success');
+      }
       expect(mapper).not.toHaveBeenCalled();
     });
 
@@ -504,7 +517,7 @@ describe('Error Handlers', () => {
         recoverable: false,
       };
 
-      const result = Err(error);
+      const result = err(error);
       const mapper = vi.fn().mockReturnValue({
         code: 'MAPPED_ERROR',
         message: 'Mapped',
@@ -514,8 +527,10 @@ describe('Error Handlers', () => {
       const mapped = mapError(result, mapper);
 
       expect(mapper).toHaveBeenCalledWith(error);
-      expect(mapped.success).toBe(false);
-      expect(mapped.error?.message).toBe('Mapped');
+      expect(mapped.isErr()).toBe(true);
+      if (mapped.isErr()) {
+        expect(mapped.error.message).toBe('Mapped');
+      }
     });
   });
 
@@ -527,7 +542,7 @@ describe('Error Handlers', () => {
         recoverable: false,
       };
 
-      const result = Promise.resolve(Err(error));
+      const result = errAsync(error);
       const mapper = vi.fn().mockResolvedValue({
         code: 'MAPPED_ASYNC_ERROR',
         message: 'Mapped async',
@@ -537,8 +552,10 @@ describe('Error Handlers', () => {
       const mapped = await mapErrorAsync(result, mapper);
 
       expect(mapper).toHaveBeenCalledWith(error);
-      expect(mapped.success).toBe(false);
-      expect(mapped.error?.message).toBe('Mapped async');
+      expect(mapped.isErr()).toBe(true);
+      if (mapped.isErr()) {
+        expect(mapped.error.message).toBe('Mapped async');
+      }
     });
   });
 
@@ -584,11 +601,11 @@ describe('Error Handlers', () => {
   describe('collectErrors', () => {
     it('should separate successful results from errors', () => {
       const results = [
-        Ok('value1'),
-        Err({ code: 'ERROR_1', message: 'Error 1', recoverable: true }),
-        Ok('value2'),
-        Err({ code: 'ERROR_2', message: 'Error 2', recoverable: false }),
-        Ok('value3'),
+        ok('value1'),
+        err({ code: 'ERROR_1', message: 'Error 1', recoverable: true }),
+        ok('value2'),
+        err({ code: 'ERROR_2', message: 'Error 2', recoverable: false }),
+        ok('value3'),
       ];
 
       const { values, errors } = collectErrors(results);

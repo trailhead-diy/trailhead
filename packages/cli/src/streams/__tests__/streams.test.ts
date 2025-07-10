@@ -58,9 +58,9 @@ describe('Stream Utils', () => {
       const filepath = createTempFile(content);
 
       const result = createReadStream(filepath);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value).toBeDefined();
       }
     });
@@ -69,9 +69,9 @@ describe('Stream Utils', () => {
       // Note: Node.js createReadStream doesn't fail synchronously for non-existent files
       // The error occurs when you try to read from the stream
       const result = createReadStream('/non/existent/file.txt');
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value).toBeDefined();
         // The stream will emit an error event when reading starts
         // Add error handler to prevent unhandled errors
@@ -90,7 +90,7 @@ describe('Stream Utils', () => {
         highWaterMark: 1024,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -100,9 +100,9 @@ describe('Stream Utils', () => {
       tempFiles.push(filepath);
 
       const result = createWriteStream(filepath);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value).toBeDefined();
         result.value.end(); // Close the stream
       }
@@ -117,8 +117,8 @@ describe('Stream Utils', () => {
         flags: 'w',
       });
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         result.value.end();
       }
     });
@@ -129,7 +129,7 @@ describe('Stream Utils', () => {
       const transformer = (chunk: string) => chunk.toUpperCase();
       const result = createTransformStream(transformer);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles async transformers', () => {
@@ -139,7 +139,7 @@ describe('Stream Utils', () => {
       };
 
       const result = createTransformStream(transformer);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles transformer errors', async () => {
@@ -148,9 +148,9 @@ describe('Stream Utils', () => {
       };
 
       const result = createTransformStream(transformer);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const transform = result.value;
         const errorPromise = new Promise(resolve => {
           transform.on('error', resolve);
@@ -168,7 +168,7 @@ describe('Stream Utils', () => {
       const predicate = (chunk: string) => chunk.length > 3;
       const result = createFilterStream(predicate);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles async predicates', () => {
@@ -178,7 +178,7 @@ describe('Stream Utils', () => {
       };
 
       const result = createFilterStream(predicate);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -187,7 +187,7 @@ describe('Stream Utils', () => {
       const mapper = (chunk: string, index: number) => `${index}: ${chunk}`;
       const result = createMapStream(mapper);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles async mappers', () => {
@@ -197,7 +197,7 @@ describe('Stream Utils', () => {
       };
 
       const result = createMapStream(mapper);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -209,7 +209,7 @@ describe('Stream Utils', () => {
       };
 
       const result = createStatsStream(statsCallback);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('tracks stream statistics', async () => {
@@ -219,9 +219,9 @@ describe('Stream Utils', () => {
       };
 
       const result = createStatsStream(statsCallback, { objectMode: false });
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const statsStream = result.value;
 
         return new Promise<void>(resolve => {
@@ -249,21 +249,21 @@ describe('Stream Utils', () => {
       const readResult = createReadStream(inputFile);
       const writeResult = createWriteStream(outputFile);
 
-      expect(readResult.success).toBe(true);
-      expect(writeResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
-      if (readResult.success && writeResult.success) {
+      if (readResult.isOk() && writeResult.isOk()) {
         const result = await pipeline(readResult.value, writeResult.value);
-        expect(result.success).toBe(true);
+        expect(result.isOk()).toBe(true);
       }
     });
 
     it('handles pipeline errors', async () => {
       const readResult = createReadStream('/non/existent/file.txt');
 
-      if (!readResult.success) {
+      if (!readResult.isOk()) {
         // This is expected - the file doesn't exist
-        expect(readResult.success).toBe(false);
+        expect(readResult.isOk()).toBe(false);
       } else {
         // Stream creation succeeded but will error on read
         // Add an error handler to prevent unhandled errors
@@ -280,9 +280,9 @@ describe('Stream Utils', () => {
       const stream = nodeCreateReadStream(createTempFile(content));
 
       const result = await streamToBuffer(stream);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.toString()).toBe(content);
       }
     });
@@ -294,9 +294,9 @@ describe('Stream Utils', () => {
       const stream = nodeCreateReadStream(createTempFile(content));
 
       const result = await streamToString(stream);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value).toBe(content);
       }
     });
@@ -306,9 +306,9 @@ describe('Stream Utils', () => {
       const stream = nodeCreateReadStream(createTempFile(content));
 
       const result = await streamToString(stream, 'utf8');
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value).toBe(content);
       }
     });
@@ -317,44 +317,44 @@ describe('Stream Utils', () => {
   describe('createLineStream', () => {
     it('splits text into lines', () => {
       const result = createLineStream();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles empty lines based on options', () => {
       const skipEmptyResult = createLineStream({ skipEmpty: true });
       const keepEmptyResult = createLineStream({ skipEmpty: false });
 
-      expect(skipEmptyResult.success).toBe(true);
-      expect(keepEmptyResult.success).toBe(true);
+      expect(skipEmptyResult.isOk()).toBe(true);
+      expect(keepEmptyResult.isOk()).toBe(true);
     });
 
     it('handles line trimming', () => {
       const trimResult = createLineStream({ trim: true });
       const noTrimResult = createLineStream({ trim: false });
 
-      expect(trimResult.success).toBe(true);
-      expect(noTrimResult.success).toBe(true);
+      expect(trimResult.isOk()).toBe(true);
+      expect(noTrimResult.isOk()).toBe(true);
     });
   });
 
   describe('createChunkStream', () => {
     it('creates chunk stream with valid size', () => {
       const result = createChunkStream(5);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('rejects invalid chunk sizes', () => {
       const result = createChunkStream(0);
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
 
-      if (!result.success) {
+      if (!result.isOk()) {
         expect(result.error.message).toContain('Chunk size must be greater than 0');
       }
     });
 
     it('rejects negative chunk sizes', () => {
       const result = createChunkStream(-1);
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -372,7 +372,7 @@ describe('Stream Utils', () => {
       const filepath = createTempFile(content);
 
       const result = streamUtils.createReadStream(filepath);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -388,12 +388,12 @@ describe('Stream Utils', () => {
       const mapResult = createMapStream((line: string) => line.toUpperCase());
       const writeResult = createWriteStream(outputFile);
 
-      expect(readResult.success).toBe(true);
-      expect(lineResult.success).toBe(true);
-      expect(mapResult.success).toBe(true);
-      expect(writeResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
+      expect(lineResult.isOk()).toBe(true);
+      expect(mapResult.isOk()).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
-      if (readResult.success && lineResult.success && mapResult.success && writeResult.success) {
+      if (readResult.isOk() && lineResult.isOk() && mapResult.isOk() && writeResult.isOk()) {
         const pipelineResult = await pipeline(
           readResult.value,
           lineResult.value,
@@ -401,7 +401,7 @@ describe('Stream Utils', () => {
           writeResult.value
         );
 
-        expect(pipelineResult.success).toBe(true);
+        expect(pipelineResult.isOk()).toBe(true);
       }
     });
   });

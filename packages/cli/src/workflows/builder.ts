@@ -1,7 +1,7 @@
 import type { ProgressTracker } from '../progress/types.js';
-import type { Result } from '../core/index.js';
+import type { Result, CLIError } from '../core/index.js';
 import { createProgressTracker } from '../progress/tracker.js';
-import { Ok, Err, createError } from '../core/index.js';
+import { ok, err, createError } from '../core/index.js';
 
 /**
  * Workflow step definition with metadata
@@ -130,7 +130,7 @@ export interface WorkflowAPI<T = Record<string, unknown>> {
   /**
    * Execute the workflow
    */
-  execute(initialContext?: Partial<T>): Promise<Result<WorkflowResult<T>>>;
+  execute(initialContext?: Partial<T>): Promise<Result<WorkflowResult<T>, CLIError>>;
 }
 
 /**
@@ -200,7 +200,7 @@ function createWorkflowAPI<T>(config: WorkflowConfig<T>): WorkflowAPI<T> {
 async function executeWorkflow<T>(
   config: WorkflowConfig<T>,
   initialContext: Partial<T>
-): Promise<Result<WorkflowResult<T>>> {
+): Promise<Result<WorkflowResult<T>, CLIError>> {
   const startTime = Date.now();
   const errors: Array<{ step: string; error: Error }> = [];
 
@@ -263,7 +263,7 @@ async function executeWorkflow<T>(
               progressTracker.stop();
               const endTime = Date.now();
 
-              return Ok({
+              return ok({
                 success: false,
                 context: context.getAll(),
                 errors,
@@ -290,7 +290,7 @@ async function executeWorkflow<T>(
     progressTracker.complete();
     const endTime = Date.now();
 
-    return Ok({
+    return ok({
       success: errors.length === 0,
       context: context.getAll(),
       errors,
@@ -305,7 +305,7 @@ async function executeWorkflow<T>(
   } catch (error) {
     progressTracker.stop();
 
-    return Err(
+    return err(
       createError(
         'workflow-execution-error',
         error instanceof Error ? error.message : String(error),

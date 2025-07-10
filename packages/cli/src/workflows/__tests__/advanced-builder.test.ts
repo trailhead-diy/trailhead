@@ -91,7 +91,7 @@ describe('AdvancedWorkflowBuilder', () => {
       );
 
       const result = await workflow.execute();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -113,7 +113,7 @@ describe('AdvancedWorkflowBuilder', () => {
       );
 
       const result = await workflow.execute();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should allow updating step progress', async () => {
@@ -244,8 +244,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(true);
         expect(result.value.metadata).toEqual({
           startTime: expect.any(Number),
@@ -267,8 +267,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.progressState).toBeDefined();
         expect(result.value.progressState.currentStepIndex).toBeDefined();
         expect(result.value.progressState.steps).toBeDefined();
@@ -297,8 +297,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(true);
         expect(result.value.context.processed).toBe(true);
       }
@@ -315,8 +315,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(mockEnhancedProgressTracker.stop).toHaveBeenCalled();
       }
@@ -334,8 +334,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(result.value.context.processed).toBe(true);
       }
@@ -354,7 +354,7 @@ describe('AdvancedWorkflowBuilder', () => {
         });
 
       const result = await workflow.execute();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -379,8 +379,8 @@ describe('AdvancedWorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.context.processed).toBe(true);
       }
     });

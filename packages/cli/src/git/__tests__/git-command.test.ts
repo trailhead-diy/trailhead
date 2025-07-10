@@ -41,8 +41,8 @@ describe('git-command', () => {
 
       const result = await executeGitCommand(['status']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.exitCode).toBe(0);
         expect(result.value.stdout).toBe('test output');
         expect(result.value.command).toBe('git status');
@@ -78,8 +78,8 @@ describe('git-command', () => {
 
       const result = await executeGitCommand(['status']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.exitCode).toBe(128);
         expect(result.value.stderr).toBe('fatal: not a git repository');
       }
@@ -101,8 +101,8 @@ describe('git-command', () => {
 
       const result = await executeGitCommand(['status']);
 
-      expect(!result.success).toBe(true);
-      if (!result.success) {
+      expect(!result.isOk()).toBe(true);
+      if (!result.isOk()) {
         expect(result.error.message).toContain('Failed to execute git command');
       }
     });
@@ -120,8 +120,8 @@ describe('git-command', () => {
       // Use a very short timeout for testing
       const result = await executeGitCommand(['status'], { timeout: 1 });
 
-      expect(!result.success).toBe(true);
-      if (!result.success) {
+      expect(!result.isOk()).toBe(true);
+      if (!result.isOk()) {
         expect(result.error.message).toContain('timed out');
       }
       expect(mockChild.kill).toHaveBeenCalledWith('SIGTERM');
@@ -151,8 +151,8 @@ describe('git-command', () => {
 
       const result = await executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe('main');
       }
     });
@@ -179,8 +179,8 @@ describe('git-command', () => {
 
       const result = await executeGitCommandSimple(['status']);
 
-      expect(!result.success).toBe(true);
-      if (!result.success) {
+      expect(!result.isOk()).toBe(true);
+      if (!result.isOk()) {
         expect(result.error.message).toContain('fatal: not a git repository');
       }
     });
@@ -228,8 +228,8 @@ describe('git-command', () => {
 
       const result = await validateGitEnvironment();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -250,8 +250,8 @@ describe('git-command', () => {
 
       const result = await validateGitEnvironment();
 
-      expect(!result.success).toBe(true);
-      if (!result.success) {
+      expect(!result.isOk()).toBe(true);
+      if (!result.isOk()) {
         expect(result.error.message).toBe('Git is not available or not installed');
       }
     });
@@ -297,8 +297,8 @@ describe('git-command', () => {
 
       const result = await validateGitEnvironment();
 
-      expect(!result.success).toBe(true);
-      if (!result.success) {
+      expect(!result.isOk()).toBe(true);
+      if (!result.isOk()) {
         expect(result.error.message).toBe('Current directory is not a git repository');
       }
     });

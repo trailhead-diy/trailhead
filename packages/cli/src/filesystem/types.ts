@@ -1,4 +1,5 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 
 export interface FileStats {
   size: number;
@@ -36,22 +37,26 @@ export interface RmOptions {
 
 export interface FileSystem {
   // node:fs/promises compatible operations
-  access(path: string, mode?: number): Promise<Result<void>>;
-  readFile(path: string, encoding?: string): Promise<Result<string>>;
-  writeFile(path: string, content: string): Promise<Result<void>>;
-  mkdir(path: string, options?: MkdirOptions): Promise<Result<void>>;
-  readdir(path: string): Promise<Result<string[]>>;
-  stat(path: string): Promise<Result<FileStats>>;
-  rm(path: string, options?: RmOptions): Promise<Result<void>>;
-  cp(src: string, dest: string, options?: CopyOptions): Promise<Result<void>>;
-  rename(src: string, dest: string): Promise<Result<void>>;
+  access(path: string, mode?: number): Promise<Result<void, CLIError>>;
+  readFile(path: string, encoding?: string): Promise<Result<string, CLIError>>;
+  writeFile(path: string, content: string): Promise<Result<void, CLIError>>;
+  mkdir(path: string, options?: MkdirOptions): Promise<Result<void, CLIError>>;
+  readdir(path: string): Promise<Result<string[], CLIError>>;
+  stat(path: string): Promise<Result<FileStats, CLIError>>;
+  rm(path: string, options?: RmOptions): Promise<Result<void, CLIError>>;
+  cp(src: string, dest: string, options?: CopyOptions): Promise<Result<void, CLIError>>;
+  rename(src: string, dest: string): Promise<Result<void, CLIError>>;
 
   // Custom convenience operations (built on native fs)
-  ensureDir(path: string): Promise<Result<void>>;
-  readJson<T = any>(path: string): Promise<Result<T>>;
-  writeJson<T = any>(path: string, data: T, options?: { spaces?: number }): Promise<Result<void>>;
-  emptyDir(path: string): Promise<Result<void>>;
-  outputFile(path: string, content: string): Promise<Result<void>>;
+  ensureDir(path: string): Promise<Result<void, CLIError>>;
+  readJson<T = any>(path: string): Promise<Result<T, CLIError>>;
+  writeJson<T = any>(
+    path: string,
+    data: T,
+    options?: { spaces?: number }
+  ): Promise<Result<void, CLIError>>;
+  emptyDir(path: string): Promise<Result<void, CLIError>>;
+  outputFile(path: string, content: string): Promise<Result<void, CLIError>>;
 
   // For testing
   getFiles?: () => Map<string, string>;

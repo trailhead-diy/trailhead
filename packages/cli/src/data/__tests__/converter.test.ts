@@ -25,8 +25,8 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.convert(csvData, 'csv', 'json');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         const parsed = JSON.parse(result.value as string);
         expect(parsed).toHaveLength(2);
         expect(parsed[0].name).toBe('John');
@@ -39,8 +39,8 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.convert(jsonData, 'json', 'csv');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name');
         expect(result.value).toContain('age');
         expect(result.value).toContain('email');
@@ -54,8 +54,8 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.convert(csvData, 'csv', 'csv');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(csvData);
       }
     });
@@ -64,7 +64,7 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.convert(csvData, 'csv', 'xml' as any);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -73,8 +73,8 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.autoConvert(csvData, 'json');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         const parsed = JSON.parse(result.value as string);
         expect(parsed).toHaveLength(2);
         expect(parsed[0].name).toBe('John');
@@ -85,8 +85,8 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.autoConvert(jsonData, 'csv');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name');
         expect(result.value).toContain('John');
       }
@@ -96,7 +96,7 @@ Jane,25,jane@example.com`;
       const converter = createDataConverter();
       const result = await converter.autoConvert('invalid data', 'json');
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 });
@@ -109,8 +109,8 @@ John,30,john@example.com
 Jane,25,jane@example.com`;
 
       const result = detectFormat(csvData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('csv');
         expect(result.value.confidence).toBeGreaterThan(0.7);
       }
@@ -120,8 +120,8 @@ Jane,25,jane@example.com`;
       const jsonData = `{"name": "John", "age": 30}`;
 
       const result = detectFormat(jsonData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('json');
         expect(result.value.confidence).toBeGreaterThan(0.8);
       }
@@ -131,8 +131,8 @@ Jane,25,jane@example.com`;
       const jsonData = `[{"name": "John"}, {"name": "Jane"}]`;
 
       const result = detectFormat(jsonData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('json');
         expect(result.value.confidence).toBeGreaterThan(0.8);
       }
@@ -140,8 +140,8 @@ Jane,25,jane@example.com`;
 
     it('should return unknown for unrecognized format', () => {
       const result = detectFormat('invalid data format');
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('unknown');
         expect(result.value.confidence).toBe(0);
       }
@@ -149,8 +149,8 @@ Jane,25,jane@example.com`;
 
     it('should handle empty string', () => {
       const result = detectFormat('');
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('unknown');
         expect(result.value.confidence).toBe(0);
       }
@@ -162,8 +162,8 @@ John;30;john@example.com
 Jane;25;jane@example.com`;
 
       const result = detectFormat(csvData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('csv');
         expect(result.value.confidence).toBeGreaterThan(0.7);
       }
@@ -175,8 +175,8 @@ John\t30\tjohn@example.com
 Jane\t25\tjane@example.com`;
 
       const result = detectFormat(csvData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('csv');
         expect(result.value.confidence).toBeGreaterThan(0.7);
       }
@@ -186,8 +186,8 @@ Jane\t25\tjane@example.com`;
       const ambiguousData = `{"name": "John", "values": "1,2,3"}`;
 
       const result = detectFormat(ambiguousData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.format).toBe('json');
       }
     });
@@ -202,8 +202,8 @@ John,30
 Jane,25`;
 
       const result = await conversionUtils.csvToJson(csvData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         const parsed = JSON.parse(result.value);
         expect(parsed).toHaveLength(2);
         expect(parsed[0].name).toBe('John');
@@ -216,8 +216,8 @@ Jane,25`;
       const jsonData = `[{"name": "John", "age": 30}, {"name": "Jane", "age": 25}]`;
 
       const result = await conversionUtils.jsonToCsv(jsonData);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name');
         expect(result.value).toContain('age');
         expect(result.value).toContain('John');
@@ -233,8 +233,8 @@ John,30
 Jane,25`;
 
       const result = await conversionUtils.autoConvertTo(csvData, 'json');
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         const parsed = JSON.parse(result.value as string);
         expect(parsed).toHaveLength(2);
         expect(parsed[0].name).toBe('John');
@@ -250,8 +250,8 @@ John,30`;
 Jane,25`;
 
       const result = await conversionUtils.batchConvert([csvData1, csvData2], 'csv', 'json');
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(2);
         const parsed1 = JSON.parse(result.value[0] as string);
         const parsed2 = JSON.parse(result.value[1] as string);
@@ -266,7 +266,7 @@ John,30`;
       const invalidData = `"unclosed quote,field`; // Malformed CSV with unclosed quote
 
       const result = await conversionUtils.batchConvert([validData, invalidData], 'csv', 'json');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 });

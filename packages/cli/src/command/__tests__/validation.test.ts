@@ -16,7 +16,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should validate valid option with flags', () => {
@@ -26,7 +26,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should validate option with alias', () => {
@@ -37,7 +37,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should fail for option without name or flags', () => {
@@ -46,8 +46,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_OPTION_CONFIG');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_OPTION_CONFIG');
+      }
     });
 
     it('should fail for invalid flags format', () => {
@@ -57,8 +59,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_OPTION_FLAGS_FORMAT');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_OPTION_FLAGS_FORMAT');
+      }
     });
 
     it('should fail for invalid option name', () => {
@@ -68,8 +72,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_OPTION_NAME_FORMAT');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_OPTION_NAME_FORMAT');
+      }
     });
 
     it('should fail for invalid alias', () => {
@@ -80,8 +86,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_OPTION_ALIAS');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_OPTION_ALIAS');
+      }
     });
 
     it('should fail for invalid type', () => {
@@ -92,8 +100,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_OPTION_TYPE');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_OPTION_TYPE');
+      }
     });
 
     it('should fail for missing description', () => {
@@ -102,8 +112,10 @@ describe('Command Validation', () => {
       } as any;
 
       const result = validateCommandOption(option, 0);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('MISSING_OPTION_DESCRIPTION');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('MISSING_OPTION_DESCRIPTION');
+      }
     });
   });
 
@@ -116,7 +128,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should validate command with options', () => {
@@ -139,7 +151,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should validate command with examples', () => {
@@ -151,7 +163,7 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should fail for invalid command name', () => {
@@ -162,8 +174,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_COMMAND_NAME_FORMAT');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_COMMAND_NAME_FORMAT');
+      }
     });
 
     it('should fail for missing description', () => {
@@ -173,8 +187,10 @@ describe('Command Validation', () => {
       } as any;
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_COMMAND_DESCRIPTION');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_COMMAND_DESCRIPTION');
+      }
     });
 
     it('should fail for invalid options array', () => {
@@ -186,8 +202,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_COMMAND_OPTIONS');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_COMMAND_OPTIONS');
+      }
     });
 
     it('should fail for duplicate option names', () => {
@@ -208,8 +226,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('DUPLICATE_OPTION_NAME');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DUPLICATE_OPTION_NAME');
+      }
     });
 
     it('should fail for duplicate option aliases', () => {
@@ -232,8 +252,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('DUPLICATE_OPTION_ALIAS');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DUPLICATE_OPTION_ALIAS');
+      }
     });
 
     it('should fail for missing action', () => {
@@ -243,8 +265,10 @@ describe('Command Validation', () => {
       } as any;
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_COMMAND_ACTION');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_COMMAND_ACTION');
+      }
     });
 
     it('should fail for invalid validation function', () => {
@@ -256,8 +280,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_COMMAND_VALIDATION');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_COMMAND_VALIDATION');
+      }
     });
 
     it('should fail for invalid examples', () => {
@@ -269,8 +295,10 @@ describe('Command Validation', () => {
       };
 
       const result = validateCommandConfig(config);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_EXAMPLE_FORMAT');
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('INVALID_EXAMPLE_FORMAT');
+      }
     });
   });
 
@@ -284,11 +312,11 @@ describe('Command Validation', () => {
 
       // First call should validate
       const result1 = validateCommandConfigWithCache(config);
-      expect(result1.success).toBe(true);
+      expect(result1.isOk()).toBe(true);
 
       // Second call should use cache (we can't easily test this without implementation details)
       const result2 = validateCommandConfigWithCache(config);
-      expect(result2.success).toBe(true);
+      expect(result2.isOk()).toBe(true);
     });
 
     it('should not cache failed validations', () => {
@@ -299,10 +327,10 @@ describe('Command Validation', () => {
       };
 
       const result1 = validateCommandConfigWithCache(config);
-      expect(result1.success).toBe(false);
+      expect(result1.isOk()).toBe(false);
 
       const result2 = validateCommandConfigWithCache(config);
-      expect(result2.success).toBe(false);
+      expect(result2.isOk()).toBe(false);
     });
   });
 });

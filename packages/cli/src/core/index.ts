@@ -1,23 +1,13 @@
 export {
-  Ok,
-  Err,
-  isOk,
-  isErr,
-  unwrap,
-  unwrapOr,
-  map,
-  mapErr,
-  chain,
-  expect,
-  toNullable,
-  toOptional,
-  getErrorMessage,
-  match,
-  all,
-  tryCatch,
-  tryCatchAsync,
+  ok,
+  err,
+  Result,
+  ResultAsync,
+  fromThrowable,
+  fromPromise,
+  safeTry,
 } from './errors/index.js';
-export type { Result, AsyncResult } from './errors/index.js';
+export type { Result as ResultType, ResultAsync as ResultAsyncType } from './errors/index.js';
 
 export {
   createError,

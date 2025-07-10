@@ -1,4 +1,4 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
 
 /**
  * Custom Vitest matchers for Result types
@@ -8,10 +8,10 @@ import type { Result } from '../core/errors/index.js';
 /**
  * Matcher to check if a Result is successful
  */
-const toBeOk = function (this: any, received: Result<any>) {
+const toBeOk = function (this: any, received: Result<any, any>) {
   const { isNot: _isNot } = this;
 
-  if (received.success) {
+  if (received.isOk()) {
     return {
       pass: true,
       message: () => 'Expected Result to be an error, but it was successful',
@@ -27,10 +27,10 @@ const toBeOk = function (this: any, received: Result<any>) {
 /**
  * Matcher to check if a Result is an error
  */
-const toBeErr = function (this: any, received: Result<any>) {
+const toBeErr = function (this: any, received: Result<any, any>) {
   const { isNot: _isNot } = this;
 
-  if (!received.success) {
+  if (received.isErr()) {
     return {
       pass: true,
       message: () => 'Expected Result to be successful, but it was an error',
@@ -46,8 +46,8 @@ const toBeErr = function (this: any, received: Result<any>) {
 /**
  * Matcher to check Result value with custom assertion
  */
-const toHaveValue = function (this: any, received: Result<any>, expected: any) {
-  if (!received.success) {
+const toHaveValue = function (this: any, received: Result<any, any>, expected: any) {
+  if (received.isErr()) {
     return {
       pass: false,
       message: () =>
@@ -69,8 +69,8 @@ const toHaveValue = function (this: any, received: Result<any>, expected: any) {
 /**
  * Matcher to check Result error with custom assertion
  */
-const toHaveError = function (this: any, received: Result<any>, expected: any) {
-  if (received.success) {
+const toHaveError = function (this: any, received: Result<any, any>, expected: any) {
+  if (received.isOk()) {
     return {
       pass: false,
       message: () =>
@@ -92,8 +92,8 @@ const toHaveError = function (this: any, received: Result<any>, expected: any) {
 /**
  * Matcher to check Result error code
  */
-const toHaveErrorCode = function (this: any, received: Result<any>, expectedCode: string) {
-  if (received.success) {
+const toHaveErrorCode = function (this: any, received: Result<any, any>, expectedCode: string) {
+  if (received.isOk()) {
     return {
       pass: false,
       message: () =>
@@ -123,8 +123,12 @@ const toHaveErrorCode = function (this: any, received: Result<any>, expectedCode
 /**
  * Matcher to check Result error message
  */
-const toHaveErrorMessage = function (this: any, received: Result<any>, expected: string | RegExp) {
-  if (received.success) {
+const toHaveErrorMessage = function (
+  this: any,
+  received: Result<any, any>,
+  expected: string | RegExp
+) {
+  if (received.isOk()) {
     return {
       pass: false,
       message: () => `Expected Result to have error message, but Result was successful`,
@@ -159,8 +163,8 @@ const toHaveErrorMessage = function (this: any, received: Result<any>, expected:
 /**
  * Matcher to check array length in Result value
  */
-const toHaveLength = function (this: any, received: Result<any>, expectedLength: number) {
-  if (!received.success) {
+const toHaveLength = function (this: any, received: Result<any, any>, expectedLength: number) {
+  if (received.isErr()) {
     return {
       pass: false,
       message: () =>
@@ -190,8 +194,8 @@ const toHaveLength = function (this: any, received: Result<any>, expectedLength:
 /**
  * Matcher to check if Result value matches a pattern
  */
-const toMatchResult = function (this: any, received: Result<any>, expected: any) {
-  if (!received.success) {
+const toMatchResult = function (this: any, received: Result<any, any>, expected: any) {
+  if (received.isErr()) {
     return {
       pass: false,
       message: () =>

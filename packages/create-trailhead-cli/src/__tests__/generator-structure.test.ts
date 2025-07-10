@@ -46,7 +46,7 @@ describe('Generator Structure Tests', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // Check main structure
       expect(existsSync(join(tempDir, 'package.json'))).toBe(true);
@@ -80,7 +80,7 @@ describe('Generator Structure Tests', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // Check command files
       expect(existsSync(join(tempDir, 'src/commands/config.ts'))).toBe(true);
@@ -111,7 +111,7 @@ describe('Generator Structure Tests', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // Check that .hbs extensions are removed
       expect(existsSync(join(tempDir, 'src/commands/build.ts.hbs'))).toBe(false);
@@ -144,7 +144,7 @@ describe('Generator Structure Tests', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.message).toContain('Invalid enum value');
     });
 
@@ -161,7 +161,7 @@ describe('Generator Structure Tests', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // No files should be created in dry run mode
       expect(existsSync(tempDir)).toBe(false);

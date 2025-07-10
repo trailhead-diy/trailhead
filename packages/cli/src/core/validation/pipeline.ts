@@ -34,7 +34,7 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
       try {
         const result = await Promise.resolve(rule.validate(value, context));
 
-        if (result.success) {
+        if (result.isOk()) {
           results.push({
             rule: rule.name,
             passed: true,
@@ -73,7 +73,7 @@ class ValidationPipelineImpl<T, C extends ValidationContext = ValidationContext>
           throw new Error(`Rule "${rule.name}" is async but validateSync was called`);
         }
 
-        if (result.success) {
+        if (result.isOk()) {
           results.push({
             rule: rule.name,
             passed: true,

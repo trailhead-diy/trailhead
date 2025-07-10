@@ -1,5 +1,5 @@
 import type { FileSystem } from './types.js';
-import { Ok, Err } from '../core/errors/index.js';
+import { ok, err } from 'neverthrow';
 import { posix, win32 } from 'path';
 
 /**
@@ -56,14 +56,14 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
       const normalizedPath = normalizePath(path);
       const content = files.get(normalizedPath);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'ENOENT',
           message: `File not found: ${path}`,
           path,
           recoverable: true,
         });
       }
-      return Ok(content);
+      return ok(content);
     },
 
     async writeFile(path: string, content: string) {
@@ -76,7 +76,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     async mkdir(path: string) {
@@ -89,13 +89,13 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     async readdir(path: string) {
       const normalizedPath = normalizePath(path);
       if (!directories.has(normalizedPath) && normalizedPath !== '.') {
-        return Err({
+        return err({
           code: 'ENOENT',
           message: `Directory not found: ${path}`,
           path,
@@ -131,7 +131,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         }
       }
 
-      return Ok(entries);
+      return ok(entries);
     },
 
     async ensureDir(path: string) {
@@ -140,15 +140,15 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
 
     async readJson<T = any>(path: string) {
       const result = await this.readFile(path);
-      if (!result.success) {
-        return result;
+      if (result.isErr()) {
+        return err(result.error);
       }
 
       try {
         const data = JSON.parse(result.value) as T;
-        return Ok(data);
+        return ok(data);
       } catch {
-        return Err({
+        return err({
           code: 'JSON_PARSE_ERROR',
           message: `Failed to parse JSON in ${path}`,
           path,
@@ -184,7 +184,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         }
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     async outputFile(path: string, content: string) {
@@ -196,9 +196,9 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
     async access(path: string, _mode?: number) {
       const normalizedPath = normalizePath(path);
       if (files.has(normalizedPath) || directories.has(normalizedPath)) {
-        return Ok(undefined);
+        return ok(undefined);
       }
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
@@ -210,21 +210,21 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
       const normalizedPath = normalizePath(path);
       if (files.has(normalizedPath)) {
         const content = files.get(normalizedPath) || '';
-        return Ok({
+        return ok({
           size: content.length,
           isFile: true,
           isDirectory: false,
           mtime: new Date(),
         });
       } else if (directories.has(normalizedPath)) {
-        return Ok({
+        return ok({
           size: 0,
           isFile: false,
           isDirectory: true,
           mtime: new Date(),
         });
       }
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
@@ -238,7 +238,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
       // Remove file if it exists
       if (files.has(normalizedPath)) {
         files.delete(normalizedPath);
-        return Ok(undefined);
+        return ok(undefined);
       }
 
       // Remove directory and all its contents
@@ -260,10 +260,10 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
           }
         }
 
-        return Ok(undefined);
+        return ok(undefined);
       }
 
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
@@ -276,7 +276,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'ENOENT',
           message: `Source file not found: ${src}`,
           path: src,
@@ -291,7 +291,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     async rename(src: string, dest: string) {
@@ -299,7 +299,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'ENOENT',
           message: `Source file not found: ${src}`,
           path: src,
@@ -315,7 +315,7 @@ export function createMemoryFileSystem(initialFiles: Record<string, string> = {}
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     // Test helpers

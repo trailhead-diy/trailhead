@@ -57,10 +57,14 @@ export interface WatcherInstance {
   readonly watcher: FSWatcher;
   readonly options: WatchOptions;
   readonly stats: WatcherStats;
-  readonly start: () => Promise<Result<void>>;
-  readonly stop: () => Promise<Result<void>>;
-  readonly add: (paths: string | string[]) => Result<void>;
-  readonly unwatch: (paths: string | string[]) => Result<void>;
+  readonly start: () => Promise<Result<void, import('../core/errors/types.js').CLIError>>;
+  readonly stop: () => Promise<Result<void, import('../core/errors/types.js').CLIError>>;
+  readonly add: (
+    paths: string | string[]
+  ) => Result<void, import('../core/errors/types.js').CLIError>;
+  readonly unwatch: (
+    paths: string | string[]
+  ) => Result<void, import('../core/errors/types.js').CLIError>;
   readonly getWatched: () => Record<string, string[]>;
 }
 

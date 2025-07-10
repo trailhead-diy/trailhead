@@ -7,7 +7,7 @@ import {
   createInteractiveTest,
 } from '../cli-testing.js';
 import { createCommand } from '../../command/index.js';
-import { Ok, Err } from '../../core/errors/index.js';
+import { ok, err } from '../../core/errors/utils.js';
 
 describe('CLI Testing Utilities', () => {
   describe('CLI Test Runner', () => {
@@ -18,7 +18,7 @@ describe('CLI Testing Utilities', () => {
         action: async () => {
           console.log('Success message');
           console.error('Warning message');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -36,7 +36,7 @@ describe('CLI Testing Utilities', () => {
         name: 'failing-test',
         description: 'Test command that fails',
         action: async () => {
-          return Err(new Error('Command failed'));
+          return err(new Error('Command failed'));
         },
       });
 
@@ -54,7 +54,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Test command with colors',
         action: async () => {
           console.log('\x1b[32mGreen text\x1b[0m');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -71,7 +71,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Test command with normalization',
         action: async () => {
           console.log('  Indented text  ');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -91,7 +91,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Test command for snapshot',
         action: async () => {
           console.log('Snapshot test output');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -115,7 +115,7 @@ describe('CLI Testing Utilities', () => {
         description: 'First step',
         action: async () => {
           console.log('Step 1 completed');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -138,7 +138,7 @@ describe('CLI Testing Utilities', () => {
         options: [{ name: 'message', type: 'string', description: 'Message to echo' }],
         action: async options => {
           console.log(options.message || 'No message provided');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -179,7 +179,7 @@ describe('CLI Testing Utilities', () => {
           const userConfirmation = await confirm({ message: 'Continue?' });
 
           console.log(`Input: ${userInput}, Confirmed: ${userConfirmation}`);
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -201,7 +201,7 @@ describe('CLI Testing Utilities', () => {
       const interactiveCommand = createCommand({
         name: 'interactive-test',
         description: 'Interactive test command',
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       // Test that the helper function exists and can be called
@@ -221,7 +221,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Command that calls process.exit',
         action: async () => {
           process.exit(2);
-          return Ok(undefined); // This line should not be reached
+          return ok(undefined); // This line should not be reached
         },
       });
 
@@ -259,7 +259,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Test console restoration',
         action: async () => {
           console.log('Test message');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -280,7 +280,7 @@ describe('CLI Testing Utilities', () => {
         description: 'Test whitespace handling',
         action: async () => {
           console.log('  \n  Message with whitespace  \n  ');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 

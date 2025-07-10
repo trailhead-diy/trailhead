@@ -12,7 +12,7 @@ describe('git integration', () => {
   beforeAll(async () => {
     // Check if git is available in the test environment
     const gitValidation = await validateGitEnvironment();
-    isGitAvailable = gitValidation.success;
+    isGitAvailable = gitValidation.isOk();
 
     if (!isGitAvailable) {
       console.log('⚠️ Skipping git integration tests - git not available or not in git repository');
@@ -28,8 +28,8 @@ describe('git integration', () => {
 
       const result = await executeGitCommandSimple(['--version']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         // Git version should match pattern like "git version 2.34.1"
         expect(result.value).toMatch(/git version \d+\.\d+\.\d+/);
 
@@ -53,8 +53,8 @@ describe('git integration', () => {
 
       const result = await validateGitEnvironment();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -80,7 +80,7 @@ describe('git integration', () => {
       // Give some leeway for test environment variability
       expect(elapsed).toBeLessThan(200);
 
-      if (!result.success) {
+      if (!result.isOk()) {
         // If it failed, it should be due to timeout
         expect(result.error.message).toMatch(/timed out|timeout/i);
       }
@@ -103,7 +103,7 @@ describe('git integration', () => {
 
       // Should complete well within timeout
       expect(elapsed).toBeLessThan(5000);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -116,8 +116,8 @@ describe('git integration', () => {
 
       const result = await executeGitCommandSimple(['status', '--porcelain']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         // Result should be a string (may be empty for clean repo)
         expect(typeof result.value).toBe('string');
       }
@@ -131,8 +131,8 @@ describe('git integration', () => {
 
       const result = await executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD']);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         // Should return a valid branch name
         expect(result.value).toMatch(/^[a-zA-Z0-9/_-]+$/);
         expect(result.value.length).toBeGreaterThan(0);
@@ -150,9 +150,9 @@ describe('git integration', () => {
 
       // This may succeed or fail depending on repository state
       // We're mainly testing that it doesn't crash or hang
-      expect(typeof result.success).toBe('boolean');
+      expect(typeof result.isOk()).toBe('boolean');
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.currentBranch).toMatch(/^[a-zA-Z0-9/_-]+$/);
         expect(typeof result.value.ahead).toBe('number');
         expect(typeof result.value.behind).toBe('number');
@@ -173,8 +173,8 @@ describe('git integration', () => {
 
       const result = await executeGitCommandSimple(['invalid-command']);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.message).toBeDefined();
         expect(result.error.code).toBeDefined();
       }
@@ -188,8 +188,8 @@ describe('git integration', () => {
       const result = await validateGitEnvironment({ cwd: '/tmp' });
 
       // Should detect that /tmp is not a git repository or git is not available
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.message).toMatch(/not a git repository|git is not available/i);
       }
     });

@@ -3,7 +3,7 @@
  */
 
 // Stream types from node:stream are imported as needed in implementation files
-import type { Result } from '../core/index.js';
+import type { Result, CLIError } from '../core/index.js';
 
 export interface StreamOptions {
   readonly encoding?: BufferEncoding;
@@ -59,7 +59,7 @@ export interface BatchProcessingOptions {
 
 export type StreamFactory<T extends NodeJS.ReadWriteStream = NodeJS.ReadWriteStream> = (
   options?: StreamOptions
-) => Result<T>;
+) => Result<T, CLIError>;
 
 export interface StreamStats {
   readonly bytesRead: number;

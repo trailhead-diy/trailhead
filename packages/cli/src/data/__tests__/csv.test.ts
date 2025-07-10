@@ -34,8 +34,8 @@ Bob,35,bob@example.com`;
       const processor = createCSVProcessor();
       const result = processor.parseString(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(3);
         expect(result.value[0]).toEqual({
           name: 'John',
@@ -49,8 +49,8 @@ Bob,35,bob@example.com`;
       const processor = createCSVProcessor({ hasHeader: false });
       const result = processor.parseString(csvDataNoHeader);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(3);
         expect(result.value[0]).toEqual(['John', 30, 'john@example.com']);
       }
@@ -65,7 +65,7 @@ Bob,35,bob@example.com`;
       const processor = createCSVProcessor({ errorTolerant: true });
       const result = processor.parseString(malformedCsv);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should fail on malformed CSV without error tolerance', () => {
@@ -77,7 +77,7 @@ Bob,35,bob@example.com`;
       const processor = createCSVProcessor({ errorTolerant: false });
       const result = processor.parseString(malformedCsv);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
 
     it('should handle custom delimiter', () => {
@@ -88,8 +88,8 @@ Jane;25;jane@example.com`;
       const processor = createCSVProcessor({ delimiter: ';' });
       const result = processor.parseString(semicolonCsv);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(2);
         expect(result.value[0].name).toBe('John');
       }
@@ -105,8 +105,8 @@ Jane,25,jane@example.com`;
       const processor = createCSVProcessor({ comments: '#' });
       const result = processor.parseString(csvWithComments);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(2);
       }
     });
@@ -123,8 +123,8 @@ Jane,25,jane@example.com`;
 
       const result = processor.parseString(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value[0].name).toBe('JOHN');
       }
     });
@@ -135,8 +135,8 @@ Jane,25,jane@example.com`;
       const processor = createCSVProcessor();
       const result = processor.parseToObjects(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(3);
         expect(result.value[0]).toEqual({
           name: 'John',
@@ -152,8 +152,8 @@ Jane,25,jane@example.com`;
       const processor = createCSVProcessor();
       const result = processor.parseToArrays(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(4); // Including header
         expect(result.value[0]).toEqual(['name', 'age', 'email']);
         expect(result.value[1]).toEqual(['John', 30, 'john@example.com']);
@@ -171,8 +171,8 @@ Jane,25,jane@example.com`;
 
       const result = processor.fromObjects(objects);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name,age,email');
         expect(result.value).toContain('John,30,john@example.com');
       }
@@ -190,8 +190,8 @@ Jane,25,jane@example.com`;
 
       const result = processor.fromArrays(arrays);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name,age,email');
         expect(result.value).toContain('John,30,john@example.com');
       }
@@ -203,8 +203,8 @@ Jane,25,jane@example.com`;
       const processor = createCSVProcessor();
       const result = processor.detectFormat(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.delimiter).toBe(',');
         expect(result.value.hasHeader).toBe(true);
         expect(result.value.rowCount).toBe(4);
@@ -219,8 +219,8 @@ John;30;john@example.com`;
       const processor = createCSVProcessor();
       const result = processor.detectFormat(semicolonCsv);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.delimiter).toBe(';');
       }
     });
@@ -231,8 +231,8 @@ John;30;john@example.com`;
       const processor = createCSVProcessor();
       const result = processor.validate(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -246,8 +246,8 @@ Bob,35,bob@example.com`;
 
       const result = processor.validate(malformedCsv);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(false);
       }
     });
@@ -263,8 +263,8 @@ Bob,35,bob@example.com`;
 
       const result = processor.stringify(data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name,age,email');
         expect(result.value).toContain('John,30,john@example.com');
       }
@@ -278,8 +278,8 @@ describe('CSV Utils', () => {
       const csvData = 'name,age,email\nJohn,30,john@example.com';
       const result = csvUtils.detectDelimiter(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(',');
       }
     });
@@ -288,8 +288,8 @@ describe('CSV Utils', () => {
       const csvData = 'name;age;email\nJohn;30;john@example.com';
       const result = csvUtils.detectDelimiter(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(';');
       }
     });
@@ -298,8 +298,8 @@ describe('CSV Utils', () => {
       const csvData = 'name\tage\temail\nJohn\t30\tjohn@example.com';
       const result = csvUtils.detectDelimiter(csvData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe('\t');
       }
     });
@@ -308,7 +308,7 @@ describe('CSV Utils', () => {
       const csvData = 'no delimiters here';
       const result = csvUtils.detectDelimiter(csvData);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -351,8 +351,8 @@ describe('CSV Utils', () => {
       const csvData = 'name,age,email\nJohn,30,john@example.com';
       const result = csvUtils.convertDelimiter(csvData, ',', ';');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name;age;email');
         expect(result.value).toContain('John;30;john@example.com');
       }
@@ -362,8 +362,8 @@ describe('CSV Utils', () => {
       const csvData = 'name;age;email\nJohn;30;john@example.com';
       const result = csvUtils.convertDelimiter(csvData, ';', ',');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name,age,email');
         expect(result.value).toContain('John,30,john@example.com');
       }
@@ -373,7 +373,7 @@ describe('CSV Utils', () => {
       const malformedCsv = 'invalid,csv,data\nwith,wrong,number,of,fields';
       const result = csvUtils.convertDelimiter(malformedCsv, ',', ';');
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 });

@@ -75,8 +75,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(3); // Excluding header
         expect(result.value[0]).toEqual(['John', 30, 'New York']);
         expect(result.value[1]).toEqual(['Jane', 25, 'Boston']);
@@ -96,8 +96,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ hasHeader: false });
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(2);
         expect(result.value[0]).toEqual(['John', 30, 'New York']);
       }
@@ -110,8 +110,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual([]);
       }
     });
@@ -120,8 +120,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.parseFile('/nonexistent/file.xlsx');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('FS_READ_ERROR');
       }
     });
@@ -141,8 +141,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ worksheetName: 'Data' });
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(1);
         expect(result.value[0]).toEqual(['Test', 42]);
       }
@@ -155,8 +155,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ worksheetName: 'NonExistent' });
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('EXCEL_WORKSHEET_NOT_FOUND');
       }
     });
@@ -174,8 +174,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ dynamicTyping: true });
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value[0]).toEqual(['John', 30, 95.5, true]);
         expect(result.value[1]).toEqual(['Jane', 25, 87.2, false]);
       }
@@ -196,8 +196,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ skipEmptyLines: true });
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(2);
         expect(result.value[0]).toEqual(['John', 30]);
         expect(result.value[1]).toEqual(['Jane', 25]);
@@ -216,8 +216,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.stringify(testData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
         expect(result.value.length).toBeGreaterThan(0);
       }
@@ -227,8 +227,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.stringify([]);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -242,8 +242,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.stringify(testData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -260,7 +260,7 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.writeFile(testData, testFilePath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(existsSync(testFilePath)).toBe(true);
     });
 
@@ -271,8 +271,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.writeFile(testData, invalidPath);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('FS_WRITE_ERROR');
       }
     });
@@ -285,8 +285,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.validate(buffer);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -297,8 +297,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.validate(invalidBuffer);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(false);
       }
     });
@@ -309,8 +309,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.validate(emptyBuffer);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(false);
       }
     });
@@ -326,8 +326,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.fromObjects(objects);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -336,8 +336,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.fromObjects([]);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -351,8 +351,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor({ hasHeader: true });
       const result = await processor.fromObjects(objects);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -369,8 +369,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.fromArrays(arrays);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -398,8 +398,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.createWorkbook(worksheets);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -408,8 +408,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.createWorkbook([]);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBeInstanceOf(Buffer);
       }
     });
@@ -422,8 +422,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.detectFormat(buffer);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.worksheetNames).toEqual(['Sheet1']);
         expect(result.value.worksheetCount).toBe(1);
         expect(result.value.hasData).toBe(true);
@@ -436,8 +436,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.detectFormat(invalidBuffer);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('EXCEL_FORMAT_DETECTION_ERROR');
       }
     });
@@ -448,8 +448,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.parseBuffer(Buffer.from('test'));
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('EXCEL_BUFFER_PARSE_ERROR');
         expect(result.error.message).toContain('Direct buffer parsing not supported');
       }
@@ -459,8 +459,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.parseWorksheet(Buffer.from('test'), 'Sheet1');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('EXCEL_BUFFER_PARSE_ERROR');
       }
     });
@@ -469,8 +469,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = processor.parseWorksheetByIndex(Buffer.from('test'), 0);
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('EXCEL_BUFFER_PARSE_ERROR');
       }
     });
@@ -491,7 +491,7 @@ describe('Excel Processing', () => {
 
         const result = await excelUtils.mergeWorksheets([file1Path, file2Path], outputPath);
 
-        expect(result.success).toBe(true);
+        expect(result.isOk()).toBe(true);
         expect(existsSync(outputPath)).toBe(true);
 
         // Clean up
@@ -503,8 +503,8 @@ describe('Excel Processing', () => {
       it('should handle merge errors', async () => {
         const result = await excelUtils.mergeWorksheets(['/nonexistent.xlsx'], '/output.xlsx');
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
+        expect(result.isOk()).toBe(false);
+        if (!result.isOk()) {
           expect(result.error.code).toBe('FS_READ_ERROR');
         }
       });
@@ -521,8 +521,8 @@ describe('Excel Processing', () => {
 
         const result = await excelUtils.splitWorkbook(testFilePath, tempDir);
 
-        expect(result.success).toBe(true);
-        if (result.success) {
+        expect(result.isOk()).toBe(true);
+        if (result.isOk()) {
           expect(result.value).toHaveLength(2);
           expect(existsSync(join(tempDir, 'Users.xlsx'))).toBe(true);
           expect(existsSync(join(tempDir, 'Products.xlsx'))).toBe(true);
@@ -536,8 +536,8 @@ describe('Excel Processing', () => {
       it('should handle split errors', async () => {
         const result = await excelUtils.splitWorkbook('/nonexistent.xlsx', tempDir);
 
-        expect(result.success).toBe(false);
-        if (!result.success) {
+        expect(result.isOk()).toBe(false);
+        if (!result.isOk()) {
           expect(result.error.code).toBe('EXCEL_SPLIT_ERROR');
         }
       });
@@ -556,13 +556,13 @@ describe('Excel Processing', () => {
 
       // Create Excel file
       const writeResult = await processor.writeFile(originalData, testFilePath);
-      expect(writeResult.success).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
       // Read Excel file
       const readResult = await processor.parseFile(testFilePath);
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
 
-      if (readResult.success) {
+      if (readResult.isOk()) {
         expect(readResult.value).toHaveLength(2); // Excluding header
         expect(readResult.value[0]).toEqual(['John', 30, 95.5]);
         expect(readResult.value[1]).toEqual(['Jane', 25, 87.2]);
@@ -591,8 +591,8 @@ describe('Excel Processing', () => {
       const processor = createExcelProcessor();
       const result = await processor.parseFile(testFilePath);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toHaveLength(1);
         const [text, number, _date, boolean, formula] = result.value[0];
         expect(text).toBe('Hello');

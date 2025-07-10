@@ -1,4 +1,6 @@
-import { Result, Ok, Err, map, CLIError } from '../core/index.js';
+import { ok, err } from '../core/index.js';
+import { Result } from 'neverthrow';
+import type { CLIError } from '../core/index.js';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { MergeBaseInfo, GitOptions } from './types.js';
@@ -13,8 +15,8 @@ export async function getMergeBase(
 ): Promise<Result<string, CLIError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
-  if (!validationResult.success) {
-    return validationResult;
+  if (validationResult.isErr()) {
+    return err(validationResult.error);
   }
 
   return executeGitCommandSimple(['merge-base', ref1, ref2], options);
@@ -30,12 +32,12 @@ export async function getAllMergeBases(
 ): Promise<Result<string[], CLIError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
-  if (!validationResult.success) {
-    return validationResult;
+  if (validationResult.isErr()) {
+    return err(validationResult.error);
   }
 
   const result = await executeGitCommandSimple(['merge-base', '--all', ref1, ref2], options);
-  return map(result, output => {
+  return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
   });
 }
@@ -50,8 +52,8 @@ export async function isAncestorMergeBase(
 ): Promise<Result<boolean, CLIError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
-  if (!validationResult.success) {
-    return validationResult;
+  if (validationResult.isErr()) {
+    return err(validationResult.error);
   }
 
   const result = await executeGitCommandSimple(
@@ -60,17 +62,17 @@ export async function isAncestorMergeBase(
   );
 
   // git merge-base --is-ancestor returns 0 if ancestor, 1 if not, other codes for errors
-  if (result.success) {
-    return Ok(true);
+  if (result.isOk()) {
+    return ok(true);
   }
 
   // Check if it's just "not an ancestor" vs actual error by trying to get merge base
   const mergeBaseResult = await getMergeBase(ancestor, descendant, options);
-  if (mergeBaseResult.success) {
-    return Ok(false); // Has common ancestor but not direct ancestor
+  if (mergeBaseResult.isOk()) {
+    return ok(false); // Has common ancestor but not direct ancestor
   }
 
-  return Err(createGitError(`Failed to determine ancestor relationship`, result.error.message));
+  return err(createGitError(`Failed to determine ancestor relationship`, result.error.message));
 }
 
 /**
@@ -83,14 +85,14 @@ export async function getMergeBaseInfo(
 ): Promise<Result<MergeBaseInfo, CLIError>> {
   // Get the merge base commit
   const mergeBaseResult = await getMergeBase(branch1, branch2, options);
-  if (!mergeBaseResult.success) {
-    return Err(createGitError(`Failed to get merge base`, mergeBaseResult.error.message));
+  if (mergeBaseResult.isErr()) {
+    return err(createGitError(`Failed to get merge base`, mergeBaseResult.error.message));
   }
   const commitSha = mergeBaseResult.value;
 
   // Check if branch1 is an ancestor of branch2
   const isAncestorResult = await isAncestorMergeBase(branch1, branch2, options);
-  const isAncestor = isAncestorResult.success ? isAncestorResult.value : false;
+  const isAncestor = isAncestorResult.isOk() ? isAncestorResult.value : false;
 
   const info: MergeBaseInfo = {
     commitSha,
@@ -99,7 +101,7 @@ export async function getMergeBaseInfo(
     isAncestor,
   };
 
-  return Ok(info);
+  return ok(info);
 }
 
 /**
@@ -114,20 +116,20 @@ export async function haveDiverged(
   const isRef2AncestorResult = await isAncestorMergeBase(ref2, ref1, options);
 
   // If either check failed, return error
-  if (!isRef1AncestorResult.success) {
-    return Err(
+  if (isRef1AncestorResult.isErr()) {
+    return err(
       createGitError(`Failed to check if ${ref1} is ancestor`, isRef1AncestorResult.error.message)
     );
   }
-  if (!isRef2AncestorResult.success) {
-    return Err(
+  if (isRef2AncestorResult.isErr()) {
+    return err(
       createGitError(`Failed to check if ${ref2} is ancestor`, isRef2AncestorResult.error.message)
     );
   }
 
   // Branches have diverged if neither is an ancestor of the other
   const diverged = !isRef1AncestorResult.value && !isRef2AncestorResult.value;
-  return Ok(diverged);
+  return ok(diverged);
 }
 
 /**
@@ -148,7 +150,7 @@ export async function formatMergeBaseInfo(
   options: GitOptions = {}
 ): Promise<string> {
   const commitMessageResult = await getCommitMessage(info.commitSha, options);
-  const commitMessage = commitMessageResult.success
+  const commitMessage = commitMessageResult.isOk()
     ? commitMessageResult.value
     : 'Unknown commit message';
 

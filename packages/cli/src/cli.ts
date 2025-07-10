@@ -144,7 +144,7 @@ export function createCLI(config: CLIConfig): CLI {
 
             // Validate option configuration with enhanced error messages
             const validationResult = validateCommandOption(option, i);
-            if (!validationResult.success) {
+            if (validationResult.isErr()) {
               const error = validationResult.error;
               console.error(`\n❌ CLI Configuration Error in command '${command.name}':`);
               console.error(`   ${error.message}`);
@@ -216,7 +216,7 @@ export function createCLI(config: CLIConfig): CLI {
 
           try {
             const result = await command.execute(options, context);
-            if (!result.success) {
+            if (result.isErr()) {
               context.logger.error(result.error.message);
               if (result.error.suggestion) {
                 context.logger.info(`💡 ${result.error.suggestion}`);

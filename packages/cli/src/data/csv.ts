@@ -2,7 +2,8 @@ import Papa from 'papaparse';
 import { readFile, writeFile } from 'fs/promises';
 import type { Result } from '../core/errors/types.js';
 import type { CLIError } from '../core/errors/types.js';
-import { Ok, Err, createError, fileSystemError } from '../core/errors/factory.js';
+import { ok, err } from 'neverthrow';
+import { createError, fileSystemError } from '../core/errors/factory.js';
 import type { CSVProcessor, CSVProcessingOptions } from './types.js';
 
 const defaultOptions: CSVProcessingOptions = {
@@ -101,16 +102,16 @@ const parseString = (data: string, options?: CSVProcessingOptions): Result<any, 
       const errorMessages = result.errors.map(
         (err: any) => `${err.type}: ${err.message} at row ${err.row}`
       );
-      return Err(
+      return err(
         createError('CSV_PARSE_ERROR', `CSV parsing failed: ${errorMessages.join(', ')}`, {
           recoverable: true,
         })
       );
     }
 
-    return Ok(result.data);
+    return ok(result.data);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_PARSE_ERROR',
         `CSV parsing error: ${error instanceof Error ? error.message : String(error)}`,
@@ -128,7 +129,7 @@ const parseFile = async (
     const data = await readFile(filePath, 'utf-8');
     return parseString(data, options);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'read',
         filePath,
@@ -144,9 +145,9 @@ const stringify = (data: any, options?: CSVProcessingOptions): Result<string, CL
 
   try {
     const csv = Papa.unparse(data, config);
-    return Ok(csv);
+    return ok(csv);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_SERIALIZE_ERROR',
         `CSV serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -163,15 +164,15 @@ const writeCSVFile = async (
 ): Promise<Result<void, CLIError>> => {
   const stringifyResult = stringify(data, options);
 
-  if (!stringifyResult.success) {
-    return stringifyResult;
+  if (stringifyResult.isErr()) {
+    return err(stringifyResult.error);
   }
 
   try {
     await writeFile(filePath, stringifyResult.value);
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'write',
         filePath,
@@ -200,7 +201,7 @@ const validate = (data: string): Result<boolean, CLIError> => {
       );
 
       if (criticalErrors.length > 0) {
-        return Ok(false);
+        return ok(false);
       }
     }
 
@@ -210,13 +211,13 @@ const validate = (data: string): Result<boolean, CLIError> => {
       const inconsistentRows = rows.filter(row => row.length !== firstRowLength);
       // Allow some tolerance for inconsistent rows
       if (inconsistentRows.length > rows.length * 0.1) {
-        return Ok(false);
+        return ok(false);
       }
     }
 
-    return Ok(true);
+    return ok(true);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_VALIDATION_ERROR',
         `CSV validation error: ${error instanceof Error ? error.message : String(error)}`,
@@ -240,16 +241,16 @@ const parseToObjects = (
       const errorMessages = result.errors.map(
         (err: any) => `${err.type}: ${err.message} at row ${err.row}`
       );
-      return Err(
+      return err(
         createError('CSV_PARSE_ERROR', `CSV parsing failed: ${errorMessages.join(', ')}`, {
           recoverable: true,
         })
       );
     }
 
-    return Ok(result.data);
+    return ok(result.data);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_PARSE_ERROR',
         `CSV parsing error: ${error instanceof Error ? error.message : String(error)}`,
@@ -273,16 +274,16 @@ const parseToArrays = (
       const errorMessages = result.errors.map(
         (err: any) => `${err.type}: ${err.message} at row ${err.row}`
       );
-      return Err(
+      return err(
         createError('CSV_PARSE_ERROR', `CSV parsing failed: ${errorMessages.join(', ')}`, {
           recoverable: true,
         })
       );
     }
 
-    return Ok(result.data);
+    return ok(result.data);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_PARSE_ERROR',
         `CSV parsing error: ${error instanceof Error ? error.message : String(error)}`,
@@ -300,9 +301,9 @@ const fromObjects = (
 
   try {
     const csv = Papa.unparse(objects, config);
-    return Ok(csv);
+    return ok(csv);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_SERIALIZE_ERROR',
         `CSV serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -320,9 +321,9 @@ const fromArrays = (
 
   try {
     const csv = Papa.unparse(arrays, config);
-    return Ok(csv);
+    return ok(csv);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_SERIALIZE_ERROR',
         `CSV serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -363,7 +364,7 @@ const detectFormat = (
     const hasHeader = detectHeader(result.data as any[][]);
     const aborted = result.meta.aborted;
 
-    return Ok({
+    return ok({
       delimiter,
       quoteChar: '"',
       hasHeader,
@@ -373,7 +374,7 @@ const detectFormat = (
       aborted,
     });
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_FORMAT_DETECTION_ERROR',
         `CSV format detection error: ${error instanceof Error ? error.message : String(error)}`,
@@ -419,7 +420,7 @@ const detectDelimiter = (data: string): Result<string, CLIError> => {
     });
 
     if (!result.meta.delimiter) {
-      return Err(
+      return err(
         createError('CSV_DELIMITER_DETECTION_ERROR', 'Could not detect CSV delimiter', {
           recoverable: true,
         })
@@ -429,16 +430,16 @@ const detectDelimiter = (data: string): Result<string, CLIError> => {
     // Additional check: ensure the delimiter actually appears in the data
     const delimiterPattern = new RegExp(`\\${result.meta.delimiter}`);
     if (!delimiterPattern.test(data)) {
-      return Err(
+      return err(
         createError('CSV_DELIMITER_DETECTION_ERROR', 'Could not detect CSV delimiter', {
           recoverable: true,
         })
       );
     }
 
-    return Ok(result.meta.delimiter);
+    return ok(result.meta.delimiter);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'CSV_DELIMITER_DETECTION_ERROR',
         `CSV delimiter detection error: ${error instanceof Error ? error.message : String(error)}`,
@@ -470,8 +471,8 @@ const convertDelimiter = (
   const processor = createCSVProcessor({ delimiter: fromDelimiter });
   const parseResult = processor.parseString(csvData);
 
-  if (!parseResult.success) {
-    return parseResult;
+  if (parseResult.isErr()) {
+    return err(parseResult.error);
   }
 
   const convertProcessor = createCSVProcessor({ delimiter: toDelimiter });

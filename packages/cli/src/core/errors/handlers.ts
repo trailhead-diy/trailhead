@@ -3,12 +3,12 @@ import pRetry, { AbortError } from 'p-retry';
 import type {
   CLIError,
   Result,
-  AsyncResult,
   ErrorCategory,
   ErrorSeverity,
   SeverityError,
   ErrorChain,
 } from './types.js';
+import { ResultAsync, err, errAsync } from 'neverthrow';
 import { RetryableError } from './retry-error.js';
 
 export function formatError(error: CLIError, verbose: boolean = false): string[] {
@@ -149,17 +149,17 @@ export function createConditionalHandler<E extends CLIError>(
 
 export async function tryRecover<T, E extends CLIError>(
   result: Result<T, E>,
-  recovery: (error: E) => AsyncResult<T, E>
-): AsyncResult<T, E> {
-  if (result.success) {
-    return result;
+  recovery: (error: E) => ResultAsync<T, E>
+): Promise<ResultAsync<T, E>> {
+  if (result.isOk()) {
+    return ResultAsync.fromSafePromise(Promise.resolve(result.value));
   }
 
   if (result.error.recoverable) {
     return recovery(result.error);
   }
 
-  return result;
+  return errAsync(result.error);
 }
 
 /**
@@ -189,7 +189,7 @@ export async function tryRecover<T, E extends CLIError>(
  * ```
  */
 export async function retryWithBackoff<T, E extends CLIError>(
-  operation: () => AsyncResult<T, E>,
+  operation: () => Promise<Result<T, E>>,
   options: {
     maxRetries?: number;
     initialDelay?: number;
@@ -197,7 +197,7 @@ export async function retryWithBackoff<T, E extends CLIError>(
     factor?: number;
     shouldRetry?: (error: E) => boolean;
   } = {}
-): AsyncResult<T, E> {
+): Promise<Result<T, E>> {
   const {
     maxRetries = 3,
     initialDelay = 1000,
@@ -213,7 +213,7 @@ export async function retryWithBackoff<T, E extends CLIError>(
       async () => {
         const operationResult = await operation();
 
-        if (operationResult.success) {
+        if (operationResult.isOk()) {
           return operationResult;
         }
 
@@ -247,23 +247,20 @@ export async function retryWithBackoff<T, E extends CLIError>(
   } catch (error) {
     // Handle abort errors (non-retryable errors)
     if (error instanceof AbortError && lastError) {
-      return { success: false, error: lastError };
+      return err(lastError);
     }
 
     // Handle other errors (exhausted retries)
     if (lastError) {
-      return { success: false, error: lastError };
+      return err(lastError);
     }
 
     // Fallback error (shouldn't happen)
-    return {
-      success: false,
-      error: {
-        code: 'RETRY_FAILED',
-        message: error instanceof Error ? error.message : 'Unknown retry error',
-        recoverable: false,
-      } as E,
-    };
+    return err({
+      code: 'RETRY_FAILED',
+      message: error instanceof Error ? error.message : 'Unknown retry error',
+      recoverable: false,
+    } as E);
   }
 }
 
@@ -271,30 +268,20 @@ export function mapError<T, E1 extends CLIError, E2 extends CLIError>(
   result: Result<T, E1>,
   mapper: (error: E1) => E2
 ): Result<T, E2> {
-  if (result.success) {
-    return result;
+  if (result.isOk()) {
+    return result as any;
   }
 
-  return {
-    success: false,
-    error: mapper(result.error),
-  };
+  return result.mapErr(mapper);
 }
 
 export async function mapErrorAsync<T, E1 extends CLIError, E2 extends CLIError>(
-  result: AsyncResult<T, E1>,
+  result: ResultAsync<T, E1>,
   mapper: (error: E1) => E2 | Promise<E2>
-): AsyncResult<T, E2> {
-  const awaited = await result;
-
-  if (awaited.success) {
-    return awaited;
-  }
-
-  return {
-    success: false,
-    error: await mapper(awaited.error),
-  };
+): Promise<ResultAsync<T, E2>> {
+  return result.mapErr(async error => {
+    return await mapper(error);
+  });
 }
 
 export function aggregateErrors(errors: CLIError[]): CLIError {
@@ -325,7 +312,7 @@ export function collectErrors<T, E extends CLIError>(
   const errors: E[] = [];
 
   for (const result of results) {
-    if (result.success) {
+    if (result.isOk()) {
       values.push(result.value);
     } else {
       errors.push(result.error);

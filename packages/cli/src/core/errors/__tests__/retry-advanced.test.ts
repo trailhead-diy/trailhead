@@ -8,7 +8,7 @@ import {
   retryParallel,
   createProgressiveRetry,
 } from '../retry-advanced.js';
-import { Ok, Err } from '../factory.js';
+import { ok, err } from '../utils.js';
 import type { CLIError } from '../types.js';
 
 describe('Advanced Retry Functionality', () => {
@@ -22,13 +22,15 @@ describe('Advanced Retry Functionality', () => {
 
   describe('retryAdvanced', () => {
     it('should return successful result immediately', async () => {
-      const operation = vi.fn().mockResolvedValue(Ok('success'));
+      const operation = vi.fn().mockResolvedValue(ok('success'));
 
       const resultPromise = retryAdvanced(operation);
       const result = await resultPromise;
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('success');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('success');
+      }
       expect(operation).toHaveBeenCalledTimes(1);
     });
 
@@ -41,8 +43,8 @@ describe('Advanced Retry Functionality', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       const mathRandomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.5);
 
@@ -53,7 +55,7 @@ describe('Advanced Retry Functionality', () => {
         maxJitter: 5,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(mathRandomSpy).toHaveBeenCalled();
     });
 
@@ -67,8 +69,8 @@ describe('Advanced Retry Functionality', () => {
       const beforeRetry = vi.fn();
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       await retryAdvanced(operation, {
         retries: 2,
@@ -83,15 +85,17 @@ describe('Advanced Retry Functionality', () => {
       const controller = new AbortController();
       controller.abort(); // Abort before starting
 
-      const operation = vi.fn().mockResolvedValue(Ok('should not be called'));
+      const operation = vi.fn().mockResolvedValue(ok('should not be called'));
 
       const result = await retryAdvanced(operation, {
         signal: controller.signal,
         retries: 2,
       });
 
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('OPERATION_ABORTED');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('OPERATION_ABORTED');
+      }
       // Operation should not be called if already aborted
       expect(operation).toHaveBeenCalledTimes(1); // Called once before checking signal
     });
@@ -111,7 +115,7 @@ describe('Advanced Retry Functionality', () => {
           // Abort after first retry attempt
           controller.abort();
         }
-        return Err(error);
+        return err(error);
       });
 
       const result = await retryAdvanced(operation, {
@@ -120,8 +124,10 @@ describe('Advanced Retry Functionality', () => {
         minTimeout: 10,
       });
 
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('OPERATION_ABORTED');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('OPERATION_ABORTED');
+      }
       // Should stop retrying after abort
       expect(attemptCount).toBeLessThan(5);
     });
@@ -136,9 +142,9 @@ describe('Advanced Retry Functionality', () => {
       const customBackoff = vi.fn().mockImplementation(attempt => attempt * 50);
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       await retryAdvanced(operation, {
         retries: 3,
@@ -186,11 +192,13 @@ describe('Advanced Retry Functionality', () => {
         minTimeout: 50,
       });
 
-      const operation = vi.fn().mockResolvedValue(Ok('wrapped'));
+      const operation = vi.fn().mockResolvedValue(ok('wrapped'));
       const result = await wrapper(operation);
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('wrapped');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('wrapped');
+      }
     });
 
     it('should allow overriding options', async () => {
@@ -207,14 +215,14 @@ describe('Advanced Retry Functionality', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       const result = await wrapper(operation, { retries: 3 });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(operation).toHaveBeenCalledTimes(4); // Initial + 3 retries
     });
   });
@@ -232,7 +240,7 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn().mockResolvedValue(Err(error));
+      const operation = vi.fn().mockResolvedValue(err(error));
 
       // First failure
       await breaker.execute(operation, { retries: 0 });
@@ -244,8 +252,10 @@ describe('Advanced Retry Functionality', () => {
 
       // Third attempt - should be blocked
       const result = await breaker.execute(operation, { retries: 0 });
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('CIRCUIT_BREAKER_OPEN');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('CIRCUIT_BREAKER_OPEN');
+      }
       expect(operation).toHaveBeenCalledTimes(2); // Not called on third attempt
     });
 
@@ -263,8 +273,8 @@ describe('Advanced Retry Functionality', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('success'));
 
       // Trip the breaker
       await breaker.execute(operation, { retries: 0 });
@@ -275,7 +285,7 @@ describe('Advanced Retry Functionality', () => {
 
       // Should allow attempt in half-open state
       const result = await breaker.execute(operation);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(breaker.getState()).toBe('closed');
     });
 
@@ -292,7 +302,7 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const operation = vi.fn().mockResolvedValue(Err(error));
+      const operation = vi.fn().mockResolvedValue(err(error));
 
       // Execute multiple times to trip the breaker
       await breaker.execute(operation, { retries: 0 });
@@ -309,12 +319,14 @@ describe('Advanced Retry Functionality', () => {
 
   describe('retryWithTimeout', () => {
     it('should succeed within timeout', async () => {
-      const operation = vi.fn().mockResolvedValue(Ok('quick'));
+      const operation = vi.fn().mockResolvedValue(ok('quick'));
 
       const result = await retryWithTimeout(operation, 1000);
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('quick');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('quick');
+      }
     });
 
     it.skip('should abort after timeout - timeout behavior is unpredictable', async () => {
@@ -326,41 +338,47 @@ describe('Advanced Retry Functionality', () => {
         if (callCount === 1) {
           await new Promise(resolve => setTimeout(resolve, 100));
         }
-        return Ok('success');
+        return ok('success');
       });
 
       const result = await retryWithTimeout(operation, 50, { retries: 0 });
 
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('OPERATION_ABORTED');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('OPERATION_ABORTED');
+      }
       expect(callCount).toBe(1);
     });
 
     it('should complete within timeout', async () => {
       const operation = vi.fn().mockImplementation(async () => {
         await new Promise(resolve => setTimeout(resolve, 10));
-        return Ok('quick success');
+        return ok('quick success');
       });
 
       const result = await retryWithTimeout(operation, 100, { retries: 0 });
 
-      expect(result.success).toBe(true);
-      expect(result.value).toBe('quick success');
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toBe('quick success');
+      }
     });
   });
 
   describe('retryParallel', () => {
     it('should succeed when all operations succeed', async () => {
       const operations = [
-        vi.fn().mockResolvedValue(Ok('op1')),
-        vi.fn().mockResolvedValue(Ok('op2')),
-        vi.fn().mockResolvedValue(Ok('op3')),
+        vi.fn().mockResolvedValue(ok('op1')),
+        vi.fn().mockResolvedValue(ok('op2')),
+        vi.fn().mockResolvedValue(ok('op3')),
       ];
 
       const result = await retryParallel(operations);
 
-      expect(result.success).toBe(true);
-      expect(result.value).toEqual(['op1', 'op2', 'op3']);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toEqual(['op1', 'op2', 'op3']);
+      }
     });
 
     it('should fail when any operation fails after retries', async () => {
@@ -371,16 +389,18 @@ describe('Advanced Retry Functionality', () => {
       };
 
       const operations = [
-        vi.fn().mockResolvedValue(Ok('op1')),
-        vi.fn().mockResolvedValue(Err(error)),
-        vi.fn().mockResolvedValue(Ok('op3')),
+        vi.fn().mockResolvedValue(ok('op1')),
+        vi.fn().mockResolvedValue(err(error)),
+        vi.fn().mockResolvedValue(ok('op3')),
       ];
 
       const result = await retryParallel(operations, { retries: 0 });
 
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('PARALLEL_RETRY_FAILED');
-      expect(result.error.message).toContain('1 operations failed');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error.code).toBe('PARALLEL_FAIL');
+        expect(result.error.message).toBe('Operation failed');
+      }
     });
 
     it('should retry failed operations independently', async () => {
@@ -390,23 +410,25 @@ describe('Advanced Retry Functionality', () => {
         recoverable: true,
       };
 
-      const op1 = vi.fn().mockResolvedValueOnce(Err(error)).mockResolvedValueOnce(Ok('op1'));
+      const op1 = vi.fn().mockResolvedValueOnce(err(error)).mockResolvedValueOnce(ok('op1'));
 
-      const op2 = vi.fn().mockResolvedValue(Ok('op2'));
+      const op2 = vi.fn().mockResolvedValue(ok('op2'));
 
       const op3 = vi
         .fn()
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Err(error))
-        .mockResolvedValueOnce(Ok('op3'));
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(err(error))
+        .mockResolvedValueOnce(ok('op3'));
 
       const result = await retryParallel([op1, op2, op3], {
         retries: 2,
         minTimeout: 10,
       });
 
-      expect(result.success).toBe(true);
-      expect(result.value).toEqual(['op1', 'op2', 'op3']);
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value).toEqual(['op1', 'op2', 'op3']);
+      }
       expect(op1).toHaveBeenCalledTimes(2);
       expect(op2).toHaveBeenCalledTimes(1);
       expect(op3).toHaveBeenCalledTimes(3);
@@ -430,8 +452,8 @@ describe('Advanced Retry Functionality', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(slowError))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(slowError))
+        .mockResolvedValueOnce(ok('success'));
 
       // Store the error for the custom backoff function
       (operation as any).lastError = slowError;
@@ -441,7 +463,7 @@ describe('Advanced Retry Functionality', () => {
         minTimeout: 10,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should use default delay for unknown errors', async () => {
@@ -456,15 +478,15 @@ describe('Advanced Retry Functionality', () => {
 
       const operation = vi
         .fn()
-        .mockResolvedValueOnce(Err(unknownError))
-        .mockResolvedValueOnce(Ok('success'));
+        .mockResolvedValueOnce(err(unknownError))
+        .mockResolvedValueOnce(ok('success'));
 
       const result = await progressiveRetry(operation, {
         retries: 2,
         minTimeout: 10,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 });

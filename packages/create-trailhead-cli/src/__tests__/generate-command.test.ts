@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createTestContext } from '@esteban-url/trailhead-cli/testing';
+import { ok, err } from '@esteban-url/trailhead-cli/core';
 import { generateCommand } from '../commands/generate.js';
 
 // Mock the generator module
 vi.mock('../lib/generator.js', () => ({
-  generateProject: vi.fn().mockResolvedValue({ success: true }),
+  generateProject: vi.fn().mockResolvedValue(ok(undefined)),
 }));
 
 // Mock fs module
@@ -27,7 +28,7 @@ describe('Generate Command', () => {
 
     const result = await generateCommand.execute({}, testContext);
 
-    expect(result.success).toBe(false);
+    expect(result.isOk()).toBe(false);
     expect(result.error.message).toContain('Project name is required');
   });
 
@@ -38,7 +39,7 @@ describe('Generate Command', () => {
 
     const result = await generateCommand.execute({}, testContext);
 
-    expect(result.success).toBe(false);
+    expect(result.isOk()).toBe(false);
     expect(result.error.message).toContain('already exists');
   });
 
@@ -53,7 +54,7 @@ describe('Generate Command', () => {
 
     const result = await generateCommand.execute(options, testContext);
 
-    expect(result.success).toBe(true);
+    expect(result.isOk()).toBe(true);
   });
 
   it('should handle dry run mode', async () => {
@@ -64,15 +65,18 @@ describe('Generate Command', () => {
 
     const result = await generateCommand.execute(options, testContext);
 
-    expect(result.success).toBe(true);
+    expect(result.isOk()).toBe(true);
   });
 
   it('should handle generator errors', async () => {
     const { generateProject } = await import('../lib/generator.js');
-    vi.mocked(generateProject).mockResolvedValueOnce({
-      success: false,
-      error: new Error('Generator failed'),
-    });
+    vi.mocked(generateProject).mockResolvedValueOnce(
+      err({
+        code: 'GENERATOR_FAILED',
+        message: 'Generator failed',
+        recoverable: false,
+      })
+    );
 
     // Provide options to avoid interactive prompts
     const options = {
@@ -82,7 +86,7 @@ describe('Generate Command', () => {
 
     const result = await generateCommand.execute(options, testContext);
 
-    expect(result.success).toBe(false);
+    expect(result.isOk()).toBe(false);
     expect(result.error.message).toContain('Generator failed');
   });
 

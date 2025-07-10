@@ -112,11 +112,11 @@ describe('Generator Integration Matrix', () => {
         const result = await generateProject(config, testContext);
 
         // Verify generation succeeded
-        if (!result.success) {
+        if (!result.isOk()) {
           console.error('Generation failed:', result.error.message);
           console.error('Full error:', result.error);
         }
-        expect(result.success).toBe(true);
+        expect(result.isOk()).toBe(true);
 
         // Verify project directory exists
         expect(existsSync(projectPath)).toBe(true);
@@ -166,7 +166,7 @@ describe('Generator Integration Matrix', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // Read generated package.json to verify template variables
       const packageJsonPath = join(projectPath, 'package.json');
@@ -200,7 +200,7 @@ describe('Generator Integration Matrix', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
       // Verify sanitized package name in package.json
       const packageJson = await import(join(projectPath, 'package.json'));

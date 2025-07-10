@@ -8,7 +8,7 @@ import type {
   MkdirOptions,
   RmOptions,
 } from './types.js';
-import { Ok, Err } from '../core/errors/index.js';
+import { ok, err } from '../core/errors/index.js';
 
 const createError = (operation: string, filePath: string, error: any): FileSystemError => {
   // Map fs-extra/Node.js error codes to more descriptive messages
@@ -57,9 +57,9 @@ export function createNodeFileSystem(): FileSystem {
     async access(filePath: string, mode: number = constants.F_OK) {
       try {
         await fs.access(filePath, mode);
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Access check', filePath, error));
+        return err(createError('Access check', filePath, error));
       }
     },
 
@@ -68,36 +68,36 @@ export function createNodeFileSystem(): FileSystem {
         const content = await fs.readFile(filePath, {
           encoding: encoding as BufferEncoding,
         });
-        return Ok(content);
+        return ok(content);
       } catch (error) {
-        return Err(createError('Read file', filePath, error));
+        return err(createError('Read file', filePath, error));
       }
     },
 
     async writeFile(filePath: string, content: string) {
       try {
         await fs.writeFile(filePath, content, 'utf-8');
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Write file', filePath, error));
+        return err(createError('Write file', filePath, error));
       }
     },
 
     async mkdir(dirPath: string, options: MkdirOptions = {}) {
       try {
         await fs.mkdir(dirPath, { recursive: options.recursive });
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Create directory', dirPath, error));
+        return err(createError('Create directory', dirPath, error));
       }
     },
 
     async readdir(dirPath: string) {
       try {
         const entries = await fs.readdir(dirPath);
-        return Ok(entries);
+        return ok(entries);
       } catch (error) {
-        return Err(createError('Read directory', dirPath, error));
+        return err(createError('Read directory', dirPath, error));
       }
     },
 
@@ -110,9 +110,9 @@ export function createNodeFileSystem(): FileSystem {
           isDirectory: stats.isDirectory(),
           mtime: stats.mtime,
         };
-        return Ok(fileStats);
+        return ok(fileStats);
       } catch (error) {
-        return Err(createError('Stat file', filePath, error));
+        return err(createError('Stat file', filePath, error));
       }
     },
 
@@ -122,9 +122,9 @@ export function createNodeFileSystem(): FileSystem {
           recursive: options.recursive,
           force: options.force,
         });
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Remove', filePath, error));
+        return err(createError('Remove', filePath, error));
       }
     },
 
@@ -135,27 +135,27 @@ export function createNodeFileSystem(): FileSystem {
           recursive: options.recursive ?? false,
           force: options.overwrite !== false,
         });
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Copy', `${src} to ${dest}`, error));
+        return err(createError('Copy', `${src} to ${dest}`, error));
       }
     },
 
     async rename(src: string, dest: string) {
       try {
         await fs.rename(src, dest);
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Rename', `${src} to ${dest}`, error));
+        return err(createError('Rename', `${src} to ${dest}`, error));
       }
     },
 
     async ensureDir(dirPath: string) {
       try {
         await fs.mkdir(dirPath, { recursive: true });
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Ensure directory', dirPath, error));
+        return err(createError('Ensure directory', dirPath, error));
       }
     },
 
@@ -163,12 +163,12 @@ export function createNodeFileSystem(): FileSystem {
       try {
         const content = await fs.readFile(filePath, 'utf-8');
         const data = JSON.parse(content) as T;
-        return Ok(data);
+        return ok(data);
       } catch (error) {
         if ((error as any).code === 'ENOENT') {
-          return Err(createError('Read JSON', filePath, error));
+          return err(createError('Read JSON', filePath, error));
         }
-        return Err({
+        return err({
           code: 'JSON_PARSE_ERROR',
           message: `Failed to parse JSON in ${filePath}: ${(error as Error).message}`,
           path: filePath,
@@ -183,9 +183,9 @@ export function createNodeFileSystem(): FileSystem {
         // Ensure directory exists before writing
         await fs.mkdir(dirname(filePath), { recursive: true });
         await fs.writeFile(filePath, content, 'utf-8');
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Write JSON', filePath, error));
+        return err(createError('Write JSON', filePath, error));
       }
     },
 
@@ -196,9 +196,9 @@ export function createNodeFileSystem(): FileSystem {
         await Promise.all(
           entries.map(entry => fs.rm(resolve(dirPath, entry), { recursive: true, force: true }))
         );
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Empty directory', dirPath, error));
+        return err(createError('Empty directory', dirPath, error));
       }
     },
 
@@ -207,9 +207,9 @@ export function createNodeFileSystem(): FileSystem {
         // Ensure directory exists before writing
         await fs.mkdir(dirname(filePath), { recursive: true });
         await fs.writeFile(filePath, content, 'utf-8');
-        return Ok(undefined);
+        return ok(undefined);
       } catch (error) {
-        return Err(createError('Output file', filePath, error));
+        return err(createError('Output file', filePath, error));
       }
     },
   };

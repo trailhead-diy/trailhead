@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createCLI } from '../cli.js';
 import { createCommand } from '../command/index.js';
-import { Ok } from '../core/errors/index.js';
+import { ok } from 'neverthrow';
 
 // Mock process.exit
 const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {
@@ -21,7 +21,7 @@ describe('CLI Integration Tests', () => {
   });
 
   it('should successfully create and run CLI with createCommand', async () => {
-    const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
+    const mockAction = vi.fn().mockResolvedValue(ok(undefined));
 
     const testCommand = createCommand({
       name: 'test',
@@ -56,7 +56,7 @@ describe('CLI Integration Tests', () => {
           default: 'dist',
         },
       ],
-      action: vi.fn().mockResolvedValue(Ok(undefined)),
+      action: vi.fn().mockResolvedValue(ok(undefined)),
     });
 
     // Verify command structure matches expected interface
@@ -75,7 +75,7 @@ describe('CLI Integration Tests', () => {
   });
 
   it('should execute command action when called', async () => {
-    const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
+    const mockAction = vi.fn().mockResolvedValue(ok(undefined));
 
     const testCommand = createCommand({
       name: 'test',
@@ -95,7 +95,7 @@ describe('CLI Integration Tests', () => {
   });
 
   it('should handle command options correctly', async () => {
-    const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
+    const mockAction = vi.fn().mockResolvedValue(ok(undefined));
 
     const testCommand = createCommand({
       name: 'build',
@@ -142,7 +142,7 @@ describe('CLI Integration Tests', () => {
         createCommand({
           name: '',
           description: 'Test command',
-          action: async () => ({ success: true, value: undefined }),
+          action: async () => ok(undefined),
         })
       ).toThrow('Invalid command configuration');
     });
@@ -157,7 +157,7 @@ describe('CLI Integration Tests', () => {
               description: 'Invalid option without name or flags',
             },
           ],
-          action: async () => ({ success: true, value: undefined }),
+          action: async () => ok(undefined),
         })
       ).toThrow('Invalid command configuration');
     });
@@ -174,7 +174,7 @@ describe('CLI Integration Tests', () => {
               type: 'string',
             },
           ],
-          action: async () => ({ success: true, value: undefined }),
+          action: async () => ok(undefined),
         })
       ).not.toThrow();
     });

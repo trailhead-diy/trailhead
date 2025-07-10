@@ -3,8 +3,9 @@
  */
 
 import { fileTypeStream } from 'file-type';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result, CLIError } from '../core/errors/types.js';
+import { ok, err } from '../core/errors/utils.js';
+import { createError } from '../core/errors/factory.js';
 import type { FormatDetectionResult, StreamDetectionOptions } from './types.js';
 
 /**
@@ -13,13 +14,13 @@ import type { FormatDetectionResult, StreamDetectionOptions } from './types.js';
 export async function enhanceStream<T extends ReadableStream | NodeJS.ReadableStream>(
   stream: T,
   options: StreamDetectionOptions = {}
-): Promise<Result<T & { fileType?: FormatDetectionResult }>> {
+): Promise<Result<T & { fileType?: FormatDetectionResult }, CLIError>> {
   try {
     const enhancedStream = await fileTypeStream(stream as any, options);
 
     if (!enhancedStream.fileType) {
       // Return stream without file type info
-      return Ok(enhancedStream as unknown as T & { fileType?: FormatDetectionResult });
+      return ok(enhancedStream as unknown as T & { fileType?: FormatDetectionResult });
     }
 
     const detectionResult: FormatDetectionResult = {
@@ -28,13 +29,13 @@ export async function enhanceStream<T extends ReadableStream | NodeJS.ReadableSt
       detectionMethod: 'magic-number' as const,
     };
 
-    return Ok({
+    return ok({
       ...enhancedStream,
       fileType: detectionResult,
     } as unknown as T & { fileType?: FormatDetectionResult });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    return Err(
+    return err(
       createError(
         'STREAM_ENHANCEMENT_ERROR',
         `Failed to enhance stream with file type detection: ${message}`,
@@ -50,7 +51,7 @@ export async function enhanceStream<T extends ReadableStream | NodeJS.ReadableSt
 export async function createDetectionStream(
   source: string | Buffer | Blob,
   options: StreamDetectionOptions = {}
-): Promise<Result<ReadableStream & { fileType?: FormatDetectionResult }>> {
+): Promise<Result<ReadableStream & { fileType?: FormatDetectionResult }, CLIError>> {
   try {
     let stream: ReadableStream;
 
@@ -70,7 +71,7 @@ export async function createDetectionStream(
     return enhanceStream(stream, options);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    return Err(
+    return err(
       createError('STREAM_CREATION_ERROR', `Failed to create detection stream: ${message}`, {
         details: message,
         recoverable: false,

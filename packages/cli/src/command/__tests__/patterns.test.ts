@@ -13,7 +13,7 @@ import {
   type ConfigurationOptions,
 } from '../patterns.js';
 import type { CommandContext } from '../types.js';
-import { Ok, Err } from '../../core/errors/index.js';
+import { ok, err } from 'neverthrow';
 
 // Mock child_process
 vi.mock('child_process', () => ({
@@ -48,11 +48,11 @@ describe('Command Patterns', () => {
     it('should execute without prompts when not in interactive mode', async () => {
       const options: TestOptions = { name: 'test', value: 42 };
       const promptFn = vi.fn().mockResolvedValue({});
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeInteractiveCommand(options, promptFn, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toBe('success');
       expect(promptFn).not.toHaveBeenCalled();
       expect(executeFn).toHaveBeenCalledWith(options);
@@ -64,11 +64,11 @@ describe('Command Patterns', () => {
         name: 'test',
       };
       const promptFn = vi.fn().mockResolvedValue({ value: 100 });
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeInteractiveCommand(options, promptFn, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(promptFn).toHaveBeenCalled();
       expect(executeFn).toHaveBeenCalledWith({
         interactive: true,
@@ -85,11 +85,11 @@ describe('Command Patterns', () => {
         name: 'test',
       };
       const promptFn = vi.fn().mockResolvedValue({ value: 100 });
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeInteractiveCommand(options, promptFn, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(promptFn).not.toHaveBeenCalled();
       expect(executeFn).toHaveBeenCalledWith(options);
     });
@@ -97,13 +97,15 @@ describe('Command Patterns', () => {
     it('should handle prompt errors', async () => {
       const options: TestOptions = { interactive: true };
       const promptFn = vi.fn().mockRejectedValue(new Error('Prompt failed'));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeInteractiveCommand(options, promptFn, executeFn, mockContext);
 
-      expect(result.success).toBe(false);
-      expect(result.error?.code).toBe('PROMPT_ERROR');
-      expect(result.error?.message).toBe('Interactive prompts failed');
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) {
+        expect(result.error?.code).toBe('PROMPT_ERROR');
+        expect(result.error?.message).toBe('Interactive prompts failed');
+      }
       expect(executeFn).not.toHaveBeenCalled();
     });
 
@@ -118,7 +120,7 @@ describe('Command Patterns', () => {
         value: 100,
         extra: 'additional',
       });
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       await executeInteractiveCommand(options, promptFn, executeFn, mockContext);
 
@@ -138,24 +140,24 @@ describe('Command Patterns', () => {
         {
           name: 'name-required',
           validate: d =>
-            d.name ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
+            d.name ? ok(d) : err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
         },
         {
           name: 'value-positive',
           validate: d =>
             d.value > 0
-              ? Ok(d)
-              : Err({
+              ? ok(d)
+              : err({
                   code: 'VALIDATION_ERROR',
                   message: 'Value must be positive',
                 }),
         },
       ];
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeWithValidation(data, rules, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toBe('success');
       expect(executeFn).toHaveBeenCalledWith(data);
       expect(mockContext.logger.debug).toHaveBeenCalledWith('All validations passed');
@@ -167,24 +169,24 @@ describe('Command Patterns', () => {
         {
           name: 'name-required',
           validate: d =>
-            d.name ? Ok(d) : Err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
+            d.name ? ok(d) : err({ code: 'VALIDATION_ERROR', message: 'Name required' }),
         },
         {
           name: 'value-positive',
           validate: d =>
             d.value > 0
-              ? Ok(d)
-              : Err({
+              ? ok(d)
+              : err({
                   code: 'VALIDATION_ERROR',
                   message: 'Value must be positive',
                 }),
         },
       ];
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeWithValidation(data, rules, executeFn, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.message).toBe('Name required');
       expect(executeFn).not.toHaveBeenCalled();
       expect(mockContext.logger.error).toHaveBeenCalledWith('Validation failed: name-required');
@@ -195,14 +197,14 @@ describe('Command Patterns', () => {
       const rules: ValidationRule<typeof data>[] = [
         {
           name: 'normalize-name',
-          validate: d => Ok({ ...d, name: d.name.toUpperCase() }),
+          validate: d => ok({ ...d, name: d.name.toUpperCase() }),
         },
       ];
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeWithValidation(data, rules, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(executeFn).toHaveBeenCalledWith({ name: 'TEST', value: 42 });
     });
   });
@@ -212,17 +214,17 @@ describe('Command Patterns', () => {
       const operations: FileSystemOperation<string>[] = [
         {
           name: 'operation1',
-          execute: vi.fn().mockResolvedValue(Ok('result1')),
+          execute: vi.fn().mockResolvedValue(ok('result1')),
         },
         {
           name: 'operation2',
-          execute: vi.fn().mockResolvedValue(Ok('result2')),
+          execute: vi.fn().mockResolvedValue(ok('result2')),
         },
       ];
 
       const result = await executeFileSystemOperations(operations, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toEqual(['result1', 'result2']);
       expect(operations[0].execute).toHaveBeenCalled();
       expect(operations[1].execute).toHaveBeenCalled();
@@ -233,20 +235,20 @@ describe('Command Patterns', () => {
       const operations: FileSystemOperation<string>[] = [
         {
           name: 'operation1',
-          execute: vi.fn().mockResolvedValue(Ok('result1')),
+          execute: vi.fn().mockResolvedValue(ok('result1')),
           rollback: rollback1,
         },
         {
           name: 'operation2',
           execute: vi
             .fn()
-            .mockResolvedValue(Err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
+            .mockResolvedValue(err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
         },
       ];
 
       const result = await executeFileSystemOperations(operations, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.message).toBe('Operation 2 failed');
       expect(rollback1).toHaveBeenCalled();
       expect(mockContext.logger.warning).toHaveBeenCalledWith('Rolling back changes...');
@@ -258,20 +260,20 @@ describe('Command Patterns', () => {
       const operations: FileSystemOperation<string>[] = [
         {
           name: 'operation1',
-          execute: vi.fn().mockResolvedValue(Ok('result1')),
+          execute: vi.fn().mockResolvedValue(ok('result1')),
           rollback: rollback1,
         },
         {
           name: 'operation2',
           execute: vi
             .fn()
-            .mockResolvedValue(Err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
+            .mockResolvedValue(err({ code: 'OP_ERROR', message: 'Operation 2 failed' })),
         },
       ];
 
       const result = await executeFileSystemOperations(operations, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(rollback1).toHaveBeenCalled();
       expect(mockContext.logger.error).toHaveBeenCalledWith(
         'Failed to rollback: operation1: Error: Rollback failed'
@@ -288,7 +290,7 @@ describe('Command Patterns', () => {
 
       const result = await executeFileSystemOperations(operations, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.code).toBe('OPERATION_ERROR');
       expect(result.error?.message).toBe('Operation failed: operation1');
     });
@@ -324,7 +326,7 @@ describe('Command Patterns', () => {
 
       const result = await executeSubprocess(config, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toBe('output data');
       expect(spawn).toHaveBeenCalledWith('echo', ['hello'], {
         cwd: process.cwd(),
@@ -360,7 +362,7 @@ describe('Command Patterns', () => {
 
       const result = await executeSubprocess(config, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.code).toBe('SUBPROCESS_EXIT_ERROR');
       expect(result.error?.message).toBe('false exited with code 1');
       expect(result.error?.details).toBe('error output');
@@ -387,7 +389,7 @@ describe('Command Patterns', () => {
 
       const result = await executeSubprocess(config, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.code).toBe('SUBPROCESS_ERROR');
       expect(result.error?.message).toBe('Failed to spawn nonexistent');
     });
@@ -425,7 +427,7 @@ describe('Command Patterns', () => {
   describe('executeBatch', () => {
     it('should process items in batches', async () => {
       const items = [1, 2, 3, 4, 5];
-      const processor = vi.fn().mockImplementation((item: number) => Promise.resolve(Ok(item * 2)));
+      const processor = vi.fn().mockImplementation((item: number) => Promise.resolve(ok(item * 2)));
       const onProgress = vi.fn();
 
       const result = await executeBatch(
@@ -435,7 +437,7 @@ describe('Command Patterns', () => {
         mockContext
       );
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toEqual([2, 4, 6, 8, 10]);
       expect(processor).toHaveBeenCalledTimes(5);
       expect(onProgress).toHaveBeenCalledWith(2, 5);
@@ -447,14 +449,14 @@ describe('Command Patterns', () => {
       const items = [1, 2, 3, 4, 5];
       const processor = vi.fn().mockImplementation((item: number) => {
         if (item === 3) {
-          return Promise.resolve(Err({ code: 'PROCESS_ERROR', message: 'Failed on item 3' }));
+          return Promise.resolve(err({ code: 'PROCESS_ERROR', message: 'Failed on item 3' }));
         }
-        return Promise.resolve(Ok(item * 2));
+        return Promise.resolve(ok(item * 2));
       });
 
       const result = await executeBatch(items, processor, { batchSize: 2 }, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.message).toBe('Failed on item 3');
       expect(processor).toHaveBeenCalledTimes(4); // First batch (1,2) + second batch (3,4) - stops at failure
     });
@@ -467,12 +469,12 @@ describe('Command Patterns', () => {
 
     it('should load and execute with configuration', async () => {
       const options: TestOptions = { name: 'test' };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting1: 'value1', setting2: 42 }));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const loadConfigFn = vi.fn().mockResolvedValue(ok({ setting1: 'value1', setting2: 42 }));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeWithConfiguration(options, loadConfigFn, executeFn, mockContext);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toBe('success');
       expect(loadConfigFn).toHaveBeenCalledWith(undefined);
       expect(executeFn).toHaveBeenCalledWith({
@@ -483,8 +485,8 @@ describe('Command Patterns', () => {
 
     it('should load configuration from specified path', async () => {
       const options: TestOptions = { config: '/path/to/config.json' };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting: 'value' }));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const loadConfigFn = vi.fn().mockResolvedValue(ok({ setting: 'value' }));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       await executeWithConfiguration(options, loadConfigFn, executeFn, mockContext);
 
@@ -495,8 +497,8 @@ describe('Command Patterns', () => {
       const options: TestOptions = {
         override: { setting1: 'overridden', newSetting: 'added' },
       };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting1: 'original', setting2: 42 }));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const loadConfigFn = vi.fn().mockResolvedValue(ok({ setting1: 'original', setting2: 42 }));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       await executeWithConfiguration(options, loadConfigFn, executeFn, mockContext);
 
@@ -509,8 +511,8 @@ describe('Command Patterns', () => {
 
     it('should handle preset application', async () => {
       const options: TestOptions = { preset: 'development' };
-      const loadConfigFn = vi.fn().mockResolvedValue(Ok({ setting: 'value' }));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+      const loadConfigFn = vi.fn().mockResolvedValue(ok({ setting: 'value' }));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       await executeWithConfiguration(options, loadConfigFn, executeFn, mockContext);
 
@@ -522,12 +524,12 @@ describe('Command Patterns', () => {
       const options: TestOptions = {};
       const loadConfigFn = vi
         .fn()
-        .mockResolvedValue(Err({ code: 'CONFIG_ERROR', message: 'Config file not found' }));
-      const executeFn = vi.fn().mockResolvedValue(Ok('success'));
+        .mockResolvedValue(err({ code: 'CONFIG_ERROR', message: 'Config file not found' }));
+      const executeFn = vi.fn().mockResolvedValue(ok('success'));
 
       const result = await executeWithConfiguration(options, loadConfigFn, executeFn, mockContext);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error?.message).toBe('Config file not found');
       expect(executeFn).not.toHaveBeenCalled();
     });

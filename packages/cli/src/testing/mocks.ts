@@ -1,7 +1,8 @@
 import type { FileSystem } from '../filesystem/index.js';
 import type { Logger } from '../core/logger.js';
-import { Ok, Err } from '../core/errors/index.js';
-import type { Result } from '../core/errors/index.js';
+import { ok, err } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/types.js';
 import { normalizePath } from './path-utils.js';
 import { vi } from 'vitest';
 
@@ -19,7 +20,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
   const directories = new Set<string>();
 
   // Extract directories from file paths using normalized paths
-  for (const filePath of files.keys()) {
+  for (const filePath of Array.from(files.keys())) {
     const parts = filePath.split('/');
     for (let i = 1; i < parts.length; i++) {
       directories.add(parts.slice(0, i).join('/'));
@@ -32,21 +33,21 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
   }
 
   return {
-    readFile: async (path: string): Promise<Result<string>> => {
+    readFile: async (path: string): Promise<Result<string, CLIError>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'FILE_NOT_FOUND',
           message: `File not found: ${path}`,
           path,
           recoverable: false,
         });
       }
-      return Ok(content);
+      return ok(content);
     },
 
-    writeFile: async (path: string, content: string): Promise<Result<void>> => {
+    writeFile: async (path: string, content: string): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
 
@@ -56,19 +57,19 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    mkdir: async (path: string): Promise<Result<void>> => {
+    mkdir: async (path: string): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    readdir: async (path: string): Promise<Result<string[]>> => {
+    readdir: async (path: string): Promise<Result<string[], CLIError>> => {
       const normalized = normalizePath(path);
       if (!directories.has(normalized) && !files.has(normalized)) {
-        return Err({
+        return err({
           code: 'DIR_NOT_FOUND',
           message: `Directory not found: ${path}`,
           path,
@@ -80,7 +81,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
       const prefix = normalized === '.' ? '' : normalized + '/';
 
       // Find all direct children
-      for (const filePath of files.keys()) {
+      for (const filePath of Array.from(files.keys())) {
         if (filePath.startsWith(prefix)) {
           const relative = filePath.slice(prefix.length);
           const firstSlash = relative.indexOf('/');
@@ -95,10 +96,10 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
         }
       }
 
-      return Ok(entries);
+      return ok(entries);
     },
 
-    ensureDir: async (path: string): Promise<Result<void>> => {
+    ensureDir: async (path: string): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
 
@@ -108,14 +109,14 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    readJson: async <T = any>(path: string): Promise<Result<T>> => {
+    readJson: async <T = any>(path: string): Promise<Result<T, CLIError>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'FILE_NOT_FOUND',
           message: `File not found: ${path}`,
           path,
@@ -125,9 +126,9 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
 
       try {
         const data = JSON.parse(content);
-        return Ok(data as T);
+        return ok(data as T);
       } catch {
-        return Err({
+        return err({
           code: 'PARSE_ERROR',
           message: `Failed to parse JSON in ${path}`,
           path,
@@ -136,7 +137,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
       }
     },
 
-    writeJson: async <T = any>(path: string, data: T): Promise<Result<void>> => {
+    writeJson: async <T = any>(path: string, data: T): Promise<Result<void, CLIError>> => {
       const content = JSON.stringify(data, null, 2);
       const normalized = normalizePath(path);
       files.set(normalized, content);
@@ -147,16 +148,16 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     // New node:fs/promises compatible methods
-    access: async (path: string, _mode?: number): Promise<Result<void>> => {
+    access: async (path: string, _mode?: number): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       if (files.has(normalized) || directories.has(normalized)) {
-        return Ok(undefined);
+        return ok(undefined);
       }
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
@@ -164,25 +165,25 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
       });
     },
 
-    stat: async (path: string): Promise<Result<any>> => {
+    stat: async (path: string): Promise<Result<any, CLIError>> => {
       const normalized = normalizePath(path);
       if (files.has(normalized)) {
         const content = files.get(normalized) || '';
-        return Ok({
+        return ok({
           size: content.length,
           isFile: true,
           isDirectory: false,
           mtime: new Date(),
         });
       } else if (directories.has(normalized)) {
-        return Ok({
+        return ok({
           size: 0,
           isFile: false,
           isDirectory: true,
           mtime: new Date(),
         });
       }
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
@@ -193,19 +194,19 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
     rm: async (
       path: string,
       _options?: { recursive?: boolean; force?: boolean }
-    ): Promise<Result<void>> => {
+    ): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       files.delete(normalized);
       directories.delete(normalized);
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    cp: async (src: string, dest: string, _options?: any): Promise<Result<void>> => {
+    cp: async (src: string, dest: string, _options?: any): Promise<Result<void, CLIError>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'FILE_NOT_FOUND',
           message: `Source file not found: ${src}`,
           path: src,
@@ -213,15 +214,15 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
         });
       }
       files.set(normalizedDest, content);
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    rename: async (src: string, dest: string): Promise<Result<void>> => {
+    rename: async (src: string, dest: string): Promise<Result<void, CLIError>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'FILE_NOT_FOUND',
           message: `Source file not found: ${src}`,
           path: src,
@@ -230,27 +231,27 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
       }
       files.set(normalizedDest, content);
       files.delete(normalizedSrc);
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     // Test helpers
     getFiles: () => new Map(files),
     getDirectories: () => new Set(directories),
 
-    emptyDir: async (path: string): Promise<Result<void>> => {
+    emptyDir: async (path: string): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
       // Remove all files in this directory
       const prefix = normalized + '/';
-      for (const filePath of files.keys()) {
+      for (const filePath of Array.from(files.keys())) {
         if (filePath.startsWith(prefix)) {
           files.delete(filePath);
         }
       }
-      return Ok(undefined);
+      return ok(undefined);
     },
 
-    outputFile: async (path: string, content: string): Promise<Result<void>> => {
+    outputFile: async (path: string, content: string): Promise<Result<void, CLIError>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
       // Add parent directories
@@ -258,7 +259,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): FileS
       for (let i = 1; i < parts.length; i++) {
         directories.add(parts.slice(0, i).join('/'));
       }
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     clear: () => {
@@ -360,16 +361,16 @@ export function createEnhancedMockFileSystem(
   const enhancedFs: EnhancedMockFileSystem = {
     ...basicFs,
 
-    readFile: async (path: string): Promise<Result<string>> => {
+    readFile: async (path: string): Promise<Result<string, CLIError>> => {
       const error = checkForSimulatedError('readFile', path);
-      if (error) return Err(error);
+      if (error) return err(error);
       const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
 
       let content: string | undefined;
 
       if (!caseSensitive) {
         // Find the actual file with case-insensitive search
-        for (const [filePath, fileContent] of files.entries()) {
+        for (const [filePath, fileContent] of Array.from(files.entries())) {
           if (filePath.toLowerCase() === normalized) {
             content = fileContent;
             break;
@@ -380,19 +381,19 @@ export function createEnhancedMockFileSystem(
       }
 
       if (content === undefined) {
-        return Err({
+        return err({
           code: 'FILE_NOT_FOUND',
           message: `File not found: ${path}`,
           path,
           recoverable: false,
         });
       }
-      return Ok(content);
+      return ok(content);
     },
 
-    writeFile: async (path: string, content: string): Promise<Result<void>> => {
+    writeFile: async (path: string, content: string): Promise<Result<void, CLIError>> => {
       const error = checkForSimulatedError('writeFile', path);
-      if (error) return Err(error);
+      if (error) return err(error);
       const normalized = normalizePath(path);
       files.set(normalized, content);
 
@@ -402,7 +403,7 @@ export function createEnhancedMockFileSystem(
         directories.add(parts.slice(0, i).join('/'));
       }
 
-      return Ok(undefined);
+      return ok(undefined);
     },
 
     // Enhanced test utilities
@@ -432,18 +433,18 @@ export function createEnhancedMockFileSystem(
 
     getStoredPaths: () => {
       const allPaths = new Set<string>();
-      for (const path of files.keys()) {
+      for (const path of Array.from(files.keys())) {
         allPaths.add(path);
       }
-      for (const path of directories) {
+      for (const path of Array.from(directories)) {
         allPaths.add(path);
       }
       return Array.from(allPaths).sort();
     },
 
-    access: async (path: string, _mode?: number): Promise<Result<void>> => {
+    access: async (path: string, _mode?: number): Promise<Result<void, CLIError>> => {
       const error = checkForSimulatedError('access', path);
-      if (error) return Err(error);
+      if (error) return err(error);
       const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
 
       if (!caseSensitive) {
@@ -451,15 +452,15 @@ export function createEnhancedMockFileSystem(
         const lowerFiles = Array.from(files.keys()).map(k => k.toLowerCase());
         const lowerDirs = Array.from(directories).map(d => d.toLowerCase());
         if (lowerFiles.includes(normalized) || lowerDirs.includes(normalized)) {
-          return Ok(undefined);
+          return ok(undefined);
         }
       } else {
         if (files.has(normalized) || directories.has(normalized)) {
-          return Ok(undefined);
+          return ok(undefined);
         }
       }
 
-      return Err({
+      return err({
         code: 'ENOENT',
         message: `Path not found: ${path}`,
         path,
