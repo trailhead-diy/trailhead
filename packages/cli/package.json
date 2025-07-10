@@ -59,6 +59,18 @@
     "./progress": {
       "types": "./dist/progress/index.d.ts",
       "default": "./dist/progress/index.js"
+    },
+    "./formats": {
+      "types": "./dist/formats/index.d.ts",
+      "default": "./dist/formats/index.js"
+    },
+    "./streams": {
+      "types": "./dist/streams/index.d.ts",
+      "default": "./dist/streams/index.js"
+    },
+    "./watcher": {
+      "types": "./dist/watcher/index.d.ts",
+      "default": "./dist/watcher/index.js"
     }
   },
   "scripts": {
@@ -85,6 +97,7 @@
     "@inquirer/prompts": "^7.6.0",
     "@types/cli-progress": "^3.11.6",
     "chalk": "^5.4.1",
+    "chokidar": "^4.0.3",
     "cli-progress": "^3.12.0",
     "commander": "^14.0.0",
     "cosmiconfig": "^9.0.0",
@@ -106,6 +119,7 @@
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@types/chokidar": "^2.1.7",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.10",
     "@types/papaparse": "^5.3.16",
