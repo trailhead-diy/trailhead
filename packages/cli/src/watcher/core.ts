@@ -23,7 +23,8 @@ export function createWatcher(
   options: WatchOptions = {}
 ): Result<WatcherInstance> {
   try {
-    const stats: WatcherStats = {
+    // Internal mutable stats object
+    const stats = {
       watchedPaths: Array.isArray(paths) ? paths : [paths],
       totalEvents: 0,
       eventsByType: {
@@ -59,17 +60,17 @@ export function createWatcher(
     });
 
     const createEventHandler = (type: WatchEventType) => {
-      return async (path: string, stats?: import('node:fs').Stats) => {
+      return async (path: string, fileStats?: import('node:fs').Stats) => {
         const event: WatchEvent = {
           type,
           path,
-          stats,
+          stats: fileStats,
           timestamp: Date.now(),
         };
 
         // Update statistics
-        (stats as any).totalEvents++;
-        (stats as any).eventsByType[type]++;
+        stats.totalEvents++;
+        stats.eventsByType[type]++;
 
         // Process middleware
         let processedEvent = event;
@@ -146,8 +147,8 @@ export function createWatcher(
         timestamp: Date.now(),
       };
 
-      (stats as any).totalEvents++;
-      (stats as any).eventsByType.error++;
+      stats.totalEvents++;
+      stats.eventsByType.error++;
 
       for (const handler of handlers) {
         try {
@@ -165,9 +166,9 @@ export function createWatcher(
 
       start: async () => {
         try {
-          if (!(stats as any).isActive) {
-            (stats as any).isActive = true;
-            (stats as any).startTime = Date.now();
+          if (!stats.isActive) {
+            stats.isActive = true;
+            stats.startTime = Date.now();
           }
           return Ok(undefined);
         } catch (error) {
@@ -184,7 +185,7 @@ export function createWatcher(
       stop: async () => {
         try {
           await watcher.close();
-          (stats as any).isActive = false;
+          stats.isActive = false;
           return Ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to stop watcher';
@@ -201,7 +202,7 @@ export function createWatcher(
         try {
           watcher.add(newPaths);
           const pathsToAdd = Array.isArray(newPaths) ? newPaths : [newPaths];
-          (stats as any).watchedPaths = [...stats.watchedPaths, ...pathsToAdd];
+          stats.watchedPaths = [...stats.watchedPaths, ...pathsToAdd];
           return Ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to add paths';
@@ -218,7 +219,7 @@ export function createWatcher(
         try {
           watcher.unwatch(pathsToRemove);
           const pathsArray = Array.isArray(pathsToRemove) ? pathsToRemove : [pathsToRemove];
-          (stats as any).watchedPaths = stats.watchedPaths.filter(p => !pathsArray.includes(p));
+          stats.watchedPaths = stats.watchedPaths.filter(p => !pathsArray.includes(p));
           return Ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to remove paths';

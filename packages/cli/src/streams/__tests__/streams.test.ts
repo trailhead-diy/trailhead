@@ -28,7 +28,10 @@ describe('Stream Utils', () => {
     tempFiles = [];
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Wait a bit for any pending stream operations to complete
+    await new Promise(resolve => setTimeout(resolve, 10));
+
     // Clean up temp files
     tempFiles.forEach(file => {
       try {
@@ -71,6 +74,10 @@ describe('Stream Utils', () => {
       if (result.success) {
         expect(result.value).toBeDefined();
         // The stream will emit an error event when reading starts
+        // Add error handler to prevent unhandled errors
+        result.value.on('error', () => {
+          // Expected error - file doesn't exist
+        });
       }
     });
 
@@ -257,6 +264,12 @@ describe('Stream Utils', () => {
       if (!readResult.success) {
         // This is expected - the file doesn't exist
         expect(readResult.success).toBe(false);
+      } else {
+        // Stream creation succeeded but will error on read
+        // Add an error handler to prevent unhandled errors
+        readResult.value.on('error', () => {
+          // Expected error - file doesn't exist
+        });
       }
     });
   });
