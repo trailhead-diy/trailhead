@@ -18,12 +18,16 @@ describe('Testing Mocks', () => {
       });
 
       const testResult = await fs.readFile('test.txt');
-      expect(testResult.success).toBe(true);
-      expect(testResult.value).toBe('Hello World');
+      expect(testResult.isOk()).toBe(true);
+      if (testResult.isOk()) {
+        expect(testResult.value).toBe('Hello World');
+      }
 
       const nestedResult = await fs.readFile('dir/nested.json');
-      expect(nestedResult.success).toBe(true);
-      expect(nestedResult.value).toBe('{"key": "value"}');
+      expect(nestedResult.isOk()).toBe(true);
+      if (nestedResult.isOk()) {
+        expect(nestedResult.value).toBe('{"key": "value"}');
+      }
     });
 
     it('should handle file existence checks', async () => {
@@ -32,17 +36,17 @@ describe('Testing Mocks', () => {
       });
 
       const existsResult = await fs.access('existing.txt');
-      expect(existsResult.success).toBe(true);
+      expect(existsResult.isOk()).toBe(true);
 
       const notExistsResult = await fs.access('nonexistent.txt');
-      expect(notExistsResult.success).toBe(false);
+      expect(notExistsResult.isErr()).toBe(true);
     });
 
     it('should return error for missing files', async () => {
       const fs = mockFileSystem();
 
       const result = await fs.readFile('missing.txt');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.code).toBe('FILE_NOT_FOUND');
       expect(result.error.message).toBe('File not found: missing.txt');
     });
@@ -51,25 +55,25 @@ describe('Testing Mocks', () => {
       const fs = mockFileSystem();
 
       const writeResult = await fs.writeFile('new/file.txt', 'new content');
-      expect(writeResult.success).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
       const readResult = await fs.readFile('new/file.txt');
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
       expect(readResult.value).toBe('new content');
 
       // Directory should exist
       const dirExistsResult = await fs.access('new');
-      expect(dirExistsResult.success).toBe(true);
+      expect(dirExistsResult.isOk()).toBe(true);
     });
 
     it('should handle directory operations', async () => {
       const fs = mockFileSystem();
 
       const mkdirResult = await fs.mkdir('testdir');
-      expect(mkdirResult.success).toBe(true);
+      expect(mkdirResult.isOk()).toBe(true);
 
       const existsResult = await fs.access('testdir');
-      expect(existsResult.success).toBe(true);
+      expect(existsResult.isOk()).toBe(true);
     });
 
     it('should list directory contents', async () => {
@@ -80,7 +84,7 @@ describe('Testing Mocks', () => {
       });
 
       const readdirResult = await fs.readdir('dir');
-      expect(readdirResult.success).toBe(true);
+      expect(readdirResult.isOk()).toBe(true);
       expect(readdirResult.value).toContain('file1.txt');
       expect(readdirResult.value).toContain('file2.txt');
       expect(readdirResult.value).toContain('subdir');
@@ -93,10 +97,10 @@ describe('Testing Mocks', () => {
       });
 
       const copyResult = await fs.cp('source.txt', 'destination.txt');
-      expect(copyResult.success).toBe(true);
+      expect(copyResult.isOk()).toBe(true);
 
       const readResult = await fs.readFile('destination.txt');
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
       expect(readResult.value).toBe('original content');
     });
 
@@ -105,10 +109,10 @@ describe('Testing Mocks', () => {
       const testData = { name: 'test', version: '1.0.0' };
 
       const writeResult = await fs.writeJson('package.json', testData);
-      expect(writeResult.success).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
       const readResult = await fs.readJson('package.json');
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
       expect(readResult.value).toEqual(testData);
     });
 
@@ -118,7 +122,7 @@ describe('Testing Mocks', () => {
       });
 
       const result = await fs.readJson('invalid.json');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.code).toBe('PARSE_ERROR');
     });
 
@@ -126,14 +130,14 @@ describe('Testing Mocks', () => {
       const fs = mockFileSystem();
 
       const ensureResult = await fs.ensureDir('deep/nested/path');
-      expect(ensureResult.success).toBe(true);
+      expect(ensureResult.isOk()).toBe(true);
 
       const existsResult = await fs.access('deep/nested/path');
-      expect(existsResult.success).toBe(true);
+      expect(existsResult.isOk()).toBe(true);
 
       // Parent directories should also exist
       const parentExistsResult = await fs.access('deep');
-      expect(parentExistsResult.success).toBe(true);
+      expect(parentExistsResult.isOk()).toBe(true);
     });
 
     it('should provide test helper methods', () => {
@@ -173,7 +177,7 @@ describe('Testing Mocks', () => {
       fs.addFile('dynamic.txt', 'dynamic content');
 
       const result = await fs.readFile('dynamic.txt');
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toBe('dynamic content');
     });
 
@@ -183,7 +187,7 @@ describe('Testing Mocks', () => {
       fs.addDirectory('new/directory');
 
       const result = await fs.access('new/directory');
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should simulate errors when enabled', async () => {
@@ -197,7 +201,7 @@ describe('Testing Mocks', () => {
       });
 
       const result = await fs.readFile('error.txt');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.code).toBe('PERMISSION_DENIED');
     });
 
@@ -214,7 +218,7 @@ describe('Testing Mocks', () => {
 
       // Should match case-insensitively
       const result = await fs.readFile('file.txt');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.code).toBe('TEST_ERROR');
     });
 
@@ -249,7 +253,7 @@ describe('Testing Mocks', () => {
 
       // Error simulations should also be cleared
       const result = await fs.readFile('test.txt');
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
       expect(result.error.code).toBe('FILE_NOT_FOUND'); // Normal error, not simulated
     });
   });
@@ -263,24 +267,24 @@ describe('Testing Mocks', () => {
 
     it('should have common test files', async () => {
       const packageResult = await fs.readJson('project/package.json');
-      expect(packageResult.success).toBe(true);
+      expect(packageResult.isOk()).toBe(true);
       expect(packageResult.value.name).toBe('test-project');
 
       const indexResult = await fs.readFile('project/src/index.ts');
-      expect(indexResult.success).toBe(true);
+      expect(indexResult.isOk()).toBe(true);
       expect(indexResult.value).toContain('Hello World');
 
       const readmeResult = await fs.readFile('project/README.md');
-      expect(readmeResult.success).toBe(true);
+      expect(readmeResult.isOk()).toBe(true);
       expect(readmeResult.value).toContain('# Test Project');
     });
 
     it('should have expected directory structure', async () => {
       const distExists = await fs.access('project/dist');
-      expect(distExists.success).toBe(true);
+      expect(distExists.isOk()).toBe(true);
 
       const nodeModulesExists = await fs.access('project/node_modules');
-      expect(nodeModulesExists.success).toBe(true);
+      expect(nodeModulesExists.isOk()).toBe(true);
     });
   });
 
@@ -293,18 +297,18 @@ describe('Testing Mocks', () => {
 
     it('should have CLI project structure', async () => {
       const packageResult = await fs.readJson('cli-project/package.json');
-      expect(packageResult.success).toBe(true);
+      expect(packageResult.isOk()).toBe(true);
       expect(packageResult.value.name).toBe('test-cli');
       expect(packageResult.value.bin).toEqual({
         'test-cli': './dist/index.js',
       });
 
       const indexResult = await fs.readFile('cli-project/src/index.ts');
-      expect(indexResult.success).toBe(true);
+      expect(indexResult.isOk()).toBe(true);
       expect(indexResult.value).toContain('@esteban-url/trailhead-cli');
 
       const tsconfigResult = await fs.readJson('cli-project/tsconfig.json');
-      expect(tsconfigResult.success).toBe(true);
+      expect(tsconfigResult.isOk()).toBe(true);
       expect(tsconfigResult.value.compilerOptions.target).toBe('es2020');
     });
   });
@@ -319,22 +323,22 @@ describe('Testing Mocks', () => {
     it('should normalize different path separators', async () => {
       // All paths should be accessible with forward slashes
       const unixResult = await fs.readFile('unix/project/src/index.ts');
-      expect(unixResult.success).toBe(true);
+      expect(unixResult.isOk()).toBe(true);
       expect(unixResult.value).toContain('Unix');
 
       const windowsResult = await fs.readFile('windows/project/src/index.ts');
-      expect(windowsResult.success).toBe(true);
+      expect(windowsResult.isOk()).toBe(true);
       expect(windowsResult.value).toContain('Windows');
 
       const mixedResult = await fs.readFile('mixed/project/src/index.ts');
-      expect(mixedResult.success).toBe(true);
+      expect(mixedResult.isOk()).toBe(true);
       expect(mixedResult.value).toContain('Mixed');
     });
 
     it('should handle case insensitivity', async () => {
       // Should work with different casing
       const result = await fs.readFile('UNIX/PROJECT/SRC/INDEX.TS');
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(result.value).toContain('Unix');
     });
   });
@@ -459,19 +463,19 @@ describe('Testing Mocks', () => {
 
       // Simulate a CLI operation that reads config and writes output
       const packageResult = await fs.readJson('project/package.json');
-      expect(packageResult.success).toBe(true);
+      expect(packageResult.isOk()).toBe(true);
 
       logger.info('Processing package.json');
 
       const newFile = `// Generated from ${packageResult.value.name}\nexport const version = "${packageResult.value.version}";`;
       const writeResult = await fs.writeFile('project/src/version.ts', newFile);
-      expect(writeResult.success).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
       logger.success('Generated version file');
 
       // Verify the operation
       const versionResult = await fs.readFile('project/src/version.ts');
-      expect(versionResult.success).toBe(true);
+      expect(versionResult.isOk()).toBe(true);
       expect(versionResult.value).toContain('export const version = "1.0.0"');
 
       // Check logging
@@ -494,11 +498,11 @@ describe('Testing Mocks', () => {
 
       // Normal read should work
       const readResult = await fs.readFile('config.json');
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
 
       // Write should fail with simulated error
       const writeResult = await fs.writeFile('output.txt', 'content');
-      expect(writeResult.success).toBe(false);
+      expect(writeResult.isOk()).toBe(false);
       expect(writeResult.error.code).toBe('PERMISSION_DENIED');
     });
   });

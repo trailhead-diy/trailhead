@@ -3,8 +3,10 @@
  */
 
 import { watch as chokidarWatch } from 'chokidar';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result } from 'neverthrow';
+import { ok, err } from 'neverthrow';
+import type { CLIError } from '../core/errors/types.js';
+import { createError } from '../core/errors/factory.js';
 import type {
   WatchOptions,
   WatchEvent,
@@ -20,7 +22,7 @@ import type {
 export function createWatcher(
   paths: string | string[],
   options: WatchOptions = {}
-): Result<WatcherInstance> {
+): Result<WatcherInstance, CLIError> {
   try {
     // Internal mutable stats object
     const stats = {
@@ -169,10 +171,10 @@ export function createWatcher(
             stats.isActive = true;
             stats.startTime = Date.now();
           }
-          return Ok(undefined);
+          return ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to start watcher';
-          return Err(
+          return err(
             createError('WATCHER_START_FAILED', 'Failed to start watcher', {
               details: message,
               recoverable: true,
@@ -185,10 +187,10 @@ export function createWatcher(
         try {
           await watcher.close();
           stats.isActive = false;
-          return Ok(undefined);
+          return ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to stop watcher';
-          return Err(
+          return err(
             createError('WATCHER_STOP_FAILED', 'Failed to stop watcher', {
               details: message,
               recoverable: true,
@@ -202,10 +204,10 @@ export function createWatcher(
           watcher.add(newPaths);
           const pathsToAdd = Array.isArray(newPaths) ? newPaths : [newPaths];
           stats.watchedPaths = [...stats.watchedPaths, ...pathsToAdd];
-          return Ok(undefined);
+          return ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to add paths';
-          return Err(
+          return err(
             createError('WATCHER_ADD_PATHS_FAILED', 'Failed to add paths to watcher', {
               details: message,
               recoverable: true,
@@ -219,10 +221,10 @@ export function createWatcher(
           watcher.unwatch(pathsToRemove);
           const pathsArray = Array.isArray(pathsToRemove) ? pathsToRemove : [pathsToRemove];
           stats.watchedPaths = stats.watchedPaths.filter(p => !pathsArray.includes(p));
-          return Ok(undefined);
+          return ok(undefined);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to remove paths';
-          return Err(
+          return err(
             createError('WATCHER_REMOVE_PATHS_FAILED', 'Failed to remove paths from watcher', {
               details: message,
               recoverable: true,
@@ -252,10 +254,10 @@ export function createWatcher(
       };
     };
 
-    return Ok(instance);
+    return ok(instance);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create watcher';
-    return Err(
+    return err(
       createError('WATCHER_CREATION_FAILED', 'Failed to create file watcher', {
         details: message,
         recoverable: false,
@@ -271,11 +273,11 @@ export function watchFiles(
   paths: string | string[],
   handler: WatchEventHandler,
   options: WatchOptions = {}
-): Result<() => Promise<void>> {
+): Result<() => Promise<void>, CLIError> {
   const watcherResult = createWatcher(paths, options);
 
-  if (!watcherResult.success) {
-    return watcherResult;
+  if (watcherResult.isErr()) {
+    return err(watcherResult.error);
   }
 
   const watcher = watcherResult.value;
@@ -285,7 +287,7 @@ export function watchFiles(
     await watcher.stop();
   };
 
-  return Ok(stopWatcher);
+  return ok(stopWatcher);
 }
 
 /**
@@ -295,13 +297,13 @@ export function createRestartableWatcher(
   paths: string | string[],
   restartFn: () => Promise<void> | void,
   options: WatchOptions = {}
-): Result<WatcherInstance> {
+): Result<WatcherInstance, CLIError> {
   const watcherResult = createWatcher(paths, {
     ...options,
     ignoreInitial: true,
   });
 
-  if (!watcherResult.success) {
+  if (watcherResult.isErr()) {
     return watcherResult;
   }
 
@@ -333,5 +335,5 @@ export function createRestartableWatcher(
 
   (watcher as any).on(handleRestart);
 
-  return Ok(watcher);
+  return ok(watcher);
 }

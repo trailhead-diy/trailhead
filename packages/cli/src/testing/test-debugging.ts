@@ -1,4 +1,4 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
 
 /**
  * Test debugging and profiling utilities
@@ -231,7 +231,7 @@ export function traceResult<T, E>(
   result: Result<T, E>
 ): { result: Result<T, E>; newState: TestDebuggerState } {
   if (state.enabled) {
-    const newState = result.success
+    const newState = result.isOk()
       ? debugLog(state, `${name} succeeded`, { value: result.value })
       : debugLog(state, `${name} failed`, { error: result.error });
     return { result, newState };

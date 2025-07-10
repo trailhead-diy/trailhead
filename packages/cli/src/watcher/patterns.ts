@@ -3,8 +3,10 @@
  */
 
 import { join } from 'node:path';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result } from 'neverthrow';
+import { ok, err } from 'neverthrow';
+import type { CLIError } from '../core/errors/types.js';
+import { createError } from '../core/errors/factory.js';
 import type {
   WatchOptions,
   WatchEvent,
@@ -19,11 +21,13 @@ import { createWatcher } from './core.js';
 /**
  * Watch files matching specific patterns
  */
-export function createPatternWatcher(options: PatternWatchOptions): Result<WatcherInstance> {
+export function createPatternWatcher(
+  options: PatternWatchOptions
+): Result<WatcherInstance, CLIError> {
   const { patterns, baseDir = process.cwd(), ...watchOptions } = options;
 
   if (patterns.length === 0) {
-    return Err(
+    return err(
       createError('WATCHER_NO_PATTERNS', 'At least one pattern must be provided', {
         recoverable: true,
         suggestion: 'Add at least one file pattern to watch',
@@ -51,7 +55,7 @@ export function createBatchWatcher(
   paths: string | string[],
   handler: WatchEventHandler,
   options: BatchWatchOptions = {}
-): Result<WatcherInstance> {
+): Result<WatcherInstance, CLIError> {
   const { batchDelay = 100, maxBatchSize = 50, ...watchOptions } = options;
 
   const batchedEvents: WatchEvent[] = [];
@@ -117,7 +121,7 @@ export function createBatchWatcher(
 
   const watcherResult = createWatcher(paths, watchOptions);
 
-  if (!watcherResult.success) {
+  if (watcherResult.isErr()) {
     return watcherResult;
   }
 
@@ -134,7 +138,7 @@ export function createBatchWatcher(
     return originalStop();
   };
 
-  return Ok(watcher);
+  return ok(watcher);
 }
 
 /**
@@ -144,7 +148,7 @@ export function createThrottledWatcher(
   paths: string | string[],
   handler: WatchEventHandler,
   options: ThrottleWatchOptions = {}
-): Result<WatcherInstance> {
+): Result<WatcherInstance, CLIError> {
   const { throttleDelay = 200, ...watchOptions } = options;
 
   const lastEventTime = new Map<string, number>();
@@ -200,7 +204,7 @@ export function createThrottledWatcher(
 
   const watcherResult = createWatcher(paths, watchOptions);
 
-  if (!watcherResult.success) {
+  if (watcherResult.isErr()) {
     return watcherResult;
   }
 
@@ -230,7 +234,7 @@ export function createThrottledWatcher(
     return originalStop();
   };
 
-  return Ok(watcher);
+  return ok(watcher);
 }
 
 /**
@@ -292,7 +296,7 @@ export function createDevWatcher(
     throttle?: number;
     batch?: boolean;
   } = {}
-): Result<WatcherInstance> {
+): Result<WatcherInstance, CLIError> {
   const {
     baseDir = 'src',
     include = watchPatterns.all(baseDir),

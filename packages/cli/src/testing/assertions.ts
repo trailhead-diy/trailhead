@@ -1,10 +1,13 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 
 /**
  * Assert that a Result is successful
  */
-export function expectResult<T>(result: Result<T>): asserts result is { success: true; value: T } {
-  if (!result.success) {
+export function expectResult<T>(
+  result: Result<T, CLIError>
+): asserts result is Extract<Result<T, CLIError>, { isOk(): true }> {
+  if (result.isErr()) {
     throw new Error(`Expected successful result, but got error: ${result.error.message}`);
   }
 }
@@ -12,10 +15,10 @@ export function expectResult<T>(result: Result<T>): asserts result is { success:
 /**
  * Assert that a Result is an error
  */
-export function expectError<E = any>(
+export function expectError<E = CLIError>(
   result: Result<any, E>
-): asserts result is { success: false; error: E } {
-  if (result.success) {
+): asserts result is Extract<Result<any, E>, { isErr(): true }> {
+  if (result.isOk()) {
     throw new Error('Expected error result, but operation succeeded');
   }
 }
@@ -24,8 +27,8 @@ export function expectError<E = any>(
  * Combined assertion and value extraction for successful Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectSuccess<T>(result: Result<T>): T {
-  if (!result.success) {
+export function expectSuccess<T>(result: Result<T, CLIError>): T {
+  if (result.isErr()) {
     throw new Error(`Expected successful result, but got error: ${result.error.message}`);
   }
   return result.value;
@@ -35,8 +38,8 @@ export function expectSuccess<T>(result: Result<T>): T {
  * Combined assertion and error extraction for failed Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectFailure<E = any>(result: Result<any, E>): E {
-  if (result.success) {
+export function expectFailure<E = CLIError>(result: Result<any, E>): E {
+  if (result.isOk()) {
     throw new Error('Expected error result, but operation succeeded');
   }
   return result.error;
@@ -49,7 +52,7 @@ export function expectErrorCode<E extends { code: string }>(
   result: Result<any, E>,
   expectedCode: string
 ): E {
-  if (result.success) {
+  if (result.isOk()) {
     throw new Error('Expected error result, but operation succeeded');
   }
   if (result.error.code !== expectedCode) {
@@ -65,7 +68,7 @@ export function expectErrorMessage<E extends { message: string }>(
   result: Result<any, E>,
   expectedMessage: string | RegExp
 ): E {
-  if (result.success) {
+  if (result.isOk()) {
     throw new Error('Expected error result, but operation succeeded');
   }
 

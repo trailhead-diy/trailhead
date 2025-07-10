@@ -58,9 +58,21 @@ export function createCLITestRunner(options: CLISnapshotOptions = {}) {
         };
 
         const mockFs = {
-          readFile: async () => ({ success: false, error: new Error('Mock fs') }),
-          writeFile: async () => ({ success: false, error: new Error('Mock fs') }),
-          access: async () => ({ success: false, error: new Error('Mock fs') }),
+          readFile: async () => ({
+            isOk: () => false,
+            isErr: () => true,
+            error: new Error('Mock fs'),
+          }),
+          writeFile: async () => ({
+            isOk: () => false,
+            isErr: () => true,
+            error: new Error('Mock fs'),
+          }),
+          access: async () => ({
+            isOk: () => false,
+            isErr: () => true,
+            error: new Error('Mock fs'),
+          }),
         };
 
         const mockContext: CommandContext = {
@@ -74,7 +86,7 @@ export function createCLITestRunner(options: CLISnapshotOptions = {}) {
         // Execute command
         const result = await command.execute({} as any, mockContext);
 
-        if (!result.success) {
+        if (result.isErr()) {
           exitCode = 1;
           stderr += result.error.message + '\n';
         }

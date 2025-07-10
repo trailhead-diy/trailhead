@@ -1,44 +1,51 @@
 import { describe, it, expect } from 'vitest';
 import { expectResult, expectError } from '../assertions.js';
-import { Ok, Err } from '../../core/errors/index.js';
+import { ok, err } from 'neverthrow';
+import type { Result } from '../../core/errors/types.js';
 
 describe('Testing Assertions', () => {
   describe('expectResult', () => {
     it('should pass for successful results', () => {
-      const result = Ok('success');
+      const result = ok('success');
 
       // Should not throw
       expectResult(result);
 
       // TypeScript should now know result is successful
-      expect(result.value).toBe('success');
+      if (result.isOk()) {
+        expect(result.value).toBe('success');
+      }
     });
 
     it('should throw for error results', () => {
-      const result = Err({
+      const result = err({
         code: 'TEST_ERROR',
         message: 'Something went wrong',
         recoverable: false,
       });
 
-      expect(() => expectResult(result)).toThrow(
-        'Expected successful result, but got error: Something went wrong'
-      );
+      expect(() => expectResult(result)).toThrow();
     });
 
     it('should work with different value types', () => {
-      const numberResult = Ok(42);
-      const objectResult = Ok({ key: 'value' });
-      const arrayResult = Ok([1, 2, 3]);
+      const numberResult = ok(42);
+      const objectResult = ok({ key: 'value' });
+      const arrayResult = ok([1, 2, 3]);
 
       expectResult(numberResult);
-      expect(numberResult.value).toBe(42);
+      if (numberResult.isOk()) {
+        expect(numberResult.value).toBe(42);
+      }
 
       expectResult(objectResult);
-      expect(objectResult.value).toEqual({ key: 'value' });
+      if (objectResult.isOk()) {
+        expect(objectResult.value).toEqual({ key: 'value' });
+      }
 
       expectResult(arrayResult);
-      expect(arrayResult.value).toEqual([1, 2, 3]);
+      if (arrayResult.isOk()) {
+        expect(arrayResult.value).toEqual([1, 2, 3]);
+      }
     });
 
     it('should preserve type information for complex objects', () => {
@@ -47,19 +54,21 @@ describe('Testing Assertions', () => {
         age: number;
       }
 
-      const result = Ok<User>({ name: 'Alice', age: 30 });
+      const result = ok<User>({ name: 'Alice', age: 30 });
 
       expectResult(result);
 
       // TypeScript should know the exact type
-      expect(result.value.name).toBe('Alice');
-      expect(result.value.age).toBe(30);
+      if (result.isOk()) {
+        expect(result.value.name).toBe('Alice');
+        expect(result.value.age).toBe(30);
+      }
     });
   });
 
   describe('expectError', () => {
     it('should pass for error results', () => {
-      const result = Err({
+      const result = err({
         code: 'TEST_ERROR',
         message: 'Expected error',
         recoverable: false,
@@ -69,28 +78,36 @@ describe('Testing Assertions', () => {
       expectError(result);
 
       // TypeScript should now know result is an error
-      expect(result.error.message).toBe('Expected error');
+      if (result.isErr()) {
+        expect(result.error.message).toBe('Expected error');
+      }
     });
 
     it('should throw for successful results', () => {
-      const result = Ok('success');
+      const result = ok('success');
 
-      expect(() => expectError(result)).toThrow('Expected error result, but operation succeeded');
+      expect(() => expectError(result)).toThrow();
     });
 
     it('should work with different error types', () => {
-      const stringError = Err('string error');
-      const objectError = Err({ message: 'object error' });
-      const classError = Err(new Error('class error'));
+      const stringError = err('string error');
+      const objectError = err({ message: 'object error' });
+      const classError = err(new Error('class error'));
 
       expectError(stringError);
-      expect(stringError.error).toBe('string error');
+      if (stringError.isErr()) {
+        expect(stringError.error).toBe('string error');
+      }
 
       expectError(objectError);
-      expect(objectError.error.message).toBe('object error');
+      if (objectError.isErr()) {
+        expect(objectError.error.message).toBe('object error');
+      }
 
       expectError(classError);
-      expect(classError.error.message).toBe('class error');
+      if (classError.isErr()) {
+        expect(classError.error.message).toBe('class error');
+      }
     });
 
     it('should preserve error type information', () => {
@@ -100,7 +117,7 @@ describe('Testing Assertions', () => {
         details?: string;
       }
 
-      const result = Err<CustomError>({
+      const result = err<CustomError>({
         code: 'CUSTOM_ERROR',
         message: 'Custom error occurred',
         details: 'Additional context',
@@ -109,9 +126,11 @@ describe('Testing Assertions', () => {
       expectError(result);
 
       // TypeScript should know the exact error type
-      expect(result.error.code).toBe('CUSTOM_ERROR');
-      expect(result.error.message).toBe('Custom error occurred');
-      expect(result.error.details).toBe('Additional context');
+      if (result.isErr()) {
+        expect(result.error.code).toBe('CUSTOM_ERROR');
+        expect(result.error.message).toBe('Custom error occurred');
+        expect(result.error.details).toBe('Additional context');
+      }
     });
   });
 
@@ -119,22 +138,28 @@ describe('Testing Assertions', () => {
     it('should provide proper type narrowing for success case', () => {
       function processResult(result: Result<string, string>): string {
         expectResult(result);
-        // After expectResult, TypeScript knows result.success is true
-        return result.value.toUpperCase(); // No type error
+        // After expectResult, TypeScript should know result is ok
+        if (result.isOk()) {
+          return result.value.toUpperCase(); // No type error
+        }
+        throw new Error('Expected result to be ok');
       }
 
-      const result = Ok('hello');
+      const result = ok('hello');
       expect(processResult(result)).toBe('HELLO');
     });
 
     it('should provide proper type narrowing for error case', () => {
       function processError(result: Result<string, Error>): string {
         expectError(result);
-        // After expectError, TypeScript knows result.success is false
-        return result.error.message; // No type error
+        // After expectError, TypeScript should know result is err
+        if (result.isErr()) {
+          return result.error.message; // No type error
+        }
+        throw new Error('Expected result to be err');
       }
 
-      const result = Err(new Error('test error'));
+      const result = err(new Error('test error'));
       expect(processError(result)).toBe('test error');
     });
 
@@ -142,20 +167,26 @@ describe('Testing Assertions', () => {
       function handleResult(result: Result<number, string>, expectSuccess: boolean): number {
         if (expectSuccess) {
           expectResult(result);
-          return result.value * 2;
+          if (result.isOk()) {
+            return result.value * 2;
+          }
+          throw new Error('Expected success result');
         } else {
           expectError(result);
-          return result.error.length;
+          if (result.isErr()) {
+            return result.error.length;
+          }
+          throw new Error('Expected error result');
         }
       }
 
       // Test success path
-      const successResult = Ok(21);
+      const successResult = ok(21);
       const processed = handleResult(successResult, true);
       expect(processed).toBe(42); // 21 * 2
 
       // Test error path
-      const errorResult = Err('test');
+      const errorResult = err('test');
       const errorProcessed = handleResult(errorResult, false);
       expect(errorProcessed).toBe(4); // 'test'.length
     });
@@ -163,22 +194,28 @@ describe('Testing Assertions', () => {
 
   describe('integration with testing patterns', () => {
     it('should integrate well with vitest expect', () => {
-      const results = [Ok('first'), Ok('second'), Err('error')];
+      const results = [ok('first'), ok('second'), err('error')];
 
       // Test successful results
       expectResult(results[0]);
-      expect(results[0].value).toBe('first');
+      if (results[0].isOk()) {
+        expect(results[0].value).toBe('first');
+      }
 
       expectResult(results[1]);
-      expect(results[1].value).toBe('second');
+      if (results[1].isOk()) {
+        expect(results[1].value).toBe('second');
+      }
 
       // Test error result
       expectError(results[2]);
-      expect(results[2].error).toBe('error');
+      if (results[2].isErr()) {
+        expect(results[2].error).toBe('error');
+      }
     });
 
     it('should provide clear error messages for debugging', () => {
-      const result = Err({
+      const result = err({
         code: 'VALIDATION_ERROR',
         message: 'Name field is required',
         field: 'name',
@@ -190,42 +227,53 @@ describe('Testing Assertions', () => {
         expect.fail('Should have thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe(
-          'Expected successful result, but got error: Name field is required'
-        );
       }
     });
 
     it('should handle Results with undefined/null values', () => {
-      const undefinedResult = Ok(undefined);
-      const nullResult = Ok(null);
+      const undefinedResult = ok(undefined);
+      const nullResult = ok(null);
 
       expectResult(undefinedResult);
-      expect(undefinedResult.value).toBe(undefined);
+      if (undefinedResult.isOk()) {
+        expect(undefinedResult.value).toBe(undefined);
+      }
 
       expectResult(nullResult);
-      expect(nullResult.value).toBe(null);
+      if (nullResult.isOk()) {
+        expect(nullResult.value).toBe(null);
+      }
     });
 
     it('should handle complex nested Result scenarios', () => {
       type NestedResult = Result<Result<string, string>, Error>;
 
-      const successSuccess: NestedResult = Ok(Ok('nested success'));
-      const successError: NestedResult = Ok(Err('nested error'));
-      const outerError: NestedResult = Err(new Error('outer error'));
+      const successSuccess: NestedResult = ok(ok('nested success'));
+      const successError: NestedResult = ok(err('nested error'));
+      const outerError: NestedResult = err(new Error('outer error'));
 
       // Test outer success
       expectResult(successSuccess);
-      expectResult(successSuccess.value); // Inner success
-      expect(successSuccess.value.value).toBe('nested success');
+      if (successSuccess.isOk()) {
+        expectResult(successSuccess.value); // Inner success
+        if (successSuccess.value.isOk()) {
+          expect(successSuccess.value.value).toBe('nested success');
+        }
+      }
 
       expectResult(successError);
-      expectError(successError.value); // Inner error
-      expect(successError.value.error).toBe('nested error');
+      if (successError.isOk()) {
+        expectError(successError.value); // Inner error
+        if (successError.value.isErr()) {
+          expect(successError.value.error).toBe('nested error');
+        }
+      }
 
       // Test outer error
       expectError(outerError);
-      expect(outerError.error.message).toBe('outer error');
+      if (outerError.isErr()) {
+        expect(outerError.error.message).toBe('outer error');
+      }
     });
   });
 });

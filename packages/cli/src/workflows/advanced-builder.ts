@@ -1,5 +1,5 @@
-import type { Result } from '../core/index.js';
-import { Ok, Err, createError } from '../core/index.js';
+import type { Result, CLIError } from '../core/index.js';
+import { ok, err, createError } from '../core/index.js';
 import {
   createEnhancedProgressTracker,
   type EnhancedProgressTracker,
@@ -158,7 +158,7 @@ export interface AdvancedWorkflowAPI<T = Record<string, unknown>> {
   /**
    * Execute the enhanced workflow with automatic progress reporting
    */
-  execute(initialContext?: Partial<T>): Promise<Result<AdvancedWorkflowResult<T>>>;
+  execute(initialContext?: Partial<T>): Promise<Result<AdvancedWorkflowResult<T>, CLIError>>;
 }
 
 /**
@@ -239,7 +239,7 @@ function createAdvancedWorkflowAPI<T>(config: AdvancedWorkflowConfig<T>): Advanc
 async function executeAdvancedWorkflow<T>(
   config: AdvancedWorkflowConfig<T>,
   initialContext: Partial<T>
-): Promise<Result<AdvancedWorkflowResult<T>>> {
+): Promise<Result<AdvancedWorkflowResult<T>, CLIError>> {
   const startTime = Date.now();
   const errors: Array<{ step: string; error: Error }> = [];
 
@@ -326,7 +326,7 @@ async function executeAdvancedWorkflow<T>(
               const endTime = Date.now();
               const finalState = progressTracker.getEnhancedState();
 
-              return Ok({
+              return ok({
                 success: false,
                 context: context.getAll(),
                 errors,
@@ -362,7 +362,7 @@ async function executeAdvancedWorkflow<T>(
     const endTime = Date.now();
     const finalState = progressTracker.getEnhancedState();
 
-    return Ok({
+    return ok({
       success: errors.length === 0,
       context: context.getAll(),
       errors,
@@ -380,7 +380,7 @@ async function executeAdvancedWorkflow<T>(
   } catch (error) {
     progressTracker.stop();
 
-    return Err(
+    return err(
       createError(
         'advanced-workflow-execution-error',
         error instanceof Error ? error.message : String(error),

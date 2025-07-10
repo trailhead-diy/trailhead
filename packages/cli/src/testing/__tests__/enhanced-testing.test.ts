@@ -22,7 +22,7 @@ import {
   testUtils,
   profileTest,
 } from '../index.js';
-import { Ok, Err } from '../../core/errors/index.js';
+import { ok, err } from '../../core/errors/utils.js';
 import type { Result } from '../../core/errors/index.js';
 import { createMemoryFileSystem } from '../../filesystem/memory.js';
 import { errorTemplates } from '../../core/error-templates.js';
@@ -33,13 +33,13 @@ setupResultMatchers();
 describe('Enhanced Testing Utilities', () => {
   describe('Enhanced Result Assertions', () => {
     it('expectSuccess should extract value from successful Result', () => {
-      const result = Ok('test value');
+      const result = ok('test value');
       const value = expectSuccess(result);
       expect(value).toBe('test value');
     });
 
     it('expectSuccess should throw on error Result', () => {
-      const result = Err(new Error('test error'));
+      const result = err(new Error('test error'));
       expect(() => expectSuccess(result)).toThrow(
         'Expected successful result, but got error: test error'
       );
@@ -47,33 +47,33 @@ describe('Enhanced Testing Utilities', () => {
 
     it('expectFailure should extract error from failed Result', () => {
       const error = new Error('test error');
-      const result = Err(error);
+      const result = err(error);
       const extractedError = expectFailure(result);
       expect(extractedError).toBe(error);
     });
 
     it('expectFailure should throw on successful Result', () => {
-      const result = Ok('success');
+      const result = ok('success');
       expect(() => expectFailure(result)).toThrow('Expected error result, but operation succeeded');
     });
 
     it('expectErrorCode should validate error codes', () => {
       const error = { code: 'TEST_ERROR', message: 'Test error' };
-      const result = Err(error);
+      const result = err(error);
       const extractedError = expectErrorCode(result, 'TEST_ERROR');
       expect(extractedError).toBe(error);
     });
 
     it('expectErrorMessage should validate error messages', () => {
       const error = { message: 'File not found: test.txt' };
-      const result = Err(error);
+      const result = err(error);
       const extractedError = expectErrorMessage(result, 'File not found');
       expect(extractedError).toBe(error);
     });
 
     it('expectErrorMessage should validate with regex', () => {
       const error = { message: 'File not found: test.txt' };
-      const result = Err(error);
+      const result = err(error);
       const extractedError = expectErrorMessage(result, /File not found: .+\.txt/);
       expect(extractedError).toBe(error);
     });
@@ -81,32 +81,32 @@ describe('Enhanced Testing Utilities', () => {
 
   describe('Custom Vitest Matchers', () => {
     it('toBeOk matcher should work', () => {
-      const result = Ok('success');
+      const result = ok('success');
       expect(result).toBeOk();
     });
 
     it('toBeErr matcher should work', () => {
-      const result = Err(new Error('error'));
+      const result = err(new Error('error'));
       expect(result).toBeErr();
     });
 
     it('toHaveValue matcher should work', () => {
-      const result = Ok('test value');
+      const result = ok('test value');
       expect(result).toHaveValue('test value');
     });
 
     it('toHaveErrorCode matcher should work', () => {
-      const result = Err({ code: 'TEST_ERROR', message: 'Test' });
+      const result = err({ code: 'TEST_ERROR', message: 'Test' });
       expect(result).toHaveErrorCode('TEST_ERROR');
     });
 
     it('toHaveErrorMessage matcher should work', () => {
-      const result = Err({ message: 'Test error message' });
+      const result = err({ message: 'Test error message' });
       expect(result).toHaveErrorMessage('Test error');
     });
 
     it('toHaveLength matcher should work', () => {
-      const result = Ok([1, 2, 3]);
+      const result = ok([1, 2, 3]);
       expect(result).toHaveLength(3);
     });
   });
@@ -116,7 +116,7 @@ describe('Enhanced Testing Utilities', () => {
       const testCases = [
         {
           name: 'should handle successful operation',
-          operation: () => Ok('success'),
+          operation: () => ok('success'),
           shouldSucceed: true,
         },
       ];
@@ -174,7 +174,7 @@ describe('Enhanced Testing Utilities', () => {
   describe('Validation Test Suite Builder', () => {
     it('should create a validation test suite builder function', () => {
       const emailValidator = (input: string): Result<string, { errors: string[] }> => {
-        return input.includes('@') ? Ok(input) : Err({ errors: ['Invalid email'] });
+        return input.includes('@') ? ok(input) : err({ errors: ['Invalid email'] });
       };
 
       const testCases = [
@@ -314,8 +314,8 @@ describe('Enhanced Testing Utilities', () => {
     it('should trace Result operations', () => {
       testUtils.debugger.enable();
 
-      const successResult = Ok('success');
-      const errorResult = Err(new Error('error'));
+      const successResult = ok('success');
+      const errorResult = err(new Error('error'));
 
       testUtils.debugger.traceResult('success-op', successResult);
       testUtils.debugger.traceResult('error-op', errorResult);

@@ -59,9 +59,9 @@ describe('File Watcher', () => {
       const filepath = createTempFile('test.txt');
       const result = createWatcher(filepath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.watcher).toBeDefined();
         expect(result.value.start).toBeDefined();
         expect(result.value.stop).toBeDefined();
@@ -73,9 +73,9 @@ describe('File Watcher', () => {
       const file2 = createTempFile('test2.txt');
 
       const result = createWatcher([file1, file2]);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.stats.watchedPaths).toContain(file1);
         expect(result.value.stats.watchedPaths).toContain(file2);
       }
@@ -90,9 +90,9 @@ describe('File Watcher', () => {
         depth: 2,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.options.ignoreInitial).toBe(true);
         expect(result.value.options.followSymlinks).toBe(false);
         expect(result.value.options.depth).toBe(2);
@@ -103,17 +103,17 @@ describe('File Watcher', () => {
       const filepath = createTempFile('test.txt');
       const result = createWatcher(filepath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const watcher = result.value;
 
         const startResult = await watcher.start();
-        expect(startResult.success).toBe(true);
+        expect(startResult.isOk()).toBe(true);
         expect(watcher.stats.isActive).toBe(true);
 
         const stopResult = await watcher.stop();
-        expect(stopResult.success).toBe(true);
+        expect(stopResult.isOk()).toBe(true);
         expect(watcher.stats.isActive).toBe(false);
       }
     });
@@ -122,18 +122,18 @@ describe('File Watcher', () => {
       const filepath = createTempFile('test.txt');
       const result = createWatcher(filepath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const watcher = result.value;
         const newFile = createTempFile('new.txt');
 
         const addResult = watcher.add(newFile);
-        expect(addResult.success).toBe(true);
+        expect(addResult.isOk()).toBe(true);
         expect(watcher.stats.watchedPaths).toContain(newFile);
 
         const removeResult = watcher.unwatch(newFile);
-        expect(removeResult.success).toBe(true);
+        expect(removeResult.isOk()).toBe(true);
         expect(watcher.stats.watchedPaths).not.toContain(newFile);
       }
     });
@@ -145,9 +145,9 @@ describe('File Watcher', () => {
       const handler = vi.fn();
 
       const result = watchFiles(filepath, handler);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(typeof result.value).toBe('function');
       }
     });
@@ -161,7 +161,7 @@ describe('File Watcher', () => {
         depth: 1,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -172,9 +172,9 @@ describe('File Watcher', () => {
         baseDir: tempDir,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         expect(result.value.options.cwd).toBe(tempDir);
       }
     });
@@ -185,9 +185,9 @@ describe('File Watcher', () => {
         baseDir: tempDir,
       });
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
 
-      if (!result.success) {
+      if (result.isErr()) {
         expect(result.error.message).toContain('At least one pattern must be provided');
       }
     });
@@ -198,7 +198,7 @@ describe('File Watcher', () => {
         baseDir: tempDir,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -207,7 +207,7 @@ describe('File Watcher', () => {
       const handler = vi.fn();
       const result = createDevWatcher(handler);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('accepts custom options', () => {
@@ -221,7 +221,7 @@ describe('File Watcher', () => {
         batch: true,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('uses throttled watcher by default', () => {
@@ -231,7 +231,7 @@ describe('File Watcher', () => {
         batch: false,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('uses batch watcher when requested', () => {
@@ -241,7 +241,7 @@ describe('File Watcher', () => {
         batch: true,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -307,7 +307,7 @@ describe('File Watcher', () => {
       const filepath = createTempFile('test.txt');
       const result = watcherUtils.createWatcher(filepath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -316,9 +316,9 @@ describe('File Watcher', () => {
       const filepath = createTempFile('test.txt');
       const result = createWatcher(filepath, { ignoreInitial: true });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const watcher = result.value;
         const events: WatchEvent[] = [];
 
@@ -354,24 +354,24 @@ describe('File Watcher', () => {
 
       // The creation might succeed, but watching will fail
       // This depends on the underlying chokidar implementation
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles stop errors gracefully', async () => {
       const filepath = createTempFile('test.txt');
       const result = createWatcher(filepath);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
 
-      if (result.success) {
+      if (result.isOk()) {
         const watcher = result.value;
 
         // Stop multiple times should not throw
         const stop1 = await watcher.stop();
         const stop2 = await watcher.stop();
 
-        expect(stop1.success).toBe(true);
-        expect(stop2.success).toBe(true);
+        expect(stop1.isOk()).toBe(true);
+        expect(stop2.isOk()).toBe(true);
       }
     });
   });
@@ -387,7 +387,7 @@ describe('File Watcher', () => {
         binaryInterval: 300,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('handles ignored patterns', () => {
@@ -396,7 +396,7 @@ describe('File Watcher', () => {
         ignoreInitial: true,
       });
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 });

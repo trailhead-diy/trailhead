@@ -61,8 +61,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute({ data: 'test-data' });
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.context.processed).toBe(true);
       }
     });
@@ -84,8 +84,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.context.processed).toBeUndefined();
       }
     });
@@ -106,7 +106,7 @@ describe('WorkflowBuilder', () => {
       });
 
       const result = await workflow.execute();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should maintain immutable context updates', async () => {
@@ -140,7 +140,7 @@ describe('WorkflowBuilder', () => {
       });
 
       const result = await workflow.execute();
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
   });
 
@@ -156,8 +156,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(result.value.errors).toHaveLength(1);
         expect(result.value.errors[0].error.message).toBe('Test error');
@@ -177,8 +177,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(result.value.context.processed).toBeUndefined();
       }
@@ -196,8 +196,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(result.value.errors).toHaveLength(1);
         expect(result.value.context.processed).toBe(true);
@@ -225,8 +225,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(true);
         expect(result.value.context.processed).toBe(true);
         expect(attempts).toBe(3);
@@ -249,8 +249,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(false);
         expect(result.value.errors).toHaveLength(1);
         expect(attempts).toBe(2);
@@ -350,8 +350,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.success).toBe(true);
         expect(result.value.context).toEqual({
           data: 'test',
@@ -376,8 +376,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute({ data: 'initial' });
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.context.processed).toBe(true);
       }
     });
@@ -404,8 +404,8 @@ describe('WorkflowBuilder', () => {
 
       const result = await workflow.execute();
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.context.processed).toBe(true);
       }
     });
