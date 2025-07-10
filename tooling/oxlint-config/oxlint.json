@@ -1,0 +1,15 @@
+{
+  "$schema": "https://oxc.rs/schema/oxlintrc.json",
+  "plugins": [],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "prefer-const": "error",
+    "no-var": "error"
+  },
+  "env": {
+    "browser": false,
+    "node": true,
+    "es2022": true
+  }
+}
