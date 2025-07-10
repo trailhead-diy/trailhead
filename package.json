@@ -15,7 +15,7 @@
     "lint:fix": "turbo lint:fix",
     "types": "turbo types",
     "clean": "turbo clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore --list-different",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
     "docs:validate": "tsx tooling/docs-tooling/src/validate-docs.ts",
     "docs:lint": "vale docs && markdownlint docs/**/*.md",

@@ -421,9 +421,9 @@ pnpm build                  # Production build
 - `qcu` = Ultra-deep quality check: Requirements audit, security review, architecture impact, future-proofing, code excellence, hidden complexities, testing gaps.
 - `fixlint` = Fix all TypeScript errors and lint warnings. Remove unused imports, prefix unused variables with underscore.
 - `write-tests` = Write high-ROI tests following project principles (no low-ROI rendering/prop tests).
-- `gcwm` = Fix lint/TS errors. Git commit with meaningful but concise message. Break changes into atomic commits: one logical change per commit. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages. Keep messages concise and meaningful - avoid verbose explanations.
+- `gcwm` = Run the format script. Fix lint/TS errors. Break changes into atomic commits: one logical change per commit. Git commit with meaningful but concise message. Each commit should be independently revertable. Use conventional commit format when applicable (feat:, fix:, refactor:, etc.). Focus on "why" not "what" in messages. Keep messages concise and meaningful - avoid verbose explanations.
 - `gbcp` = Git branch, commit, push/PR workflow with concise PR body. Include "Closes #[issue]" in commit/PR for auto-linking. PR body should be succinct yet meaningful: brief summary, key changes (3-7 bullet points max), testing validation, issue reference.
-- `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking. Focus on essential information: what changed, why it matters, how it was tested. Avoid verbose explanations.
+- `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking. Focus on essential information: what changed, why it matters. Avoid verbose explanations.
 - `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, apply principles, create TodoWrite plan.
 
 # important-instruction-reminders
