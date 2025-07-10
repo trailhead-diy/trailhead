@@ -82,7 +82,7 @@ export function CatalystBadge({ color = 'red', ...props }) {
       }
     });
 
-    it('should handle use client files', () => {
+    it('should add headers at the very beginning of files', () => {
       const input = `'use client'
 
 export function Button() {
@@ -94,8 +94,10 @@ export function Button() {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.value.changed).toBe(true);
-        expect(result.value.content.startsWith("'use client'")).toBe(true);
-        expect(result.value.content).toContain('WARNING: This file is auto-generated');
+        expect(result.value.content.startsWith('// WARNING: This file is auto-generated')).toBe(
+          true
+        );
+        expect(result.value.content).toContain("'use client'");
       }
     });
   });
