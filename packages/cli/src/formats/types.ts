@@ -25,26 +25,4 @@ export interface AbortableOptions extends FormatDetectionOptions {
   readonly abortSignal?: AbortSignal;
 }
 
-// Simplified types - no custom detectors for now
-
-// Legacy types for backward compatibility
-export type FormatValidator = (content: string) => FormatValidationResult;
-
-export interface FormatValidationResult {
-  readonly isValid: boolean;
-  readonly format?: SupportedFormat;
-  readonly confidence: number;
-  readonly errors: readonly string[];
-}
-
-export interface FormatInfo {
-  readonly extensions: readonly string[];
-  readonly mimeTypes: readonly string[];
-  readonly description: string;
-  readonly parser?: string;
-  readonly binary?: boolean;
-}
-
-export interface FormatRegistry {
-  readonly [key: string]: FormatInfo;
-}
+// Simplified types - focused on file-type integration only

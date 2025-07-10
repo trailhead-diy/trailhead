@@ -8,11 +8,6 @@ export type {
   StreamDetectionOptions,
   AbortableOptions,
   SupportedFormat,
-  // Legacy types for backward compatibility
-  FormatValidator,
-  FormatValidationResult,
-  FormatInfo,
-  FormatRegistry,
 } from './types.js';
 
 // Core detection functions
@@ -37,12 +32,4 @@ export {
 // Custom detector utilities (simplified implementation)
 // For advanced custom detectors, use file-type's native API directly
 
-// Convenience aliases that match file-type API
-export {
-  detectFromFile as fileTypeFromFile,
-  detectFromBuffer as fileTypeFromBuffer,
-  detectFromStream as fileTypeFromStream,
-  detectFromBlob as fileTypeFromBlob,
-} from './detection.js';
-
-// Legacy utilities removed - use new file-type API functions instead
+// Use the core detection functions directly - no legacy aliases needed

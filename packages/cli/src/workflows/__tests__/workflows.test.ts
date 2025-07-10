@@ -9,70 +9,17 @@ vi.mock('listr2', () => ({
   })),
 }));
 
-import { createTask, createTaskList } from '../index.js';
+import { createTaskList } from '../index.js';
 
 describe('Workflows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('createTask', () => {
-    it('should create task with required properties', () => {
-      const task = createTask('Test Task', async () => 'result');
-
-      expect(task).toEqual({
-        title: 'Test Task',
-        task: expect.any(Function),
-        enabled: undefined,
-        skip: undefined,
-        retry: undefined,
-        rollback: undefined,
-      });
-    });
-
-    it('should create task with all options', () => {
-      const taskFn = async () => 'result';
-      const rollbackFn = async () => {};
-      const task = createTask('Test Task', taskFn, {
-        enabled: true,
-        skip: false,
-        retry: 3,
-        rollback: rollbackFn,
-      });
-
-      expect(task).toEqual({
-        title: 'Test Task',
-        task: taskFn,
-        enabled: true,
-        skip: false,
-        retry: 3,
-        rollback: rollbackFn,
-      });
-    });
-
-    it('should handle conditional enabled function', () => {
-      const enabledFn = (ctx: any) => ctx.shouldRun;
-      const task = createTask('Test Task', async () => 'result', {
-        enabled: enabledFn,
-      });
-
-      expect(task.enabled).toBe(enabledFn);
-    });
-
-    it('should handle conditional skip function', () => {
-      const skipFn = (ctx: any) => ctx.shouldSkip;
-      const task = createTask('Test Task', async () => 'result', {
-        skip: skipFn,
-      });
-
-      expect(task.skip).toBe(skipFn);
-    });
-  });
-
   describe('createTaskList', () => {
     it('should create Listr instance with default options', async () => {
       const { Listr } = await import('listr2');
-      const tasks = [createTask('Task 1', async () => 'result')];
+      const tasks = [{ title: 'Task 1', task: async () => 'result' }];
 
       createTaskList(tasks);
 
@@ -85,7 +32,7 @@ describe('Workflows', () => {
 
     it('should create Listr instance with custom options', async () => {
       const { Listr } = await import('listr2');
-      const tasks = [createTask('Task 1', async () => 'result')];
+      const tasks = [{ title: 'Task 1', task: async () => 'result' }];
       const options = {
         concurrent: true,
         exitOnError: false,
@@ -115,7 +62,7 @@ describe('Workflows', () => {
 
     it('should pass through task functions correctly', async () => {
       const taskFn = vi.fn().mockResolvedValue('success');
-      const tasks = [createTask('Test Task', taskFn)];
+      const tasks = [{ title: 'Test Task', task: taskFn }];
 
       createTaskList(tasks);
 
@@ -128,13 +75,17 @@ describe('Workflows', () => {
     it('should work with multiple tasks', async () => {
       const { Listr } = await import('listr2');
       const tasks = [
-        createTask('Setup', async () => 'setup complete'),
-        createTask('Process', async () => 'processing done', {
+        { title: 'Setup', task: async () => 'setup complete' },
+        {
+          title: 'Process',
+          task: async () => 'processing done',
           retry: 2,
-        }),
-        createTask('Cleanup', async () => 'cleanup finished', {
+        },
+        {
+          title: 'Cleanup',
+          task: async () => 'cleanup finished',
           enabled: (ctx: any) => ctx.needsCleanup,
-        }),
+        },
       ];
 
       createTaskList(tasks, {
