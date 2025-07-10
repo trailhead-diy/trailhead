@@ -14,6 +14,10 @@ import { transformCatalystPrefix, catalystPrefixTransform } from './format/prefi
 import { transformSemanticColors, semanticColorsTransform } from './semantic/color-tokens/index.js';
 import { transformFileHeaders, fileHeadersTransform } from './format/file-headers.js';
 import { transformTsNocheck, tsNocheckTransform } from './format/ts-nocheck.js';
+import {
+  transformRemoveDuplicateProps,
+  removeDuplicatePropsTransform,
+} from './format/remove-duplicate-props.js';
 
 /**
  * Execute the new functional pipeline on a directory of files
@@ -104,6 +108,7 @@ export async function runMainPipelineWithFs(
       { ...clsxToCnTransform, transform: transformClsxToCn },
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
+      { ...removeDuplicatePropsTransform, transform: transformRemoveDuplicateProps },
       { ...fileHeadersTransform, transform: transformFileHeaders },
       { ...tsNocheckTransform, transform: transformTsNocheck },
     ];
@@ -240,6 +245,11 @@ export function getMainPipelineInfo(): {
       name: semanticColorsTransform.name,
       description: semanticColorsTransform.description,
       type: semanticColorsTransform.category,
+    },
+    {
+      name: removeDuplicatePropsTransform.name,
+      description: removeDuplicatePropsTransform.description,
+      type: removeDuplicatePropsTransform.category,
     },
     {
       name: fileHeadersTransform.name,
