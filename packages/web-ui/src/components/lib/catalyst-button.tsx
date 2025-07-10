@@ -5,7 +5,6 @@ import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystLink } from './catalyst-link';
-
 const styles = {
   base: [
     // Base
@@ -158,7 +157,6 @@ const styles = {
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
       '[--btn-icon:var(--color-rose-300)] data-active:[--btn-icon:var(--color-rose-200)] data-hover:[--btn-icon:var(--color-rose-200)]',
     ],
-
     primary: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
       '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',
@@ -181,30 +179,42 @@ const styles = {
     ],
   },
 };
-
 export type CatalystButtonProps = (
-  | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
-  | { color?: never; outline: true; plain?: never }
-  | { color?: never; outline?: never; plain: true }
-) & { className?: string; children: React.ReactNode } & (
+  | {
+      color?: keyof typeof styles.colors;
+      outline?: never;
+      plain?: never;
+    }
+  | {
+      color?: never;
+      outline: true;
+      plain?: never;
+    }
+  | {
+      color?: never;
+      outline?: never;
+      plain: true;
+    }
+) & {
+  className?: string;
+  children: React.ReactNode;
+} & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
   );
-
 export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: CatalystButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
-    className,
     styles.base,
     outline
       ? styles.outline
       : plain
         ? styles.plain
-        : cn(styles.solid, styles.colors[color ?? 'dark/zinc'])
+        : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
+    className
   );
-
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
@@ -215,7 +225,6 @@ export const CatalystButton = forwardRef(function CatalystButton(
     </Headless.Button>
   );
 });
-
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */

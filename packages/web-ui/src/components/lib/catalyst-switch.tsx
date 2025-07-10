@@ -4,7 +4,6 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
-
 export function CatalystSwitchGroup({
   className,
   ...props
@@ -14,26 +13,26 @@ export function CatalystSwitchGroup({
       data-slot="control"
       {...props}
       className={cn(
-        className,
         // Basic groups
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 export function CatalystSwitchField({
   className,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
       data-slot="field"
       {...props}
       className={cn(
-        className,
         // Base layout
         'grid grid-cols-[1fr_auto] gap-x-8 gap-y-1 sm:grid-cols-[1fr_auto]',
         // Control layout
@@ -43,12 +42,12 @@ export function CatalystSwitchField({
         // Description layout
         '*:data-[slot=description]:col-start-1 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 const colors = {
   'dark/zinc': [
     '[--switch-bg-ring:var(--color-zinc-950)]/90 [--switch-bg:var(--color-zinc-900)] dark:[--switch-bg-ring:transparent] dark:[--switch-bg:var(--color-white)]/25',
@@ -138,7 +137,6 @@ const colors = {
     '[--switch-bg-ring:var(--color-rose-600)]/90 [--switch-bg:var(--color-rose-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-rose-600)]/90 [--switch-shadow:var(--color-rose-900)]/20',
   ],
-
   primary: [
     '[--switch-bg-ring:var(--color-blue-600)]/90 [--switch-bg:var(--color-blue-500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-blue-600)]/90 [--switch-shadow:var(--color-blue-900)]/20',
@@ -160,9 +158,7 @@ const colors = {
     '[--switch:white] [--switch-ring:var(--color-gray-700)]/90 [--switch-shadow:var(--color-gray-900)]/20',
   ],
 };
-
 type CatalystColor = keyof typeof colors;
-
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
@@ -176,7 +172,6 @@ export function CatalystSwitch({
       data-slot="control"
       {...props}
       className={cn(
-        className,
         // Base styles
         'group relative isolate inline-flex h-6 w-10 cursor-default rounded-full p-[3px] sm:h-5 sm:w-8',
         // Transitions
@@ -196,7 +191,8 @@ export function CatalystSwitch({
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
         // Color specific styles
-        colors[color]
+        colors[color],
+        className
       )}
     >
       <span

@@ -1,12 +1,12 @@
-// @ts-nocheck
-'use client';
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
+// @ts-nocheck
+
+'use client';
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import { Fragment } from 'react';
-
 export function CatalystListbox<T>({
   className,
   placeholder,
@@ -115,15 +115,14 @@ export function CatalystListbox<T>({
     </Headless.Listbox>
   );
 }
-
 export function CatalystListboxOption<T>({
   children,
   className,
   ...props
-}: { className?: string; children?: React.ReactNode } & Omit<
-  Headless.ListboxOptionProps<'div', T>,
-  'as' | 'className'
->) {
+}: {
+  className?: string;
+  children?: React.ReactNode;
+} & Omit<Headless.ListboxOptionProps<'div', T>, 'as' | 'className'>) {
   let sharedClasses = cn(
     // Base
     'flex min-w-0 items-center',
@@ -134,14 +133,12 @@ export function CatalystListboxOption<T>({
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
   );
-
   return (
     <Headless.ListboxOption as={Fragment} {...props}>
       {({ selectedOption }) => {
         if (selectedOption) {
-          return <div className={cn(className, sharedClasses)}>{children}</div>;
+          return <div className={cn(sharedClasses, className)}>{children}</div>;
         }
-
         return (
           <div
             className={cn(
@@ -170,14 +167,13 @@ export function CatalystListboxOption<T>({
                 strokeLinejoin="round"
               />
             </svg>
-            <span className={cn(className, sharedClasses, 'col-start-2')}>{children}</span>
+            <span className={cn(sharedClasses, 'col-start-2', className)}>{children}</span>
           </div>
         );
       }}
     </Headless.ListboxOption>
   );
 }
-
 export function CatalystListboxLabel({
   className,
   ...props
@@ -185,11 +181,10 @@ export function CatalystListboxLabel({
   return (
     <span
       {...props}
-      className={cn(className, 'ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0')}
+      className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
     />
   );
 }
-
 export function CatalystListboxDescription({
   className,
   children,
@@ -199,8 +194,8 @@ export function CatalystListboxDescription({
     <span
       {...props}
       className={cn(
-        className,
-        'flex flex-1 overflow-hidden text-zinc-500 group-data-focus/option:text-white before:w-2 before:min-w-0 before:shrink dark:text-zinc-400'
+        'flex flex-1 overflow-hidden text-zinc-500 group-data-focus/option:text-white before:w-2 before:min-w-0 before:shrink dark:text-zinc-400',
+        className
       )}
     >
       <span className="flex-1 truncate">{children}</span>

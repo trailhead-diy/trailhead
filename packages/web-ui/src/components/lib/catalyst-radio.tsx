@@ -3,36 +3,37 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
-
 export function CatalystRadioGroup({
   className,
   ...props
-}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
   return (
     <Headless.RadioGroup
       data-slot="control"
       {...props}
       className={cn(
-        className,
         // Basic groups
         'space-y-3 **:data-[slot=label]:font-normal',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 export function CatalystRadioField({
   className,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
       data-slot="field"
       {...props}
       className={cn(
-        className,
         // Base layout
         'grid grid-cols-[1.125rem_1fr] gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
         // Control layout
@@ -42,12 +43,12 @@ export function CatalystRadioField({
         // Description layout
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 const base = [
   // Basic layout
   'relative isolate flex size-4.75 shrink-0 rounded-full sm:size-4.25',
@@ -76,7 +77,6 @@ const base = [
   'group-data-disabled:border-zinc-950/25 group-data-disabled:bg-zinc-950/5 group-data-disabled:[--radio-checked-indicator:var(--color-zinc-950)]/50 group-data-disabled:before:bg-transparent',
   'dark:group-data-disabled:border-white/20 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:[--radio-checked-indicator:var(--color-white)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
 ];
-
 const colors = {
   'dark/zinc': [
     '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
@@ -116,7 +116,6 @@ const colors = {
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-fuchsia-500)] [--radio-checked-border:var(--color-fuchsia-600)]/90',
   pink: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
   rose: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
-
   primary:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
   secondary:
@@ -128,22 +127,20 @@ const colors = {
   muted:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',
 };
-
 type CatalystColor = keyof typeof colors;
-
 export function CatalystRadio({
   color = 'dark/zinc',
   className,
   ...props
-}: { color?: CatalystColor; className?: string } & Omit<
-  Headless.RadioProps,
-  'as' | 'className' | 'children'
->) {
+}: {
+  color?: CatalystColor;
+  className?: string;
+} & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Radio
       data-slot="control"
       {...props}
-      className={cn(className, 'group inline-flex focus:outline-hidden')}
+      className={cn('group inline-flex focus:outline-hidden', className)}
     >
       <span className={cn([base, colors[color]])}>
         <span

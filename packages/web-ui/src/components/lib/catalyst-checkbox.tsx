@@ -4,7 +4,6 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
-
 export function CatalystCheckboxGroup({
   className,
   ...props
@@ -14,26 +13,26 @@ export function CatalystCheckboxGroup({
       data-slot="control"
       {...props}
       className={cn(
-        className,
         // Basic groups
         'space-y-3',
         // With descriptions
-        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 export function CatalystCheckboxField({
   className,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
       data-slot="field"
       {...props}
       className={cn(
-        className,
         // Base layout
         'grid grid-cols-[1.125rem_1fr] gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
         // Control layout
@@ -43,12 +42,12 @@ export function CatalystCheckboxField({
         // Description layout
         '*:data-[slot=description]:col-start-2 *:data-[slot=description]:row-start-2',
         // With description
-        'has-data-[slot=description]:**:data-[slot=label]:font-medium'
+        'has-data-[slot=description]:**:data-[slot=label]:font-medium',
+        className
       )}
     />
   );
 }
-
 const base = [
   // Basic layout
   'relative isolate flex size-4.5 items-center justify-center rounded-[0.3125rem] sm:size-4',
@@ -76,7 +75,6 @@ const base = [
   'forced-colors:[--checkbox-check:HighlightText] forced-colors:[--checkbox-checked-bg:Highlight] forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
   'dark:forced-colors:[--checkbox-check:HighlightText] dark:forced-colors:[--checkbox-checked-bg:Highlight] dark:forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
 ];
-
 const colors = {
   'dark/zinc': [
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-900)] [--checkbox-checked-border:var(--color-zinc-950)]/90',
@@ -116,7 +114,6 @@ const colors = {
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-fuchsia-500)] [--checkbox-checked-border:var(--color-fuchsia-600)]/90',
   pink: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-pink-500)] [--checkbox-checked-border:var(--color-pink-600)]/90',
   rose: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-rose-500)] [--checkbox-checked-border:var(--color-rose-600)]/90',
-
   primary:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-blue-600)] [--checkbox-checked-border:var(--color-blue-700)]/90',
   secondary:
@@ -128,9 +125,7 @@ const colors = {
   muted:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-gray-600)] [--checkbox-checked-border:var(--color-gray-700)]/90',
 };
-
 type CatalystColor = keyof typeof colors;
-
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
@@ -143,7 +138,7 @@ export function CatalystCheckbox({
     <Headless.Checkbox
       data-slot="control"
       {...props}
-      className={cn(className, 'group inline-flex focus:outline-hidden')}
+      className={cn('group inline-flex focus:outline-hidden', className)}
     >
       <span className={cn([base, colors[color]])}>
         <svg

@@ -1,12 +1,12 @@
-// @ts-nocheck
-'use client';
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
+// @ts-nocheck
+
+'use client';
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import { useState } from 'react';
-
 export function CatalystCombobox<T>({
   options,
   displayValue,
@@ -31,7 +31,6 @@ export function CatalystCombobox<T>({
     anchor?: 'top' | 'bottom';
   }) {
   const [query, setQuery] = useState('');
-
   const filteredOptions =
     query === ''
       ? options
@@ -40,7 +39,6 @@ export function CatalystCombobox<T>({
             ? filter(option, query)
             : displayValue(option)?.toLowerCase().includes(query.toLowerCase())
         );
-
   return (
     <Headless.Combobox
       {...props}
@@ -142,15 +140,14 @@ export function CatalystCombobox<T>({
     </Headless.Combobox>
   );
 }
-
 export function CatalystComboboxOption<T>({
   children,
   className,
   ...props
-}: { className?: string; children?: React.ReactNode } & Omit<
-  Headless.ComboboxOptionProps<'div', T>,
-  'as' | 'className'
->) {
+}: {
+  className?: string;
+  children?: React.ReactNode;
+} & Omit<Headless.ComboboxOptionProps<'div', T>, 'as' | 'className'>) {
   let sharedClasses = cn(
     // Base
     'flex min-w-0 items-center',
@@ -161,7 +158,6 @@ export function CatalystComboboxOption<T>({
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
   );
-
   return (
     <Headless.ComboboxOption
       {...props}
@@ -178,7 +174,7 @@ export function CatalystComboboxOption<T>({
         'data-disabled:opacity-50'
       )}
     >
-      <span className={cn(className, sharedClasses)}>{children}</span>
+      <span className={cn(sharedClasses, className)}>{children}</span>
       <svg
         className="relative col-start-2 hidden size-5 self-center stroke-current group-data-selected/option:inline sm:size-4"
         viewBox="0 0 16 16"
@@ -190,7 +186,6 @@ export function CatalystComboboxOption<T>({
     </Headless.ComboboxOption>
   );
 }
-
 export function CatalystComboboxLabel({
   className,
   ...props
@@ -198,11 +193,10 @@ export function CatalystComboboxLabel({
   return (
     <span
       {...props}
-      className={cn(className, 'ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0')}
+      className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
     />
   );
 }
-
 export function CatalystComboboxDescription({
   className,
   children,
@@ -212,8 +206,8 @@ export function CatalystComboboxDescription({
     <span
       {...props}
       className={cn(
-        className,
-        'flex flex-1 overflow-hidden text-zinc-500 group-data-focus/option:text-white before:w-2 before:min-w-0 before:shrink dark:text-zinc-400'
+        'flex flex-1 overflow-hidden text-zinc-500 group-data-focus/option:text-white before:w-2 before:min-w-0 before:shrink dark:text-zinc-400',
+        className
       )}
     >
       <span className="flex-1 truncate">{children}</span>

@@ -18,6 +18,7 @@ import {
   transformRemoveDuplicateProps,
   removeDuplicatePropsTransform,
 } from './format/remove-duplicate-props.js';
+import { transformReorderCnArgs, reorderCnArgsTransform } from './format/reorder-cn-args.js';
 
 /**
  * Execute the new functional pipeline on a directory of files
@@ -109,8 +110,9 @@ export async function runMainPipelineWithFs(
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
       { ...removeDuplicatePropsTransform, transform: transformRemoveDuplicateProps },
-      { ...fileHeadersTransform, transform: transformFileHeaders },
+      { ...reorderCnArgsTransform, transform: transformReorderCnArgs },
       { ...tsNocheckTransform, transform: transformTsNocheck },
+      { ...fileHeadersTransform, transform: transformFileHeaders },
     ];
 
     for (const file of filteredFiles) {
@@ -252,14 +254,19 @@ export function getMainPipelineInfo(): {
       type: removeDuplicatePropsTransform.category,
     },
     {
-      name: fileHeadersTransform.name,
-      description: fileHeadersTransform.description,
-      type: fileHeadersTransform.category,
+      name: reorderCnArgsTransform.name,
+      description: reorderCnArgsTransform.description,
+      type: reorderCnArgsTransform.category,
     },
     {
       name: tsNocheckTransform.name,
       description: tsNocheckTransform.description,
       type: tsNocheckTransform.category,
+    },
+    {
+      name: fileHeadersTransform.name,
+      description: fileHeadersTransform.description,
+      type: fileHeadersTransform.category,
     },
   ];
 

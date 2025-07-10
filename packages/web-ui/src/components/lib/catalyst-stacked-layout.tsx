@@ -1,6 +1,7 @@
-'use client';
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
+
+'use client';
 
 import * as Headless from '@headlessui/react';
 import React, { useState } from 'react';
