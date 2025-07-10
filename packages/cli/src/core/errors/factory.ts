@@ -7,21 +7,10 @@ import type {
   ExecutionError,
   UserInputError,
   DependencyError,
-  Result,
   ErrorContext,
   ErrorSeverity,
   SeverityError,
 } from './types.js';
-
-export const Ok = <T>(value: T): Result<T, never> => ({
-  success: true,
-  value,
-});
-
-export const Err = <E extends CLIError>(error: E): Result<never, E> => ({
-  success: false,
-  error,
-});
 
 export function createError(
   code: string,
@@ -405,3 +394,5 @@ export function chainError<E extends CLIError>(error: E, cause: CLIError | Error
     cause,
   };
 }
+
+// Note: ok, err are exported from utils.ts which imports from neverthrow

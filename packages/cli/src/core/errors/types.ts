@@ -1,3 +1,8 @@
+// Core neverthrow type exports only
+import type { Result, ResultAsync } from 'neverthrow';
+export type { Result, ResultAsync, Err as ErrType, Ok as OkType } from 'neverthrow';
+
+// CLI Error System - Domain-specific error types
 export interface CLIError {
   readonly code: string;
   readonly message: string;
@@ -70,11 +75,9 @@ export interface DependencyError extends CategorizedError {
   readonly installedVersion?: string;
 }
 
-export type Result<T, E = CLIError> =
-  | { readonly success: true; readonly value: T }
-  | { readonly success: false; readonly error: E };
-
-export type AsyncResult<T, E = CLIError> = Promise<Result<T, E>>;
+// Convenience type aliases
+export type CLIResult<T> = Result<T, CLIError>;
+export type CLIResultAsync<T> = ResultAsync<T, CLIError>;
 
 export interface ErrorChain {
   readonly error: CLIError;
