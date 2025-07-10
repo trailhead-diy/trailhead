@@ -1,99 +1,48 @@
 /**
- * Format utilities for DRY format handling across CLI applications
- *
- * This module provides centralized utilities for:
- * - File extension management
- * - MIME type handling
- * - Format validation and detection
- * - Output path generation
- *
- * @example
- * ```typescript
- * import { formatUtils } from '@esteban-url/trailhead-cli/formats';
- *
- * // Get extension for format
- * const ext = formatUtils.getExtension('json'); // '.json'
- *
- * // Detect format from filename
- * const format = formatUtils.detectFormatFromExtension('data.csv'); // 'csv'
- *
- * // Validate content matches format
- * const validation = formatUtils.validateFormat(content, 'json');
- *
- * // Generate output filename
- * const output = formatUtils.generateOutputFilename('input.csv', 'json'); // 'input.json'
- * ```
+ * Clean public API exposing file-type functionality with Result<T> patterns
  */
 
-// Types
 export type {
-  SupportedFormat,
-  FormatInfo,
-  FormatValidationResult,
+  FormatDetectionResult,
   FormatDetectionOptions,
+  StreamDetectionOptions,
+  AbortableOptions,
+  SupportedFormat,
+  // Legacy types for backward compatibility
   FormatValidator,
+  FormatValidationResult,
+  FormatInfo,
   FormatRegistry,
 } from './types.js';
 
-// Registry
-export { FORMAT_REGISTRY, SUPPORTED_FORMATS, ALL_EXTENSIONS, ALL_MIME_TYPES } from './registry.js';
+// Core detection functions
+export { detectFromFile, detectFromBuffer, detectFromStream, detectFromBlob } from './detection.js';
 
-// Utilities
+// Advanced parsing with custom detectors
+export { parseFile, parseBuffer, parseStream } from './parser.js';
+
+// Stream utilities
+export { enhanceStream, createDetectionStream } from './stream-utils.js';
+
+// Registry and validation
 export {
-  getExtension,
-  getExtensions,
-  getMimeType,
-  getMimeTypes,
-  getFormatInfo,
-  isSupported,
-  detectFormatFromExtension,
-  detectFormatFromMimeType,
-  changeExtension,
-  generateOutputFilename,
+  getSupportedExtensions,
+  getSupportedMimeTypes,
+  isExtensionSupported,
+  isMimeTypeSupported,
   validateFormat,
-  createValidator,
-  detectFormat,
-  getSupportedFormats,
-  isBinaryFormat,
-} from './utils.js';
+  getMimeTypeForExtension,
+} from './registry.js';
 
-// Import utilities for the convenience object
-import {
-  getExtension,
-  getExtensions,
-  getMimeType,
-  getMimeTypes,
-  getFormatInfo,
-  isSupported,
-  detectFormatFromExtension,
-  detectFormatFromMimeType,
-  changeExtension,
-  generateOutputFilename,
-  validateFormat,
-  createValidator,
-  detectFormat,
-  getSupportedFormats,
-  isBinaryFormat,
-} from './utils.js';
+// Custom detector utilities (simplified implementation)
+// For advanced custom detectors, use file-type's native API directly
 
-// Convenience object for cleaner imports
-export const formatUtils = {
-  getExtension,
-  getExtensions,
-  getMimeType,
-  getMimeTypes,
-  getFormatInfo,
-  isSupported,
-  detectFormatFromExtension,
-  detectFormatFromMimeType,
-  changeExtension,
-  generateOutputFilename,
-  validateFormat,
-  createValidator,
-  detectFormat,
-  getSupportedFormats,
-  isBinaryFormat,
-} as const;
+// Convenience aliases that match file-type API
+export {
+  detectFromFile as fileTypeFromFile,
+  detectFromBuffer as fileTypeFromBuffer,
+  detectFromStream as fileTypeFromStream,
+  detectFromBlob as fileTypeFromBlob,
+} from './detection.js';
 
-// Re-export everything from utils for backward compatibility
-export * from './utils.js';
+// Legacy utilities removed - use new file-type API functions instead
