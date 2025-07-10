@@ -88,9 +88,13 @@ export function executeSemanticColorsTransform(input: string): {
         const beforeClosing = match[1];
         const closing = match[2];
 
+        // Check if the content before closing brace ends with a comma
+        const needsComma = !beforeClosing.trim().endsWith(',');
+        const commaPrefix = needsComma ? ',' : '';
+
         // Add semantic colors before the closing brace with proper indentation
         const semanticColorsBlock = semanticColors.map(color => `  ${color}`).join('\n');
-        const newColorsObject = `${beforeClosing},\n  ${semanticColorsBlock}\n${closing}`;
+        const newColorsObject = `${beforeClosing}${commaPrefix}\n  ${semanticColorsBlock}\n${closing}`;
 
         content = content.replace(colorsObjectPattern, newColorsObject);
         changed = true;
@@ -113,9 +117,13 @@ export function executeSemanticColorsTransform(input: string): {
         const beforeClosing = match[1];
         const closing = match[2];
 
+        // Check if the content before closing brace ends with a comma
+        const needsComma = !beforeClosing.trim().endsWith(',');
+        const commaPrefix = needsComma ? ',' : '';
+
         // Add semantic colors before the closing brace with proper indentation
         const semanticColorsBlock = semanticColors.map(color => `    ${color}`).join('\n');
-        const newColorsObject = `${beforeClosing},\n    ${semanticColorsBlock}${closing}`;
+        const newColorsObject = `${beforeClosing}${commaPrefix}\n    ${semanticColorsBlock}${closing}`;
 
         content = content.replace(colorsObjectPattern, newColorsObject);
         changed = true;
