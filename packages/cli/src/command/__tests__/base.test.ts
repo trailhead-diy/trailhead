@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createCommand, type CommandOptions, type CommandConfig } from '../base.js';
-import { Ok } from '../../core/errors/index.js';
+import { ok } from 'neverthrow';
 
 // Mock external dependencies
 vi.mock('ora', () => ({
@@ -43,7 +43,7 @@ describe('Command Base', () => {
       const config: CommandConfig<TestOptions> = {
         name: 'test',
         description: 'Test command',
-        action: vi.fn().mockResolvedValue(Ok(undefined)),
+        action: vi.fn().mockResolvedValue(ok(undefined)),
       };
 
       const command = createCommand(config);
@@ -67,7 +67,7 @@ describe('Command Base', () => {
             default: 'dist',
           },
         ],
-        action: vi.fn().mockResolvedValue(Ok(undefined)),
+        action: vi.fn().mockResolvedValue(ok(undefined)),
       };
 
       const command = createCommand(config);
@@ -82,7 +82,7 @@ describe('Command Base', () => {
     });
 
     it('should execute action function', async () => {
-      const mockAction = vi.fn().mockResolvedValue(Ok(undefined));
+      const mockAction = vi.fn().mockResolvedValue(ok(undefined));
       const config: CommandConfig<TestOptions> = {
         name: 'test',
         description: 'Test command',

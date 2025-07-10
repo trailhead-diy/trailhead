@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createMemoryFileSystem } from '../filesystem/index.js';
 import { createSilentLogger } from '../core/index.js';
-import { Ok, Err } from '../core/errors/index.js';
+import { ok, err } from 'neverthrow';
 import {
   createFileProcessingCommand,
   commonOptions,
@@ -159,7 +159,7 @@ describe('Command Enhancement Suite', () => {
         name: 'test-process',
         description: 'Test processing command',
         inputFile: { required: true },
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       expect(command.name).toBe('test-process');
@@ -171,13 +171,13 @@ describe('Command Enhancement Suite', () => {
         name: 'test-process',
         description: 'Test command',
         inputFile: { required: true },
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       const result = await command.execute({}, { ...context, args: [] });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.message).toBe("Required field 'input file' is missing");
       }
     });
@@ -187,13 +187,13 @@ describe('Command Enhancement Suite', () => {
         name: 'test-process',
         description: 'Test command',
         inputFile: { required: true },
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       const result = await command.execute({}, { ...context, args: ['nonexistent.txt'] });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.message).toBe('File not found: nonexistent.txt');
       }
     });
@@ -207,7 +207,7 @@ describe('Command Enhancement Suite', () => {
         inputFile: { required: true },
         action: async (options, ctx, processing) => {
           capturedContext = processing;
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -219,7 +219,7 @@ describe('Command Enhancement Suite', () => {
         { ...context, args: ['/test/input.txt'] }
       );
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(capturedContext).toBeDefined();
       expect(capturedContext?.inputFile).toBe('/test/input.txt');
       expect(capturedContext?.outputPath).toBe('/test/output.txt');
@@ -232,7 +232,7 @@ describe('Command Enhancement Suite', () => {
         description: 'Test command',
         inputFile: { required: true },
         commonOptions: ['output', 'verbose', 'dryRun'],
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       expect(command.options).toHaveLength(3);
@@ -251,7 +251,7 @@ describe('Command Enhancement Suite', () => {
         description: 'Test command',
         inputFile: { required: true },
         customOptions: [customOption],
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       expect(command.options).toHaveLength(1);
@@ -265,7 +265,7 @@ describe('Command Enhancement Suite', () => {
         inputFile: { required: true },
         commonOptions: ['output', 'verbose'],
         customOptions: [{ name: 'custom', description: 'Custom', type: 'string' }],
-        action: async () => Ok(undefined),
+        action: async () => ok(undefined),
       });
 
       expect(command.options).toHaveLength(3);
@@ -279,12 +279,12 @@ describe('Command Enhancement Suite', () => {
         inputFile: { required: false },
         action: async (options, ctx, processing) => {
           expect(processing.inputFile).toBe('');
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
       const result = await command.execute({}, { ...context, args: [] });
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('resolves output path correctly', async () => {
@@ -297,7 +297,7 @@ describe('Command Enhancement Suite', () => {
         commonOptions: ['output'],
         action: async (options, ctx, processing) => {
           capturedProcessing = processing;
-          return Ok(undefined);
+          return ok(undefined);
         },
       });
 
@@ -311,13 +311,13 @@ describe('Command Enhancement Suite', () => {
         name: 'test-process',
         description: 'Test command',
         inputFile: { required: false },
-        action: async () => Err(new Error('Processing failed')),
+        action: async () => err(new Error('Processing failed')),
       });
 
       const result = await command.execute({}, { ...context, args: [] });
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.message).toBe('Processing failed');
       }
     });

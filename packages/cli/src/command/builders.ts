@@ -1,9 +1,10 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 import type { FileSystem } from '../filesystem/index.js';
 import type { CommandContext, CommandOption } from './types.js';
 import type { CommandConfig, CommandOptions } from './base.js';
 import { createCommand } from './base.js';
-import { Err, requiredFieldError, fileNotFoundError } from '../core/errors/index.js';
+import { err, requiredFieldError, fileNotFoundError } from '../core/errors/index.js';
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112
@@ -130,7 +131,7 @@ export interface FileProcessingConfig<T extends FileProcessingOptions> {
     options: T,
     context: CommandContext,
     processing: FileProcessingContext
-  ) => Promise<Result<void>>;
+  ) => Promise<Result<void, CLIError>>;
 }
 
 /**
@@ -173,14 +174,14 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
       const [inputFile] = context.args;
 
       if (config.inputFile.required !== false && !inputFile) {
-        return Err(requiredFieldError('input file'));
+        return err(requiredFieldError('input file'));
       }
 
       // Validate file exists if provided
       if (inputFile) {
         const fileCheck = await context.fs.access(inputFile);
-        if (!fileCheck.success) {
-          return Err(fileNotFoundError(inputFile));
+        if (fileCheck.isErr()) {
+          return err(fileNotFoundError(inputFile));
         }
       }
 

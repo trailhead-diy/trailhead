@@ -1,4 +1,4 @@
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
 import type { FileSystem } from '../filesystem/index.js';
 import type { Logger } from '../core/index.js';
 
@@ -76,7 +76,10 @@ export interface Command<T = any> {
   /** Array of command options/flags */
   options?: CommandOption[];
   /** Function that implements the command logic */
-  execute: (options: T, context: CommandContext) => Promise<Result<void>>;
+  execute: (
+    options: T,
+    context: CommandContext
+  ) => Promise<Result<void, import('../core/errors/index.js').CLIError>>;
 }
 
 /**
@@ -94,7 +97,10 @@ export interface CommandPhase<T> {
   /** Human-readable name of the phase for logging */
   name: string;
   /** Function that executes the phase logic */
-  execute: (data: T, context: CommandContext) => Promise<Result<T>>;
+  execute: (
+    data: T,
+    context: CommandContext
+  ) => Promise<Result<T, import('../core/errors/index.js').CLIError>>;
 }
 
 /**

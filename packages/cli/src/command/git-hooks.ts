@@ -5,7 +5,8 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { Ok, Err, createError, type Result, type CLIError } from '../core/index.js';
+import { ok, err, type Result, type CLIError } from '../core/errors/index.js';
+import { createError } from '../core/index.js';
 import { createFileSystem } from '../filesystem/index.js';
 import chalk from 'chalk';
 
@@ -44,9 +45,9 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
     const pnpmLockResult = await fs.access('pnpm-lock.yaml');
     const yarnLockResult = await fs.access('yarn.lock');
 
-    if (pnpmLockResult.success) {
+    if (pnpmLockResult.isOk()) {
       packageManager = 'pnpm';
-    } else if (yarnLockResult.success) {
+    } else if (yarnLockResult.isOk()) {
       packageManager = 'yarn';
     }
 
@@ -55,25 +56,25 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
     const pnpmWorkspaceResult = await fs.access('pnpm-workspace.yaml');
     const lernaResult = await fs.access('lerna.json');
 
-    const isMonorepo = turboResult.success || pnpmWorkspaceResult.success || lernaResult.success;
+    const isMonorepo = turboResult.isOk() || pnpmWorkspaceResult.isOk() || lernaResult.isOk();
 
     // Detect TypeScript
     const tsconfigResult = await fs.access('tsconfig.json');
-    const hasTypeScript = tsconfigResult.success;
+    const hasTypeScript = tsconfigResult.isOk();
 
     // Detect test framework
     let testFramework = 'vitest';
     const jestConfigJsResult = await fs.access('jest.config.js');
     const jestConfigTsResult = await fs.access('jest.config.ts');
 
-    if (jestConfigJsResult.success || jestConfigTsResult.success) {
+    if (jestConfigJsResult.isOk() || jestConfigTsResult.isOk()) {
       testFramework = 'jest';
     }
 
     // Try to read package.json to confirm framework
     try {
       const packageJsonResult = await fs.readFile('package.json');
-      if (packageJsonResult.success) {
+      if (packageJsonResult.isOk()) {
         const packageJson = JSON.parse(packageJsonResult.value);
 
         if (packageJson.devDependencies?.jest || packageJson.dependencies?.jest) {
@@ -93,9 +94,9 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
     if (isMonorepo) {
       try {
         const packagesDirResult = await fs.access('packages');
-        if (packagesDirResult.success) {
+        if (packagesDirResult.isOk()) {
           const dirResult = await fs.readdir('packages');
-          if (dirResult.success) {
+          if (dirResult.isOk()) {
             packages = dirResult.value;
           }
         }
@@ -104,7 +105,7 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
       }
     }
 
-    return Ok({
+    return ok({
       isMonorepo,
       packageManager,
       testFramework,
@@ -113,7 +114,7 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
       packages,
     });
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'PROJECT_CONFIG_DETECTION_FAILED',
         `Failed to detect project configuration: ${error}`,
@@ -298,8 +299,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     // Detect project configuration
     const projectConfigResult = await detectProjectConfig();
-    if (!projectConfigResult.success) {
-      return Err(projectConfigResult.error);
+    if (projectConfigResult.isErr()) {
+      return err(projectConfigResult.error);
     }
 
     const config = projectConfigResult.value;
@@ -314,7 +315,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       if (config.isMonorepo) {
         console.log(`  Packages: ${config.packages.join(', ')}`);
       }
-      return Ok(undefined);
+      return ok(undefined);
     }
 
     // Get template directory
@@ -326,8 +327,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     // Copy and process smart-test-runner.sh
     const runnerTemplateResult = await fs.readFile(path.join(templatesDir, 'smart-test-runner.sh'));
-    if (!runnerTemplateResult.success) {
-      return Err(
+    if (runnerTemplateResult.isErr()) {
+      return err(
         createError(
           'TEMPLATE_READ_FAILED',
           `Failed to read smart-test-runner.sh template: ${runnerTemplateResult.error.message}`,
@@ -340,8 +341,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const runnerPath = path.join(scriptsDir, 'smart-test-runner.sh');
 
     const writeRunnerResult = await fs.writeFile(runnerPath, runnerContent);
-    if (!writeRunnerResult.success) {
-      return Err(
+    if (writeRunnerResult.isErr()) {
+      return err(
         createError(
           'FILE_WRITE_FAILED',
           `Failed to write smart-test-runner.sh: ${writeRunnerResult.error.message}`,
@@ -352,8 +353,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     // Make executable using outputFile (which handles permissions)
     const outputResult = await fs.outputFile(runnerPath, runnerContent);
-    if (!outputResult.success) {
-      return Err(
+    if (outputResult.isErr()) {
+      return err(
         createError(
           'FILE_PERMISSIONS_FAILED',
           `Failed to set executable permissions: ${outputResult.error.message}`,
@@ -366,8 +367,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const lefthookTemplateResult = await fs.readFile(
       path.join(templatesDir, 'lefthook.yml.template')
     );
-    if (!lefthookTemplateResult.success) {
-      return Err(
+    if (lefthookTemplateResult.isErr()) {
+      return err(
         createError(
           'TEMPLATE_READ_FAILED',
           `Failed to read lefthook.yml.template: ${lefthookTemplateResult.error.message}`,
@@ -380,12 +381,12 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     const lefthookPath = 'lefthook.yml';
     const lefthookResult = await fs.access(lefthookPath);
-    if (lefthookResult.success && !options.force) {
+    if (lefthookResult.isOk() && !options.force) {
       console.log(chalk.yellow(`⚠️  ${lefthookPath} already exists. Use --force to overwrite.`));
     } else {
       const writeLefthookResult = await fs.writeFile(lefthookPath, lefthookContent);
-      if (!writeLefthookResult.success) {
-        return Err(
+      if (writeLefthookResult.isErr()) {
+        return err(
           createError(
             'FILE_WRITE_FAILED',
             `Failed to write lefthook.yml: ${writeLefthookResult.error.message}`,
@@ -399,8 +400,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const configTemplateResult = await fs.readFile(
       path.join(templatesDir, 'smart-test-config.json.template')
     );
-    if (!configTemplateResult.success) {
-      return Err(
+    if (configTemplateResult.isErr()) {
+      return err(
         createError(
           'TEMPLATE_READ_FAILED',
           `Failed to read smart-test-config.json.template: ${configTemplateResult.error.message}`,
@@ -413,12 +414,12 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     const configPath = '.smart-test-config.json';
     const smartConfigResult = await fs.access(configPath);
-    if (smartConfigResult.success && !options.force) {
+    if (smartConfigResult.isOk() && !options.force) {
       console.log(chalk.yellow(`⚠️  ${configPath} already exists. Use --force to overwrite.`));
     } else {
       const writeConfigResult = await fs.writeFile(configPath, configContent);
-      if (!writeConfigResult.success) {
-        return Err(
+      if (writeConfigResult.isErr()) {
+        return err(
           createError(
             'FILE_WRITE_FAILED',
             `Failed to write .smart-test-config.json: ${writeConfigResult.error.message}`,
@@ -430,8 +431,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     // Copy README
     const readmeTemplateResult = await fs.readFile(path.join(templatesDir, 'README.md'));
-    if (!readmeTemplateResult.success) {
-      return Err(
+    if (readmeTemplateResult.isErr()) {
+      return err(
         createError(
           'TEMPLATE_READ_FAILED',
           `Failed to read README.md template: ${readmeTemplateResult.error.message}`,
@@ -442,10 +443,10 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     const readmePath = path.join(scriptsDir, 'README.md');
     const readmeResult = await fs.access(readmePath);
-    if (!readmeResult.success || options.force) {
+    if (readmeResult.isErr() || options.force) {
       const writeReadmeResult = await fs.writeFile(readmePath, readmeTemplateResult.value);
-      if (!writeReadmeResult.success) {
-        return Err(
+      if (writeReadmeResult.isErr()) {
+        return err(
           createError(
             'FILE_WRITE_FAILED',
             `Failed to write README.md: ${writeReadmeResult.error.message}`,
@@ -463,9 +464,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     console.log(`   2. Install git hooks: ${config.packageManager} lefthook install`);
     console.log(`   3. Test the setup: ./${scriptsDir}/smart-test-runner.sh --dry-run --verbose`);
 
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('GIT_HOOKS_INSTALL_FAILED', `Failed to install git hooks: ${error}`, {
         recoverable: false,
       })
@@ -500,7 +501,7 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
       console.log('  scripts/smart-test-runner.sh');
       console.log('  lefthook.yml');
       console.log('  .smart-test-config.json');
-      return Ok(undefined);
+      return ok(undefined);
     }
 
     const scriptsDir = options.destination || DEFAULT_SCRIPTS_DIR;
@@ -515,12 +516,12 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
 
     for (const file of filesToRemove) {
       const fileResult = await fs.access(file);
-      if (fileResult.success) {
+      if (fileResult.isOk()) {
         const removeResult = await fs.rm(file, {
           recursive: true,
           force: true,
         });
-        if (removeResult.success) {
+        if (removeResult.isOk()) {
           console.log(chalk.gray(`   Removed ${file}`));
         }
       }
@@ -529,12 +530,12 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
     // Remove scripts directory if empty
     try {
       const entriesResult = await fs.readdir(scriptsDir);
-      if (entriesResult.success && entriesResult.value.length === 0) {
+      if (entriesResult.isOk() && entriesResult.value.length === 0) {
         const removeDirResult = await fs.rm(scriptsDir, {
           recursive: true,
           force: true,
         });
-        if (removeDirResult.success) {
+        if (removeDirResult.isOk()) {
           console.log(chalk.gray(`   Removed empty directory ${scriptsDir}`));
         }
       }
@@ -547,9 +548,9 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
     console.log('   1. Uninstall lefthook: npm uninstall lefthook');
     console.log('   2. Remove git hooks: lefthook uninstall');
 
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('GIT_HOOKS_REMOVE_FAILED', `Failed to remove git hooks: ${error}`, {
         recoverable: false,
       })
@@ -568,8 +569,8 @@ async function configureGitHooks(): Promise<Result<void, CLIError>> {
 
     // Detect current configuration
     const configResult = await detectProjectConfig();
-    if (!configResult.success) {
-      return Err(configResult.error);
+    if (configResult.isErr()) {
+      return err(configResult.error);
     }
 
     const config = configResult.value;
@@ -597,9 +598,9 @@ async function configureGitHooks(): Promise<Result<void, CLIError>> {
       chalk.yellow('💡 Configuration looks good! Run `git-hooks install` to set up hooks.')
     );
 
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('CONFIG_WIZARD_FAILED', `Configuration wizard failed: ${error}`, {
         recoverable: false,
       })
@@ -629,7 +630,7 @@ export function createGitHooksCommand(): Command {
     .option('--force', 'Overwrite existing files')
     .action(async (options: GitHooksOptions) => {
       const result = await installGitHooks(options);
-      if (!result.success) {
+      if (result.isErr()) {
         console.error(chalk.red(`❌ ${result.error.message}`));
         process.exit(1);
       }
@@ -643,7 +644,7 @@ export function createGitHooksCommand(): Command {
     .option('--dry-run', 'Show what would be updated without making changes')
     .action(async (options: GitHooksOptions) => {
       const result = await updateGitHooks(options);
-      if (!result.success) {
+      if (result.isErr()) {
         console.error(chalk.red(`❌ ${result.error.message}`));
         process.exit(1);
       }
@@ -657,7 +658,7 @@ export function createGitHooksCommand(): Command {
     .option('--dry-run', 'Show what would be removed without making changes')
     .action(async (options: GitHooksOptions) => {
       const result = await removeGitHooks(options);
-      if (!result.success) {
+      if (result.isErr()) {
         console.error(chalk.red(`❌ ${result.error.message}`));
         process.exit(1);
       }
@@ -669,7 +670,7 @@ export function createGitHooksCommand(): Command {
     .description('Interactive configuration wizard for git hooks')
     .action(async () => {
       const result = await configureGitHooks();
-      if (!result.success) {
+      if (result.isErr()) {
         console.error(chalk.red(`❌ ${result.error.message}`));
         process.exit(1);
       }
@@ -688,14 +689,14 @@ export function createGitHooksCommand(): Command {
 
       for (const file of files) {
         const fileResult = await fs.access(file);
-        const status = fileResult.success ? chalk.green('✅ Installed') : chalk.red('❌ Missing');
+        const status = fileResult.isOk() ? chalk.green('✅ Installed') : chalk.red('❌ Missing');
         console.log(`   ${file}: ${status}`);
       }
 
       // Check if lefthook is installed
       try {
         const packageJsonResult = await fs.readFile('package.json');
-        if (packageJsonResult.success) {
+        if (packageJsonResult.isOk()) {
           const pkg = JSON.parse(packageJsonResult.value);
           const hasLefthook = pkg.devDependencies?.lefthook || pkg.dependencies?.lefthook;
           const lefthookStatus = hasLefthook

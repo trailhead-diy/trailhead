@@ -1,5 +1,6 @@
 import { Command } from 'commander';
-import type { Result } from '../core/errors/index.js';
+import type { Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 import type { CommandContext, CommandOption } from './types.js';
 import { validateCommandConfigWithCache } from './validation.js';
 
@@ -41,13 +42,13 @@ export interface CommandConfig<T extends CommandOptions> {
 export type CommandAction<T extends CommandOptions> = (
   options: T,
   context: CommandContext
-) => Promise<Result<void>>;
+) => Promise<Result<void, CLIError>>;
 
 /**
  * Command validation function type
  * @template T - Command options type
  */
-export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T>;
+export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, CLIError>;
 
 /**
  * Create a command object for use with createCLI
@@ -120,7 +121,7 @@ export function createCommand<T extends CommandOptions>(
 ): import('./types.js').Command<T> {
   // Validate configuration
   const validationResult = validateCommandConfigWithCache(config);
-  if (!validationResult.success) {
+  if (validationResult.isErr()) {
     throw new Error(`Invalid command configuration: ${validationResult.error.message}`);
   }
 
