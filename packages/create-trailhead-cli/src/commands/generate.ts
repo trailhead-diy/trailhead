@@ -1,5 +1,5 @@
 import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
 import { select, confirm } from '@inquirer/prompts';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
@@ -135,7 +135,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
       if (!projectName) {
         logger.error('Project name is required');
         logger.info('Usage: create-trailhead-cli <project-name>');
-        return Err(
+        return err(
           createError('MISSING_PROJECT_NAME', 'Project name is required', {
             suggestion: 'Provide a project name as the first argument',
           })
@@ -146,7 +146,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
       const projectPath = resolve(process.cwd(), projectName);
       if (existsSync(projectPath) && !options.force) {
         logger.error(`Directory '${projectName}' already exists. Use --force to overwrite.`);
-        return Err(
+        return err(
           createError('DIRECTORY_EXISTS', `Directory '${projectName}' already exists`, {
             suggestion: 'Use --force to overwrite or choose a different name',
           })
@@ -186,7 +186,7 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
         { logger, fs: undefined, verbose }
       );
 
-      if (result.success) {
+      if (result.isOk()) {
         logger.success(`Successfully generated '${projectName}'`);
 
         if (!options.dryRun) {
@@ -201,14 +201,14 @@ export const generateCommand = createCommand<GenerateCommandOptions>({
           logger.info('Happy coding! 🚀');
         }
 
-        return Ok(undefined);
+        return ok(undefined);
       } else {
         logger.error(`Failed to generate project: ${result.error.message}`);
-        return Err(result.error);
+        return err(result.error);
       }
     } catch (error) {
       logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
-      return Err(
+      return err(
         createError('UNEXPECTED_ERROR', error instanceof Error ? error.message : String(error), {
           cause: error,
         })

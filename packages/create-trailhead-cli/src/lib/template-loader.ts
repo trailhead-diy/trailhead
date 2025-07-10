@@ -215,7 +215,7 @@ async function loadTemplateFilesFromDirectory(
     // Only validate if baseTemplatesDir is provided
     if (baseTemplatesDir) {
       const dirValidation = validateTemplatePath(dir, baseTemplatesDir);
-      if (!dirValidation.success) {
+      if (!dirValidation.isOk()) {
         console.warn(`Skipping invalid template directory: ${dir}`);
         return [];
       }
@@ -234,7 +234,7 @@ async function loadTemplateFilesFromDirectory(
         // Validate each file path if baseTemplatesDir is provided
         if (baseTemplatesDir) {
           const fileValidation = validateTemplatePath(filePath, baseTemplatesDir);
-          if (!fileValidation.success) {
+          if (!fileValidation.isOk()) {
             console.warn(`Skipping invalid template file: ${filePath}`);
             return null;
           }

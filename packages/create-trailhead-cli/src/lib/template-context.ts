@@ -106,7 +106,7 @@ async function getGitUser(): Promise<string> {
     timeout: 5000,
   });
 
-  if (!nameResult.success) {
+  if (!nameResult.isOk()) {
     return 'Your Name';
   }
 
@@ -132,7 +132,7 @@ async function getGitEmail(): Promise<string> {
     timeout: 5000,
   });
 
-  if (!emailResult.success) {
+  if (!emailResult.isOk()) {
     return 'your.email@example.com';
   }
 

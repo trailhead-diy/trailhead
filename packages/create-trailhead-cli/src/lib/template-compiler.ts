@@ -113,19 +113,19 @@ export class TemplateCompiler {
     Handlebars.registerHelper('uppercase', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      return sanitized.success ? sanitized.value.toUpperCase() : str;
+      return sanitized.isOk() ? sanitized.value.toUpperCase() : str;
     });
 
     Handlebars.registerHelper('lowercase', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      return sanitized.success ? sanitized.value.toLowerCase() : str;
+      return sanitized.isOk() ? sanitized.value.toLowerCase() : str;
     });
 
     Handlebars.registerHelper('capitalize', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      if (!sanitized.success) return str;
+      if (!sanitized.isOk()) return str;
       const clean = sanitized.value;
       return clean.charAt(0).toUpperCase() + clean.slice(1);
     });
@@ -134,7 +134,7 @@ export class TemplateCompiler {
     Handlebars.registerHelper('kebab', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      if (!sanitized.success) return str;
+      if (!sanitized.isOk()) return str;
       return sanitized.value.replace(/[A-Z]/g, '-$&').toLowerCase().replace(/^-/, '');
     });
 
@@ -142,7 +142,7 @@ export class TemplateCompiler {
     Handlebars.registerHelper('pascal', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      if (!sanitized.success) return str;
+      if (!sanitized.isOk()) return str;
       return sanitized.value
         .split(/[-_\s]+/)
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -153,7 +153,7 @@ export class TemplateCompiler {
     Handlebars.registerHelper('camel', (str: string) => {
       if (typeof str !== 'string') return str;
       const sanitized = sanitizeText(str);
-      if (!sanitized.success) return str;
+      if (!sanitized.isOk()) return str;
       const pascal = sanitized.value
         .split(/[-_\s]+/)
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -264,7 +264,7 @@ export class TemplateCompiler {
 
     // Read and compile template
     const contentResult = await fs.readFile(templatePath, 'utf-8');
-    if (!contentResult.success) {
+    if (!contentResult.isOk()) {
       throw new Error(`Failed to read template file: ${contentResult.error.message}`);
     }
     const templateContent = contentResult.value;
@@ -331,7 +331,7 @@ export class TemplateCompiler {
       const stats = await stat(templatePath);
 
       const contentResult = await fs.readFile(templatePath, 'utf-8');
-      if (!contentResult.success) {
+      if (!contentResult.isOk()) {
         return; // Can't cache if we can't read the file
       }
 
@@ -354,7 +354,7 @@ export class TemplateCompiler {
     const promises = templatePaths.map(async templatePath => {
       try {
         const contentResult = await fs.readFile(templatePath, 'utf-8');
-        if (!contentResult.success) {
+        if (!contentResult.isOk()) {
           return; // Skip files that can't be read
         }
 
@@ -418,7 +418,7 @@ export class TemplateCompiler {
     for (const [key, value] of Object.entries(context)) {
       if (typeof value === 'string') {
         const sanitizedValue = sanitizeText(value);
-        sanitized[key] = sanitizedValue.success ? sanitizedValue.value : '';
+        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : '';
       } else if (typeof value === 'object' && value !== null) {
         sanitized[key] = this.sanitizeObject(value);
       } else if (typeof value === 'number' || typeof value === 'boolean') {
@@ -448,7 +448,7 @@ export class TemplateCompiler {
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === 'string') {
         const sanitizedValue = sanitizeText(value);
-        sanitized[key] = sanitizedValue.success ? sanitizedValue.value : '';
+        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : '';
       } else if (typeof value === 'object' && value !== null) {
         sanitized[key] = this.sanitizeObject(value);
       } else if (typeof value === 'number' || typeof value === 'boolean') {

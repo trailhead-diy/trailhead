@@ -1,6 +1,6 @@
 import { resolve, normalize, isAbsolute, relative } from 'path';
 import { z } from 'zod';
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
 
 /**
@@ -99,24 +99,22 @@ function zodResultToResult<T>(
 ): Result<T, CLIError> {
   try {
     const result = schema.parse(input);
-    return { success: true, value: result };
+    return ok(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
       const firstIssue = error.issues[0];
-      return {
-        success: false,
-        error: createError('VALIDATION_FAILED', firstIssue.message, {
+      return err(
+        createError('VALIDATION_FAILED', firstIssue.message, {
           details: `${operation} validation failed: ${firstIssue.message}`,
-        }),
-      };
+        })
+      );
     }
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', `${operation} validation failed`, {
+    return err(
+      createError('VALIDATION_FAILED', `${operation} validation failed`, {
         cause: error,
         details: error instanceof Error ? error.message : String(error),
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -133,7 +131,7 @@ export function validateProjectName(name: string): Result<string, CLIError> {
 export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CLIError> {
   // First validate the basic path schema
   const basicValidation = zodResultToResult(pathSchema, inputPath, 'Project path');
-  if (!basicValidation.success) {
+  if (!basicValidation.isOk()) {
     return basicValidation;
   }
 
@@ -141,15 +139,14 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
 
   try {
     const resolvedPath = isAbsolute(trimmed) ? trimmed : resolve(baseDir, trimmed);
-    return { success: true, value: resolvedPath };
+    return ok(resolvedPath);
   } catch (error) {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Invalid project path', {
+    return err(
+      createError('VALIDATION_FAILED', 'Invalid project path', {
         cause: error,
         details: 'Unable to resolve project path',
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -176,7 +173,7 @@ export function validateTemplatePath(
 ): Result<string, CLIError> {
   // First validate basic path
   const basicValidation = zodResultToResult(pathSchema, filePath, 'Template file path');
-  if (!basicValidation.success) {
+  if (!basicValidation.isOk()) {
     return basicValidation;
   }
 
@@ -186,23 +183,21 @@ export function validateTemplatePath(
     const relativePath = relative(baseTemplateDir, resolvedPath);
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
-      return {
-        success: false,
-        error: createError('VALIDATION_FAILED', 'Invalid template path', {
+      return err(
+        createError('VALIDATION_FAILED', 'Invalid template path', {
           details: 'Template path must be within the template directory',
-        }),
-      };
+        })
+      );
     }
 
-    return { success: true, value: resolvedPath };
+    return ok(resolvedPath);
   } catch (error) {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Invalid template path', {
+    return err(
+      createError('VALIDATION_FAILED', 'Invalid template path', {
         cause: error,
         details: 'Unable to resolve template path',
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -215,7 +210,7 @@ export function validateOutputPath(
 ): Result<string, CLIError> {
   // First validate basic path
   const basicValidation = zodResultToResult(pathSchema, filePath, 'Output file path');
-  if (!basicValidation.success) {
+  if (!basicValidation.isOk()) {
     return basicValidation;
   }
 
@@ -223,35 +218,32 @@ export function validateOutputPath(
     const normalizedPath = normalize(filePath);
 
     if (normalizedPath.includes('..') || isAbsolute(normalizedPath)) {
-      return {
-        success: false,
-        error: createError('VALIDATION_FAILED', 'Invalid output path', {
+      return err(
+        createError('VALIDATION_FAILED', 'Invalid output path', {
           details: 'Output path must be relative and within the project directory',
-        }),
-      };
+        })
+      );
     }
 
     const resolvedPath = resolve(baseOutputDir, normalizedPath);
     const relativePath = relative(baseOutputDir, resolvedPath);
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
-      return {
-        success: false,
-        error: createError('VALIDATION_FAILED', 'Invalid output path', {
+      return err(
+        createError('VALIDATION_FAILED', 'Invalid output path', {
           details: 'Output path must be within the project directory',
-        }),
-      };
+        })
+      );
     }
 
-    return { success: true, value: resolvedPath };
+    return ok(resolvedPath);
   } catch (error) {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Invalid output path', {
+    return err(
+      createError('VALIDATION_FAILED', 'Invalid output path', {
         cause: error,
         details: 'Unable to resolve output path',
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -263,12 +255,11 @@ export function sanitizeText(
   _maxLength: number = MAX_TEXT_LENGTH
 ): Result<string, CLIError> {
   if (!input || typeof input !== 'string') {
-    return {
-      success: false,
-      error: createError('VALIDATION_FAILED', 'Text input is required', {
+    return err(
+      createError('VALIDATION_FAILED', 'Text input is required', {
         details: 'Text input must be a string',
-      }),
-    };
+      })
+    );
   }
 
   return zodResultToResult(textSchema, input, 'Text input');

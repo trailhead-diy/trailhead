@@ -1,4 +1,4 @@
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
 import { resolve, dirname } from 'path';
 import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { fileURLToPath } from 'url';
@@ -54,7 +54,7 @@ const templateCompiler = new TemplateCompiler();
  * }
  *
  * const result = await generateProject(config, context)
- * if (result.success) {
+ * if (result.isOk()) {
  *   console.log('Project generated successfully!')
  * } else {
  *   console.error('Generation failed:', result.error.message)
@@ -73,7 +73,7 @@ export async function generateProject(
   try {
     // Phase 0: Validate configuration
     const validationResult = validateProjectConfig(config);
-    if (!validationResult.success) {
+    if (!validationResult.isOk()) {
       return validationResult;
     }
 
@@ -110,7 +110,7 @@ export async function generateProject(
     // Phase 3: Create project directory
     if (!config.dryRun) {
       const createDirResult = await createProjectDirectory(config.projectPath);
-      if (!createDirResult.success) {
+      if (!createDirResult.isOk()) {
         return createDirResult;
       }
     }
@@ -122,7 +122,7 @@ export async function generateProject(
     for (const templateFile of templateFiles) {
       const result = await processTemplateFile(templateFile, templateContext, config, context);
 
-      if (!result.success) {
+      if (!result.isOk()) {
         spinner.fail(`Failed to process ${templateFile.source}`);
         return result;
       }
@@ -147,7 +147,7 @@ export async function generateProject(
     // Phase 5: Initialize git repository
     if (config.initGit && !config.dryRun) {
       const gitResult = await initializeGitRepository(config.projectPath, context);
-      if (!gitResult.success) {
+      if (!gitResult.isOk()) {
         logger.warning('Failed to initialize git repository');
       }
     }
@@ -155,7 +155,7 @@ export async function generateProject(
     // Phase 6: Install dependencies
     if (config.installDependencies && !config.dryRun) {
       const installResult = await installDependencies(config, context);
-      if (!installResult.success) {
+      if (!installResult.isOk()) {
         logger.warning('Failed to install dependencies');
       }
     }
@@ -163,10 +163,10 @@ export async function generateProject(
     // Phase 7: Cleanup template cache if needed
     templateCompiler.cleanup(50); // Keep max 50 entries
 
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
     logger.error('Generator failed:', error);
-    return Err(
+    return err(
       createError('GENERATOR_FAILED', 'Project generation failed', {
         cause: error,
         details: error instanceof Error ? error.message : String(error),
@@ -195,29 +195,29 @@ export async function generateProject(
 function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
   // Validate project name with security checks
   const nameValidation = validateProjectName(config.projectName);
-  if (!nameValidation.success) {
-    return nameValidation;
+  if (!nameValidation.isOk()) {
+    return err(nameValidation.error);
   }
 
   // Validate project path with directory traversal protection
   const pathValidation = validateProjectPath(config.projectPath, process.cwd());
-  if (!pathValidation.success) {
-    return pathValidation;
+  if (!pathValidation.isOk()) {
+    return err(pathValidation.error);
   }
 
   // Validate template with whitelist
   const templateValidation = validateTemplate(config.template);
-  if (!templateValidation.success) {
-    return templateValidation;
+  if (!templateValidation.isOk()) {
+    return err(templateValidation.error);
   }
 
   // Validate package manager with whitelist
   const packageManagerValidation = validatePackageManager(config.packageManager);
-  if (!packageManagerValidation.success) {
-    return packageManagerValidation;
+  if (!packageManagerValidation.isOk()) {
+    return err(packageManagerValidation.error);
   }
 
-  return Ok(undefined);
+  return ok(undefined);
 }
 
 /**
@@ -235,15 +235,15 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
  */
 async function createProjectDirectory(projectPath: string): Promise<Result<void, CLIError>> {
   const result = await fs.ensureDir(projectPath);
-  if (!result.success) {
-    return Err(
+  if (!result.isOk()) {
+    return err(
       createError('DIRECTORY_CREATE_FAILED', 'Failed to create project directory', {
         cause: result.error,
         details: result.error.message,
       })
     );
   }
-  return Ok(undefined);
+  return ok(undefined);
 }
 
 /**
@@ -285,14 +285,14 @@ async function processTemplateFile(
     const { paths } = resolveTemplatePaths(config.template, context.templateConfig);
     const baseTemplateDir = paths.base;
     const templatePathValidation = validateOutputPath(templateFile.source, baseTemplateDir);
-    if (!templatePathValidation.success) {
-      return templatePathValidation;
+    if (!templatePathValidation.isOk()) {
+      return err(templatePathValidation.error);
     }
 
     // Validate output destination path to prevent directory traversal
     const outputPathValidation = validateOutputPath(templateFile.destination, config.projectPath);
-    if (!outputPathValidation.success) {
-      return outputPathValidation;
+    if (!outputPathValidation.isOk()) {
+      return err(outputPathValidation.error);
     }
 
     const templatePath = templatePathValidation.value;
@@ -300,13 +300,13 @@ async function processTemplateFile(
 
     if (config.dryRun) {
       logger.info(`Would create: ${templateFile.destination}`);
-      return Ok(undefined);
+      return ok(undefined);
     }
 
     // Ensure output directory exists
     const ensureDirResult = await fs.ensureDir(dirname(outputPath));
-    if (!ensureDirResult.success) {
-      return Err(
+    if (!ensureDirResult.isOk()) {
+      return err(
         createError(
           'TEMPLATE_PROCESS_FAILED',
           `Failed to create output directory ${dirname(outputPath)}`,
@@ -326,8 +326,8 @@ async function processTemplateFile(
       );
 
       const writeResult = await fs.writeFile(outputPath, processedContent);
-      if (!writeResult.success) {
-        return Err(
+      if (!writeResult.isOk()) {
+        return err(
           createError('TEMPLATE_PROCESS_FAILED', `Failed to write template file ${outputPath}`, {
             cause: writeResult.error,
             details: writeResult.error.message,
@@ -341,8 +341,8 @@ async function processTemplateFile(
     } else {
       // Copy file as-is
       const copyResult = await fs.cp(templatePath, outputPath);
-      if (!copyResult.success) {
-        return Err(
+      if (!copyResult.isOk()) {
+        return err(
           createError(
             'TEMPLATE_PROCESS_FAILED',
             `Failed to copy file ${templatePath} to ${outputPath}`,
@@ -373,9 +373,9 @@ async function processTemplateFile(
       }
     }
 
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'TEMPLATE_PROCESS_FAILED',
         `Failed to process template file ${templateFile.source}`,
@@ -417,8 +417,8 @@ async function initializeGitRepository(
 
   // Validate project path to prevent command injection
   const pathValidation = validateProjectPath(projectPath, process.cwd());
-  if (!pathValidation.success) {
-    return pathValidation;
+  if (!pathValidation.isOk()) {
+    return err(pathValidation.error);
   }
   const safePath = pathValidation.value;
 
@@ -426,9 +426,9 @@ async function initializeGitRepository(
 
   // Check if git is available and environment is valid
   const envCheck = await validateGitEnvironment({ cwd: safePath });
-  if (!envCheck.success) {
+  if (!envCheck.isOk()) {
     spinner.fail('Git not available');
-    return Err(
+    return err(
       createError('GIT_INIT_FAILED', 'Git environment validation failed', {
         cause: envCheck.error,
         details: 'Git is not installed or not available in PATH',
@@ -438,9 +438,9 @@ async function initializeGitRepository(
 
   // Initialize git repository
   const initResult = await executeGitCommandSimple(['init'], { cwd: safePath });
-  if (!initResult.success) {
+  if (!initResult.isOk()) {
     spinner.fail('Failed to initialize git repository');
-    return Err(
+    return err(
       createError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
         cause: initResult.error,
         details: 'Git init command failed',
@@ -452,9 +452,9 @@ async function initializeGitRepository(
   const addResult = await executeGitCommandSimple(['add', '.'], {
     cwd: safePath,
   });
-  if (!addResult.success) {
+  if (!addResult.isOk()) {
     spinner.fail('Failed to stage files');
-    return Err(
+    return err(
       createError('GIT_INIT_FAILED', 'Failed to stage files for initial commit', {
         cause: addResult.error,
         details: 'Git add command failed',
@@ -467,9 +467,9 @@ async function initializeGitRepository(
   const commitResult = await executeGitCommandSimple(['commit', '-m', commitMessage], {
     cwd: safePath,
   });
-  if (!commitResult.success) {
+  if (!commitResult.isOk()) {
     spinner.fail('Failed to create initial commit');
-    return Err(
+    return err(
       createError('GIT_INIT_FAILED', 'Failed to create initial commit', {
         cause: commitResult.error,
         details: 'Git commit command failed',
@@ -478,7 +478,7 @@ async function initializeGitRepository(
   }
 
   spinner.succeed('Git repository initialized');
-  return Ok(undefined);
+  return ok(undefined);
 }
 
 /**
@@ -511,15 +511,15 @@ async function installDependencies(
   try {
     // Validate project path to prevent command injection
     const pathValidation = validateProjectPath(config.projectPath, process.cwd());
-    if (!pathValidation.success) {
-      return pathValidation;
+    if (!pathValidation.isOk()) {
+      return err(pathValidation.error);
     }
     const safePath = pathValidation.value;
 
     // Use CLI package manager detection instead of manual validation
     const packageManagerResult = detectPackageManager();
-    if (!packageManagerResult.success) {
-      return Err(
+    if (!packageManagerResult.isOk()) {
+      return err(
         createError('PACKAGE_MANAGER_NOT_FOUND', 'No suitable package manager found', {
           cause: packageManagerResult.error,
           details: packageManagerResult.error.message,
@@ -543,9 +543,9 @@ async function installDependencies(
     });
 
     spinner.succeed('Dependencies installed');
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('DEPENDENCY_INSTALL_FAILED', 'Failed to install dependencies', {
         cause: error,
         details:
