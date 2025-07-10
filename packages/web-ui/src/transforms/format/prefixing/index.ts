@@ -56,7 +56,7 @@
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js';
 import {
   createASTContext,
   processExportDeclarations,
@@ -64,16 +64,16 @@ import {
   detectHeadlessReferences,
   mapTypeAliases,
   generateTransformedCode,
-} from './catalyst-prefix-core.js';
-import { processImportDeclarations } from './catalyst-prefix-imports.js';
+} from './core.js';
+import { processImportDeclarations } from './imports.js';
 import {
   updateFunctionParameterTypes,
   updateTypeofUsages,
   updateJSXReferences,
   updateTypeReferences,
   updateDirectIdentifiers,
-} from './catalyst-prefix-references.js';
-import { updateTypeAliasDeclarations } from './catalyst-prefix-types.js';
+} from './references.js';
+import { updateTypeAliasDeclarations } from './types.js';
 
 /**
  * Transform metadata

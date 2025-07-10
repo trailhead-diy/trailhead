@@ -6,7 +6,7 @@
  * mappings module to apply component-specific color tokens.
  */
 
-import { getSemanticColorsForComponent } from './semantic-colors-mappings.js';
+import { getSemanticColorsForComponent } from './mappings.js';
 
 /**
  * Core semantic colors transformation logic

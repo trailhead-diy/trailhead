@@ -70,8 +70,8 @@
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
-import { executeSemanticColorsTransform } from './semantic-colors-transform.js';
+import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js';
+import { executeSemanticColorsTransform } from './transform.js';
 
 /**
  * Transform metadata

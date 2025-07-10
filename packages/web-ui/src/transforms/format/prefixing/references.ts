@@ -6,7 +6,7 @@
  * Protects Headless UI qualified names from any modifications.
  */
 
-import type { ASTContext } from './catalyst-prefix-core.js';
+import type { ASTContext } from './core.js';
 
 /**
  * Update function parameter types in component definitions

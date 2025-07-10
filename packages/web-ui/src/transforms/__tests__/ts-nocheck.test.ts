@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformTsNocheck } from '../transforms/ts-nocheck.js';
+import { transformTsNocheck } from '../format/ts-nocheck.js';
 
 describe('transformTsNocheck', () => {
   it('should add @ts-nocheck directive to target file without it', () => {

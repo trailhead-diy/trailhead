@@ -4,7 +4,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { expectResult } from '@esteban-url/trailhead-cli/testing';
-import { transformSemanticColors, semanticColorsTransform } from '../transforms/semantic-colors.js';
+import {
+  transformSemanticColors,
+  semanticColorsTransform,
+} from '../semantic/color-tokens/index.js';
 
 describe('SemanticColorsTransform', () => {
   describe('Badge Component', () => {

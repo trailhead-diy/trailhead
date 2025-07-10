@@ -5,7 +5,7 @@
  * catalyst- path prefixes. Protects Headless UI imports from any modifications.
  */
 
-import type { ASTContext } from './catalyst-prefix-core.js';
+import type { ASTContext } from './core.js';
 
 /**
  * Process import declarations and update paths to use catalyst- prefix

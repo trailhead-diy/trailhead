@@ -5,7 +5,7 @@
  * prefixes and ensures prop types are properly exported.
  */
 
-import type { ASTContext } from './catalyst-prefix-core.js';
+import type { ASTContext } from './core.js';
 
 /**
  * Update type alias declarations and ensure they are properly exported

@@ -4,10 +4,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { transformClsxToCn } from '../transforms/clsx-to-cn.js';
-import { transformSemanticColors } from '../transforms/semantic-colors.js';
-import { transformFileHeaders } from '../transforms/file-headers.js';
-import { transformCatalystPrefix } from '../transforms/catalyst-prefix.js';
+import { transformClsxToCn } from '../imports/clsx-to-cn.js';
+import { transformSemanticColors } from '../semantic/color-tokens/index.js';
+import { transformFileHeaders } from '../format/file-headers.js';
+import { transformCatalystPrefix } from '../format/prefixing/index.js';
 
 describe('Transform Pipeline Integration', () => {
   describe('clsx-to-cn transform', () => {

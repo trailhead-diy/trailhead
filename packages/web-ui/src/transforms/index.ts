@@ -9,11 +9,11 @@ import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
 import type { FileSystem } from '../cli/core/installation/types.js';
 
 // Import functional transforms
-import { transformClsxToCn, clsxToCnTransform } from './transforms/clsx-to-cn.js';
-import { transformCatalystPrefix, catalystPrefixTransform } from './transforms/catalyst-prefix.js';
-import { transformSemanticColors, semanticColorsTransform } from './transforms/semantic-colors.js';
-import { transformFileHeaders, fileHeadersTransform } from './transforms/file-headers.js';
-import { transformTsNocheck, tsNocheckTransform } from './transforms/ts-nocheck.js';
+import { transformClsxToCn, clsxToCnTransform } from './imports/clsx-to-cn.js';
+import { transformCatalystPrefix, catalystPrefixTransform } from './format/prefixing/index.js';
+import { transformSemanticColors, semanticColorsTransform } from './semantic/color-tokens/index.js';
+import { transformFileHeaders, fileHeadersTransform } from './format/file-headers.js';
+import { transformTsNocheck, tsNocheckTransform } from './format/ts-nocheck.js';
 
 /**
  * Execute the new functional pipeline on a directory of files
