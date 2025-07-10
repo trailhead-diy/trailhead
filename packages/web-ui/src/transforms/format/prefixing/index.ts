@@ -135,66 +135,99 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Initialize TypeScript AST Context
-    // Create parsing context with mapping systems and protection sets
+    //
+    // From:  (input source code)
+    // To:    (TypeScript AST with context objects)
+    //
     /////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 2: Export Declaration Processing
-    // Find and transform all exported components and functions
+    //
+    // From:  export function Button() { }
+    // To:    export function CatalystButton() { }
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = processExportDeclarations(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 3: Headless UI Protection
-    // Detect all Headless UI imports and add them to protection set
+    //
+    // From:  import { Button } from '@headlessui/react'
+    // To:    (protected set: Button - no transformation)
+    //
     /////////////////////////////////////////////////////////////////////////////////
     detectHeadlessReferences(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 4: Type Alias Mapping
-    // Map all type aliases and generate Props suffix mappings
+    //
+    // From:  type ButtonProps = { children: React.ReactNode }
+    // To:    type CatalystButtonProps = { children: React.ReactNode }
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = mapTypeAliases(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 5: Import Declaration Processing
-    // Transform import paths and specifier names
+    //
+    // From:  import { Button } from './button'
+    // To:    import { CatalystButton } from './catalyst-button'
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = processImportDeclarations(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 6: Reference Updates - Function Parameter Types
-    // Update function parameter types in component definitions
+    //
+    // From:  function CatalystButton({ color }: ButtonProps) { }
+    // To:    function CatalystButton({ color }: CatalystButtonProps) { }
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = updateFunctionParameterTypes(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 7: Reference Updates - Typeof Expressions
-    // Update typeof expressions in type definitions
+    //
+    // From:  ComponentPropsWithoutRef<typeof Button>
+    // To:    ComponentPropsWithoutRef<typeof CatalystButton>
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = updateTypeofUsages(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 8: Reference Updates - JSX Elements
-    // Update JSX expressions and elements
+    //
+    // From:  <Button color="blue">Click me</Button>
+    // To:    <CatalystButton color="blue">Click me</CatalystButton>
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = updateJSXReferences(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 9: Reference Updates - Type References
-    // Update type references and annotations
+    //
+    // From:  React.ComponentProps<Button>
+    // To:    React.ComponentProps<CatalystButton>
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = updateTypeReferences(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 10: Reference Updates - Direct Identifiers
-    // Update direct identifier references with comprehensive exclusions
+    //
+    // From:  const MyButton = Button
+    // To:    const MyButton = CatalystButton
+    //
     /////////////////////////////////////////////////////////////////////////////////
     context.sourceFile = updateDirectIdentifiers(context);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 11: Code Generation
-    // Generate final transformed code from modified AST
+    //
+    // From:  (modified TypeScript AST)
+    // To:    (final transformed source code)
+    //
     /////////////////////////////////////////////////////////////////////////////////
     const content = generateTransformedCode(context.sourceFile);
 

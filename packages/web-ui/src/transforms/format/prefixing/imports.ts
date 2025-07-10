@@ -73,8 +73,10 @@ export function processImportDeclarations(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Import Declaration Processing with TypeScript AST
-  // Find all import declarations and transform relative paths and specifier names
-  // NEVER modify @headlessui/react imports
+  //
+  // From:  import { Button, Input } from './components'
+  // To:    import { CatalystButton, CatalystInput } from './catalyst-components'
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {

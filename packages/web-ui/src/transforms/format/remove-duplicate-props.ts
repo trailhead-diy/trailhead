@@ -60,7 +60,10 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Find JSX elements with duplicate prop spreads
-    // Use a simpler, more reliable approach that handles multiline JSX
+    // Finds:
+    //        <div {...props} className="..." {...props} />
+    //        <button {...buttonProps} disabled {...buttonProps}>
+    //        JSX elements with repeated spread operator usage
     //
     /////////////////////////////////////////////////////////////////////////////////
 
@@ -70,6 +73,9 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
     content = content.replace(jsxOpeningTagRegex, (fullMatch, tagName, attributes) => {
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 2: Find all prop spreads in this element
+      // Finds:
+      //        {...props}, {...buttonProps}, {...otherProps}
+      //        and records their positions and identifiers
       //
       /////////////////////////////////////////////////////////////////////////////////
       const spreadMatches: Array<{
@@ -96,6 +102,9 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 3: Group by identifier and find duplicates
+      // Groups:
+      //        spreads by variable name to identify duplicates
+      //        e.g., props: [position1, position2], otherProps: [position1]
       //
       /////////////////////////////////////////////////////////////////////////////////
       const spreadsByIdentifier: Record<string, typeof spreadMatches> = {};
@@ -116,6 +125,9 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 4: Remove duplicate spreads (keep only the last occurrence)
+      //
+      // From:  <div {...props} data-slot="label" {...props} />
+      // To:    <div data-slot="label" {...props} />
       //
       /////////////////////////////////////////////////////////////////////////////////
       let modifiedAttributes = attributes;

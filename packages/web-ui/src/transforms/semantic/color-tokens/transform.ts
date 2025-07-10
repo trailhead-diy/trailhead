@@ -37,8 +37,9 @@ export function executeSemanticColorsTransform(input: string): {
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Detect Colors Object Patterns
   // Finds:
-  //        const colors = {...}    (direct colors object)
-  //        colors: {...}          (nested colors object in styles)
+  //        const colors = { zinc: '#27272a', blue: '#3b82f6' }
+  //        colors: { zinc: ['#fafafa', '#27272a'], blue: ['#eff6ff', '#1e40af'] }
+  //        const styles = { base: '...', colors: { zinc: '...', blue: '...' } }
   //
   /////////////////////////////////////////////////////////////////////////////////
   const directColorsObject = /const colors = \{/.test(content);
@@ -52,11 +53,10 @@ export function executeSemanticColorsTransform(input: string): {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 2: Component Type Detection and Semantic Color Generation
-  // Analyzes function signatures and CSS patterns to determine component type
   // Finds:
-  //        export function CatalystBadge + inline-flex items-center gap-x-1.5
-  //        export const CatalystButton + --btn-
-  //        export function CatalystSwitch + --switch-
+  //        export function CatalystBadge pattern with 'inline-flex items-center'
+  //        export function CatalystButton pattern with 'rounded-md px-2.5 py-1.5'
+  //        then generates component-specific semantic colors (primary, secondary, etc.)
   //
   /////////////////////////////////////////////////////////////////////////////////
   const semanticColors = getSemanticColorsForComponent(content);
@@ -68,10 +68,9 @@ export function executeSemanticColorsTransform(input: string): {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 3: Check for Existing Semantic Colors
-  // Verifies if semantic colors are already present with correct format
   // Finds:
-  //        primary: 'bg-primary-500/15 text-primary-700...'
-  //        secondary: ['text-white [--btn-bg:var(--color-zinc-600)]...']
+  //        existing 'primary', 'secondary', 'destructive', 'accent', 'muted' keys
+  //        in colors object to avoid adding duplicates
   //
   /////////////////////////////////////////////////////////////////////////////////
   const semanticColorKeys = ['primary', 'secondary', 'destructive', 'accent', 'muted'];
@@ -85,8 +84,9 @@ export function executeSemanticColorsTransform(input: string): {
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 4: Apply Semantic Colors to Direct Colors Object
-    // Finds:
-    //        const colors = { zinc: '...', blue: '...' }
+    //
+    // From:  const colors = { zinc: '#27272a', blue: '#3b82f6' }
+    // To:    const colors = { zinc: '#27272a', blue: '#3b82f6', primary: 'var(--color-zinc-900)' }
     //
     /////////////////////////////////////////////////////////////////////////////////
     if (directColorsObject) {
@@ -114,8 +114,9 @@ export function executeSemanticColorsTransform(input: string): {
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 5: Apply Semantic Colors to Nested Colors Object
-    // Finds:
-    //        colors: { zinc: [...], blue: [...] }
+    //
+    // From:  colors: { zinc: ['#fafafa', '#27272a'], blue: ['#eff6ff', '#1e40af'] }
+    // To:    colors: { zinc: ['#fafafa', '#27272a'], blue: ['#eff6ff', '#1e40af'], primary: ['var(--color-zinc-50)', 'var(--color-zinc-900)'] }
     //
     /////////////////////////////////////////////////////////////////////////////////
     if (!patternFound && (nestedColorsObject || stylesColorsObject)) {

@@ -86,8 +86,10 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
     try {
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 1: Parse TypeScript AST
-      // Parse the source code into a TypeScript AST tree to enable precise
-      // manipulation of function call expressions.
+      // Parses:
+      //        source code string into TypeScript AST tree structure
+      //        for reliable syntax analysis and transformation
+      //
       /////////////////////////////////////////////////////////////////////////////////
       const sourceFile = ts.createSourceFile(
         'temp.tsx',
@@ -99,16 +101,21 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 2: Create AST Transformer
-      // Build a visitor function that traverses the AST and identifies cn() calls
-      // for argument reordering transformation.
+      // Creates:
+      //        visitor function that will traverse AST nodes
+      //        to find and transform cn() function calls
+      //
       /////////////////////////////////////////////////////////////////////////////////
       const transformer: ts.TransformerFactory<ts.SourceFile> = context => {
         return sourceFile => {
           function visitNode(node: ts.Node): ts.Node {
             /////////////////////////////////////////////////////////////////////////////////
             // Phase 3: Identify cn() Function Calls
-            // Check if current node is a CallExpression with identifier 'cn'
-            // Only process nodes that match this exact pattern.
+            // Finds:
+            //        cn(className, 'base-styles', 'more-styles')
+            //        cn(className, { 'active': isActive }, 'rounded-md')
+            //        cn(className1, className2, 'flex items-center')
+            //
             /////////////////////////////////////////////////////////////////////////////////
             if (
               ts.isCallExpression(node) &&
@@ -120,8 +127,10 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 4: Classify Arguments
-              // Separate className variables (/^className\d*$/) from other expressions
-              // to determine if reordering is needed.
+              // Separates:
+              //        className variables (className, className1, className2)
+              //        from other expressions ('base-styles', { active: true }, variables)
+              //
               /////////////////////////////////////////////////////////////////////////////////
               const classNameArgs = args.filter(
                 arg => ts.isIdentifier(arg) && /^className\d*$/.test(arg.text)
@@ -134,8 +143,10 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 5: Check Current Order
-              // Determine if className variables are already at the end of the argument list
-              // If so, no transformation is needed.
+              // Checks:
+              //        if className variables are already at the end
+              //        if reordering is needed (className before other expressions)
+              //
               /////////////////////////////////////////////////////////////////////////////////
               const lastOtherIndex = args.findLastIndex(
                 arg => !ts.isIdentifier(arg) || !/^className\d*$/.test(arg.text)
@@ -148,9 +159,10 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 6: Reorder Arguments
-              // Create new CallExpression with reordered arguments:
-              // - Other expressions first (preserving their relative order)
-              // - className variables last (preserving their relative order)
+              //
+              // From:  cn(className, 'base-styles', 'more-styles')
+              // To:    cn('base-styles', 'more-styles', className)
+              //
               /////////////////////////////////////////////////////////////////////////////////
               changed = true;
               warnings.push('Reordered cn() arguments to place className variables last');
@@ -170,8 +182,10 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 7: Apply Transformation and Generate Code
-      // Execute the AST transformation and convert the modified AST back to source code
-      // using TypeScript's printer with consistent formatting.
+      //
+      // From:  (modified AST tree)
+      // To:    (transformed source code string)
+      //
       /////////////////////////////////////////////////////////////////////////////////
       const result = ts.transform(sourceFile, [transformer]);
       const printer = ts.createPrinter({

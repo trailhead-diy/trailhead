@@ -143,8 +143,10 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Export Declaration Processing with TypeScript AST
-  // Find all export declarations and transform function/variable names
-  // Handles: export function Button(), export const Button = ...
+  //
+  // From:  export function Button() { return <button />; }
+  // To:    export function CatalystButton() { return <button />; }
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -264,7 +266,11 @@ export function detectHeadlessReferences(context: ASTContext): void {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 2: Headless UI Protection with TypeScript AST
-  // Find all @headlessui/react imports and protect those names from transformation
+  // Finds:
+  //        import { Button, Menu, Dialog } from '@headlessui/react'
+  //        import * as Headless from '@headlessui/react'
+  //        adds imported names to protected set to prevent prefixing
+  //
   /////////////////////////////////////////////////////////////////////////////////
   function visitNode(node: ts.Node): void {
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
@@ -315,7 +321,10 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 3: Type Alias Mapping with TypeScript AST
-  // Find all type alias declarations and transform their names
+  //
+  // From:  type ButtonProps = { children: React.ReactNode }
+  // To:    type CatalystButtonProps = { children: React.ReactNode }
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -389,7 +398,10 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 4: Props Suffix Handling
-  // Automatically generate Props mappings for discovered Catalyst components
+  //
+  // From:  CatalystButton (discovered component)
+  // To:    ButtonProps -> CatalystButtonProps (auto-generated mapping)
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const catalystFunctions = Array.from(oldToNewMap.values()).filter(name =>
     name.startsWith('Catalyst')

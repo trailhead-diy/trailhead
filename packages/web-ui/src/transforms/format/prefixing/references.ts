@@ -80,7 +80,10 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Function Parameter Type Updates with TypeScript AST
-  // Find variable declarations with Catalyst functions and update their parameter types
+  //
+  // From:  function CatalystButton({ color }: ButtonProps) { }
+  // To:    function CatalystButton({ color }: CatalystButtonProps) { }
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -248,7 +251,10 @@ export function updateTypeofUsages(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 2: Typeof Expression Updates with TypeScript AST
-  // Find all typeof expressions and update their referenced names
+  //
+  // From:  ComponentPropsWithoutRef<typeof Button>
+  // To:    ComponentPropsWithoutRef<typeof CatalystButton>
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -299,7 +305,10 @@ export function updateJSXReferences(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 3: JSX Reference Updates with TypeScript AST
-  // Find all JSX elements and expressions and update component names
+  //
+  // From:  <Button color="blue">Click me</Button>
+  // To:    <CatalystButton color="blue">Click me</CatalystButton>
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -396,7 +405,10 @@ export function updateTypeReferences(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 4: Type Reference Updates with TypeScript AST
-  // Find all type references and update their names, protecting Headless namespace
+  //
+  // From:  React.ComponentProps<Button>
+  // To:    React.ComponentProps<CatalystButton>
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
@@ -486,7 +498,10 @@ export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 5: Direct Identifier Updates with TypeScript AST
-  // Find all identifiers and update them with comprehensive exclusions
+  //
+  // From:  const MyButton = Button
+  // To:    const MyButton = CatalystButton
+  //
   /////////////////////////////////////////////////////////////////////////////////
   const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
     return sourceFile => {
