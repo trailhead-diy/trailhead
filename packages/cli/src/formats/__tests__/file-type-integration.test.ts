@@ -73,24 +73,24 @@ describe('File-type Integration', () => {
   describe('validateFormat', () => {
     it('validates supported formats', () => {
       const result = validateFormat('jpg');
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe('jpg');
       }
     });
 
     it('rejects unsupported formats', () => {
       const result = validateFormat('invalid');
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('UNSUPPORTED_FORMAT');
       }
     });
 
     it('validates against allowed formats list', () => {
       const result = validateFormat('jpg', ['png', 'gif']);
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (!result.isOk()) {
         expect(result.error.code).toBe('FORMAT_NOT_ALLOWED');
       }
     });

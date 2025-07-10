@@ -18,7 +18,7 @@ export { createExcelProcessor, excelUtils } from './excel.js';
 
 export { createDataConverter, detectFormat, conversionUtils } from './converter.js';
 
-export { isOk, isErr, unwrap, unwrapOr, map, chain, Ok, Err } from '../core/errors/index.js';
+export { ok, err, Result } from '../core/errors/index.js';
 
 import * as csvModule from './csv.js';
 import * as jsonModule from './json.js';
@@ -65,7 +65,7 @@ export const processors = {
 export const utils = {
   autoParse: (data: string, options?: DataProcessingOptions) => {
     const detectionResult = converterModule.detectFormat(data);
-    if (!detectionResult.success) {
+    if (detectionResult.isErr()) {
       return detectionResult;
     }
 

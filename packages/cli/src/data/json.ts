@@ -5,7 +5,8 @@ import equal from 'fast-deep-equal';
 import { flatten, unflatten } from 'flat';
 import type { Result } from '../core/errors/types.js';
 import type { CLIError } from '../core/errors/types.js';
-import { Ok, Err, createError, fileSystemError } from '../core/errors/factory.js';
+import { ok, err } from '../core/errors/utils.js';
+import { createError, fileSystemError } from '../core/errors/factory.js';
 import type { JSONProcessor, JSONProcessingOptions } from './types.js';
 
 const defaultOptions: JSONProcessingOptions = {
@@ -38,20 +39,20 @@ const parseString = (data: string, options?: JSONProcessingOptions): Result<any,
 
     if (shouldUseJSON5(opts)) {
       const result = JSON5.parse(processedData, opts.reviver);
-      return Ok(result);
+      return ok(result);
     } else {
       const result = JSON.parse(processedData, opts.reviver);
-      return Ok(result);
+      return ok(result);
     }
   } catch (error) {
     if (opts.errorTolerant) {
       const recoveryResult = tryRecover(data, opts);
-      if (recoveryResult.success) {
+      if (recoveryResult.isOk()) {
         return recoveryResult;
       }
     }
 
-    return Err(
+    return err(
       createError(
         'JSON_PARSE_ERROR',
         `JSON parsing error: ${error instanceof Error ? error.message : String(error)}`,
@@ -69,7 +70,7 @@ const parseFile = async (
     const data = await readFile(filePath, 'utf-8');
     return parseString(data, options);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'read',
         filePath,
@@ -86,13 +87,13 @@ const stringify = (data: any, options?: JSONProcessingOptions): Result<string, C
   try {
     if (shouldUseJSON5(opts)) {
       const json = JSON5.stringify(data);
-      return Ok(json);
+      return ok(json);
     } else {
       const json = JSON.stringify(data);
-      return Ok(json);
+      return ok(json);
     }
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_SERIALIZE_ERROR',
         `JSON serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -109,15 +110,15 @@ const writeJSONFile = async (
 ): Promise<Result<void, CLIError>> => {
   const stringifyResult = stringify(data, options);
 
-  if (!stringifyResult.success) {
-    return stringifyResult;
+  if (stringifyResult.isErr()) {
+    return err(stringifyResult.error);
   }
 
   try {
     await writeFile(filePath, stringifyResult.value);
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'write',
         filePath,
@@ -160,9 +161,9 @@ const stringifyFormatted = (
     }
 
     const json = JSON.stringify(data, replacer, opts.indent);
-    return Ok(json);
+    return ok(json);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_FORMATTING_ERROR',
         `JSON formatting error: ${error instanceof Error ? error.message : String(error)}`,
@@ -175,13 +176,13 @@ const stringifyFormatted = (
 const validateJSON = (data: string): Result<boolean, CLIError> => {
   try {
     JSON.parse(data);
-    return Ok(true);
+    return ok(true);
   } catch (error) {
     try {
       JSON5.parse(data);
-      return Ok(true);
+      return ok(true);
     } catch {
-      return Err(
+      return err(
         createError(
           'JSON_VALIDATION_ERROR',
           `JSON validation failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -195,15 +196,15 @@ const validateJSON = (data: string): Result<boolean, CLIError> => {
 const minify = (data: string): Result<string, CLIError> => {
   const parseResult = parseString(data);
 
-  if (!parseResult.success) {
+  if (parseResult.isErr()) {
     return parseResult;
   }
 
   try {
     const minified = JSON.stringify(parseResult.value);
-    return Ok(minified);
+    return ok(minified);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_MINIFICATION_ERROR',
         `JSON minification error: ${error instanceof Error ? error.message : String(error)}`,
@@ -223,9 +224,9 @@ const tryRecover = (data: string, options: JSONProcessingOptions): Result<any, C
     processedData = processedData.replace(/'/g, '"');
 
     const result = JSON.parse(processedData, options.reviver);
-    return Ok(result);
+    return ok(result);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_RECOVERY_ERROR',
         `JSON recovery failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -296,9 +297,9 @@ const removePath = (obj: any, path: string, separator: string = '.'): any => {
 const prettify = (obj: any, indent: number = 2): Result<string, CLIError> => {
   try {
     const pretty = JSON.stringify(obj, null, indent);
-    return Ok(pretty);
+    return ok(pretty);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_PRETTIFICATION_ERROR',
         `JSON prettification error: ${error instanceof Error ? error.message : String(error)}`,
@@ -311,9 +312,9 @@ const prettify = (obj: any, indent: number = 2): Result<string, CLIError> => {
 const compact = (obj: any): Result<string, CLIError> => {
   try {
     const compact = JSON.stringify(obj);
-    return Ok(compact);
+    return ok(compact);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_COMPACTION_ERROR',
         `JSON compaction error: ${error instanceof Error ? error.message : String(error)}`,
@@ -325,9 +326,9 @@ const compact = (obj: any): Result<string, CLIError> => {
 
 const validateSchema = (data: any, schema: any): Result<boolean, CLIError> => {
   try {
-    return Ok(matchesSchema(data, schema));
+    return ok(matchesSchema(data, schema));
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'JSON_SCHEMA_VALIDATION_ERROR',
         `Schema validation error: ${error instanceof Error ? error.message : String(error)}`,

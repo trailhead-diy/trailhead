@@ -40,8 +40,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.parseString(jsonData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual({
           name: 'John',
           age: 30,
@@ -60,8 +60,8 @@ describe('JSON Processor', () => {
 
       const result = processor.parseString(json5Data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.name).toBe('John');
         expect(result.value.trailing).toBe('comma');
       }
@@ -78,7 +78,7 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor({ errorTolerant: true });
       const result = processor.parseString(malformedJson);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should fail on malformed JSON without error tolerance', () => {
@@ -92,7 +92,7 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor({ errorTolerant: false, allowTrailingCommas: false });
       const result = processor.parseString(malformedJson);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
 
     it('should use custom reviver function', () => {
@@ -107,8 +107,8 @@ describe('JSON Processor', () => {
 
       const result = processor.parseString(jsonData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.age).toBe(60); // 30 * 2
       }
     });
@@ -119,8 +119,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.parseEnhanced(json5Data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.name).toBe('John');
       }
     });
@@ -138,8 +138,8 @@ describe('JSON Processor', () => {
 
       const result = processor.stringify(data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('"name":"John"');
         expect(result.value).toContain('"age":30');
       }
@@ -154,8 +154,8 @@ describe('JSON Processor', () => {
       const data = { name: 'John', age: 30 };
       const result = processor.stringify(data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('name:');
       }
     });
@@ -168,8 +168,8 @@ describe('JSON Processor', () => {
 
       const result = processor.stringifyFormatted(data, { indent: 4 });
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('    "name": "John"');
       }
     });
@@ -180,8 +180,8 @@ describe('JSON Processor', () => {
 
       const result = processor.stringifyFormatted(data, { sortKeys: true });
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         const lines = result.value.split('\n');
         const appleIndex = lines.findIndex(line => line.includes('apple'));
         const bananaIndex = lines.findIndex(line => line.includes('banana'));
@@ -198,8 +198,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.validateJSON(jsonData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -208,8 +208,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.validateJSON(json5Data);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -219,7 +219,7 @@ describe('JSON Processor', () => {
       const invalidJson = '{ invalid json }';
       const result = processor.validateJSON(invalidJson);
 
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -228,8 +228,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.minify(jsonData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).not.toContain('  ');
         expect(result.value).not.toContain('\n');
         expect(result.value).toContain('{"name":"John"');
@@ -242,8 +242,8 @@ describe('JSON Processor', () => {
       const processor = createJSONProcessor();
       const result = processor.validate(jsonData);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -443,8 +443,8 @@ describe('JSON Utils', () => {
       const obj = { name: 'John', age: 30 };
       const result = jsonUtils.prettify(obj);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('  "name": "John"');
         expect(result.value).toContain('  "age": 30');
       }
@@ -454,8 +454,8 @@ describe('JSON Utils', () => {
       const obj = { name: 'John' };
       const result = jsonUtils.prettify(obj, 4);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toContain('    "name": "John"');
       }
     });
@@ -466,8 +466,8 @@ describe('JSON Utils', () => {
       const obj = { name: 'John', age: 30 };
       const result = jsonUtils.compact(obj);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe('{"name":"John","age":30}');
       }
     });
@@ -483,8 +483,8 @@ describe('JSON Utils', () => {
 
       const result = jsonUtils.validateSchema(data, schema);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(true);
       }
     });
@@ -498,8 +498,8 @@ describe('JSON Utils', () => {
 
       const result = jsonUtils.validateSchema(data, schema);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(false);
       }
     });

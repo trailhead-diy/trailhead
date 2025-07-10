@@ -1,6 +1,7 @@
 import type { Result } from '../core/errors/types.js';
 import type { CLIError } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import { ok, err } from 'neverthrow';
+import { createError } from '../core/errors/factory.js';
 import type { DataConverter, DataProcessingOptions, FormatDetectionResult } from './types.js';
 import { createCSVProcessor } from './csv.js';
 import { createJSONProcessor } from './json.js';
@@ -18,21 +19,21 @@ const parseData = async (
   switch (format) {
     case 'csv':
       if (typeof data !== 'string') {
-        return Err(createError('INVALID_DATA_TYPE', 'CSV parsing requires string data'));
+        return err(createError('INVALID_DATA_TYPE', 'CSV parsing requires string data'));
       }
       return createCSVProcessor().parseString(data, options);
     case 'json':
       if (typeof data !== 'string') {
-        return Err(createError('INVALID_DATA_TYPE', 'JSON parsing requires string data'));
+        return err(createError('INVALID_DATA_TYPE', 'JSON parsing requires string data'));
       }
       return createJSONProcessor().parseString(data, options);
     case 'excel':
       if (!(data instanceof Buffer)) {
-        return Err(createError('INVALID_DATA_TYPE', 'Excel parsing requires Buffer data'));
+        return err(createError('INVALID_DATA_TYPE', 'Excel parsing requires Buffer data'));
       }
       return createExcelProcessor().parseBuffer(data, options);
     default:
-      return Err(createError('UNSUPPORTED_FORMAT', `Unsupported source format: ${format}`));
+      return err(createError('UNSUPPORTED_FORMAT', `Unsupported source format: ${format}`));
   }
 };
 
@@ -49,7 +50,7 @@ const serializeData = async (
     case 'excel':
       return createExcelProcessor().stringify(data, options);
     default:
-      return Err(createError('UNSUPPORTED_FORMAT', `Unsupported target format: ${format}`));
+      return err(createError('UNSUPPORTED_FORMAT', `Unsupported target format: ${format}`));
   }
 };
 
@@ -60,11 +61,11 @@ const convert = async (
   options?: DataProcessingOptions
 ): Promise<Result<string | Buffer, CLIError>> => {
   if (fromFormat === toFormat) {
-    return Ok(data);
+    return ok(data);
   }
 
   const parseResult = await parseData(data, fromFormat, options);
-  if (!parseResult.success) {
+  if (parseResult.isErr()) {
     return parseResult;
   }
 
@@ -77,21 +78,21 @@ const autoConvert = async (
   options?: DataProcessingOptions
 ): Promise<Result<string | Buffer, CLIError>> => {
   const detectionResult = detectFormat(data);
-  if (!detectionResult.success) {
-    return detectionResult;
+  if (detectionResult.isErr()) {
+    return err(detectionResult.error);
   }
 
   const fromFormat = detectionResult.value.format;
   if (fromFormat === 'unknown') {
-    return Err(createError('UNKNOWN_FORMAT', 'Could not detect source data format'));
+    return err(createError('UNKNOWN_FORMAT', 'Could not detect source data format'));
   }
 
   if (fromFormat === 'excel' && typeof data === 'string') {
-    return Err(createError('INVALID_DATA_TYPE', 'Excel format requires Buffer data'));
+    return err(createError('INVALID_DATA_TYPE', 'Excel format requires Buffer data'));
   }
 
   if ((fromFormat === 'csv' || fromFormat === 'json') && !(typeof data === 'string')) {
-    return Err(createError('INVALID_DATA_TYPE', 'CSV/JSON formats require string data'));
+    return err(createError('INVALID_DATA_TYPE', 'CSV/JSON formats require string data'));
   }
 
   return convert(data, fromFormat as any, toFormat, options);
@@ -170,7 +171,7 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
   if (data instanceof Buffer) {
     const excelResult = isLikelyExcel(data);
     if (excelResult.isExcel) {
-      return Ok({
+      return ok({
         format: 'excel',
         confidence: excelResult.confidence,
         details: {
@@ -180,7 +181,7 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
       });
     }
 
-    return Ok({
+    return ok({
       format: 'unknown',
       confidence: 0,
     });
@@ -190,7 +191,7 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
   const trimmed = (data as string).trim();
 
   if (!trimmed) {
-    return Ok({
+    return ok({
       format: 'unknown',
       confidence: 0,
     });
@@ -198,7 +199,7 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
 
   // Check JSON first (more specific)
   if (isLikelyJSON(trimmed)) {
-    return Ok({
+    return ok({
       format: 'json',
       confidence: 0.95,
       details: {
@@ -213,8 +214,8 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
     const csvProcessor = createCSVProcessor();
     const formatResult = csvProcessor.detectFormat(trimmed);
 
-    if (formatResult.success) {
-      return Ok({
+    if (formatResult.isOk()) {
+      return ok({
         format: 'csv',
         confidence: csvResult.confidence,
         details: {
@@ -225,7 +226,7 @@ export function detectFormat(data: string | Buffer): Result<FormatDetectionResul
     }
   }
 
-  return Ok({
+  return ok({
     format: 'unknown',
     confidence: 0,
   });
@@ -244,12 +245,12 @@ const csvToJson = async (
 ): Promise<Result<string, CLIError>> => {
   const converter = createDataConverter();
   const result = await converter.convert(csv, 'csv', 'json', options);
-  if (result.success && typeof result.value === 'string') {
-    return Ok(result.value);
+  if (result.isOk() && typeof result.value === 'string') {
+    return ok(result.value);
   }
-  return result.success
-    ? Err(createError('CONVERSION_ERROR', 'Expected string result for JSON output'))
-    : result;
+  return result.isOk()
+    ? err(createError('CONVERSION_ERROR', 'Expected string result for JSON output'))
+    : err(result.error);
 };
 
 const jsonToCsv = async (
@@ -258,12 +259,12 @@ const jsonToCsv = async (
 ): Promise<Result<string, CLIError>> => {
   const converter = createDataConverter();
   const result = await converter.convert(json, 'json', 'csv', options);
-  if (result.success && typeof result.value === 'string') {
-    return Ok(result.value);
+  if (result.isOk() && typeof result.value === 'string') {
+    return ok(result.value);
   }
-  return result.success
-    ? Err(createError('CONVERSION_ERROR', 'Expected string result for CSV output'))
-    : result;
+  return result.isOk()
+    ? err(createError('CONVERSION_ERROR', 'Expected string result for CSV output'))
+    : err(result.error);
 };
 
 const excelToCsv = async (
@@ -272,12 +273,12 @@ const excelToCsv = async (
 ): Promise<Result<string, CLIError>> => {
   const converter = createDataConverter();
   const result = await converter.convert(excel, 'excel', 'csv', options);
-  if (result.success && typeof result.value === 'string') {
-    return Ok(result.value);
+  if (result.isOk() && typeof result.value === 'string') {
+    return ok(result.value);
   }
-  return result.success
-    ? Err(createError('CONVERSION_ERROR', 'Expected string result for CSV output'))
-    : result;
+  return result.isOk()
+    ? err(createError('CONVERSION_ERROR', 'Expected string result for CSV output'))
+    : err(result.error);
 };
 
 const csvToExcel = async (
@@ -286,12 +287,12 @@ const csvToExcel = async (
 ): Promise<Result<Buffer, CLIError>> => {
   const converter = createDataConverter();
   const result = await converter.convert(csv, 'csv', 'excel', options);
-  if (result.success && result.value instanceof Buffer) {
-    return Ok(result.value);
+  if (result.isOk() && result.value instanceof Buffer) {
+    return ok(result.value);
   }
-  return result.success
-    ? Err(createError('CONVERSION_ERROR', 'Expected Buffer result for Excel output'))
-    : result;
+  return result.isOk()
+    ? err(createError('CONVERSION_ERROR', 'Expected Buffer result for Excel output'))
+    : err(result.error);
 };
 
 const autoConvertTo = async (
@@ -315,7 +316,7 @@ const batchConvert = async (
 
   for (const data of dataList) {
     const result = await converter.convert(data, fromFormat, toFormat, options);
-    if (result.success) {
+    if (result.isOk()) {
       results.push(result.value);
     } else {
       errors.push(result.error);
@@ -323,10 +324,10 @@ const batchConvert = async (
   }
 
   if (errors.length > 0) {
-    return { success: false, error: errors };
+    return err(errors);
   }
 
-  return Ok(results);
+  return ok(results);
 };
 
 export const conversionUtils = {

@@ -2,7 +2,8 @@ import ExcelJS from 'exceljs';
 import { writeFile } from 'fs/promises';
 import type { Result } from '../core/errors/types.js';
 import type { CLIError } from '../core/errors/types.js';
-import { Ok, Err, createError, fileSystemError } from '../core/errors/factory.js';
+import { ok, err } from 'neverthrow';
+import { createError, fileSystemError } from '../core/errors/factory.js';
 import type { ExcelProcessor, ExcelProcessingOptions } from './types.js';
 
 const defaultOptions: ExcelProcessingOptions = {
@@ -27,7 +28,7 @@ const parseBuffer = (
   _options?: ExcelProcessingOptions
 ): Result<any[], CLIError> => {
   // Direct buffer parsing not currently supported - would need async implementation
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -51,7 +52,7 @@ const parseFile = async (
     if (opts.worksheetName) {
       const ws = workbook.getWorksheet(opts.worksheetName);
       if (!ws) {
-        return Err(
+        return err(
           createError('EXCEL_WORKSHEET_NOT_FOUND', `Worksheet '${opts.worksheetName}' not found`, {
             recoverable: true,
           })
@@ -62,7 +63,7 @@ const parseFile = async (
       const wsIndex = opts.worksheetIndex ?? 0;
       worksheet = workbook.worksheets[wsIndex];
       if (!worksheet) {
-        return Err(
+        return err(
           createError('EXCEL_WORKSHEET_NOT_FOUND', `Worksheet at index ${wsIndex} not found`, {
             recoverable: true,
           })
@@ -137,9 +138,9 @@ const parseFile = async (
       rows.push(rowData);
     });
 
-    return Ok(rows);
+    return ok(rows);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'read',
         filePath,
@@ -155,7 +156,7 @@ const parseWorksheet = (
   _worksheetName: string,
   _options?: ExcelProcessingOptions
 ): Result<any[], CLIError> => {
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -169,7 +170,7 @@ const parseWorksheetByIndex = (
   _worksheetIndex: number,
   _options?: ExcelProcessingOptions
 ): Result<any[], CLIError> => {
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -191,7 +192,7 @@ const stringify = async (
 
     if (data.length === 0) {
       const buffer = await workbook.xlsx.writeBuffer();
-      return Ok(buffer as Buffer);
+      return ok(buffer as Buffer);
     }
 
     // Add header row if specified
@@ -225,9 +226,9 @@ const stringify = async (
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return Ok(buffer as Buffer);
+    return ok(buffer as Buffer);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_SERIALIZE_ERROR',
         `Excel serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -244,15 +245,15 @@ const writeExcelFile = async (
 ): Promise<Result<void, CLIError>> => {
   const stringifyResult = await stringify(data, options);
 
-  if (!stringifyResult.success) {
-    return stringifyResult;
+  if (stringifyResult.isErr()) {
+    return err(stringifyResult.error);
   }
 
   try {
     await writeFile(filePath, stringifyResult.value);
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       fileSystemError(
         'write',
         filePath,
@@ -278,9 +279,9 @@ const validate = (buffer: Buffer): Result<boolean, CLIError> => {
       signature[2] === 0x11 &&
       signature[3] === 0xe0;
 
-    return Ok(isXLSX || isXLS);
+    return ok(isXLSX || isXLS);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_VALIDATION_ERROR',
         `Excel validation error: ${error instanceof Error ? error.message : String(error)}`,
@@ -294,7 +295,7 @@ const parseToObjects = (
   _buffer: Buffer,
   _options?: ExcelProcessingOptions
 ): Result<Record<string, any>[], CLIError> => {
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -307,7 +308,7 @@ const parseToArrays = (
   _buffer: Buffer,
   _options?: ExcelProcessingOptions
 ): Result<any[][], CLIError> => {
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -329,7 +330,7 @@ const fromObjects = async (
 
     if (objects.length === 0) {
       const buffer = await workbook.xlsx.writeBuffer();
-      return Ok(buffer as Buffer);
+      return ok(buffer as Buffer);
     }
 
     // Get headers from the first object
@@ -358,9 +359,9 @@ const fromObjects = async (
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return Ok(buffer as Buffer);
+    return ok(buffer as Buffer);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_SERIALIZE_ERROR',
         `Excel serialization error: ${error instanceof Error ? error.message : String(error)}`,
@@ -384,20 +385,20 @@ const detectFormat = (
     // This is a simplified detection - in practice, we'd need to actually parse the file
     const isValid = validate(buffer);
 
-    if (!isValid.success || !isValid.value) {
-      return Err(
+    if (isValid.isErr() || !isValid.value) {
+      return err(
         createError('EXCEL_FORMAT_DETECTION_ERROR', 'Not a valid Excel file', { recoverable: true })
       );
     }
 
     // For now, return basic info - actual implementation would parse the file
-    return Ok({
+    return ok({
       worksheetNames: ['Sheet1'], // Would need actual parsing to get real names
       worksheetCount: 1,
       hasData: true,
     });
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_FORMAT_DETECTION_ERROR',
         `Excel format detection error: ${error instanceof Error ? error.message : String(error)}`,
@@ -408,7 +409,7 @@ const detectFormat = (
 };
 
 const getWorksheetNames = (_buffer: Buffer): Result<string[], CLIError> => {
-  return Err(
+  return err(
     createError(
       'EXCEL_BUFFER_PARSE_ERROR',
       'Direct buffer parsing not supported. Use parseFile for Excel files.',
@@ -441,9 +442,9 @@ const createWorkbook = async (
     }
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return Ok(buffer as Buffer);
+    return ok(buffer as Buffer);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_WORKBOOK_CREATION_ERROR',
         `Excel workbook creation error: ${error instanceof Error ? error.message : String(error)}`,
@@ -496,13 +497,13 @@ const convertRange = async (
     const processor = createExcelProcessor({ range });
     const parseResult = await processor.parseFile(filePath);
 
-    if (!parseResult.success) {
-      return parseResult;
+    if (parseResult.isErr()) {
+      return err(parseResult.error);
     }
 
     return processor.writeFile(parseResult.value, outputPath);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_RANGE_CONVERSION_ERROR',
         `Excel range conversion error: ${error instanceof Error ? error.message : String(error)}`,
@@ -522,8 +523,8 @@ const mergeWorksheets = async (
 
     for (let i = 0; i < worksheetPaths.length; i++) {
       const parseResult = await processor.parseFile(worksheetPaths[i]);
-      if (!parseResult.success) {
-        return parseResult;
+      if (parseResult.isErr()) {
+        return err(parseResult.error);
       }
 
       worksheets.push({
@@ -533,15 +534,15 @@ const mergeWorksheets = async (
     }
 
     const workbookResult = await processor.createWorkbook(worksheets);
-    if (!workbookResult.success) {
-      return workbookResult;
+    if (workbookResult.isErr()) {
+      return err(workbookResult.error);
     }
 
     try {
       await writeFile(outputPath, workbookResult.value);
-      return Ok(undefined);
+      return ok(undefined);
     } catch (error) {
-      return Err(
+      return err(
         fileSystemError(
           'write',
           outputPath,
@@ -551,7 +552,7 @@ const mergeWorksheets = async (
       );
     }
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_MERGE_ERROR',
         `Excel merge error: ${error instanceof Error ? error.message : String(error)}`,
@@ -587,16 +588,16 @@ const splitWorkbook = async (
       const outputPath = `${outputDir}/${worksheet.name || `Sheet${i + 1}`}.xlsx`;
       const writeResult = await processor.writeFile(rows, outputPath);
 
-      if (!writeResult.success) {
-        return writeResult;
+      if (writeResult.isErr()) {
+        return err(writeResult.error);
       }
 
       outputFiles.push(outputPath);
     }
 
-    return Ok(outputFiles);
+    return ok(outputFiles);
   } catch (error) {
-    return Err(
+    return err(
       createError(
         'EXCEL_SPLIT_ERROR',
         `Excel split error: ${error instanceof Error ? error.message : String(error)}`,

@@ -4,10 +4,7 @@ import { glob } from 'glob';
 
 // Import CLI framework types for consistent error handling
 import type { Result, CLIError } from '../core/index.js';
-import { createError } from '../core/index.js';
-
-const Ok = <T>(value: T): Result<T, never> => ({ success: true, value });
-const Err = <E>(error: E): Result<never, E> => ({ success: false, error });
+import { createError, ok, err } from '../core/index.js';
 
 export interface FileComparison {
   readonly sourceExists: boolean;
@@ -40,9 +37,9 @@ export async function findFiles(
       ignore: [...defaultIgnores, ...ignorePatterns],
     });
 
-    return Ok(files);
+    return ok(files);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to find files', {
         details: `Pattern: ${pattern} in ${directory}`,
         cause: error instanceof Error ? error : new Error(String(error)),
@@ -57,9 +54,9 @@ export async function findFiles(
 export async function readFile(filePath: string): Promise<Result<string, CLIError>> {
   try {
     const content = await fs.readFile(filePath, 'utf8');
-    return Ok(content);
+    return ok(content);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to read file', {
         details: `Path: ${filePath}`,
         cause: error instanceof Error ? error : new Error(`Failed to read ${filePath}`),
@@ -77,9 +74,9 @@ export async function writeFile(
 ): Promise<Result<void, CLIError>> {
   try {
     await fs.writeFile(filePath, content, 'utf8');
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to write file', {
         details: `Path: ${filePath}`,
         cause: error instanceof Error ? error : new Error(`Failed to write ${filePath}`),
@@ -106,14 +103,14 @@ export async function fileExists(filePath: string): Promise<boolean> {
 export async function pathExists(filePath: string): Promise<Result<boolean, CLIError>> {
   try {
     await fs.access(filePath);
-    return Ok(true);
+    return ok(true);
   } catch (error) {
     // If access fails with ENOENT, the file doesn't exist
     if ((error as any).code === 'ENOENT') {
-      return Ok(false);
+      return ok(false);
     }
     // Other errors are actual filesystem errors
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to check path existence', {
         details: `Path: ${filePath}`,
         cause:
@@ -129,9 +126,9 @@ export async function pathExists(filePath: string): Promise<Result<boolean, CLIE
 export async function ensureDirectory(dirPath: string): Promise<Result<void, CLIError>> {
   try {
     await fs.mkdir(dirPath, { recursive: true });
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to create directory', {
         details: `Path: ${dirPath}`,
         cause: error instanceof Error ? error : new Error(`Failed to create directory ${dirPath}`),
@@ -152,7 +149,7 @@ export async function compareFiles(
     const destExists = await fileExists(destPath);
 
     if (!sourceExists) {
-      return Ok({
+      return ok({
         sourceExists: false,
         destExists,
         identical: false,
@@ -160,14 +157,14 @@ export async function compareFiles(
     }
 
     const sourceResult = await readFile(sourcePath);
-    if (!sourceResult.success) {
-      return Err(sourceResult.error);
+    if (sourceResult.isErr()) {
+      return err(sourceResult.error);
     }
 
     const sourceContent = sourceResult.value;
 
     if (!destExists) {
-      return Ok({
+      return ok({
         sourceExists: true,
         destExists: false,
         identical: false,
@@ -176,14 +173,14 @@ export async function compareFiles(
     }
 
     const destResult = await readFile(destPath);
-    if (!destResult.success) {
-      return Err(destResult.error);
+    if (destResult.isErr()) {
+      return err(destResult.error);
     }
 
     const destContent = destResult.value;
     const identical = sourceContent === destContent;
 
-    return Ok({
+    return ok({
       sourceExists: true,
       destExists: true,
       identical,
@@ -191,7 +188,7 @@ export async function compareFiles(
       destContent,
     });
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to compare files', {
         details: `Source: ${sourcePath}, Destination: ${destPath}`,
         cause:

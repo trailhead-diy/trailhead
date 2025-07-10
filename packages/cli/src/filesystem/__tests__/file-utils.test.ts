@@ -58,8 +58,8 @@ describe('File Utils', () => {
 
       const result = await findFiles('src', '*.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual(expectedFiles);
       }
       expect(mockPath.join).toHaveBeenCalledWith('src', '*.ts');
@@ -74,7 +74,7 @@ describe('File Utils', () => {
 
       const result = await findFiles('src', '*.ts', ['**/*.test.ts']);
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(mockGlob).toHaveBeenCalledWith('src/*.ts', {
         ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.ts'],
       });
@@ -86,8 +86,8 @@ describe('File Utils', () => {
 
       const result = await findFiles('src', '*.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to find files');
         expect(result.error.cause).toBe(error);
@@ -99,8 +99,8 @@ describe('File Utils', () => {
 
       const result = await findFiles('src', '*.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to find files');
         expect((result.error.cause as Error).message).toBe('string error');
@@ -115,8 +115,8 @@ describe('File Utils', () => {
 
       const result = await readFile('test.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe(content);
       }
       expect(mockFs.readFile).toHaveBeenCalledWith('test.ts', 'utf8');
@@ -128,8 +128,8 @@ describe('File Utils', () => {
 
       const result = await readFile('missing.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect(result.error.cause).toBe(error);
@@ -141,8 +141,8 @@ describe('File Utils', () => {
 
       const result = await readFile('restricted.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect((result.error.cause as Error).message).toBe('Failed to read restricted.ts');
@@ -156,7 +156,7 @@ describe('File Utils', () => {
 
       const result = await writeFile('test.ts', 'content');
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(mockFs.writeFile).toHaveBeenCalledWith('test.ts', 'content', 'utf8');
     });
 
@@ -166,8 +166,8 @@ describe('File Utils', () => {
 
       const result = await writeFile('readonly.ts', 'content');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to write file');
         expect(result.error.cause).toBe(error);
@@ -179,8 +179,8 @@ describe('File Utils', () => {
 
       const result = await writeFile('test.ts', 'content');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to write file');
         expect((result.error.cause as Error).message).toBe('Failed to write test.ts');
@@ -221,7 +221,7 @@ describe('File Utils', () => {
 
       const result = await ensureDirectory('new-dir');
 
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
       expect(mockFs.mkdir).toHaveBeenCalledWith('new-dir', { recursive: true });
     });
 
@@ -231,8 +231,8 @@ describe('File Utils', () => {
 
       const result = await ensureDirectory('restricted-dir');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to create directory');
         expect(result.error.cause).toBe(error);
@@ -244,8 +244,8 @@ describe('File Utils', () => {
 
       const result = await ensureDirectory('test-dir');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to create directory');
         expect((result.error.cause as Error).message).toBe('Failed to create directory test-dir');
@@ -260,8 +260,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('file1.ts', 'file2.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual({
           sourceExists: true,
           destExists: true,
@@ -278,8 +278,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('file1.ts', 'file2.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual({
           sourceExists: true,
           destExists: true,
@@ -297,8 +297,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('missing.ts', 'existing.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual({
           sourceExists: false,
           destExists: true,
@@ -315,8 +315,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('existing.ts', 'missing.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toEqual({
           sourceExists: true,
           destExists: false,
@@ -333,8 +333,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('error.ts', 'file2.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect(result.error.cause).toBe(readError);
@@ -348,8 +348,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('file1.ts', 'error.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect(result.error.cause).toBe(readError);
@@ -363,8 +363,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('', '');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.sourceExists).toBe(true);
         expect(result.value.destExists).toBe(true);
         expect(result.value.identical).toBe(true);
@@ -526,8 +526,8 @@ describe('File Utils', () => {
 
       const result = await readFile('test.ts');
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value).toBe('content');
       }
     });
@@ -538,8 +538,8 @@ describe('File Utils', () => {
 
       const result = await readFile('test.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect(result.error.cause).toBe(error);
@@ -557,13 +557,13 @@ describe('File Utils', () => {
 
       // Process: read, modify, ensure directory, write
       const readResult = await readFile('input.ts');
-      expect(readResult.success).toBe(true);
+      expect(readResult.isOk()).toBe(true);
 
       const ensureResult = await ensureDirectory('output');
-      expect(ensureResult.success).toBe(true);
+      expect(ensureResult.isOk()).toBe(true);
 
       const writeResult = await writeFile('output/modified.ts', 'modified content');
-      expect(writeResult.success).toBe(true);
+      expect(writeResult.isOk()).toBe(true);
 
       // Verify stats tracking
       let stats = createFileStats();
@@ -584,8 +584,8 @@ describe('File Utils', () => {
 
       const result = await compareFiles('source.ts', 'dest.ts');
 
-      expect(result.success).toBe(false);
-      if (!result.success) {
+      expect(result.isOk()).toBe(false);
+      if (result.isErr()) {
         expect(result.error.code).toBe('FILESYSTEM_ERROR');
         expect(result.error.message).toBe('Failed to read file');
         expect((result.error.cause as Error).message).toBe('Destination read failed');

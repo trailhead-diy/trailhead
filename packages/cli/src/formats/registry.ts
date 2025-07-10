@@ -3,8 +3,9 @@
  */
 
 import { supportedExtensions, supportedMimeTypes } from 'file-type';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result, CLIError } from '../core/errors/types.js';
+import { ok, err } from '../core/errors/utils.js';
+import { createError } from '../core/errors/factory.js';
 
 /**
  * Get all supported file extensions
@@ -38,9 +39,12 @@ export function isMimeTypeSupported(mimeType: string): boolean {
 /**
  * Validate format against supported formats
  */
-export function validateFormat(format: string, allowedFormats?: string[]): Result<string> {
+export function validateFormat(
+  format: string,
+  allowedFormats?: string[]
+): Result<string, CLIError> {
   if (!isExtensionSupported(format)) {
-    return Err(
+    return err(
       createError(
         'UNSUPPORTED_FORMAT',
         `Format '${format}' is not supported by file-type library`,
@@ -53,7 +57,7 @@ export function validateFormat(format: string, allowedFormats?: string[]): Resul
   }
 
   if (allowedFormats && !allowedFormats.includes(format)) {
-    return Err(
+    return err(
       createError(
         'FORMAT_NOT_ALLOWED',
         `Format '${format}' is not in allowed formats: ${allowedFormats.join(', ')}`,
@@ -62,17 +66,17 @@ export function validateFormat(format: string, allowedFormats?: string[]): Resul
     );
   }
 
-  return Ok(format);
+  return ok(format);
 }
 
 /**
  * Get MIME type for extension
  */
-export function getMimeTypeForExtension(extension: string): Result<string> {
+export function getMimeTypeForExtension(extension: string): Result<string, CLIError> {
   // This would require mapping from file-type's internal registry
   // For now, we'd need to detect a sample file or use a lookup table
   if (!isExtensionSupported(extension)) {
-    return Err(
+    return err(
       createError('UNSUPPORTED_EXTENSION', `Extension '${extension}' is not supported`, {
         recoverable: true,
       })
@@ -81,7 +85,7 @@ export function getMimeTypeForExtension(extension: string): Result<string> {
 
   // Since file-type doesn't expose extension->mime mapping directly,
   // we'd need to maintain a lookup or use detection
-  return Err(
+  return err(
     createError(
       'MIME_LOOKUP_NOT_AVAILABLE',
       'Direct MIME type lookup not available, use detection instead',
