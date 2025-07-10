@@ -38,10 +38,10 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, testContext);
 
-    if (!result.success) {
+    if (!result.isOk()) {
       console.error('Generator failed:', result.error.message);
     }
-    expect(result.success).toBe(true);
+    expect(result.isOk()).toBe(true);
   });
 
   it('should handle template processing errors', async () => {
@@ -58,7 +58,7 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, testContext);
 
-    expect(result.success).toBe(false);
+    expect(result.isOk()).toBe(false);
     expect(result.error.message).toContain('Failed to create project directory');
   });
 
@@ -78,7 +78,7 @@ describe('Generator Integration', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     }
   });
 
@@ -98,7 +98,7 @@ describe('Generator Integration', () => {
       };
 
       const result = await generateProject(config, testContext);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     }
   });
 
@@ -116,6 +116,6 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(invalidConfig, testContext);
 
-    expect(result.success).toBe(false);
+    expect(result.isOk()).toBe(false);
   });
 });
