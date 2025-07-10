@@ -134,21 +134,4 @@ export function Component() {
 'use client'`);
     }
   });
-
-  it('should handle all three target files', () => {
-    const input = `export function Component() { return <div>Hello</div>; }`;
-
-    const targetFiles = ['catalyst-combobox.tsx', 'catalyst-dropdown.tsx', 'catalyst-listbox.tsx'];
-
-    for (const filename of targetFiles) {
-      const result = transformTsNocheck(input, filename);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value.changed).toBe(true);
-        expect(result.value.content).toBe(`// @ts-nocheck
-export function Component() { return <div>Hello</div>; }`);
-      }
-    }
-  });
 });

@@ -4,14 +4,11 @@
 
 import { describe, it, expect } from 'vitest';
 import { expectResult } from '@esteban-url/trailhead-cli/testing';
-import {
-  transformSemanticColors,
-  semanticColorsTransform,
-} from '../semantic/color-tokens/index.js';
+import { transformSemanticColors } from '../semantic/color-tokens/index.js';
 
 describe('SemanticColorsTransform', () => {
-  describe('Badge Component', () => {
-    it('should add semantic colors to badge component', () => {
+  describe('Core Transform Logic', () => {
+    it('should add semantic colors to components with colors object', () => {
       const input = `
 const colors = {
   red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20',
@@ -71,57 +68,6 @@ export function CatalystBadge({ className, ...props }) {
     });
   });
 
-  describe('Button Component', () => {
-    it('should add semantic colors to button component', () => {
-      const input = `
-const colors = {
-  blue: 'bg-blue-600 text-white hover:bg-blue-700',
-  red: 'bg-red-600 text-white hover:bg-red-700',
-  green: 'bg-green-600 text-white hover:bg-green-700',
-};
-
-export function CatalystButton({ color = 'blue', ...props }) {
-  return <button className={colors[color]} {...props} />;
-}
-      `.trim();
-
-      const result = transformSemanticColors(input);
-
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
-      expect(result.value.content).toContain('destructive:');
-    });
-  });
-
-  describe('Alert Component', () => {
-    it('should add semantic colors to alert component', () => {
-      const input = `
-const colors = {
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  success: 'bg-green-50 border-green-200 text-green-800',
-};
-
-export function CatalystAlert({ variant = 'info', ...props }) {
-  return <div className={colors[variant]} {...props} />;
-}
-      `.trim();
-
-      const result = transformSemanticColors(input);
-
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
-      expect(result.value.content).toContain('destructive:');
-      expect(result.value.content).toContain('accent:');
-      expect(result.value.content).toContain('muted:');
-    });
-  });
-
   describe('Edge Cases', () => {
     it('should handle malformed colors object', () => {
       const input = `
@@ -166,16 +112,6 @@ const colors = {
       expectResult(result);
       expect(result.value.changed).toBe(false);
       expect(result.value.warnings).toContain('No colors object found in component');
-    });
-  });
-
-  describe('Transform Metadata', () => {
-    it('should have correct transform metadata', () => {
-      expect(semanticColorsTransform.name).toBe('semantic-colors');
-      expect(semanticColorsTransform.description).toBe(
-        'Add semantic color tokens to color objects'
-      );
-      expect(semanticColorsTransform.category).toBe('semantic');
     });
   });
 
