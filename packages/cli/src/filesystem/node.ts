@@ -10,65 +10,49 @@ import type {
 } from './types.js';
 import { Ok, Err } from '../core/errors/index.js';
 
-export function createNodeFileSystem(): FileSystem {
-  const createError = (operation: string, filePath: string, error: any): FileSystemError => {
-    // Map fs-extra/Node.js error codes to more descriptive messages
-    const errorCode = error.code || 'FS_ERROR';
-    let message: string;
-    let recoverable: boolean;
+const createError = (operation: string, filePath: string, error: any): FileSystemError => {
+  // Map fs-extra/Node.js error codes to more descriptive messages
+  const errorCode = error.code || 'FS_ERROR';
+  let message: string;
+  let recoverable: boolean;
 
-    switch (errorCode) {
-      case 'ENOENT':
-        message = `${operation} failed: File or directory '${filePath}' does not exist`;
-        recoverable = true;
-        break;
-      case 'EEXIST':
-        message = `${operation} failed: File or directory '${filePath}' already exists`;
-        recoverable = true;
-        break;
-      case 'EACCES':
-      case 'EPERM':
-        message = `${operation} failed: Permission denied for '${filePath}'`;
-        recoverable = false;
-        break;
-      case 'EISDIR':
-        message = `${operation} failed: Expected file but '${filePath}' is a directory`;
-        recoverable = false;
-        break;
-      case 'ENOTDIR':
-        message = `${operation} failed: Expected directory but '${filePath}' is a file`;
-        recoverable = false;
-        break;
-      case 'ENOTEMPTY':
-        message = `${operation} failed: Directory '${filePath}' is not empty`;
-        recoverable = true;
-        break;
-      case 'EMFILE':
-      case 'ENFILE':
-        message = `${operation} failed: Too many open files (system limit reached)`;
-        recoverable = true; // Can be retried after closing files
-        break;
-      case 'ENOSPC':
-        message = `${operation} failed: No space left on device for '${filePath}'`;
-        recoverable = false;
-        break;
-      case 'EROFS':
-        message = `${operation} failed: File system is read-only for '${filePath}'`;
-        recoverable = false;
-        break;
-      default:
-        message = `${operation} failed for '${filePath}': ${error.message || 'Unknown error'}`;
-        recoverable = ['ENOENT', 'EAGAIN', 'EBUSY'].includes(errorCode);
-    }
+  switch (errorCode) {
+    case 'ENOENT':
+      message = `${operation} failed: File or directory '${filePath}' does not exist`;
+      recoverable = true;
+      break;
+    case 'EEXIST':
+      message = `${operation} failed: File or directory '${filePath}' already exists`;
+      recoverable = true;
+      break;
+    case 'EACCES':
+      message = `${operation} failed: Permission denied for '${filePath}'`;
+      recoverable = false;
+      break;
+    case 'EISDIR':
+      message = `${operation} failed: '${filePath}' is a directory`;
+      recoverable = true;
+      break;
+    case 'ENOTDIR':
+      message = `${operation} failed: Part of path '${filePath}' is not a directory`;
+      recoverable = true;
+      break;
+    default:
+      message = `${operation} failed: ${error.message || error}`;
+      recoverable = false;
+  }
 
-    return {
-      code: errorCode,
-      message,
-      path: filePath,
-      recoverable,
-    };
+  return {
+    code: errorCode,
+    message,
+    operation,
+    path: filePath,
+    recoverable,
+    originalError: error,
   };
+};
 
+export function createNodeFileSystem(): FileSystem {
   return {
     async access(filePath: string, mode: number = constants.F_OK) {
       try {

@@ -51,7 +51,7 @@ export const getCommand = createCommand({
 
     // Validate URL
     try {
-      new URL(url);
+      const _validatedUrl = new URL(url);
     } catch {
       return Err(new Error('Invalid URL provided'));
     }

@@ -1,5 +1,6 @@
 // Re-export listr2 with enhanced TypeScript support
 import { Listr } from 'listr2';
+import type { ListrTask, ListrTaskWrapper } from 'listr2';
 export { Listr } from 'listr2';
 export type {
   ListrTask,
@@ -10,60 +11,24 @@ export type {
   ListrTaskWrapper,
 } from 'listr2';
 
-// Enhanced task creation types - addresses issue #112 item 1
-export type TaskHandler<T> = (ctx: T) => Promise<void> | void;
+// Enhanced type helpers for better developer experience
+export type TypedTask<T = any> = {
+  title: string;
+  task: (ctx: T, task: ListrTaskWrapper<T, any, any>) => void | Promise<void> | any;
+  enabled?: boolean | ((ctx: T) => boolean);
+  skip?: boolean | string | ((ctx: T) => boolean | string | Promise<boolean | string>);
+  retry?: number;
+  rollback?: (ctx: T, task: ListrTaskWrapper<T, any, any>) => void | Promise<void> | any;
+};
 
-// Simple task creation helpers (backward compatible)
-export function createTask<T = any>(
-  title: string,
-  task: (ctx: T, task: any) => Promise<any> | any,
-  options?: {
-    enabled?: boolean | ((ctx: T) => boolean);
-    skip?: boolean | string | ((ctx: T) => boolean | string | Promise<boolean | string>);
-    retry?: number;
-    rollback?: (ctx: T, task: any) => Promise<any> | any;
-  }
-) {
-  return {
-    title,
-    task,
-    enabled: options?.enabled,
-    skip: options?.skip,
-    retry: options?.retry,
-    rollback: options?.rollback,
-  };
-}
+// Utility type for creating task lists with consistent context typing
+export type TypedTaskList<T = any> = TypedTask<T>[];
 
-// New typed task creation helpers - reduces boilerplate by 60%
-export function createTypedTask<T>(
-  title: string,
-  handler: TaskHandler<T>,
-  options?: {
-    enabled?: boolean | ((ctx: T) => boolean);
-    skip?: boolean | string | ((ctx: T) => boolean | string | Promise<boolean | string>);
-    retry?: number;
-    rollback?: (ctx: T, task: any) => Promise<any> | any;
-  }
-) {
-  return createTask<T>(title, handler, options);
-}
+// Helper for creating a typed task - provides IntelliSense without wrapper overhead
+export const createTask = <T = any>(task: TypedTask<T>): TypedTask<T> => task;
 
-// Task builder factory for command-specific contexts
-export function createTaskBuilder<T>() {
-  return (
-    title: string,
-    handler: TaskHandler<T>,
-    options?: {
-      enabled?: boolean | ((ctx: T) => boolean);
-      skip?: boolean | string | ((ctx: T) => boolean | string | Promise<boolean | string>);
-      retry?: number;
-      rollback?: (ctx: T, task: any) => Promise<any> | any;
-    }
-  ) => createTypedTask<T>(title, handler, options);
-}
-
-export function createTaskList(
-  tasks: Array<ReturnType<typeof createTask>>,
+export function createTaskList<T = any>(
+  tasks: TypedTaskList<T>,
   options?: {
     concurrent?: boolean;
     exitOnError?: boolean;
