@@ -4,13 +4,14 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
-
 export const CatalystSelect = forwardRef(function CatalystSelect(
   {
     className,
     multiple,
     ...props
-  }: { className?: string } & Omit<Headless.SelectProps, 'as' | 'className'>,
+  }: {
+    className?: string;
+  } & Omit<Headless.SelectProps, 'as' | 'className'>,
   ref: React.ForwardedRef<HTMLSelectElement>
 ) {
   return (

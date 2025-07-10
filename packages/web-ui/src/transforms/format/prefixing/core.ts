@@ -1,24 +1,58 @@
 /**
- * Core AST utilities and mapping system for Catalyst prefix transformations
+ * Core AST utilities and mapping system for Catalyst prefix transformations using TypeScript AST
  *
- * Provides the foundational AST parsing, component detection, and name mapping
- * system used by the Catalyst prefix transform. Handles the complex jscodeshift
- * operations and maintains the old-to-new name mapping system.
+ * Migrated from jscodeshift to TypeScript's native compiler API for better performance,
+ * reliability, and consistency with other transforms in the codebase.
+ *
+ * Transform process:
+ * 1. Parse code into TypeScript AST using ts.createSourceFile
+ * 2. Process export declarations and build component name mappings
+ * 3. Detect and protect Headless UI references from transformation
+ * 4. Map type aliases and ensure they follow Catalyst naming
+ * 5. Transform all references throughout the AST
+ * 6. Generate transformed code from modified AST using ts.createPrinter
+ *
+ * Examples of transformations:
+ *
+ * Export function prefixing:
+ * ```tsx
+ * export function Button() { return <button />; }
+ * // becomes:
+ * export function CatalystButton() { return <button />; }
+ * ```
+ *
+ * Type alias prefixing:
+ * ```tsx
+ * type ButtonProps = { children: React.ReactNode; }
+ * // becomes:
+ * type CatalystButtonProps = { children: React.ReactNode; }
+ * ```
+ *
+ * Reference updates:
+ * ```tsx
+ * const MyButton: ButtonProps = { children: 'Click me' };
+ * // becomes:
+ * const MyButton: CatalystButtonProps = { children: 'Click me' };
+ * ```
+ *
+ * Headless UI protection:
+ * ```tsx
+ * import { Button as HeadlessButton } from '@headlessui/react';
+ * // HeadlessButton references remain unchanged
+ * ```
+ *
+ * Uses TypeScript's compiler API for reliable AST parsing and transformation.
+ * Pure functional interface with no classes.
  */
 
 import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createRequire } from 'module';
-
-// Create require function for ESM compatibility
-const require = createRequire(import.meta.url);
+import ts from 'typescript';
 
 /**
- * AST utilities and core transformation setup
+ * AST context for TypeScript-based transformations
  */
-export interface ASTContext {
-  jscodeshift: any;
-  j: any;
-  root: any;
+export interface TSASTContext {
+  sourceFile: ts.SourceFile;
   oldToNewMap: Map<string, string>;
   headlessPropsTypes: Set<string>;
   changes: string[];
@@ -26,20 +60,22 @@ export interface ASTContext {
 }
 
 /**
- * Initialize jscodeshift and create AST context
+ * Initialize TypeScript AST context
  */
-export function createASTContext(input: string): Result<ASTContext, CLIError> {
+export function createTSASTContext(input: string): Result<TSASTContext, CLIError> {
   try {
-    const jscodeshift = require('jscodeshift');
-    const j = jscodeshift.withParser('tsx');
-    const root = j(input);
+    const sourceFile = ts.createSourceFile(
+      'temp.tsx',
+      input,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX
+    );
 
     return {
       success: true,
       value: {
-        jscodeshift,
-        j,
-        root,
+        sourceFile,
         oldToNewMap: new Map<string, string>(),
         headlessPropsTypes: new Set<string>(),
         changes: [],
@@ -50,8 +86,8 @@ export function createASTContext(input: string): Result<ASTContext, CLIError> {
     return {
       success: false,
       error: {
-        code: 'AST_INIT_ERROR',
-        message: `Failed to initialize AST: ${error instanceof Error ? error.message : String(error)}`,
+        code: 'TS_AST_INIT_ERROR',
+        message: `Failed to initialize TypeScript AST: ${error instanceof Error ? error.message : String(error)}`,
         recoverable: false,
       },
     };
@@ -59,174 +95,301 @@ export function createASTContext(input: string): Result<ASTContext, CLIError> {
 }
 
 /**
- * Process export declarations and build initial function name mappings
+ * Process export declarations and build initial function name mappings using TypeScript AST
+ *
+ * Transform process:
+ * 1. Find all ExportDeclaration nodes in the AST
+ * 2. Identify function declarations and variable declarations
+ * 3. Extract function names and add Catalyst prefix if needed
+ * 4. Build mapping from old names to new names
+ * 5. Track changes for reporting
+ *
+ * Examples:
+ * - Transforms `export function Button()` to `export function CatalystButton()`
+ * - Transforms `export const Input = forwardRef(...)` to `export const CatalystInput = forwardRef(...)`
+ * - Preserves existing Catalyst-prefixed exports
  */
-export function processExportDeclarations(context: ASTContext): void {
-  const { j, root, changes } = context;
+/**
+ * Helper function to check if a node is exported
+ */
+function isNodeExported(node: ts.Node): boolean {
+  // Check if the current node itself has export modifier
+  if (
+    ts.isFunctionDeclaration(node) ||
+    ts.isVariableStatement(node) ||
+    ts.isTypeAliasDeclaration(node)
+  ) {
+    if (node.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+      return true;
+    }
+  }
 
-  //////////////////////////////////////////////////////////////////////////////////
-  // Phase 1: Export Declaration Processing
-  // Finds:
-  //        export function Button() {...}
-  //        export const Button = ...
-  //
-  //////////////////////////////////////////////////////////////////////////////////
-  root.find(j.ExportNamedDeclaration).forEach((exportDecl: any) => {
-    if (exportDecl.node.declaration) {
-      let funcName: string | undefined;
+  // Check parent nodes for export context
+  let current = node.parent;
+  while (current) {
+    if (ts.isExportDeclaration(current) || ts.isExportAssignment(current)) {
+      return true;
+    }
+    if (ts.isVariableStatement(current) || ts.isFunctionDeclaration(current)) {
+      return current.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+    }
+    current = current.parent;
+  }
+  return false;
+}
 
-      if (j.FunctionDeclaration.check(exportDecl.node.declaration)) {
-        funcName = exportDecl.node.declaration.id?.name.toString();
-      } else if (j.VariableDeclaration.check(exportDecl.node.declaration)) {
-        const firstDeclarator = exportDecl.node.declaration.declarations[0];
+export function processTSExportDeclarations(context: TSASTContext): ts.SourceFile {
+  const { sourceFile, changes, oldToNewMap } = context;
+
+  /////////////////////////////////////////////////////////////////////////////////
+  // Phase 1: Export Declaration Processing with TypeScript AST
+  // Find all export declarations and transform function/variable names
+  // Handles: export function Button(), export const Button = ...
+  /////////////////////////////////////////////////////////////////////////////////
+  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
+    return sourceFile => {
+      function visitNode(node: ts.Node): ts.Node {
+        // Process export declarations
         if (
-          firstDeclarator &&
-          j.VariableDeclarator.check(firstDeclarator) &&
-          j.Identifier.check(firstDeclarator.id)
+          ts.isExportDeclaration(node) &&
+          node.exportClause &&
+          ts.isNamedExports(node.exportClause)
         ) {
-          funcName = firstDeclarator.id.name.toString();
-        }
-      }
+          // Handle: export { Button, Input }
+          const updatedElements = node.exportClause.elements.map(element => {
+            const originalName = element.name.text;
+            if (!originalName.startsWith('Catalyst')) {
+              const newName = `Catalyst${originalName}`;
+              oldToNewMap.set(originalName, newName);
+              changes.push(`Updated export name from ${originalName} to ${newName}`);
 
-      if (funcName && !funcName.startsWith('Catalyst')) {
-        if (j.FunctionDeclaration.check(exportDecl.node.declaration)) {
-          exportDecl.node.declaration.id!.name = `Catalyst${funcName}`;
-        } else if (j.VariableDeclaration.check(exportDecl.node.declaration)) {
-          const firstDeclarator = exportDecl.node.declaration.declarations[0];
-          if (
-            firstDeclarator &&
-            j.VariableDeclarator.check(firstDeclarator) &&
-            j.Identifier.check(firstDeclarator.id)
-          ) {
-            firstDeclarator.id.name = `Catalyst${funcName}`;
+              return ts.factory.updateExportSpecifier(
+                element,
+                false,
+                ts.factory.createIdentifier(newName),
+                element.propertyName || ts.factory.createIdentifier(originalName)
+              );
+            }
+            return element;
+          });
+
+          return ts.factory.updateExportDeclaration(
+            node,
+            node.modifiers,
+            false,
+            ts.factory.updateNamedExports(node.exportClause, updatedElements),
+            node.moduleSpecifier,
+            node.assertClause
+          );
+        }
+
+        // Process function declarations in export statements
+        if (ts.isFunctionDeclaration(node) && node.name) {
+          const originalName = node.name.text;
+
+          // Only process if this function is actually exported
+          const isExported = isNodeExported(node);
+
+          if (!originalName.startsWith('Catalyst') && isExported) {
+            const newName = `Catalyst${originalName}`;
+            oldToNewMap.set(originalName, newName);
+            changes.push(`Updated function name from ${originalName} to ${newName}`);
+
+            return ts.factory.updateFunctionDeclaration(
+              node,
+              node.modifiers,
+              node.asteriskToken,
+              ts.factory.createIdentifier(newName),
+              node.typeParameters,
+              node.parameters,
+              node.type,
+              node.body
+            );
           }
         }
-        /////////////////////////////////////////////////////////////////////////////////
-        //
-        // From:  export function Button()
-        // To:    export function CatalystButton()
-        //
-        /////////////////////////////////////////////////////////////////////////////////
-        changes.push(`Updated function name from ${funcName} to Catalyst${funcName}`);
+
+        // Process variable declarations in export statements
+        if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+          const originalName = node.name.text;
+
+          // Only process if this variable is actually exported and looks like a component
+          const isExported = isNodeExported(node);
+          const looksLikeComponent = originalName.charAt(0) >= 'A' && originalName.charAt(0) <= 'Z';
+
+          if (!originalName.startsWith('Catalyst') && isExported && looksLikeComponent) {
+            const newName = `Catalyst${originalName}`;
+            oldToNewMap.set(originalName, newName);
+            changes.push(`Updated variable name from ${originalName} to ${newName}`);
+
+            return ts.factory.updateVariableDeclaration(
+              node,
+              ts.factory.createIdentifier(newName),
+              node.exclamationToken,
+              node.type,
+              node.initializer
+            );
+          }
+        }
+
+        return ts.visitEachChild(node, visitNode, transformContext);
       }
-    }
-  });
+
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
+    };
+  };
+
+  const result = ts.transform(sourceFile, [transformer]);
+  const transformedSourceFile = result.transformed[0];
+  result.dispose();
+
+  return transformedSourceFile;
 }
 
 /**
- * Build comprehensive mapping system for all component names and types
+ * Detect and protect Headless UI references from transformation using TypeScript AST
+ *
+ * Transform process:
+ * 1. Find all ImportDeclaration nodes for @headlessui/react
+ * 2. Extract imported names from named imports
+ * 3. Add them to protection set to prevent transformation
+ * 4. Handle namespace imports (import * as Headless)
+ *
+ * Examples:
+ * - Protects `Button` from `import { Button } from '@headlessui/react'`
+ * - Protects `ButtonProps` from `import { ButtonProps } from '@headlessui/react'`
+ * - Handles namespace imports like `import * as Headless from '@headlessui/react'`
  */
-export function buildComprehensiveMapping(context: ASTContext): void {
-  const { j, root, oldToNewMap } = context;
+export function detectTSHeadlessReferences(context: TSASTContext): void {
+  const { sourceFile, headlessPropsTypes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
-  // Phase 2: Build Comprehensive Mapping System
-  // Collect all exported function names and type definitions
-  // Finds:
-  //        export function Button() {...}
-  //        export const Button = forwardRef(...)
-  //
+  // Phase 2: Headless UI Protection with TypeScript AST
+  // Find all @headlessui/react imports and protect those names from transformation
   /////////////////////////////////////////////////////////////////////////////////
-  root.find(j.ExportNamedDeclaration).forEach((exportDecl: any) => {
-    if (exportDecl.node.declaration) {
-      let funcName: string | undefined;
+  function visitNode(node: ts.Node): void {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      const moduleSpecifier = node.moduleSpecifier.text;
 
-      if (j.FunctionDeclaration.check(exportDecl.node.declaration)) {
-        funcName = exportDecl.node.declaration.id?.name.toString();
-      } else if (j.VariableDeclaration.check(exportDecl.node.declaration)) {
-        const firstDeclarator = exportDecl.node.declaration.declarations[0];
-        if (
-          firstDeclarator &&
-          j.VariableDeclarator.check(firstDeclarator) &&
-          j.Identifier.check(firstDeclarator.id)
-        ) {
-          funcName = firstDeclarator.id.name.toString();
-        }
-      }
-
-      if (funcName) {
-        if (!funcName.startsWith('Catalyst')) {
-          oldToNewMap.set(funcName, `Catalyst${funcName}`);
-        } else {
-          const baseName = funcName.replace('Catalyst', '');
-          if (baseName && !oldToNewMap.has(baseName)) {
-            oldToNewMap.set(baseName, funcName);
-          }
-        }
-      }
-    }
-  });
-}
-
-/**
- * Detect and protect Headless UI references from transformation
- */
-export function detectHeadlessReferences(context: ASTContext): void {
-  const { j, root, headlessPropsTypes } = context;
-
-  /////////////////////////////////////////////////////////////////////////////////
-  // Phase 3: Headless Props Detection - Find ALL Headless references to protect them
-  // Finds:
-  //        import { Button, ButtonProps } from '@headlessui/react'
-  //        import * as Headless from '@headlessui/react'
-  //
-  /////////////////////////////////////////////////////////////////////////////////
-  root.find(j.ImportDeclaration).forEach((importDecl: any) => {
-    const source = importDecl.node.source.value?.toString() || '';
-    if (source === '@headlessui/react') {
-      importDecl.node.specifiers?.forEach((specifier: any) => {
+      if (moduleSpecifier === '@headlessui/react' && node.importClause) {
         // Handle named imports: import { Button, ButtonProps } from '@headlessui/react'
-        if (j.ImportSpecifier.check(specifier) && j.Identifier.check(specifier.imported)) {
-          headlessPropsTypes.add(specifier.imported.name);
+        if (node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
+          node.importClause.namedBindings.elements.forEach(element => {
+            const importedName = element.name.text;
+            headlessPropsTypes.add(importedName);
+          });
         }
+
         // Handle namespace imports: import * as Headless from '@headlessui/react'
-        // For namespace imports, qualified names like Headless.ButtonProps are protected
-        // by the AST structure in the qualified name transformation logic
-        else if (j.ImportNamespaceSpecifier.check(specifier)) {
-          // Namespace imports are protected by qualified name logic in Phase 7.9
+        if (
+          node.importClause.namedBindings &&
+          ts.isNamespaceImport(node.importClause.namedBindings)
+        ) {
+          // Namespace imports are protected by qualified name logic in reference transformation
           // No individual type names need to be added to protection set
         }
-      });
+      }
     }
-  });
+
+    ts.forEachChild(node, visitNode);
+  }
+
+  visitNode(sourceFile);
 }
 
 /**
- * Map type aliases and ensure they follow Catalyst naming
+ * Map type aliases and ensure they follow Catalyst naming using TypeScript AST
+ *
+ * Transform process:
+ * 1. Find all TypeAliasDeclaration nodes
+ * 2. Extract type names and check if they need Catalyst prefix
+ * 3. Build comprehensive mapping including Props suffixes
+ * 4. Protect Headless UI types from transformation
+ *
+ * Examples:
+ * - Maps `ButtonProps` to `CatalystButtonProps`
+ * - Maps `InputState` to `CatalystInputState`
+ * - Generates automatic Props mappings for discovered components
  */
-export function mapTypeAliases(context: ASTContext): void {
-  const { j, root, oldToNewMap, headlessPropsTypes } = context;
+export function mapTSTypeAliases(context: TSASTContext): ts.SourceFile {
+  const { sourceFile, oldToNewMap, headlessPropsTypes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
-  // Phase 4: Type Alias Mapping
-  // Finds:
-  //        type ButtonProps = {...}
-  //        type CatalystButtonProps = {...}
-  //
+  // Phase 3: Type Alias Mapping with TypeScript AST
+  // Find all type alias declarations and transform their names
   /////////////////////////////////////////////////////////////////////////////////
-  root.find(j.TSTypeAliasDeclaration).forEach((typeDecl: any) => {
-    const typeName = typeDecl.node.id.name;
-    if (typeof typeName === 'string') {
-      if (!typeName.startsWith('Catalyst')) {
-        if (!headlessPropsTypes.has(typeName)) {
-          oldToNewMap.set(typeName, `Catalyst${typeName}`);
+  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
+    return sourceFile => {
+      function visitNode(node: ts.Node): ts.Node {
+        // Process type alias declarations
+        if (ts.isTypeAliasDeclaration(node)) {
+          const typeName = node.name.text;
+
+          // Only process Props types, not all types
+          if (
+            !typeName.startsWith('Catalyst') &&
+            !headlessPropsTypes.has(typeName) &&
+            typeName.endsWith('Props')
+          ) {
+            const newTypeName = `Catalyst${typeName}`;
+            oldToNewMap.set(typeName, newTypeName);
+
+            // Ensure the type alias is exported by adding export modifier if not present
+            const hasExport = node.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+            const modifiers = hasExport
+              ? node.modifiers
+              : [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword), ...(node.modifiers || [])];
+
+            return ts.factory.updateTypeAliasDeclaration(
+              node,
+              modifiers,
+              ts.factory.createIdentifier(newTypeName),
+              node.typeParameters,
+              node.type
+            );
+          } else if (typeName.startsWith('Catalyst')) {
+            // Map existing Catalyst types
+            const baseName = typeName.replace('Catalyst', '');
+            if (baseName && !oldToNewMap.has(baseName) && !headlessPropsTypes.has(baseName)) {
+              oldToNewMap.set(baseName, typeName);
+            }
+          }
         }
-      } else {
+
+        return ts.visitEachChild(node, visitNode, transformContext);
+      }
+
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
+    };
+  };
+
+  // First pass: build mappings
+  function buildMappings(node: ts.Node): void {
+    if (ts.isTypeAliasDeclaration(node)) {
+      const typeName = node.name.text;
+
+      // Only process Props types, not all types
+      if (
+        !typeName.startsWith('Catalyst') &&
+        !headlessPropsTypes.has(typeName) &&
+        typeName.endsWith('Props')
+      ) {
+        oldToNewMap.set(typeName, `Catalyst${typeName}`);
+      } else if (typeName.startsWith('Catalyst') && typeName.endsWith('Props')) {
         const baseName = typeName.replace('Catalyst', '');
         if (baseName && !oldToNewMap.has(baseName) && !headlessPropsTypes.has(baseName)) {
           oldToNewMap.set(baseName, typeName);
         }
       }
     }
-  });
+
+    ts.forEachChild(node, buildMappings);
+  }
+
+  buildMappings(sourceFile);
 
   /////////////////////////////////////////////////////////////////////////////////
-  // Phase 5: Props Suffix Handling
+  // Phase 4: Props Suffix Handling
   // Automatically generate Props mappings for discovered Catalyst components
-  // Finds:
-  //        CatalystButton → ButtonProps should map to CatalystButtonProps
-  //        CatalystInput → InputProps should map to CatalystInputProps
-  //
   /////////////////////////////////////////////////////////////////////////////////
   const catalystFunctions = Array.from(oldToNewMap.values()).filter(name =>
     name.startsWith('Catalyst')
@@ -242,17 +405,26 @@ export function mapTypeAliases(context: ASTContext): void {
       }
     }
   });
+
+  // Second pass: apply transformations
+  const result = ts.transform(sourceFile, [transformer]);
+  const transformedSourceFile = result.transformed[0];
+  result.dispose();
+
+  return transformedSourceFile;
 }
 
 /**
- * Generate final transformed code from AST
+ * Generate final transformed code from TypeScript AST
+ *
+ * Uses TypeScript's native printer for consistent formatting and proper
+ * handling of all TypeScript syntax features.
  */
-export function generateTransformedCode(context: ASTContext): string {
-  const { root } = context;
-
-  return root.toSource({
-    quote: 'single',
-    lineTerminator: '\n',
-    tabWidth: 2,
+export function generateTSTransformedCode(sourceFile: ts.SourceFile): string {
+  const printer = ts.createPrinter({
+    newLine: ts.NewLineKind.LineFeed,
+    removeComments: false,
   });
+
+  return printer.printFile(sourceFile);
 }

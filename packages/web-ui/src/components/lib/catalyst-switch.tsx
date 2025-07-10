@@ -158,13 +158,13 @@ const colors = {
     '[--switch:white] [--switch-ring:var(--color-gray-700)]/90 [--switch-shadow:var(--color-gray-900)]/20',
   ],
 };
-type CatalystColor = keyof typeof colors;
+type Color = keyof typeof colors;
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: CatalystColor;
+  color?: Color;
   className?: string;
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   return (

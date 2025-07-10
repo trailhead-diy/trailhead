@@ -127,13 +127,13 @@ const colors = {
   muted:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',
 };
-type CatalystColor = keyof typeof colors;
+type Color = keyof typeof colors;
 export function CatalystRadio({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: CatalystColor;
+  color?: Color;
   className?: string;
 } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
   return (

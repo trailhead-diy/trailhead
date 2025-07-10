@@ -125,13 +125,13 @@ const colors = {
   muted:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-gray-600)] [--checkbox-checked-border:var(--color-gray-700)]/90',
 };
-type CatalystColor = keyof typeof colors;
+type Color = keyof typeof colors;
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: CatalystColor;
+  color?: Color;
   className?: string;
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   return (
