@@ -8,8 +8,9 @@ import {
 } from 'node:fs';
 import { Transform, pipeline as nodePipeline } from 'node:stream';
 import { promisify } from 'node:util';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result, CLIError } from '../core/errors/types.js';
+import { ok, err } from '../core/errors/utils.js';
+import { createError } from '../core/errors/factory.js';
 import type {
   ReadStreamOptions,
   WriteStreamOptions,
@@ -29,7 +30,7 @@ const pipelineAsync = promisify(nodePipeline);
 export function createReadStream(
   filePath: string,
   options: ReadStreamOptions = {}
-): Result<NodeJS.ReadableStream> {
+): Result<NodeJS.ReadableStream, CLIError> {
   try {
     const stream = nodeCreateReadStream(filePath, {
       encoding: options.encoding,
@@ -39,10 +40,10 @@ export function createReadStream(
       autoClose: options.autoClose ?? true,
     });
 
-    return Ok(stream);
+    return ok(stream);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create read stream';
-    return Err(
+    return err(
       createError('STREAM_READ_FAILED', `Failed to create read stream for ${filePath}`, {
         details: message,
         recoverable: false,
@@ -57,7 +58,7 @@ export function createReadStream(
 export function createWriteStream(
   filePath: string,
   options: WriteStreamOptions = {}
-): Result<NodeJS.WritableStream> {
+): Result<NodeJS.WritableStream, CLIError> {
   try {
     const stream = nodeCreateWriteStream(filePath, {
       encoding: options.encoding,
@@ -67,10 +68,10 @@ export function createWriteStream(
       autoClose: options.autoClose ?? true,
     });
 
-    return Ok(stream);
+    return ok(stream);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create write stream';
-    return Err(
+    return err(
       createError('STREAM_WRITE_FAILED', `Failed to create write stream for ${filePath}`, {
         details: message,
         recoverable: false,
@@ -85,7 +86,7 @@ export function createWriteStream(
 export function createTransformStream<TInput = any, TOutput = any>(
   transformer: StreamTransformer<TInput, TOutput>,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   try {
     const transform = new Transform({
       objectMode: options.objectMode ?? true,
@@ -103,10 +104,10 @@ export function createTransformStream<TInput = any, TOutput = any>(
       },
     });
 
-    return Ok(transform);
+    return ok(transform);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create transform stream';
-    return Err(
+    return err(
       createError('STREAM_TRANSFORM_FAILED', 'Failed to create transform stream', {
         details: message,
         recoverable: false,
@@ -121,7 +122,7 @@ export function createTransformStream<TInput = any, TOutput = any>(
 export function createFilterStream<T = any>(
   predicate: StreamFilter<T>,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   return createTransformStream(
     async (chunk: T) => {
       const shouldPass = await predicate(chunk);
@@ -140,7 +141,7 @@ export function createFilterStream<T = any>(
 export function createMapStream<TInput = any, TOutput = any>(
   mapper: StreamMapper<TInput, TOutput>,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   let index = 0;
 
   return createTransformStream(
@@ -161,7 +162,7 @@ export function createMapStream<TInput = any, TOutput = any>(
 export function createBatchStream<T = any>(
   batchOptions: BatchProcessingOptions,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   try {
     let batch: T[] = [];
     let batchIndex = 0;
@@ -210,10 +211,10 @@ export function createBatchStream<T = any>(
       },
     });
 
-    return Ok(transform);
+    return ok(transform);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create batch stream';
-    return Err(
+    return err(
       createError('STREAM_BATCH_FAILED', 'Failed to create batch stream', {
         details: message,
         recoverable: false,
@@ -228,7 +229,7 @@ export function createBatchStream<T = any>(
 export function createStatsStream(
   onStats?: (stats: StreamStats) => void,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   try {
     const stats = {
       bytesRead: 0,
@@ -269,10 +270,10 @@ export function createStatsStream(
       },
     });
 
-    return Ok(transform);
+    return ok(transform);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create stats stream';
-    return Err(
+    return err(
       createError('STREAM_STATS_FAILED', 'Failed to create stats stream', {
         details: message,
         recoverable: false,
@@ -288,13 +289,13 @@ export async function pipeline(
   stream1: NodeJS.ReadableStream,
   stream2: NodeJS.WritableStream | NodeJS.ReadWriteStream,
   ...additionalStreams: (NodeJS.WritableStream | NodeJS.ReadWriteStream)[]
-): Promise<Result<void>> {
+): Promise<Result<void, CLIError>> {
   try {
     await pipelineAsync(stream1, stream2, ...additionalStreams);
-    return Ok(undefined);
+    return ok(undefined);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Pipeline error';
-    return Err(
+    return err(
       createError('STREAM_PIPELINE_FAILED', 'Stream pipeline failed', {
         details: message,
         recoverable: false,
@@ -306,7 +307,9 @@ export async function pipeline(
 /**
  * Read entire stream into memory (use carefully with large streams)
  */
-export async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Result<Buffer>> {
+export async function streamToBuffer(
+  stream: NodeJS.ReadableStream
+): Promise<Result<Buffer, CLIError>> {
   try {
     const chunks: Buffer[] = [];
 
@@ -314,10 +317,10 @@ export async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Res
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     }
 
-    return Ok(Buffer.concat(chunks));
+    return ok(Buffer.concat(chunks));
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to read stream';
-    return Err(
+    return err(
       createError('STREAM_READ_BUFFER_FAILED', 'Failed to read stream to buffer', {
         details: message,
         recoverable: false,
@@ -332,18 +335,18 @@ export async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Res
 export async function streamToString(
   stream: NodeJS.ReadableStream,
   encoding: BufferEncoding = 'utf8'
-): Promise<Result<string>> {
+): Promise<Result<string, CLIError>> {
   const bufferResult = await streamToBuffer(stream);
 
-  if (!bufferResult.success) {
-    return bufferResult;
+  if (bufferResult.isErr()) {
+    return err(bufferResult.error);
   }
 
   try {
-    return Ok(bufferResult.value.toString(encoding));
+    return ok(bufferResult.value.toString(encoding));
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to convert buffer to string';
-    return Err(
+    return err(
       createError('STREAM_STRING_CONVERSION_FAILED', 'Failed to convert stream to string', {
         details: message,
         recoverable: false,

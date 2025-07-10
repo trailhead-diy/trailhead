@@ -1,4 +1,5 @@
-import { Result, Ok, Err, map, CLIError } from '../core/index.js';
+import { ok, err, Result } from 'neverthrow';
+import type { CLIError } from '../core/errors/index.js';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { GitStatus, GitOptions } from './types.js';
@@ -19,7 +20,7 @@ export async function isWorkingDirectoryClean(
   options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
   const result = await executeGitCommandSimple(['status', '--porcelain'], options);
-  return map(result, output => output.trim().length === 0);
+  return result.map(output => output.trim().length === 0);
 }
 
 /**
@@ -28,21 +29,21 @@ export async function isWorkingDirectoryClean(
 export async function getGitStatus(options: GitOptions = {}): Promise<Result<GitStatus, CLIError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
-  if (!validationResult.success) {
-    return validationResult;
+  if (validationResult.isErr()) {
+    return err(validationResult.error);
   }
 
   // Get current branch
   const currentBranchResult = await getCurrentBranch(options);
-  if (!currentBranchResult.success) {
-    return Err(createGitError(`Failed to get current branch`, currentBranchResult.error.message));
+  if (currentBranchResult.isErr()) {
+    return err(createGitError(`Failed to get current branch`, currentBranchResult.error.message));
   }
   const currentBranch = currentBranchResult.value;
 
   // Get porcelain status
   const statusResult = await executeGitCommandSimple(['status', '--porcelain'], options);
-  if (!statusResult.success) {
-    return Err(createGitError(`Failed to get git status`, statusResult.error.message));
+  if (statusResult.isErr()) {
+    return err(createGitError(`Failed to get git status`, statusResult.error.message));
   }
 
   const statusLines = statusResult.value
@@ -85,7 +86,7 @@ export async function getGitStatus(options: GitOptions = {}): Promise<Result<Git
     untracked,
   };
 
-  return Ok(status);
+  return ok(status);
 }
 
 /**
@@ -95,7 +96,7 @@ export async function hasUncommittedChanges(
   options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
   const statusResult = await getGitStatus(options);
-  return map(statusResult, status => status.staged > 0 || status.modified > 0);
+  return statusResult.map(status => status.staged > 0 || status.modified > 0);
 }
 
 /**
@@ -105,7 +106,7 @@ export async function hasUntrackedFiles(
   options: GitOptions = {}
 ): Promise<Result<boolean, CLIError>> {
   const statusResult = await getGitStatus(options);
-  return map(statusResult, status => status.untracked > 0);
+  return statusResult.map(status => status.untracked > 0);
 }
 
 /**
@@ -115,7 +116,7 @@ export async function getModifiedFiles(
   options: GitOptions = {}
 ): Promise<Result<string[], CLIError>> {
   const result = await executeGitCommandSimple(['diff', '--name-only'], options);
-  return map(result, output => {
+  return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
   });
 }
@@ -127,7 +128,7 @@ export async function getStagedFiles(
   options: GitOptions = {}
 ): Promise<Result<string[], CLIError>> {
   const result = await executeGitCommandSimple(['diff', '--cached', '--name-only'], options);
-  return map(result, output => {
+  return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
   });
 }
@@ -142,7 +143,7 @@ export async function getUntrackedFiles(
     ['ls-files', '--others', '--exclude-standard'],
     options
   );
-  return map(result, output => {
+  return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
   });
 }

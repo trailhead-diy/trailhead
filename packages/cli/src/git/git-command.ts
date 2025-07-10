@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { Result, Ok, Err, tryCatchAsync, CLIError } from '../core/index.js';
+import { Result, ok, err, CLIError } from '../core/index.js';
 import { createGitError } from './errors.js';
 import type { GitCommandResult, GitOptions } from './types.js';
 
@@ -17,8 +17,8 @@ export async function executeGitCommand(
 ): Promise<Result<GitCommandResult, CLIError>> {
   const { cwd = process.cwd(), timeout = DEFAULT_TIMEOUT } = options;
 
-  return tryCatchAsync(async () => {
-    return new Promise<GitCommandResult>((resolve, reject) => {
+  try {
+    const result = await new Promise<GitCommandResult>((resolve, reject) => {
       const command = `git ${args.join(' ')}`;
       const child = spawn('git', args, {
         cwd,
@@ -72,7 +72,12 @@ export async function executeGitCommand(
         reject(new Error(`Failed to execute git command: ${error.message}`));
       });
     });
-  });
+
+    return ok(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown git command error';
+    return err(createGitError(message));
+  }
 }
 
 /**
@@ -84,18 +89,18 @@ export async function executeGitCommandSimple(
 ): Promise<Result<string, CLIError>> {
   const result = await executeGitCommand(args, options);
 
-  if (!result.success) {
-    return result;
+  if (result.isErr()) {
+    return err(result.error);
   }
 
   const { exitCode, stdout, stderr, command } = result.value;
 
   if (exitCode !== 0) {
     const errorMessage = stderr || `Git command failed with exit code ${exitCode}`;
-    return Err(createGitError(`${command}: ${errorMessage}`));
+    return err(createGitError(`${command}: ${errorMessage}`));
   }
 
-  return Ok(stdout);
+  return ok(stdout);
 }
 
 /**
@@ -106,15 +111,15 @@ export async function validateGitEnvironment(
 ): Promise<Result<boolean, CLIError>> {
   // Check if git is available
   const gitVersionResult = await executeGitCommandSimple(['--version'], options);
-  if (!gitVersionResult.success) {
-    return Err(createGitError('Git is not available or not installed'));
+  if (gitVersionResult.isErr()) {
+    return err(createGitError('Git is not available or not installed'));
   }
 
   // Check if current directory is a git repository
   const gitDirResult = await executeGitCommandSimple(['rev-parse', '--git-dir'], options);
-  if (!gitDirResult.success) {
-    return Err(createGitError('Current directory is not a git repository'));
+  if (gitDirResult.isErr()) {
+    return err(createGitError('Current directory is not a git repository'));
   }
 
-  return Ok(true);
+  return ok(true);
 }

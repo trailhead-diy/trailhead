@@ -3,8 +3,9 @@
  */
 
 import { Transform } from 'node:stream';
-import type { Result } from '../core/errors/types.js';
-import { Ok, Err, createError } from '../core/errors/factory.js';
+import type { Result, CLIError } from '../core/errors/types.js';
+import { ok, err } from '../core/errors/utils.js';
+import { createError } from '../core/errors/factory.js';
 import type { TransformStreamOptions, StreamTransformer } from './types.js';
 import { createTransformStream } from './core.js';
 
@@ -29,7 +30,7 @@ export interface LineStreamOptions extends TransformStreamOptions {
 /**
  * Create a stream that parses CSV data line by line
  */
-export function createCSVParseStream(options: CSVStreamOptions = {}): Result<Transform> {
+export function createCSVParseStream(options: CSVStreamOptions = {}): Result<Transform, CLIError> {
   const {
     delimiter = ',',
     quote = '"',
@@ -119,7 +120,9 @@ export function createCSVParseStream(options: CSVStreamOptions = {}): Result<Tra
 /**
  * Create a stream that converts objects to CSV format
  */
-export function createCSVStringifyStream(options: CSVStreamOptions = {}): Result<Transform> {
+export function createCSVStringifyStream(
+  options: CSVStreamOptions = {}
+): Result<Transform, CLIError> {
   const { delimiter = ',', quote = '"', headers = true } = options;
 
   let headerWritten = false;
@@ -174,7 +177,9 @@ const jsonlTransformer: StreamTransformer<string, any> = line => {
 /**
  * Create a stream that parses JSON Lines format
  */
-export function createJSONLParseStream(options: JSONLStreamOptions = {}): Result<Transform> {
+export function createJSONLParseStream(
+  options: JSONLStreamOptions = {}
+): Result<Transform, CLIError> {
   return createTransformStream(jsonlTransformer, {
     ...options,
     objectMode: true,
@@ -184,7 +189,9 @@ export function createJSONLParseStream(options: JSONLStreamOptions = {}): Result
 /**
  * Create a stream that converts objects to JSON Lines format
  */
-export function createJSONLStringifyStream(options: JSONLStreamOptions = {}): Result<Transform> {
+export function createJSONLStringifyStream(
+  options: JSONLStreamOptions = {}
+): Result<Transform, CLIError> {
   const { pretty = false, indent = 2 } = options;
 
   const transformer: StreamTransformer<any, string> = obj => {
@@ -203,7 +210,7 @@ export function createJSONLStringifyStream(options: JSONLStreamOptions = {}): Re
 /**
  * Create a stream that splits text into lines
  */
-export function createLineStream(options: LineStreamOptions = {}): Result<Transform> {
+export function createLineStream(options: LineStreamOptions = {}): Result<Transform, CLIError> {
   const { skipEmpty = true, trim = true } = options;
 
   let buffer = '';
@@ -244,7 +251,7 @@ export function createLineStream(options: LineStreamOptions = {}): Result<Transf
     },
   });
 
-  return Ok(transformStream);
+  return ok(transformStream);
 }
 
 /**
@@ -253,9 +260,9 @@ export function createLineStream(options: LineStreamOptions = {}): Result<Transf
 export function createChunkStream<T = any>(
   chunkSize: number,
   options: TransformStreamOptions = {}
-): Result<Transform> {
+): Result<Transform, CLIError> {
   if (chunkSize <= 0) {
-    return Err(
+    return err(
       createError('STREAM_INVALID_CHUNK_SIZE', 'Chunk size must be greater than 0', {
         recoverable: true,
         suggestion: 'Use a positive integer for chunk size',
@@ -290,5 +297,5 @@ export function createChunkStream<T = any>(
     },
   });
 
-  return Ok(transformStream);
+  return ok(transformStream);
 }
