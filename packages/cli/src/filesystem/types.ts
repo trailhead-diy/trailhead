@@ -10,8 +10,10 @@ export interface FileStats {
 export interface FileSystemError {
   code: string;
   message: string;
+  operation: string;
   path?: string;
   recoverable: boolean;
+  originalError?: any;
 }
 
 export interface CopyOptions {

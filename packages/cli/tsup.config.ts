@@ -15,6 +15,9 @@ export default defineConfig({
     'workflows/index': 'src/workflows/index.ts',
     'error-recovery/index': 'src/error-recovery/index.ts',
     'progress/index': 'src/progress/index.ts',
+    'formats/index': 'src/formats/index.ts',
+    'streams/index': 'src/streams/index.ts',
+    'watcher/index': 'src/watcher/index.ts',
   },
   // ESM-only output
   format: ['esm'],
@@ -44,5 +47,6 @@ export default defineConfig({
     'p-retry',
     'cli-progress',
     'yocto-spinner',
+    'chokidar',
   ],
 });
