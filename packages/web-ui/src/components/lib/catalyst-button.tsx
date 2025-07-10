@@ -158,6 +158,7 @@ const styles = {
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
       '[--btn-icon:var(--color-rose-300)] data-active:[--btn-icon:var(--color-rose-200)] data-hover:[--btn-icon:var(--color-rose-200)]',
     ],
+
     primary: [
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
       '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',

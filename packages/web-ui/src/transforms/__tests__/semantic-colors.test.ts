@@ -235,4 +235,41 @@ export function CatalystBadge({ color = 'red', ...props }) {
       expect(secondColorsMatch?.[0]).not.toContain('primary:');
     });
   });
+
+  describe('Nested Colors in Styles', () => {
+    it('should add semantic colors to button-style nested colors object', () => {
+      const input = `
+  const styles = {
+    base: ['relative inline-flex'],
+    colors: {
+      zinc: [
+        'text-white [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
+        '[--btn-icon:var(--color-zinc-400)]',
+      ],
+      blue: [
+        'text-white [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
+        '[--btn-icon:var(--color-blue-400)]',
+      ],
+    },
+  };
+
+  export const CatalystButton = forwardRef(function CatalystButton(props) {
+    return <button className={cn(styles.base, styles.colors[color])} {...props} />;
+  });
+      `.trim();
+
+      const result = transformSemanticColors(input);
+
+      expectResult(result);
+      expect(result.value.changed).toBe(true);
+      expect(result.value.content).toContain('primary:');
+      expect(result.value.content).toContain('secondary:');
+      expect(result.value.content).toContain('destructive:');
+      expect(result.value.content).toContain('accent:');
+      expect(result.value.content).toContain('muted:');
+      // Should preserve existing colors
+      expect(result.value.content).toContain('zinc:');
+      expect(result.value.content).toContain('blue:');
+    });
+  });
 });
