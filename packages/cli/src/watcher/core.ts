@@ -11,7 +11,6 @@ import type {
   WatchEventHandler,
   WatchEventType,
   WatcherInstance,
-  WatcherStats,
   WatchMiddleware,
 } from './types.js';
 
