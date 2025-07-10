@@ -60,13 +60,9 @@ export function executeSemanticColorsTransform(input: string): {
   //        secondary: ['text-white [--btn-bg:var(--color-zinc-600)]...']
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const hasSemanticColors = semanticColors.some(colorLine => {
-    const parts = colorLine.split(':');
-    if (parts.length < 2) return false;
-
-    const colorKey = parts[0].trim();
-
-    // Check if the color key exists (simpler check)
+  const semanticColorKeys = ['primary', 'secondary', 'destructive', 'accent', 'muted'];
+  const hasSemanticColors = semanticColorKeys.some(colorKey => {
+    // Check if the color key exists as a property (more precise check)
     return content.includes(`${colorKey}:`);
   });
 
@@ -109,23 +105,29 @@ export function executeSemanticColorsTransform(input: string): {
     //
     /////////////////////////////////////////////////////////////////////////////////
     if (!patternFound && (nestedColorsObject || stylesColorsObject)) {
-      // More flexible pattern for nested colors objects
-      const colorsObjectPattern = /(colors:\s*\{[\s\S]*?)(\n\s*})/;
-      const match = content.match(colorsObjectPattern);
+      // Use a more robust regex that handles both patterns:
+      // 1. colors: { ... }; (direct colors object)
+      // 2. colors: { ... }, (nested colors object in styles)
+      const colorsPattern = /(colors:\s*\{[\s\S]*?)(\n\s*}[,;]?)/;
+      const match = content.match(colorsPattern);
 
       if (match) {
         const beforeClosing = match[1];
-        const closing = match[2];
+        const closingWithIndent = match[2];
 
         // Check if the content before closing brace ends with a comma
         const needsComma = !beforeClosing.trim().endsWith(',');
         const commaPrefix = needsComma ? ',' : '';
 
-        // Add semantic colors before the closing brace with proper indentation
-        const semanticColorsBlock = semanticColors.map(color => `    ${color}`).join('\n');
-        const newColorsObject = `${beforeClosing}${commaPrefix}\n    ${semanticColorsBlock}${closing}`;
+        // Extract the indentation from the closing brace line
+        const indentMatch = closingWithIndent.match(/\n(\s*)/);
+        const indent = indentMatch ? indentMatch[1] : '  ';
 
-        content = content.replace(colorsObjectPattern, newColorsObject);
+        // Add semantic colors before the closing brace with proper indentation
+        const semanticColorsBlock = semanticColors.map(color => `${indent}  ${color}`).join('\n');
+        const newColorsObject = `${beforeClosing}${commaPrefix}\n\n${semanticColorsBlock}\n${closingWithIndent}`;
+
+        content = content.replace(colorsPattern, newColorsObject);
         changed = true;
         patternFound = true;
       }
