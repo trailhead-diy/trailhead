@@ -10,6 +10,20 @@ import { getSemanticColorsForComponent } from './mappings.js';
 
 /**
  * Core semantic colors transformation logic
+ *
+ * Transforms hardcoded color values to semantic color tokens for consistent theming.
+ * Processes both standalone colors objects and embedded colors within configuration objects.
+ *
+ * @param input - The source code content to transform
+ * @returns Object containing transformed content, change status, and any warnings
+ *
+ * @example
+ * ```typescript
+ * // Input:
+ * const colors = { red: '#ef4444', blue: '#3b82f6' };
+ * // Output:
+ * const colors = { red: 'var(--color-red-500)', blue: 'var(--color-blue-500)' };
+ * ```
  */
 export function executeSemanticColorsTransform(input: string): {
   content: string;

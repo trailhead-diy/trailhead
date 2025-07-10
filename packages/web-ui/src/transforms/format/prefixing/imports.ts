@@ -1,8 +1,8 @@
 /**
  * Import declaration processing for Catalyst prefix transformations using TypeScript AST
  *
- * Migrated from jscodeshift to TypeScript's native compiler API for better performance,
- * reliability, and consistency with other transforms in the codebase.
+ * Uses TypeScript's native compiler API for reliable AST parsing and transformation,
+ * ensuring consistency with other transforms in the codebase.
  *
  * Handles transformation of import statements to use Catalyst prefixes and
  * catalyst- path prefixes. Protects Headless UI imports from any modifications.
@@ -48,7 +48,7 @@
  * Pure functional interface with no classes.
  */
 
-import type { TSASTContext } from './core.js';
+import type { ASTContext } from './core.js';
 import ts from 'typescript';
 
 /**
@@ -68,7 +68,7 @@ import ts from 'typescript';
  * - Preserves `import { Button } from '@headlessui/react'` unchanged
  * - Handles multiple import specifiers in a single declaration
  */
-export function processTSImportDeclarations(context: TSASTContext): ts.SourceFile {
+export function processImportDeclarations(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////

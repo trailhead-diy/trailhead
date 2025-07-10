@@ -1,8 +1,8 @@
 /**
  * Reference transformation for Catalyst prefix transformations using TypeScript AST
  *
- * Migrated from jscodeshift to TypeScript's native compiler API for better performance,
- * reliability, and consistency with other transforms in the codebase.
+ * Uses TypeScript's native compiler API for reliable AST parsing and transformation,
+ * ensuring consistency with other transforms in the codebase.
  *
  * Handles transformation of all component and type references throughout the code,
  * including function parameters, JSX elements, type references, and variable declarations.
@@ -57,7 +57,7 @@
  * Pure functional interface with no classes.
  */
 
-import type { TSASTContext } from './core.js';
+import type { ASTContext } from './core.js';
 import ts from 'typescript';
 
 /**
@@ -75,7 +75,7 @@ import ts from 'typescript';
  * - Transforms `CatalystButton = ({ style }: ButtonProps)` to use `CatalystButtonProps`
  * - Preserves Headless UI prop types from any modifications
  */
-export function updateTSFunctionParameterTypes(context: TSASTContext): ts.SourceFile {
+export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, headlessPropsTypes, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ export function updateTSFunctionParameterTypes(context: TSASTContext): ts.Source
  * - Updates `ComponentPropsWithoutRef<typeof Input>` references
  * - Handles complex typeof expressions in utility types
  */
-export function updateTSTypeofUsages(context: TSASTContext): ts.SourceFile {
+export function updateTypeofUsages(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +294,7 @@ export function updateTSTypeofUsages(context: TSASTContext): ts.SourceFile {
  * - Updates `<Component as={Button} />` expressions
  * - Handles self-closing JSX elements properly
  */
-export function updateTSJSXReferences(context: TSASTContext): ts.SourceFile {
+export function updateJSXReferences(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -391,7 +391,7 @@ export function updateTSJSXReferences(context: TSASTContext): ts.SourceFile {
  * - Updates `ButtonProps` type annotations to `CatalystButtonProps`
  * - Preserves `Headless.ButtonProps` references unchanged
  */
-export function updateTSTypeReferences(context: TSASTContext): ts.SourceFile {
+export function updateTypeReferences(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +481,7 @@ export function updateTSTypeReferences(context: TSASTContext): ts.SourceFile {
  * - Preserves `Headless.Button` member expressions
  * - Skips transforming import statements and type declarations
  */
-export function updateTSDirectIdentifiers(context: TSASTContext): ts.SourceFile {
+export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, changes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////

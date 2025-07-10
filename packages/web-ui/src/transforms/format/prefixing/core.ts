@@ -1,8 +1,8 @@
 /**
  * Core AST utilities and mapping system for Catalyst prefix transformations using TypeScript AST
  *
- * Migrated from jscodeshift to TypeScript's native compiler API for better performance,
- * reliability, and consistency with other transforms in the codebase.
+ * Uses TypeScript's native compiler API for reliable AST parsing and transformation,
+ * ensuring consistency with other transforms in the codebase.
  *
  * Transform process:
  * 1. Parse code into TypeScript AST using ts.createSourceFile
@@ -51,7 +51,7 @@ import ts from 'typescript';
 /**
  * AST context for TypeScript-based transformations
  */
-export interface TSASTContext {
+export interface ASTContext {
   sourceFile: ts.SourceFile;
   oldToNewMap: Map<string, string>;
   headlessPropsTypes: Set<string>;
@@ -62,7 +62,7 @@ export interface TSASTContext {
 /**
  * Initialize TypeScript AST context
  */
-export function createTSASTContext(input: string): Result<TSASTContext, CLIError> {
+export function createASTContext(input: string): Result<ASTContext, CLIError> {
   try {
     const sourceFile = ts.createSourceFile(
       'temp.tsx',
@@ -112,7 +112,7 @@ export function createTSASTContext(input: string): Result<TSASTContext, CLIError
 /**
  * Helper function to check if a node is exported
  */
-function isNodeExported(node: ts.Node): boolean {
+function hasExportModifier(node: ts.Node): boolean {
   // Check if the current node itself has export modifier
   if (
     ts.isFunctionDeclaration(node) ||
@@ -138,7 +138,7 @@ function isNodeExported(node: ts.Node): boolean {
   return false;
 }
 
-export function processTSExportDeclarations(context: TSASTContext): ts.SourceFile {
+export function processExportDeclarations(context: ASTContext): ts.SourceFile {
   const { sourceFile, changes, oldToNewMap } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ export function processTSExportDeclarations(context: TSASTContext): ts.SourceFil
           const originalName = node.name.text;
 
           // Only process if this function is actually exported
-          const isExported = isNodeExported(node);
+          const isExported = hasExportModifier(node);
 
           if (!originalName.startsWith('Catalyst') && isExported) {
             const newName = `Catalyst${originalName}`;
@@ -213,7 +213,7 @@ export function processTSExportDeclarations(context: TSASTContext): ts.SourceFil
           const originalName = node.name.text;
 
           // Only process if this variable is actually exported and looks like a component
-          const isExported = isNodeExported(node);
+          const isExported = hasExportModifier(node);
           const looksLikeComponent = originalName.charAt(0) >= 'A' && originalName.charAt(0) <= 'Z';
 
           if (!originalName.startsWith('Catalyst') && isExported && looksLikeComponent) {
@@ -259,7 +259,7 @@ export function processTSExportDeclarations(context: TSASTContext): ts.SourceFil
  * - Protects `ButtonProps` from `import { ButtonProps } from '@headlessui/react'`
  * - Handles namespace imports like `import * as Headless from '@headlessui/react'`
  */
-export function detectTSHeadlessReferences(context: TSASTContext): void {
+export function detectHeadlessReferences(context: ASTContext): void {
   const { sourceFile, headlessPropsTypes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +310,7 @@ export function detectTSHeadlessReferences(context: TSASTContext): void {
  * - Maps `InputState` to `CatalystInputState`
  * - Generates automatic Props mappings for discovered components
  */
-export function mapTSTypeAliases(context: TSASTContext): ts.SourceFile {
+export function mapTypeAliases(context: ASTContext): ts.SourceFile {
   const { sourceFile, oldToNewMap, headlessPropsTypes } = context;
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ export function mapTSTypeAliases(context: TSASTContext): ts.SourceFile {
  * Uses TypeScript's native printer for consistent formatting and proper
  * handling of all TypeScript syntax features.
  */
-export function generateTSTransformedCode(sourceFile: ts.SourceFile): string {
+export function generateTransformedCode(sourceFile: ts.SourceFile): string {
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
     removeComments: false,
