@@ -7,9 +7,6 @@ import { dirname, join } from 'path';
 import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import type { CLIContext } from './types.js';
 
-// Import new CLI package-based configuration
-import { loadConfigSync } from '../config.js';
-
 /**
  * Internal helper: Get package version from package.json
  */
@@ -59,27 +56,11 @@ export const isTrailheadProject = async (projectRoot: string): Promise<boolean> 
 export const createCLIContext = async (baseDir: string): Promise<CLIContext> => {
   const projectRoot = process.cwd();
 
-  // Load configuration using simplified CLI package system
-  try {
-    const configResult = loadConfigSync(projectRoot);
-
-    return {
-      version: await getPackageVersion(baseDir),
-      projectRoot,
-      isTrailheadProject: await isTrailheadProject(projectRoot),
-      config: {
-        loaded: true,
-        filepath: configResult.filepath,
-        data: configResult.config,
-      },
-    };
-  } catch (_error) {
-    return {
-      version: await getPackageVersion(baseDir),
-      projectRoot,
-      isTrailheadProject: await isTrailheadProject(projectRoot),
-    };
-  }
+  return {
+    version: await getPackageVersion(baseDir),
+    projectRoot,
+    isTrailheadProject: await isTrailheadProject(projectRoot),
+  };
 };
 
 /**

@@ -17,9 +17,7 @@ import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesyst
 
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
-import { loadConfigSync, logConfigDiscovery } from '../config.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
-import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
 import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
 import chalk from 'chalk';
 
@@ -27,8 +25,13 @@ import chalk from 'chalk';
 // TYPES
 // ============================================================================
 
-// Use strict typing for better type safety
-type DevRefreshOptions = StrictDevRefreshOptions;
+interface DevRefreshOptions {
+  readonly src?: string;
+  readonly dest?: string;
+  readonly clean?: boolean;
+  readonly skipTransforms?: boolean;
+  readonly verbose?: boolean;
+}
 
 interface RefreshConfig {
   source: string;
@@ -262,36 +265,15 @@ export const createDevRefreshCommand = () => {
     ],
 
     action: async (options: DevRefreshOptions, cmdContext: CommandContext) => {
-      // Load configuration
-      const configResult = loadConfigSync(cmdContext.projectRoot);
-      const loadedConfig = configResult.config;
-      const configPath = configResult.filepath;
-
-      // Only show config info in verbose mode
-      if (options.verbose || loadedConfig.verbose) {
-        if (configPath) {
-          cmdContext.logger.info(`Configuration loaded from: ${configPath}`);
-        }
-        logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
-      }
-
-      // Build configuration merging: CLI options > config file > defaults
-      const devRefreshConfig = loadedConfig.devRefresh;
       const config: RefreshConfig = {
-        source: join(
-          cmdContext.projectRoot,
-          options.src || devRefreshConfig?.srcDir || 'catalyst-ui-kit/typescript'
-        ),
-        dest: join(
-          cmdContext.projectRoot,
-          options.dest || devRefreshConfig?.destDir || 'src/components/lib'
-        ),
+        source: join(cmdContext.projectRoot, options.src || 'catalyst-ui-kit/typescript'),
+        dest: join(cmdContext.projectRoot, options.dest || 'src/components/lib'),
         clean: options.clean ?? true,
         copiedFiles: [], // Will be populated after copying
       };
 
       // Display configuration only in verbose mode
-      if (options.verbose || loadedConfig.verbose) {
+      if (options.verbose) {
         displaySummary(
           'Dev Refresh Configuration',
           [
@@ -308,7 +290,7 @@ export const createDevRefreshCommand = () => {
       const phases = createRefreshPhases(options, cmdContext.logger);
       const phaseResult = await executeWithPhases(phases, config, {
         ...cmdContext,
-        verbose: options.verbose || loadedConfig.verbose || false,
+        verbose: options.verbose || false,
       });
 
       if (phaseResult.isErr()) {

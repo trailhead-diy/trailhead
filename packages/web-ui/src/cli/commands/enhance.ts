@@ -16,7 +16,6 @@ import { join } from 'path';
 import chalk from 'chalk';
 
 import { runMainPipeline, getMainPipelineInfo } from '../../transforms/index.js';
-import { loadConfigSync, logConfigDiscovery } from '../config.js';
 
 // ============================================================================
 // TYPES
@@ -178,15 +177,6 @@ export const createEnhanceCommand = () => {
         return ok(undefined);
       }
 
-      // Load configuration
-      const configResult = loadConfigSync(cmdContext.projectRoot);
-      const loadedConfig = configResult.config;
-      const configPath = configResult.filepath;
-
-      if (options.verbose && configPath) {
-        logConfigDiscovery(configPath, loadedConfig, options.verbose, configResult.source);
-      }
-
       // Resolve source directory
       const sourceDir = options.src
         ? options.src.startsWith('/')
@@ -221,7 +211,6 @@ export const createEnhanceCommand = () => {
             label: 'Transforms Applied',
             value: getMainPipelineInfo().transformCount.toString(),
           },
-          ...(configPath ? [{ label: 'Config', value: configPath }] : []),
         ],
         cmdContext
       );

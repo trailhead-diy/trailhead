@@ -27,11 +27,6 @@ export interface CLIContext {
   readonly version: string;
   readonly projectRoot: string;
   readonly isTrailheadProject: boolean;
-  readonly config?: {
-    readonly loaded: boolean;
-    readonly filepath: string | null;
-    readonly data: import('../config.js').TrailheadConfig;
-  };
 }
 
 export interface PromptChoice<T = string> {
