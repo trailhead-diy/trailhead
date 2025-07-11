@@ -26,31 +26,6 @@ const getPackageVersion = async (baseDir: string): Promise<string> => {
 };
 
 /**
- * Pure function: Check if current directory is a Trailhead UI project
- */
-export const isTrailheadProject = async (projectRoot: string): Promise<boolean> => {
-  const fs = createNodeFileSystem();
-  try {
-    const packageJsonPath = join(projectRoot, 'package.json');
-    const accessResult = await fs.access(packageJsonPath);
-    if (!accessResult.isOk()) return false;
-
-    const readResult = await fs.readJson(packageJsonPath);
-    if (!readResult.isOk()) return false;
-
-    const packageJson = readResult.value as {
-      dependencies?: Record<string, string>;
-      devDependencies?: Record<string, string>;
-    };
-    return !!(
-      packageJson.dependencies?.['trailhead-ui'] || packageJson.devDependencies?.['trailhead-ui']
-    );
-  } catch {
-    return false;
-  }
-};
-
-/**
  * Pure function: Create CLI context
  */
 export const createCLIContext = async (baseDir: string): Promise<CLIContext> => {
@@ -59,7 +34,7 @@ export const createCLIContext = async (baseDir: string): Promise<CLIContext> => 
   return {
     version: await getPackageVersion(baseDir),
     projectRoot,
-    isTrailheadProject: await isTrailheadProject(projectRoot),
+    isTrailheadProject: false,
   };
 };
 
@@ -69,22 +44,4 @@ export const createCLIContext = async (baseDir: string): Promise<CLIContext> => 
 export const getScriptDir = (): string => {
   const __filename = fileURLToPath(import.meta.url);
   return dirname(__filename);
-};
-
-/**
- * Pure function: Get Trailhead UI package root
- * Resolves to the installed package location
- */
-export const getTrailheadPackageRoot = (): string => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-
-  // Check if we're running from source or dist
-  if (__dirname.includes('/dist/')) {
-    // From dist/src/cli/utils/context.js, go up to package root
-    return join(__dirname, '..', '..', '..', '..');
-  } else {
-    // From src/cli/utils/context.ts, go up to package root
-    return join(__dirname, '..', '..', '..');
-  }
 };
