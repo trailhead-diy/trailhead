@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockFileSystem } from '@esteban-url/trailhead-cli/testing';
 // import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
 import { join } from 'path';
-import { runMainPipelineWithFs } from '@/transforms/index.js';
+import { runMainPipelineWithFs } from '../../../transforms/index.js';
 
 describe('Enhance Command Integration', () => {
   let fs: ReturnType<typeof mockFileSystem>;

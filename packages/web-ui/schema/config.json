@@ -8,59 +8,6 @@
       "type": "string",
       "description": "JSON Schema reference"
     },
-    "install": {
-      "type": "object",
-      "description": "Installation command configuration",
-      "properties": {
-        "destDir": {
-          "type": "string",
-          "description": "Destination directory for component installation",
-          "default": "src/components/ui"
-        },
-        "wrappers": {
-          "type": "boolean",
-          "description": "Whether to install wrapper files",
-          "default": true
-        },
-        "framework": {
-          "type": "string",
-          "enum": ["nextjs", "vite", "redwood-sdk", "generic-react"],
-          "description": "Target framework"
-        }
-      },
-      "additionalProperties": false
-    },
-    "transforms": {
-      "type": "object",
-      "description": "Transform command configuration",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether transforms are enabled globally",
-          "default": true
-        },
-        "srcDir": {
-          "type": "string",
-          "description": "Source directory containing components to transform",
-          "default": "src/components/lib"
-        },
-        "enabledTransforms": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of transforms to enable (overrides defaults)"
-        },
-        "disabledTransforms": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of transforms to disable"
-        }
-      },
-      "additionalProperties": false
-    },
     "devRefresh": {
       "type": "object",
       "description": "Dev refresh command configuration",

@@ -1,2 +1,0 @@
-origin	git@github.com:esteban-url/trailhead-ui.git (fetch)
-origin	git@github.com:esteban-url/trailhead-ui.git (push)
