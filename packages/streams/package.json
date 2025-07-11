@@ -1,0 +1,72 @@
+{
+  "name": "@trailhead/streams",
+  "version": "1.0.0",
+  "description": "Functional stream processing utilities for Node.js with Result types",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./readable": {
+      "types": "./dist/readable/index.d.ts",
+      "default": "./dist/readable/index.js"
+    },
+    "./writable": {
+      "types": "./dist/writable/index.d.ts",
+      "default": "./dist/writable/index.js"
+    },
+    "./transform": {
+      "types": "./dist/transform/index.d.ts",
+      "default": "./dist/transform/index.js"
+    },
+    "./duplex": {
+      "types": "./dist/duplex/index.d.ts",
+      "default": "./dist/duplex/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "types": "tsc --noEmit",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@trailhead/core": "workspace:*",
+    "neverthrow": "^8.1.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "streams",
+    "nodejs",
+    "functional",
+    "typescript",
+    "result-types",
+    "trailhead"
+  ],
+  "author": "Trailhead CLI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esteban-url/trailhead-cli.git",
+    "directory": "packages/streams"
+  }
+}
