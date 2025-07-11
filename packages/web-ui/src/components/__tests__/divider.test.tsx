@@ -58,8 +58,8 @@ describe('Divider Component', () => {
       // Should still have base classes
       expect(divider).toHaveClass('w-full');
       expect(divider).toHaveClass('border-t');
-      // Custom border color may be overridden by default styles
-      expect(divider).toHaveClass('border-zinc-950/10');
+      // Custom border color should override default styles (className is now last)
+      expect(divider).toHaveClass('border-red-500');
     });
 
     it('should override default styling with custom className when needed', () => {
@@ -70,8 +70,8 @@ describe('Divider Component', () => {
       expect(divider).toHaveClass('border-b'); // Custom border direction
       expect(divider).toHaveClass('w-full'); // Base class preserved
       expect(divider).toHaveClass('border-t'); // Default border direction still applied
-      // Default color may override custom color
-      expect(divider).toHaveClass('border-zinc-950/10');
+      // Custom color should override default color (className is now last)
+      expect(divider).toHaveClass('border-red-500');
     });
   });
 

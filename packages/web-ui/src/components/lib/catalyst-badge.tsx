@@ -6,7 +6,6 @@ import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-
 const colors = {
   red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20',
   orange:
@@ -35,7 +34,6 @@ const colors = {
   pink: 'bg-pink-400/15 text-pink-700 group-data-hover:bg-pink-400/25 dark:bg-pink-400/10 dark:text-pink-400 dark:group-data-hover:bg-pink-400/20',
   rose: 'bg-rose-400/15 text-rose-700 group-data-hover:bg-rose-400/25 dark:bg-rose-400/10 dark:text-rose-400 dark:group-data-hover:bg-rose-400/20',
   zinc: 'bg-zinc-600/10 text-zinc-700 group-data-hover:bg-zinc-600/20 dark:bg-white/5 dark:text-zinc-400 dark:group-data-hover:bg-white/10',
-
   primary:
     'bg-primary-500/15 text-primary-700 group-data-hover:bg-primary-500/25 dark:bg-primary-500/10 dark:text-primary-400 dark:group-data-hover:bg-primary-500/20',
   secondary:
@@ -47,9 +45,9 @@ const colors = {
   muted:
     'bg-muted-500/15 text-muted-700 group-data-hover:bg-muted-500/25 dark:bg-muted-500/10 dark:text-muted-400 dark:group-data-hover:bg-muted-500/20',
 };
-
-export type CatalystBadgeProps = { color?: keyof typeof colors };
-
+export type CatalystBadgeProps = {
+  color?: keyof typeof colors;
+};
 export function CatalystBadge({
   color = 'zinc',
   className,
@@ -59,31 +57,32 @@ export function CatalystBadge({
     <span
       {...props}
       className={cn(
-        className,
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline',
-        colors[color]
+        colors[color],
+        className
       )}
     />
   );
 }
-
 export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
   {
     color = 'zinc',
     className,
     children,
     ...props
-  }: CatalystBadgeProps & { className?: string; children: React.ReactNode } & (
+  }: CatalystBadgeProps & {
+    className?: string;
+    children: React.ReactNode;
+  } & (
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
     ),
   ref: React.ForwardedRef<HTMLElement>
 ) {
   let classes = cn(
-    className,
-    'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'
+    'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
+    className
   );
-
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>

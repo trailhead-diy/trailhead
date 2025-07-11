@@ -2,7 +2,8 @@
  * Shared file filter predicates for consistent file filtering across the codebase
  */
 
-import type { FileFilterPredicate } from '../installation/types.js';
+// Define file filter predicate type locally since installation types were removed
+type FileFilterPredicate<T = string> = (file: T) => boolean;
 
 // Basic file type filters
 export const isTsxFile: FileFilterPredicate = file => file.endsWith('.tsx');

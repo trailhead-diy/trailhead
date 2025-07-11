@@ -3,7 +3,6 @@
 import { createCLI } from '@esteban-url/trailhead-cli';
 import { chalk } from '@esteban-url/trailhead-cli/utils';
 import { createCLIContext, getScriptDir } from './cli/utils/context.js';
-import { createInstallCommand } from './cli/commands/install.js';
 import { createEnhanceCommand } from './cli/commands/enhance.js';
 import { createTransformsCommand } from './cli/commands/transforms.js';
 import { createDevRefreshCommand } from './cli/commands/dev-refresh.js';
@@ -30,7 +29,6 @@ async function main(): Promise<void> {
       description: 'Trailhead UI - Catalyst UI with advanced theming system',
       version: context.version,
       commands: [
-        createInstallCommand(),
         createEnhanceCommand(),
         createTransformsCommand(),
         createDevRefreshCommand(),

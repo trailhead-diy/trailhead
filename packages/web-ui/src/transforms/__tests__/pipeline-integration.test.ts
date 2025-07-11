@@ -4,10 +4,11 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { transformClsxToCn } from '../transforms/clsx-to-cn.js';
-import { transformSemanticColors } from '../transforms/semantic-colors.js';
-import { transformFileHeaders } from '../transforms/file-headers.js';
-import { transformCatalystPrefix } from '../transforms/catalyst-prefix.js';
+import { transformClsxToCn } from '../imports/clsx-to-cn.js';
+import { transformSemanticColors } from '../semantic/color-tokens/index.js';
+import { transformFileHeaders } from '../format/file-headers.js';
+import { transformCatalystPrefix } from '../format/prefixing/index.js';
+import { transformRemoveDuplicateProps } from '../format/remove-duplicate-props.js';
 
 describe('Transform Pipeline Integration', () => {
   describe('clsx-to-cn transform', () => {
@@ -19,8 +20,8 @@ export function Button() {
 
       const result = transformClsxToCn(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain("import { cn } from '../utils/cn';");
         expect(result.value.content).toContain('cn(');
@@ -41,8 +42,8 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('primary:');
         expect(result.value.content).toContain('secondary:');
@@ -57,8 +58,8 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(false);
         expect(result.value.warnings).toContain('No colors object found in component');
       }
@@ -73,15 +74,15 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformFileHeaders(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('WARNING: This file is auto-generated');
         expect(result.value.content).toContain('Auto generated on');
       }
     });
 
-    it('should handle use client files', () => {
+    it('should add headers at the very beginning of files', () => {
       const input = `'use client'
 
 export function Button() {
@@ -90,11 +91,13 @@ export function Button() {
 
       const result = transformFileHeaders(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
-        expect(result.value.content.startsWith("'use client'")).toBe(true);
-        expect(result.value.content).toContain('WARNING: This file is auto-generated');
+        expect(result.value.content.startsWith('// WARNING: This file is auto-generated')).toBe(
+          true
+        );
+        expect(result.value.content).toContain("'use client'");
       }
     });
   });
@@ -107,8 +110,8 @@ export function Button() {
 
       const result = transformCatalystPrefix(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(true);
         expect(result.value.content).toContain('CatalystButton');
       }
@@ -121,8 +124,44 @@ export function Button() {
 
       const result = transformCatalystPrefix(input);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.changed).toBe(false);
+      }
+    });
+  });
+
+  describe('remove-duplicate-props transform', () => {
+    it('should remove duplicate prop spreads from JSX elements', () => {
+      const input = `export function Component() {
+  return (
+    <div
+      {...props}
+      data-slot="label"
+      {...props}
+    />
+  );
+}`;
+
+      const result = transformRemoveDuplicateProps(input);
+
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
+        expect(result.value.changed).toBe(true);
+        const propsCount = (result.value.content.match(/\{\.\.\.props\}/g) || []).length;
+        expect(propsCount).toBe(1);
+      }
+    });
+
+    it('should skip elements with no duplicate spreads', () => {
+      const input = `export function Component() {
+  return <div {...props} className="test" />;
+}`;
+
+      const result = transformRemoveDuplicateProps(input);
+
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.value.changed).toBe(false);
       }
     });

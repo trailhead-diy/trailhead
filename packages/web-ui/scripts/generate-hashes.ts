@@ -15,7 +15,7 @@ import {
   generateCatalystHashData,
   writeCatalystHashes,
 } from '../src/cli/core/installation/verification.js';
-import { CATALYST_VERSION, Ok, Err } from '../src/cli/core/installation/types.js';
+import { CATALYST_VERSION, ok, err } from '../src/cli/core/installation/types.js';
 import type {
   InstallError,
   FileSystem as InstallFileSystem,
@@ -46,71 +46,71 @@ const createDefaultFileSystem = (): InstallFileSystem => {
     exists: async (path: string) => {
       const result = await robustFs.exists(path);
       if (result.success) {
-        return Ok(result.value);
+        return ok(result.value);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     readDir: async (path: string) => {
       const result = await robustFs.readdir(path);
       if (result.success) {
-        return Ok(result.value);
+        return ok(result.value);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     readFile: async (path: string) => {
       const result = await robustFs.readFile(path);
       if (result.success) {
-        return Ok(result.value);
+        return ok(result.value);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     writeFile: async (path: string, content: string) => {
       const result = await robustFs.writeFile(path, content);
       if (result.success) {
-        return Ok(undefined);
+        return ok(undefined);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     readJson: async <T>(path: string) => {
       const result = await robustFs.readJson<T>(path);
       if (result.success) {
-        return Ok(result.value);
+        return ok(result.value);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     writeJson: async (path: string, data: any, options?: any) => {
       const result = await robustFs.writeJson(path, data, options);
       if (result.success) {
-        return Ok(undefined);
+        return ok(undefined);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     copy: async (src: string, dest: string, options?: any) => {
       const result = await robustFs.copy(src, dest, options);
       if (result.success) {
-        return Ok(undefined);
+        return ok(undefined);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     ensureDir: async (path: string) => {
       const result = await robustFs.ensureDir(path);
       if (result.success) {
-        return Ok(undefined);
+        return ok(undefined);
       } else {
-        return Err(adaptError((result as any).error));
+        return err(adaptError((result as any).error));
       }
     },
     stat: async (_path: string) => {
       // stat is not available in the new filesystem module
       // Return a mock implementation for now
-      return Err(adaptError({ message: 'stat not implemented', type: 'FileSystemError' }));
+      return err(adaptError({ message: 'stat not implemented', type: 'FileSystemError' }));
     },
   };
 };
