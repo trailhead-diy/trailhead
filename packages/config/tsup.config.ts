@@ -1,0 +1,19 @@
+import { defineConfig } from 'tsup';
+
+export default defineConfig({
+  entry: {
+    index: 'src/index.ts',
+    'core/index': 'src/core/operations.ts',
+    'loaders/index': 'src/loaders/operations.ts',
+    'validators/index': 'src/validators/operations.ts',
+    'transformers/index': 'src/transformers/operations.ts',
+  },
+  format: ['esm'],
+  dts: false, // Use tsc for declarations
+  sourcemap: true,
+  clean: true,
+  splitting: true,
+  treeshake: true,
+  minify: false,
+  target: 'node18',
+});

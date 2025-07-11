@@ -1,0 +1,70 @@
+{
+  "name": "@trailhead/watcher",
+  "version": "1.0.0",
+  "description": "Functional file system watching utilities with Result types and event filtering",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "default": "./dist/events/index.js"
+    },
+    "./patterns": {
+      "types": "./dist/patterns/index.d.ts",
+      "default": "./dist/patterns/index.js"
+    },
+    "./filters": {
+      "types": "./dist/filters/index.d.ts",
+      "default": "./dist/filters/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "types": "tsc --noEmit",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "chokidar": "^4.0.1",
+    "neverthrow": "^8.1.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "file-watching",
+    "chokidar",
+    "functional",
+    "typescript",
+    "result-types",
+    "trailhead"
+  ],
+  "author": "Trailhead CLI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esteban-url/trailhead-cli.git",
+    "directory": "packages/watcher"
+  }
+}
