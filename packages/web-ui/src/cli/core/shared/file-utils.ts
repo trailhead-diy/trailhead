@@ -49,8 +49,8 @@ export function updateStats(
 ): ConversionStats {
   const newStats: ConversionStats = {
     filesProcessed: stats.filesProcessed + 1,
-    filesModified: stats.filesModified + (result.isOk() && result.changes > 0 ? 1 : 0),
-    totalConversions: stats.totalConversions + (result.isOk() ? result.changes : 0),
+    filesModified: stats.filesModified + (result.success && result.changes > 0 ? 1 : 0),
+    totalConversions: stats.totalConversions + (result.success ? result.changes : 0),
     conversionsByType: new Map(stats.conversionsByType),
   };
 

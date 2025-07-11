@@ -3,7 +3,7 @@
  */
 
 import * as path from 'node:path';
-import type { InstallConfig } from '../installation/types.js';
+// Types removed with installation system
 
 // ============================================================================
 // SOURCE PATH GENERATION
@@ -83,54 +83,7 @@ export const generateSourcePaths = (trailheadRoot: string) => {
 };
 
 // ============================================================================
-// DESTINATION PATH GENERATION
-// ============================================================================
-
-/**
- * Pure function: Generate destination paths for installation
- */
-export const generateDestinationPaths = (config: InstallConfig) => ({
-  // Theme system destination (in destinationDir/theme/ - sibling of lib)
-  themeDir: path.join(config.componentsDir, 'theme'),
-  themeConfig: path.join(config.componentsDir, 'theme', 'config.ts'),
-  themeBuilder: path.join(config.componentsDir, 'theme', 'builder.ts'),
-  themeRegistry: path.join(config.componentsDir, 'theme', 'registry.ts'),
-  themeUtils: path.join(config.componentsDir, 'theme', 'utils.ts'),
-  themePresets: path.join(config.componentsDir, 'theme', 'presets.ts'),
-  themeIndex: path.join(config.componentsDir, 'theme', 'index.ts'),
-  catalystTheme: path.join(config.componentsDir, 'theme', 'catalyst-theme.ts'),
-  semanticTokens: path.join(config.componentsDir, 'theme', 'semantic-tokens.ts'),
-  semanticEnhancements: path.join(config.componentsDir, 'theme', 'semantic-enhancements.ts'),
-  themeProvider: path.join(config.componentsDir, 'theme', 'theme-provider.tsx'),
-  themeSwitcher: path.join(config.componentsDir, 'theme', 'theme-switcher.tsx'),
-
-  // Utility files destination
-  cnUtils: path.join(config.componentsDir, 'utils', 'cn.ts'),
-
-  // Catalyst components destination (in destinationDir/lib/)
-  catalystDir: path.join(config.componentsDir, 'lib'),
-
-  // Component wrapper destination (in destinationDir/components/)
-  wrapperComponentsDir: path.join(config.componentsDir),
-
-  // Index files
-  componentsIndex: path.join(config.componentsDir, 'index.ts'),
-  libIndex: path.join(config.componentsDir, 'lib', 'index.ts'),
-});
-
-// ============================================================================
 // PATH UTILITIES
 // ============================================================================
 
-/**
- * Create path mappings for TypeScript
- */
-export const createPathMappings = (config: InstallConfig): Record<string, string[]> => {
-  const componentsPath = path.relative(config.projectRoot, config.componentsDir);
-
-  return {
-    '@/components/*': [`./${componentsPath}/*`],
-    '@/lib/*': [`./${componentsPath}/lib/*`],
-    '@/theme/*': [`./${componentsPath}/theme/*`],
-  };
-};
+// Installation-related path functions removed with installation system

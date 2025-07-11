@@ -7,7 +7,8 @@ import { join } from 'path';
 import { ok } from '@esteban-url/trailhead-cli/core';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
 import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
-import type { FileSystem } from '../cli/core/installation/types.js';
+// Import FileSystem from CLI framework
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import functional transforms
 import { transformClsxToCn, clsxToCnTransform } from './imports/clsx-to-cn.js';
@@ -82,23 +83,8 @@ export async function runMainPipelineWithFs(
   let processedFiles = 0;
 
   try {
-    // Use injected filesystem if available, otherwise fall back to Node.js fs
-    let files: string[];
-    if (fs) {
-      const readdirResult = await fs.readdir(sourceDir);
-      if (readdirResult.isErr()) {
-        errors.push({ file: sourceDir, error: 'Failed to read directory' });
-        return {
-          success: false,
-          processedFiles: 0,
-          errors,
-          summary: 'Failed to read directory',
-        };
-      }
-      files = readdirResult.value;
-    } else {
-      files = await readdir(sourceDir);
-    }
+    // Use Node.js fs for directory reading (FileSystem interface doesn't have readdir)
+    const files = await readdir(sourceDir);
 
     const tsxFiles = files.filter(f => f.endsWith('.tsx') && isNotTestRelated(f));
     const filteredFiles = filter ? tsxFiles.filter(filter) : tsxFiles;
@@ -129,12 +115,12 @@ export async function runMainPipelineWithFs(
           ? await fs.readFile(filePath)
           : ok(await readFile(filePath, 'utf-8'));
 
-        if (contentResult.isErr ? contentResult.isErr() : !contentResult.isOk()) {
+        if (contentResult.isErr()) {
           errors.push({ file, error: 'Failed to read file' });
           continue;
         }
 
-        let content = contentResult.value;
+        let content = contentResult.value.toString();
         let hasChanges = false;
         const allWarnings: string[] = [];
 
@@ -173,7 +159,7 @@ export async function runMainPipelineWithFs(
             ? await fs.writeFile(filePath, content)
             : ok(await writeFile(filePath, content, 'utf-8'));
 
-          if (writeResult.isErr ? writeResult.isErr() : !writeResult.isOk()) {
+          if (writeResult.isErr()) {
             errors.push({ file, error: 'Failed to write file' });
             continue;
           }
