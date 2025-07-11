@@ -25,6 +25,7 @@ const packageSpecificConfig = defineConfig({
         '**/__tests__/**',
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
+        'src/demo/**',
       ],
     },
   },
