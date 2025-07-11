@@ -1,12 +1,11 @@
-'use client';
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
 
+'use client';
+import { cn } from '../utils/cn';
 import type React from 'react';
 import { createContext, useContext, useState } from 'react';
 import { CatalystLink } from './catalyst-link';
-import { SemanticColorToken, isSemanticToken, createSemanticTableStyles } from '../theme/index';
-import { cn } from '../utils/cn';
-
 const TableContext = createContext<{
   bleed: boolean;
   dense: boolean;
@@ -18,7 +17,6 @@ const TableContext = createContext<{
   grid: false,
   striped: false,
 });
-
 export function CatalystTable({
   bleed = false,
   dense = false,
@@ -26,43 +24,24 @@ export function CatalystTable({
   striped = false,
   className,
   children,
-  color,
   ...props
 }: {
   bleed?: boolean;
   dense?: boolean;
   grid?: boolean;
   striped?: boolean;
-  color?: SemanticColorToken;
 } & React.ComponentPropsWithoutRef<'div'>) {
-  const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticTableStyles(color) : '';
   return (
     <TableContext.Provider
       value={{ bleed, dense, grid, striped } as React.ContextType<typeof TableContext>}
     >
-      <div className={cn('flow-root', resolvedColorClasses)}>
+      <div className="flow-root">
         <div
           {...props}
-          className={cn(
-            '-mx-(--gutter) overflow-x-auto whitespace-nowrap',
-            resolvedColorClasses,
-            className
-          )}
+          className={cn('-mx-(--gutter) overflow-x-auto whitespace-nowrap', className)}
         >
-          <div
-            className={cn(
-              'inline-block min-w-full align-middle',
-              !bleed && 'sm:px-(--gutter)',
-              resolvedColorClasses
-            )}
-          >
-            <table
-              className={cn(
-                'min-w-full text-left text-sm/6 text-foreground dark:text-foreground',
-                resolvedColorClasses
-              )}
-            >
+          <div className={cn('inline-block min-w-full align-middle', !bleed && 'sm:px-(--gutter)')}>
+            <table className="min-w-full text-left text-sm/6 text-zinc-950 dark:text-white">
               {children}
             </table>
           </div>
@@ -71,23 +50,15 @@ export function CatalystTable({
     </TableContext.Provider>
   );
 }
-
 export function CatalystTableHead({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'thead'>) {
-  return (
-    <thead
-      {...props}
-      className={cn('text-muted-foreground dark:text-muted-foreground', className)}
-    />
-  );
+  return <thead {...props} className={cn('text-zinc-500 dark:text-zinc-400', className)} />;
 }
-
 export function CatalystTableBody(props: React.ComponentPropsWithoutRef<'tbody'>) {
   return <tbody {...props} />;
 }
-
 const TableRowContext = createContext<{
   href?: string;
   target?: string;
@@ -97,7 +68,6 @@ const TableRowContext = createContext<{
   target: undefined,
   title: undefined,
 });
-
 export function CatalystTableRow({
   href,
   target,
@@ -110,7 +80,6 @@ export function CatalystTableRow({
   title?: string;
 } & React.ComponentPropsWithoutRef<'tr'>) {
   let { striped } = useContext(TableContext);
-
   return (
     <TableRowContext.Provider
       value={{ href, target, title } as React.ContextType<typeof TableRowContext>}
@@ -119,33 +88,30 @@ export function CatalystTableRow({
         {...props}
         className={cn(
           href &&
-            'has-[[data-row-link][data-focus]]:outline-2 has-[[data-row-link][data-focus]]:-outline-offset-2 has-[[data-row-link][data-focus]]:outline-primary dark:focus-within:bg-accent',
-          striped && 'even:bg-muted/50',
-          href && striped && 'hover:bg-muted/75',
-          href && !striped && 'hover:bg-muted/50',
+            'has-[[data-row-link][data-focus]]:outline-2 has-[[data-row-link][data-focus]]:-outline-offset-2 has-[[data-row-link][data-focus]]:outline-blue-500 dark:focus-within:bg-white/2.5',
+          striped && 'even:bg-zinc-950/2.5 dark:even:bg-white/2.5',
+          href && striped && 'hover:bg-zinc-950/5 dark:hover:bg-white/5',
+          href && !striped && 'hover:bg-zinc-950/2.5 dark:hover:bg-white/2.5',
           className
         )}
       />
     </TableRowContext.Provider>
   );
 }
-
 export function CatalystTableHeader({ className, ...props }: React.ComponentPropsWithoutRef<'th'>) {
   let { bleed, grid } = useContext(TableContext);
-
   return (
     <th
       {...props}
       className={cn(
-        'border-b border-b-border px-4 py-2 font-medium first:pl-(--gutter,--spacing(2)) last:pr-(--gutter,--spacing(2)) dark:border-b-border',
-        grid && 'border-l border-l-border first:border-l-0',
+        'border-b border-b-zinc-950/10 px-4 py-2 font-medium first:pl-(--gutter,--spacing(2)) last:pr-(--gutter,--spacing(2)) dark:border-b-white/10',
+        grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5',
         !bleed && 'sm:first:pl-1 sm:last:pr-1',
         className
       )}
     />
   );
 }
-
 export function CatalystTableCell({
   className,
   children,
@@ -154,15 +120,14 @@ export function CatalystTableCell({
   let { bleed, dense, grid, striped } = useContext(TableContext);
   let { href, target, title } = useContext(TableRowContext);
   let [cellRef, setCellRef] = useState<HTMLElement | null>(null);
-
   return (
     <td
       ref={href ? setCellRef : undefined}
       {...props}
       className={cn(
         'relative px-4 first:pl-(--gutter,--spacing(2)) last:pr-(--gutter,--spacing(2))',
-        !striped && 'border-b border-border',
-        grid && 'border-l border-l-border first:border-l-0',
+        !striped && 'border-b border-zinc-950/5 dark:border-white/5',
+        grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5',
         dense ? 'py-2.5' : 'py-4',
         !bleed && 'sm:first:pl-1 sm:last:pr-1',
         className
@@ -175,7 +140,7 @@ export function CatalystTableCell({
           target={target}
           aria-label={title}
           tabIndex={cellRef?.previousElementSibling === null ? 0 : -1}
-          className={cn('absolute inset-0 focus:outline-hidden')}
+          className="absolute inset-0 focus:outline-hidden"
         />
       )}
       {children}

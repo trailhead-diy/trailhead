@@ -1,17 +1,16 @@
-'use client';
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
 
+'use client';
 import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 import { LayoutGroup, motion } from 'framer-motion';
 import React, { forwardRef, useId } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
-
 export function CatalystSidebar({ className, ...props }: React.ComponentPropsWithoutRef<'nav'>) {
   return <nav {...props} className={cn('flex h-full min-h-0 flex-col', className)} />;
 }
-
 export function CatalystSidebarHeader({
   className,
   ...props
@@ -20,13 +19,12 @@ export function CatalystSidebarHeader({
     <div
       {...props}
       className={cn(
-        'flex flex-col border-b border-border p-4 dark:border-border [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
+        'flex flex-col border-b border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
         className
       )}
     />
   );
 }
-
 export function CatalystSidebarBody({
   className,
   ...props
@@ -41,7 +39,6 @@ export function CatalystSidebarBody({
     />
   );
 }
-
 export function CatalystSidebarFooter({
   className,
   ...props
@@ -50,26 +47,23 @@ export function CatalystSidebarFooter({
     <div
       {...props}
       className={cn(
-        'flex flex-col border-t border-border p-4 dark:border-border [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
+        'flex flex-col border-t border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5',
         className
       )}
     />
   );
 }
-
 export function CatalystSidebarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   let id = useId();
-
   return (
     <LayoutGroup id={id}>
       <div {...props} data-slot="section" className={cn('flex flex-col gap-0.5', className)} />
     </LayoutGroup>
   );
 }
-
 export function CatalystSidebarDivider({
   className,
   ...props
@@ -77,18 +71,16 @@ export function CatalystSidebarDivider({
   return (
     <hr
       {...props}
-      className={cn('my-4 border-t border-border lg:-mx-4 dark:border-border', className)}
+      className={cn('my-4 border-t border-zinc-950/5 lg:-mx-4 dark:border-white/5', className)}
     />
   );
 }
-
 export function CatalystSidebarSpacer({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
   return <div aria-hidden="true" {...props} className={cn('mt-8 flex-1', className)} />;
 }
-
 export function CatalystSidebarHeading({
   className,
   ...props
@@ -96,21 +88,21 @@ export function CatalystSidebarHeading({
   return (
     <h3
       {...props}
-      className={cn(
-        'mb-1 px-2 text-xs/6 font-medium text-muted-foreground dark:text-muted-foreground',
-        className
-      )}
+      className={cn('mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-400', className)}
     />
   );
 }
-
 export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
   {
     current,
     className,
     children,
     ...props
-  }: { current?: boolean; className?: string; children: React.ReactNode } & (
+  }: {
+    current?: boolean;
+    className?: string;
+    children: React.ReactNode;
+  } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<Headless.ButtonProps<typeof CatalystLink>, 'as' | 'className'>
   ),
@@ -118,32 +110,31 @@ export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
 ) {
   let classes = cn(
     // Base
-    'flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-foreground sm:py-2 sm:text-sm/5',
+    'flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-zinc-950 sm:py-2 sm:text-sm/5',
     // Leading icon/icon-only
-    '*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-muted-foreground sm:*:data-[slot=icon]:size-5',
+    '*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500 sm:*:data-[slot=icon]:size-5',
     // Trailing icon (down chevron or similar)
     '*:last:data-[slot=icon]:ml-auto *:last:data-[slot=icon]:size-5 sm:*:last:data-[slot=icon]:size-4',
     // Avatar
     '*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 sm:*:data-[slot=avatar]:size-6',
     // Hover
-    'data-hover:bg-card/5 data-hover:*:data-[slot=icon]:fill-foreground',
+    'data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950',
     // Active
-    'data-active:bg-card/5 data-active:*:data-[slot=icon]:fill-foreground',
+    'data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950',
     // Current
-    'data-current:*:data-[slot=icon]:fill-foreground',
+    'data-current:*:data-[slot=icon]:fill-zinc-950',
     // Dark mode
-    'dark:text-foreground dark:*:data-[slot=icon]:fill-muted-foreground',
-    'dark:data-hover:bg-accent dark:data-hover:*:data-[slot=icon]:fill-foreground',
-    'dark:data-active:bg-accent dark:data-active:*:data-[slot=icon]:fill-foreground',
-    'dark:data-current:*:data-[slot=icon]:fill-foreground'
+    'dark:text-white dark:*:data-[slot=icon]:fill-zinc-400',
+    'dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-white',
+    'dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-white',
+    'dark:data-current:*:data-[slot=icon]:fill-white'
   );
-
   return (
     <span className={cn('relative', className)}>
       {current && (
         <motion.span
           layoutId="current-indicator"
-          className={cn('absolute inset-y-2 -left-4 w-0.5 rounded-full bg-primary')}
+          className="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white"
         />
       )}
       {'href' in props ? (
@@ -169,7 +160,6 @@ export const CatalystSidebarItem = forwardRef(function CatalystSidebarItem(
     </span>
   );
 });
-
 export function CatalystSidebarLabel({
   className,
   ...props

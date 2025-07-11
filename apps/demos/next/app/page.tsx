@@ -1,4 +1,4 @@
-import { DemoLayout } from '@/components/demo-layout';
+import { HomePage as DemoHomePage } from '@/components/demo';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage(): React.JSX.Element {
-  return <DemoLayout>Home</DemoLayout>;
+  return <DemoHomePage />;
 }

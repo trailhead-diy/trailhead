@@ -1,10 +1,10 @@
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 'use client';
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 import * as Headless from '@headlessui/react';
 import React, { useState } from 'react';
 import { CatalystNavbarItem } from './catalyst-navbar';
-import { cn } from '../utils/cn';
-
 function OpenMenuIcon() {
   return (
     <svg data-slot="icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -12,7 +12,6 @@ function OpenMenuIcon() {
     </svg>
   );
 }
-
 function CloseMenuIcon() {
   return (
     <svg data-slot="icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -20,32 +19,26 @@ function CloseMenuIcon() {
     </svg>
   );
 }
-
 function MobileSidebar({
   open,
   close,
   children,
-}: React.PropsWithChildren<{ open: boolean; close: () => void }>) {
+}: React.PropsWithChildren<{
+  open: boolean;
+  close: () => void;
+}>) {
   return (
-    <Headless.Dialog open={open} onClose={close} className={cn('lg:hidden')}>
+    <Headless.Dialog open={open} onClose={close} className="lg:hidden">
       <Headless.DialogBackdrop
         transition
-        className={cn(
-          'fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in'
-        )}
+        className="fixed inset-0 bg-black/30 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       <Headless.DialogPanel
         transition
-        className={cn(
-          'fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full'
-        )}
+        className="fixed inset-y-0 w-full max-w-80 p-2 transition duration-300 ease-in-out data-closed:-translate-x-full"
       >
-        <div
-          className={cn(
-            'flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring'
-          )}
-        >
-          <div className={cn('-mb-3 px-4 pt-3')}>
+        <div className="flex h-full flex-col rounded-lg bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-zinc-900 dark:ring-white/10">
+          <div className="-mb-3 px-4 pt-3">
             <Headless.CloseButton as={CatalystNavbarItem} aria-label="Close navigation">
               <CloseMenuIcon />
             </Headless.CloseButton>
@@ -56,47 +49,39 @@ function MobileSidebar({
     </Headless.Dialog>
   );
 }
-
 export function CatalystSidebarLayout({
   navbar,
   sidebar,
   children,
-  className: className,
 }: React.PropsWithChildren<{
   navbar: React.ReactNode;
   sidebar: React.ReactNode;
 }>) {
   let [showSidebar, setShowSidebar] = useState(false);
-
   return (
-    <div
-      className={cn(
-        'relative isolate flex min-h-svh w-full bg-background max-lg:flex-col lg:bg-accent dark:bg-card dark:lg:bg-card'
-      )}
-    >
+    <div className="relative isolate flex min-h-svh w-full bg-white max-lg:flex-col lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950">
       {/* Sidebar on desktop */}
-      <div className={cn('fixed inset-y-0 left-0 w-64 max-lg:hidden')}>{sidebar}</div>
+      <div className="fixed inset-y-0 left-0 w-64 max-lg:hidden">{sidebar}</div>
+
       {/* Sidebar on mobile */}
       <MobileSidebar open={showSidebar} close={() => setShowSidebar(false)}>
         {sidebar}
       </MobileSidebar>
+
       {/* Navbar on mobile */}
-      <header className={cn('flex items-center px-4 lg:hidden')}>
-        <div className={cn('py-2.5')}>
+      <header className="flex items-center px-4 lg:hidden">
+        <div className="py-2.5">
           <CatalystNavbarItem onClick={() => setShowSidebar(true)} aria-label="Open navigation">
             <OpenMenuIcon />
           </CatalystNavbarItem>
         </div>
-        <div className={cn('min-w-0 flex-1')}>{navbar}</div>
+        <div className="min-w-0 flex-1">{navbar}</div>
       </header>
+
       {/* Content */}
-      <main className={cn('flex flex-1 flex-col pb-2 lg:min-w-0 lg:pt-2 lg:pr-2 lg:pl-64')}>
-        <div
-          className={cn(
-            'grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'
-          )}
-        >
-          <div className={cn('mx-auto max-w-6xl')}>{children}</div>
+      <main className="flex flex-1 flex-col pb-2 lg:min-w-0 lg:pt-2 lg:pr-2 lg:pl-64">
+        <div className="grow p-6 lg:rounded-lg lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10">
+          <div className="mx-auto max-w-6xl">{children}</div>
         </div>
       </main>
     </div>

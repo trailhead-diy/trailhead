@@ -1,4 +1,6 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 /**
  * TODO: Update this component to use your client-side framework's link
  * component. We've provided examples of how to do this for Next.js, Remix, and
@@ -6,13 +8,12 @@
  *
  * https://catalyst.tailwindui.com/docs#client-side-router-integration
  */
-
 import * as Headless from '@headlessui/react';
 import React, { forwardRef } from 'react';
-// Semantic token imports removed - not used in this component
-
 export const CatalystLink = forwardRef(function CatalystLink(
-  props: { href: string } & React.ComponentPropsWithoutRef<'a'>,
+  props: {
+    href: string;
+  } & React.ComponentPropsWithoutRef<'a'>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
   return (

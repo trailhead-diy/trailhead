@@ -1,18 +1,18 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
+
 import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
-
-type AvatarProps = {
+export type CatalystAvatarProps = {
   src?: string | null;
   square?: boolean;
   initials?: string;
   alt?: string;
   className?: string;
 };
-
 export function CatalystAvatar({
   src = null,
   square = false,
@@ -20,7 +20,7 @@ export function CatalystAvatar({
   alt = '',
   className,
   ...props
-}: AvatarProps & React.ComponentPropsWithoutRef<'span'>) {
+}: CatalystAvatarProps & React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
       data-slot="avatar"
@@ -38,9 +38,7 @@ export function CatalystAvatar({
     >
       {initials && (
         <svg
-          className={cn(
-            'size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none'
-          )}
+          className="size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none"
           viewBox="0 0 100 100"
           aria-hidden={alt ? undefined : 'true'}
         >
@@ -57,11 +55,10 @@ export function CatalystAvatar({
           </text>
         </svg>
       )}
-      {src && <img className={cn('size-full')} src={src} alt={alt} />}
+      {src && <img className="size-full" src={src} alt={alt} />}
     </span>
   );
 }
-
 export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
   {
     src,
@@ -70,7 +67,7 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
     alt,
     className,
     ...props
-  }: AvatarProps &
+  }: CatalystAvatarProps &
     (
       | Omit<Headless.ButtonProps, 'as' | 'className'>
       | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
@@ -79,10 +76,9 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
 ) {
   let classes = cn(
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
+    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
     className
   );
-
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>

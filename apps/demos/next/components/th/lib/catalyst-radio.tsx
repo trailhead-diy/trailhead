@@ -1,12 +1,14 @@
-// AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import { isSemanticToken, createSemanticRadioStyles } from '../theme/index';
-import { cn } from '../utils/cn';
+// WARNING: This file is auto-generated and will be overwritten.
+// Auto generated on DEVELOPMENT
 
+import * as Headless from '@headlessui/react';
+import { cn } from '../utils/cn';
 export function CatalystRadioGroup({
   className,
   ...props
-}: { className?: string } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
   return (
     <Headless.RadioGroup
       data-slot="control"
@@ -21,11 +23,12 @@ export function CatalystRadioGroup({
     />
   );
 }
-
 export function CatalystRadioField({
   className,
   ...props
-}: { className?: string } & Omit<Headless.FieldProps, 'as' | 'className'>) {
+}: {
+  className?: string;
+} & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
       data-slot="field"
@@ -46,111 +49,100 @@ export function CatalystRadioField({
     />
   );
 }
-
 const base = [
   // Basic layout
   'relative isolate flex size-4.75 shrink-0 rounded-full sm:size-4.25',
   // Background color + shadow applied to inset pseudo element, so shadow blends with border in light mode
-  'before:absolute before:inset-0 before:-z-10 before:rounded-full before:bg-background before:shadow-sm',
+  'before:absolute before:inset-0 before:-z-10 before:rounded-full before:bg-white before:shadow-sm',
   // Background color when checked
   'group-data-checked:before:bg-(--radio-checked-bg)',
   // Background color is moved to control and shadow is removed in dark mode so hide `before` pseudo
   'dark:before:hidden',
   // Background color applied to control in dark mode
-  'dark:bg-card dark:group-data-checked:bg-(--radio-checked-bg)',
+  'dark:bg-white/5 dark:group-data-checked:bg-(--radio-checked-bg)',
   // Border
-  'border border-border group-data-checked:border-transparent group-data-hover:group-data-checked:border-transparent group-data-hover:border-border group-data-checked:bg-(--radio-checked-border)',
-  'dark:border-border dark:group-data-checked:border-border dark:group-data-hover:group-data-checked:border-border dark:group-data-hover:border-border',
+  'border border-zinc-950/15 group-data-checked:border-transparent group-data-hover:group-data-checked:border-transparent group-data-hover:border-zinc-950/30 group-data-checked:bg-(--radio-checked-border)',
+  'dark:border-white/15 dark:group-data-checked:border-white/5 dark:group-data-hover:group-data-checked:border-white/5 dark:group-data-hover:border-white/30',
   // Inner highlight shadow
   'after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_1px_--theme(--color-white/15%)]',
   'dark:after:-inset-px dark:after:hidden dark:after:rounded-full dark:group-data-checked:after:block',
   // Indicator color (light mode)
-  '[--radio-indicator:transparent] group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] group-data-hover:group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] group-data-hover:[--radio-indicator:var(--color-foreground)]/10',
+  '[--radio-indicator:transparent] group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] group-data-hover:group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] group-data-hover:[--radio-indicator:var(--color-zinc-900)]/10',
   // Indicator color (dark mode)
-  'dark:group-data-hover:group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] dark:group-data-hover:[--radio-indicator:var(--color-muted-foreground)]',
+  'dark:group-data-hover:group-data-checked:[--radio-indicator:var(--radio-checked-indicator)] dark:group-data-hover:[--radio-indicator:var(--color-zinc-700)]',
   // Focus ring
-  'group-data-focus:outline group-data-focus:outline-2 group-data-focus:outline-offset-2 group-data-focus:outline-primary',
+  'group-data-focus:outline group-data-focus:outline-2 group-data-focus:outline-offset-2 group-data-focus:outline-blue-500',
   // Disabled state
   'group-data-disabled:opacity-50',
-  'group-data-disabled:border-border group-data-disabled:bg-card/5 group-data-disabled:[--radio-checked-indicator:var(--color-foreground)]/50 group-data-disabled:before:bg-transparent',
-  'dark:group-data-disabled:border-border dark:group-data-disabled:bg-card dark:group-data-disabled:[--radio-checked-indicator:var(--color-background)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
+  'group-data-disabled:border-zinc-950/25 group-data-disabled:bg-zinc-950/5 group-data-disabled:[--radio-checked-indicator:var(--color-zinc-950)]/50 group-data-disabled:before:bg-transparent',
+  'dark:group-data-disabled:border-white/20 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:[--radio-checked-indicator:var(--color-white)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
 ];
-
 const colors = {
   'dark/zinc': [
-    '[--radio-checked-bg:var(--color-foreground)] [--radio-checked-border:var(--color-foreground)]/90 [--radio-checked-indicator:var(--color-background)]',
-    'dark:[--radio-checked-bg:var(--color-muted-foreground)]',
+    '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
+    'dark:[--radio-checked-bg:var(--color-zinc-600)]',
   ],
   'dark/white': [
-    '[--radio-checked-bg:var(--color-foreground)] [--radio-checked-border:var(--color-foreground)]/90 [--radio-checked-indicator:var(--color-background)]',
-    'dark:[--radio-checked-bg:var(--color-background)] dark:[--radio-checked-border:var(--color-foreground)]/15 dark:[--radio-checked-indicator:var(--color-foreground)]',
+    '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
+    'dark:[--radio-checked-bg:var(--color-white)] dark:[--radio-checked-border:var(--color-zinc-950)]/15 dark:[--radio-checked-indicator:var(--color-zinc-900)]',
   ],
   white:
-    '[--radio-checked-bg:var(--color-background)] [--radio-checked-border:var(--color-foreground)]/15 [--radio-checked-indicator:var(--color-foreground)]',
-  dark: '[--radio-checked-bg:var(--color-foreground)] [--radio-checked-border:var(--color-foreground)]/90 [--radio-checked-indicator:var(--color-background)]',
-  zinc: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-muted-foreground)] [--radio-checked-border:var(--color-muted-foreground)]/90',
-  red: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',
+    '[--radio-checked-bg:var(--color-white)] [--radio-checked-border:var(--color-zinc-950)]/15 [--radio-checked-indicator:var(--color-zinc-900)]',
+  dark: '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
+  zinc: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-zinc-600)] [--radio-checked-border:var(--color-zinc-700)]/90',
+  red: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',
   orange:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-orange-500)] [--radio-checked-border:var(--color-orange-600)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-orange-500)] [--radio-checked-border:var(--color-orange-600)]/90',
   amber:
     '[--radio-checked-bg:var(--color-amber-400)] [--radio-checked-border:var(--color-amber-500)]/80 [--radio-checked-indicator:var(--color-amber-950)]',
   yellow:
     '[--radio-checked-bg:var(--color-yellow-300)] [--radio-checked-border:var(--color-yellow-400)]/80 [--radio-checked-indicator:var(--color-yellow-950)]',
   lime: '[--radio-checked-bg:var(--color-lime-300)] [--radio-checked-border:var(--color-lime-400)]/80 [--radio-checked-indicator:var(--color-lime-950)]',
   green:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-green-600)] [--radio-checked-border:var(--color-green-700)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-green-600)] [--radio-checked-border:var(--color-green-700)]/90',
   emerald:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-emerald-600)] [--radio-checked-border:var(--color-emerald-700)]/90',
-  teal: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-teal-600)] [--radio-checked-border:var(--color-teal-700)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-emerald-600)] [--radio-checked-border:var(--color-emerald-700)]/90',
+  teal: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-teal-600)] [--radio-checked-border:var(--color-teal-700)]/90',
   cyan: '[--radio-checked-bg:var(--color-cyan-300)] [--radio-checked-border:var(--color-cyan-400)]/80 [--radio-checked-indicator:var(--color-cyan-950)]',
-  sky: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-sky-500)] [--radio-checked-border:var(--color-sky-600)]/80',
-  blue: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
+  sky: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-sky-500)] [--radio-checked-border:var(--color-sky-600)]/80',
+  blue: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
   indigo:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-indigo-500)] [--radio-checked-border:var(--color-indigo-600)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-indigo-500)] [--radio-checked-border:var(--color-indigo-600)]/90',
   violet:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-violet-500)] [--radio-checked-border:var(--color-violet-600)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-violet-500)] [--radio-checked-border:var(--color-violet-600)]/90',
   purple:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-purple-500)] [--radio-checked-border:var(--color-purple-600)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-500)] [--radio-checked-border:var(--color-purple-600)]/90',
   fuchsia:
-    '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-fuchsia-500)] [--radio-checked-border:var(--color-fuchsia-600)]/90',
-  pink: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
-  rose: '[--radio-checked-indicator:var(--color-background)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
-  // Semantic color variants
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-fuchsia-500)] [--radio-checked-border:var(--color-fuchsia-600)]/90',
+  pink: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-pink-500)] [--radio-checked-border:var(--color-pink-600)]/90',
+  rose: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-rose-500)] [--radio-checked-border:var(--color-rose-600)]/90',
   primary:
-    '[--radio-checked-indicator:var(--primary-foreground)] [--radio-checked-bg:var(--primary)] [--radio-checked-border:var(--primary)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-blue-600)] [--radio-checked-border:var(--color-blue-700)]/90',
   secondary:
-    '[--radio-checked-indicator:var(--secondary-foreground)] [--radio-checked-bg:var(--secondary)] [--radio-checked-border:var(--secondary)]/90',
-  accent:
-    '[--radio-checked-indicator:var(--accent-foreground)] [--radio-checked-bg:var(--accent)] [--radio-checked-border:var(--accent)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-zinc-600)] [--radio-checked-border:var(--color-zinc-700)]/90',
   destructive:
-    '[--radio-checked-indicator:var(--destructive-foreground)] [--radio-checked-bg:var(--destructive)] [--radio-checked-border:var(--destructive)]/90',
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',
+  accent:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-600)] [--radio-checked-border:var(--color-purple-700)]/90',
+  muted:
+    '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',
 };
-
 type Color = keyof typeof colors;
-
 export function CatalystRadio({
   color = 'dark/zinc',
   className,
   ...props
-}: { color?: Color; className?: string } & Omit<
-  Headless.RadioProps,
-  'as' | 'className' | 'children'
->) {
-  const resolvedColorClasses = (() => {
-    if (color && isSemanticToken(color)) {
-      return createSemanticRadioStyles(color);
-    }
-
-    return colors[color] || colors['dark/zinc'];
-  })();
-
+}: {
+  color?: Color;
+  className?: string;
+} & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Radio
       data-slot="control"
       {...props}
       className={cn('group inline-flex focus:outline-hidden', className)}
     >
-      <span className={cn([base, resolvedColorClasses])}>
+      <span className={cn([base, colors[color]])}>
         <span
           className={cn(
             'size-full rounded-full border-[4.5px] border-transparent bg-(--radio-indicator) bg-clip-padding',
