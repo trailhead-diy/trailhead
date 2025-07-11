@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { expectResult } from '@esteban-url/trailhead-cli/testing';
+import { expectSuccess } from '@esteban-url/trailhead-cli/testing';
 import { transformReorderCnArgs } from '../format/reorder-cn-args.js';
 
 describe('ReorderCnArgsTransform', () => {
@@ -17,12 +17,12 @@ export function Component({ className }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*'base-styles'[^)]*'more-styles'[^)]*className[^)]*\)/
       );
-      expect(result.value.warnings).toContain(
+      expect(transformed.warnings).toContain(
         'Reordered cn() arguments to place className variables last'
       );
     });
@@ -36,9 +36,9 @@ export function Component({ className, className2 }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*'base'[^)]*'other'[^)]*className[^)]*className2[^)]*\)/
       );
     });
@@ -52,10 +52,10 @@ export function Component({ className }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
       // Check that className is still last in the cn() call
-      expect(result.value.content).toMatch(
+      expect(transformed.content).toMatch(
         /cn\(['"]base-styles['"],\s*['"]more-styles['"],\s*className\)/
       );
     });
@@ -69,9 +69,9 @@ export function Component({ className, isActive }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*'base'[^)]*isActive && 'active'[^)]*someVar[^)]*className[^)]*\)/
       );
     });
@@ -85,9 +85,9 @@ const classes = cn();
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toMatch(/const classes = cn\(\);/);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toMatch(/const classes = cn\(\);/);
     });
 
     it('should handle cn() calls with single argument', () => {
@@ -97,9 +97,9 @@ const classes = cn(className);
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toMatch(/const classes = cn\(className\);/);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toMatch(/const classes = cn\(className\);/);
     });
 
     it('should handle cn() calls with no className variables', () => {
@@ -109,9 +109,9 @@ const classes = cn('base', 'styles', isActive && 'active');
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toMatch(
         /cn\(['"]base['"],\s*['"]styles['"],\s*isActive && ['"]active['"]\);/
       );
     });
@@ -123,9 +123,9 @@ const classes = cn(className, getBaseClass(), 'static', condition ? 'yes' : 'no'
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*getBaseClass\(\)[^)]*'static'[^)]*condition \? 'yes' : 'no'[^)]*className[^)]*\)/
       );
     });
@@ -135,9 +135,9 @@ const classes = cn(className, getBaseClass(), 'static', condition ? 'yes' : 'no'
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toBe('');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toBe('');
     });
 
     it('should handle file with no cn() calls', () => {
@@ -149,9 +149,9 @@ export function Component({ className }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toMatch(
         /export function Component.*className.*return.*div.*className.*{className}/s
       );
     });
@@ -165,9 +165,9 @@ const classes = cn(className, 'base, with, commas', 'other');
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*'base, with, commas'[^)]*'other'[^)]*className[^)]*\)/
       );
     });
@@ -179,9 +179,9 @@ const classes = cn(className, \`base-\${variant}\`, 'other');
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*`base-\$\{variant\}`[^)]*'other'[^)]*className[^)]*\)/
       );
     });
@@ -193,9 +193,9 @@ const classes = cn(className, someFunc(arg1, arg2), 'static');
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(
         /cn\([^)]*someFunc\(arg1, arg2\)[^)]*'static'[^)]*className[^)]*\)/
       );
     });
@@ -213,10 +213,10 @@ export function Component({ className, className2 }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toMatch(/cn\([^)]*'base'[^)]*className[^)]*\)/);
-      expect(result.value.content).toMatch(/cn\([^)]*'other'[^)]*'styles'[^)]*className2[^)]*\)/);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toMatch(/cn\([^)]*'base'[^)]*className[^)]*\)/);
+      expect(transformed.content).toMatch(/cn\([^)]*'other'[^)]*'styles'[^)]*className2[^)]*\)/);
     });
   });
 
@@ -226,10 +226,10 @@ export function Component({ className, className2 }) {
 
       const result = transformReorderCnArgs(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
       // Regex transform preserves some whitespace - className should be moved to end
-      expect(result.value.content).toMatch(/cn\([^)]*'base'[^)]*'styles'[^)]*className[^)]*\)/);
+      expect(transformed.content).toMatch(/cn\([^)]*'base'[^)]*'styles'[^)]*className[^)]*\)/);
     });
   });
 });

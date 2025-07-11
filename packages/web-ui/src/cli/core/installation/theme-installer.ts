@@ -69,7 +69,7 @@ export const installThemeSystem = async (
     copiedFiles.push(file.name);
   }
 
-  logger.isOk()(`Installed ${copiedFiles.length} theme system files`);
+  logger.success(`Installed ${copiedFiles.length} theme system files`);
 
   return ok(themeFiles.map(f => f.name));
 };
@@ -108,7 +108,7 @@ export const installThemeComponents = async (
     copiedFiles.push(file.name);
   }
 
-  logger.isOk()(`Installed ${copiedFiles.length} theme components`);
+  logger.success(`Installed ${copiedFiles.length} theme components`);
 
   return ok(copiedFiles);
 };

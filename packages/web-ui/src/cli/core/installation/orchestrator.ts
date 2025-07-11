@@ -353,7 +353,7 @@ function logInstallationSummary(
   dependenciesAdded: readonly string[],
   failedSteps: readonly string[]
 ): void {
-  logger.isOk()('Installation Summary:');
+  logger.success('Installation Summary:');
 
   const categories = [
     { name: 'Theme system', pattern: 'theme/' },
@@ -451,7 +451,7 @@ export const performDryRunInstallation = async (
         logger.info(`  • ${dep}@${dependencyUpdate.added[dep]}`);
       });
     } else {
-      logger.isOk()('All required dependencies are already installed');
+      logger.success('All required dependencies are already installed');
     }
   }
 

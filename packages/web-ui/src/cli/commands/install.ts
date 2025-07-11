@@ -535,7 +535,7 @@ export const createInstallCommand = () => {
       const preResult = await executeWithPhases(prePhases, config, cmdContext);
 
       if (!preResult.isOk()) {
-        return preResult;
+        return CliErr(preResult.error);
       }
 
       // Execute main installation phases
@@ -548,7 +548,7 @@ export const createInstallCommand = () => {
         if (options.verbose && mainResult.error.details) {
           cmdContext.logger.error('Details:' + mainResult.error.details);
         }
-        return mainResult;
+        return CliErr(mainResult.error);
       }
 
       // Display final summary

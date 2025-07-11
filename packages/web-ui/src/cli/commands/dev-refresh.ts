@@ -312,7 +312,7 @@ export const createDevRefreshCommand = () => {
       });
 
       if (phaseResult.isErr()) {
-        return phaseResult;
+        return err(phaseResult.error);
       }
 
       // Display final results

@@ -4,6 +4,7 @@
 
 import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
+import { ok } from '@esteban-url/trailhead-cli/core';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
 import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
 import type { FileSystem } from '../cli/core/installation/types.js';

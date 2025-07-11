@@ -273,7 +273,7 @@ export const createTransformsCommand = () => {
       const setupResult = await executeWithPhases(setupPhases, config, cmdContext);
 
       if (!setupResult.isOk()) {
-        return setupResult;
+        return err(setupResult.error);
       }
 
       // Execute transformation phases
@@ -285,7 +285,7 @@ export const createTransformsCommand = () => {
       );
 
       if (!executionResult.isOk()) {
-        return executionResult;
+        return err(executionResult.error);
       }
 
       // Display final summary

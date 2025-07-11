@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { expectResult } from '@esteban-url/trailhead-cli/testing';
+import { expectSuccess } from '@esteban-url/trailhead-cli/testing';
 import { transformSemanticColors } from '../semantic/color-tokens/index.js';
 
 describe('SemanticColorsTransform', () => {
@@ -22,15 +22,15 @@ export function CatalystBadge({ color = 'zinc', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
-      expect(result.value.content).toContain('destructive:');
-      expect(result.value.content).toContain('accent:');
-      expect(result.value.content).toContain('muted:');
-      expect(result.value.content).toContain('bg-primary-500/15');
-      expect(result.value.content).toContain('text-primary-700');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toContain('primary:');
+      expect(transformed.content).toContain('secondary:');
+      expect(transformed.content).toContain('destructive:');
+      expect(transformed.content).toContain('accent:');
+      expect(transformed.content).toContain('muted:');
+      expect(transformed.content).toContain('bg-primary-500/15');
+      expect(transformed.content).toContain('text-primary-700');
     });
 
     it('should skip if semantic colors already exist', () => {
@@ -48,9 +48,9 @@ export function CatalystBadge({ color = 'zinc', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.warnings).toHaveLength(0);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.warnings).toHaveLength(0);
     });
 
     it('should handle component without colors object', () => {
@@ -62,9 +62,9 @@ export function CatalystBadge({ className, ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.warnings).toContain('No colors object found in component');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.warnings).toContain('No colors object found in component');
     });
   });
 
@@ -78,10 +78,10 @@ const colors = {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
       // Just check that there's at least one warning for malformed input
-      expect(result.value.warnings.length).toBeGreaterThan(0);
+      expect(transformed.warnings.length).toBeGreaterThan(0);
     });
 
     it('should handle empty file', () => {
@@ -89,9 +89,9 @@ const colors = {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.warnings).toContain('No colors object found in component');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.warnings).toContain('No colors object found in component');
     });
 
     it('should handle file with only comments', () => {
@@ -99,9 +99,9 @@ const colors = {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.warnings).toContain('No colors object found in component');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.warnings).toContain('No colors object found in component');
     });
 
     it('should handle transform error gracefully', () => {
@@ -109,9 +109,9 @@ const colors = {
       // Instead test that the transform handles invalid input appropriately
       const result = transformSemanticColors(null as any);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.warnings).toContain('No colors object found in component');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.warnings).toContain('No colors object found in component');
     });
   });
 
@@ -131,15 +131,15 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
       // Original colors should be preserved
-      expect(result.value.content).toContain("red: 'bg-red-500/15 text-red-700'");
-      expect(result.value.content).toContain("blue: 'bg-blue-500/15 text-blue-700'");
-      expect(result.value.content).toContain("custom: 'bg-purple-500/15 text-purple-700'");
+      expect(transformed.content).toContain("red: 'bg-red-500/15 text-red-700'");
+      expect(transformed.content).toContain("blue: 'bg-blue-500/15 text-blue-700'");
+      expect(transformed.content).toContain("custom: 'bg-purple-500/15 text-purple-700'");
       // New semantic colors should be added
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
+      expect(transformed.content).toContain('primary:');
+      expect(transformed.content).toContain('secondary:');
     });
   });
 
@@ -161,11 +161,11 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
       // Should only add semantic colors to the first colors object
-      const firstColorsMatch = result.value.content.match(/const colors = \{[^}]+\}/s);
-      const secondColorsMatch = result.value.content.match(/const anotherColors = \{[^}]+\}/s);
+      const firstColorsMatch = transformed.content.match(/const colors = \{[^}]+\}/s);
+      const secondColorsMatch = transformed.content.match(/const anotherColors = \{[^}]+\}/s);
 
       expect(firstColorsMatch?.[0]).toContain('primary:');
       expect(secondColorsMatch?.[0]).not.toContain('primary:');
@@ -196,16 +196,16 @@ export function CatalystBadge({ color = 'red', ...props }) {
 
       const result = transformSemanticColors(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('primary:');
-      expect(result.value.content).toContain('secondary:');
-      expect(result.value.content).toContain('destructive:');
-      expect(result.value.content).toContain('accent:');
-      expect(result.value.content).toContain('muted:');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toContain('primary:');
+      expect(transformed.content).toContain('secondary:');
+      expect(transformed.content).toContain('destructive:');
+      expect(transformed.content).toContain('accent:');
+      expect(transformed.content).toContain('muted:');
       // Should preserve existing colors
-      expect(result.value.content).toContain('zinc:');
-      expect(result.value.content).toContain('blue:');
+      expect(transformed.content).toContain('zinc:');
+      expect(transformed.content).toContain('blue:');
     });
   });
 });

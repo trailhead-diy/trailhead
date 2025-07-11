@@ -386,7 +386,7 @@ export const installDependencies = async (
           });
         });
 
-        logger.isOk()('Dependencies installed successfully');
+        logger.success('Dependencies installed successfully');
 
         return ok({
           installed: true,

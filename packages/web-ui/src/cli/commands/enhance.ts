@@ -208,7 +208,7 @@ export const createEnhanceCommand = () => {
       );
 
       if (!phasesResult.isOk()) {
-        return phasesResult;
+        return err(phasesResult.error);
       }
 
       // Display summary

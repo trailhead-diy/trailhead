@@ -108,7 +108,7 @@ export const runColorConversions = async (
 
     // Show results
     if (stats.filesModified > 0) {
-      logger.isOk()(`Transform pipeline completed: ${stats.filesModified} files modified`);
+      logger.success(`Transform pipeline completed: ${stats.filesModified} files modified`);
       if (stats.conversionsApplied > 0) {
         logger.info(`Applied ${stats.conversionsApplied} semantic token conversions`);
       }

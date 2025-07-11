@@ -65,7 +65,7 @@ export const installCatalystComponents = async (
   const libIndexResult = await copyFile(fs, sourcePaths.libIndex, destPaths.libIndex, force);
   if (!libIndexResult.isOk()) return libIndexResult;
 
-  logger.isOk()(`Installed ${catalystFiles.length} Catalyst components and lib index`);
+  logger.success(`Installed ${catalystFiles.length} Catalyst components and lib index`);
 
   return ok([...catalystFiles.map((file: string) => `lib/${file}`), 'lib/index.ts']);
 };
@@ -133,7 +133,7 @@ export const installComponentWrappers = async (
   installedFiles.push('index.ts');
   logger.debug('Installed components index.ts');
 
-  logger.isOk()(`Installed ${installedFiles.length} component wrappers`);
+  logger.success(`Installed ${installedFiles.length} component wrappers`);
   return ok(installedFiles);
 };
 
@@ -184,7 +184,7 @@ export const installUtilityFiles = async (
   installedFiles.push('utils/semantic-tokens.ts');
   logger.debug('Installed utils/semantic-tokens.ts');
 
-  logger.isOk()(`Installed ${installedFiles.length} utility files`);
+  logger.success(`Installed ${installedFiles.length} utility files`);
   return ok(installedFiles);
 };
 
@@ -301,6 +301,6 @@ export const installTransformedComponents = async (
 
   installedFiles.push('index.ts');
 
-  logger.isOk()(`Installed ${installedFiles.length} transformed components`);
+  logger.success(`Installed ${installedFiles.length} transformed components`);
   return ok(installedFiles);
 };

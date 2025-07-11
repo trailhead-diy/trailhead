@@ -20,7 +20,7 @@ import type {
   Result,
   AsyncResult,
 } from './types.js';
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { createError, ok, err, type CLIError } from '@esteban-url/trailhead-cli/core';
 import { isNotTestRelated } from './file-filters.js';
 
 // ============================================================================
@@ -255,7 +255,7 @@ export async function copyFreshFiles(
 /**
  * Validate UI converter configuration
  */
-export function validateConfig(config: ConverterConfig): Result<ConverterConfig> {
+export function validateConfig(config: ConverterConfig): Result<ConverterConfig, CLIError> {
   if (!config.name || config.name.trim().length === 0) {
     return err(createError('VALIDATION_ERROR', 'Converter name is required'));
   }

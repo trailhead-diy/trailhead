@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { expectResult } from '@esteban-url/trailhead-cli/testing';
+import { expectSuccess } from '@esteban-url/trailhead-cli/testing';
 import { transformRemoveDuplicateProps } from '../format/remove-duplicate-props.js';
 
 describe('RemoveDuplicatePropsTransform', () => {
@@ -20,11 +20,11 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).not.toContain('  {...props}\n  data-slot');
-      expect(result.value.content).toContain('  {...props}\n/>');
-      expect(result.value.warnings).toContain('Removed duplicate {...props} spread in div element');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).not.toContain('  {...props}\n  data-slot');
+      expect(transformed.content).toContain('  {...props}\n/>');
+      expect(transformed.warnings).toContain('Removed duplicate {...props} spread in div element');
     });
 
     it('should handle multiple different prop spreads without removing them', () => {
@@ -40,10 +40,10 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toContain('{...buttonProps}');
-      expect(result.value.content).toContain('{...eventHandlers}');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toContain('{...buttonProps}');
+      expect(transformed.content).toContain('{...eventHandlers}');
     });
 
     it('should handle complex cases with multiple duplicate spreads', () => {
@@ -60,12 +60,12 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
       // Should keep only the last occurrence of each spread
-      const occurrences = (result.value.content.match(/\{\.\.\.props\}/g) || []).length;
+      const occurrences = (transformed.content.match(/\{\.\.\.props\}/g) || []).length;
       expect(occurrences).toBe(1);
-      const otherPropsOccurrences = (result.value.content.match(/\{\.\.\.otherProps\}/g) || [])
+      const otherPropsOccurrences = (transformed.content.match(/\{\.\.\.otherProps\}/g) || [])
         .length;
       expect(otherPropsOccurrences).toBe(1);
     });
@@ -81,9 +81,9 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toBe(input);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toBe(input);
     });
 
     it('should handle single prop spread', () => {
@@ -95,9 +95,9 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toBe(input);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toBe(input);
     });
 
     it('should handle empty file', () => {
@@ -105,9 +105,9 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
-      expect(result.value.content).toBe('');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
+      expect(transformed.content).toBe('');
     });
 
     it('should handle malformed JSX gracefully', () => {
@@ -118,8 +118,8 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(false);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(false);
     });
   });
 
@@ -133,10 +133,10 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
-      expect(result.value.content).toContain('className="test"');
-      expect(result.value.content).toContain('{...props}');
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
+      expect(transformed.content).toContain('className="test"');
+      expect(transformed.content).toContain('{...props}');
     });
 
     it('should maintain proper spacing between tag name and attributes', () => {
@@ -148,12 +148,12 @@ describe('RemoveDuplicatePropsTransform', () => {
 
       const result = transformRemoveDuplicateProps(input);
 
-      expectResult(result);
-      expect(result.value.changed).toBe(true);
+      const transformed = expectSuccess(result);
+      expect(transformed.changed).toBe(true);
       // Should not have the tag name run into the attribute
-      expect(result.value.content).not.toContain('<divdata-slot');
+      expect(transformed.content).not.toContain('<divdata-slot');
       // Should have proper space before attributes
-      expect(result.value.content).toContain('<div data-slot="label"');
+      expect(transformed.content).toContain('<div data-slot="label"');
     });
   });
 });
