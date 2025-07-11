@@ -4,8 +4,8 @@ import { createExcelOperations } from './core.js';
 describe('Excel Core Operations', () => {
   const excelOps = createExcelOperations();
 
-  // Helper to create a simple Excel buffer for testing
-  const createSimpleExcelBuffer = (): Buffer => {
+  // Helper to create a simple Excel buffer for testing (currently unused)
+  const _createSimpleExcelBuffer = (): Buffer => {
     // This creates a minimal valid Excel file buffer
     // In a real scenario, you'd use actual Excel file data
     const csvData = 'name,age\nJohn,30\nJane,25';

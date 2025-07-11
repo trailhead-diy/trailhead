@@ -2,9 +2,7 @@ import { ok, err } from '@trailhead/core';
 import { readFile, writeFile } from '@trailhead/fs';
 import * as Papa from 'papaparse';
 import type {
-  CSVConfig,
   CSVProcessingOptions,
-  CSVOperations,
   DataResult,
   CSVFormatInfo,
 } from '../types.js';

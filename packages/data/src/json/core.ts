@@ -1,6 +1,6 @@
 import { ok, err } from '@trailhead/core';
 import { readFile, writeFile } from '@trailhead/fs';
-import type { JSONConfig, JSONProcessingOptions, JSONOperations, DataResult } from '../types.js';
+import type { JSONProcessingOptions, DataResult } from '../types.js';
 import type { CreateJSONOperations, JSONFormatOptions } from './types.js';
 import { defaultJSONConfig } from './types.js';
 import { createJSONError, createParsingError, mapLibraryError } from '../errors.js';
