@@ -117,6 +117,16 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
 
               // Handle object pattern parameters: { color, size }: ButtonProps
               if (ts.isParameter(firstParam) && firstParam.type) {
+                // Skip intersection types and union types - don't transform complex type expressions
+                if (
+                  ts.isIntersectionTypeNode(firstParam.type) ||
+                  ts.isUnionTypeNode(firstParam.type)
+                ) {
+                  // Don't transform complex type expressions
+                  return node;
+                }
+
+                // Only transform simple type references
                 if (
                   ts.isTypeReferenceNode(firstParam.type) &&
                   ts.isIdentifier(firstParam.type.typeName)
