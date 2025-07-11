@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   trailheadConfigSchema,
-  transformConfigSchema,
   installConfigSchema,
   devRefreshConfigSchema,
 } from '@/cli/config.js';
@@ -10,11 +9,6 @@ import {
 const defaultConfig = {
   install: {
     wrappers: true,
-  },
-  transforms: {
-    enabled: true,
-    excludePatterns: [],
-    disabledTransforms: [],
   },
   devRefresh: {
     prefix: 'catalyst-',
@@ -30,13 +24,6 @@ describe('Configuration Schema', () => {
         install: {
           destDir: './components/ui',
           wrappers: true,
-        },
-        transforms: {
-          enabled: true,
-          srcDir: './src/components',
-          excludePatterns: ['**/*.test.tsx'],
-          enabledTransforms: ['button', 'badge'],
-          disabledTransforms: ['experimental'],
         },
         devRefresh: {
           srcDir: './catalyst-ui-kit',
@@ -65,47 +52,13 @@ describe('Configuration Schema', () => {
     it('should reject invalid types', () => {
       const invalidConfig = {
         verbose: 'yes', // Should be boolean
-        transforms: {
-          enabled: 'true', // Should be boolean
+        install: {
+          wrappers: 'true', // Should be boolean
         },
       };
 
       const result = trailheadConfigSchema.safeParse(invalidConfig);
       expect(result.success).toBe(false);
-    });
-  });
-
-  describe('transformConfigSchema', () => {
-    it('should accept valid transform config', () => {
-      const validConfig = {
-        enabled: true,
-        srcDir: './src/components',
-        excludePatterns: ['**/*.test.tsx', '**/legacy/**'],
-        enabledTransforms: ['button', 'alert', 'badge'],
-        disabledTransforms: ['experimental-component'],
-      };
-
-      const result = transformConfigSchema.safeParse(validConfig);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.enabled).toBe(true);
-        expect(result.data.srcDir).toBe('./src/components');
-        expect(result.data.excludePatterns).toHaveLength(2);
-        expect(result.data.enabledTransforms).toHaveLength(3);
-        expect(result.data.disabledTransforms).toHaveLength(1);
-      }
-    });
-
-    it('should accept empty transform config', () => {
-      const minimalConfig = {};
-      const result = transformConfigSchema.safeParse(minimalConfig);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.enabled).toBeUndefined();
-        expect(result.data.excludePatterns).toBeUndefined();
-        expect(result.data.disabledTransforms).toBeUndefined();
-      }
     });
   });
 
@@ -171,9 +124,6 @@ describe('Configuration Schema', () => {
 
     it('should have expected default values', () => {
       expect(defaultConfig.install?.wrappers).toBe(true);
-      expect(defaultConfig.transforms?.enabled).toBe(true);
-      expect(defaultConfig.transforms?.excludePatterns).toEqual([]);
-      expect(defaultConfig.transforms?.disabledTransforms).toEqual([]);
       expect(defaultConfig.devRefresh?.prefix).toBe('catalyst-');
       expect(defaultConfig.verbose).toBe(false);
       expect(defaultConfig.dryRun).toBe(false);

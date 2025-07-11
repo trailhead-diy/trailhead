@@ -4,10 +4,7 @@ import { createCLI } from '@esteban-url/trailhead-cli';
 import { chalk } from '@esteban-url/trailhead-cli/utils';
 import { createCLIContext, getScriptDir } from './cli/utils/context.js';
 import { createEnhanceCommand } from './cli/commands/enhance.js';
-import { createTransformsCommand } from './cli/commands/transforms.js';
 import { createDevRefreshCommand } from './cli/commands/dev-refresh.js';
-import { createInitCommand } from './cli/commands/init.js';
-import { createAddCommand } from './cli/commands/add.js';
 process.on('uncaughtException', error => {
   if (error instanceof Error && error.name === 'ExitPromptError') {
     console.log(chalk.gray('\n👋 Installation cancelled'));
@@ -28,13 +25,7 @@ async function main(): Promise<void> {
       name: 'trailhead-ui',
       description: 'Trailhead UI - Catalyst UI with advanced theming system',
       version: context.version,
-      commands: [
-        createEnhanceCommand(),
-        createTransformsCommand(),
-        createDevRefreshCommand(),
-        createInitCommand(),
-        createAddCommand(),
-      ],
+      commands: [createEnhanceCommand(), createDevRefreshCommand()],
     });
 
     await cli.run(process.argv);

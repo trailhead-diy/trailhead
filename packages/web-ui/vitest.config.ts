@@ -16,7 +16,16 @@ const packageSpecificConfig = defineConfig({
     coverage: {
       provider: 'v8',
       include: ['{scripts,src}/**/**/*.{ts,tsx}'],
-      exclude: ['**/index.ts', '**/types.ts', '**/*.config.ts', '**/*.setup.ts', '**/*.d.ts'],
+      exclude: [
+        '**/index.ts',
+        '**/types.ts',
+        '**/*.config.ts',
+        '**/*.setup.ts',
+        '**/*.d.ts',
+        '**/__tests__/**',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+      ],
     },
   },
   resolve: {

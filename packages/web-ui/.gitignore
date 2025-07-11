@@ -38,8 +38,7 @@ test-temp/
 test-temp*/
 temp/
 
-# Demo directory (generated locally by prepare-demo script)
-demo/
+
 
 # Cache directories
 .cache/

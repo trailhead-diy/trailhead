@@ -5,14 +5,6 @@
 import { createConfig, z, type ConfigLoadResult } from '@esteban-url/trailhead-cli/config';
 
 // Schema definitions
-export const transformConfigSchema = z.object({
-  enabled: z.boolean().optional(),
-  srcDir: z.string().optional(),
-  excludePatterns: z.array(z.string()).optional(),
-  enabledTransforms: z.array(z.string()).optional(),
-  disabledTransforms: z.array(z.string()).optional(),
-});
-
 export const installConfigSchema = z.object({
   destDir: z.string().optional(),
   wrappers: z.boolean().optional(),
@@ -30,7 +22,6 @@ export const devRefreshConfigSchema = z.object({
 export const trailheadConfigSchema = z.object({
   $schema: z.string().optional(),
   install: installConfigSchema.optional(),
-  transforms: transformConfigSchema.optional(),
   devRefresh: devRefreshConfigSchema.optional(),
   verbose: z.boolean().optional(),
   dryRun: z.boolean().optional(),
@@ -44,14 +35,6 @@ export type TrailheadConfigInput = z.infer<typeof trailheadConfigSchema>;
 /**
  * Final configuration types (with required defaults applied)
  */
-export interface TransformConfig {
-  enabled?: boolean;
-  srcDir?: string;
-  excludePatterns?: string[];
-  enabledTransforms?: string[];
-  disabledTransforms?: string[];
-}
-
 export interface InstallationConfig {
   destDir?: string;
   wrappers?: boolean;
@@ -66,7 +49,6 @@ export interface DevRefreshConfig {
 export interface TrailheadConfig {
   $schema?: string;
   install?: InstallationConfig;
-  transforms?: TransformConfig;
   devRefresh?: DevRefreshConfig;
   verbose?: boolean;
   dryRun?: boolean;
@@ -78,11 +60,6 @@ export interface TrailheadConfig {
 const defaultConfig: TrailheadConfig = {
   install: {
     wrappers: true,
-  },
-  transforms: {
-    enabled: true,
-    excludePatterns: [],
-    disabledTransforms: [],
   },
   devRefresh: {
     prefix: 'catalyst-',
@@ -191,16 +168,6 @@ export function logConfigDiscovery(
     console.log(`   Install Wrappers: ${config.install.wrappers}`);
     if (config.install.destDir) {
       console.log(`   Install Destination: ${config.install.destDir}`);
-    }
-  }
-
-  if (config.transforms) {
-    console.log(`   Transforms Enabled: ${config.transforms.enabled}`);
-    if (config.transforms.srcDir) {
-      console.log(`   Transform Source: ${config.transforms.srcDir}`);
-    }
-    if (config.transforms.excludePatterns?.length) {
-      console.log(`   Exclude Patterns: ${config.transforms.excludePatterns.join(', ')}`);
     }
   }
 

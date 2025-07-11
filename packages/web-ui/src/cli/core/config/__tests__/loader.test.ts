@@ -20,7 +20,6 @@ const createTempDir = () => {
 // Default configuration for tests
 const defaultConfig = {
   install: { wrappers: true },
-  transforms: { enabled: true, excludePatterns: [], disabledTransforms: [] },
   devRefresh: { prefix: 'catalyst-' },
   verbose: false,
   dryRun: false,
@@ -54,10 +53,9 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
     it('should load config from .trailheadrc.json', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
       const testConfig = {
-        transforms: {
-          enabled: false,
+        devRefresh: {
+          prefix: 'custom-',
           srcDir: './custom/src',
-          enabledTransforms: ['button', 'badge'],
         },
         verbose: true,
       };
@@ -72,11 +70,8 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       expect(result.source).toBe('file');
 
       // Verify the loaded config has merged properly with defaults
-      expect(result.config.transforms?.enabled).toBe(false); // from file
-      expect(result.config.transforms?.srcDir).toBe('./custom/src'); // from file
-      expect(result.config.transforms?.enabledTransforms).toEqual(['button', 'badge']); // from file
-      expect(result.config.transforms?.excludePatterns).toEqual([]); // from defaults
-      expect(result.config.transforms?.disabledTransforms).toEqual([]); // from defaults
+      expect(result.config.devRefresh?.prefix).toBe('custom-'); // from file
+      expect(result.config.devRefresh?.srcDir).toBe('./custom/src'); // from file
       expect(result.config.verbose).toBe(true); // from file
       expect(result.config.dryRun).toBe(false); // from defaults
     });
@@ -84,8 +79,8 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
     it('should validate config schema and throw on invalid data', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
       const invalidConfig = {
-        transforms: {
-          enabled: 'not-a-boolean', // Invalid type - should be boolean
+        devRefresh: {
+          prefix: 123, // Invalid type - should be string
         },
       };
 
@@ -100,7 +95,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       const configPath = join(testDir, '.trailheadrc.json');
 
       // Write malformed JSON file
-      writeFileSync(configPath, '{ "transforms": { "enabled": true, } }'); // trailing comma makes it invalid JSON
+      writeFileSync(configPath, '{ "devRefresh": { "prefix": "catalyst-", } }'); // trailing comma makes it invalid JSON
 
       await expect(loadConfig(testDir)).rejects.toThrow('Failed to load configuration');
     });
@@ -166,8 +161,8 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
         name: 'test-package',
         version: '1.0.0',
         trailhead: {
-          transforms: {
-            srcDir: './src/components',
+          devRefresh: {
+            prefix: 'custom-',
           },
         },
       };
@@ -177,7 +172,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
 
       const result = await loadConfig(testDir);
 
-      expect(result.config.transforms?.srcDir).toBe('./src/components');
+      expect(result.config.devRefresh?.prefix).toBe('custom-');
       expect(result.filepath).toBe(packagePath);
       expect(result.source).toBe('package.json');
     });
@@ -209,16 +204,14 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
     it('should merge nested objects correctly', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
       const partialConfig = {
-        transforms: {
-          enabled: false,
-          srcDir: './custom',
-          // excludePatterns and disabledTransforms should use defaults
-        },
         install: {
           destDir: './ui',
           // wrappers should use default
         },
-        // devRefresh should use all defaults
+        devRefresh: {
+          prefix: 'custom-',
+          // srcDir and destDir should use defaults
+        },
         verbose: true,
         // dryRun should use default
       };
@@ -229,37 +222,33 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       const result = await loadConfig(testDir);
 
       // User overrides
-      expect(result.config.transforms?.enabled).toBe(false);
-      expect(result.config.transforms?.srcDir).toBe('./custom');
       expect(result.config.install?.destDir).toBe('./ui');
+      expect(result.config.devRefresh?.prefix).toBe('custom-');
       expect(result.config.verbose).toBe(true);
 
       // Defaults preserved for unspecified values
-      expect(result.config.transforms?.excludePatterns).toEqual([]);
-      expect(result.config.transforms?.disabledTransforms).toEqual([]);
       expect(result.config.install?.wrappers).toBe(true);
-      expect(result.config.devRefresh?.prefix).toBe('catalyst-');
       expect(result.config.dryRun).toBe(false);
     });
 
-    it('should handle arrays in configuration', async () => {
+    it('should handle string configuration values', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
-      const configWithArrays = {
-        transforms: {
-          excludePatterns: ['*.test.tsx', '*.stories.tsx'],
-          enabledTransforms: ['button', 'input', 'select'],
-          disabledTransforms: ['legacy-component'],
+      const configWithStrings = {
+        devRefresh: {
+          prefix: 'my-component-',
+          srcDir: './catalyst-source',
+          destDir: './my-components',
         },
       };
 
-      // Write config file with arrays
-      writeFileSync(configPath, JSON.stringify(configWithArrays, null, 2));
+      // Write config file with string values
+      writeFileSync(configPath, JSON.stringify(configWithStrings, null, 2));
 
       const result = await loadConfig(testDir);
 
-      expect(result.config.transforms?.excludePatterns).toEqual(['*.test.tsx', '*.stories.tsx']);
-      expect(result.config.transforms?.enabledTransforms).toEqual(['button', 'input', 'select']);
-      expect(result.config.transforms?.disabledTransforms).toEqual(['legacy-component']);
+      expect(result.config.devRefresh?.prefix).toBe('my-component-');
+      expect(result.config.devRefresh?.srcDir).toBe('./catalyst-source');
+      expect(result.config.devRefresh?.destDir).toBe('./my-components');
     });
   });
 
@@ -268,7 +257,7 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
       const configPath = join(testDir, '.trailheadrc.json');
 
       // Write malformed JSON
-      writeFileSync(configPath, '{ "transforms": { "enabled": true, } }'); // trailing comma
+      writeFileSync(configPath, '{ "devRefresh": { "prefix": "catalyst-", } }'); // trailing comma
 
       await expect(loadConfig(testDir)).rejects.toThrow('Failed to load configuration');
     });
@@ -276,9 +265,8 @@ describe('Configuration Loader (CLI Framework Integration Tests)', () => {
     it('should validate type mismatches', async () => {
       const configPath = join(testDir, '.trailheadrc.json');
       const configWithWrongTypes = {
-        transforms: {
-          enabled: true,
-          excludePatterns: 'not-an-array', // Should be array
+        install: {
+          wrappers: 'not-a-boolean', // Should be boolean
         },
       };
 

@@ -161,7 +161,10 @@
       "**/types.ts",
       "**/*.config.ts",
       "**/*.setup.ts",
-      "**/*.d.ts"
+      "**/*.d.ts",
+      "**/__tests__/**",
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}"
     ]
   },
   "packageManager": "pnpm@10.12.4",
