@@ -112,7 +112,7 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
 
       JSON.parse(data);
       return ok(true);
-    } catch (error) {
+    } catch (_error) {
       return ok(false);
     }
   };
@@ -137,19 +137,6 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
     };
 
     if (options.sortKeys) {
-      const sortKeysReplacer = (key: string, value: any) => {
-        if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-          const sortedObject: Record<string, any> = {};
-          Object.keys(value)
-            .sort()
-            .forEach(sortedKey => {
-              sortedObject[sortedKey] = value[sortedKey];
-            });
-          return sortedObject;
-        }
-        return value;
-      };
-
       formatOptions = { ...formatOptions, replacer: sortKeysReplacer };
     }
 
@@ -165,4 +152,21 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
     minify,
     format,
   };
+};
+
+// ========================================
+// Helper Functions
+// ========================================
+
+const sortKeysReplacer = (key: string, value: any) => {
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    const sortedObject: Record<string, any> = {};
+    Object.keys(value)
+      .sort()
+      .forEach(sortedKey => {
+        sortedObject[sortedKey] = value[sortedKey];
+      });
+    return sortedObject;
+  }
+  return value;
 };

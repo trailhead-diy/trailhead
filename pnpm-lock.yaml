@@ -59,9 +59,42 @@ importers:
       '@inquirer/prompts':
         specifier: ^7.6.0
         version: 7.6.0(@types/node@24.0.10)
+      '@trailhead/config':
+        specifier: workspace:*
+        version: link:../config
       '@trailhead/core':
         specifier: workspace:*
         version: link:../core
+      '@trailhead/data':
+        specifier: workspace:*
+        version: link:../data
+      '@trailhead/db':
+        specifier: workspace:*
+        version: link:../db
+      '@trailhead/formats':
+        specifier: workspace:*
+        version: link:../formats
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@trailhead/git':
+        specifier: workspace:*
+        version: link:../git
+      '@trailhead/streams':
+        specifier: workspace:*
+        version: link:../streams
+      '@trailhead/testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@trailhead/validation':
+        specifier: workspace:*
+        version: link:../validation
+      '@trailhead/watcher':
+        specifier: workspace:*
+        version: link:../watcher
+      '@trailhead/workflows':
+        specifier: workspace:*
+        version: link:../workflows
       '@types/cli-progress':
         specifier: ^3.11.6
         version: 3.11.6
@@ -170,6 +203,34 @@ importers:
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
       typescript:
         specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/config:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@trailhead/validation':
+        specifier: workspace:*
+        version: link:../validation
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.3
         version: 5.8.3
       vitest:
         specifier: ^3.2.4
@@ -313,6 +374,34 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
 
+  packages/db:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@trailhead/validation':
+        specifier: workspace:*
+        version: link:../validation
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
   packages/formats:
     dependencies:
       '@trailhead/core':
@@ -402,6 +491,84 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
 
+  packages/git:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/streams:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      neverthrow:
+        specifier: ^8.1.0
+        version: 8.2.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.16.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.16.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/testing:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
   packages/validation:
     dependencies:
       '@trailhead/core':
@@ -438,6 +605,40 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/watcher:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      chokidar:
+        specifier: ^4.0.1
+        version: 4.0.3
+      neverthrow:
+        specifier: ^8.1.0
+        version: 8.2.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.16.0
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.16.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
 
   packages/web-ui:
     dependencies:
@@ -598,6 +799,31 @@ importers:
       vite:
         specifier: npm:rolldown-vite@^7.0.6
         version: rolldown-vite@7.0.6(@types/node@24.0.10)(esbuild@0.25.6)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/workflows:
+    dependencies:
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      neverthrow:
+        specifier: ^8.2.0
+        version: 8.2.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.8.3
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
@@ -5564,7 +5790,7 @@ snapshots:
 
   '@types/cli-progress@3.11.6':
     dependencies:
-      '@types/node': 24.0.10
+      '@types/node': 22.16.0
 
   '@types/culori@4.0.0': {}
 
@@ -5583,7 +5809,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 24.0.10
+      '@types/node': 22.16.0
 
   '@types/lodash@4.17.20': {}
 

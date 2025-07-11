@@ -103,10 +103,7 @@ export interface RawQuery<T> {
 // Query Condition Types
 // ========================================
 
-export type WhereCondition<T> = 
-  | SimpleCondition<T>
-  | LogicalCondition<T>
-  | ComparisonCondition<T>;
+export type WhereCondition<T> = SimpleCondition<T> | LogicalCondition<T> | ComparisonCondition<T>;
 
 export interface SimpleCondition<T> {
   readonly column: keyof T;
@@ -187,7 +184,7 @@ export interface ColumnDefinition {
   readonly references?: ForeignKeyReference;
 }
 
-export type ColumnType = 
+export type ColumnType =
   | 'INTEGER'
   | 'REAL'
   | 'TEXT'
@@ -277,8 +274,16 @@ export interface AppliedMigration {
 export interface SchemaBuilder {
   readonly createTable: (name: string, callback: (table: TableBuilder) => void) => SchemaBuilder;
   readonly dropTable: (name: string, ifExists?: boolean) => SchemaBuilder;
-  readonly alterTable: (name: string, callback: (table: AlterTableBuilder) => void) => SchemaBuilder;
-  readonly createIndex: (name: string, table: string, columns: readonly string[], unique?: boolean) => SchemaBuilder;
+  readonly alterTable: (
+    name: string,
+    callback: (table: AlterTableBuilder) => void
+  ) => SchemaBuilder;
+  readonly createIndex: (
+    name: string,
+    table: string,
+    columns: readonly string[],
+    unique?: boolean
+  ) => SchemaBuilder;
   readonly dropIndex: (name: string, ifExists?: boolean) => SchemaBuilder;
   readonly raw: (sql: string) => SchemaBuilder;
   readonly toSQL: () => readonly string[];
@@ -304,11 +309,23 @@ export interface TableBuilder {
 }
 
 export interface AlterTableBuilder {
-  readonly addColumn: (name: string, type: ColumnType, options?: ColumnOptions) => AlterTableBuilder;
+  readonly addColumn: (
+    name: string,
+    type: ColumnType,
+    options?: ColumnOptions
+  ) => AlterTableBuilder;
   readonly dropColumn: (name: string) => AlterTableBuilder;
   readonly renameColumn: (oldName: string, newName: string) => AlterTableBuilder;
-  readonly modifyColumn: (name: string, type: ColumnType, options?: ColumnOptions) => AlterTableBuilder;
-  readonly addIndex: (columns: readonly string[], name?: string, unique?: boolean) => AlterTableBuilder;
+  readonly modifyColumn: (
+    name: string,
+    type: ColumnType,
+    options?: ColumnOptions
+  ) => AlterTableBuilder;
+  readonly addIndex: (
+    columns: readonly string[],
+    name?: string,
+    unique?: boolean
+  ) => AlterTableBuilder;
   readonly dropIndex: (name: string) => AlterTableBuilder;
   readonly addConstraint: (constraint: ConstraintDefinition) => AlterTableBuilder;
   readonly dropConstraint: (name: string) => AlterTableBuilder;
@@ -339,14 +356,21 @@ export interface Transaction {
   readonly rollbackTo: (name: string) => Promise<DbResult<void>>;
 }
 
-export type IsolationLevel = 'READ_UNCOMMITTED' | 'READ_COMMITTED' | 'REPEATABLE_READ' | 'SERIALIZABLE';
+export type IsolationLevel =
+  | 'READ_UNCOMMITTED'
+  | 'READ_COMMITTED'
+  | 'REPEATABLE_READ'
+  | 'SERIALIZABLE';
 
 // ========================================
 // Operations Types
 // ========================================
 
 export interface DatabaseOperations {
-  readonly connect: (url: string, options?: Partial<ConnectionOptions>) => Promise<DbResult<DatabaseConnection>>;
+  readonly connect: (
+    url: string,
+    options?: Partial<ConnectionOptions>
+  ) => Promise<DbResult<DatabaseConnection>>;
   readonly disconnect: (connection: DatabaseConnection) => Promise<DbResult<void>>;
   readonly ping: (connection: DatabaseConnection) => Promise<DbResult<boolean>>;
   readonly query: <T = unknown>(table?: string) => QueryBuilder<T>;
@@ -355,7 +379,10 @@ export interface DatabaseOperations {
     fn: (tx: Transaction) => Promise<DbResult<unknown>>,
     options?: TransactionOptions
   ) => Promise<DbResult<unknown>>;
-  readonly migrate: (connection: DatabaseConnection, migrations: readonly Migration[]) => Promise<DbResult<MigrationStatus>>;
+  readonly migrate: (
+    connection: DatabaseConnection,
+    migrations: readonly Migration[]
+  ) => Promise<DbResult<MigrationStatus>>;
   readonly schema: () => SchemaBuilder;
 }
 
@@ -373,15 +400,25 @@ export interface AdapterOperations {
 
 export interface DatabaseAdapter {
   readonly driver: DatabaseDriver;
-  readonly connect: (url: string, options: ConnectionOptions) => Promise<DbResult<DatabaseConnection>>;
+  readonly connect: (
+    url: string,
+    options: ConnectionOptions
+  ) => Promise<DbResult<DatabaseConnection>>;
   readonly disconnect: (connection: DatabaseConnection) => Promise<DbResult<void>>;
-  readonly execute: (connection: DatabaseConnection, sql: string, params?: readonly unknown[]) => Promise<DbResult<QueryResult>>;
+  readonly execute: (
+    connection: DatabaseConnection,
+    sql: string,
+    params?: readonly unknown[]
+  ) => Promise<DbResult<QueryResult>>;
   readonly transaction: (
     connection: DatabaseConnection,
     fn: (connection: DatabaseConnection) => Promise<DbResult<unknown>>,
     options?: TransactionOptions
   ) => Promise<DbResult<unknown>>;
-  readonly migrate: (connection: DatabaseConnection, migration: Migration) => Promise<DbResult<void>>;
+  readonly migrate: (
+    connection: DatabaseConnection,
+    migration: Migration
+  ) => Promise<DbResult<void>>;
 }
 
 export interface QueryResult {

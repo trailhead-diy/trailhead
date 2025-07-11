@@ -1,10 +1,5 @@
 import { ok, err } from '@trailhead/core';
-import type {
-  FixtureOperations,
-  FixtureRegistry,
-  TestFixture,
-  TestResult,
-} from '../types.js';
+import type { FixtureOperations, FixtureRegistry, TestFixture, TestResult } from '../types.js';
 
 // ========================================
 // Fixture Operations
@@ -30,7 +25,7 @@ export const createFixtureOperations = (): FixtureOperations => {
     fn: (registry: FixtureRegistry) => Promise<TestResult<T>> | TestResult<T>
   ): Promise<TestResult<T>> => {
     const registry = createRegistry();
-    
+
     try {
       // Register all fixtures
       for (const fixture of fixtures) {
@@ -39,10 +34,10 @@ export const createFixtureOperations = (): FixtureOperations => {
 
       // Execute function with registry
       const result = await fn(registry);
-      
+
       // Cleanup
       await registry.cleanup();
-      
+
       return result;
     } catch (error) {
       await registry.cleanup();
@@ -76,7 +71,7 @@ const createFixtureRegistry = (): FixtureRegistry => {
     if (fixtures.has(fixture.name)) {
       throw new Error(`Fixture ${fixture.name} is already registered`);
     }
-    
+
     fixtures.set(fixture.name, fixture);
   };
 
@@ -148,7 +143,9 @@ const createFixtureRegistry = (): FixtureRegistry => {
         try {
           const cleanupResult = await fixture.cleanup(instance);
           if (cleanupResult.isErr()) {
-            errors.push(new Error(`Cleanup failed for fixture ${name}: ${cleanupResult.error.message}`));
+            errors.push(
+              new Error(`Cleanup failed for fixture ${name}: ${cleanupResult.error.message}`)
+            );
           }
         } catch (error) {
           errors.push(new Error(`Cleanup threw for fixture ${name}: ${error}`));

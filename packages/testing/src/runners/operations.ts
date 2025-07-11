@@ -33,10 +33,10 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
   const run = async (suite: TestSuite): Promise<TestResult<TestReport>> => {
     try {
       const startTime = Date.now();
-      
+
       await config.reporter.onStart([suite]);
       const suiteReport = await runSuiteSequentially(suite);
-      
+
       const report: TestReport = {
         suites: [suiteReport],
         stats: suiteReport.stats,
@@ -61,7 +61,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
 
   const runSuiteSequentially = async (suite: TestSuite): Promise<TestSuiteReport> => {
     await config.reporter.onSuiteStart(suite);
-    
+
     const stats: TestStats = { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 };
     const testReports: TestCaseReport[] = [];
     const suiteReports: TestSuiteReport[] = [];
@@ -83,21 +83,23 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
           name: updatedTest.name,
           status: updatedTest.status,
           duration: updatedTest.duration || 0,
-          error: updatedTest.error ? {
-            message: updatedTest.error.message,
-            code: updatedTest.error.code,
-            cause: updatedTest.error.cause,
-          } : undefined,
+          error: updatedTest.error
+            ? {
+                message: updatedTest.error.message,
+                code: updatedTest.error.code,
+                cause: updatedTest.error.cause,
+              }
+            : undefined,
           retries: updatedTest.retries,
         };
 
         testReports.push(testReport);
         stats.total++;
-        
+
         if (updatedTest.status === 'passed') stats.passed++;
         else if (updatedTest.status === 'failed') stats.failed++;
         else if (updatedTest.status === 'skipped') stats.skipped++;
-        
+
         stats.duration += updatedTest.duration || 0;
 
         if (config.failFast && updatedTest.status === 'failed') {
@@ -110,7 +112,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
     for (const childSuite of suite.suites) {
       const childReport = await runSuiteSequentially(childSuite);
       suiteReports.push(childReport);
-      
+
       stats.total += childReport.stats.total;
       stats.passed += childReport.stats.passed;
       stats.failed += childReport.stats.failed;
@@ -140,10 +142,10 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
   const runTest = async (test: TestCase): Promise<TestResult<TestCase>> => {
     try {
       await config.reporter.onTestStart(test);
-      
+
       const startTime = Date.now();
       let updatedTest = { ...test, status: 'running' as TestStatus };
-      
+
       const runContext = createContext({
         suite: test.context.name,
         test: test.name,
@@ -161,7 +163,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
       // Run the test with retry logic
       let lastError: Error | undefined;
       const maxAttempts = (test.context.retries || config.retries) + 1;
-      
+
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
           const testResult = await Promise.race([
@@ -172,7 +174,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
           if (testResult.isErr()) {
             lastError = new Error(testResult.error.message);
             updatedTest.retries = attempt;
-            
+
             if (attempt === maxAttempts - 1) {
               updatedTest = {
                 ...updatedTest,
@@ -195,7 +197,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
         } catch (error) {
           lastError = error as Error;
           updatedTest.retries = attempt;
-          
+
           if (error instanceof Error && error.message === 'TEST_TIMEOUT') {
             updatedTest = {
               ...updatedTest,
@@ -256,11 +258,13 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
         name: updatedTest.name,
         status: updatedTest.status,
         duration: updatedTest.duration || 0,
-        error: updatedTest.error ? {
-          message: updatedTest.error.message,
-          code: updatedTest.error.code,
-          cause: updatedTest.error.cause,
-        } : undefined,
+        error: updatedTest.error
+          ? {
+              message: updatedTest.error.message,
+              code: updatedTest.error.code,
+              cause: updatedTest.error.cause,
+            }
+          : undefined,
         retries: updatedTest.retries,
       };
 
@@ -277,7 +281,11 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
     }
   };
 
-  const createContext = (options: { suite: string; test: string; timeout: number }): TestRunContext => {
+  const createContext = (options: {
+    suite: string;
+    test: string;
+    timeout: number;
+  }): TestRunContext => {
     const cleanupFns: TestCleanupFn[] = [];
 
     return {
@@ -305,7 +313,7 @@ export const createSequentialRunner = (options: Partial<TestRunnerOptions> = {})
 
 export const createParallelRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner => {
   const sequentialRunner = createSequentialRunner({ ...options, parallel: true });
-  
+
   // For now, parallel runner uses sequential implementation
   // In a full implementation, this would run tests concurrently
   return sequentialRunner;
@@ -322,34 +330,43 @@ const createTimeout = (ms: number): Promise<never> => {
 };
 
 const createConsoleReporter = (): TestReporter => ({
-  onStart: async (suites) => {
+  onStart: async suites => {
     if (suites.length > 0) {
       console.log(`Running ${suites.length} test suite(s)...`);
     }
   },
-  onSuiteStart: async (suite) => {
+  onSuiteStart: async suite => {
     console.log(`\n  ${suite.name}`);
   },
   onSuiteEnd: async (suite, report) => {
     const { stats } = report;
-    console.log(`    ${stats.passed} passed, ${stats.failed} failed, ${stats.skipped} skipped (${stats.duration}ms)`);
+    console.log(
+      `    ${stats.passed} passed, ${stats.failed} failed, ${stats.skipped} skipped (${stats.duration}ms)`
+    );
   },
   onTestStart: async () => {
     // No-op for console reporter
   },
   onTestEnd: async (test, report) => {
-    const statusIcon = report.status === 'passed' ? '✓' : 
-                     report.status === 'failed' ? '✗' : 
-                     report.status === 'skipped' ? '-' : '?';
+    const statusIcon =
+      report.status === 'passed'
+        ? '✓'
+        : report.status === 'failed'
+          ? '✗'
+          : report.status === 'skipped'
+            ? '-'
+            : '?';
     console.log(`    ${statusIcon} ${test.name} (${report.duration}ms)`);
-    
+
     if (report.error) {
       console.log(`      Error: ${report.error.message}`);
     }
   },
-  onEnd: async (report) => {
+  onEnd: async report => {
     const { stats } = report;
-    console.log(`\nTest Results: ${stats.passed} passed, ${stats.failed} failed, ${stats.skipped} skipped`);
+    console.log(
+      `\nTest Results: ${stats.passed} passed, ${stats.failed} failed, ${stats.skipped} skipped`
+    );
     console.log(`Duration: ${report.duration}ms`);
     console.log(`Success: ${report.success}`);
   },

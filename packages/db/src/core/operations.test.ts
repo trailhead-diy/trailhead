@@ -49,7 +49,8 @@ describe('Database Operations', () => {
     });
 
     it('should build select query', () => {
-      const query = dbOps.query('users')
+      const query = dbOps
+        .query('users')
         .select(['id', 'name'])
         .where({ column: 'active', operator: '=', value: true });
 
@@ -60,7 +61,8 @@ describe('Database Operations', () => {
     });
 
     it('should build insert query', () => {
-      const query = dbOps.query('users')
+      const query = dbOps
+        .query('users')
         .insert({ name: 'John', email: 'john@example.com' })
         .into('users');
 
@@ -70,7 +72,8 @@ describe('Database Operations', () => {
     });
 
     it('should build update query', () => {
-      const query = dbOps.query('users')
+      const query = dbOps
+        .query('users')
         .update({ name: 'Jane' })
         .table('users')
         .where({ column: 'id', operator: '=', value: 1 });
@@ -83,7 +86,8 @@ describe('Database Operations', () => {
     });
 
     it('should build delete query', () => {
-      const query = dbOps.query('users')
+      const query = dbOps
+        .query('users')
         .delete()
         .from('users')
         .where({ column: 'id', operator: '=', value: 1 });
@@ -95,8 +99,7 @@ describe('Database Operations', () => {
     });
 
     it('should build raw query', () => {
-      const query = dbOps.query()
-        .raw('SELECT COUNT(*) FROM users WHERE active = ?', [true]);
+      const query = dbOps.query().raw('SELECT COUNT(*) FROM users WHERE active = ?', [true]);
 
       const { sql, params } = query.toSQL();
       expect(sql).toBe('SELECT COUNT(*) FROM users WHERE active = ?');
@@ -117,13 +120,12 @@ describe('Database Operations', () => {
     });
 
     it('should build create table statement', () => {
-      const schema = dbOps.schema()
-        .createTable('users', (table) => {
-          table.integer('id', { primary: true, autoIncrement: true });
-          table.text('name', { nullable: false });
-          table.text('email', { unique: true });
-          table.boolean('active', { defaultValue: true });
-        });
+      const schema = dbOps.schema().createTable('users', table => {
+        table.integer('id', { primary: true, autoIncrement: true });
+        table.text('name', { nullable: false });
+        table.text('email', { unique: true });
+        table.boolean('active', { defaultValue: true });
+      });
 
       const statements = schema.toSQL();
       expect(statements).toHaveLength(1);
@@ -131,8 +133,7 @@ describe('Database Operations', () => {
     });
 
     it('should build drop table statement', () => {
-      const schema = dbOps.schema()
-        .dropTable('users', true);
+      const schema = dbOps.schema().dropTable('users', true);
 
       const statements = schema.toSQL();
       expect(statements).toHaveLength(1);
@@ -140,8 +141,7 @@ describe('Database Operations', () => {
     });
 
     it('should build create index statement', () => {
-      const schema = dbOps.schema()
-        .createIndex('idx_users_email', 'users', ['email'], true);
+      const schema = dbOps.schema().createIndex('idx_users_email', 'users', ['email'], true);
 
       const statements = schema.toSQL();
       expect(statements).toHaveLength(1);

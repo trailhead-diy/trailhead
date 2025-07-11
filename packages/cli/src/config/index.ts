@@ -1,8 +1,7 @@
-// New simplified configuration API
-export { createConfig } from './config.js';
-export type { CreateConfigOptions, ConfigLoader, ConfigLoadResult } from './types.js';
+// Delegate to @trailhead/config domain package
+export * from '@trailhead/config/core';
 
-// Configuration templates
+// Keep CLI-specific templates
 export {
   configTemplates,
   getTemplate,

@@ -54,7 +54,10 @@ export const createTestOperations = (): TestOperations => {
 // Test Suite Builder
 // ========================================
 
-const createTestSuiteBuilder = (name: string, options: Partial<TestContext> = {}): TestSuiteBuilder => {
+const createTestSuiteBuilder = (
+  name: string,
+  options: Partial<TestContext> = {}
+): TestSuiteBuilder => {
   const context: TestContext = {
     name,
     timeout: 5000,
@@ -68,7 +71,11 @@ const createTestSuiteBuilder = (name: string, options: Partial<TestContext> = {}
   const tests: TestCase[] = [];
   const suites: TestSuite[] = [];
 
-  const test = (testName: string, fn: TestFn, testOptions: Partial<TestContext> = {}): TestSuiteBuilder => {
+  const test = (
+    testName: string,
+    fn: TestFn,
+    testOptions: Partial<TestContext> = {}
+  ): TestSuiteBuilder => {
     const testContext: TestContext = {
       ...context,
       name: testName,
@@ -167,10 +174,10 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
   const run = async (suite: TestSuite): Promise<TestResult<TestReport>> => {
     try {
       const startTime = Date.now();
-      
+
       await config.reporter.onStart([suite]);
       const suiteReport = await runSuite(suite);
-      
+
       const report: TestReport = {
         suites: [suiteReport],
         stats: suiteReport.stats,
@@ -195,7 +202,7 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
 
   const runSuite = async (suite: TestSuite) => {
     await config.reporter.onSuiteStart(suite);
-    
+
     const stats = { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 };
     const testReports = [];
     const suiteReports = [];
@@ -214,11 +221,13 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
           name: updatedTest.name,
           status: updatedTest.status,
           duration: updatedTest.duration || 0,
-          error: updatedTest.error ? {
-            message: updatedTest.error.message,
-            code: updatedTest.error.code,
-            cause: updatedTest.error.cause,
-          } : undefined,
+          error: updatedTest.error
+            ? {
+                message: updatedTest.error.message,
+                code: updatedTest.error.code,
+                cause: updatedTest.error.cause,
+              }
+            : undefined,
           retries: updatedTest.retries,
         });
 
@@ -238,7 +247,7 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
     for (const childSuite of suite.suites) {
       const childReport = await runSuite(childSuite);
       suiteReports.push(childReport);
-      
+
       stats.total += childReport.stats.total;
       stats.passed += childReport.stats.passed;
       stats.failed += childReport.stats.failed;
@@ -265,10 +274,10 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
   const runTest = async (test: TestCase): Promise<TestResult<TestCase>> => {
     try {
       await config.reporter.onTestStart(test);
-      
+
       const startTime = Date.now();
       let updatedTest = { ...test, status: 'running' as TestStatus };
-      
+
       const runContext = createContext({
         suite: test.context.name,
         test: test.name,
@@ -347,11 +356,13 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
         name: updatedTest.name,
         status: updatedTest.status,
         duration: updatedTest.duration || 0,
-        error: updatedTest.error ? {
-          message: updatedTest.error.message,
-          code: updatedTest.error.code,
-          cause: updatedTest.error.cause,
-        } : undefined,
+        error: updatedTest.error
+          ? {
+              message: updatedTest.error.message,
+              code: updatedTest.error.code,
+              cause: updatedTest.error.cause,
+            }
+          : undefined,
         retries: updatedTest.retries,
       };
 
@@ -507,7 +518,7 @@ const createAssertion = <T>(value: T): Assertion<T> => {
       if (typeof value !== 'function') {
         throw new Error('Expected value to be a function');
       }
-      
+
       try {
         (value as any)();
         throw new Error('Expected function to throw');
@@ -533,7 +544,7 @@ const createAssertion = <T>(value: T): Assertion<T> => {
       if (!(value instanceof Promise)) {
         throw new Error('Expected value to be a Promise');
       }
-      
+
       try {
         await value;
       } catch (error) {
@@ -544,7 +555,7 @@ const createAssertion = <T>(value: T): Assertion<T> => {
       if (!(value instanceof Promise)) {
         throw new Error('Expected value to be a Promise');
       }
-      
+
       try {
         await value;
         throw new Error('Expected promise to reject');
@@ -573,7 +584,7 @@ const createAssertion = <T>(value: T): Assertion<T> => {
 
 const createNegatedAssertion = <T>(value: T): Assertion<T> => {
   const assertion = createAssertion(value);
-  
+
   return {
     ...assertion,
     get not() {
@@ -586,7 +597,9 @@ const createNegatedAssertion = <T>(value: T): Assertion<T> => {
     },
     toEqual: (expected: T) => {
       if (deepEqual(value, expected)) {
-        throw new Error(`Expected ${JSON.stringify(value)} not to equal ${JSON.stringify(expected)}`);
+        throw new Error(
+          `Expected ${JSON.stringify(value)} not to equal ${JSON.stringify(expected)}`
+        );
       }
     },
     toBeTruthy: () => {
@@ -616,21 +629,21 @@ const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === b) return true;
   if (a == null || b == null) return false;
   if (typeof a !== typeof b) return false;
-  
+
   if (typeof a === 'object') {
     const keysA = Object.keys(a as object);
     const keysB = Object.keys(b as object);
-    
+
     if (keysA.length !== keysB.length) return false;
-    
+
     for (const key of keysA) {
       if (!keysB.includes(key)) return false;
       if (!deepEqual((a as any)[key], (b as any)[key])) return false;
     }
-    
+
     return true;
   }
-  
+
   return false;
 };
 

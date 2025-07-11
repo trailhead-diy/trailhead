@@ -129,7 +129,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
     try {
       const validation = validateWorkflow(workflow);
       if (validation.isErr()) {
-        return validation;
+        return err(validation.error);
       }
 
       // Build dependency graph
@@ -144,7 +144,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
       // Topological sort to determine execution order
       const sorted = topologicalSort(dependencies);
       if (sorted.isErr()) {
-        return sorted;
+        return err(sorted.error);
       }
 
       const executionOrder = sorted.value;

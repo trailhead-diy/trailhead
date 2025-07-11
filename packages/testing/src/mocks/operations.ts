@@ -1,10 +1,5 @@
 import { ok, err } from '@trailhead/core';
-import type {
-  MockOperations,
-  MockFunction,
-  MockImplementation,
-  TestResult,
-} from '../types.js';
+import type { MockOperations, MockFunction, MockImplementation, TestResult } from '../types.js';
 
 // ========================================
 // Mock Operations
@@ -24,14 +19,14 @@ export const createMockOperations = (): MockOperations => {
 
   const spyOn = <T, K extends keyof T>(object: T, method: K): MockFunction<any[], any> => {
     const original = object[method];
-    
+
     if (typeof original !== 'function') {
       throw new Error(`Cannot spy on ${String(method)} - not a function`);
     }
 
     const spy = createMockFunction(original as any);
     (object as any)[method] = spy;
-    
+
     // Override restore to put back original
     const originalRestore = spy.mock.restore;
     spy.mock.restore = () => {
@@ -86,7 +81,11 @@ const createMockFunction = <TArgs extends readonly unknown[], TReturn>(
   implementation?: MockImplementation<TArgs, TReturn>
 ): MockFunction<TArgs, TReturn> => {
   const calls: TArgs[] = [];
-  const results: Array<{ type: 'return' | 'throw' | 'incomplete'; value?: TReturn; error?: Error }> = [];
+  const results: Array<{
+    type: 'return' | 'throw' | 'incomplete';
+    value?: TReturn;
+    error?: Error;
+  }> = [];
   const instances: unknown[] = [];
   const invocationCallOrder: number[] = [];
   let callCount = 0;

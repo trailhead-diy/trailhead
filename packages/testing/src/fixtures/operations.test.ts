@@ -8,7 +8,7 @@ describe('Fixture Operations', () => {
   describe('createRegistry', () => {
     it('should create a fixture registry', () => {
       const registry = fixtureOps.createRegistry();
-      
+
       expect(typeof registry.register).toBe('function');
       expect(typeof registry.get).toBe('function');
       expect(typeof registry.cleanup).toBe('function');
@@ -21,7 +21,7 @@ describe('Fixture Operations', () => {
       const fixture = fixtureOps.createFixture('test-fixture', {
         create: () => ok({ value: 42 }),
       });
-      
+
       expect(fixture.name).toBe('test-fixture');
       expect(typeof fixture.create).toBe('function');
     });
@@ -31,7 +31,7 @@ describe('Fixture Operations', () => {
         create: () => ok({ value: 42 }),
         cleanup: () => ok(undefined),
       });
-      
+
       expect(fixture.cleanup).toBeDefined();
     });
 
@@ -40,7 +40,7 @@ describe('Fixture Operations', () => {
         create: () => ok({ value: 42 }),
         dependencies: ['base-fixture'],
       });
-      
+
       expect(fixture.dependencies).toEqual(['base-fixture']);
     });
   });
@@ -51,9 +51,9 @@ describe('Fixture Operations', () => {
       const fixture = fixtureOps.createFixture('test-data', {
         create: () => ok({ id: 1, name: 'test' }),
       });
-      
+
       registry.register(fixture);
-      
+
       const result = await registry.get('test-data');
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
@@ -66,12 +66,12 @@ describe('Fixture Operations', () => {
       const fixture = fixtureOps.createFixture('singleton', {
         create: () => ok({ timestamp: Date.now() }),
       });
-      
+
       registry.register(fixture);
-      
+
       const result1 = await registry.get('singleton');
       const result2 = await registry.get('singleton');
-      
+
       expect(result1.isOk()).toBe(true);
       expect(result2.isOk()).toBe(true);
       if (result1.isOk() && result2.isOk()) {
@@ -81,11 +81,11 @@ describe('Fixture Operations', () => {
 
     it('should handle fixture dependencies', async () => {
       const registry = fixtureOps.createRegistry();
-      
+
       const baseFixture = fixtureOps.createFixture('base', {
         create: () => ok({ baseValue: 'foundation' }),
       });
-      
+
       const dependentFixture = fixtureOps.createFixture('dependent', {
         create: async () => {
           const base = await registry.get<{ baseValue: string }>('base');
@@ -94,10 +94,10 @@ describe('Fixture Operations', () => {
         },
         dependencies: ['base'],
       });
-      
+
       registry.register(baseFixture);
       registry.register(dependentFixture);
-      
+
       const result = await registry.get('dependent');
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
@@ -107,7 +107,7 @@ describe('Fixture Operations', () => {
 
     it('should handle missing fixtures', async () => {
       const registry = fixtureOps.createRegistry();
-      
+
       const result = await registry.get('non-existent');
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
@@ -120,7 +120,7 @@ describe('Fixture Operations', () => {
       const fixture = fixtureOps.createFixture('duplicate', {
         create: () => ok({}),
       });
-      
+
       registry.register(fixture);
       expect(() => registry.register(fixture)).toThrow();
     });
@@ -128,7 +128,7 @@ describe('Fixture Operations', () => {
     it('should cleanup fixtures in reverse order', async () => {
       const registry = fixtureOps.createRegistry();
       const cleanupOrder: string[] = [];
-      
+
       const fixture1 = fixtureOps.createFixture('first', {
         create: () => ok({ name: 'first' }),
         cleanup: () => {
@@ -136,7 +136,7 @@ describe('Fixture Operations', () => {
           return ok(undefined);
         },
       });
-      
+
       const fixture2 = fixtureOps.createFixture('second', {
         create: () => ok({ name: 'second' }),
         cleanup: () => {
@@ -144,15 +144,15 @@ describe('Fixture Operations', () => {
           return ok(undefined);
         },
       });
-      
+
       registry.register(fixture1);
       registry.register(fixture2);
-      
+
       await registry.get('first');
       await registry.get('second');
-      
+
       const cleanupResult = await registry.cleanup();
-      
+
       expect(cleanupResult.isOk()).toBe(true);
       expect(cleanupOrder).toEqual(['second', 'first']);
     });
@@ -162,10 +162,10 @@ describe('Fixture Operations', () => {
       const fixture = fixtureOps.createFixture('test', {
         create: () => ok({}),
       });
-      
+
       registry.register(fixture);
       registry.clear();
-      
+
       // Should be able to register same fixture again
       expect(() => registry.register(fixture)).not.toThrow();
     });
@@ -181,21 +181,21 @@ describe('Fixture Operations', () => {
           create: () => ok({ items: [1, 2, 3] }),
         }),
       ];
-      
-      const result = await fixtureOps.withFixtures(fixtures, async (registry) => {
+
+      const result = await fixtureOps.withFixtures(fixtures, async registry => {
         const config = await registry.get('config');
         const data = await registry.get('data');
-        
+
         if (config.isErr() || data.isErr()) {
           return ok('error');
         }
-        
+
         return ok({
           config: config.value,
           data: data.value,
         });
       });
-      
+
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
         expect(result.value).toEqual({
@@ -207,7 +207,7 @@ describe('Fixture Operations', () => {
 
     it('should cleanup fixtures after execution', async () => {
       let cleanupCalled = false;
-      
+
       const fixtures = [
         fixtureOps.createFixture('cleanup-test', {
           create: () => ok({}),
@@ -217,18 +217,18 @@ describe('Fixture Operations', () => {
           },
         }),
       ];
-      
-      await fixtureOps.withFixtures(fixtures, async (registry) => {
+
+      await fixtureOps.withFixtures(fixtures, async registry => {
         await registry.get('cleanup-test');
         return ok('done');
       });
-      
+
       expect(cleanupCalled).toBe(true);
     });
 
     it('should cleanup even if function throws', async () => {
       let cleanupCalled = false;
-      
+
       const fixtures = [
         fixtureOps.createFixture('error-test', {
           create: () => ok({}),
@@ -238,12 +238,12 @@ describe('Fixture Operations', () => {
           },
         }),
       ];
-      
-      const result = await fixtureOps.withFixtures(fixtures, async (registry) => {
+
+      const result = await fixtureOps.withFixtures(fixtures, async registry => {
         await registry.get('error-test');
         throw new Error('Test error');
       });
-      
+
       expect(result.isErr()).toBe(true);
       expect(cleanupCalled).toBe(true);
     });

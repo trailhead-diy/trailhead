@@ -16,10 +16,13 @@ import type {
 export const createMemoryAdapter = (): DatabaseAdapter => {
   const databases = new Map<string, MemoryDatabase>();
 
-  const connect = async (url: string, options: ConnectionOptions): Promise<DbResult<DatabaseConnection>> => {
+  const connect = async (
+    url: string,
+    options: ConnectionOptions
+  ): Promise<DbResult<DatabaseConnection>> => {
     try {
       const dbName = extractDatabaseName(url);
-      
+
       if (!databases.has(dbName)) {
         databases.set(dbName, createMemoryDatabase());
       }
@@ -87,7 +90,7 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
 
       // Simple SQL parsing for memory database
       const result = await executeQuery(db, sql, params);
-      
+
       const queryResult: QueryResult = {
         rows: result.rows,
         rowCount: result.rows.length,
@@ -133,12 +136,15 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
     }
   };
 
-  const migrate = async (connection: DatabaseConnection, migration: Migration): Promise<DbResult<void>> => {
+  const migrate = async (
+    connection: DatabaseConnection,
+    migration: Migration
+  ): Promise<DbResult<void>> => {
     try {
       // Simple migration execution
       const schemaBuilder = createSchemaBuilder();
       const result = await migration.up(schemaBuilder);
-      
+
       if (result.isErr()) {
         return result;
       }
@@ -229,7 +235,7 @@ const executeSelect = async (
 
   const tableName = match[1];
   const table = db.tables.get(tableName);
-  
+
   if (!table) {
     return { rows: [] };
   }
@@ -250,16 +256,16 @@ const executeInsert = async (
 
   const tableName = match[1];
   const table = db.tables.get(tableName);
-  
+
   if (!table) {
     return { rows: [], insertId: 0 };
   }
 
   const insertId = db.autoIncrement++;
   const row = { id: insertId, ...Object.fromEntries(params.map((p, i) => [`col${i}`, p])) };
-  
+
   table.rows.push(row);
-  
+
   return { rows: [row], insertId };
 };
 
@@ -301,7 +307,7 @@ const executeCreateTable = async (
   };
 
   db.tables.set(tableName, table);
-  
+
   return { rows: [] };
 };
 

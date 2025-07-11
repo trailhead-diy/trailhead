@@ -18,7 +18,10 @@ import type {
 // ========================================
 
 export const createDatabaseOperations = (): DatabaseOperations => {
-  const connect = async (url: string, options: Partial<ConnectionOptions> = {}): Promise<DbResult<DatabaseConnection>> => {
+  const connect = async (
+    url: string,
+    options: Partial<ConnectionOptions> = {}
+  ): Promise<DbResult<DatabaseConnection>> => {
     try {
       const connectionOptions: ConnectionOptions = {
         driver: 'sqlite',
@@ -115,10 +118,14 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         } as any);
       }
 
-      return await adapter.transaction(connection, async (txConnection) => {
-        const tx = createTransaction(txConnection, options);
-        return await fn(tx);
-      }, options);
+      return await adapter.transaction(
+        connection,
+        async txConnection => {
+          const tx = createTransaction(txConnection, options);
+          return await fn(tx);
+        },
+        options
+      );
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -228,9 +235,9 @@ const registerAdapter = (driver: DatabaseDriver, adapter: any) => {
 
 const createQueryBuilder = <T>(table?: string): QueryBuilder<T> => {
   return {
-    select: (columns) => createSelectQuery<any>(table, columns),
-    insert: (data) => createInsertQuery<T>(table, data),
-    update: (data) => createUpdateQuery<T>(table, data),
+    select: columns => createSelectQuery<any>(table, columns),
+    insert: data => createInsertQuery<T>(table, data),
+    update: data => createUpdateQuery<T>(table, data),
     delete: () => createDeleteQuery<T>(table),
     raw: (sql, params) => createRawQuery<T>(sql, params),
   };
@@ -261,16 +268,16 @@ const createSelectQuery = <T>(table?: string, columns?: readonly (keyof T)[]) =>
           recoverable: false,
         } as any);
       }
-      
+
       const result = await adapter.execute(connection, sql, []);
       if (result.isErr()) return result;
-      
+
       return ok(result.value.rows as T[]);
     },
     first: async (connection: any) => {
       const result = await query.limit(1).execute(connection);
       if (result.isErr()) return result;
-      
+
       return ok(result.value[0]);
     },
   };
@@ -333,10 +340,10 @@ const createRawQuery = <T>(sql: string, params?: readonly unknown[]) => {
           recoverable: false,
         } as any);
       }
-      
+
       const result = await adapter.execute(connection, sql, params);
       if (result.isErr()) return result;
-      
+
       return ok(result.value.rows as T[]);
     },
   };
@@ -387,12 +394,12 @@ const createSchemaBuilder = (): SchemaBuilder => {
       statements.push(`DROP INDEX ${ifExists ? 'IF EXISTS ' : ''}${name}`);
       return builder;
     },
-    raw: (sql) => {
+    raw: sql => {
       statements.push(sql);
       return builder;
     },
     toSQL: () => statements,
-    execute: async (connection) => {
+    execute: async connection => {
       try {
         const adapter = getAdapter(connection.options.driver);
         if (!adapter) {
@@ -453,7 +460,8 @@ const createAlterTableBuilder = () => {
     dropColumn: (name: string) => createAlterTableBuilder(),
     renameColumn: (oldName: string, newName: string) => createAlterTableBuilder(),
     modifyColumn: (name: string, type: any, options?: any) => createAlterTableBuilder(),
-    addIndex: (columns: readonly string[], name?: string, unique?: boolean) => createAlterTableBuilder(),
+    addIndex: (columns: readonly string[], name?: string, unique?: boolean) =>
+      createAlterTableBuilder(),
     dropIndex: (name: string) => createAlterTableBuilder(),
     addConstraint: (constraint: any) => createAlterTableBuilder(),
     dropConstraint: (name: string) => createAlterTableBuilder(),

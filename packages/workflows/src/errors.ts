@@ -11,14 +11,11 @@ export const createWorkflowError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'WorkflowError',
-    code: 'WORKFLOW_ERROR',
-    message,
+  return createTrailheadError('WorkflowError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -28,14 +25,11 @@ export const createWorkflowValidationError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'WorkflowValidationError',
-    code: 'WORKFLOW_VALIDATION_ERROR',
-    message,
+  return createTrailheadError('WorkflowValidationError', message, {
     suggestion,
     cause,
     recoverable: true,
-    details,
+    context: details,
   });
 };
 
@@ -45,14 +39,11 @@ export const createWorkflowExecutionError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'WorkflowExecutionError',
-    code: 'WORKFLOW_EXECUTION_ERROR',
-    message,
+  return createTrailheadError('WorkflowExecutionError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -62,14 +53,11 @@ export const createWorkflowTimeoutError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'WorkflowTimeoutError',
-    code: 'WORKFLOW_TIMEOUT_ERROR',
-    message,
+  return createTrailheadError('WorkflowTimeoutError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -79,14 +67,11 @@ export const createStepError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'StepError',
-    code: 'STEP_ERROR',
-    message,
+  return createTrailheadError('StepError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -96,14 +81,11 @@ export const createStepValidationError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'StepValidationError',
-    code: 'STEP_VALIDATION_ERROR',
-    message,
+  return createTrailheadError('StepValidationError', message, {
     suggestion,
     cause,
     recoverable: true,
-    details,
+    context: details,
   });
 };
 
@@ -113,14 +95,11 @@ export const createStepExecutionError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'StepExecutionError',
-    code: 'STEP_EXECUTION_ERROR',
-    message,
+  return createTrailheadError('StepExecutionError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -130,14 +109,11 @@ export const createStepTimeoutError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'StepTimeoutError',
-    code: 'STEP_TIMEOUT_ERROR',
-    message,
+  return createTrailheadError('StepTimeoutError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -147,14 +123,11 @@ export const createDependencyError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'DependencyError',
-    code: 'DEPENDENCY_ERROR',
-    message,
+  return createTrailheadError('DependencyError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 
@@ -164,14 +137,11 @@ export const createConcurrencyError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): TrailheadError => {
-  return createTrailheadError({
-    type: 'ConcurrencyError',
-    code: 'CONCURRENCY_ERROR',
-    message,
+  return createTrailheadError('ConcurrencyError', message, {
     suggestion,
     cause,
     recoverable: false,
-    details,
+    context: details,
   });
 };
 

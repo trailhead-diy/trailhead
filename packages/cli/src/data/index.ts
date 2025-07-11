@@ -1,24 +1,8 @@
-export type {
-  DataProcessingOptions,
-  CSVProcessingOptions,
-  JSONProcessingOptions,
-  ExcelProcessingOptions,
-  CSVProcessor,
-  JSONProcessor,
-  ExcelProcessor,
-  FormatDetectionResult,
-  DataConverter,
-} from './types.js';
-
-export { createCSVProcessor, csvUtils } from './csv.js';
-
-export { createJSONProcessor, jsonUtils } from './json.js';
-
-export { createExcelProcessor, excelUtils } from './excel.js';
-
-export { createDataConverter, detectFormat, conversionUtils } from './converter.js';
-
-export { ok, err, Result } from '../core/errors/index.js';
+// Delegate to @trailhead/data domain package
+export * from '@trailhead/data/core';
+export * from '@trailhead/data/csv';
+export * from '@trailhead/data/json';
+export * from '@trailhead/data/excel';
 
 import * as csvModule from './csv.js';
 import * as jsonModule from './json.js';

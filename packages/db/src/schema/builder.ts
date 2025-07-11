@@ -241,7 +241,9 @@ interface AlterTableBuilderState {
   dropConstraints: string[];
 }
 
-const createAlterTableBuilder = (tableName: string): AlterTableBuilder & { _getState: () => AlterTableBuilderState } => {
+const createAlterTableBuilder = (
+  tableName: string
+): AlterTableBuilder & { _getState: () => AlterTableBuilderState } => {
   const state: AlterTableBuilderState = {
     tableName,
     addColumns: [],
@@ -305,30 +307,33 @@ const createAlterTableBuilder = (tableName: string): AlterTableBuilder & { _getS
 // SQL Generation Functions
 // ========================================
 
-const generateCreateTableSQL = (tableName: string, builder: TableBuilder & { _getState: () => TableBuilderState }): string => {
+const generateCreateTableSQL = (
+  tableName: string,
+  builder: TableBuilder & { _getState: () => TableBuilderState }
+): string => {
   const state = builder._getState();
   let sql = `CREATE TABLE ${tableName} (\n`;
 
   // Add columns
   const columnDefinitions = state.columns.map(col => {
     let def = `  ${col.name} ${col.type}`;
-    
+
     if (col.options.primary) {
       def += ' PRIMARY KEY';
     }
-    
+
     if (col.options.autoIncrement) {
       def += ' AUTOINCREMENT';
     }
-    
+
     if (!col.options.nullable && !col.options.primary) {
       def += ' NOT NULL';
     }
-    
+
     if (col.options.unique) {
       def += ' UNIQUE';
     }
-    
+
     if (col.options.defaultValue !== undefined) {
       def += ` DEFAULT ${formatValue(col.options.defaultValue)}`;
     }
@@ -346,11 +351,11 @@ const generateCreateTableSQL = (tableName: string, builder: TableBuilder & { _ge
   // Add foreign key constraints
   for (const fk of state.foreignKeys) {
     sql += `,\n  FOREIGN KEY (${fk.column}) REFERENCES ${fk.references.table}(${fk.references.column})`;
-    
+
     if (fk.references.onDelete) {
       sql += ` ON DELETE ${fk.references.onDelete}`;
     }
-    
+
     if (fk.references.onUpdate) {
       sql += ` ON UPDATE ${fk.references.onUpdate}`;
     }
@@ -372,22 +377,24 @@ const generateCreateTableSQL = (tableName: string, builder: TableBuilder & { _ge
   return sql;
 };
 
-const generateAlterTableSQL = (builder: AlterTableBuilder & { _getState: () => AlterTableBuilderState }): string[] => {
+const generateAlterTableSQL = (
+  builder: AlterTableBuilder & { _getState: () => AlterTableBuilderState }
+): string[] => {
   const state = builder._getState();
   const statements: string[] = [];
 
   // Add columns
   for (const col of state.addColumns) {
     let sql = `ALTER TABLE ${state.tableName} ADD COLUMN ${col.name} ${col.type}`;
-    
+
     if (!col.options.nullable) {
       sql += ' NOT NULL';
     }
-    
+
     if (col.options.defaultValue !== undefined) {
       sql += ` DEFAULT ${formatValue(col.options.defaultValue)}`;
     }
-    
+
     statements.push(sql);
   }
 
@@ -398,7 +405,9 @@ const generateAlterTableSQL = (builder: AlterTableBuilder & { _getState: () => A
 
   // Rename columns
   for (const rename of state.renameColumns) {
-    statements.push(`ALTER TABLE ${state.tableName} RENAME COLUMN ${rename.oldName} TO ${rename.newName}`);
+    statements.push(
+      `ALTER TABLE ${state.tableName} RENAME COLUMN ${rename.oldName} TO ${rename.newName}`
+    );
   }
 
   // Modify columns (simplified - actual implementation would vary by database)
@@ -410,7 +419,9 @@ const generateAlterTableSQL = (builder: AlterTableBuilder & { _getState: () => A
   for (const idx of state.addIndexes) {
     const indexName = idx.name || `idx_${state.tableName}_${idx.columns.join('_')}`;
     const indexType = idx.unique ? 'UNIQUE INDEX' : 'INDEX';
-    statements.push(`CREATE ${indexType} ${indexName} ON ${state.tableName} (${idx.columns.join(', ')})`);
+    statements.push(
+      `CREATE ${indexType} ${indexName} ON ${state.tableName} (${idx.columns.join(', ')})`
+    );
   }
 
   // Drop indexes
@@ -421,7 +432,7 @@ const generateAlterTableSQL = (builder: AlterTableBuilder & { _getState: () => A
   // Add constraints
   for (const constraint of state.addConstraints) {
     let sql = `ALTER TABLE ${state.tableName} ADD CONSTRAINT ${constraint.name} `;
-    
+
     switch (constraint.type) {
       case 'PRIMARY':
         sql += `PRIMARY KEY (${constraint.columns.join(', ')})`;
@@ -438,7 +449,7 @@ const generateAlterTableSQL = (builder: AlterTableBuilder & { _getState: () => A
         sql += `CHECK (${constraint.check})`;
         break;
     }
-    
+
     statements.push(sql);
   }
 

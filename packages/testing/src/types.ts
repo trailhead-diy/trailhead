@@ -130,7 +130,10 @@ export interface TestError {
 // Mock Types
 // ========================================
 
-export interface MockFunction<TArgs extends readonly unknown[] = readonly unknown[], TReturn = unknown> {
+export interface MockFunction<
+  TArgs extends readonly unknown[] = readonly unknown[],
+  TReturn = unknown,
+> {
   (...args: TArgs): TReturn;
   readonly mock: MockFunctionState<TArgs, TReturn>;
 }
@@ -189,9 +192,13 @@ export interface Assertion<T> {
   readonly toBeDefined: () => void;
   readonly toBeTruthy: () => void;
   readonly toBeFalsy: () => void;
-  readonly toThrow: T extends (...args: any[]) => any ? (expected?: string | RegExp | Error) => void : never;
+  readonly toThrow: T extends (...args: any[]) => any
+    ? (expected?: string | RegExp | Error) => void
+    : never;
   readonly toResolve: T extends Promise<any> ? () => Promise<void> : never;
-  readonly toReject: T extends Promise<any> ? (expected?: string | RegExp | Error) => Promise<void> : never;
+  readonly toReject: T extends Promise<any>
+    ? (expected?: string | RegExp | Error) => Promise<void>
+    : never;
 }
 
 export interface NumberAssertion extends Assertion<number> {
@@ -258,7 +265,10 @@ export interface MockOperations {
 
 export interface FixtureOperations {
   readonly createRegistry: () => FixtureRegistry;
-  readonly createFixture: <T>(name: string, options: Omit<TestFixture<T>, 'name'>) => TestFixture<T>;
+  readonly createFixture: <T>(
+    name: string,
+    options: Omit<TestFixture<T>, 'name'>
+  ) => TestFixture<T>;
   readonly withFixtures: <T>(
     fixtures: readonly TestFixture<any>[],
     fn: (registry: FixtureRegistry) => Promise<TestResult<T>> | TestResult<T>
@@ -273,7 +283,11 @@ export interface TestSuiteBuilder {
   readonly name: string;
   readonly context: TestContext;
   readonly test: (name: string, fn: TestFn, options?: Partial<TestContext>) => TestSuiteBuilder;
-  readonly describe: (name: string, fn: (suite: TestSuiteBuilder) => void, options?: Partial<TestContext>) => TestSuiteBuilder;
+  readonly describe: (
+    name: string,
+    fn: (suite: TestSuiteBuilder) => void,
+    options?: Partial<TestContext>
+  ) => TestSuiteBuilder;
   readonly beforeEach: (fn: TestHookFn) => TestSuiteBuilder;
   readonly afterEach: (fn: TestHookFn) => TestSuiteBuilder;
   readonly beforeAll: (fn: TestHookFn) => TestSuiteBuilder;

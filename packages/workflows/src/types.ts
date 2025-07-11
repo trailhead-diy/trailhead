@@ -277,3 +277,23 @@ export interface SchedulerMetrics {
   readonly averageWaitTime: number;
   readonly averageExecutionTime: number;
 }
+
+// ========================================
+// Additional Type Aliases for Subpackages
+// ========================================
+
+// Step-related aliases
+export type WorkflowStep = StepDefinition;
+export type StepContext = WorkflowContext;
+export type StepDependency = string;
+
+// Execution-related aliases
+export type WorkflowExecution = WorkflowEngine;
+export type ExecutionContext = WorkflowContext;
+export type ExecutionResult<T = unknown> = StepResult<T>;
+export type ExecutionState = WorkflowState;
+
+// State-related aliases
+export type StateManager = StateOperations;
+export type StateSnapshot = WorkflowState;
+export type StateTransition = Partial<WorkflowState>;

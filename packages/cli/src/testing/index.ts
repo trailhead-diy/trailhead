@@ -1,14 +1,10 @@
-export {
-  mockFileSystem,
-  mockLogger,
-  mockPrompts,
-  mockConfig,
-  createConfigMock,
-  createEnhancedMockFileSystem,
-  createTestMockFileSystem,
-  createCLIMockFileSystem,
-  createCrossPlatformMockFileSystem,
-} from './mocks.js';
+// Delegate to @trailhead/testing domain package
+export * from '@trailhead/testing/core';
+export * from '@trailhead/testing/mocks';
+export * from '@trailhead/testing/fixtures';
+export * from '@trailhead/testing/runners';
+
+// Keep CLI-specific testing utilities
 export { createTestContext, createTestContextWithFiles } from './context.js';
 export {
   runCommand,
