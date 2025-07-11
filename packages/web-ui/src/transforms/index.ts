@@ -6,7 +6,7 @@ import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import { ok } from '@esteban-url/trailhead-cli/core';
 import type { Logger } from '@esteban-url/trailhead-cli/core';
-import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
+import { isNotTestRelated } from '../cli/shared/file-filters.js';
 // Import FileSystem from CLI framework
 import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 
@@ -21,6 +21,7 @@ import {
   removeDuplicatePropsTransform,
 } from './format/remove-duplicate-props.js';
 import { transformReorderCnArgs, reorderCnArgsTransform } from './format/reorder-cn-args.js';
+import { addUseClientDirective } from './format/use-client.js';
 
 /**
  * Execute the new functional pipeline on a directory of files
@@ -105,6 +106,12 @@ export async function runMainPipelineWithFs(
 
     // Define functional transforms to apply
     const transforms = [
+      {
+        name: 'use-client',
+        description: 'Add use client directive to interactive components',
+        category: 'format',
+        transform: addUseClientDirective,
+      },
       { ...clsxToCnTransform, transform: transformClsxToCn },
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
@@ -138,9 +145,9 @@ export async function runMainPipelineWithFs(
 
         // Apply all transforms in sequence
         for (const transform of transforms) {
-          // Pass filename to transforms that need it (like ts-nocheck)
+          // Pass filename to transforms that need it (like ts-nocheck and use-client)
           const result =
-            transform.name === 'ts-nocheck'
+            transform.name === 'ts-nocheck' || transform.name === 'use-client'
               ? transform.transform(content, file)
               : transform.transform(content);
 
@@ -156,10 +163,14 @@ export async function runMainPipelineWithFs(
               effectiveLogger.debug(`  - ${transform.name}: no changes`);
             }
 
-            // Collect warnings
-            allWarnings.push(...transformResult.warnings);
+            // Collect warnings if they exist
+            if (transformResult.warnings) {
+              allWarnings.push(...transformResult.warnings);
+            }
           } else {
-            const errorMessage = result.error?.message || String(result.error);
+            const errorMessage = typeof result.error === 'object' && result.error !== null && 'message' in result.error 
+              ? result.error.message 
+              : String(result.error);
             errors.push({ file, error: `${transform.name}: ${errorMessage}` });
             effectiveLogger.error(`❌ ${file} (${transform.name}): ${errorMessage}`);
           }
@@ -232,6 +243,11 @@ export function getMainPipelineInfo(): {
   categories: Record<string, number>;
 } {
   const transforms = [
+    {
+      name: 'use-client',
+      description: 'Add use client directive to interactive components',
+      type: 'format',
+    },
     {
       name: clsxToCnTransform.name,
       description: clsxToCnTransform.description,
