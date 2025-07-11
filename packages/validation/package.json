@@ -1,0 +1,72 @@
+{
+  "name": "@trailhead/validation",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "description": "Functional validation with Zod integration and Result types for Trailhead System",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "@trailhead:registry": "https://npm.pkg.github.com"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "types": "tsc --noEmit",
+    "format": "prettier --write . --ignore-path .prettierignore",
+    "clean": "rm -rf dist",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@trailhead/core": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^24.0.10",
+    "@vitest/coverage-v8": "^3.2.4",
+    "oxlint": "^1.6.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "validation",
+    "zod",
+    "schema",
+    "functional",
+    "result-types",
+    "typescript",
+    "trailhead"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "directory": "packages/validation"
+  },
+  "license": "MIT"
+}
