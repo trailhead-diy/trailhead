@@ -103,6 +103,7 @@
     "validate": "pnpm types && pnpm lint && pnpm test:all"
   },
   "dependencies": {
+    "@trailhead/core": "workspace:*",
     "@inquirer/prompts": "^7.6.0",
     "@types/cli-progress": "^3.11.6",
     "chalk": "^5.4.1",
