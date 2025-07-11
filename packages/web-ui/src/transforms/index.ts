@@ -83,8 +83,20 @@ export async function runMainPipelineWithFs(
   let processedFiles = 0;
 
   try {
-    // Use Node.js fs for directory reading (FileSystem interface doesn't have readdir)
-    const files = await readdir(sourceDir);
+    // Use injected filesystem if available, otherwise Node.js fs
+    const dirResult = fs ? await fs.readdir(sourceDir) : ok(await readdir(sourceDir));
+
+    if (dirResult.isErr()) {
+      errors.push({ file: sourceDir, error: 'Failed to read directory' });
+      return {
+        success: false,
+        processedFiles: 0,
+        errors,
+        summary: 'Failed to read directory',
+      };
+    }
+
+    const files = dirResult.value;
 
     const tsxFiles = files.filter(f => f.endsWith('.tsx') && isNotTestRelated(f));
     const filteredFiles = filter ? tsxFiles.filter(filter) : tsxFiles;
