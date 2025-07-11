@@ -68,7 +68,7 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+import { err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
 import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js';
 import {
   createASTContext,
@@ -126,12 +126,12 @@ export const catalystPrefixTransform = createTransformMetadata(
 export function transformCatalystPrefix(input: string): Result<TransformResult, CLIError> {
   // Initialize context first to handle errors properly
   const contextResult = createASTContext(input);
-  if (!contextResult.success) {
-    return { success: false, error: contextResult.error };
+  if (contextResult.isErr()) {
+    return err(contextResult.error);
   }
 
   return executeTransform(() => {
-    let context = contextResult.value;
+    const context = contextResult.value;
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Initialize TypeScript AST Context

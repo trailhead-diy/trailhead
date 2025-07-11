@@ -4,7 +4,7 @@
 
 import * as path from 'node:path';
 import type { FileSystem, Result, InstallError, InstallConfig, Logger } from './types.js';
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
 import { generateSourcePaths, generateDestinationPaths } from '../filesystem/paths.js';
 import { pathExists } from '@esteban-url/trailhead-cli/filesystem';
 import {
@@ -35,12 +35,12 @@ export const installCatalystComponents = async (
 
   // Check if source catalyst directory exists
   const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
-  if (!sourceCheckResult.success) {
-    return Err(sourceCheckResult.error);
+  if (!sourceCheckResult.isOk()) {
+    return err(sourceCheckResult.error);
   }
 
   if (!sourceCheckResult.value) {
-    return Err(
+    return err(
       createError(
         'SOURCE_NOT_FOUND',
         `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
@@ -53,21 +53,21 @@ export const installCatalystComponents = async (
     overwrite: force,
   });
 
-  if (!copyResult.success) return copyResult;
+  if (!copyResult.isOk()) return copyResult;
 
   // Get list of files in catalyst directory
   const readDirResult = await fs.readdir(sourcePaths.catalystDir);
-  if (!readDirResult.success) return readDirResult;
+  if (!readDirResult.isOk()) return readDirResult;
 
   const catalystFiles = readDirResult.value.filter(isTsxFile);
 
   // Install lib/index.ts
   const libIndexResult = await copyFile(fs, sourcePaths.libIndex, destPaths.libIndex, force);
-  if (!libIndexResult.success) return libIndexResult;
+  if (!libIndexResult.isOk()) return libIndexResult;
 
-  logger.success(`Installed ${catalystFiles.length} Catalyst components and lib index`);
+  logger.isOk()(`Installed ${catalystFiles.length} Catalyst components and lib index`);
 
-  return Ok([...catalystFiles.map((file: string) => `lib/${file}`), 'lib/index.ts']);
+  return ok([...catalystFiles.map((file: string) => `lib/${file}`), 'lib/index.ts']);
 };
 
 // ============================================================================
@@ -93,10 +93,10 @@ export const installComponentWrappers = async (
   // Read source wrapper components directory
   const sourceWrapperDir = sourcePaths.wrapperComponentsDir;
   const dirCheckResult = await pathExists(sourceWrapperDir);
-  if (!dirCheckResult.success) return dirCheckResult;
+  if (!dirCheckResult.isOk()) return dirCheckResult;
 
   if (!dirCheckResult.value) {
-    return Err(
+    return err(
       createError(
         'SOURCE_NOT_FOUND',
         `Source wrapper components directory not found: ${sourceWrapperDir}`
@@ -106,7 +106,7 @@ export const installComponentWrappers = async (
 
   // Get all component wrapper files
   const readDirResult = await fs.readdir(sourceWrapperDir);
-  if (!readDirResult.success) return readDirResult;
+  if (!readDirResult.isOk()) return readDirResult;
 
   const wrapperFiles = readDirResult.value.filter(isWrapperComponent);
 
@@ -116,7 +116,7 @@ export const installComponentWrappers = async (
 
     // Copy the wrapper file
     const copyResult = await copyFile(fs, sourcePath, destPath, force);
-    if (!copyResult.success) return copyResult;
+    if (!copyResult.isOk()) return copyResult;
 
     installedFiles.push(wrapperFile);
     logger.debug(`Installed wrapper for ${path.basename(wrapperFile, '.tsx')}`);
@@ -129,12 +129,12 @@ export const installComponentWrappers = async (
     destPaths.componentsIndex,
     force
   );
-  if (!componentsIndexResult.success) return componentsIndexResult;
+  if (!componentsIndexResult.isOk()) return componentsIndexResult;
   installedFiles.push('index.ts');
   logger.debug('Installed components index.ts');
 
-  logger.success(`Installed ${installedFiles.length} component wrappers`);
-  return Ok(installedFiles);
+  logger.isOk()(`Installed ${installedFiles.length} component wrappers`);
+  return ok(installedFiles);
 };
 
 // ============================================================================
@@ -160,14 +160,14 @@ export const installUtilityFiles = async (
   const utilsDir = path.join(config.componentsDir, 'utils');
 
   const ensureDirsResult = await fs.ensureDir(libDir);
-  if (!ensureDirsResult.success) return ensureDirsResult;
+  if (!ensureDirsResult.isOk()) return ensureDirsResult;
 
   const ensureUtilsResult = await fs.ensureDir(utilsDir);
-  if (!ensureUtilsResult.success) return ensureUtilsResult;
+  if (!ensureUtilsResult.isOk()) return ensureUtilsResult;
 
   // Install utils/cn.ts
   const cnUtilsResult = await copyFile(fs, sourcePaths.cnUtils, destPaths.cnUtils, force);
-  if (!cnUtilsResult.success) return cnUtilsResult;
+  if (!cnUtilsResult.isOk()) return cnUtilsResult;
 
   installedFiles.push('utils/cn.ts');
   logger.debug('Installed utils/cn.ts');
@@ -179,13 +179,13 @@ export const installUtilityFiles = async (
     destPaths.semanticTokens,
     force
   );
-  if (!semanticResult.success) return semanticResult;
+  if (!semanticResult.isOk()) return semanticResult;
 
   installedFiles.push('utils/semantic-tokens.ts');
   logger.debug('Installed utils/semantic-tokens.ts');
 
-  logger.success(`Installed ${installedFiles.length} utility files`);
-  return Ok(installedFiles);
+  logger.isOk()(`Installed ${installedFiles.length} utility files`);
+  return ok(installedFiles);
 };
 
 /**
@@ -198,10 +198,10 @@ async function copyFile(
   force: boolean
 ): Promise<Result<void, InstallError>> {
   const existsResult = await pathExists(src);
-  if (!existsResult.success) return existsResult;
+  if (!existsResult.isOk()) return existsResult;
 
   if (!existsResult.value) {
-    return Err(createError('FILE_NOT_FOUND', `Source file not found: ${src}`));
+    return err(createError('FILE_NOT_FOUND', `Source file not found: ${src}`));
   }
 
   return fs.cp(src, dest, { overwrite: force });
@@ -226,10 +226,10 @@ export const installTransformedComponents = async (
 
   // Check if source catalyst directory exists
   const sourceCheckResult = await pathExists(sourcePaths.catalystDir);
-  if (!sourceCheckResult.success) return sourceCheckResult;
+  if (!sourceCheckResult.isOk()) return sourceCheckResult;
 
   if (!sourceCheckResult.value) {
-    return Err(
+    return err(
       createError(
         'SOURCE_NOT_FOUND',
         `Source Catalyst directory not found: ${sourcePaths.catalystDir}`
@@ -239,7 +239,7 @@ export const installTransformedComponents = async (
 
   // Get all catalyst-*.tsx files
   const readDirResult = await fs.readdir(sourcePaths.catalystDir);
-  if (!readDirResult.success) return readDirResult;
+  if (!readDirResult.isOk()) return readDirResult;
 
   const catalystFiles = readDirResult.value.filter(isCatalystComponent);
 
@@ -251,7 +251,7 @@ export const installTransformedComponents = async (
 
     // Read source file
     const readResult = await fs.readFile(sourcePath);
-    if (!readResult.success) return readResult;
+    if (!readResult.isOk()) return readResult;
 
     // Get transformation options
     const transformOptions = getTransformOptions(fileName);
@@ -261,7 +261,7 @@ export const installTransformedComponents = async (
 
     // Validate transformation result
     const validationResult = validateTransformResult(transformResult, fileName);
-    if (!validationResult.success) return validationResult;
+    if (!validationResult.isOk()) return validationResult;
 
     // Log transformations in debug mode
     if (transformResult.transformations.length > 0) {
@@ -271,7 +271,7 @@ export const installTransformedComponents = async (
 
     // Write transformed file
     const writeResult = await fs.writeFile(destPath, transformResult.content);
-    if (!writeResult.success) return writeResult;
+    if (!writeResult.isOk()) return writeResult;
 
     installedFiles.push(newFileName);
     logger.debug(`Installed and transformed ${newFileName}`);
@@ -282,13 +282,13 @@ export const installTransformedComponents = async (
   const destIndexPath = path.join(config.componentsDir, 'index.ts');
 
   const indexReadResult = await fs.readFile(libIndexPath);
-  if (!indexReadResult.success) return indexReadResult;
+  if (!indexReadResult.isOk()) return indexReadResult;
 
   const transformedIndexResult = transformLibIndexContent(indexReadResult.value);
 
   // Validate index transformation
   const indexValidationResult = validateTransformResult(transformedIndexResult, 'index.ts');
-  if (!indexValidationResult.success) return indexValidationResult;
+  if (!indexValidationResult.isOk()) return indexValidationResult;
 
   // Log index transformations
   if (transformedIndexResult.transformations.length > 0) {
@@ -297,10 +297,10 @@ export const installTransformedComponents = async (
   }
 
   const indexWriteResult = await fs.writeFile(destIndexPath, transformedIndexResult.content);
-  if (!indexWriteResult.success) return indexWriteResult;
+  if (!indexWriteResult.isOk()) return indexWriteResult;
 
   installedFiles.push('index.ts');
 
-  logger.success(`Installed ${installedFiles.length} transformed components`);
-  return Ok(installedFiles);
+  logger.isOk()(`Installed ${installedFiles.length} transformed components`);
+  return ok(installedFiles);
 };

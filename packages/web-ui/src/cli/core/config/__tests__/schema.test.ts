@@ -48,15 +48,15 @@ describe('Configuration Schema', () => {
       };
 
       const result = trailheadConfigSchema.safeParse(validConfig);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should accept empty config (defaults handled by loader)', () => {
       const minimalConfig = {};
       const result = trailheadConfigSchema.safeParse(minimalConfig);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.verbose).toBeUndefined();
         expect(result.data.dryRun).toBeUndefined();
       }
@@ -71,7 +71,7 @@ describe('Configuration Schema', () => {
       };
 
       const result = trailheadConfigSchema.safeParse(invalidConfig);
-      expect(result.success).toBe(false);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -86,8 +86,8 @@ describe('Configuration Schema', () => {
       };
 
       const result = transformConfigSchema.safeParse(validConfig);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.enabled).toBe(true);
         expect(result.data.srcDir).toBe('./src/components');
         expect(result.data.excludePatterns).toHaveLength(2);
@@ -100,8 +100,8 @@ describe('Configuration Schema', () => {
       const minimalConfig = {};
       const result = transformConfigSchema.safeParse(minimalConfig);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.enabled).toBeUndefined();
         expect(result.data.excludePatterns).toBeUndefined();
         expect(result.data.disabledTransforms).toBeUndefined();
@@ -117,8 +117,8 @@ describe('Configuration Schema', () => {
       };
 
       const result = installConfigSchema.safeParse(validConfig);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.destDir).toBe('./components/ui');
         expect(result.data.wrappers).toBe(false);
       }
@@ -128,8 +128,8 @@ describe('Configuration Schema', () => {
       const minimalConfig = {};
       const result = installConfigSchema.safeParse(minimalConfig);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.wrappers).toBeUndefined();
       }
     });
@@ -144,8 +144,8 @@ describe('Configuration Schema', () => {
       };
 
       const result = devRefreshConfigSchema.safeParse(validConfig);
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.srcDir).toBe('./catalyst-ui-kit/typescript');
         expect(result.data.destDir).toBe('./src/components/lib');
         expect(result.data.prefix).toBe('cat-');
@@ -156,8 +156,8 @@ describe('Configuration Schema', () => {
       const minimalConfig = {};
       const result = devRefreshConfigSchema.safeParse(minimalConfig);
 
-      expect(result.success).toBe(true);
-      if (result.success) {
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) {
         expect(result.data.prefix).toBeUndefined();
       }
     });
@@ -166,7 +166,7 @@ describe('Configuration Schema', () => {
   describe('defaultConfig', () => {
     it('should have valid default configuration', () => {
       const result = trailheadConfigSchema.safeParse(defaultConfig);
-      expect(result.success).toBe(true);
+      expect(result.isOk()).toBe(true);
     });
 
     it('should have expected default values', () => {

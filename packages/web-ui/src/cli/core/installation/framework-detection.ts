@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import { createConfig, z } from '@esteban-url/trailhead-cli/config';
 import type { FileSystem, Result, InstallError } from './types.js';
-import { Ok, Err } from './types.js';
+import { ok, err } from './types.js';
 
 export type FrameworkType = 'redwood-sdk' | 'nextjs' | 'vite' | 'generic-react';
 
@@ -136,14 +136,14 @@ export const checkConfigFiles = async (
       const configPath = path.join(projectRoot, configFile);
       const existsResult = await fs.access(configPath);
 
-      if (existsResult.success) {
+      if (existsResult.isOk()) {
         matches++;
       }
     }
 
-    return Ok(matches);
+    return ok(matches);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', 'Failed to check config files', {
         details: `Project root: ${projectRoot}`,
         cause: error,
@@ -178,9 +178,9 @@ export const detectConfigWithFramework = async (
     });
 
     const result = await configLoader.load(projectRoot);
-    return Ok(result.filepath !== null);
+    return ok(result.filepath !== null);
   } catch (error) {
-    return Err(
+    return err(
       createError('FILESYSTEM_ERROR', `Failed to detect ${moduleName} configuration`, {
         details: `Project root: ${projectRoot}`,
         cause: error,
@@ -199,8 +199,8 @@ export const readPackageJson = async (
   const packageJsonPath = path.join(projectRoot, 'package.json');
 
   const existsResult = await fs.access(packageJsonPath);
-  if (!existsResult.success) {
-    return Err(
+  if (!existsResult.isOk()) {
+    return err(
       createError('FILESYSTEM_ERROR', 'package.json not found', {
         details: `Path: ${packageJsonPath}`,
       })
@@ -221,8 +221,8 @@ export const detectSingleFramework = async (
 ): Promise<Result<FrameworkDetectionResult | null, InstallError>> => {
   // Check config files
   const configCheckResult = await checkConfigFiles(fs, projectRoot, framework.configFiles);
-  if (!configCheckResult.success) {
-    return Err(configCheckResult.error);
+  if (!configCheckResult.isOk()) {
+    return err(configCheckResult.error);
   }
 
   const configMatches = configCheckResult.value;
@@ -230,7 +230,7 @@ export const detectSingleFramework = async (
 
   // Skip if no matches at all
   if (configMatches === 0 && !packageMatches) {
-    return Ok(null);
+    return ok(null);
   }
 
   const confidence = calculateConfidence(
@@ -251,7 +251,7 @@ export const detectSingleFramework = async (
     projectRoot,
   };
 
-  return Ok(detectionResult);
+  return ok(detectionResult);
 };
 
 /**
@@ -264,8 +264,8 @@ export const detectFramework = async (
 ): Promise<Result<FrameworkDetectionResult, InstallError>> => {
   // Read package.json first
   const packageJsonResult = await readPackageJson(fs, projectRoot);
-  if (!packageJsonResult.success) {
-    return Err(packageJsonResult.error);
+  if (!packageJsonResult.isOk()) {
+    return err(packageJsonResult.error);
   }
 
   const packageJson = packageJsonResult.value;
@@ -273,7 +273,7 @@ export const detectFramework = async (
 
   // Try enhanced detection for specific frameworks using CLI framework config
   const tailwindDetected = await detectConfigWithFramework('tailwind', projectRoot);
-  if (tailwindDetected.success && tailwindDetected.value) {
+  if (tailwindDetected.isOk() && tailwindDetected.value) {
     // Project uses Tailwind CSS, which is good for our components
   }
 
@@ -281,7 +281,7 @@ export const detectFramework = async (
   if (forceFramework) {
     const targetFramework = frameworks.find(f => f.type === forceFramework);
     if (!targetFramework) {
-      return Err(
+      return err(
         createError('CONFIGURATION_ERROR', `Unknown framework: ${forceFramework}`, {
           details: `Available frameworks: ${frameworks.map(f => f.type).join(', ')}`,
         })
@@ -289,7 +289,7 @@ export const detectFramework = async (
     }
 
     const result = await detectSingleFramework(fs, projectRoot, targetFramework, packageJson);
-    if (!result.success) {
+    if (!result.isOk()) {
       return result;
     }
 
@@ -300,10 +300,10 @@ export const detectFramework = async (
         confidence: 'low',
         projectRoot,
       };
-      return Ok(syntheticResult);
+      return ok(syntheticResult);
     }
 
-    return Ok(result.value);
+    return ok(result.value);
   }
 
   // Detect all frameworks and find best match
@@ -311,7 +311,7 @@ export const detectFramework = async (
 
   for (const framework of frameworks) {
     const result = await detectSingleFramework(fs, projectRoot, framework, packageJson);
-    if (!result.success) {
+    if (!result.isOk()) {
       return result;
     }
 
@@ -326,15 +326,15 @@ export const detectFramework = async (
     const reactFramework = frameworks.find(f => f.type === 'generic-react')!;
     const reactResult = await detectSingleFramework(fs, projectRoot, reactFramework, packageJson);
 
-    if (!reactResult.success) {
+    if (!reactResult.isOk()) {
       return reactResult;
     }
 
     if (reactResult.value) {
-      return Ok(reactResult.value);
+      return ok(reactResult.value);
     }
 
-    return Err(
+    return err(
       createError('CONFIGURATION_ERROR', 'No supported React framework detected', {
         details: 'Make sure you have React installed or use --framework to specify manually',
       })
@@ -355,7 +355,7 @@ export const detectFramework = async (
     return aIndex - bIndex;
   });
 
-  return Ok(detectionResults[0]);
+  return ok(detectionResults[0]);
 };
 
 // ============================================================================

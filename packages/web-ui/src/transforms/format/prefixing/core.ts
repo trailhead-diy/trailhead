@@ -45,7 +45,7 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
 import ts from 'typescript';
 
 /**
@@ -72,25 +72,19 @@ export function createASTContext(input: string): Result<ASTContext, CLIError> {
       ts.ScriptKind.TSX
     );
 
-    return {
-      success: true,
-      value: {
-        sourceFile,
-        oldToNewMap: new Map<string, string>(),
-        headlessPropsTypes: new Set<string>(),
-        changes: [],
-        warnings: [],
-      },
-    };
+    return ok({
+      sourceFile,
+      oldToNewMap: new Map<string, string>(),
+      headlessPropsTypes: new Set<string>(),
+      changes: [],
+      warnings: [],
+    });
   } catch (error) {
-    return {
-      success: false,
-      error: {
-        code: 'TS_AST_INIT_ERROR',
-        message: `Failed to initialize TypeScript AST: ${error instanceof Error ? error.message : String(error)}`,
-        recoverable: false,
-      },
-    };
+    return err({
+      code: 'TS_AST_INIT_ERROR',
+      message: `Failed to initialize TypeScript AST: ${error instanceof Error ? error.message : String(error)}`,
+      recoverable: false,
+    });
   }
 }
 

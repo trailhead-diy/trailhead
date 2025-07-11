@@ -58,7 +58,7 @@ export interface InstallationSummary {
 }
 
 // Re-export Ok and Err from CLI package for compatibility
-export { Ok, Err } from '@esteban-url/trailhead-cli/core';
+export { ok, err } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
 // CLI OPTIONS AND FLAGS

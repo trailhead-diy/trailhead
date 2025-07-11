@@ -3,7 +3,7 @@
  * Eliminates duplication across transform files
  */
 
-import { Ok, Err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
 
 /**
  * Transform result type
@@ -42,9 +42,9 @@ export function executeTransform(
 ): Result<TransformResult, CLIError> {
   try {
     const result = transformFn();
-    return Ok(result);
+    return ok(result);
   } catch (error) {
-    return Err({
+    return err({
       code: 'TRANSFORM_ERROR',
       message: `Transform execution failed: ${error instanceof Error ? error.message : String(error)}`,
       recoverable: true,

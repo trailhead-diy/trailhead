@@ -1,4 +1,4 @@
-import { Ok as CliOk, Err as CliErr } from '@esteban-url/trailhead-cli';
+import { ok as CliOk, err as CliErr } from '@esteban-url/trailhead-cli';
 import {
   createCommand,
   executeWithPhases,
@@ -199,7 +199,7 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
         config.projectRoot
       );
 
-      if (!resolveResult.success) {
+      if (!resolveResult.isOk()) {
         return resolveResult;
       }
 
@@ -222,7 +222,7 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
           : undefined
       );
 
-      if (!frameworkResult.success) {
+      if (!frameworkResult.isOk()) {
         return frameworkResult;
       }
 
@@ -252,7 +252,7 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
           config.options.wrappers ?? true
         );
 
-        if (!dryRunResult.success) {
+        if (!dryRunResult.isOk()) {
           return dryRunResult;
         }
 
@@ -282,7 +282,7 @@ const createInstallPhases = (cmdContext: CommandContext): CommandPhase<InstallCo
         coreOptions
       );
 
-      if (!installResult.success) {
+      if (!installResult.isOk()) {
         return installResult;
       }
 
@@ -534,7 +534,7 @@ export const createInstallCommand = () => {
       const prePhases = createPreInstallPhases(cmdContext);
       const preResult = await executeWithPhases(prePhases, config, cmdContext);
 
-      if (!preResult.success) {
+      if (!preResult.isOk()) {
         return preResult;
       }
 
@@ -542,7 +542,7 @@ export const createInstallCommand = () => {
       const mainPhases = createInstallPhases(cmdContext);
       const mainResult = await executeWithPhases(mainPhases, preResult.value, cmdContext);
 
-      if (!mainResult.success) {
+      if (!mainResult.isOk()) {
         cmdContext.logger.error('❌ Installation failed:');
         cmdContext.logger.error(mainResult.error.message);
         if (options.verbose && mainResult.error.details) {

@@ -83,7 +83,7 @@ describe('Semantic Token System', () => {
     it('should map semantic tokens to appropriate values', () => {
       expect(SEMANTIC_MAPPINGS.primary).toBe('primary');
       expect(SEMANTIC_MAPPINGS.secondary).toBe('secondary');
-      expect(SEMANTIC_MAPPINGS.success).toBe('green');
+      expect(SEMANTIC_MAPPINGS.isOk()).toBe('green');
       expect(SEMANTIC_MAPPINGS.warning).toBe('amber');
       expect(SEMANTIC_MAPPINGS.danger).toBe('destructive');
     });
@@ -475,7 +475,7 @@ describe('Semantic Token System', () => {
 
     it('should provide proper color mappings for accessibility', () => {
       // Success should map to green for semantic clarity
-      expect(SEMANTIC_MAPPINGS.success).toBe('green');
+      expect(SEMANTIC_MAPPINGS.isOk()).toBe('green');
 
       // Warning should map to amber for semantic clarity
       expect(SEMANTIC_MAPPINGS.warning).toBe('amber');

@@ -85,7 +85,7 @@ export async function runMainPipelineWithFs(
     let files: string[];
     if (fs) {
       const readdirResult = await fs.readdir(sourceDir);
-      if (!readdirResult.success) {
+      if (readdirResult.isErr()) {
         errors.push({ file: sourceDir, error: 'Failed to read directory' });
         return {
           success: false,
@@ -126,9 +126,9 @@ export async function runMainPipelineWithFs(
         // Use injected filesystem if available
         const contentResult = fs
           ? await fs.readFile(filePath)
-          : { success: true, value: await readFile(filePath, 'utf-8') };
+          : ok(await readFile(filePath, 'utf-8'));
 
-        if (!contentResult.success) {
+        if (contentResult.isErr ? contentResult.isErr() : !contentResult.isOk()) {
           errors.push({ file, error: 'Failed to read file' });
           continue;
         }
@@ -145,7 +145,7 @@ export async function runMainPipelineWithFs(
               ? transform.transform(content, file)
               : transform.transform(content);
 
-          if (result.success) {
+          if (result.isOk()) {
             const transformResult = result.value;
             if (transformResult.changed) {
               content = transformResult.content;
@@ -170,9 +170,9 @@ export async function runMainPipelineWithFs(
         if (hasChanges && !dryRun) {
           const writeResult = fs
             ? await fs.writeFile(filePath, content)
-            : { success: true, value: await writeFile(filePath, content, 'utf-8') };
+            : ok(await writeFile(filePath, content, 'utf-8'));
 
-          if (!writeResult.success) {
+          if (writeResult.isErr ? writeResult.isErr() : !writeResult.isOk()) {
             errors.push({ file, error: 'Failed to write file' });
             continue;
           }

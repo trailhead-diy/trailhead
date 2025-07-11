@@ -3,7 +3,7 @@
  */
 
 import type { Result, InstallError } from './types.js';
-import { Ok, Err } from './types.js';
+import { ok, err } from './types.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 
 // ============================================================================
@@ -354,7 +354,7 @@ export const validateTransformResult = (
 ): Result<TransformResult, InstallError> => {
   // Check for empty content
   if (!result.content || result.content.trim().length === 0) {
-    return Err(
+    return err(
       createError('VALIDATION_ERROR', `Transformation resulted in empty content for ${fileName}`, {
         details: `Empty content detected for file: ${fileName}`,
       })
@@ -365,12 +365,12 @@ export const validateTransformResult = (
   // Index files might have different export patterns
   const exportCount = (result.content.match(/export/g) || []).length;
   if (exportCount === 0 && !fileName.includes('index')) {
-    return Err(
+    return err(
       createError('VALIDATION_ERROR', `No exports found in transformed ${fileName}`, {
         details: `No exports detected in transformed file: ${fileName}`,
       })
     );
   }
 
-  return Ok(result);
+  return ok(result);
 };

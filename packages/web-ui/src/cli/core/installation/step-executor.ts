@@ -6,7 +6,7 @@ import { createTaskList, createTask } from '@esteban-url/trailhead-cli/workflows
 import { retryableOperation } from '@esteban-url/trailhead-cli/error-recovery';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import type { Result, InstallError, Logger } from './types.js';
-import { Ok, Err } from './types.js';
+import { ok, err } from './types.js';
 
 // ============================================================================
 // TYPES
@@ -52,14 +52,14 @@ export const executeInstallationSteps = async (
             ? () =>
                 retryableOperation(async () => {
                   const result = await step.execute();
-                  if (!result.success) {
+                  if (!result.isOk()) {
                     throw new Error(result.error.message);
                   }
                   return result.value;
                 })
             : async () => {
                 const result = await step.execute();
-                if (!result.success) {
+                if (!result.isOk()) {
                   throw new Error(result.error.message);
                 }
                 return result.value;
@@ -85,7 +85,7 @@ export const executeInstallationSteps = async (
 
     await taskList.run();
 
-    return Ok({
+    return ok({
       installedFiles: Object.freeze([...allInstalledFiles]),
       failedSteps: Object.freeze([...failedSteps]),
     });
@@ -96,7 +96,7 @@ export const executeInstallationSteps = async (
       logger.warning(`  rm -rf ${componentsDir}`);
     }
 
-    return Err(
+    return err(
       createError(
         'INSTALLATION_STEP_EXECUTION_FAILED',
         error instanceof Error ? error.message : 'Installation step execution failed',

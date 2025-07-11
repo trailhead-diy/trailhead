@@ -49,8 +49,8 @@ export function updateStats(
 ): ConversionStats {
   const newStats: ConversionStats = {
     filesProcessed: stats.filesProcessed + 1,
-    filesModified: stats.filesModified + (result.success && result.changes > 0 ? 1 : 0),
-    totalConversions: stats.totalConversions + (result.success ? result.changes : 0),
+    filesModified: stats.filesModified + (result.isOk() && result.changes > 0 ? 1 : 0),
+    totalConversions: stats.totalConversions + (result.isOk() ? result.changes : 0),
     conversionsByType: new Map(stats.conversionsByType),
   };
 
@@ -96,7 +96,7 @@ export async function findComponentFiles(
     ...skipFiles.map(f => `**/${f}`),
   ]);
 
-  if (!result.success) {
+  if (!result.isOk()) {
     return [];
   }
 
@@ -144,7 +144,7 @@ export async function copyFreshFilesBatch(
       // Check if destination exists and compare
       const comparisonResult = await frameworkCompareFiles(sourceFile, destFile);
 
-      if (!comparisonResult.success) {
+      if (!comparisonResult.isOk()) {
         failed.push(destFileName);
         continue;
       }
@@ -154,9 +154,9 @@ export async function copyFreshFilesBatch(
       if (!comparison.destExists) {
         // File doesn't exist at destination, copy it
         const sourceResult = await readFile(sourceFile);
-        if (sourceResult.success) {
+        if (sourceResult.isOk()) {
           const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-          if (writeResult.success) {
+          if (writeResult.isOk()) {
             copied.push(destFileName);
           } else {
             failed.push(destFileName);
@@ -175,9 +175,9 @@ export async function copyFreshFilesBatch(
       // Destination exists and is different
       if (force) {
         const sourceResult = await readFile(sourceFile);
-        if (sourceResult.success) {
+        if (sourceResult.isOk()) {
           const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-          if (writeResult.success) {
+          if (writeResult.isOk()) {
             copied.push(destFileName);
           } else {
             failed.push(destFileName);
@@ -191,17 +191,13 @@ export async function copyFreshFilesBatch(
       }
     }
 
-    return {
-      success: true,
-      value: { copied, skipped, failed, filesToConfirm },
-    };
+    return ok({ copied, skipped, failed, filesToConfirm });
   } catch (error) {
-    return {
-      success: false,
-      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+    return err(
+      createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -218,7 +214,7 @@ export async function copyFreshFiles(
   try {
     const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix);
 
-    if (!batchResult.success) {
+    if (!batchResult.isOk()) {
       return batchResult;
     }
 
@@ -232,9 +228,9 @@ export async function copyFreshFiles(
         const shouldOverwrite = await onConfirmOverwrite(destFile, comparison);
         if (shouldOverwrite) {
           const sourceResult = await readFile(sourceFile);
-          if (sourceResult.success) {
+          if (sourceResult.isOk()) {
             const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
-            if (writeResult.success) {
+            if (writeResult.isOk()) {
               finalCopied.push(fileName);
             }
           }
@@ -246,17 +242,13 @@ export async function copyFreshFiles(
       }
     }
 
-    return {
-      success: true,
-      value: { copied: finalCopied, skipped: finalSkipped },
-    };
+    return ok({ copied: finalCopied, skipped: finalSkipped });
   } catch (error) {
-    return {
-      success: false,
-      error: createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
+    return err(
+      createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
-      }),
-    };
+      })
+    );
   }
 }
 
@@ -265,18 +257,12 @@ export async function copyFreshFiles(
  */
 export function validateConfig(config: ConverterConfig): Result<ConverterConfig> {
   if (!config.name || config.name.trim().length === 0) {
-    return {
-      success: false,
-      error: createError('VALIDATION_ERROR', 'Converter name is required'),
-    };
+    return err(createError('VALIDATION_ERROR', 'Converter name is required'));
   }
 
   if (!config.description || config.description.trim().length === 0) {
-    return {
-      success: false,
-      error: createError('VALIDATION_ERROR', 'Converter description is required'),
-    };
+    return err(createError('VALIDATION_ERROR', 'Converter description is required'));
   }
 
-  return { success: true, value: config };
+  return ok(config);
 }
