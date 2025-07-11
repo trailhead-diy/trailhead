@@ -98,7 +98,7 @@ export const createWatcherOperations = (
       return ok(fileWatcher);
     } catch (error) {
       const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-      return err(mapChokidarError('create', pathStr, error));
+      return err(mapChokidarError('create', pathStr as string, error));
     }
   };
 
@@ -125,7 +125,7 @@ export const createWatcherOperations = (
       return ok(undefined);
     } catch (error) {
       const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-      return err(mapChokidarError('watch', pathStr, error));
+      return err(mapChokidarError('watch', pathStr as string, error));
     }
   };
 
@@ -147,7 +147,7 @@ export const createWatcherOperations = (
       return watch(paths, filteredHandler, options);
     } catch (error) {
       const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-      return err(mapChokidarError('watchWithFilter', pathStr, error));
+      return err(mapChokidarError('watchWithFilter', pathStr as string, error));
     }
   };
 
@@ -200,7 +200,7 @@ export const createWatcherOperations = (
       return watch(paths, batchHandler, options);
     } catch (error) {
       const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-      return err(mapChokidarError('watchBatch', pathStr, error));
+      return err(mapChokidarError('watchBatch', pathStr as string, error));
     }
   };
 
@@ -379,23 +379,23 @@ const createFileWatcher = (chokidarWatcher: FSWatcher, options: WatcherOptions):
 
     add: (paths: string | readonly string[]) => {
       try {
-        const pathArray = Array.isArray(paths) ? [...paths] : paths;
+        const pathArray = Array.isArray(paths) ? [...paths] : [paths];
         chokidarWatcher.add(pathArray);
         return ok(fileWatcher);
       } catch (error) {
         const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-        return err(mapChokidarError('add', pathStr, error));
+        return err(mapChokidarError('add', pathStr as string, error));
       }
     },
 
     unwatch: (paths: string | readonly string[]) => {
       try {
-        const pathArray = Array.isArray(paths) ? [...paths] : paths;
+        const pathArray = Array.isArray(paths) ? [...paths] : [paths];
         chokidarWatcher.unwatch(pathArray);
         return ok(fileWatcher);
       } catch (error) {
         const pathStr = Array.isArray(paths) ? paths.join(', ') : paths;
-        return err(mapChokidarError('unwatch', pathStr, error));
+        return err(mapChokidarError('unwatch', pathStr as string, error));
       }
     },
 

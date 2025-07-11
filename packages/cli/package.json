@@ -113,8 +113,6 @@
     "@trailhead/workflows": "workspace:*",
     "@trailhead/config": "workspace:*",
     "@trailhead/git": "workspace:*",
-    "@trailhead/testing": "workspace:*",
-    "@trailhead/db": "workspace:*",
     "@inquirer/prompts": "^7.6.0",
     "@types/cli-progress": "^3.11.6",
     "chalk": "^5.4.1",

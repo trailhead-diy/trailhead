@@ -1,10 +1,4 @@
-// Delegate to @trailhead/testing domain package
-export * from '@trailhead/testing/core';
-export * from '@trailhead/testing/mocks';
-export * from '@trailhead/testing/fixtures';
-export * from '@trailhead/testing/runners';
-
-// Keep CLI-specific testing utilities
+// CLI-specific testing utilities (domain package temporarily disabled due to build issues)
 export { createTestContext, createTestContextWithFiles } from './context.js';
 export {
   runCommand,

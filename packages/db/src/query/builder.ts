@@ -63,8 +63,8 @@ const createSelectQuery = <T>(
   let columns = initialColumns;
   let whereConditions: WhereCondition<any>[] = [];
   let orderByClause: { column: string; direction: SortDirection }[] = [];
-  let limitClause?: number;
-  let offsetClause?: number;
+  let limitClause: number | undefined;
+  let offsetClause: number | undefined;
   let joinClauses: { table: string; condition: JoinCondition }[] = [];
   let groupByClause: string[] = [];
   let havingConditions: WhereCondition<any>[] = [];
@@ -213,8 +213,8 @@ const createInsertQuery = <T>(
 ): InsertQuery<T> => {
   let table = initialTable;
   let data = initialData;
-  let conflictAction?: ConflictAction;
-  let returningColumns?: string[];
+  let conflictAction: ConflictAction | undefined;
+  let returningColumns: string[] | undefined;
 
   const query: InsertQuery<T> = {
     into: (tableName: string) => {
@@ -331,7 +331,7 @@ const createUpdateQuery = <T>(
   let table = initialTable;
   let data = initialData;
   let whereConditions: WhereCondition<T>[] = [];
-  let returningColumns?: string[];
+  let returningColumns: string[] | undefined;
 
   const query: UpdateQuery<T> = {
     table: (tableName: string) => {
@@ -421,7 +421,7 @@ const createUpdateQuery = <T>(
 const createDeleteQuery = <T>(initialTable?: string): DeleteQuery<T> => {
   let table = initialTable;
   let whereConditions: WhereCondition<T>[] = [];
-  let returningColumns?: string[];
+  let returningColumns: string[] | undefined;
 
   const query: DeleteQuery<T> = {
     from: (tableName: string) => {
