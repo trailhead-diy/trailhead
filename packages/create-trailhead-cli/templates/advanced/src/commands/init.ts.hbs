@@ -1,6 +1,6 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
-import { input, select, confirm } from '@inquirer/prompts'
+import { input, select, confirm } from '@esteban-url/trailhead-cli/prompts'
 import { join } from 'path'
 import { ensureDir } from 'fs-extra'
 import type { Result } from '@esteban-url/trailhead-cli/core'
@@ -61,7 +61,7 @@ export const initCommand = createCommand<InitOptions>({
         
         if (!shouldOverwrite) {
           logger.info('Initialization cancelled')
-          return Ok(undefined)
+          return ok(undefined)
         }
       }
       
@@ -116,13 +116,13 @@ export const initCommand = createCommand<InitOptions>({
         await writeFile(configPath, configContent)
       } catch (error) {
         logger.error(`Failed to write configuration: ${error instanceof Error ? error.message : String(error)}`)
-        return Err(createError('CONFIG_WRITE_FAILED', 'Failed to write configuration file', {
+        return err(createCoreError('CONFIG_WRITE_FAILED', 'Failed to write configuration file', {
           cause: error,
           recoverable: true
         }))
       }
       
-      logger.success(`Configuration created: ${configPath}`)
+      .success(`Configuration created: ${configPath}`)
       
       // Create basic project structure
       // Tests use colocation pattern (src/**/__tests__/) instead of separate tests/ directory
@@ -151,19 +151,19 @@ console.log('Hello from ${projectName}!')
         logger.info('Created CLI entry point: src/index.ts')
       }
       
-      logger.success('Project initialization completed!')
+      .success('Project initialization completed!')
       logger.info('')
       logger.info('Next steps:')
       logger.info('  1. Review the generated configuration')
       logger.info('  2. Install dependencies')
       logger.info('  3. Start developing!')
       
-      return Ok(undefined)
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Initialization failed: ${errorMessage}`)
-      return Err(createError('INIT_FAILED', `Init failed: ${errorMessage}`, {
+      return err(createCoreError('INIT_FAILED', `Init failed: ${errorMessage}`, {
         cause: error,
         details: 'Project initialization failed due to an unexpected error'
       }))

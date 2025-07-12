@@ -52,7 +52,7 @@ export const buildCommand = createCommand<BuildOptions>({
       const outputDir = options.output || 'dist'
       const ensureResult = await fs.ensureDir(outputDir)
       
-      if (!ensureResult.success) {
+      if (!ensureResult.isOk()) {
         logger.error(`Failed to create output directory: ${ensureResult.error.message}`)
         return ensureResult
       }
@@ -70,13 +70,13 @@ export const buildCommand = createCommand<BuildOptions>({
         // Minification logic would go here
       }
       
-      logger.success('Build completed successfully!')
-      return Ok(undefined)
+      .success('Build completed successfully!')
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Build failed: ${errorMessage}`)
-      return Err(createError('BUILD_FAILED', `Build failed: ${errorMessage}`, {
+      return err(createCoreError('BUILD_FAILED', `Build failed: ${errorMessage}`, {
         cause: error,
         recoverable: true
       }))

@@ -1,141 +1,23 @@
 {{#if IS_MONOREPO}}
-{
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"],
-      "inputs": [
-        "src/**",
-        "package.json",
-        "tsconfig.json",
-        "tsconfig.*.json",
-        "vite.config.*",
-        "vitest.config.*"
-      ],
-      "cache": true
-    },
-    "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**", "test-results/**"],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "vitest.config.*",
-        "vitest.setup.*",
-        "tsconfig.json"
-      ],
-      "cache": true,
-      "env": ["NODE_ENV"]
-    },
-    "lint": {
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "oxlintrc.*",
-        ".oxlintrc.*",
-        "package.json"
-      ],
-      "cache": true
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "types": {
-      "dependsOn": ["^build"],
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "tsconfig.json",
-        "tsconfig.*.json",
-        "package.json"
-      ],
-      "cache": true
-    },
-    "format": {
-      "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc.*",
-        "prettier.config.*"
-      ],
-      "cache": false
-    },
-    "format:check": {
-      "outputs": [],
-      "inputs": [
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc.*",
-        "prettier.config.*"
-      ],
-      "cache": true
-    },
-    "lint:fix": {
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "oxlintrc.*",
-        ".oxlintrc.*",
-        "package.json"
-      ],
-      "cache": false
-    }
-  }
-}
+  { "$schema": "https://turbo.build/schema.json", "globalDependencies": ["**/.env.*local"], "tasks":
+  { "build": { "dependsOn": ["^build"], "outputs": ["dist/**", ".next/**"], "inputs": [ "src/**",
+  "package.json", "tsconfig.json", "tsconfig.*.json", "vite.config.*", "vitest.config.*" ], "cache":
+  true }, "test": { "dependsOn": ["^build"], "outputs": ["coverage/**", "test-results/**"],
+  "inputs": [ "src/**", "tests/**", "vitest.config.*", "vitest.setup.*", "tsconfig.json" ], "cache":
+  true, "env": ["NODE_ENV"] }, "lint": { "outputs": [], "inputs": [ "src/**", "tests/**",
+  "oxlintrc.*", ".oxlintrc.*", "package.json" ], "cache": true }, "dev": { "cache": false,
+  "persistent": true }, "types": { "dependsOn": ["^build"], "outputs": [], "inputs": [ "src/**",
+  "tests/**", "tsconfig.json", "tsconfig.*.json", "package.json" ], "cache": true }, "format": {
+  "outputs": [], "inputs": [ "**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc.*", "prettier.config.*" ],
+  "cache": false }, "format:check": { "outputs": [], "inputs": [ "**/*.{ts,tsx,js,jsx,json,md}",
+  ".prettierrc.*", "prettier.config.*" ], "cache": true }, "lint:fix": { "outputs": [], "inputs": [
+  "src/**", "tests/**", "oxlintrc.*", ".oxlintrc.*", "package.json" ], "cache": false } } }
 {{else}}
-{
-  "$schema": "https://turbo.build/schema.json",
-  "tasks": {
-    "build": {
-      "outputs": ["dist/**"],
-      "inputs": [
-        "src/**",
-        "package.json",
-        "tsconfig.json",
-        "tsup.config.*"
-      ],
-      "cache": true
-    },
-    "test": {
-      "outputs": ["coverage/**"],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "vitest.config.*",
-        "tsconfig.json"
-      ],
-      "cache": true,
-      "env": ["NODE_ENV"]
-    },
-    "lint": {
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "oxlintrc.*",
-        "package.json"
-      ],
-      "cache": true
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "types": {
-      "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "tsconfig.json",
-        "package.json"
-      ],
-      "cache": true
-    }
-  }
-}
+  { "$schema": "https://turbo.build/schema.json", "tasks": { "build": { "outputs": ["dist/**"],
+  "inputs": [ "src/**", "package.json", "tsconfig.json", "tsup.config.*" ], "cache": true }, "test":
+  { "outputs": ["coverage/**"], "inputs": [ "src/**", "tests/**", "vitest.config.*", "tsconfig.json"
+  ], "cache": true, "env": ["NODE_ENV"] }, "lint": { "outputs": [], "inputs": [ "src/**",
+  "tests/**", "oxlintrc.*", "package.json" ], "cache": true }, "dev": { "cache": false,
+  "persistent": true }, "types": { "outputs": [], "inputs": [ "src/**", "tests/**", "tsconfig.json",
+  "package.json" ], "cache": true } } }
 {{/if}}

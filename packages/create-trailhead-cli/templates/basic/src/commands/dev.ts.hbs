@@ -1,6 +1,6 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
-import { input, confirm } from '@inquirer/prompts'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import { input, confirm } from '@esteban-url/trailhead-cli/prompts'
 import type { Result } from '@esteban-url/trailhead-cli/core'
 import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
@@ -91,7 +91,7 @@ export const devCommand = createCommand<DevOptions>({
       
       // Validate port availability (example)
       const isPortAvailable = await checkPortAvailable(port)
-      if (!isPortAvailable.success) {
+      if (isPortAvailable.isErr()) {
         logger.error(`Port ${port} is already in use`)
         return isPortAvailable
       }
@@ -107,14 +107,17 @@ export const devCommand = createCommand<DevOptions>({
       logger.success('Development server is running!')
       logger.info('Press Ctrl+C to stop')
       
-      return Ok(undefined)
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Failed to start development server: ${errorMessage}`)
-      return Err(createError('DEV_SERVER_FAILED', `Dev server failed: ${errorMessage}`, {
+      return err(createCoreError('DEV_SERVER_FAILED', `Dev server failed: ${errorMessage}`, {
+        component: '{{packageName}}',
+        operation: 'dev',
         cause: error,
-        recoverable: true
+        recoverable: true,
+        severity: 'high'
       }))
     }
   }
@@ -123,20 +126,26 @@ export const devCommand = createCommand<DevOptions>({
 /**
  * Check if port is available (example utility function)
  */
-async function checkPortAvailable(port: number): Promise<Result<boolean>> {
+async function checkPortAvailable(port: number): Promise<Result<boolean, any>> {
   try {
     // This is a simplified example
     // In real implementation, you'd check if the port is actually available
     if (port < 1 || port > 65535) {
-      return Err(createError('INVALID_PORT', 'Invalid port range', {
-        details: 'Port must be between 1 and 65535'
+      return err(createCoreError('INVALID_PORT', 'Invalid port range', {
+        details: 'Port must be between 1 and 65535',
+        component: '{{packageName}}',
+        operation: 'checkPortAvailable',
+        recoverable: true
       }))
     }
     
-    return Ok(true)
+    return ok(true)
   } catch (error) {
-    return Err(createError('PORT_CHECK_FAILED', 'Failed to check port availability', {
-      cause: error
+    return err(createCoreError('PORT_CHECK_FAILED', 'Failed to check port availability', {
+      component: '{{packageName}}',
+      operation: 'checkPortAvailable',
+      cause: error,
+      recoverable: true
     }))
   }
 }

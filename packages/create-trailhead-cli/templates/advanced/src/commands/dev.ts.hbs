@@ -1,6 +1,6 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
 import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
-import { input, confirm } from '@inquirer/prompts'
+import { input, confirm } from '@esteban-url/trailhead-cli/prompts'
 import type { Result } from '@esteban-url/trailhead-cli/core'
 import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
@@ -91,7 +91,7 @@ export const devCommand = createCommand<DevOptions>({
       
       // Validate port availability (example)
       const isPortAvailable = await checkPortAvailable(port)
-      if (!isPortAvailable.success) {
+      if (!isPortAvailable.isOk()) {
         logger.error(`Port ${port} is already in use`)
         return isPortAvailable
       }
@@ -104,15 +104,15 @@ export const devCommand = createCommand<DevOptions>({
       }
       
       // Simulate server startup
-      logger.success('Development server is running!')
+      .success('Development server is running!')
       logger.info('Press Ctrl+C to stop')
       
-      return Ok(undefined)
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Failed to start development server: ${errorMessage}`)
-      return Err(createError('DEV_SERVER_FAILED', `Dev server failed: ${errorMessage}`, {
+      return err(createCoreError('DEV_SERVER_FAILED', `Dev server failed: ${errorMessage}`, {
         cause: error,
         recoverable: true
       }))
@@ -128,14 +128,14 @@ async function checkPortAvailable(port: number): Promise<Result<boolean>> {
     // This is a simplified example
     // In real implementation, you'd check if the port is actually available
     if (port < 1 || port > 65535) {
-      return Err(createError('INVALID_PORT', 'Invalid port range', {
+      return err(createCoreError('INVALID_PORT', 'Invalid port range', {
         details: 'Port must be between 1 and 65535'
       }))
     }
     
-    return Ok(true)
+    return ok(true)
   } catch (error) {
-    return Err(createError('PORT_CHECK_FAILED', 'Failed to check port availability', {
+    return err(createCoreError('PORT_CHECK_FAILED', 'Failed to check port availability', {
       cause: error
     }))
   }

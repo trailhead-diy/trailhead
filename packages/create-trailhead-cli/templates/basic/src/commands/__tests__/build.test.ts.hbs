@@ -1,70 +1,23 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing'
-import { buildCommand } from '../build.js'
-
-describe('build command', () => {
-  let testContext: any
-
-  beforeEach(async () => {
-    testContext = createTestContext({
-      verbose: false,
-      fs: mockFileSystem({
-        '/project/src/index.ts': 'export const hello = "world"',
-        '/project/package.json': '{"name": "test-project"}'
-      })
-    })
-  })
-
-  it('should create output directory', async () => {
-    const result = await buildCommand.execute({ output: 'dist' }, testContext)
-    
-    expect(result.success).toBe(true)
-    expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist')
-  })
-
-  it('should handle custom output directory', async () => {
-    const result = await buildCommand.execute({ output: 'build' }, testContext)
-    
-    expect(result.success).toBe(true)
-    expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('build')
-  })
-
-  it('should handle filesystem errors', async () => {
-    // Mock filesystem error
-    testContext.fs.ensureDirectory.mockImplementation(() => 
-      Promise.resolve({ success: false, error: new Error('Permission denied') })
-    )
-
-    const result = await buildCommand.execute({ output: 'dist' }, testContext)
-    
-    expect(result.success).toBe(false)
-    expect(result.error.message).toContain('Permission denied')
-  })
-
-  it('should enable watch mode when requested', async () => {
-    const result = await buildCommand.execute({ 
-      output: 'dist', 
-      watch: true 
-    }, testContext)
-    
-    expect(result.success).toBe(true)
-    // In a real implementation, you'd verify watch mode is enabled
-  })
-
-  it('should enable minification when requested', async () => {
-    const result = await buildCommand.execute({ 
-      output: 'dist', 
-      minify: true 
-    }, testContext)
-    
-    expect(result.success).toBe(true)
-    // In a real implementation, you'd verify minification is enabled
-  })
-
-  it('should use default output directory', async () => {
-    const result = await buildCommand.execute({}, testContext)
-    
-    expect(result.success).toBe(true)
-    expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist')
-  })
-})
+import { describe, it, expect, beforeEach } from 'vitest' import { createTestContext, mockFileSystem
+} from '@esteban-url/trailhead-cli/testing' import { buildCommand } from '../build.js'
+describe('build command', () => { let testContext: any beforeEach(async () => { testContext =
+createTestContext({ verbose: false, fs: mockFileSystem({ '/project/src/index.ts': 'export const
+hello = "world"', '/project/package.json': '{"name": "test-project"}' }) }) }) it('should create
+output directory', async () => { const result = await buildCommand.execute({ output: 'dist' },
+testContext) expect(result.isOk()).toBe(true)
+expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist') }) it('should handle custom
+output directory', async () => { const result = await buildCommand.execute({ output: 'build' },
+testContext) expect(result.isOk()).toBe(true)
+expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('build') }) it('should handle filesystem
+errors', async () => { // Mock filesystem error testContext.fs.ensureDirectory.mockImplementation(()
+=> Promise.resolve({ success: false, error: new Error('Permission denied') }) ) const result = await
+buildCommand.execute({ output: 'dist' }, testContext) expect(result.isOk()).toBe(false)
+expect(result.error.message).toContain('Permission denied') }) it('should enable watch mode when
+requested', async () => { const result = await buildCommand.execute({ output: 'dist', watch: true },
+testContext) expect(result.isOk()).toBe(true) // In a real implementation, you'd verify watch mode
+is enabled }) it('should enable minification when requested', async () => { const result = await
+buildCommand.execute({ output: 'dist', minify: true }, testContext) expect(result.isOk()).toBe(true)
+// In a real implementation, you'd verify minification is enabled }) it('should use default output
+directory', async () => { const result = await buildCommand.execute({}, testContext)
+expect(result.isOk()).toBe(true) expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist')
+}) })

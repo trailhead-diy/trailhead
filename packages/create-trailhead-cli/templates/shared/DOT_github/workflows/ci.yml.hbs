@@ -1,158 +1,55 @@
-name: CI
+name: CI on: push: branches: [main, develop] pull_request: branches: [main, develop]
+workflow_dispatch: permissions: contents: read jobs: # Quality checks (lint, format, types) quality:
+name: Quality Checks runs-on: ubuntu-latest strategy: fail-fast: false matrix: task: - name: lint
+command:
+{{PACKAGE_MANAGER}}
+lint - name: format command:
+{{PACKAGE_MANAGER}}
+format:check - name: types command:
+{{PACKAGE_MANAGER}}
+types steps: - name: Checkout uses: actions/checkout@v4 - name: Setup pnpm uses:
+pnpm/action-setup@v4 with: version: latest - name: Setup Node.js uses: actions/setup-node@v4 with:
+node-version: 20 cache: '{{PACKAGE_MANAGER}}' - name: Install dependencies run:
+{{PACKAGE_MANAGER}}
+install --frozen-lockfile - name: Cache
+\{{matrix.task.name}} uses: actions/cache@v4 with: path: |
+{{#if IS_MONOREPO}}.turbo{{else}}node_modules/.cache{{/if}}
+key:
+\{{runner.os}}-\{{matrix.task.name}}-\{{hashFiles('{{#if
+  (eq PACKAGE_MANAGER 'pnpm')
+}}pnpm-lock.yaml{{else}}package-lock.json{{/if}}')}}} continue-on-error: true - name: Run
+\{{matrix.task.name}} run:
+\{{matrix.task.command}} # Test execution test: name: Test runs-on: ubuntu-latest steps: - name:
+Checkout uses: actions/checkout@v4 - name: Setup pnpm uses: pnpm/action-setup@v4 with: version:
+latest - name: Setup Node.js uses: actions/setup-node@v4 with: node-version: 20 cache: '{{PACKAGE_MANAGER}}'
+- name: Install dependencies run:
+{{PACKAGE_MANAGER}}
+install --frozen-lockfile - name: Cache test results uses: actions/cache@v4 with: path: |
+{{#if IS_MONOREPO}}.turbo{{else}}node_modules/.cache{{/if}}
+coverage/ key:
+\{{runner.os}}-test-\{{hashFiles('{{#if
+  (eq PACKAGE_MANAGER 'pnpm')
+}}pnpm-lock.yaml{{else}}package-lock.json{{/if}}')}}-\{{hashFiles('**/*.test.ts', '**/*.test.js')}}}
+continue-on-error: true - name: Run tests run:
+{{PACKAGE_MANAGER}}
+test{{#if IS_MONOREPO}} --concurrency=50%{{/if}}
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  # Quality checks (lint, format, types)
-  quality:
-    name: Quality Checks
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        task:
-          - name: lint
-            command: {{PACKAGE_MANAGER}} lint
-          - name: format
-            command: {{PACKAGE_MANAGER}} format:check
-          - name: types
-            command: {{PACKAGE_MANAGER}} types
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: '{{PACKAGE_MANAGER}}'
-
-      - name: Install dependencies
-        run: {{PACKAGE_MANAGER}} install --frozen-lockfile
-
-      - name: Cache \{{matrix.task.name}}
-        uses: actions/cache@v4
-        with:
-          path: |
-            {{#if IS_MONOREPO}}.turbo{{else}}node_modules/.cache{{/if}}
-          key: \{{runner.os}}-\{{matrix.task.name}}-\{{hashFiles('{{#if (eq PACKAGE_MANAGER "pnpm")}}pnpm-lock.yaml{{else}}package-lock.json{{/if}}')}}}
-        continue-on-error: true
-
-      - name: Run \{{matrix.task.name}}
-        run: \{{matrix.task.command}}
-
-  # Test execution
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: '{{PACKAGE_MANAGER}}'
-
-      - name: Install dependencies
-        run: {{PACKAGE_MANAGER}} install --frozen-lockfile
-
-      - name: Cache test results
-        uses: actions/cache@v4
-        with:
-          path: |
-            {{#if IS_MONOREPO}}.turbo{{else}}node_modules/.cache{{/if}}
-            coverage/
-          key: \{{runner.os}}-test-\{{hashFiles('{{#if (eq PACKAGE_MANAGER "pnpm")}}pnpm-lock.yaml{{else}}package-lock.json{{/if}}')}}-\{{hashFiles('**/*.test.ts', '**/*.test.js')}}}
-        continue-on-error: true
-
-      - name: Run tests
-        run: {{PACKAGE_MANAGER}} test{{#if IS_MONOREPO}} --concurrency=50%{{/if}}
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./coverage/lcov.info
-        continue-on-error: true
-
-  # Security checks
-  security:
-    name: Security
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: '{{PACKAGE_MANAGER}}'
-
-      - name: Install dependencies
-        run: {{PACKAGE_MANAGER}} install --frozen-lockfile
-
-      - name: Run security audit
-        run: {{PACKAGE_MANAGER}} audit
-        continue-on-error: true
-
-      - name: Check for secrets
-        run: |
-          if command -v git >/dev/null 2>&1; then
-            # Basic secret detection
-            git log --oneline -n 10 | grep -i "password\|secret\|key\|token" || true
-          fi
-        continue-on-error: true
+- name: Upload coverage uses: codecov/codecov-action@v4 if: always() with: files:
+./coverage/lcov.info continue-on-error: true # Security checks security: name: Security runs-on:
+ubuntu-latest steps: - name: Checkout uses: actions/checkout@v4 - name: Setup pnpm uses:
+pnpm/action-setup@v4 with: version: latest - name: Setup Node.js uses: actions/setup-node@v4 with:
+node-version: 20 cache: '{{PACKAGE_MANAGER}}' - name: Install dependencies run:
+{{PACKAGE_MANAGER}}
+install --frozen-lockfile - name: Run security audit run:
+{{PACKAGE_MANAGER}}
+audit continue-on-error: true - name: Check for secrets run: | if command -v git >/dev/null 2>&1;
+then # Basic secret detection git log --oneline -n 10 | grep -i "password\|secret\|key\|token" ||
+true fi continue-on-error: true
 
 {{#if IS_MONOREPO}}
-  # Build check (monorepo)
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [quality, test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build packages
-        run: pnpm build
+  # Build check (monorepo) build: name: Build runs-on: ubuntu-latest needs: [quality, test] steps: -
+  name: Checkout uses: actions/checkout@v4 - name: Setup pnpm uses: pnpm/action-setup@v4 with:
+  version: latest - name: Setup Node.js uses: actions/setup-node@v4 with: node-version: 20 cache:
+  'pnpm' - name: Install dependencies run: pnpm install --frozen-lockfile - name: Build packages
+  run: pnpm build
 {{/if}}

@@ -32,18 +32,11 @@
     "validate": "{{packageManager}} run types && {{packageManager}} run lint && {{packageManager}} run test"
   },
   "dependencies": {
-    "@esteban-url/trailhead-cli": "^0.1.0",
-    "@inquirer/prompts": "^7.0.0",
-    "chalk": "^5.3.0",
-    "commander": "^14.0.0",
-    "fs-extra": "^11.3.0",{{#if isAdvanced}}
-    "glob": "^10.3.0",{{/if}}
-    "ora": "^8.0.1"{{#if isAdvanced}},
+    "@esteban-url/trailhead-cli": "^0.1.0"{{#if isAdvanced}},
     "zod": "^3.22.4"{{/if}}
   },
   "devDependencies": {
 {{#unless IS_MONOREPO}}
-    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.0",
     "@vitest/coverage-v8": "^1.2.0",
     "oxlint": "^0.2.0",
@@ -54,7 +47,6 @@
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.0",
     "@vitest/coverage-v8": "^1.2.0",
     "oxlint": "^0.2.0",

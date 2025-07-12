@@ -130,18 +130,18 @@ export const validateCommand = createCommand<ValidateOptions>({
       }
       
       if (errors.length > 0) {
-        return Err(createError('VALIDATION_FAILED', `Validation failed with ${errors.length} errors`, {
+        return err(createCoreError('VALIDATION_FAILED', `Validation failed with ${errors.length} errors`, {
           details: `Found ${errors.length} validation errors that need to be fixed`
         }))
       }
       
-      logger.success('Validation completed successfully!')
-      return Ok(undefined)
+      .success('Validation completed successfully!')
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Validation failed: ${errorMessage}`)
-      return Err(createError('VALIDATION_ERROR', `Validation failed: ${errorMessage}`, {
+      return err(createCoreError('VALIDATION_ERROR', `Validation failed: ${errorMessage}`, {
         cause: error,
         details: 'An unexpected error occurred during validation'
       }))

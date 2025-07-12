@@ -1,5 +1,5 @@
 import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
 import { loadConfig, defineConfig } from '@esteban-url/trailhead-cli/config'
 import { z } from 'zod'
 import type { Result } from '@esteban-url/trailhead-cli/core'
@@ -76,7 +76,7 @@ export const configCommand = createCommand<ConfigOptions>({
       // Load configuration
       const loadResult = await loadConfig(configSchema, { name: '{{packageName}}' })
       
-      if (!loadResult.success) {
+      if (!loadResult.isOk()) {
         logger.error(`Failed to load configuration: ${loadResult.error.message}`)
         return loadResult
       }
@@ -89,13 +89,13 @@ export const configCommand = createCommand<ConfigOptions>({
         if (verbose) {
           logger.debug(`Configuration: ${JSON.stringify(projectConfig)}`)
         }
-        return Ok(undefined)
+        return ok(undefined)
       }
       
       if (options.list) {
         logger.info('Current configuration:')
         console.log(JSON.stringify(projectConfig, null, 2))
-        return Ok(undefined)
+        return ok(undefined)
       }
       
       if (options.get) {
@@ -104,18 +104,18 @@ export const configCommand = createCommand<ConfigOptions>({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${options.get}`)
-          return Err(createError('CONFIG_KEY_NOT_FOUND', `Key not found: ${options.get}`, {
+          return err(createCoreError('CONFIG_KEY_NOT_FOUND', `Key not found: ${options.get}`, {
             details: `Configuration key '${options.get}' does not exist`
           }))
         }
-        return Ok(undefined)
+        return ok(undefined)
       }
       
       if (options.set) {
         const [key, value] = options.set.split('=', 2)
         if (!key || value === undefined) {
           logger.error('Invalid format. Use: --set key=value')
-          return Err(createError('INVALID_CONFIG_FORMAT', 'Invalid set format', {
+          return err(createCoreError('INVALID_CONFIG_FORMAT', 'Invalid set format', {
             details: 'Use format: --set key=value'
           }))
         }
@@ -123,7 +123,7 @@ export const configCommand = createCommand<ConfigOptions>({
         logger.info(`Setting ${key} = ${value}`)
         // In a real implementation, you'd update the config file
         logger.error('Configuration updates not implemented in this example')
-        return Ok(undefined)
+        return ok(undefined)
       }
       
       // Handle positional arguments
@@ -135,12 +135,12 @@ export const configCommand = createCommand<ConfigOptions>({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${key}`)
-          return Err(createError('CONFIG_KEY_NOT_FOUND', `Key not found: ${key}`, {
+          return err(createCoreError('CONFIG_KEY_NOT_FOUND', `Key not found: ${key}`, {
             details: `Configuration key '${key}' does not exist`
           }))
         }
         
-        return Ok(undefined)
+        return ok(undefined)
       }
       
       // Default: show configuration summary
@@ -153,12 +153,12 @@ export const configCommand = createCommand<ConfigOptions>({
       )
       logger.info(`Build target: ${(projectConfig as any).build.target}`)
       
-      return Ok(undefined)
+      return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Config operation failed: ${errorMessage}`)
-      return Err(createError('CONFIG_OPERATION_FAILED', `Config failed: ${errorMessage}`, {
+      return err(createCoreError('CONFIG_OPERATION_FAILED', `Config failed: ${errorMessage}`, {
         cause: error,
         recoverable: true
       }))
