@@ -67,19 +67,130 @@ export function executeSemanticColorsTransform(input: string): {
   }
 
   /////////////////////////////////////////////////////////////////////////////////
-  // Phase 3: Check for Existing Semantic Colors
+  // Phase 3: Check for Existing Semantic Colors and Misplaced Semantic Colors
   // Finds:
   //        existing 'primary', 'secondary', 'destructive', 'accent', 'muted' keys
   //        in colors object to avoid adding duplicates
+  //        OR misplaced semantic colors that need to be moved into colors object
   //
   /////////////////////////////////////////////////////////////////////////////////
   const semanticColorKeys = ['primary', 'secondary', 'destructive', 'accent', 'muted'];
-  const hasSemanticColors = semanticColorKeys.some(colorKey => {
-    // Check if the color key exists as a property (more precise check)
-    return content.includes(`${colorKey}:`);
-  });
 
-  if (!hasSemanticColors) {
+  // Check if semantic colors exist within the colors object (correct location)
+  const hasSemanticColorsInColorsObject = (() => {
+    if (directColorsObject) {
+      const colorsMatch = content.match(/const colors = \{([\s\S]*?)\}/);
+      if (colorsMatch) {
+        return semanticColorKeys.some(key => colorsMatch[1].includes(`${key}:`));
+      }
+    }
+
+    if (nestedColorsObject || stylesColorsObject) {
+      const colorsMatch = content.match(/colors:\s*\{([\s\S]*?)\n\s*\}/);
+      if (colorsMatch) {
+        return semanticColorKeys.some(key => colorsMatch[1].includes(`${key}:`));
+      }
+    }
+
+    return false;
+  })();
+
+  // Check if semantic colors exist outside colors object (incorrect location)
+  const hasMisplacedSemanticColors = (() => {
+    if (!stylesColorsObject) return false;
+
+    // For styles pattern, check if semantic colors exist outside the colors object
+    const stylesMatch = content.match(/const styles = \{([\s\S]*?)\};\s*\}?/);
+    if (stylesMatch) {
+      const stylesContent = stylesMatch[1];
+      // More flexible pattern for colors object closing
+      const colorsMatch = stylesContent.match(/colors:\s*\{[\s\S]*?\n\s*\}(?=\s*,|\s*$)/);
+
+      if (colorsMatch) {
+        // Get content after colors object within styles
+        const afterColorsIndex = stylesContent.indexOf(colorsMatch[0]) + colorsMatch[0].length;
+        const afterColorsContent = stylesContent.slice(afterColorsIndex);
+
+        return semanticColorKeys.some(key => afterColorsContent.includes(`${key}:`));
+      }
+    }
+
+    return false;
+  })();
+
+  // Phase 3A: Handle misplaced semantic colors (move them into colors object)
+  if (hasMisplacedSemanticColors && !hasSemanticColorsInColorsObject) {
+    /////////////////////////////////////////////////////////////////////////////////
+    // Phase 3A: Move Misplaced Semantic Colors into Colors Object (Simple Approach)
+    //
+    // From:  const styles = { colors: { rose: [...] }, primary: [...], muted: [...] }
+    // To:    const styles = { colors: { rose: [...], primary: [...], muted: [...] } }
+    //
+    /////////////////////////////////////////////////////////////////////////////////
+
+    // Find and extract misplaced semantic colors
+    const misplacedSemanticColors: Array<{ key: string; fullMatch: string; definition: string }> =
+      [];
+    semanticColorKeys.forEach(key => {
+      // Look for semantic colors that appear after the colors object closes
+      const colorsObjectEnd = content.lastIndexOf('  },');
+      const afterColors = content.slice(colorsObjectEnd);
+
+      const semanticPattern = new RegExp(`(\n\\s*)(${key}:\\s*\\[[\\s\\S]*?\\n\\s*\\]),?`, 'g');
+      let match;
+      while ((match = semanticPattern.exec(afterColors)) !== null) {
+        misplacedSemanticColors.push({
+          key,
+          fullMatch: match[0],
+          definition: match[2].trim(),
+        });
+      }
+    });
+
+    if (misplacedSemanticColors.length > 0) {
+      // Get the colors object closing position
+      const colorsClosingPattern = /(colors:\s*\{[\s\S]*?)(\n\s*\},)/;
+      const colorsMatch = content.match(colorsClosingPattern);
+
+      if (colorsMatch) {
+        const beforeClosing = colorsMatch[1];
+        const closingBrace = colorsMatch[2];
+
+        // Determine proper indentation
+        const indentMatch = closingBrace.match(/\n(\s*)/);
+        const indent = indentMatch ? indentMatch[1] : '  ';
+
+        // Add comma if needed
+        const needsComma = !beforeClosing.trim().endsWith(',');
+        const commaPrefix = needsComma ? ',' : '';
+
+        if (misplacedSemanticColors.length > 0) {
+          // Build semantic colors with proper indentation
+          const semanticColorsBlock = misplacedSemanticColors
+            .map(item => `${indent}  ${item.definition},`)
+            .join('\n');
+
+          // Reconstruct colors object with semantic colors included
+          const newColorsObject = `${beforeClosing}${commaPrefix}\n\n${semanticColorsBlock}\n${closingBrace}`;
+
+          // Replace the colors object
+          content = content.replace(colorsClosingPattern, newColorsObject);
+
+          // Remove the misplaced semantic colors from their original locations
+          misplacedSemanticColors.forEach(item => {
+            content = content.replace(item.fullMatch, '');
+          });
+        }
+
+        changed = true;
+        warnings.push(
+          `Moved ${misplacedSemanticColors.length} misplaced semantic colors into colors object`
+        );
+      }
+    }
+  }
+
+  if (!hasSemanticColorsInColorsObject && !hasMisplacedSemanticColors) {
     let patternFound = false;
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +262,8 @@ export function executeSemanticColorsTransform(input: string): {
     if (!patternFound) {
       warnings.push('Could not find colors object pattern to add semantic colors');
     }
+  } else if (hasSemanticColorsInColorsObject) {
+    warnings.push('Semantic colors already exist in colors object');
   }
 
   return { content, changed, warnings };
