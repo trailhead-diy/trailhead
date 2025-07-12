@@ -352,7 +352,7 @@ const createFileWatcher = (
       handlers.forEach(handler => {
         try {
           handler(event as any);
-        } catch (_error) {
+        } catch {
           // Silently handle handler errors
         }
       });

@@ -30,7 +30,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
         }
 
         return result;
-      } catch (_error) {
+      } catch {
         return false;
       }
     };
@@ -40,7 +40,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
     return (event: FileEvent): boolean => {
       try {
         return filters.every(filter => filter(event));
-      } catch (_error) {
+      } catch {
         return false;
       }
     };
@@ -50,7 +50,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
     return (event: FileEvent): boolean => {
       try {
         return !filter(event);
-      } catch (_error) {
+      } catch {
         return true; // If filter fails, inverted result is true
       }
     };
@@ -117,7 +117,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
         }
 
         return true;
-      } catch (_error) {
+      } catch {
         return false;
       }
     };

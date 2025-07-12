@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err, fromThrowable } from '@trailhead/core';
 import { execSync } from 'node:child_process';
 import type {
   GitStatusOperations,
@@ -15,27 +15,29 @@ import type {
 
 export const createGitStatusOperations = (): GitStatusOperations => {
   const getStatus = async (repo: GitRepository): Promise<GitResult<GitStatus>> => {
-    try {
-      // Get porcelain status
-      const statusOutput = execSync('git status --porcelain=v2 -b', {
-        cwd: repo.workingDirectory,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      });
+    const safeStatus = fromThrowable(
+      () =>
+        execSync('git status --porcelain=v2 -b', {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    );
 
-      const status = parseStatusOutput(statusOutput);
-
-      return ok(status);
-    } catch (error) {
+    const result = safeStatus();
+    if (result.isErr()) {
       return err({
         type: 'GitError',
         code: 'STATUS_FAILED',
         message: 'Failed to get repository status',
         suggestion: 'Check if the repository is valid and accessible',
-        cause: error,
+        cause: result.error,
         recoverable: true,
       } as any);
     }
+
+    const status = parseStatusOutput(result.value);
+    return ok(status);
   };
 
   const isClean = async (repo: GitRepository): Promise<GitResult<boolean>> => {

@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err, fromThrowable } from '@trailhead/core';
 import { execSync } from 'node:child_process';
 import type {
   GitDiffOperations,
@@ -23,52 +23,60 @@ export const createGitDiffOperations = (): GitDiffOperations => {
     repo: GitRepository,
     options: GitDiffOptions = {}
   ): Promise<GitResult<GitDiff>> => {
-    try {
-      const args = buildDiffArgs(options);
-      const diffOutput = execSync(`git diff ${args.join(' ')}`, {
-        cwd: repo.workingDirectory,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      });
+    const args = buildDiffArgs(options);
+    const safeDiff = fromThrowable(
+      () =>
+        execSync(`git diff ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    );
 
-      const diff = parseDiffOutput(diffOutput);
-      return ok(diff);
-    } catch (error) {
+    const result = safeDiff();
+    if (result.isErr()) {
       return err({
         type: 'GitError',
         code: 'DIFF_FAILED',
         message: 'Failed to get diff',
         suggestion: 'Check if the repository is valid and the refs exist',
-        cause: error,
+        cause: result.error,
         recoverable: true,
       } as any);
     }
+
+    const diff = parseDiffOutput(result.value);
+    return ok(diff);
   };
 
   const getDiffSummary = async (
     repo: GitRepository,
     options: GitDiffOptions = {}
   ): Promise<GitResult<DiffSummary>> => {
-    try {
-      const args = buildDiffArgs({ ...options, stat: true });
-      const summaryOutput = execSync(`git diff --stat ${args.join(' ')}`, {
-        cwd: repo.workingDirectory,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      });
+    const args = buildDiffArgs({ ...options, stat: true });
+    const safeDiffSummary = fromThrowable(
+      () =>
+        execSync(`git diff --stat ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    );
 
-      const summary = parseDiffSummary(summaryOutput);
-      return ok(summary);
-    } catch (error) {
+    const result = safeDiffSummary();
+    if (result.isErr()) {
       return err({
         type: 'GitError',
         code: 'DIFF_SUMMARY_FAILED',
         message: 'Failed to get diff summary',
         suggestion: 'Check if the repository is valid and the refs exist',
-        cause: error,
+        cause: result.error,
         recoverable: true,
       } as any);
     }
+
+    const summary = parseDiffSummary(result.value);
+    return ok(summary);
   };
 
   const getFileDiff = async (
@@ -76,38 +84,42 @@ export const createGitDiffOperations = (): GitDiffOperations => {
     path: string,
     options: GitDiffOptions = {}
   ): Promise<GitResult<DiffFile>> => {
-    try {
-      const args = buildDiffArgs({ ...options, paths: [path] });
-      const diffOutput = execSync(`git diff ${args.join(' ')}`, {
-        cwd: repo.workingDirectory,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      });
+    const args = buildDiffArgs({ ...options, paths: [path] });
+    const safeFileDiff = fromThrowable(
+      () =>
+        execSync(`git diff ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    );
 
-      const diff = parseDiffOutput(diffOutput);
-      const fileDiff = diff.files.find(f => f.path === path);
-
-      if (!fileDiff) {
-        return err({
-          type: 'GitError',
-          code: 'FILE_NOT_FOUND',
-          message: `No diff found for file ${path}`,
-          suggestion: 'Check if the file exists and has changes',
-          recoverable: true,
-        } as any);
-      }
-
-      return ok(fileDiff);
-    } catch (error) {
+    const result = safeFileDiff();
+    if (result.isErr()) {
       return err({
         type: 'GitError',
         code: 'FILE_DIFF_FAILED',
         message: `Failed to get diff for file ${path}`,
         suggestion: 'Check if the file exists and the repository is valid',
-        cause: error,
+        cause: result.error,
         recoverable: true,
       } as any);
     }
+
+    const diff = parseDiffOutput(result.value);
+    const fileDiff = diff.files.find(f => f.path === path);
+
+    if (!fileDiff) {
+      return err({
+        type: 'GitError',
+        code: 'FILE_NOT_FOUND',
+        message: `No diff found for file ${path}`,
+        suggestion: 'Check if the file exists and has changes',
+        recoverable: true,
+      } as any);
+    }
+
+    return ok(fileDiff);
   };
 
   return {

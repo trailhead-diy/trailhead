@@ -1,13 +1,16 @@
-import { ok, err } from '@trailhead/core';
 import path from 'node:path';
-import type { PatternOperations, GlobPattern, PathMatcher, WatcherResult } from '../types.js';
+import type { GlobPattern, PathMatcher } from '../types.js';
 import type { CreatePatternOperations, CompiledPattern, PatternCache } from './types.js';
 import { defaultPatternConfig } from './types.js';
-import { createPatternError, mapLibraryError } from '../errors.js';
+import { createPatternError } from '../errors.js';
 
 // ========================================
 // Pattern Operations
 // ========================================
+
+const isGlobPattern = (pattern: string): boolean => {
+  return /[*?[\]{}()]/.test(pattern);
+};
 
 export const createPatternOperations: CreatePatternOperations = (config = {}) => {
   const patternConfig = { ...defaultPatternConfig, ...config };
@@ -27,7 +30,7 @@ export const createPatternOperations: CreatePatternOperations = (config = {}) =>
 
       // GlobPattern
       return matchGlobPattern(normalizedPath, pattern);
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -38,7 +41,7 @@ export const createPatternOperations: CreatePatternOperations = (config = {}) =>
   ): boolean => {
     try {
       return patterns.some(pattern => match(filePath, pattern));
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -89,7 +92,7 @@ export const createPatternOperations: CreatePatternOperations = (config = {}) =>
         }
 
         return true;
-      } catch (error) {
+      } catch {
         return false;
       }
     };
@@ -112,12 +115,12 @@ export const createPatternOperations: CreatePatternOperations = (config = {}) =>
 
       return regex;
     } catch (error) {
+      // INTENTIONAL THROW: This function is part of the PatternOperations interface
+      // which requires throwing on error for compatibility with pattern libraries.
+      // The calling code expects synchronous error propagation via exceptions.
+      // Converting to Result<RegExp, Error> would break the interface contract.
       throw createPatternError(pattern, 'globToRegex', error);
     }
-  };
-
-  const isGlobPattern = (pattern: string): boolean => {
-    return /[*?[\]{}()]/.test(pattern);
   };
 
   return {

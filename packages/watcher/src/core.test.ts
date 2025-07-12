@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createWatcherOperations } from './core.js';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { mkdir, writeFile, rm } from 'node:fs/promises';
+import { mkdir, rm } from 'node:fs/promises';
 
 describe('Watcher Operations', () => {
   const watcherOps = createWatcherOperations();
@@ -17,7 +17,7 @@ describe('Watcher Operations', () => {
     await watcherOps.closeAll();
     try {
       await rm(testDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });

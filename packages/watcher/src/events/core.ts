@@ -1,6 +1,4 @@
-import { ok, err } from '@trailhead/core';
 import type {
-  EventOperations,
   FileEvent,
   FileEventType,
   FileStats,
@@ -8,11 +6,10 @@ import type {
   FilterConfig,
   EventTransformer,
   EventBatch,
-  WatcherResult,
 } from '../types.js';
 import type { CreateEventOperations } from './types.js';
 import { defaultEventConfig } from './types.js';
-import { createWatcherEventError, mapLibraryError } from '../errors.js';
+import { createWatcherEventError } from '../errors.js';
 
 // ========================================
 // Event Operations
@@ -105,7 +102,7 @@ export const createEventOperations: CreateEventOperations = (config = {}) => {
 
         return true;
       });
-    } catch (error) {
+    } catch {
       // Return empty array on filter error
       return [];
     }
@@ -119,6 +116,10 @@ export const createEventOperations: CreateEventOperations = (config = {}) => {
       const result = transformer(event);
       return result instanceof Promise ? await result : result;
     } catch (error) {
+      // INTENTIONAL THROW: This function follows the EventOperations interface contract
+      // which requires throwing on transformation errors for compatibility with event
+      // processing libraries. The caller expects synchronous error propagation.
+      // Converting to Result<T, Error> would break the interface contract.
       throw createWatcherEventError(event.type, event.path, error, { operation: 'transform' });
     }
   };
@@ -143,7 +144,7 @@ export const createEventOperations: CreateEventOperations = (config = {}) => {
       }
 
       return batches;
-    } catch (error) {
+    } catch {
       return [];
     }
   };
