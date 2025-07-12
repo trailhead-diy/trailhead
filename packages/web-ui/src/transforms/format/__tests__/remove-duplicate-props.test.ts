@@ -193,7 +193,6 @@ describe('remove-duplicate-props transform', () => {
         const content = result.value.content;
         const classNameIndex = content.indexOf('className="base"');
         const disabledIndex = content.indexOf('disabled={false}');
-        const propsIndex = content.indexOf('{...props}');
         const onClickIndex = content.indexOf('onClick={handler}');
 
         // Props should be last, maintaining React override behavior
