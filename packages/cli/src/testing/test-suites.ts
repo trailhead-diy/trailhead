@@ -1,4 +1,4 @@
-import type { Result } from '../core/index.js';
+import type { Result } from '@trailhead/core';
 // @ts-expect-error - Domain package types will be available after build
 import type { FileSystem } from '@trailhead/fs';
 import type { CoreError } from '@trailhead/core';

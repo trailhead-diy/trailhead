@@ -1,7 +1,14 @@
 import type { Result } from 'neverthrow';
 import type { CoreError } from '@trailhead/core';
-import type { FileSystem } from '../filesystem/index.js';
-import type { Logger } from '../core/index.js';
+import type { Logger } from '../utils/logger.js';
+
+// Simple FileSystem interface for CLI context
+interface FileSystem {
+  readFile: (path: string) => Promise<Result<string, CoreError>>;
+  writeFile: (path: string, content: string) => Promise<Result<void, CoreError>>;
+  exists: (path: string) => Promise<Result<boolean, CoreError>>;
+  [key: string]: any; // Allow additional fs methods
+}
 
 /**
  * Context object provided to command actions during execution

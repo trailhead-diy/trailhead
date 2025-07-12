@@ -11,7 +11,7 @@ export {
   underline,
 } from './chalk.js';
 export { createSpinner, withSpinner } from './spinner.js';
-export { createDefaultLogger } from '../core/logger.js';
+export { createDefaultLogger, type Logger } from './logger.js';
 
 export {
   createStats,
@@ -20,8 +20,6 @@ export {
   formatStats,
   type StatsTracker,
 } from './stats.js';
-
-export type { Logger } from '../core/logger.js';
 
 export {
   filterUndefined,

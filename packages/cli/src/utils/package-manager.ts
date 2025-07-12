@@ -1,6 +1,6 @@
 import { execSync, type ExecSyncOptions } from 'node:child_process';
 import { Result, ok, err, type CoreError } from '@trailhead/core';
-import { createCoreError } from '../core/index.js';
+import { createCoreError } from '@trailhead/core';
 
 /**
  * Package manager configuration

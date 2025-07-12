@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import type { Command as CommandInterface, CommandContext } from './command/index.js';
-import { createDefaultLogger } from './core/logger.js';
-import { createFileSystem } from './filesystem/index.js';
+import { createDefaultLogger } from './utils/logger.js';
+import { fs } from '@trailhead/fs';
 import { validateCommandOption } from './command/validation.js';
 import { processCommandOptionsWithCache } from './command/performance.js';
 
@@ -210,7 +210,7 @@ export function createCLI(config: CLIConfig): CLI {
             projectRoot: process.cwd(),
             logger: createDefaultLogger(options.verbose),
             verbose: options.verbose,
-            fs: createFileSystem as any, // Type compatibility with domain package
+            fs: fs as any, // Type compatibility with domain package
             args: positionalArgs,
           };
 

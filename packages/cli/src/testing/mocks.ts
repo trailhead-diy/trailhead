@@ -1,4 +1,4 @@
-import type { Logger } from '../core/logger.js';
+import type { Logger } from '../utils/logger.js';
 import { ok, err } from 'neverthrow';
 import type { Result } from 'neverthrow';
 import type { CoreError } from '@trailhead/core';

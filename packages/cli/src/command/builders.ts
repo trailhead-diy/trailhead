@@ -1,11 +1,17 @@
 import type { Result } from 'neverthrow';
 import type { CoreError } from '@trailhead/core';
-import type { FileSystem } from '../filesystem/index.js';
 import type { CommandContext, CommandOption } from './types.js';
+
+// Simple FileSystem interface for file processing
+interface FileSystem {
+  readFile: (path: string) => Promise<Result<string, CoreError>>;
+  writeFile: (path: string, content: string) => Promise<Result<void, CoreError>>;
+  exists: (path: string) => Promise<Result<boolean, CoreError>>;
+  [key: string]: any; // Allow additional fs methods
+}
 import type { CommandConfig, CommandOptions } from './base.js';
 import { createCommand } from './base.js';
-import { err } from 'neverthrow';
-import { errors } from '../core/error-templates.js';
+import { err, createCoreError } from '@trailhead/core';
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112
@@ -175,17 +181,27 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
       const [inputFile] = context.args;
 
       if (config.inputFile.required !== false && !inputFile) {
-        return err(errors.requiredFieldMissing('input file'));
+        return err(
+          createCoreError('VALIDATION_ERROR', 'input file is required', { recoverable: true })
+        );
       }
 
       // Validate file exists if provided
       if (inputFile) {
         const fileCheck = await context.fs.exists(inputFile);
         if (fileCheck.isErr()) {
-          return err(errors.fileNotFound(inputFile));
+          return err(
+            createCoreError('FILESYSTEM_ERROR', `file not found: ${inputFile}`, {
+              recoverable: false,
+            })
+          );
         }
         if (fileCheck.isOk() && !fileCheck.value) {
-          return err(errors.fileNotFound(inputFile));
+          return err(
+            createCoreError('FILESYSTEM_ERROR', `file not found: ${inputFile}`, {
+              recoverable: false,
+            })
+          );
         }
       }
 

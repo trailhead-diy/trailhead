@@ -20,6 +20,8 @@ const packageSpecificConfig = defineConfig({
     include: [
       'src/**/*.test.ts',
       'src/**/*.spec.ts',
+      'tests/**/*.test.ts',
+      'tests/**/*.spec.ts',
       'examples/**/*.test.ts',
       'examples/**/*.spec.ts',
     ],

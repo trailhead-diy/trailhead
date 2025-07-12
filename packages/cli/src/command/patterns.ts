@@ -2,7 +2,7 @@ import type { CommandContext, CommandPhase } from './types.js';
 import type { Result } from 'neverthrow';
 import { ok, err } from 'neverthrow';
 import type { CoreError } from '@trailhead/core';
-import { createCoreError } from '../core/index.js';
+import { createCoreError } from '@trailhead/core';
 
 export interface InteractiveCommandOptions {
   readonly interactive?: boolean;

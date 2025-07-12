@@ -1,23 +1,14 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  // Multiple entry points for each subpath export
+  // CLI-specific entry points only
   entry: {
     index: 'src/index.ts',
-    'core/index': 'src/core/index.ts',
     'command/index': 'src/command/index.ts',
-    'filesystem/index': 'src/filesystem/index.ts',
-    'config/index': 'src/config/index.ts',
     'prompts/index': 'src/prompts/index.ts',
     'testing/index': 'src/testing/index.ts',
     'utils/index': 'src/utils/index.ts',
-    'git/index': 'src/git/index.ts',
-    'workflows/index': 'src/workflows/index.ts',
-    'error-recovery/index': 'src/error-recovery/index.ts',
     'progress/index': 'src/progress/index.ts',
-    'formats/index': 'src/formats/index.ts',
-    'streams/index': 'src/streams/index.ts',
-    'watcher/index': 'src/watcher/index.ts',
   },
   // ESM-only output
   format: ['esm'],
