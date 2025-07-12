@@ -3,6 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from '../default-colors';
 import type React from 'react';
 export function CatalystCheckboxGroup({
   className,
@@ -127,20 +128,21 @@ const colors = {
 };
 type Color = keyof typeof colors;
 export function CatalystCheckbox({
-  color = 'dark/zinc',
+  color,
   className,
   ...props
 }: {
   color?: Color;
   className?: string;
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
+  const defaultColor = useDefaultColor<keyof typeof colors>('checkbox');
   return (
     <Headless.Checkbox
       data-slot="control"
       {...props}
       className={cn('group inline-flex focus:outline-hidden', className)}
     >
-      <span className={cn([base, colors[color]])}>
+      <span className={cn([base, colors[color ?? defaultColor]])}>
         <svg
           className="size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5"
           viewBox="0 0 14 14"

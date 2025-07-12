@@ -92,55 +92,74 @@ export function Badge({ color = 'gray', className, children, ...props }: {
   );
 }`,
 
-  'button.tsx': `import clsx from 'clsx';
+  'button.tsx': `import * as Headless from '@headlessui/react';
+import clsx from 'clsx';
 import React, { forwardRef } from 'react';
 import { Link } from './link';
 
-// Complex Button with --btn- CSS variables to trigger semantic color detection
 const styles = {
   base: [
     'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
-    'px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)]',
-    'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
-    '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)]',
   ],
-  solid: [
-    'border-transparent bg-(--btn-border)',
-    'dark:bg-(--btn-bg)',
-    'before:absolute before:inset-0 before:-z-10 before:rounded-[calc(var(--radius-lg)-1px)] before:bg-(--btn-bg)',
-    'data-active:after:bg-(--btn-hover-overlay) data-hover:after:bg-(--btn-hover-overlay)',
+  plain: [
+    'border-transparent text-zinc-950 data-active:bg-zinc-950/5 data-hover:bg-zinc-950/5',
   ],
-  outline: [
-    'border-zinc-950/10 text-zinc-950 data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
-    'dark:border-white/15 dark:text-white dark:[--btn-bg:transparent]',
-  ],
+  colors: {
+    'dark/zinc': [
+      'text-white [--btn-bg:var(--color-zinc-900)] [--btn-border:var(--color-zinc-950)]/90 [--btn-hover-overlay:var(--color-white)]/10',
+    ],
+    rose: [
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
+    ],
+  },
 };
 
-export const Button = forwardRef<HTMLButtonElement, {
-  variant?: 'solid' | 'outline';
-  className?: string;
-  children: React.ReactNode;
-  href?: string;
-} & React.ComponentPropsWithoutRef<'button'>>(
-  function Button({ variant = 'solid', className, children, href, ...props }, ref) {
-    const classes = clsx(className, styles.base, styles[variant]);
-    
-    return href ? (
-      <Link href={href} className={classes} {...props} {...props}>
-        {children}
-      </Link>
-    ) : (
-      <button
-        ref={ref}
-        className={classes}
-        {...props}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-);`,
+type ButtonProps = (
+  | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
+  | { color?: never; outline: true; plain?: never }
+  | { color?: never; outline?: never; plain: true }
+) & { className?: string; children: React.ReactNode } & (
+    | Omit<Headless.ButtonProps, 'as' | 'className'>
+    | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
+  );
+
+export const Button = forwardRef(function Button(
+  { color, outline, plain, className, children, ...props }: ButtonProps,
+  ref: React.ForwardedRef<HTMLElement>
+) {
+  let classes = clsx(
+    className,
+    styles.base,
+    outline
+      ? styles.outline
+      : plain
+        ? styles.plain
+        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc'])
+  );
+
+  return 'href' in props ? (
+    <Link {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+      <TouchTarget>{children}</TouchTarget>
+    </Link>
+  ) : (
+    <Headless.Button {...props} className={clsx(classes, 'cursor-default')} ref={ref}>
+      <TouchTarget>{children}</TouchTarget>
+    </Headless.Button>
+  );
+});
+
+export function TouchTarget({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <span
+        className="absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden"
+        aria-hidden="true"
+      />
+      {children}
+    </>
+  );
+}
+`,
 
   'checkbox.tsx': `import clsx from 'clsx';
 import React, { forwardRef } from 'react';

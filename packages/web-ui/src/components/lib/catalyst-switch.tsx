@@ -3,6 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from '../default-colors';
 import type React from 'react';
 export function CatalystSwitchGroup({
   className,
@@ -160,13 +161,14 @@ const colors = {
 };
 type Color = keyof typeof colors;
 export function CatalystSwitch({
-  color = 'dark/zinc',
+  color,
   className,
   ...props
 }: {
   color?: Color;
   className?: string;
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
+  const defaultColor = useDefaultColor<keyof typeof colors>('switch');
   return (
     <Headless.Switch
       data-slot="control"
@@ -191,7 +193,7 @@ export function CatalystSwitch({
         'data-disabled:bg-zinc-200 data-disabled:opacity-50 data-disabled:data-checked:bg-zinc-200 data-disabled:data-checked:ring-black/5',
         'dark:data-disabled:bg-white/15 dark:data-disabled:data-checked:bg-white/15 dark:data-disabled:data-checked:ring-white/15',
         // Color specific styles
-        colors[color],
+        colors[color ?? defaultColor],
         className
       )}
     >

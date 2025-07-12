@@ -2,7 +2,7 @@
   "name": "@esteban-url/trailhead-web-ui",
   "version": "1.0.1",
   "private": false,
-  "description": "Enhanced Catalyst UI components with advanced theming system, semantic tokens, and professional CLI",
+  "description": "Enhanced Catalyst UI components with default color system, semantic tokens, and professional CLI",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "@esteban-url:registry": "https://npm.pkg.github.com"
@@ -90,7 +90,6 @@
     "culori": "^4.0.2",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",
-    "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "semver": "^7.7.2",
@@ -132,7 +131,6 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "next-themes": ">=0.2.0",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
   },

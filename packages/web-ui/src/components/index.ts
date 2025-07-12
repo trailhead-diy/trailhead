@@ -4,6 +4,9 @@
  * Enhanced component wrappers with semantic token support
  */
 
+// Default color system
+export * from './default-colors';
+
 // Component wrappers (these already re-export the lib components with enhancements)
 export * from './alert';
 export * from './auth-layout';

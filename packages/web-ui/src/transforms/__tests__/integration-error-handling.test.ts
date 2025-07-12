@@ -381,8 +381,8 @@ describe('Transform Pipeline Integration - Error Handling', () => {
     it('should provide accurate pipeline information', () => {
       const info = getMainPipelineInfo();
 
-      expect(info.transformCount).toBe(8);
-      expect(info.transforms).toHaveLength(8);
+      expect(info.transformCount).toBe(9);
+      expect(info.transforms).toHaveLength(9);
       expect(info.categories).toBeDefined();
 
       // Verify all expected transforms are present

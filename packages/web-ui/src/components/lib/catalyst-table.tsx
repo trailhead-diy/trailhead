@@ -11,12 +11,7 @@ const TableContext = createContext<{
   dense: boolean;
   grid: boolean;
   striped: boolean;
-}>({
-  bleed: false,
-  dense: false,
-  grid: false,
-  striped: false,
-});
+}>({ bleed: false, dense: false, grid: false, striped: false });
 export function CatalystTable({
   bleed = false,
   dense = false,
@@ -63,11 +58,7 @@ const TableRowContext = createContext<{
   href?: string;
   target?: string;
   title?: string;
-}>({
-  href: undefined,
-  target: undefined,
-  title: undefined,
-});
+}>({ href: undefined, target: undefined, title: undefined });
 export function CatalystTableRow({
   href,
   target,

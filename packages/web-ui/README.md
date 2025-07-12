@@ -1,15 +1,13 @@
 # @esteban-url/trailhead-web-ui
 
-Enhanced Catalyst UI components with advanced theming system, semantic tokens, and professional CLI.
+Enhanced Catalyst UI components with default color system, semantic tokens, and professional CLI.
 
 ## Overview
 
 @esteban-url/trailhead-web-ui provides a comprehensive UI component library built on top of Tailwind's official Catalyst components, featuring:
 
 - **26 Enhanced Components** with semantic color tokens
-- **21 Predefined Themes** using OKLCH color space for perceptual uniformity
-- **Functional Theme Builder API** for creating custom themes programmatically
-- **Runtime Theme Switching** with next-themes integration and SSR-safe theming
+- **Default Color System** for consistent component styling without prop passing
 - **Professional CLI** with smart framework detection and interactive setup
 - **Zero Performance Overhead** using CSS custom properties
 - **Full TypeScript Support** with comprehensive type definitions
@@ -41,17 +39,14 @@ trailhead-ui install --framework vite
 ### Basic Usage
 
 ```tsx
-import { Button, Alert } from './components/ui';
-import { ThemeProvider } from './components/ui/theme';
+import { Button, Alert, DefaultColorProvider } from './components/ui';
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="zinc">
+    <DefaultColorProvider colors={{ button: 'green', badge: 'blue' }}>
       <Alert variant="success">Welcome to Trailhead UI!</Alert>
-      <Button variant="solid" color="primary">
-        Get Started
-      </Button>
-    </ThemeProvider>
+      <Button variant="solid">Get Started</Button> {/* Uses default green color */}
+    </DefaultColorProvider>
   );
 }
 ```
@@ -69,13 +64,11 @@ All 26 Catalyst UI components with enhanced TypeScript interfaces:
 **Typography**: Heading, Text  
 **Utilities**: Alert, Divider, Fieldset, Listbox, Combobox
 
-### Theming System
+### Color System
 
-- **21 Built-in Themes**: zinc, slate, gray, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose
-- **OKLCH Color Space**: Perceptually uniform colors for consistent brightness
+- **Default Color System**: Set component colors once without repetitive prop passing
 - **Semantic Tokens**: Never hardcode colors, always use semantic tokens
-- **Runtime Switching**: Change themes without page reload
-- **SSR Compatible**: No hydration mismatches
+- **Color Consistency**: Maintain uniform styling across your application
 
 ### CLI Features
 

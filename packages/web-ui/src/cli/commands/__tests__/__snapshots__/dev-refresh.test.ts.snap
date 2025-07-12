@@ -86,12 +86,17 @@ export function CatalystAvatar({ className, src, alt }: { className?: string;
 // Auto generated on DEVELOPMENT
 
 import { cn } from '../utils/cn';
+import { useDefaultColor } from "../default-colors";
 ;
 import React from 'react';
 // Complex Badge component designed for semantic color detection after prefixing
-export function CatalystBadge({ color = 'gray', className, children, ...props }: { color?: 'red' | 'blue' | 'gray' | 'zinc' | 'green' | 'yellow' | 'orange' | 'purple';
+export function CatalystBadge({ color, className, children, ...props }: {
+    color?: 'red' | 'blue' | 'gray' | 'zinc' | 'green' | 'yellow' | 'orange' | 'purple';
     className?: string;
-    children: React.ReactNode } & React.ComponentPropsWithoutRef<'span'>) { return (<span className={cn(
+    children: React.ReactNode;
+} & React.ComponentPropsWithoutRef<'span'>) {
+    const defaultColor = useDefaultColor<keyof typeof colors>("badge");
+    return (<span className={cn(
         // This specific pattern should trigger CatalystBadge detection after prefixing
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs/5 font-medium sm:text-[0.8125rem]/5 forced-colors:outline', {
             'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/30': color === 'red',
@@ -101,7 +106,8 @@ export function CatalystBadge({ color = 'gray', className, children, ...props }:
             'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/30': color === 'blue',
             'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-600/20 dark:bg-purple-500/10 dark:text-purple-400 dark:ring-purple-500/30': color === 'purple',
             'bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/20 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/30': color === 'gray',
-            'bg-zinc-50 text-zinc-600 ring-1 ring-inset ring-zinc-500/20 dark:bg-zinc-400/10 dark:text-zinc-400 dark:ring-zinc-400/30': color === 'zinc', }, className)}{...props}>
+            'bg-zinc-50 text-zinc-600 ring-1 ring-inset ring-zinc-500/20 dark:bg-zinc-400/10 dark:text-zinc-400 dark:ring-zinc-400/30': color === 'zinc',
+        }, className)}{...props}>
       {children}
     </span>);
 }
@@ -109,49 +115,97 @@ export function CatalystBadge({ color = 'gray', className, children, ...props }:
     "catalyst-button.tsx": "// WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
+import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from "../default-colors";
 ;
 import React, { forwardRef } from 'react';
 import { CatalystLink } from "./catalyst-link";
-// Complex Button with --btn- CSS variables to trigger semantic color detection
 const styles = { base: [
         'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
-        'px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)]',
-        'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
-        '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)]',
     ],
-    solid: [
-        'border-transparent bg-(--btn-border)',
-        'dark:bg-(--btn-bg)',
-        'before:absolute before:inset-0 before:-z-10 before:rounded-[calc(var(--radius-lg)-1px)] before:bg-(--btn-bg)',
-        'data-active:after:bg-(--btn-hover-overlay) data-hover:after:bg-(--btn-hover-overlay)',
+    plain: [
+        'border-transparent text-zinc-950 data-active:bg-zinc-950/5 data-hover:bg-zinc-950/5',
     ],
-    outline: [
-        'border-zinc-950/10 text-zinc-950 data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
-        'dark:border-white/15 dark:text-white dark:[--btn-bg:transparent]',
-    ], };
-export const CatalystButton = forwardRef<HTMLButtonElement, {
-    variant?: 'solid' | 'outline';
+    colors: {
+        'dark/zinc': [
+            'text-white [--btn-bg:var(--color-zinc-900)] [--btn-border:var(--color-zinc-950)]/90 [--btn-hover-overlay:var(--color-white)]/10',
+        ],
+        rose: [
+            'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
+        ],
+    },
+    primary: [
+        'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
+        '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',
+    ],
+    secondary: [
+        'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
+        '[--btn-icon:var(--color-zinc-300)] data-active:[--btn-icon:var(--color-zinc-200)] data-hover:[--btn-icon:var(--color-zinc-200)]',
+    ],
+    destructive: [
+        'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-red-600)] [--btn-border:var(--color-red-700)]/90',
+        '[--btn-icon:var(--color-red-300)] data-active:[--btn-icon:var(--color-red-200)] data-hover:[--btn-icon:var(--color-red-200)]',
+    ],
+    accent: [
+        'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-purple-600)] [--btn-border:var(--color-purple-700)]/90',
+        '[--btn-icon:var(--color-purple-300)] data-active:[--btn-icon:var(--color-purple-200)] data-hover:[--btn-icon:var(--color-purple-200)]',
+    ],
+    muted: [
+        'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-gray-600)] [--btn-border:var(--color-gray-700)]/90',
+        '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',
+    ],
+};
+export type CatalystButtonProps = ({
+    color?: keyof typeof styles.colors;
+    outline?: never;
+    plain?: never;
+} | {
+    color?: never;
+    outline: true;
+    plain?: never;
+} | {
+    color?: never;
+    outline?: never;
+    plain: true;
+}) & {
     className?: string;
     children: React.ReactNode;
-    href?: string;
-} & React.ComponentPropsWithoutRef<'button'>>(function CatalystButton({ variant = 'solid', className, children, href, ...props }, ref) {
-    const classes = cn(styles.base, styles[variant], className);
-    return href ? (<CatalystLink href={href} className={classes} {...props}>
-        {children}
-      </CatalystLink>) : (<button ref={ref} className={classes} {...props}>
-        {children}
-      </button>);
+} & (Omit<Headless.ButtonProps, 'as' | 'className'> | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>);
+export const CatalystButton = forwardRef(function CatalystButton({ color, outline, plain, className, children, ...props }: CatalystButtonProps, ref: React.ForwardedRef<HTMLElement>) {
+    const defaultColor = useDefaultColor<keyof typeof styles.colors>("button");
+    let classes = cn(styles.base, outline
+        ? styles.outline
+        : plain
+            ? styles.plain
+            : cn(styles.solid, styles.colors[color ?? defaultColor]), className);
+    return 'href' in props ? (<CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+      <CatalystTouchTarget>{children}</CatalystTouchTarget>
+    </CatalystLink>) : (<Headless.Button {...props} className={cn(classes, 'cursor-default')} ref={ref}>
+      <CatalystTouchTarget>{children}</CatalystTouchTarget>
+    </Headless.Button>);
 });
+export function CatalystTouchTarget({ children }: {
+    children: React.ReactNode;
+}) {
+    return (<>
+      <span className="absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden" aria-hidden="true"/>
+      {children}
+    </>);
+}
 ",
     "catalyst-checkbox.tsx": "// WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
 import { cn } from '../utils/cn';
+import { useDefaultColor } from "../default-colors";
 ;
 import React, { forwardRef } from 'react';
-export const CatalystCheckbox = forwardRef<HTMLInputElement, { className?: string } & React.ComponentPropsWithoutRef<'input'>>(function CatalystCheckbox({ className, ...props }, ref) {
-    return (<input ref={ref} type="checkbox" className={cn('h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props} />);
+export const CatalystCheckbox = forwardRef<HTMLInputElement, {
+    className?: string;
+} & React.ComponentPropsWithoutRef<'input'>>(function CatalystCheckbox({ className, ...props }, ref) {
+    const defaultColor = useDefaultColor<keyof typeof colors>("checkbox");
+    return (<input ref={ref} type="checkbox" className={cn('h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props}/>);
 });
 ",
     "catalyst-combobox.tsx": "// WARNING: This file is auto-generated and will be overwritten.
@@ -404,10 +458,14 @@ export function CatalystPagination({ className, children }: { className?: string
 // Auto generated on DEVELOPMENT
 
 import { cn } from '../utils/cn';
+import { useDefaultColor } from "../default-colors";
 ;
 import React, { forwardRef } from 'react';
-export const CatalystRadio = forwardRef<HTMLInputElement, { className?: string } & React.ComponentPropsWithoutRef<'input'>>(function CatalystRadio({ className, ...props }, ref) {
-    return (<input ref={ref} type="radio" className={cn('h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props} />);
+export const CatalystRadio = forwardRef<HTMLInputElement, {
+    className?: string;
+} & React.ComponentPropsWithoutRef<'input'>>(function CatalystRadio({ className, ...props }, ref) {
+    const defaultColor = useDefaultColor<keyof typeof colors>("radio");
+    return (<input ref={ref} type="radio" className={cn('h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props}/>);
 });
 ",
     "catalyst-select.tsx": "// WARNING: This file is auto-generated and will be overwritten.
@@ -470,10 +528,14 @@ export function CatalystStackedLayout({ navbar, children }: { navbar: React.Reac
 // Auto generated on DEVELOPMENT
 
 import { cn } from '../utils/cn';
+import { useDefaultColor } from "../default-colors";
 ;
 import React, { forwardRef } from 'react';
-export const CatalystSwitch = forwardRef<HTMLInputElement, { className?: string } & React.ComponentPropsWithoutRef<'input'>>(function CatalystSwitch({ className, ...props }, ref) {
-    return (<input ref={ref} type="checkbox" role="switch" className={cn('h-6 w-11 rounded-full border-2 border-transparent bg-gray-200 dark:bg-gray-700', className)} {...props} />);
+export const CatalystSwitch = forwardRef<HTMLInputElement, {
+    className?: string;
+} & React.ComponentPropsWithoutRef<'input'>>(function CatalystSwitch({ className, ...props }, ref) {
+    const defaultColor = useDefaultColor<keyof typeof colors>("switch");
+    return (<input ref={ref} type="checkbox" role="switch" className={cn('h-6 w-11 rounded-full border-2 border-transparent bg-gray-200 dark:bg-gray-700', className)} {...props}/>);
 });
 ",
     "catalyst-table.tsx": "// WARNING: This file is auto-generated and will be overwritten.
@@ -590,55 +652,74 @@ export function Badge({ color = 'gray', className, children, ...props }: {
     </span>
   );
 }",
-    "catalyst-button.tsx": "import clsx from 'clsx';
+    "catalyst-button.tsx": "import * as Headless from '@headlessui/react';
+import clsx from 'clsx';
 import React, { forwardRef } from 'react';
 import { Link } from './link';
 
-// Complex Button with --btn- CSS variables to trigger semantic color detection
 const styles = {
   base: [
     'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
-    'px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)]',
-    'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
-    '[--btn-icon:var(--color-zinc-500)] data-active:[--btn-icon:var(--color-zinc-700)]',
   ],
-  solid: [
-    'border-transparent bg-(--btn-border)',
-    'dark:bg-(--btn-bg)',
-    'before:absolute before:inset-0 before:-z-10 before:rounded-[calc(var(--radius-lg)-1px)] before:bg-(--btn-bg)',
-    'data-active:after:bg-(--btn-hover-overlay) data-hover:after:bg-(--btn-hover-overlay)',
+  plain: [
+    'border-transparent text-zinc-950 data-active:bg-zinc-950/5 data-hover:bg-zinc-950/5',
   ],
-  outline: [
-    'border-zinc-950/10 text-zinc-950 data-active:bg-zinc-950/2.5 data-hover:bg-zinc-950/2.5',
-    'dark:border-white/15 dark:text-white dark:[--btn-bg:transparent]',
-  ],
+  colors: {
+    'dark/zinc': [
+      'text-white [--btn-bg:var(--color-zinc-900)] [--btn-border:var(--color-zinc-950)]/90 [--btn-hover-overlay:var(--color-white)]/10',
+    ],
+    rose: [
+      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
+    ],
+  },
 };
 
-export const Button = forwardRef<HTMLButtonElement, {
-  variant?: 'solid' | 'outline';
-  className?: string;
-  children: React.ReactNode;
-  href?: string;
-} & React.ComponentPropsWithoutRef<'button'>>(
-  function Button({ variant = 'solid', className, children, href, ...props }, ref) {
-    const classes = clsx(className, styles.base, styles[variant]);
-    
-    return href ? (
-      <Link href={href} className={classes} {...props} {...props}>
-        {children}
-      </Link>
-    ) : (
-      <button
-        ref={ref}
-        className={classes}
-        {...props}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-);",
+type ButtonProps = (
+  | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
+  | { color?: never; outline: true; plain?: never }
+  | { color?: never; outline?: never; plain: true }
+) & { className?: string; children: React.ReactNode } & (
+    | Omit<Headless.ButtonProps, 'as' | 'className'>
+    | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
+  );
+
+export const Button = forwardRef(function Button(
+  { color, outline, plain, className, children, ...props }: ButtonProps,
+  ref: React.ForwardedRef<HTMLElement>
+) {
+  let classes = clsx(
+    className,
+    styles.base,
+    outline
+      ? styles.outline
+      : plain
+        ? styles.plain
+        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc'])
+  );
+
+  return 'href' in props ? (
+    <Link {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+      <TouchTarget>{children}</TouchTarget>
+    </Link>
+  ) : (
+    <Headless.Button {...props} className={clsx(classes, 'cursor-default')} ref={ref}>
+      <TouchTarget>{children}</TouchTarget>
+    </Headless.Button>
+  );
+});
+
+export function TouchTarget({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <span
+        className="absolute top-1/2 left-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 pointer-fine:hidden"
+        aria-hidden="true"
+      />
+      {children}
+    </>
+  );
+}
+",
     "catalyst-checkbox.tsx": "import clsx from 'clsx';
 import React, { forwardRef } from 'react';
 

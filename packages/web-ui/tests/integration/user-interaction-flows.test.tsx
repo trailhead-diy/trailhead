@@ -4,7 +4,6 @@
  * Tests critical user interactions that directly impact user experience:
  * - Click handlers and form submissions
  * - Keyboard navigation and accessibility
- * - Theme switching and persistence
  * - Error states and recovery
  * - Data flow between components
  */
@@ -13,50 +12,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { ThemeProvider } from '../../src/components/theme/theme-provider';
-import { ThemeSwitcher } from '../../src/components/theme/theme-switcher';
 import { Button } from '../../src/components/button';
 import { Alert } from '../../src/components/alert';
 import { Input } from '../../src/components/input';
 import { Dialog } from '../../src/components/dialog';
-import { Switch } from '../../src/components/switch';
-
-// Mock next-themes for controlled testing
-let mockTheme = 'catalyst';
-let mockResolvedTheme = 'catalyst';
-const mockSetTheme = vi.fn((newTheme: string) => {
-  mockTheme = newTheme;
-  mockResolvedTheme = newTheme;
-});
-
-vi.mock('next-themes', () => ({
-  ThemeProvider: ({ children, ..._props }: any) => {
-    // Apply the theme as a class like the real next-themes does
-    React.useEffect(() => {
-      document.documentElement.className = mockTheme;
-    }, []);
-
-    return (
-      <div data-testid="theme-provider" data-theme={mockTheme}>
-        {children}
-      </div>
-    );
-  },
-  useTheme: () => ({
-    theme: mockTheme,
-    setTheme: mockSetTheme,
-    systemTheme: 'light',
-    resolvedTheme: mockResolvedTheme,
-    themes: ['catalyst', 'red', 'green', 'blue', 'purple'],
-  }),
-}));
 
 describe('User Interactions - Critical User Behavior', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockTheme = 'catalyst';
-    mockResolvedTheme = 'catalyst';
-    document.documentElement.className = '';
   });
 
   describe('Button Click Behavior', () => {
@@ -311,105 +274,6 @@ describe('User Interactions - Critical User Behavior', () => {
       await user.keyboard('{Escape}');
 
       expect(onClose).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Theme Switching User Flow', () => {
-    it('should persist theme selection across page reloads', async () => {
-      const user = userEvent.setup();
-
-      const ThemeApp = () => (
-        <ThemeProvider defaultTheme="catalyst">
-          <div>
-            <ThemeSwitcher />
-            <Button>Themed Button</Button>
-          </div>
-        </ThemeProvider>
-      );
-
-      const { rerender } = render(<ThemeApp />);
-
-      // Select a different theme
-      const switcher = screen.getByRole('combobox');
-      await user.selectOptions(switcher, 'blue');
-
-      expect(mockSetTheme).toHaveBeenCalledWith('blue');
-      mockTheme = 'blue';
-
-      // Simulate page reload
-      rerender(<ThemeApp />);
-
-      // Theme should persist
-      const provider = screen.getByTestId('theme-provider');
-      expect(provider).toHaveAttribute('data-theme', 'blue');
-    });
-
-    it('should update all themed components when theme changes', async () => {
-      const user = userEvent.setup();
-
-      const MultiComponentApp = () => {
-        const [alertOpen, setAlertOpen] = React.useState(false);
-
-        return (
-          <ThemeProvider defaultTheme="catalyst">
-            <div data-testid="app-container">
-              <ThemeSwitcher />
-              <Button onClick={() => setAlertOpen(true)}>Show Alert</Button>
-              <Alert open={alertOpen} onClose={() => setAlertOpen(false)}>
-                Themed alert message
-              </Alert>
-            </div>
-          </ThemeProvider>
-        );
-      };
-
-      render(<MultiComponentApp />);
-
-      // Change theme
-      const switcher = screen.getByRole('combobox');
-      await user.selectOptions(switcher, 'red');
-
-      // Wait for theme to be applied
-      await waitFor(() => {
-        expect(mockSetTheme).toHaveBeenCalledWith('red');
-      });
-
-      // The mock should have been called, which means the theme switching logic works
-      // The actual DOM update would happen in a real next-themes implementation
-      expect(mockSetTheme).toHaveBeenCalledWith('red');
-
-      // Show alert to verify it also uses new theme
-      await user.click(screen.getByText('Show Alert'));
-      expect(screen.getByText('Themed alert message')).toBeInTheDocument();
-    });
-
-    it('should handle theme switching during user interactions', async () => {
-      const user = userEvent.setup();
-      const onSwitchChange = vi.fn();
-
-      const InteractiveApp = () => (
-        <ThemeProvider defaultTheme="catalyst">
-          <div>
-            <ThemeSwitcher />
-            <Switch checked={false} onChange={onSwitchChange} />
-            <span>Toggle setting</span>
-          </div>
-        </ThemeProvider>
-      );
-
-      render(<InteractiveApp />);
-
-      // Interact with switch while changing theme
-      const switchElement = screen.getByRole('switch');
-      const themeSwitcher = screen.getByRole('combobox');
-
-      await user.click(switchElement);
-      await user.selectOptions(themeSwitcher, 'green');
-      await user.click(switchElement);
-
-      // Both interactions should work correctly
-      expect(onSwitchChange).toHaveBeenCalledTimes(2);
-      expect(mockSetTheme).toHaveBeenCalledWith('green');
     });
   });
 

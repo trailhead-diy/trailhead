@@ -16,7 +16,7 @@ import { join } from 'path';
 import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesystem';
 
 // Import local utilities
-import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
+import { copyFreshFilesBatch } from '../shared/file-utils.js';
 import { createError } from '@esteban-url/trailhead-cli/core';
 import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
 import chalk from 'chalk';

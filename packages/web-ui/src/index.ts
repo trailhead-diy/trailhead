@@ -26,28 +26,10 @@ export {
   Table,
   Text,
   Textarea,
+  DefaultColorProvider,
+  useDefaultColor,
+  useDefaultColors,
 } from './components/index.js';
-
-export { ThemeProvider, useTheme } from './components/theme/theme-provider.js';
-
-export { ThemeSwitcher } from './components/theme/theme-switcher.js';
-
-export {
-  createThemeMap,
-  addTheme,
-  getTheme,
-  getThemeNames,
-  applyThemeToDocument,
-  type ThemeMap,
-} from './components/theme/registry.js';
-
-export { buildTheme, createTheme } from './components/theme/builder.js';
-
-export {
-  type TrailheadThemeConfig,
-  type ShadcnTheme,
-  type ComponentThemeOverrides,
-} from './components/theme/config.js';
 
 export { cn } from './components/utils/cn.js';
 

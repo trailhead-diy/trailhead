@@ -3,6 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from '../default-colors';
 import React, { forwardRef } from 'react';
 import { CatalystLink } from './catalyst-link';
 const styles = {
@@ -157,27 +158,27 @@ const styles = {
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
       '[--btn-icon:var(--color-rose-300)] data-active:[--btn-icon:var(--color-rose-200)] data-hover:[--btn-icon:var(--color-rose-200)]',
     ],
-    primary: [
-      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
-      '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',
-    ],
-    secondary: [
-      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
-      '[--btn-icon:var(--color-zinc-300)] data-active:[--btn-icon:var(--color-zinc-200)] data-hover:[--btn-icon:var(--color-zinc-200)]',
-    ],
-    destructive: [
-      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-red-600)] [--btn-border:var(--color-red-700)]/90',
-      '[--btn-icon:var(--color-red-300)] data-active:[--btn-icon:var(--color-red-200)] data-hover:[--btn-icon:var(--color-red-200)]',
-    ],
-    accent: [
-      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-purple-600)] [--btn-border:var(--color-purple-700)]/90',
-      '[--btn-icon:var(--color-purple-300)] data-active:[--btn-icon:var(--color-purple-200)] data-hover:[--btn-icon:var(--color-purple-200)]',
-    ],
-    muted: [
-      'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-gray-600)] [--btn-border:var(--color-gray-700)]/90',
-      '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',
-    ],
   },
+  primary: [
+    'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-blue-600)] [--btn-border:var(--color-blue-700)]/90',
+    '[--btn-icon:var(--color-blue-300)] data-active:[--btn-icon:var(--color-blue-200)] data-hover:[--btn-icon:var(--color-blue-200)]',
+  ],
+  secondary: [
+    'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-zinc-600)] [--btn-border:var(--color-zinc-700)]/90',
+    '[--btn-icon:var(--color-zinc-300)] data-active:[--btn-icon:var(--color-zinc-200)] data-hover:[--btn-icon:var(--color-zinc-200)]',
+  ],
+  destructive: [
+    'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-red-600)] [--btn-border:var(--color-red-700)]/90',
+    '[--btn-icon:var(--color-red-300)] data-active:[--btn-icon:var(--color-red-200)] data-hover:[--btn-icon:var(--color-red-200)]',
+  ],
+  accent: [
+    'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-purple-600)] [--btn-border:var(--color-purple-700)]/90',
+    '[--btn-icon:var(--color-purple-300)] data-active:[--btn-icon:var(--color-purple-200)] data-hover:[--btn-icon:var(--color-purple-200)]',
+  ],
+  muted: [
+    'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-gray-600)] [--btn-border:var(--color-gray-700)]/90',
+    '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',
+  ],
 };
 export type CatalystButtonProps = (
   | {
@@ -206,13 +207,14 @@ export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: CatalystButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
+  const defaultColor = useDefaultColor<keyof typeof styles.colors>('button');
   let classes = cn(
     styles.base,
     outline
       ? styles.outline
       : plain
         ? styles.plain
-        : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
+        : cn(styles.solid, styles.colors[color ?? defaultColor]),
     className
   );
   return 'href' in props ? (

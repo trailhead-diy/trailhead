@@ -52,28 +52,6 @@
         "unicorn/consistent-function-scoping": "off"
       }
     },
-    { "files": ["src/cli/core/installation/**/*.ts"], "rules": { "no-console": "off" } },
-    {
-      "files": ["src/cli/core/installation/**/*.ts"],
-      "rules": {
-        "no-console": "off",
-        "unicorn/consistent-function-scoping": "off"
-      }
-    },
-    {
-      "files": ["src/cli/core/installation/**/*.ts"],
-      "rules": {
-        "no-console": "off",
-        "unicorn/consistent-function-scoping": "off"
-      }
-    },
-    {
-      "files": ["src/cli/core/installation/**/*.ts"],
-      "rules": {
-        "no-console": "off",
-        "unicorn/consistent-function-scoping": "off"
-      }
-    },
     {
       "files": [
         "**/*.test.ts",

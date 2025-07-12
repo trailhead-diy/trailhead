@@ -23,10 +23,7 @@ function MobileSidebar({
   open,
   close,
   children,
-}: React.PropsWithChildren<{
-  open: boolean;
-  close: () => void;
-}>) {
+}: React.PropsWithChildren<{ open: boolean; close: () => void }>) {
   return (
     <Headless.Dialog open={open} onClose={close} className="lg:hidden">
       <Headless.DialogBackdrop
@@ -53,10 +50,7 @@ export function CatalystStackedLayout({
   navbar,
   sidebar,
   children,
-}: React.PropsWithChildren<{
-  navbar: React.ReactNode;
-  sidebar: React.ReactNode;
-}>) {
+}: React.PropsWithChildren<{ navbar: React.ReactNode; sidebar: React.ReactNode }>) {
   let [showSidebar, setShowSidebar] = useState(false);
   return (
     <div className="relative isolate flex min-h-svh w-full flex-col bg-white lg:bg-zinc-100 dark:bg-zinc-900 dark:lg:bg-zinc-950">

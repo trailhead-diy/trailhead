@@ -11,7 +11,20 @@ import { ok, err } from '@esteban-url/trailhead-cli/core';
 /**
  * Component names that require "use client" directive
  */
-const CLIENT_COMPONENTS = new Set(['button', 'dropdown', 'alert', 'combobox']);
+const CLIENT_COMPONENTS = new Set([
+  'alert',
+  'button',
+  'checkbox',
+  'combobox',
+  'dropdown',
+  'input',
+  'listbox',
+  'navbar',
+  'radio',
+  'sidebar',
+  'switch',
+  'textarea',
+]);
 
 /**
  * Adds "use client" directive to specific component files

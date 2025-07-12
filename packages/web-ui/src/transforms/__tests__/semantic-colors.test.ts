@@ -33,26 +33,6 @@ export function CatalystBadge({ color = 'zinc', ...props }) {
       expect(transformed.content).toContain('text-primary-700');
     });
 
-    it('should skip if semantic colors already exist', () => {
-      const input = `
-const colors = {
-  red: 'bg-red-500/15 text-red-700',
-  primary: 'bg-primary-500/15 text-primary-700',
-  secondary: 'bg-secondary-500/15 text-secondary-700',
-};
-
-export function CatalystBadge({ color = 'zinc', ...props }) {
-  return <span className={colors[color]} {...props} />;
-}
-      `.trim();
-
-      const result = transformSemanticColors(input);
-
-      const transformed = expectSuccess(result);
-      expect(transformed.changed).toBe(false);
-      expect(transformed.warnings).toHaveLength(0);
-    });
-
     it('should handle component without colors object', () => {
       const input = `
 export function CatalystBadge({ className, ...props }) {

@@ -3,6 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from '../default-colors';
 export function CatalystRadioGroup({
   className,
   ...props
@@ -129,20 +130,21 @@ const colors = {
 };
 type Color = keyof typeof colors;
 export function CatalystRadio({
-  color = 'dark/zinc',
+  color,
   className,
   ...props
 }: {
   color?: Color;
   className?: string;
 } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
+  const defaultColor = useDefaultColor<keyof typeof colors>('radio');
   return (
     <Headless.Radio
       data-slot="control"
       {...props}
       className={cn('group inline-flex focus:outline-hidden', className)}
     >
-      <span className={cn([base, colors[color]])}>
+      <span className={cn([base, colors[color ?? defaultColor]])}>
         <span
           className={cn(
             'size-full rounded-full border-[4.5px] border-transparent bg-(--radio-indicator) bg-clip-padding',

@@ -2,7 +2,6 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { mockAnimationsApi } from 'jsdom-testing-mocks';
-import React from 'react';
 
 // Mock animations API for Headless UI
 mockAnimationsApi();
@@ -43,45 +42,6 @@ globalThis.__mockConsole = () => {
 };
 
 globalThis.__originalConsole = originalConsole;
-
-// Mock next-themes with proper state management
-vi.mock('next-themes', () => {
-  let currentTheme = 'zinc';
-
-  const setTheme = vi.fn((theme: string) => {
-    currentTheme = theme;
-    if (document?.documentElement) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-    }
-  });
-
-  return {
-    useTheme: vi.fn(() => ({
-      theme: currentTheme,
-      setTheme,
-      resolvedTheme: currentTheme,
-      themes: ['light', 'dark', 'zinc', 'purple', 'green', 'orange', 'rose', 'violet'],
-      systemTheme: 'light',
-    })),
-    ThemeProvider: ({
-      children,
-      defaultTheme = 'zinc',
-    }: {
-      children: React.ReactNode;
-      defaultTheme?: string;
-    }) => {
-      React.useEffect(() => {
-        currentTheme = defaultTheme;
-        if (document?.documentElement) {
-          document.documentElement.setAttribute('data-theme', defaultTheme);
-        }
-      }, [defaultTheme]);
-
-      return children;
-    },
-  };
-});
 
 // Mock Next.js dynamic imports
 vi.mock('next/dynamic', () => ({
@@ -192,16 +152,10 @@ Element.prototype.scrollIntoView = vi.fn();
 
 // Basic DOM cleanup between tests
 beforeEach(() => {
-  // Clear localStorage theme data
-  localStorage.removeItem('theme');
-  localStorage.removeItem('theme-storage');
+  // Basic localStorage cleanup
+  localStorage.clear();
 });
 
 afterEach(() => {
   cleanup();
-  // Reset DOM attributes
-  if (document?.documentElement) {
-    document.documentElement.removeAttribute('data-theme');
-    document.documentElement.className = '';
-  }
 });

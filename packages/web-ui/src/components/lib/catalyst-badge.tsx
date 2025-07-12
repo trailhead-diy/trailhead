@@ -3,6 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
+import { useDefaultColor } from '../default-colors';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
@@ -49,16 +50,17 @@ export type CatalystBadgeProps = {
   color?: keyof typeof colors;
 };
 export function CatalystBadge({
-  color = 'zinc',
+  color,
   className,
   ...props
 }: CatalystBadgeProps & React.ComponentPropsWithoutRef<'span'>) {
+  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
   return (
     <span
       {...props}
       className={cn(
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline',
-        colors[color],
+        colors[color ?? defaultColor],
         className
       )}
     />
@@ -66,7 +68,7 @@ export function CatalystBadge({
 }
 export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
   {
-    color = 'zinc',
+    color,
     className,
     children,
     ...props
@@ -79,6 +81,7 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
     ),
   ref: React.ForwardedRef<HTMLElement>
 ) {
+  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
   let classes = cn(
     'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
     className
@@ -86,13 +89,13 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>
-        <CatalystBadge color={color}>{children}</CatalystBadge>
+        <CatalystBadge color={color ?? defaultColor}>{children}</CatalystBadge>
       </CatalystTouchTarget>
     </CatalystLink>
   ) : (
     <Headless.Button {...props} className={classes} ref={ref}>
       <CatalystTouchTarget>
-        <CatalystBadge color={color}>{children}</CatalystBadge>
+        <CatalystBadge color={color ?? defaultColor}>{children}</CatalystBadge>
       </CatalystTouchTarget>
     </Headless.Button>
   );

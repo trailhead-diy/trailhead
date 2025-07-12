@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { ThemeProvider, ThemeSwitcher } from '../components/theme/';
 import { Navbar } from '../components/navbar';
 import {
   Sidebar,
@@ -68,34 +67,31 @@ const components = [
 ];
 
 export const DemoLayout = ({ children }: { children: ReactNode }) => (
-  <ThemeProvider>
-    <ThemeSwitcher />
-    <SidebarLayout
-      navbar={<Navbar />}
-      sidebar={
-        <Sidebar>
-          <SidebarHeader>
-            <SidebarSection className="max-lg:hidden">
-              {layouts.map(({ name, href }) => (
-                <SidebarItem key={name} href={href}>
-                  {name}
-                </SidebarItem>
-              ))}
-            </SidebarSection>
-          </SidebarHeader>
-          <SidebarBody>
-            <SidebarSection className="">
-              {components.map(({ name, href }) => (
-                <SidebarItem key={name} href={href}>
-                  {name}
-                </SidebarItem>
-              ))}
-            </SidebarSection>
-          </SidebarBody>
-        </Sidebar>
-      }
-    >
-      {children}
-    </SidebarLayout>
-  </ThemeProvider>
+  <SidebarLayout
+    navbar={<Navbar />}
+    sidebar={
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarSection className="max-lg:hidden">
+            {layouts.map(({ name, href }) => (
+              <SidebarItem key={name} href={href}>
+                {name}
+              </SidebarItem>
+            ))}
+          </SidebarSection>
+        </SidebarHeader>
+        <SidebarBody>
+          <SidebarSection className="">
+            {components.map(({ name, href }) => (
+              <SidebarItem key={name} href={href}>
+                {name}
+              </SidebarItem>
+            ))}
+          </SidebarSection>
+        </SidebarBody>
+      </Sidebar>
+    }
+  >
+    {children}
+  </SidebarLayout>
 );
