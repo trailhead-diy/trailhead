@@ -184,7 +184,7 @@ pnpm validate          # Types + lint + tests
 
 ## Best Practices
 
-1. **Always return Results** - Use `ok()` and `err()` from neverthrow, never throw exceptions
+1. **Always return Results** - Use `ok()` and `err()` from @trailhead/core, never throw exceptions
 2. **Use functional composition** - Combine small, pure functions with `Result.map()` and `Result.andThen()`
 3. **Handle errors explicitly** - Check `result.isOk()` and `result.isErr()` for proper error handling
 4. **Inject dependencies** - Pass FileSystem, Logger, etc. through context for testability
