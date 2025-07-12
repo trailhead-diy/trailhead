@@ -1,4 +1,4 @@
-import type { PatternOperations, GlobPattern, PathMatcher } from '../types.js';
+import type { PatternOperations } from '../types.js';
 
 // ========================================
 // Pattern Configuration Defaults

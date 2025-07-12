@@ -35,13 +35,17 @@ describe('Watcher Operations', () => {
       }
     });
 
-    it('should handle multiple paths', () => {
+    it('should handle multiple paths', async () => {
       const paths = [testDir, tmpdir()];
       const result = watcherOps.create(paths);
 
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
         const watcher = result.value;
+
+        // Wait for watcher to initialize before checking watched paths
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         const watched = watcher.getWatched();
         expect(Object.keys(watched).length).toBeGreaterThan(0);
       }
@@ -63,16 +67,16 @@ describe('Watcher Operations', () => {
       expect(isWatching).toBe(false);
     });
 
-    it('should return true for watched paths', () => {
+    it('should return true for watched paths', async () => {
       const result = watcherOps.create(testDir);
       expect(result.isOk()).toBe(true);
 
       if (result.isOk()) {
         // Need to wait a bit for watcher to initialize
-        setTimeout(() => {
-          const isWatching = watcherOps.isWatching(testDir);
-          expect(isWatching).toBe(true);
-        }, 100);
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const isWatching = watcherOps.isWatching(testDir);
+        expect(isWatching).toBe(true);
       }
     });
   });

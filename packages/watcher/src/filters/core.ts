@@ -1,22 +1,7 @@
-import { ok, err } from '@trailhead/core';
 import path from 'node:path';
-import type {
-  FilterOperations,
-  EventFilter,
-  FilterConfig,
-  FileEventType,
-  PathMatcher,
-  FileEvent,
-  WatcherResult,
-} from '../types.js';
-import type {
-  CreateFilterOperations,
-  FilterCache,
-  FilterMetrics,
-  LocalFilterConfig,
-} from './types.js';
+import type { EventFilter, FilterConfig, FileEventType, PathMatcher, FileEvent } from '../types.js';
+import type { CreateFilterOperations, FilterCache } from './types.js';
 import { defaultFilterConfig } from './types.js';
-import { createWatcherFilterError, mapLibraryError } from '../errors.js';
 
 // ========================================
 // Filter Operations
@@ -45,7 +30,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
         }
 
         return result;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     };
@@ -55,7 +40,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
     return (event: FileEvent): boolean => {
       try {
         return filters.every(filter => filter(event));
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     };
@@ -65,7 +50,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
     return (event: FileEvent): boolean => {
       try {
         return !filter(event);
-      } catch (error) {
+      } catch (_error) {
         return true; // If filter fails, inverted result is true
       }
     };
@@ -132,7 +117,7 @@ export const createFilterOperations: CreateFilterOperations = (config = {}) => {
         }
 
         return true;
-      } catch (error) {
+      } catch (_error) {
         return false;
       }
     };

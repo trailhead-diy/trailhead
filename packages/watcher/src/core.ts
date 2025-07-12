@@ -9,7 +9,6 @@ import type {
   FilterConfig,
   BatchProcessor,
   WatcherState,
-  WatcherMetrics,
   FileEvent,
   FileEventType,
   FileStats,
@@ -17,7 +16,7 @@ import type {
 } from './types.js';
 import { createEventOperations } from './events/core.js';
 import { createFilterOperations } from './filters/core.js';
-import { createWatcherError, createWatcherInitError, mapChokidarError } from './errors.js';
+import { createWatcherError, mapChokidarError } from './errors.js';
 
 // ========================================
 // Default Configuration
@@ -62,8 +61,8 @@ export const createWatcherOperations = (
   config: Partial<WatcherOptions> = {}
 ): WatcherOperations => {
   const watcherConfig = { ...defaultWatcherOptions, ...config };
-  const eventOps = createEventOperations();
-  const filterOps = createFilterOperations();
+  const _eventOps = createEventOperations();
+  const _filterOps = createFilterOperations();
 
   const create = (
     paths: string | readonly string[],
@@ -92,7 +91,7 @@ export const createWatcherOperations = (
       };
 
       const chokidarWatcher = chokidarWatch(pathArray, chokidarOptions);
-      const fileWatcher = createFileWatcher(chokidarWatcher, mergedOptions);
+      const fileWatcher = createFileWatcher(chokidarWatcher, mergedOptions, pathArray);
 
       activeWatchers.add(fileWatcher);
       return ok(fileWatcher);
@@ -136,7 +135,7 @@ export const createWatcherOperations = (
     options: WatcherOptions = {}
   ): Promise<WatcherResult<void>> => {
     try {
-      const eventFilter = filterOps.createFilter(filter);
+      const eventFilter = _filterOps.createFilter(filter);
 
       const filteredHandler: EventHandler = event => {
         if (eventFilter(event)) {
@@ -206,8 +205,8 @@ export const createWatcherOperations = (
 
   const isWatching = (path: string): boolean => {
     return Array.from(activeWatchers).some(watcher => {
-      const watched = watcher.getWatched();
-      return Object.keys(watched).some(watchedPath => path.startsWith(watchedPath));
+      const state = watcher.getState();
+      return state.watchedPaths.some(watchedPath => path.startsWith(watchedPath));
     });
   };
 
@@ -261,15 +260,19 @@ export const createWatcherOperations = (
 // File Watcher Implementation
 // ========================================
 
-const createFileWatcher = (chokidarWatcher: FSWatcher, options: WatcherOptions): FileWatcher => {
-  const eventOps = createEventOperations();
-  const filterOps = createFilterOperations();
+const createFileWatcher = (
+  chokidarWatcher: FSWatcher,
+  options: WatcherOptions,
+  initialPaths: string[] = []
+): FileWatcher => {
+  const _eventOps = createEventOperations();
+  const _filterOps = createFilterOperations();
   const eventHandlers = new Map<FileEventType, Set<TypedEventHandler<any>>>();
 
   let state: WatcherState = {
     isReady: false,
     isWatching: true,
-    watchedPaths: [],
+    watchedPaths: initialPaths,
     eventCount: 0,
     errorCount: 0,
     startTime: Date.now(),
@@ -297,40 +300,40 @@ const createFileWatcher = (chokidarWatcher: FSWatcher, options: WatcherOptions):
   // Set up chokidar event listeners
   const setupChokidarListeners = () => {
     chokidarWatcher.on('add', (path, stats) => {
-      const event = eventOps.createEvent('add', path, stats ? mapStats(stats) : undefined);
+      const event = _eventOps.createEvent('add', path, stats ? mapStats(stats) : undefined);
       emitEvent(event);
     });
 
     chokidarWatcher.on('change', (path, stats) => {
-      const event = eventOps.createEvent('change', path, stats ? mapStats(stats) : undefined);
+      const event = _eventOps.createEvent('change', path, stats ? mapStats(stats) : undefined);
       emitEvent(event);
     });
 
     chokidarWatcher.on('unlink', path => {
-      const event = eventOps.createEvent('unlink', path);
+      const event = _eventOps.createEvent('unlink', path);
       emitEvent(event);
     });
 
     chokidarWatcher.on('addDir', (path, stats) => {
-      const event = eventOps.createEvent('addDir', path, stats ? mapStats(stats) : undefined);
+      const event = _eventOps.createEvent('addDir', path, stats ? mapStats(stats) : undefined);
       emitEvent(event);
     });
 
     chokidarWatcher.on('unlinkDir', path => {
-      const event = eventOps.createEvent('unlinkDir', path);
+      const event = _eventOps.createEvent('unlinkDir', path);
       emitEvent(event);
     });
 
     chokidarWatcher.on('ready', () => {
       state = { ...state, isReady: true };
-      const event = eventOps.createEvent('ready', '');
+      const event = _eventOps.createEvent('ready', '');
       emitEvent(event);
     });
 
     chokidarWatcher.on('error', error => {
       state = { ...state, errorCount: state.errorCount + 1 };
       metrics.totalErrors++;
-      const event = eventOps.createEvent('error', '', undefined, { raw: error });
+      const event = _eventOps.createEvent('error', '', undefined, { raw: error });
       emitEvent(event);
     });
   };
@@ -349,7 +352,7 @@ const createFileWatcher = (chokidarWatcher: FSWatcher, options: WatcherOptions):
       handlers.forEach(handler => {
         try {
           handler(event as any);
-        } catch (error) {
+        } catch (_error) {
           // Silently handle handler errors
         }
       });
@@ -438,25 +441,25 @@ const createFileWatcher = (chokidarWatcher: FSWatcher, options: WatcherOptions):
       return fileWatcher;
     },
 
-    filter: (config: FilterConfig) => {
+    filter: (_config: FilterConfig) => {
       // This would return a new filtered watcher
       // For now, return the same watcher
       return fileWatcher;
     },
 
-    debounce: (ms: number) => {
+    debounce: (_ms: number) => {
       // This would return a debounced watcher
       // For now, return the same watcher
       return fileWatcher;
     },
 
-    throttle: (ms: number) => {
+    throttle: (_ms: number) => {
       // This would return a throttled watcher
       // For now, return the same watcher
       return fileWatcher;
     },
 
-    batch: (size: number, timeoutMs?: number) => {
+    batch: (_size: number, _timeoutMs?: number) => {
       // This would return a batched watcher
       // For now, return the same watcher
       return fileWatcher;
