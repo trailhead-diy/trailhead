@@ -3,7 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
-import { useDefaultColor } from '../default-colors';
+import { useDefaultColor } from '../theme/default-colors';
 export function CatalystRadioGroup({
   className,
   ...props

@@ -5,7 +5,7 @@
  */
 
 // Default color system
-export * from './default-colors';
+export * from './theme/default-colors';
 
 // Component wrappers (these already re-export the lib components with enhancements)
 export * from './alert';

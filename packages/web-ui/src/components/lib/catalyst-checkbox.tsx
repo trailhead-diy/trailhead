@@ -4,7 +4,7 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
-import { useDefaultColor } from '../default-colors';
+import { useDefaultColor } from '../theme/default-colors';
 export function CatalystCheckboxGroup({
   className,
   ...props

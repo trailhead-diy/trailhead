@@ -5,7 +5,7 @@ import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystLink } from './catalyst-link';
-import { useDefaultColor } from '../default-colors';
+import { useDefaultColor } from '../theme/default-colors';
 const styles = {
   base: [
     // Base
