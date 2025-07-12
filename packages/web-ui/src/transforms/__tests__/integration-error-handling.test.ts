@@ -5,14 +5,20 @@ import { runMainPipelineWithFs, getMainPipelineInfo } from '../index';
 
 // Mock filesystem for testing
 const createMockFileSystem = (): FileSystem => ({
-  readdir: vi.fn(),
+  access: vi.fn(),
   readFile: vi.fn(),
   writeFile: vi.fn(),
-  exists: vi.fn(),
   mkdir: vi.fn(),
-  rmdir: vi.fn(),
+  readdir: vi.fn(),
   stat: vi.fn(),
-  copyFile: vi.fn(),
+  rm: vi.fn(),
+  cp: vi.fn(),
+  rename: vi.fn(),
+  ensureDir: vi.fn(),
+  readJson: vi.fn(),
+  writeJson: vi.fn(),
+  emptyDir: vi.fn(),
+  outputFile: vi.fn(),
 });
 
 describe('Transform Pipeline Integration - Error Handling', () => {
@@ -24,9 +30,11 @@ describe('Transform Pipeline Integration - Error Handling', () => {
     mockLogger = {
       info: vi.fn(),
       warn: vi.fn(),
+      warning: vi.fn(),
       error: vi.fn(),
       debug: vi.fn(),
       success: vi.fn(),
+      step: vi.fn(),
     };
   });
 
@@ -95,7 +103,9 @@ describe('Transform Pipeline Integration - Error Handling', () => {
 
     it('should handle binary files gracefully', async () => {
       vi.mocked(mockFs.readdir).mockResolvedValue(ok(['component.tsx']));
-      vi.mocked(mockFs.readFile).mockResolvedValue(ok(Buffer.from([0x89, 0x50, 0x4e, 0x47]))); // PNG header
+      vi.mocked(mockFs.readFile).mockResolvedValue(
+        ok(Buffer.from([0x89, 0x50, 0x4e, 0x47]).toString('utf8'))
+      ); // PNG header
       vi.mocked(mockFs.writeFile).mockResolvedValue(ok(undefined));
 
       const result = await runMainPipelineWithFs(mockFs, '/components', {
@@ -342,9 +352,11 @@ describe('Transform Pipeline Integration - Error Handling', () => {
       const faultyLogger = {
         info: vi.fn(),
         warn: vi.fn(),
+        warning: vi.fn(),
         error: vi.fn(),
         debug: vi.fn(),
         success: vi.fn(),
+        step: vi.fn(),
       };
 
       vi.mocked(mockFs.readdir).mockResolvedValue(ok(['button.tsx']));

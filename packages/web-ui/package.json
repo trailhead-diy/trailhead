@@ -98,6 +98,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@heroicons/react": "^2.2.0",
     "@playwright/test": "^1.53.2",
     "@repo/oxlint-config": "workspace:*",
     "@repo/prettier-config": "workspace:*",

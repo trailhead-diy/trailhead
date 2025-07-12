@@ -210,8 +210,11 @@ export const CatalystButton = forwardRef(function CatalystButton(
   const defaultColor = useDefaultColor<keyof typeof styles.colors>('button');
   let classes = cn(
     styles.base,
-    outline ? styles.outline : plain ? styles.plain : styles.solid,
-    styles.colors[color ?? defaultColor],
+    outline
+      ? styles.outline
+      : plain
+        ? styles.plain
+        : cn(styles.solid, styles.colors[color ?? defaultColor]),
     className
   );
   return 'href' in props ? (

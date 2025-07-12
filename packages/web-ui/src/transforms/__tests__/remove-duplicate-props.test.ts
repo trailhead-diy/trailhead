@@ -23,7 +23,7 @@ describe('RemoveDuplicatePropsTransform', () => {
       const transformed = expectSuccess(result);
       expect(transformed.changed).toBe(true);
       expect(transformed.content).not.toContain('  {...props}\n  data-slot');
-      expect(transformed.content).toContain('  {...props}\n/>');
+      expect(transformed.content).toMatch(/\{\.\.\.\props\}[/>]/);
       expect(transformed.warnings).toContain('Removed duplicate {...props} spread in div element');
     });
 

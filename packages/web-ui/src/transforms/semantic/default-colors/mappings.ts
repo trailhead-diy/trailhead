@@ -20,45 +20,33 @@ export interface DefaultColorComponentConfig {
 }
 
 /**
+ * Helper function to create default color configuration
+ */
+function createColorConfig(
+  componentType: string,
+  stylePattern: 'colors' | 'styles.colors' = 'colors'
+): DefaultColorComponentConfig {
+  const colorPattern = `${stylePattern}[`;
+  const hookCall = `useDefaultColor<keyof typeof ${stylePattern}>('${componentType}')`;
+
+  return {
+    hookCall,
+    colorPattern,
+    stylePattern,
+    componentType,
+  };
+}
+
+/**
  * Mapping of component names to their default color configurations
  */
 export const DEFAULT_COLOR_COMPONENTS: Record<string, DefaultColorComponentConfig> = {
-  Badge: {
-    hookCall: "useDefaultColor<keyof typeof colors>('badge')",
-    colorPattern: 'colors[',
-    stylePattern: 'colors',
-    componentType: 'badge',
-  },
-  BadgeButton: {
-    hookCall: "useDefaultColor<keyof typeof colors>('badge')",
-    colorPattern: 'colors[',
-    stylePattern: 'colors',
-    componentType: 'badge',
-  },
-  Button: {
-    hookCall: "useDefaultColor<keyof typeof styles.colors>('button')",
-    colorPattern: 'styles.colors[',
-    stylePattern: 'styles.colors',
-    componentType: 'button',
-  },
-  Checkbox: {
-    hookCall: "useDefaultColor<keyof typeof colors>('checkbox')",
-    colorPattern: 'colors[',
-    stylePattern: 'colors',
-    componentType: 'checkbox',
-  },
-  Radio: {
-    hookCall: "useDefaultColor<keyof typeof colors>('radio')",
-    colorPattern: 'colors[',
-    stylePattern: 'colors',
-    componentType: 'radio',
-  },
-  Switch: {
-    hookCall: "useDefaultColor<keyof typeof colors>('switch')",
-    colorPattern: 'colors[',
-    stylePattern: 'colors',
-    componentType: 'switch',
-  },
+  Badge: createColorConfig('badge'),
+  BadgeButton: createColorConfig('badge'),
+  Button: createColorConfig('button', 'styles.colors'),
+  Checkbox: createColorConfig('checkbox'),
+  Radio: createColorConfig('radio'),
+  Switch: createColorConfig('switch'),
 };
 
 /**

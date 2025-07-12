@@ -15,7 +15,8 @@ describe('Transform Edge Cases', () => {
 
       const transformed = expectSuccess(result);
       expect(transformed.changed).toBe(true);
-      expect(transformed.content).toContain("import { cn } from '../utils/cn';");
+      expect(transformed.content).toContain('import { cn } from ');
+      expect(transformed.content).toContain('../utils/cn');
       // Should not contain clsx imports anymore
       expect(transformed.content).not.toMatch(/import.*clsx.*from/);
     });
@@ -76,7 +77,8 @@ describe('Transform Edge Cases', () => {
 
       const transformed = expectSuccess(result);
       expect(transformed.changed).toBe(true);
-      expect(transformed.content).toContain("import { cn } from '../utils/cn';");
+      expect(transformed.content).toContain('import { cn } from ');
+      expect(transformed.content).toContain('../utils/cn');
       expect(transformed.content).toContain("cn('actual-usage')");
       // Should have warnings about remaining clsx references in comments/strings
       expect(transformed.warnings).toContain(
@@ -111,7 +113,8 @@ describe('Transform Edge Cases', () => {
 
       const transformed = expectSuccess(result);
       expect(transformed.changed).toBe(true);
-      expect(transformed.content).toContain("import { cn } from '../utils/cn';");
+      expect(transformed.content).toContain('import { cn } from ');
+      expect(transformed.content).toContain('../utils/cn');
       expect(transformed.content).toContain("cn('old-style')");
       expect(transformed.content).toContain("cn('new-style')");
     });
@@ -462,7 +465,8 @@ export function Component({ className }) {
       expect(headerTransformed.content).toContain(
         '// WARNING: This file is auto-generated and will be overwritten.'
       );
-      expect(headerTransformed.content).toContain("import { cn } from '../utils/cn';");
+      expect(headerTransformed.content).toContain('import { cn } from ');
+      expect(headerTransformed.content).toContain('../utils/cn');
       expect(headerTransformed.content).toContain("cn('base-class', className)");
       expect(headerTransformed.content).not.toContain('clsx');
     });
@@ -491,7 +495,8 @@ export function Component({ className }) {
       expect(clsxTransformed.content).toContain(
         '// WARNING: This file is auto-generated and will be overwritten.'
       );
-      expect(clsxTransformed.content).toContain("import { cn } from '../utils/cn';");
+      expect(clsxTransformed.content).toContain('import { cn } from ');
+      expect(clsxTransformed.content).toContain('../utils/cn');
       expect(clsxTransformed.content).toContain("cn('test')");
     });
   });

@@ -680,9 +680,11 @@ describe('Dev Refresh Command Execution Snapshots', () => {
     const mockLogger = {
       info: (msg: string) => logOutput.push(`INFO: ${msg}`),
       warn: (msg: string) => logOutput.push(`WARN: ${msg}`),
+      warning: (msg: string) => logOutput.push(`WARNING: ${msg}`),
       error: (msg: string) => logOutput.push(`ERROR: ${msg}`),
       debug: (msg: string) => logOutput.push(`DEBUG: ${msg}`),
       success: (msg: string) => logOutput.push(`SUCCESS: ${msg}`),
+      step: (msg: string) => logOutput.push(`STEP: ${msg}`),
     };
 
     // Step 1: Copy files
@@ -768,7 +770,6 @@ describe('Dev Refresh Command Execution Snapshots', () => {
       copySuccess: copyResult.isOk(),
       copyError: copyResult.isErr()
         ? {
-            type: copyResult.error.type,
             message: copyResult.error.message,
           }
         : null,

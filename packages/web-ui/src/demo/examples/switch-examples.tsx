@@ -1,8 +1,8 @@
 'use client';
 
 import { List, Item } from '../demo-ui';
-import { Description, Label } from '../../../../components';
-import { Switch, SwitchField } from '../../../../components';
+import { Description, Label } from '../../components';
+import { Switch, SwitchField } from '../../components';
 
 export function SwitchExamples() {
   return (

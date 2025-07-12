@@ -166,15 +166,17 @@ function processImportDeclarations(context: ClsxToCnContext): ts.SourceFile {
  * Process call expressions and replace clsx calls using TypeScript AST
  *
  * Transform process:
- * 1. Find all CallExpression nodes in the AST
+ * 1. Find all CallExpression nodes in the AST recursively
  * 2. Check if the callee is an Identifier with text 'clsx'
  * 3. Replace the callee identifier with 'cn'
  * 4. Preserve all arguments and formatting
+ * 5. Handle nested clsx calls by visiting child nodes recursively
  *
  * Examples:
  * - Transforms `clsx('class1', 'class2')` to `cn('class1', 'class2')`
  * - Transforms `clsx({ active: isActive })` to `cn({ active: isActive })`
- * - Handles complex expressions and nested calls
+ * - Handles nested calls: `clsx('base', clsx('solid', 'colors'))` → `cn('base', cn('solid', 'colors'))`
+ * - Handles complex expressions and ternary operators with nested clsx
  */
 function processCallExpressions(
   context: ClsxToCnContext,
@@ -190,16 +192,24 @@ function processCallExpressions(
             context.hasClsxUsage = true;
             context.changes.push('Transformed clsx() call to cn()');
 
+            // First visit children to handle any nested clsx calls in arguments
+            const visitedNode = ts.visitEachChild(
+              node,
+              visitNode,
+              transformContext
+            ) as ts.CallExpression;
+
             // Replace the callee identifier with 'cn'
             return ts.factory.updateCallExpression(
-              node,
+              visitedNode,
               ts.factory.createIdentifier('cn'),
-              node.typeArguments,
-              node.arguments
+              visitedNode.typeArguments,
+              visitedNode.arguments
             );
           }
         }
 
+        // Continue visiting child nodes for nested patterns
         return ts.visitEachChild(node, visitNode, transformContext);
       }
 
