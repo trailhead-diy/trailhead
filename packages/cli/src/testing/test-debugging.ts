@@ -1,4 +1,4 @@
-import type { Result } from 'neverthrow';
+import type { Result } from '@trailhead/core';
 
 /**
  * Test debugging and profiling utilities

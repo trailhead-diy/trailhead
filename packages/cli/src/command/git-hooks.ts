@@ -5,9 +5,7 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { ok, err, type Result } from 'neverthrow';
-import type { CoreError } from '@trailhead/core';
-import { createCoreError } from '@trailhead/core';
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core';
 import { fs } from '@trailhead/fs';
 import chalk from 'chalk';
 

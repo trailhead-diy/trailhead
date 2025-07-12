@@ -35,8 +35,7 @@
   "dependencies": {
     "@trailhead/core": "workspace:*",
     "@trailhead/fs": "workspace:*",
-    "chokidar": "^4.0.1",
-    "neverthrow": "^8.1.0"
+    "chokidar": "^4.0.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

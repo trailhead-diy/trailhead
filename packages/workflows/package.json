@@ -37,8 +37,7 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "neverthrow": "^8.2.0"
+    "@trailhead/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

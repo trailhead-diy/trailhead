@@ -1,7 +1,5 @@
 import type { Logger } from '../utils/logger.js';
-import { ok, err } from 'neverthrow';
-import type { Result } from 'neverthrow';
-import type { CoreError } from '@trailhead/core';
+import { ok, err, type Result, type CoreError } from '@trailhead/core';
 
 // Local test-specific error interface that extends CoreError
 interface TestCoreError extends CoreError {

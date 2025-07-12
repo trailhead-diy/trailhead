@@ -1,7 +1,5 @@
-import type { Result } from 'neverthrow';
-import { ok, err } from 'neverthrow';
-import type { CoreError } from '@trailhead/core';
-import { createCoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@trailhead/core';
 import type { CommandConfig, CommandOptions } from './base.js';
 import type { CommandOption } from './types.js';
 

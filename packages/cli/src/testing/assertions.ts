@@ -1,5 +1,4 @@
-import type { Result } from 'neverthrow';
-import type { CoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@trailhead/core';
 
 /**
  * Assert that a Result is successful

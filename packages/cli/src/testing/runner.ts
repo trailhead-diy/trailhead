@@ -1,6 +1,5 @@
 import type { Command, CommandContext } from '../command/index.js';
-import type { Result } from 'neverthrow';
-import type { CoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@trailhead/core';
 import { createTestContext } from './context.js';
 
 /**

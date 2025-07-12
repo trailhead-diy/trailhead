@@ -37,8 +37,7 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "neverthrow": "^8.1.0"
+    "@trailhead/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
