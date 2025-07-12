@@ -1,0 +1,129 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import { validateJsonFile, validateFileExists } from '../lib/validators.js'
+import { resolve } from 'path'
+
+export const validateCommand = createCommand({
+  name: 'validate',
+  description: 'Validate files and data',
+  flags: {
+    file: {
+      type: 'string',
+      description: 'File to validate'
+    },
+    type: {
+      type: 'string',
+      description: 'Validation type (json, config, package)'
+    }
+  },
+  async handler(args) {
+    const { file, type } = args.flags
+
+    if (!file) {
+      console.log('Usage: {{packageName}} validate --file <path> [--type <type>]')
+      console.log('')
+      console.log('Supported types:')
+      console.log('  json     - Validate JSON syntax')
+      console.log('  config   - Validate configuration file')
+      console.log('  package  - Validate package.json')
+      return ok(undefined)
+    }
+
+    const filepath = resolve(file)
+    
+    // Check if file exists
+    const fileExistsResult = validateFileExists(filepath)
+    if (fileExistsResult.isErr()) {
+      return fileExistsResult
+    }
+
+    console.log(`Validating: ${filepath}`)
+
+    switch (type) {
+      case 'json':
+        return validateJson(filepath)
+      case 'config':
+        return validateConfig(filepath)
+      case 'package':
+        return validatePackageJson(filepath)
+      default:
+        // Auto-detect based on filename
+        if (filepath.endsWith('package.json')) {
+          return validatePackageJson(filepath)
+        } else if (filepath.endsWith('config.json')) {
+          return validateConfig(filepath)
+        } else if (filepath.endsWith('.json')) {
+          return validateJson(filepath)
+        } else {
+          return err(createCoreError('UNKNOWN_VALIDATION_TYPE', 'Unknown validation type', {
+            component: '{{packageName}}',
+            operation: 'validate',
+            details: 'Specify --type or use a recognized file extension'
+          }))
+        }
+    }
+  }
+})
+
+function validateJson(filepath: string) {
+  const result = validateJsonFile(filepath)
+  
+  if (result.isErr()) {
+    console.error('❌ JSON validation failed')
+    return result
+  }
+
+  console.log('✅ Valid JSON file')
+  return ok(undefined)
+}
+
+function validateConfig(filepath: string) {
+  // Import config schema if available
+  try {
+    const { configSchema } = require('../lib/config-schema.js')
+    const result = validateJsonFile(filepath, configSchema)
+    
+    if (result.isErr()) {
+      console.error('❌ Configuration validation failed')
+      return result
+    }
+
+    console.log('✅ Valid configuration file')
+    return ok(undefined)
+  } catch {
+    // Fallback to basic JSON validation
+    return validateJson(filepath)
+  }
+}
+
+function validatePackageJson(filepath: string) {
+  const result = validateJsonFile(filepath)
+  
+  if (result.isErr()) {
+    console.error('❌ package.json validation failed')
+    return result
+  }
+
+  const data = result.value
+
+  // Basic package.json structure validation
+  if (!data.name) {
+    return err(createCoreError('INVALID_PACKAGE_JSON', 'package.json missing required "name" field', {
+      component: '{{packageName}}',
+      operation: 'validatePackageJson'
+    }))
+  }
+
+  if (!data.version) {
+    return err(createCoreError('INVALID_PACKAGE_JSON', 'package.json missing required "version" field', {
+      component: '{{packageName}}',
+      operation: 'validatePackageJson'
+    }))
+  }
+
+  console.log('✅ Valid package.json file')
+  console.log(`   Name: ${data.name}`)
+  console.log(`   Version: ${data.version}`)
+  
+  return ok(undefined)
+}

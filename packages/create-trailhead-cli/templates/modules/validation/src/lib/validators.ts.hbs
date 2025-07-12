@@ -1,0 +1,117 @@
+import { z } from 'zod'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+
+/**
+ * Common validation schemas and utilities
+ */
+
+export const projectNameSchema = z
+  .string()
+  .min(1, 'Project name is required')
+  .regex(/^[a-z0-9-]+$/, 'Project name must be lowercase alphanumeric with hyphens only')
+
+export const emailSchema = z
+  .string()
+  .email('Invalid email format')
+
+export const urlSchema = z
+  .string()
+  .url('Invalid URL format')
+
+export const semverSchema = z
+  .string()
+  .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/, 'Invalid semver format')
+
+/**
+ * File validation utilities
+ */
+export function validateFileExists(filepath: string): Result<void, any> {
+  try {
+    const fs = require('fs')
+    if (!fs.existsSync(filepath)) {
+      return err(createCoreError('FILE_NOT_FOUND', `File not found: ${filepath}`, {
+        component: '{{packageName}}',
+        operation: 'validateFileExists'
+      }))
+    }
+    return ok(undefined)
+  } catch (error) {
+    return err(createCoreError('FILE_VALIDATION_FAILED', 'Failed to validate file existence', {
+      component: '{{packageName}}',
+      operation: 'validateFileExists',
+      cause: error
+    }))
+  }
+}
+
+export function validateJsonFile(filepath: string, schema?: z.ZodSchema): Result<any, any> {
+  try {
+    const fs = require('fs')
+    
+    if (!fs.existsSync(filepath)) {
+      return err(createCoreError('FILE_NOT_FOUND', `JSON file not found: ${filepath}`, {
+        component: '{{packageName}}',
+        operation: 'validateJsonFile'
+      }))
+    }
+
+    const content = fs.readFileSync(filepath, 'utf-8')
+    let data: any
+
+    try {
+      data = JSON.parse(content)
+    } catch (parseError) {
+      return err(createCoreError('INVALID_JSON', `Invalid JSON in file: ${filepath}`, {
+        component: '{{packageName}}',
+        operation: 'validateJsonFile',
+        cause: parseError
+      }))
+    }
+
+    if (schema) {
+      const result = schema.safeParse(data)
+      if (!result.success) {
+        return err(createCoreError('SCHEMA_VALIDATION_FAILED', `Schema validation failed for: ${filepath}`, {
+          component: '{{packageName}}',
+          operation: 'validateJsonFile',
+          details: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+        }))
+      }
+      return ok(result.data)
+    }
+
+    return ok(data)
+  } catch (error) {
+    return err(createCoreError('JSON_VALIDATION_FAILED', 'Failed to validate JSON file', {
+      component: '{{packageName}}',
+      operation: 'validateJsonFile',
+      cause: error
+    }))
+  }
+}
+
+/**
+ * Input validation utilities
+ */
+export function validateInput<T>(value: unknown, schema: z.ZodSchema<T>): Result<T, any> {
+  try {
+    const result = schema.safeParse(value)
+    
+    if (!result.success) {
+      return err(createCoreError('INPUT_VALIDATION_FAILED', 'Input validation failed', {
+        component: '{{packageName}}',
+        operation: 'validateInput',
+        details: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+      }))
+    }
+
+    return ok(result.data)
+  } catch (error) {
+    return err(createCoreError('VALIDATION_ERROR', 'Validation error occurred', {
+      component: '{{packageName}}',
+      operation: 'validateInput',
+      cause: error
+    }))
+  }
+}

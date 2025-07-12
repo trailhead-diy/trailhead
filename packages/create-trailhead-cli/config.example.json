@@ -1,0 +1,27 @@
+{
+  "$schema": "./config.schema.json",
+  "projectName": "my-awesome-cli",
+  "description": "An awesome CLI application built with create-trailhead-cli",
+  "template": "advanced",
+  "projectType": "standalone-cli",
+  "packageManager": "pnpm",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "license": "MIT",
+  "features": {
+    "core": true,
+    "config": true,
+    "validation": true,
+    "testing": true,
+    "docs": true,
+    "cicd": true
+  },
+  "nodeVersion": "18",
+  "typescript": true,
+  "ide": "vscode",
+  "includeDocs": true,
+  "initGit": true,
+  "installDependencies": true
+}

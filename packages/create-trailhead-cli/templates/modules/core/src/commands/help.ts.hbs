@@ -1,0 +1,26 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command' import { ok } from
+'@esteban-url/trailhead-cli/core' export const helpCommand = createCommand({ name: 'help',
+description: 'Show help information', flags: {}, async handler() { console.log(`
+{{projectName}}
+-
+{{description}}
+
+Usage:
+{{packageName}}
+<command />
+[options] Commands: help Show this help message version Show version information
+{{#if features.examples}}
+  build Build the project dev Start development mode
+{{/if}}
+{{#if features.config}}
+  config Manage configuration
+{{/if}}
+{{#if features.validation}}
+  validate Validate input files
+{{/if}}
+
+Options: -h, --help Show help -v, --version Show version For more information about a specific
+command:
+{{packageName}}
+<command />
+--help `) return ok(undefined) } })

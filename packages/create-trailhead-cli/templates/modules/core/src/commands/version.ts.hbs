@@ -1,0 +1,4 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command' import { ok } from
+'@esteban-url/trailhead-cli/core' export const versionCommand = createCommand({ name: 'version',
+description: 'Show version information', flags: {}, async handler() { console.log('{{version}}')
+return ok(undefined) } })

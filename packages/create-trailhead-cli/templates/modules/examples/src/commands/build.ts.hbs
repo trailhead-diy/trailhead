@@ -1,0 +1,109 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import { ensureDirectoryExists } from '@esteban-url/trailhead-cli/filesystem'
+import { spawn } from 'child_process'
+import { promisify } from 'util'
+
+export const buildCommand = createCommand({
+  name: 'build',
+  description: 'Build the project',
+  flags: {
+    clean: {
+      type: 'boolean',
+      description: 'Clean build directory before building'
+    },
+    watch: {
+      type: 'boolean',
+      description: 'Watch for changes and rebuild'
+    },
+    production: {
+      type: 'boolean',
+      description: 'Build for production'
+    }
+  },
+  async handler(args) {
+    console.log('🏗️  Building {{projectName}}...')
+
+    try {
+      // Ensure build directory exists
+      const ensureResult = await ensureDirectoryExists('dist')
+      if (ensureResult.isErr()) {
+        return err(createCoreError('BUILD_FAILED', `Failed to create build directory: ${ensureResult.error.message}`, {
+          component: '{{packageName}}',
+          operation: 'build',
+          cause: ensureResult.error,
+          recoverable: true,
+          severity: 'high'
+        }))
+      }
+
+      // Clean if requested
+      if (args.flags.clean) {
+        console.log('🧹 Cleaning build directory...')
+        await runCommand('rm', ['-rf', 'dist/*'])
+      }
+
+      // Build command based on package.json scripts
+      const buildArgs = []
+      if (args.flags.production) {
+        buildArgs.push('--mode', 'production')
+      }
+      if (args.flags.watch) {
+        buildArgs.push('--watch')
+      }
+
+      console.log('📦 Compiling TypeScript...')
+      const buildResult = await runCommand('tsc', buildArgs)
+      
+      if (buildResult.code !== 0) {
+        return err(createCoreError('BUILD_FAILED', `Build failed with code ${buildResult.code}`, {
+          component: '{{packageName}}',
+          operation: 'build',
+          recoverable: true,
+          severity: 'high'
+        }))
+      }
+
+      console.log('✅ Build completed successfully!')
+      
+      if (!args.flags.watch) {
+        console.log('📁 Build output: ./dist/')
+      }
+
+      return ok(undefined)
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      return err(createCoreError('BUILD_FAILED', `Build failed: ${errorMessage}`, {
+        component: '{{packageName}}',
+        operation: 'build',
+        cause: error,
+        recoverable: true,
+        severity: 'high'
+      }))
+    }
+  }
+})
+
+async function runCommand(command: string, args: string[] = []): Promise<{code: number, stdout: string, stderr: string}> {
+  return new Promise((resolve) => {
+    const child = spawn(command, args, { stdio: 'pipe' })
+    
+    let stdout = ''
+    let stderr = ''
+
+    child.stdout?.on('data', (data) => {
+      stdout += data.toString()
+      process.stdout.write(data)
+    })
+
+    child.stderr?.on('data', (data) => {
+      stderr += data.toString()
+      process.stderr.write(data)
+    })
+
+    child.on('close', (code) => {
+      resolve({ code: code || 0, stdout, stderr })
+    })
+  })
+}

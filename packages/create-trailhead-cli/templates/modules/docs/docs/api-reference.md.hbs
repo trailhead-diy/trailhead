@@ -1,0 +1,356 @@
+# API Reference
+
+Complete API reference for {{projectName}} commands and options.
+
+## Global Options
+
+These options are available for all commands:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--help` | boolean | false | Show help information |
+| `--version` | boolean | false | Show version number |
+| `--verbose` | boolean | false | Enable verbose output |
+
+## Core Commands
+
+### `help`
+
+Show help information for the CLI or a specific command.
+
+```bash
+{{packageName}} help [command]
+```
+
+**Examples:**
+```bash
+{{packageName}} help                # Global help
+{{packageName}} help build          # Help for build command
+```
+
+### `version`
+
+Display the current version of {{projectName}}.
+
+```bash
+{{packageName}} version
+```
+
+**Output:** `{{version}}`
+
+{{#if features.examples}}
+## Development Commands
+
+### `build`
+
+Build the project with TypeScript compilation.
+
+```bash
+{{packageName}} build [options]
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--clean` | boolean | false | Clean build directory before building |
+| `--watch` | boolean | false | Watch for changes and rebuild |
+| `--production` | boolean | false | Build for production |
+
+**Examples:**
+```bash
+{{packageName}} build                    # Basic build
+{{packageName}} build --clean            # Clean build
+{{packageName}} build --watch            # Watch mode
+{{packageName}} build --production       # Production build
+{{packageName}} build --clean --production  # Clean production build
+```
+
+**Exit Codes:**
+- `0` - Build successful
+- `1` - Build failed (compilation errors, missing files, etc.)
+
+### `dev`
+
+Start development mode with file watching and hot reloading.
+
+```bash
+{{packageName}} dev [options]
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--port` | number | 3000 | Port to run development server on |
+| `--hot` | boolean | true | Enable hot reloading |
+| `--debug` | boolean | false | Enable debug mode |
+
+**Examples:**
+```bash
+{{packageName}} dev                      # Start with defaults
+{{packageName}} dev --port 8080          # Custom port
+{{packageName}} dev --debug              # Debug mode
+{{packageName}} dev --no-hot             # Disable hot reloading
+```
+
+**Interactive Features:**
+- Prompts for advanced configuration options
+- Custom port selection
+- Hot reload preferences
+
+**Exit Codes:**
+- `0` - Development server started successfully
+- `1` - Failed to start development server
+{{/if}}
+
+{{#if features.config}}
+## Configuration Commands
+
+### `config`
+
+Manage application configuration files.
+
+```bash
+{{packageName}} config [options]
+```
+
+**Options:**
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--init` | boolean | false | Initialize a new configuration file |
+| `--validate` | boolean | false | Validate existing configuration |
+| `--show` | boolean | false | Show current configuration |
+
+**Examples:**
+```bash
+{{packageName}} config --init            # Create config.json
+{{packageName}} config --validate        # Validate config.json
+{{packageName}} config --show            # Display current config
+```
+
+**Configuration Schema:**
+
+```typescript
+interface Config {
+  name: string;           // Project name
+  version: string;        // Semver version
+  environment: 'development' | 'production' | 'test';
+  settings: {
+    debug: boolean;       // Enable debug mode
+    verbose: boolean;     // Enable verbose output
+    maxRetries?: number;  // Maximum retry attempts
+    timeout?: number;     // Timeout in milliseconds
+  };
+}
+```
+
+**Exit Codes:**
+- `0` - Configuration operation successful
+- `1` - Configuration file not found, invalid, or operation failed
+{{/if}}
+
+{{#if features.validation}}
+## Validation Commands
+
+### `validate`
+
+Validate files and data structures.
+
+```bash
+{{packageName}} validate --file <path> [options]
+```
+
+**Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `--file` | string | **Required.** Path to file to validate |
+| `--type` | string | Validation type (auto-detected if not specified) |
+
+**Supported Types:**
+
+| Type | Description | File Extensions |
+|------|-------------|-----------------|
+| `json` | JSON syntax validation | `.json` |
+| `config` | Configuration schema validation | `config*.json` |
+| `package` | package.json structure validation | `package.json` |
+
+**Examples:**
+```bash
+{{packageName}} validate --file data.json           # Auto-detect JSON
+{{packageName}} validate --file config.json         # Auto-detect config
+{{packageName}} validate --file package.json        # Auto-detect package
+{{packageName}} validate --file custom.json --type json  # Explicit type
+```
+
+**Validation Features:**
+
+1. **JSON Validation**
+   - Syntax checking
+   - Structure validation
+   - Error reporting with line numbers
+
+2. **Configuration Validation**
+   - Schema compliance
+   - Required field validation
+   - Type checking
+
+3. **Package.json Validation**
+   - Required fields (name, version)
+   - Semver version format
+   - Dependency structure
+
+**Exit Codes:**
+- `0` - File is valid
+- `1` - File not found, invalid syntax, or schema violation
+{{/if}}
+
+## Error Handling
+
+All commands use explicit error handling with structured error responses:
+
+```typescript
+interface CoreError {
+  code: string;           // Error identifier
+  message: string;        // Human-readable message
+  component: string;      // Component that generated the error
+  operation: string;      // Operation that failed
+  cause?: Error;          // Original error (if any)
+  recoverable?: boolean;  // Whether error can be recovered from
+  severity?: 'low' | 'medium' | 'high';
+  details?: string;       // Additional context
+}
+```
+
+### Common Error Codes
+
+| Code | Description | Recovery |
+|------|-------------|----------|
+| `FILE_NOT_FOUND` | Specified file does not exist | Check file path |
+| `INVALID_JSON` | JSON syntax error | Fix JSON syntax |
+| `SCHEMA_VALIDATION_FAILED` | Data doesn't match schema | Fix data structure |
+| `BUILD_FAILED` | Compilation or build error | Fix code issues |
+| `CONFIG_NOT_FOUND` | Configuration file missing | Run `config --init` |
+| `PERMISSION_DENIED` | Insufficient file permissions | Check file permissions |
+
+## Environment Variables
+
+{{projectName}} recognizes these environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Runtime environment | `development` |
+| `DEBUG` | Enable debug output | `false` |
+| `{{packageName.toUpperCase()}}_CONFIG` | Custom config file path | `./config.json` |
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | General error |
+| `2` | Invalid arguments |
+| `126` | Command not executable |
+| `127` | Command not found |
+
+## Examples
+
+### Basic Usage
+
+```bash
+# Show version
+{{packageName}} --version
+
+# Get help
+{{packageName}} --help
+{{packageName}} help build
+```
+
+{{#if features.examples}}
+### Development Workflow
+
+```bash
+# Build project
+{{packageName}} build --clean
+
+# Start development
+{{packageName}} dev --debug
+
+# Build for production
+{{packageName}} build --production
+```
+{{/if}}
+
+{{#if features.config}}
+### Configuration Management
+
+```bash
+# Initialize configuration
+{{packageName}} config --init
+
+# Validate configuration
+{{packageName}} config --validate
+
+# Show current settings
+{{packageName}} config --show
+```
+{{/if}}
+
+{{#if features.validation}}
+### File Validation
+
+```bash
+# Validate JSON files
+{{packageName}} validate --file data.json
+
+# Validate package.json
+{{packageName}} validate --file package.json
+
+# Validate configuration
+{{packageName}} validate --file config.json --type config
+```
+{{/if}}
+
+## Programmatic Usage
+
+{{projectName}} can be used programmatically in Node.js applications:
+
+```typescript
+import { createCLI } from '@esteban-url/trailhead-cli/command';
+import { buildCommand } from './commands/build.js';
+
+const cli = createCLI({
+  name: '{{packageName}}',
+  version: '{{version}}',
+  description: '{{description}}',
+  commands: [buildCommand]
+});
+
+await cli.run(['build', '--production']);
+```
+
+## TypeScript Support
+
+{{projectName}} is built with TypeScript and provides full type definitions:
+
+```typescript
+import type { Result } from '@esteban-url/trailhead-cli/core';
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+
+const myCommand = createCommand({
+  name: 'example',
+  description: 'Example command',
+  flags: {
+    input: { type: 'string', required: true }
+  },
+  async handler(args): Promise<Result<void, Error>> {
+    // Implementation with full type safety
+  }
+});
+```
+
+---
+
+For more examples and advanced usage, see the [Getting Started Guide](getting-started.md) and [Architecture Documentation](architecture.md).

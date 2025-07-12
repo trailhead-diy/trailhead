@@ -1,0 +1,126 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import { input, confirm } from '@esteban-url/trailhead-cli/prompts'
+import { spawn } from 'child_process'
+
+export const devCommand = createCommand({
+  name: 'dev',
+  description: 'Start development mode',
+  flags: {
+    port: {
+      type: 'number',
+      description: 'Port to run on',
+      default: 3000
+    },
+    hot: {
+      type: 'boolean',
+      description: 'Enable hot reloading',
+      default: true
+    },
+    debug: {
+      type: 'boolean',
+      description: 'Enable debug mode'
+    }
+  },
+  async handler(args) {
+    console.log('🚀 Starting {{projectName}} in development mode...')
+
+    try {
+      const { port, hot, debug } = args.flags
+
+      if (debug) {
+        console.log('🐛 Debug mode enabled')
+      }
+
+      // Interactive setup for advanced features
+      if (await shouldSetupAdvanced()) {
+        const customPort = await input({
+          message: 'Custom port (press enter for default):',
+          default: port.toString()
+        })
+
+        const useHotReload = await confirm({
+          message: 'Enable hot reloading?',
+          default: hot
+        })
+
+        console.log(`Configuration: port=${customPort}, hot-reload=${useHotReload}`)
+      }
+
+      // Start the development server
+      console.log(`📡 Starting server on port ${port}...`)
+      
+      const devArgs = ['--watch']
+      if (hot) {
+        devArgs.push('--hot')
+      }
+      if (debug) {
+        devArgs.push('--debug')
+      }
+
+      const result = await runDevServer('tsc', devArgs)
+      
+      if (result.code !== 0) {
+        return err(createCoreError('DEV_FAILED', `Development server failed with code ${result.code}`, {
+          component: '{{packageName}}',
+          operation: 'dev',
+          recoverable: true,
+          severity: 'medium'
+        }))
+      }
+
+      return ok(undefined)
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      return err(createCoreError('DEV_FAILED', `Development mode failed: ${errorMessage}`, {
+        component: '{{packageName}}',
+        operation: 'dev',
+        cause: error,
+        recoverable: true,
+        severity: 'medium'
+      }))
+    }
+  }
+})
+
+async function shouldSetupAdvanced(): Promise<boolean> {
+  try {
+    return await confirm({
+      message: 'Configure advanced development options?',
+      default: false
+    })
+  } catch {
+    return false
+  }
+}
+
+async function runDevServer(command: string, args: string[] = []): Promise<{code: number}> {
+  return new Promise((resolve) => {
+    console.log(`Running: ${command} ${args.join(' ')}`)
+    
+    const child = spawn(command, args, { 
+      stdio: 'inherit',
+      shell: true 
+    })
+
+    // Handle graceful shutdown
+    process.on('SIGINT', () => {
+      console.log('\n👋 Shutting down development server...')
+      child.kill('SIGINT')
+    })
+
+    process.on('SIGTERM', () => {
+      child.kill('SIGTERM')
+    })
+
+    child.on('close', (code) => {
+      resolve({ code: code || 0 })
+    })
+
+    child.on('error', (error) => {
+      console.error('Failed to start development server:', error)
+      resolve({ code: 1 })
+    })
+  })
+}
