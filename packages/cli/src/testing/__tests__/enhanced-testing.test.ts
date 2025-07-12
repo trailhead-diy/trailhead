@@ -22,9 +22,9 @@ import {
   testUtils,
   profileTest,
 } from '../index.js';
-import { ok, err } from '../../core/errors/utils.js';
-import type { Result } from '../../core/errors/index.js';
-import { createMemoryFileSystem } from '../../filesystem/memory.js';
+import { ok, err } from 'neverthrow';
+import type { Result } from 'neverthrow';
+import { createMemoryFileSystemLegacy as createMemoryFileSystem } from '../../filesystem/index.js';
 import { errorTemplates } from '../../core/error-templates.js';
 
 // Setup custom matchers

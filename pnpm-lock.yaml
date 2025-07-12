@@ -68,9 +68,6 @@ importers:
       '@trailhead/data':
         specifier: workspace:*
         version: link:../data
-      '@trailhead/db':
-        specifier: workspace:*
-        version: link:../db
       '@trailhead/formats':
         specifier: workspace:*
         version: link:../formats
@@ -83,9 +80,6 @@ importers:
       '@trailhead/streams':
         specifier: workspace:*
         version: link:../streams
-      '@trailhead/testing':
-        specifier: workspace:*
-        version: link:../testing
       '@trailhead/validation':
         specifier: workspace:*
         version: link:../validation
@@ -272,12 +266,18 @@ importers:
 
   packages/create-trailhead-cli:
     dependencies:
-      '@esteban-url/trailhead-cli':
-        specifier: workspace:*
-        version: link:../cli
       '@inquirer/prompts':
         specifier: ^7.6.0
         version: 7.6.0(@types/node@24.0.10)
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@trailhead/validation':
+        specifier: workspace:*
+        version: link:../validation
       chalk:
         specifier: ^5.4.1
         version: 5.4.1

@@ -16,6 +16,7 @@ import type {
   UpdateResult,
   DeleteResult,
 } from '../types.js';
+import { getAdapter } from '../core/operations.js';
 
 // ========================================
 // Query Builder Implementation
@@ -113,7 +114,7 @@ const createSelectQuery = <T>(
     toSQL: () => {
       let sql = 'SELECT ';
       sql += columns ? columns.join(', ') : '*';
-      
+
       if (table) {
         sql += ` FROM ${table}`;
       }
@@ -161,7 +162,7 @@ const createSelectQuery = <T>(
       try {
         const { sql, params } = query.toSQL();
         const adapter = getAdapter(connection.options.driver);
-        
+
         if (!adapter) {
           return err({
             type: 'DatabaseError',
@@ -173,7 +174,7 @@ const createSelectQuery = <T>(
 
         const result = await adapter.execute(connection, sql, params);
         if (result.isErr()) {
-          return result;
+          return err(result.error);
         }
 
         return ok(result.value.rows as T[]);
@@ -191,9 +192,9 @@ const createSelectQuery = <T>(
     first: async (connection: DatabaseConnection): Promise<DbResult<T | undefined>> => {
       const limitedQuery = query.limit(1);
       const result = await limitedQuery.execute(connection);
-      
+
       if (result.isErr()) {
-        return result;
+        return err(result.error);
       }
 
       return ok(result.value[0]);
@@ -238,8 +239,8 @@ const createInsertQuery = <T>(
       }
 
       const isArray = Array.isArray(data);
-      const records = isArray ? data as readonly Partial<T>[] : [data as Partial<T>];
-      
+      const records = isArray ? (data as readonly Partial<T>[]) : [data as Partial<T>];
+
       if (records.length === 0) {
         return { sql: '', params: [] };
       }
@@ -247,9 +248,9 @@ const createInsertQuery = <T>(
       const columns = Object.keys(records[0] as object);
       let sql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES `;
 
-      const valuePlaceholders = records.map(() => 
-        `(${columns.map(() => '?').join(', ')})`
-      ).join(', ');
+      const valuePlaceholders = records
+        .map(() => `(${columns.map(() => '?').join(', ')})`)
+        .join(', ');
 
       sql += valuePlaceholders;
 
@@ -273,9 +274,7 @@ const createInsertQuery = <T>(
         sql += ` RETURNING ${returningColumns.join(', ')}`;
       }
 
-      const params = records.flatMap(record => 
-        columns.map(col => (record as any)[col])
-      );
+      const params = records.flatMap(record => columns.map(col => (record as any)[col]));
 
       return { sql, params };
     },
@@ -284,7 +283,7 @@ const createInsertQuery = <T>(
       try {
         const { sql, params } = query.toSQL();
         const adapter = getAdapter(connection.options.driver);
-        
+
         if (!adapter) {
           return err({
             type: 'DatabaseError',
@@ -296,7 +295,7 @@ const createInsertQuery = <T>(
 
         const result = await adapter.execute(connection, sql, params);
         if (result.isErr()) {
-          return result;
+          return err(result.error);
         }
 
         const insertResult: InsertResult = {
@@ -324,10 +323,7 @@ const createInsertQuery = <T>(
 // Update Query Implementation
 // ========================================
 
-const createUpdateQuery = <T>(
-  initialTable?: string,
-  initialData?: Partial<T>
-): UpdateQuery<T> => {
+const createUpdateQuery = <T>(initialTable?: string, initialData?: Partial<T>): UpdateQuery<T> => {
   let table = initialTable;
   let data = initialData;
   let whereConditions: WhereCondition<T>[] = [];
@@ -366,10 +362,7 @@ const createUpdateQuery = <T>(
         sql += ` RETURNING ${returningColumns.join(', ')}`;
       }
 
-      const params = [
-        ...columns.map(col => (data as any)[col]),
-        ...extractParams(whereConditions),
-      ];
+      const params = [...columns.map(col => (data as any)[col]), ...extractParams(whereConditions)];
 
       return { sql, params };
     },
@@ -378,7 +371,7 @@ const createUpdateQuery = <T>(
       try {
         const { sql, params } = query.toSQL();
         const adapter = getAdapter(connection.options.driver);
-        
+
         if (!adapter) {
           return err({
             type: 'DatabaseError',
@@ -390,7 +383,7 @@ const createUpdateQuery = <T>(
 
         const result = await adapter.execute(connection, sql, params);
         if (result.isErr()) {
-          return result;
+          return err(result.error);
         }
 
         const updateResult: UpdateResult = {
@@ -463,7 +456,7 @@ const createDeleteQuery = <T>(initialTable?: string): DeleteQuery<T> => {
       try {
         const { sql, params } = query.toSQL();
         const adapter = getAdapter(connection.options.driver);
-        
+
         if (!adapter) {
           return err({
             type: 'DatabaseError',
@@ -475,7 +468,7 @@ const createDeleteQuery = <T>(initialTable?: string): DeleteQuery<T> => {
 
         const result = await adapter.execute(connection, sql, params);
         if (result.isErr()) {
-          return result;
+          return err(result.error);
         }
 
         const deleteResult: DeleteResult = {
@@ -509,7 +502,7 @@ const createRawQuery = <T>(sql: string, params?: readonly unknown[]): RawQuery<T
     execute: async (connection: DatabaseConnection): Promise<DbResult<readonly T[]>> => {
       try {
         const adapter = getAdapter(connection.options.driver);
-        
+
         if (!adapter) {
           return err({
             type: 'DatabaseError',
@@ -521,7 +514,7 @@ const createRawQuery = <T>(sql: string, params?: readonly unknown[]): RawQuery<T
 
         const result = await adapter.execute(connection, sql, params);
         if (result.isErr()) {
-          return result;
+          return err(result.error);
         }
 
         return ok(result.value.rows as T[]);
@@ -545,23 +538,25 @@ const createRawQuery = <T>(sql: string, params?: readonly unknown[]): RawQuery<T
 const buildWhereClause = (conditions: WhereCondition<any>[]): string => {
   if (conditions.length === 0) return '';
 
-  return conditions.map(condition => {
-    if ('operator' in condition && condition.operator === 'AND') {
-      return `(${buildWhereClause((condition as any).conditions)})`;
-    } else if ('operator' in condition && condition.operator === 'OR') {
-      return `(${buildWhereClause((condition as any).conditions)})`;
-    } else if ('values' in condition) {
-      const placeholders = condition.values.map(() => '?').join(', ');
-      return `${String(condition.column)} ${condition.operator} (${placeholders})`;
-    } else {
-      return `${String(condition.column)} ${condition.operator} ?`;
-    }
-  }).join(' AND ');
+  return conditions
+    .map(condition => {
+      if ('operator' in condition && condition.operator === 'AND') {
+        return `(${buildWhereClause((condition as any).conditions)})`;
+      } else if ('operator' in condition && condition.operator === 'OR') {
+        return `(${buildWhereClause((condition as any).conditions)})`;
+      } else if ('values' in condition) {
+        const placeholders = condition.values.map(() => '?').join(', ');
+        return `${String((condition as any).column)} ${condition.operator} (${placeholders})`;
+      } else {
+        return `${String((condition as any).column)} ${(condition as any).operator} ?`;
+      }
+    })
+    .join(' AND ');
 };
 
 const extractParams = (conditions: WhereCondition<any>[]): unknown[] => {
   const params: unknown[] = [];
-  
+
   for (const condition of conditions) {
     if ('operator' in condition && (condition.operator === 'AND' || condition.operator === 'OR')) {
       params.push(...extractParams((condition as any).conditions));
@@ -571,12 +566,6 @@ const extractParams = (conditions: WhereCondition<any>[]): unknown[] => {
       params.push(condition.value);
     }
   }
-  
-  return params;
-};
 
-// Simple adapter getter (should be imported from core)
-const getAdapter = (driver: string) => {
-  // This should import from core operations
-  return null;
+  return params;
 };

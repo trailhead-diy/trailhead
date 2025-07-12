@@ -1,6 +1,7 @@
-import type { Result } from '../core/errors/index.js';
-import type { FileSystem } from '../filesystem/index.js';
-import type { CLIError } from '../core/errors/types.js';
+import type { Result } from '../core/index.js';
+// @ts-expect-error - Domain package types will be available after build
+import type { FileSystem } from '@trailhead/fs';
+import type { CLIError } from '../core/index.js';
 // Import statements for documentation - functions are placeholders for test framework usage
 
 /**

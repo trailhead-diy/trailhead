@@ -18,7 +18,7 @@ import type { Readable } from 'node:stream';
 export const defaultReadableConfig: Required<ReadableConfig> = {
   timeout: 30000,
   highWaterMark: 16384,
-  objectMode: false,
+  objectMode: true,
   encoding: 'utf8',
   autoDestroy: true,
   read: () => {}, // Default no-op read implementation
@@ -67,7 +67,7 @@ export interface AsyncGeneratorSource<T> {
   readonly generator: () => AsyncGenerator<T>;
 }
 
-export type StreamSource<T> = 
+export type StreamSource<T> =
   | IteratorSource<T>
   | AsyncIteratorSource<T>
   | ArraySource<T>
@@ -79,8 +79,14 @@ export type StreamSource<T> =
 // ========================================
 
 export type ReadableFromArrayOp = <T>(data: T[], config?: ReadableConfig) => StreamResult<Readable>;
-export type ReadableFromIteratorOp = <T>(iterator: Iterable<T>, config?: ReadableConfig) => StreamResult<Readable>;
-export type ReadableFromAsyncIteratorOp = <T>(iterator: AsyncIterable<T>, config?: ReadableConfig) => StreamResult<Readable>;
+export type ReadableFromIteratorOp = <T>(
+  iterator: Iterable<T>,
+  config?: ReadableConfig
+) => StreamResult<Readable>;
+export type ReadableFromAsyncIteratorOp = <T>(
+  iterator: AsyncIterable<T>,
+  config?: ReadableConfig
+) => StreamResult<Readable>;
 
 export type ReadableToArrayOp = <T>(stream: Readable) => Promise<StreamResult<T[]>>;
 export type ReadableForEachOp = <T>(

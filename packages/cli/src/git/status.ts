@@ -1,8 +1,17 @@
 import { ok, err, Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { CLIError } from '../core/index.js';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
-import type { GitStatus, GitOptions } from './types.js';
+import type { GitOptions } from './types.js';
+
+// Local interface for GitStatus to avoid confusion with GitStatusResult
+interface GitStatus {
+  currentBranch: string;
+  isClean: boolean;
+  staged: number;
+  modified: number;
+  untracked: number;
+}
 
 /**
  * Get the current branch name

@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { TrailheadError } from '@trailhead/core';
 import type { CommandContext, CommandOption } from './types.js';
 import { validateCommandConfigWithCache } from './validation.js';
 
@@ -42,13 +42,13 @@ export interface CommandConfig<T extends CommandOptions> {
 export type CommandAction<T extends CommandOptions> = (
   options: T,
   context: CommandContext
-) => Promise<Result<void, CLIError>>;
+) => Promise<Result<void, TrailheadError>>;
 
 /**
  * Command validation function type
  * @template T - Command options type
  */
-export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, CLIError>;
+export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, TrailheadError>;
 
 /**
  * Create a command object for use with createCLI

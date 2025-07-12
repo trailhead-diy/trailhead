@@ -85,7 +85,7 @@ export const createConfigManager = <T>(
         );
 
         if (transformResult.isErr()) {
-          return transformResult;
+          return err(transformResult.error);
         }
 
         transformedConfig = transformResult.value;
@@ -101,7 +101,7 @@ export const createConfigManager = <T>(
         );
 
         if (validationResult.isErr()) {
-          return validationResult;
+          return err(validationResult.error);
         }
       }
 

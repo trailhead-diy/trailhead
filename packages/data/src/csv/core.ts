@@ -1,11 +1,7 @@
 import { ok, err } from '@trailhead/core';
 import { readFile, writeFile } from '@trailhead/fs';
 import * as Papa from 'papaparse';
-import type {
-  CSVProcessingOptions,
-  DataResult,
-  CSVFormatInfo,
-} from '../types.js';
+import type { CSVProcessingOptions, DataResult, CSVFormatInfo } from '../types.js';
 import type { CreateCSVOperations } from './types.js';
 import { defaultCSVConfig } from './types.js';
 import { createCSVError, createParsingError, mapLibraryError } from '../errors.js';

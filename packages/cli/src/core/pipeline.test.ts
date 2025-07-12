@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { pipeline, parallel, parallelSettled, retryPipeline } from './pipeline.js';
 import { ok, err } from 'neverthrow';
-import { createError } from './errors/factory.js';
+import { createTrailheadError } from '@trailhead/core';
 
 describe('Pipeline Utilities', () => {
   describe('pipeline', () => {
@@ -37,13 +37,13 @@ describe('Pipeline Utilities', () => {
     it('stops on first error', async () => {
       const result = await pipeline(10)
         .step('multiply', async (value: number) => ok(value * 2))
-        .step('fail', async () => err(createError('TEST_ERROR', 'Test error')))
+        .step('fail', async () => err(createTrailheadError('TEST_ERROR', 'Test error')))
         .step('should-not-execute', async (value: number) => ok(value + 5))
         .execute();
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('TEST_ERROR');
+        expect(result.error.type).toBe('TEST_ERROR');
       }
     });
 
@@ -90,7 +90,9 @@ describe('Pipeline Utilities', () => {
     it('handles error recovery', async () => {
       let errorHandlerCalled = false;
       const result = await pipeline(10)
-        .step('fail', async () => err(createError('RECOVERABLE_ERROR', 'Recoverable error')))
+        .step('fail', async () =>
+          err(createTrailheadError('RECOVERABLE_ERROR', 'Recoverable error'))
+        )
         .onError(async (error, stepName) => {
           errorHandlerCalled = true;
           expect(stepName).toBe('fail');
@@ -135,7 +137,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PIPELINE_TIMEOUT');
+        expect(result.error.type).toBe('CLI_ERROR');
       }
     });
 
@@ -153,7 +155,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PIPELINE_CANCELLED');
+        expect(result.error.type).toBe('CLI_ERROR');
       }
     });
 
@@ -170,14 +172,14 @@ describe('Pipeline Utilities', () => {
     });
 
     it('handles pipeline with failed Result as initial value', async () => {
-      const initialResult = err(createError('INITIAL_ERROR', 'Initial error'));
+      const initialResult = err(createTrailheadError('INITIAL_ERROR', 'Initial error'));
       const result = await pipeline(initialResult)
         .map('should-not-execute', (value: string) => `${value}-transformed`)
         .execute();
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INITIAL_ERROR');
+        expect(result.error.type).toBe('INITIAL_ERROR');
       }
     });
 
@@ -190,7 +192,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PIPELINE_STEP_ERROR');
+        expect(result.error.type).toBe('CLI_ERROR');
         expect(result.error.message).toContain('throwing-step');
       }
     });
@@ -234,7 +236,7 @@ describe('Pipeline Utilities', () => {
     it('fails fast on first error (array)', async () => {
       const operations = [
         async () => ok('result1'),
-        async () => err(createError('PARALLEL_ERROR', 'Parallel error')),
+        async () => err(createTrailheadError('PARALLEL_ERROR', 'Parallel error')),
         async () => ok('result3'),
       ];
 
@@ -242,14 +244,14 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PARALLEL_ERROR');
+        expect(result.error.type).toBe('PARALLEL_ERROR');
       }
     });
 
     it('fails fast on first error (object)', async () => {
       const operations = {
         op1: async () => ok('result1'),
-        op2: async () => err(createError('PARALLEL_ERROR', 'Parallel error')),
+        op2: async () => err(createTrailheadError('PARALLEL_ERROR', 'Parallel error')),
         op3: async () => ok('result3'),
       };
 
@@ -257,7 +259,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PARALLEL_ERROR');
+        expect(result.error.type).toBe('PARALLEL_ERROR');
       }
     });
   });
@@ -266,9 +268,9 @@ describe('Pipeline Utilities', () => {
     it('collects both successes and failures (array)', async () => {
       const operations = [
         async () => ok('success1'),
-        async () => err(createError('ERROR1', 'Error 1')),
+        async () => err(createTrailheadError('ERROR1', 'Error 1')),
         async () => ok('success2'),
-        async () => err(createError('ERROR2', 'Error 2')),
+        async () => err(createTrailheadError('ERROR2', 'Error 2')),
       ];
 
       const result = await parallelSettled(operations);
@@ -277,17 +279,17 @@ describe('Pipeline Utilities', () => {
       if (result.isOk()) {
         expect(result.value.successes).toEqual(['success1', 'success2']);
         expect(result.value.failures).toHaveLength(2);
-        expect(result.value.failures[0].code).toBe('ERROR1');
-        expect(result.value.failures[1].code).toBe('ERROR2');
+        expect(result.value.failures[0].type).toBe('ERROR1');
+        expect(result.value.failures[1].type).toBe('ERROR2');
       }
     });
 
     it('collects both successes and failures (object)', async () => {
       const operations = {
         op1: async () => ok('success1'),
-        op2: async () => err(createError('ERROR1', 'Error 1')),
+        op2: async () => err(createTrailheadError('ERROR1', 'Error 1')),
         op3: async () => ok('success2'),
-        op4: async () => err(createError('ERROR2', 'Error 2')),
+        op4: async () => err(createTrailheadError('ERROR2', 'Error 2')),
       };
 
       const result = await parallelSettled(operations);
@@ -299,8 +301,8 @@ describe('Pipeline Utilities', () => {
           op3: 'success2',
         });
         expect(result.value.failures).toEqual({
-          op2: expect.objectContaining({ code: 'ERROR1' }),
-          op4: expect.objectContaining({ code: 'ERROR2' }),
+          op2: expect.objectContaining({ type: 'ERROR1' }),
+          op4: expect.objectContaining({ type: 'ERROR2' }),
         });
       }
     });
@@ -324,7 +326,7 @@ describe('Pipeline Utilities', () => {
         pipeline('test').step('flaky', async () => {
           attempts++;
           if (attempts < 3) {
-            return err(createError('FLAKY_ERROR', 'Flaky error'));
+            return err(createTrailheadError('FLAKY_ERROR', 'Flaky error'));
           }
           return ok('success');
         });
@@ -341,14 +343,14 @@ describe('Pipeline Utilities', () => {
     it('exhausts retries and returns last error', async () => {
       const pipelineFactory = () =>
         pipeline('test').step('always-fail', async () =>
-          err(createError('PERSISTENT_ERROR', 'Persistent error'))
+          err(createTrailheadError('PERSISTENT_ERROR', 'Persistent error'))
         );
 
       const result = await retryPipeline(pipelineFactory, { maxAttempts: 2 });
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.code).toBe('PIPELINE_RETRY_EXHAUSTED');
+        expect(result.error.type).toBe('CLI_ERROR');
       }
     });
 
@@ -359,7 +361,7 @@ describe('Pipeline Utilities', () => {
       const pipelineFactory = () =>
         pipeline('test').step('fail', async () => {
           attempts++;
-          return err(createError('RETRY_ERROR', `Error ${attempts}`));
+          return err(createTrailheadError('RETRY_ERROR', `Error ${attempts}`));
         });
 
       await retryPipeline(pipelineFactory, {

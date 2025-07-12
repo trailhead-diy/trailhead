@@ -1,6 +1,6 @@
 import type { Command, CommandContext } from '../command/index.js';
 import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { TrailheadError } from '@trailhead/core';
 import { createTestContext } from './context.js';
 
 /**
@@ -10,7 +10,7 @@ export async function runCommand<T>(
   command: Command<T>,
   options: T,
   context?: CommandContext
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, TrailheadError>> {
   const testContext = context ?? createTestContext();
   return command.execute(options, testContext);
 }
@@ -42,7 +42,7 @@ export function createCommandTestRunner<T>(
 export async function runTestCommand<T>(
   state: CommandTestRunnerState<T>,
   options: T
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, TrailheadError>> {
   return state.command.execute(options, state.context);
 }
 
@@ -71,8 +71,8 @@ export async function runTestCommandExpectError<T>(
   if (result.isOk()) {
     throw new Error('Expected command to fail, but it succeeded');
   }
-  if (errorCode && result.error.code !== errorCode) {
-    throw new Error(`Expected error code ${errorCode}, but got ${result.error.code}`);
+  if (errorCode && result.error.type !== errorCode) {
+    throw new Error(`Expected error code ${errorCode}, but got ${result.error.type}`);
   }
 }
 

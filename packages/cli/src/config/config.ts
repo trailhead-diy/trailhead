@@ -1,6 +1,23 @@
 import { cosmiconfig, cosmiconfigSync } from 'cosmiconfig';
 import type { z } from 'zod';
-import type { CreateConfigOptions, ConfigLoader, ConfigLoadResult } from './types.js';
+// Use local types for this legacy config implementation
+type CreateConfigOptions<T> = {
+  name: string;
+  schema?: any;
+  defaults?: T;
+  searchPlaces?: string[];
+};
+
+type ConfigLoader<T> = {
+  load: (searchFrom?: string) => Promise<ConfigLoadResult<T>>;
+  loadSync: (searchFrom?: string) => ConfigLoadResult<T>;
+  clearCache: () => void;
+};
+
+type ConfigLoadResult<T> = {
+  config: T;
+  filepath?: string;
+};
 
 /**
  * Create a simplified configuration loader
@@ -79,8 +96,7 @@ function processResult<T>(result: any, schema: z.ZodSchema<T>, defaults?: T): Co
 
     return {
       config: validatedDefaults,
-      filepath: null,
-      source: 'defaults',
+      filepath: undefined,
     };
   }
 
@@ -89,12 +105,11 @@ function processResult<T>(result: any, schema: z.ZodSchema<T>, defaults?: T): Co
 
   const finalConfig = defaults ? mergeWithDefaults(defaults, validatedConfig) : validatedConfig;
 
-  const source = result.filepath?.endsWith('package.json') ? 'package.json' : 'file';
+  const _source = result.filepath?.endsWith('package.json') ? 'package.json' : 'file';
 
   return {
     config: finalConfig,
     filepath: result.filepath,
-    source,
   };
 }
 

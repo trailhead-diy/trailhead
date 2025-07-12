@@ -1,8 +1,4 @@
-import type {
-  DuplexConfig,
-  DuplexOperations,
-  StreamResult,
-} from '../types.js';
+import type { DuplexConfig, DuplexOperations, StreamResult } from '../types.js';
 import type { Duplex } from 'node:stream';
 
 // ========================================
@@ -12,13 +8,13 @@ import type { Duplex } from 'node:stream';
 export const defaultDuplexConfig: Required<DuplexConfig> = {
   timeout: 30000,
   highWaterMark: 16384,
-  objectMode: false,
+  objectMode: true,
   encoding: 'utf8',
   autoDestroy: true,
   allowHalfOpen: false,
   read: () => {}, // Default no-op read implementation
   write: (chunk, encoding, callback) => callback(), // Default no-op write
-  final: (callback) => callback(), // Default no-op final
+  final: callback => callback(), // Default no-op final
 };
 
 // ========================================
@@ -32,7 +28,10 @@ export type CreateDuplexOperations = (config?: DuplexConfig) => DuplexOperations
 // ========================================
 
 export type DuplexEchoOp = (config?: DuplexConfig) => StreamResult<Duplex>;
-export type DuplexBufferOp = <T>(bufferSize: number, config?: DuplexConfig) => StreamResult<Duplex>;
+export type DuplexBufferOp = <_T>(
+  bufferSize: number,
+  config?: DuplexConfig
+) => StreamResult<Duplex>;
 export type DuplexPassThroughOp = (config?: DuplexConfig) => StreamResult<Duplex>;
 
 // ========================================

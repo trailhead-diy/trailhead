@@ -7,7 +7,7 @@ import {
   createInteractiveTest,
 } from '../cli-testing.js';
 import { createCommand } from '../../command/index.js';
-import { ok, err } from '../../core/errors/utils.js';
+import { ok, err } from 'neverthrow';
 
 describe('CLI Testing Utilities', () => {
   describe('CLI Test Runner', () => {

@@ -14,7 +14,7 @@ export const defaultValidationConfig: ValidationConfig = {
 export const createValidator =
   <T, R = T>(
     schema: z.ZodType<R>,
-    config: ValidationConfig = defaultValidationConfig
+    _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<T, R> =>
   (value: T): ValidationResult<R> => {
     const result = schema.safeParse(value);
@@ -28,15 +28,15 @@ export const createValidator =
 
 export const createSchemaValidator = <T>(
   schema: z.ZodType<T>,
-  config: ValidationConfig = defaultValidationConfig
+  _config: ValidationConfig = defaultValidationConfig
 ): SchemaValidator<T> => ({
   schema,
-  validate: createValidator(schema, config),
+  validate: createValidator(schema, _config),
 });
 
 // Common validation functions
 export const validateEmail =
-  (config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
+  (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (email: string): ValidationResult<string> => {
     if (!email || email.trim().length === 0) {
       return err(
@@ -59,7 +59,7 @@ export const validateEmail =
   };
 
 export const validateUrl =
-  (config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
+  (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (url: string): ValidationResult<string> => {
     if (!url || url.trim().length === 0) {
       return err(
@@ -82,7 +82,7 @@ export const validateUrl =
   };
 
 export const validatePhoneNumber =
-  (config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
+  (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (phone: string): ValidationResult<string> => {
     if (!phone || phone.trim().length === 0) {
       return err(
@@ -110,7 +110,7 @@ export const validateStringLength =
   (
     min: number,
     max?: number,
-    config: ValidationConfig = defaultValidationConfig
+    _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<string> =>
   (value: string): ValidationResult<string> => {
     let schema = z.string().min(min, `Value must be at least ${min} characters long`);
@@ -132,7 +132,7 @@ export const validateNumberRange =
   (
     min?: number,
     max?: number,
-    config: ValidationConfig = defaultValidationConfig
+    _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<number> =>
   (value: number): ValidationResult<number> => {
     let schema = z.number();
@@ -155,7 +155,7 @@ export const validateNumberRange =
   };
 
 export const validateRequired =
-  <T>(config: ValidationConfig = defaultValidationConfig): ValidatorFn<T | null | undefined, T> =>
+  <T>(_config: ValidationConfig = defaultValidationConfig): ValidatorFn<T | null | undefined, T> =>
   (value: T | null | undefined): ValidationResult<T> => {
     const schema = z
       .any()
@@ -170,7 +170,7 @@ export const validateRequired =
   };
 
 export const validateCurrency =
-  (config: ValidationConfig = defaultValidationConfig): ValidatorFn<number> =>
+  (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<number> =>
   (value: number): ValidationResult<number> => {
     const schema = z
       .number()
@@ -190,7 +190,7 @@ export const validateCurrency =
   };
 
 export const validateDate =
-  (config: ValidationConfig = defaultValidationConfig): ValidatorFn<string, Date> =>
+  (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string, Date> =>
   (dateString: string): ValidationResult<Date> => {
     if (!dateString || dateString.trim().length === 0) {
       return err(
@@ -252,7 +252,7 @@ export const validateDate =
 export const validateArray =
   <T, R = T>(
     validator: ValidatorFn<T, R>,
-    config: ValidationConfig = defaultValidationConfig
+    _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<T[], R[]> =>
   (items: T[]): ValidationResult<R[]> => {
     const schema = z.array(z.any());
@@ -284,7 +284,7 @@ export const validateArray =
 export const validateObject =
   <T extends Record<string, any>>(
     validators: Partial<{ [K in keyof T]: ValidatorFn<T[K]> }>,
-    config: ValidationConfig = defaultValidationConfig
+    _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<T> =>
   (obj: T): ValidationResult<T> => {
     const schema = z.object({});

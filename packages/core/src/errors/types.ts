@@ -99,6 +99,7 @@ export interface GitError extends CategorizedError {
 
 export interface CLIError extends CategorizedError {
   readonly category: 'cli';
+  readonly code?: string;
   readonly command?: string;
   readonly args?: string[];
 }

@@ -95,6 +95,9 @@ export async function getMergeBaseInfo(
   const isAncestor = isAncestorResult.isOk() ? isAncestorResult.value : false;
 
   const info: MergeBaseInfo = {
+    base: commitSha,
+    ahead: 0, // TODO: Calculate actual ahead count
+    behind: 0, // TODO: Calculate actual behind count
     commitSha,
     branch1,
     branch2,

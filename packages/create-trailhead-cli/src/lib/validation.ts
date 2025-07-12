@@ -1,7 +1,7 @@
 import { resolve, normalize, isAbsolute, relative } from 'path';
 import { z } from 'zod';
-import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createCLIError } from '@trailhead/core';
+import type { Result, CLIError } from '@trailhead/core';
 
 /**
  * Validation utilities using Zod schemas for type-safe input validation
@@ -104,15 +104,15 @@ function zodResultToResult<T>(
     if (error instanceof z.ZodError) {
       const firstIssue = error.issues[0];
       return err(
-        createError('VALIDATION_FAILED', firstIssue.message, {
-          details: `${operation} validation failed: ${firstIssue.message}`,
+        createCLIError(firstIssue.message, {
+          context: { operation, details: `${operation} validation failed: ${firstIssue.message}` },
         })
       );
     }
     return err(
-      createError('VALIDATION_FAILED', `${operation} validation failed`, {
+      createCLIError(`${operation} validation failed`, {
         cause: error,
-        details: error instanceof Error ? error.message : String(error),
+        context: { details: error instanceof Error ? error.message : String(error) },
       })
     );
   }
@@ -142,9 +142,9 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createError('VALIDATION_FAILED', 'Invalid project path', {
+      createCLIError('Invalid project path', {
         cause: error,
-        details: 'Unable to resolve project path',
+        context: { details: 'Unable to resolve project path' },
       })
     );
   }
@@ -184,8 +184,8 @@ export function validateTemplatePath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createError('VALIDATION_FAILED', 'Invalid template path', {
-          details: 'Template path must be within the template directory',
+        createCLIError('Invalid template path', {
+          context: { details: 'Template path must be within the template directory' },
         })
       );
     }
@@ -193,9 +193,9 @@ export function validateTemplatePath(
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createError('VALIDATION_FAILED', 'Invalid template path', {
+      createCLIError('Invalid template path', {
         cause: error,
-        details: 'Unable to resolve template path',
+        context: { details: 'Unable to resolve template path' },
       })
     );
   }
@@ -219,8 +219,8 @@ export function validateOutputPath(
 
     if (normalizedPath.includes('..') || isAbsolute(normalizedPath)) {
       return err(
-        createError('VALIDATION_FAILED', 'Invalid output path', {
-          details: 'Output path must be relative and within the project directory',
+        createCLIError('Invalid output path', {
+          context: { details: 'Output path must be relative and within the project directory' },
         })
       );
     }
@@ -230,8 +230,8 @@ export function validateOutputPath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createError('VALIDATION_FAILED', 'Invalid output path', {
-          details: 'Output path must be within the project directory',
+        createCLIError('Invalid output path', {
+          context: { details: 'Output path must be within the project directory' },
         })
       );
     }
@@ -239,9 +239,9 @@ export function validateOutputPath(
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createError('VALIDATION_FAILED', 'Invalid output path', {
+      createCLIError('Invalid output path', {
         cause: error,
-        details: 'Unable to resolve output path',
+        context: { details: 'Unable to resolve output path' },
       })
     );
   }
@@ -256,8 +256,8 @@ export function sanitizeText(
 ): Result<string, CLIError> {
   if (!input || typeof input !== 'string') {
     return err(
-      createError('VALIDATION_FAILED', 'Text input is required', {
-        details: 'Text input must be a string',
+      createCLIError('Text input is required', {
+        context: { details: 'Text input must be a string' },
       })
     );
   }

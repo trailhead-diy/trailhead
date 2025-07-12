@@ -1,16 +1,10 @@
 import { ok, err } from '@trailhead/core';
 import { readFile as fsReadFile, writeFile as fsWriteFile } from '@trailhead/fs';
 import * as XLSX from 'xlsx';
-import type {
-  ExcelConfig,
-  ExcelProcessingOptions,
-  ExcelOperations,
-  DataResult,
-  ExcelFormatInfo,
-} from '../types.js';
+import type { ExcelProcessingOptions, DataResult, ExcelFormatInfo } from '../types.js';
 import type { CreateExcelOperations, ExcelParseOptions, ExcelWriteOptions } from './types.js';
 import { defaultExcelConfig } from './types.js';
-import { createExcelError, createParsingError, mapLibraryError } from '../errors.js';
+import { createExcelError, mapLibraryError } from '../errors.js';
 
 // ========================================
 // Excel Core Operations
@@ -186,7 +180,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
 
       XLSX.read(buffer, { type: 'buffer', bookSheets: true });
       return ok(true);
-    } catch (error) {
+    } catch {
       return ok(false);
     }
   };

@@ -85,7 +85,6 @@
     "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
-    "pretest": "pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

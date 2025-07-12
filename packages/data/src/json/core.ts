@@ -112,7 +112,7 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
 
       JSON.parse(data);
       return ok(true);
-    } catch (_error) {
+    } catch {
       return ok(false);
     }
   };

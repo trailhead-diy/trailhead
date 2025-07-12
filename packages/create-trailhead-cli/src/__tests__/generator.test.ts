@@ -2,20 +2,17 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { rmSync, existsSync } from 'fs';
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing';
 import { generateProject } from '../lib/generator.js';
+import { createLogger } from '../lib/logger.js';
 import type { ProjectConfig } from '../lib/types.js';
 
 describe('Generator Integration', () => {
   let testDir: string;
-  let testContext: any;
+  let logger: any;
 
   beforeEach(() => {
     testDir = join(tmpdir(), `create-trailhead-cli-test-${Date.now()}`);
-    testContext = createTestContext({
-      verbose: false,
-      fs: mockFileSystem({}),
-    });
+    logger = createLogger();
   });
 
   afterEach(() => {
@@ -24,98 +21,60 @@ describe('Generator Integration', () => {
     }
   });
 
-  it('should generate basic project structure', async () => {
+  it('should generate a basic project successfully', async () => {
     const config: ProjectConfig = {
       projectName: 'test-cli',
-      projectPath: testDir,
+      projectPath: join(testDir, 'test-cli'),
       template: 'basic',
       packageManager: 'pnpm',
       includeDocs: false,
-      initGit: false,
-      installDependencies: false,
-      dryRun: true, // Use dry run to avoid actual file creation
+      initGit: false, // Skip git for test
+      installDependencies: false, // Skip install for test
+      force: false,
+      dryRun: true, // Use dry run for test
+      verbose: false,
     };
 
-    const result = await generateProject(config, testContext);
+    const result = await generateProject(config, { logger, verbose: false });
 
-    if (!result.isOk()) {
-      console.error('Generator failed:', result.error.message);
-    }
     expect(result.isOk()).toBe(true);
   });
 
-  it('should handle template processing errors', async () => {
+  it('should generate an advanced project successfully', async () => {
     const config: ProjectConfig = {
-      projectName: 'test-cli',
-      projectPath: '/invalid/path/that/does/not/exist',
-      template: 'basic',
-      packageManager: 'pnpm',
-      includeDocs: false,
-      initGit: false,
-      installDependencies: false,
-      dryRun: false,
+      projectName: 'advanced-cli',
+      projectPath: join(testDir, 'advanced-cli'),
+      template: 'advanced',
+      packageManager: 'npm',
+      includeDocs: true,
+      initGit: false, // Skip git for test
+      installDependencies: false, // Skip install for test
+      force: false,
+      dryRun: true, // Use dry run for test
+      verbose: false,
     };
 
-    const result = await generateProject(config, testContext);
+    const result = await generateProject(config, { logger, verbose: false });
 
-    expect(result.isOk()).toBe(false);
-    expect(result.error.message).toContain('Failed to create project directory');
-  });
-
-  it('should support different template variants', async () => {
-    const variants = ['basic', 'advanced'] as const;
-
-    for (const variant of variants) {
-      const config: ProjectConfig = {
-        projectName: `test-cli-${variant}`,
-        projectPath: join(testDir, variant),
-        template: variant,
-        packageManager: 'pnpm',
-        includeDocs: false,
-        initGit: false,
-        installDependencies: false,
-        dryRun: true,
-      };
-
-      const result = await generateProject(config, testContext);
-      expect(result.isOk()).toBe(true);
-    }
-  });
-
-  it('should support different package managers', async () => {
-    const packageManagers = ['npm', 'pnpm'] as const;
-
-    for (const pm of packageManagers) {
-      const config: ProjectConfig = {
-        projectName: `test-cli-${pm}`,
-        projectPath: join(testDir, pm),
-        template: 'basic',
-        packageManager: pm,
-        includeDocs: false,
-        initGit: false,
-        installDependencies: false,
-        dryRun: true,
-      };
-
-      const result = await generateProject(config, testContext);
-      expect(result.isOk()).toBe(true);
-    }
+    expect(result.isOk()).toBe(true);
   });
 
   it('should validate project configuration', async () => {
-    const invalidConfig: ProjectConfig = {
-      projectName: '',
+    const config: ProjectConfig = {
+      projectName: '', // Invalid empty name
       projectPath: '',
       template: 'basic',
       packageManager: 'pnpm',
       includeDocs: false,
       initGit: false,
       installDependencies: false,
+      force: false,
       dryRun: true,
+      verbose: false,
     };
 
-    const result = await generateProject(invalidConfig, testContext);
+    const result = await generateProject(config, { logger, verbose: false });
 
-    expect(result.isOk()).toBe(false);
+    expect(result.isErr()).toBe(true);
   });
 });

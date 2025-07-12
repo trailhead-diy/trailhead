@@ -1,12 +1,12 @@
 import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { TrailheadError } from '@trailhead/core';
 
 /**
  * Assert that a Result is successful
  */
 export function expectResult<T>(
-  result: Result<T, CLIError>
-): asserts result is Extract<Result<T, CLIError>, { isOk(): true }> {
+  result: Result<T, TrailheadError>
+): asserts result is Extract<Result<T, TrailheadError>, { isOk(): true }> {
   if (result.isErr()) {
     throw new Error(`Expected successful result, but got error: ${result.error.message}`);
   }
@@ -15,7 +15,7 @@ export function expectResult<T>(
 /**
  * Assert that a Result is an error
  */
-export function expectError<E = CLIError>(
+export function expectError<E = TrailheadError>(
   result: Result<any, E>
 ): asserts result is Extract<Result<any, E>, { isErr(): true }> {
   if (result.isOk()) {
@@ -27,7 +27,7 @@ export function expectError<E = CLIError>(
  * Combined assertion and value extraction for successful Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectSuccess<T>(result: Result<T, CLIError>): T {
+export function expectSuccess<T>(result: Result<T, TrailheadError>): T {
   if (result.isErr()) {
     throw new Error(`Expected successful result, but got error: ${result.error.message}`);
   }
@@ -38,7 +38,7 @@ export function expectSuccess<T>(result: Result<T, CLIError>): T {
  * Combined assertion and error extraction for failed Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectFailure<E = CLIError>(result: Result<any, E>): E {
+export function expectFailure<E = TrailheadError>(result: Result<any, E>): E {
   if (result.isOk()) {
     throw new Error('Expected error result, but operation succeeded');
   }

@@ -23,7 +23,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -54,7 +54,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -84,7 +84,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -115,7 +115,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -145,7 +145,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -173,7 +173,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -203,7 +203,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -234,7 +234,7 @@ describe('Transform Stream Operations', () => {
       expect(transformResult.isOk()).toBe(true);
 
       if (readableResult.isOk() && writableResult.isOk() && transformResult.isOk()) {
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const transform = transformResult.value;
           const writable = writableResult.value;
@@ -270,9 +270,14 @@ describe('Transform Stream Operations', () => {
       expect(compressedWritableResult.isOk()).toBe(true);
       expect(decompressedWritableResult.isOk()).toBe(true);
 
-      if (readableResult.isOk() && compressResult.isOk() && decompressResult.isOk() && 
-          compressedWritableResult.isOk() && decompressedWritableResult.isOk()) {
-        return new Promise<void>((resolve) => {
+      if (
+        readableResult.isOk() &&
+        compressResult.isOk() &&
+        decompressResult.isOk() &&
+        compressedWritableResult.isOk() &&
+        decompressedWritableResult.isOk()
+      ) {
+        return new Promise<void>(resolve => {
           const readable = readableResult.value;
           const compress = compressResult.value;
           const decompress = decompressResult.value;
@@ -280,14 +285,14 @@ describe('Transform Stream Operations', () => {
           const decompressedWritable = decompressedWritableResult.value;
 
           let step = 0;
-          
+
           compressedWritable.on('finish', () => {
             step++;
             if (step === 1) {
               // Now decompress
               const compressedData = Buffer.concat(compressedTarget);
               const decompressReadableResult = readableOps.createFromArray([compressedData]);
-              
+
               if (decompressReadableResult.isOk()) {
                 decompressReadableResult.value.pipe(decompress).pipe(decompressedWritable);
               }

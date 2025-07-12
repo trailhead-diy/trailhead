@@ -3,7 +3,6 @@ import { Transform } from 'node:stream';
 import { createGzip, createGunzip } from 'node:zlib';
 import type {
   TransformConfig,
-  TransformOperations,
   StreamResult,
   StreamProcessor,
   AsyncStreamProcessor,
@@ -11,12 +10,14 @@ import type {
   AsyncStreamPredicate,
   BatchConfig,
 } from '../types.js';
-import type { CreateTransformOperations, BatchState, ThrottleState, DebounceState } from './types.js';
+import type {
+  CreateTransformOperations,
+  BatchState,
+  ThrottleState,
+  DebounceState,
+} from './types.js';
 import { defaultTransformConfig } from './types.js';
-import {
-  createStreamError,
-  mapStreamError,
-} from '../errors.js';
+import { mapStreamError } from '../errors.js';
 
 // ========================================
 // Transform Stream Operations
@@ -39,12 +40,12 @@ export const createTransformOperations: CreateTransformOperations = (config = {}
           try {
             const result = mapper(chunk);
             const mappedValue = result instanceof Promise ? await result : result;
-            
+
             if (mappedValue.isErr()) {
               callback(new Error(mappedValue.error.message));
               return;
             }
-            
+
             callback(null, mappedValue.value);
           } catch (error) {
             callback(error instanceof Error ? error : new Error(String(error)));
@@ -155,10 +156,7 @@ export const createTransformOperations: CreateTransformOperations = (config = {}
     }
   };
 
-  const debounce = <T>(
-    delayMs: number,
-    options: TransformConfig = {}
-  ): StreamResult<Transform> => {
+  const debounce = <T>(delayMs: number, options: TransformConfig = {}): StreamResult<Transform> => {
     try {
       const mergedOptions = { ...transformConfig, ...options };
       let state: DebounceState<T> = {};
@@ -264,7 +262,7 @@ export const createTransformOperations: CreateTransformOperations = (config = {}
     }
   };
 
-  const compress = (options: TransformConfig = {}): StreamResult<Transform> => {
+  const compress = (_options: TransformConfig = {}): StreamResult<Transform> => {
     try {
       const gzip = createGzip();
       return ok(gzip);
@@ -273,7 +271,7 @@ export const createTransformOperations: CreateTransformOperations = (config = {}
     }
   };
 
-  const decompress = (options: TransformConfig = {}): StreamResult<Transform> => {
+  const decompress = (_options: TransformConfig = {}): StreamResult<Transform> => {
     try {
       const gunzip = createGunzip();
       return ok(gunzip);

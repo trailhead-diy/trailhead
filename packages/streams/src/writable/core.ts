@@ -1,18 +1,9 @@
 import { ok, err } from '@trailhead/core';
 import { Writable } from 'node:stream';
-import type {
-  WritableConfig,
-  WritableOperations,
-  StreamResult,
-} from '../types.js';
+import type { WritableConfig, StreamResult } from '../types.js';
 import type { CreateWritableOperations } from './types.js';
 import { defaultWritableConfig } from './types.js';
-import {
-  createStreamError,
-  createStreamTimeoutError,
-  createStreamClosedError,
-  mapStreamError,
-} from '../errors.js';
+import { createStreamTimeoutError, createStreamClosedError, mapStreamError } from '../errors.js';
 
 // ========================================
 // Writable Stream Operations
@@ -74,7 +65,7 @@ export const createWritableOperations: CreateWritableOperations = (config = {}) 
   };
 
   const writeAll = <T>(stream: Writable, data: T[]): Promise<StreamResult<void>> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (!stream.writable) {
         resolve(err(createStreamClosedError('writable stream')));
         return;
@@ -118,7 +109,7 @@ export const createWritableOperations: CreateWritableOperations = (config = {}) 
         }
       };
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         if (!hasError) {
           hasError = true;
           clearTimeout(timeoutId);
@@ -149,7 +140,7 @@ export const createWritableOperations: CreateWritableOperations = (config = {}) 
   };
 
   const end = (stream: Writable): Promise<StreamResult<void>> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (!stream.writable) {
         resolve(err(createStreamClosedError('writable stream')));
         return;
@@ -171,7 +162,7 @@ export const createWritableOperations: CreateWritableOperations = (config = {}) 
         }
       }, writableConfig.timeout);
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         if (!hasError) {
           hasError = true;
           clearTimeout(timeoutId);

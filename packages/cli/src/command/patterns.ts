@@ -1,7 +1,8 @@
 import type { CommandContext, CommandPhase } from './types.js';
 import type { Result } from 'neverthrow';
 import { ok, err } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { TrailheadError } from '@trailhead/core';
+import { createCLIError } from '@trailhead/core';
 
 export interface InteractiveCommandOptions {
   readonly interactive?: boolean;
@@ -11,9 +12,9 @@ export interface InteractiveCommandOptions {
 export async function executeInteractiveCommand<T extends InteractiveCommandOptions, R>(
   options: T,
   promptFn: () => Promise<Partial<T>>,
-  executeFn: (finalOptions: T) => Promise<Result<R, CLIError>>,
+  executeFn: (finalOptions: T) => Promise<Result<R, TrailheadError>>,
   context: CommandContext
-): Promise<Result<R, CLIError>> {
+): Promise<Result<R, TrailheadError>> {
   let finalOptions = options;
 
   // Run interactive prompts if needed
@@ -25,12 +26,13 @@ export async function executeInteractiveCommand<T extends InteractiveCommandOpti
       // Merge prompt results with CLI options (CLI takes precedence)
       finalOptions = { ...promptResults, ...options } as T;
     } catch (error) {
-      return err({
-        code: 'PROMPT_ERROR',
-        message: 'Interactive prompts failed',
-        cause: error,
-        recoverable: true,
-      });
+      return err(
+        createCLIError('Interactive prompts failed', {
+          code: 'PROMPT_ERROR',
+          cause: error,
+          suggestion: 'Check the prompt configuration and try again',
+        })
+      );
     }
   }
 
@@ -40,16 +42,16 @@ export async function executeInteractiveCommand<T extends InteractiveCommandOpti
 
 export interface ValidationRule<T> {
   readonly name: string;
-  readonly validate: (value: T) => Result<T, CLIError>;
+  readonly validate: (value: T) => Result<T, TrailheadError>;
   readonly required?: boolean;
 }
 
 export async function executeWithValidation<T, R>(
   data: T,
   rules: ValidationRule<T>[],
-  executeFn: (validData: T) => Promise<Result<R, CLIError>>,
+  executeFn: (validData: T) => Promise<Result<R, TrailheadError>>,
   context: CommandContext
-): Promise<Result<R, CLIError>> {
+): Promise<Result<R, TrailheadError>> {
   // Run validation rules
   for (const rule of rules) {
     const result = rule.validate(data);
@@ -69,14 +71,14 @@ export async function executeWithValidation<T, R>(
 
 export interface FileSystemOperation<T> {
   readonly name: string;
-  readonly execute: () => Promise<Result<T, CLIError>>;
+  readonly execute: () => Promise<Result<T, TrailheadError>>;
   readonly rollback?: () => Promise<void>;
 }
 
 export async function executeFileSystemOperations<T>(
   operations: FileSystemOperation<T>[],
   context: CommandContext
-): Promise<Result<T[], CLIError>> {
+): Promise<Result<T[], TrailheadError>> {
   const results: T[] = [];
   const completedOps: FileSystemOperation<T>[] = [];
 
@@ -109,12 +111,12 @@ export async function executeFileSystemOperations<T>(
       results.push(result.value);
       completedOps.push(op);
     } catch (error) {
-      return err({
-        code: 'OPERATION_ERROR',
-        message: `Operation failed: ${op.name}`,
-        cause: error,
-        recoverable: false,
-      });
+      return err(
+        createCLIError(`Operation failed: ${op.name}`, {
+          code: 'OPERATION_ERROR',
+          cause: error,
+        })
+      );
     }
   }
 
@@ -131,7 +133,7 @@ export interface SubprocessConfig {
 export async function executeSubprocess(
   config: SubprocessConfig,
   context: CommandContext
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, TrailheadError>> {
   const { spawn } = await import('child_process');
   const { command, args, cwd, env } = config;
 
@@ -158,12 +160,12 @@ export async function executeSubprocess(
 
     child.on('error', error => {
       resolve(
-        err({
-          code: 'SUBPROCESS_ERROR',
-          message: `Failed to spawn ${command}`,
-          cause: error,
-          recoverable: false,
-        })
+        err(
+          createCLIError(`Failed to spawn ${command}`, {
+            code: 'SUBPROCESS_ERROR',
+            cause: error,
+          })
+        )
       );
     });
 
@@ -172,12 +174,12 @@ export async function executeSubprocess(
         resolve(ok(stdout));
       } else {
         resolve(
-          err({
-            code: 'SUBPROCESS_EXIT_ERROR',
-            message: `${command} exited with code ${code}`,
-            details: stderr || undefined,
-            recoverable: false,
-          })
+          err(
+            createCLIError(`${command} exited with code ${code}`, {
+              code: 'SUBPROCESS_EXIT_ERROR',
+              context: { stderr: stderr || undefined },
+            })
+          )
         );
       }
     });
@@ -189,13 +191,13 @@ export async function executeSubprocess(
  */
 export async function executeBatch<T, R>(
   items: T[],
-  processor: (item: T) => Promise<Result<R, CLIError>>,
+  processor: (item: T) => Promise<Result<R, TrailheadError>>,
   options: {
     batchSize: number;
     onProgress?: (completed: number, total: number) => void;
   },
   _context: CommandContext
-): Promise<Result<R[], CLIError>> {
+): Promise<Result<R[], TrailheadError>> {
   const results: R[] = [];
   const { batchSize, onProgress } = options;
 
@@ -231,10 +233,10 @@ export interface ConfigurationOptions {
 
 export async function executeWithConfiguration<T extends ConfigurationOptions, R>(
   options: T,
-  loadConfigFn: (path?: string) => Promise<Result<Record<string, any>, CLIError>>,
-  executeFn: (config: Record<string, any>) => Promise<Result<R, CLIError>>,
+  loadConfigFn: (path?: string) => Promise<Result<Record<string, any>, TrailheadError>>,
+  executeFn: (config: Record<string, any>) => Promise<Result<R, TrailheadError>>,
   context: CommandContext
-): Promise<Result<R, CLIError>> {
+): Promise<Result<R, TrailheadError>> {
   // Load base configuration
   const configResult = await loadConfigFn(options.config);
   if (configResult.isErr()) {
@@ -276,7 +278,7 @@ export async function executeWithPhases<T>(
   phases: CommandPhase<T>[],
   initialData: T,
   context: CommandContext
-): Promise<Result<T, CLIError>> {
+): Promise<Result<T, TrailheadError>> {
   let currentData = initialData;
   const totalPhases = phases.length;
 
@@ -302,12 +304,12 @@ export async function executeWithPhases<T>(
         context.logger.success(`Phase ${phaseNumber} completed: ${phase.name}`);
       }
     } catch (error) {
-      return err({
-        code: 'PHASE_ERROR',
-        message: `Phase execution failed: ${phase.name}`,
-        cause: error,
-        recoverable: false,
-      });
+      return err(
+        createCLIError(`Phase execution failed: ${phase.name}`, {
+          code: 'PHASE_ERROR',
+          cause: error,
+        })
+      );
     }
   }
 
@@ -334,10 +336,10 @@ export async function executeWithPhases<T>(
  */
 export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
   options: T,
-  executeFn: (config: T) => Promise<Result<R, CLIError>>,
+  executeFn: (config: T) => Promise<Result<R, TrailheadError>>,
   context: CommandContext,
   confirmationPrompt?: string
-): Promise<Result<R, CLIError>> {
+): Promise<Result<R, TrailheadError>> {
   if (options.dryRun) {
     context.logger.info('🔍 DRY RUN MODE - No changes will be made');
     context.logger.info('The following operations would be performed:');
@@ -367,19 +369,15 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
 
       if (!shouldProceed) {
         context.logger.info('Operation cancelled by user');
-        return err({
-          code: 'USER_CANCELLED',
-          message: 'Operation cancelled by user',
-          recoverable: true,
-        });
+        return err(createCLIError('Operation cancelled by user', { code: 'USER_CANCELLED' }));
       }
     } catch (error) {
-      return err({
-        code: 'CONFIRMATION_ERROR',
-        message: 'Failed to get user confirmation',
-        cause: error,
-        recoverable: true,
-      });
+      return err(
+        createCLIError('Failed to get user confirmation', {
+          code: 'CONFIRMATION_ERROR',
+          cause: error,
+        })
+      );
     }
   }
 

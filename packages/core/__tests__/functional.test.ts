@@ -20,28 +20,33 @@ import {
   retry,
 } from '../src/functional/composition.js';
 
+// Test helper functions
+const add1 = (x: number) => x + 1;
+const multiply2 = (x: number) => x * 2;
+const subtract3 = (x: number) => x - 3;
+const add = (a: number, b: number) => a + b;
+const addThree = (a: number, b: number, c: number) => a + b + c;
+const add10 = (x: number) => x + 10;
+const double = (x: number) => x * 2;
+const asyncAdd1 = async (x: number) => x + 1;
+const asyncMultiply2 = async (x: number) => x * 2;
+const asyncSubtract3 = async (x: number) => x - 3;
+
 describe('Functional Composition', () => {
   describe('Basic Composition', () => {
     it('should compose two functions', () => {
-      const add1 = (x: number) => x + 1;
-      const multiply2 = (x: number) => x * 2;
       const composed = compose(multiply2, add1);
 
       expect(composed(5)).toBe(12); // (5 + 1) * 2 = 12
     });
 
     it('should compose multiple functions', () => {
-      const add1 = (x: number) => x + 1;
-      const multiply2 = (x: number) => x * 2;
-      const subtract3 = (x: number) => x - 3;
       const composed = composeMany(subtract3, multiply2, add1);
 
       expect(composed(5)).toBe(9); // ((5 + 1) * 2) - 3 = 9
     });
 
     it('should create pipeline', () => {
-      const add1 = (x: number) => x + 1;
-      const multiply2 = (x: number) => x * 2;
       const pipe = pipeline(add1, multiply2);
 
       expect(pipe(5)).toBe(12); // (5 + 1) * 2 = 12
@@ -50,7 +55,6 @@ describe('Functional Composition', () => {
 
   describe('Currying', () => {
     it('should curry function with 2 arguments', () => {
-      const add = (a: number, b: number) => a + b;
       const curriedAdd = curry2(add);
       const add5 = curriedAdd(5);
 
@@ -58,7 +62,6 @@ describe('Functional Composition', () => {
     });
 
     it('should curry function with 3 arguments', () => {
-      const addThree = (a: number, b: number, c: number) => a + b + c;
       const curriedAddThree = curry3(addThree);
       const add5And3 = curriedAddThree(5)(3);
 
@@ -98,7 +101,6 @@ describe('Functional Composition', () => {
     });
 
     it('should conditionally apply function with when', () => {
-      const add10 = (x: number) => x + 10;
       const conditionalAdd = when(true, add10);
       const noAdd = when(false, add10);
 
@@ -107,7 +109,6 @@ describe('Functional Composition', () => {
     });
 
     it('should conditionally apply function with unless', () => {
-      const add10 = (x: number) => x + 10;
       const conditionalAdd = unless(false, add10);
       const noAdd = unless(true, add10);
 
@@ -116,7 +117,6 @@ describe('Functional Composition', () => {
     });
 
     it('should handle maybe values', () => {
-      const double = (x: number) => x * 2;
       const safeDouble = maybe(double);
 
       expect(safeDouble(5)).toBe(10);
@@ -158,8 +158,6 @@ describe('Functional Composition', () => {
 
   describe('Async Composition', () => {
     it('should compose async functions', async () => {
-      const asyncAdd1 = async (x: number) => x + 1;
-      const asyncMultiply2 = async (x: number) => x * 2;
       const composed = composeAsync(asyncMultiply2, asyncAdd1);
 
       const result = await composed(5);
@@ -167,9 +165,6 @@ describe('Functional Composition', () => {
     });
 
     it('should compose multiple async functions', async () => {
-      const asyncAdd1 = async (x: number) => x + 1;
-      const asyncMultiply2 = async (x: number) => x * 2;
-      const asyncSubtract3 = async (x: number) => x - 3;
       const composed = composeManyAsync(asyncAdd1, asyncMultiply2, asyncSubtract3);
 
       const result = await composed(5);

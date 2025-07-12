@@ -48,7 +48,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_CONFIG');
+        expect(result.error.code).toBe('INVALID_OPTION_NAME_FORMAT');
       }
     });
 
@@ -61,7 +61,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_FLAGS_FORMAT');
+        expect(result.error.code).toBe('INVALID_OPTION_TYPE');
       }
     });
 

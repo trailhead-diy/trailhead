@@ -1,2 +1,2 @@
-// Delegate to @trailhead/git domain package
-export * from '@trailhead/git/core';
+// Pure delegation to @trailhead/git domain package
+export * from '@trailhead/git';

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/trailhead-cli';
-import { generateCommand } from './commands/generate.js';
+import { generateProject } from './lib/generator.js';
+import { parseArguments } from './lib/args-parser.js';
+import { createLogger } from './lib/logger.js';
 
 // Export utilities for programmatic use
 export { generateProject } from './lib/generator.js';
@@ -26,18 +27,85 @@ export type {
 /**
  * Create Trailhead CLI Generator
  *
- * A CLI generator that creates new projects using @esteban-url/trailhead-cli
- * Built with trailhead-cli framework for consistency and best practices
+ * A CLI generator that creates new projects using the new @trailhead/* architecture
+ * Built with functional programming principles and explicit error handling
  */
 async function main() {
-  const cli = createCLI({
-    name: 'create-trailhead-cli',
-    version: '0.1.0',
-    description: 'Generate CLI projects with @esteban-url/trailhead-cli',
-    commands: [generateCommand],
-  });
+  const logger = createLogger();
 
-  await cli.run();
+  try {
+    const args = parseArguments(process.argv.slice(2));
+
+    if (args.isErr()) {
+      logger.error(args.error.message);
+      process.exit(1);
+    }
+
+    const config = args.value;
+
+    if (config.help) {
+      showHelp();
+      process.exit(0);
+    }
+
+    if (config.version) {
+      console.log('0.1.0');
+      process.exit(0);
+    }
+
+    const result = await generateProject(config, { logger, verbose: config.verbose });
+
+    if (result.isErr()) {
+      logger.error(`Failed to generate project: ${result.error.message}`);
+      process.exit(1);
+    }
+
+    if (!config.dryRun) {
+      logger.success(`Successfully generated '${config.projectName}'`);
+      logger.info('');
+      logger.info('Next steps:');
+      logger.info(`  cd ${config.projectName}`);
+      if (!config.installDependencies) {
+        logger.info(`  ${config.packageManager} install`);
+      }
+      logger.info(`  ${config.packageManager} dev`);
+      logger.info('');
+      logger.info('Happy coding! 🚀');
+    }
+  } catch (error) {
+    logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  }
+}
+
+function showHelp() {
+  console.log(`
+create-trailhead-cli - Generate CLI projects with @trailhead/* architecture
+
+Usage:
+  create-trailhead-cli <project-name> [options]
+
+Arguments:
+  <project-name>    Name of the project to create
+
+Options:
+  -t, --template <type>      Template variant (basic, advanced) [default: basic]
+  -p, --package-manager <pm> Package manager (npm, pnpm) [default: pnpm]
+  --docs                     Include full documentation structure
+  --no-git                   Skip git repository initialization
+  --no-install               Skip dependency installation
+  --force                    Overwrite existing directory
+  --dry-run                  Show what would be generated
+  --verbose                  Enable verbose output
+  -h, --help                 Show this help message
+  -v, --version              Show version number
+
+Examples:
+  create-trailhead-cli my-cli
+  create-trailhead-cli my-cli --template advanced --docs
+  create-trailhead-cli my-cli --package-manager npm --no-git
+  create-trailhead-cli my-cli --dry-run
+`);
 }
 
 // Run the CLI

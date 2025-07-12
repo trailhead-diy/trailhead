@@ -1,11 +1,8 @@
-import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { fs } from '@trailhead/fs';
 import { createHash } from 'crypto';
 import Handlebars from 'handlebars';
 import { sanitizeText } from './validation.js';
 import type { TemplateContext } from './types.js';
-
-// Global filesystem instance
-const fs = createNodeFileSystem();
 
 /**
  * Cache entry structure for compiled Handlebars templates
@@ -263,8 +260,8 @@ export class TemplateCompiler {
     }
 
     // Read and compile template
-    const contentResult = await fs.readFile(templatePath, 'utf-8');
-    if (!contentResult.isOk()) {
+    const contentResult = await fs.readFile(templatePath);
+    if (contentResult.isErr()) {
       throw new Error(`Failed to read template file: ${contentResult.error.message}`);
     }
     const templateContent = contentResult.value;
@@ -330,8 +327,8 @@ export class TemplateCompiler {
       const { stat } = await import('node:fs/promises');
       const stats = await stat(templatePath);
 
-      const contentResult = await fs.readFile(templatePath, 'utf-8');
-      if (!contentResult.isOk()) {
+      const contentResult = await fs.readFile(templatePath);
+      if (contentResult.isErr()) {
         return; // Can't cache if we can't read the file
       }
 
@@ -353,8 +350,8 @@ export class TemplateCompiler {
   async precompileTemplates(templatePaths: string[]): Promise<void> {
     const promises = templatePaths.map(async templatePath => {
       try {
-        const contentResult = await fs.readFile(templatePath, 'utf-8');
-        if (!contentResult.isOk()) {
+        const contentResult = await fs.readFile(templatePath);
+        if (contentResult.isErr()) {
           return; // Skip files that can't be read
         }
 

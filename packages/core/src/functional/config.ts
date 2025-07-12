@@ -1,6 +1,6 @@
 import type { Result } from 'neverthrow';
 import { ok, err } from 'neverthrow';
-import type { TrailheadError, ConfigurationError } from '../errors/types.js';
+import type { ConfigurationError } from '../errors/types.js';
 import { createConfigurationError } from '../errors/factory.js';
 
 /**

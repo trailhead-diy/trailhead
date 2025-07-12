@@ -43,7 +43,7 @@ export type {
   WritableConfig,
   TransformConfig,
   DuplexConfig,
-  
+
   // Stream operations
   StreamProcessor,
   AsyncStreamProcessor,
@@ -51,18 +51,18 @@ export type {
   AsyncStreamPredicate,
   StreamAccumulator,
   AsyncStreamAccumulator,
-  
+
   // Stream information
   StreamInfo,
   StreamMetrics,
-  
+
   // Pipeline types
   PipelineOptions,
   PipelineStream,
-  
+
   // Batch processing
   BatchConfig,
-  
+
   // Operations interfaces
   ReadableOperations,
   WritableOperations,

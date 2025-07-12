@@ -120,7 +120,7 @@ export const createDatabaseOperations = (): DatabaseOperations => {
 
       return await adapter.transaction(
         connection,
-        async txConnection => {
+        async (txConnection: any) => {
           const tx = createTransaction(txConnection, options);
           return await fn(tx);
         },
@@ -155,7 +155,7 @@ export const createDatabaseOperations = (): DatabaseOperations => {
       // Get applied migrations
       const appliedResult = await getAppliedMigrations(connection);
       if (appliedResult.isErr()) {
-        return appliedResult;
+        return err(appliedResult.error);
       }
 
       const applied = appliedResult.value;
@@ -300,11 +300,36 @@ const createInsertQuery = <T>(table?: string, data?: any) => {
 };
 
 const createUpdateQuery = <T>(table?: string, data?: any) => {
+  let whereConditions: any[] = [];
+
   const query = {
     table: (tableName: string) => createUpdateQuery<T>(tableName, data),
-    where: (condition: any) => query,
+    where: (condition: any) => {
+      whereConditions.push(condition);
+      return query;
+    },
     returning: (columns: any) => query,
-    toSQL: () => ({ sql: 'UPDATE ' + (table || 'table'), params: [] }),
+    toSQL: () => {
+      let sql = 'UPDATE ' + (table || 'table');
+
+      // Add SET clause if data is provided
+      if (data && Object.keys(data).length > 0) {
+        const setClause = Object.keys(data)
+          .map(key => `${key} = ?`)
+          .join(', ');
+        sql += ` SET ${setClause}`;
+      }
+
+      // Add WHERE clause if conditions exist
+      if (whereConditions.length > 0) {
+        const whereClause = whereConditions
+          .map(condition => `${condition.column} ${condition.operator} ?`)
+          .join(' AND ');
+        sql += ` WHERE ${whereClause}`;
+      }
+
+      return { sql, params: [] };
+    },
     execute: async (connection: any) => {
       return ok({ updatedCount: 1, changedRows: 1 });
     },
@@ -314,11 +339,28 @@ const createUpdateQuery = <T>(table?: string, data?: any) => {
 };
 
 const createDeleteQuery = <T>(table?: string) => {
+  let whereConditions: any[] = [];
+
   const query = {
     from: (tableName: string) => createDeleteQuery<T>(tableName),
-    where: (condition: any) => query,
+    where: (condition: any) => {
+      whereConditions.push(condition);
+      return query;
+    },
     returning: (columns: any) => query,
-    toSQL: () => ({ sql: 'DELETE FROM ' + (table || 'table'), params: [] }),
+    toSQL: () => {
+      let sql = 'DELETE FROM ' + (table || 'table');
+
+      // Add WHERE clause if conditions exist
+      if (whereConditions.length > 0) {
+        const whereClause = whereConditions
+          .map(condition => `${condition.column} ${condition.operator} ?`)
+          .join(' AND ');
+        sql += ` WHERE ${whereClause}`;
+      }
+
+      return { sql, params: [] };
+    },
     execute: async (connection: any) => {
       return ok({ deletedCount: 1 });
     },
@@ -468,7 +510,7 @@ const createAlterTableBuilder = () => {
   };
 };
 
-const getAppliedMigrations = async (connection: any) => {
+const getAppliedMigrations = async (connection: any): Promise<DbResult<readonly any[]>> => {
   // Simplified implementation
   return ok([]);
 };

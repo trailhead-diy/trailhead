@@ -2,7 +2,6 @@ import { ok, err } from '@trailhead/core';
 import { Readable } from 'node:stream';
 import type {
   ReadableConfig,
-  ReadableOperations,
   StreamResult,
   StreamProcessor,
   AsyncStreamProcessor,
@@ -13,12 +12,7 @@ import type {
 } from '../types.js';
 import type { CreateReadableOperations } from './types.js';
 import { defaultReadableConfig } from './types.js';
-import {
-  createStreamError,
-  createStreamTimeoutError,
-  createInvalidStreamError,
-  mapStreamError,
-} from '../errors.js';
+import { createStreamTimeoutError, mapStreamError } from '../errors.js';
 
 // ========================================
 // Readable Stream Operations
@@ -50,7 +44,10 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
     }
   };
 
-  const createFromIterator = <T>(iterator: Iterable<T>, options: ReadableConfig = {}): StreamResult<Readable> => {
+  const createFromIterator = <T>(
+    iterator: Iterable<T>,
+    options: ReadableConfig = {}
+  ): StreamResult<Readable> => {
     try {
       const mergedOptions = { ...readableConfig, ...options };
       const iter = iterator[Symbol.iterator]();
@@ -74,7 +71,10 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
     }
   };
 
-  const createFromAsyncIterator = <T>(iterator: AsyncIterable<T>, options: ReadableConfig = {}): StreamResult<Readable> => {
+  const createFromAsyncIterator = <T>(
+    iterator: AsyncIterable<T>,
+    options: ReadableConfig = {}
+  ): StreamResult<Readable> => {
     try {
       const mergedOptions = { ...readableConfig, ...options };
       const iter = iterator[Symbol.asyncIterator]();
@@ -103,7 +103,7 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
   };
 
   const toArray = <T>(stream: Readable): Promise<StreamResult<T[]>> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const chunks: T[] = [];
       let hasError = false;
 
@@ -135,7 +135,7 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         }
       });
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         if (!hasError) {
           hasError = true;
           clearTimeout(timeoutId);
@@ -150,7 +150,7 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
     stream: Readable,
     fn: StreamProcessor<T, void> | AsyncStreamProcessor<T, void>
   ): Promise<StreamResult<void>> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let hasError = false;
 
       const cleanup = () => {
@@ -204,7 +204,7 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         }
       });
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         if (!hasError) {
           hasError = true;
           clearTimeout(timeoutId);
@@ -227,22 +227,36 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         },
       });
 
+      let pendingOperations = 0;
+      let hasEnded = false;
+
+      const checkEnd = () => {
+        if (hasEnded && pendingOperations === 0) {
+          filteredStream.push(null);
+        }
+      };
+
       stream.on('data', async (chunk: T) => {
         try {
-          const shouldInclude = await predicate(chunk);
+          pendingOperations++;
+          const result = predicate(chunk);
+          const shouldInclude = result instanceof Promise ? await result : result;
           if (shouldInclude) {
             filteredStream.push(chunk);
           }
+          pendingOperations--;
+          checkEnd();
         } catch (error) {
           filteredStream.destroy(error instanceof Error ? error : new Error(String(error)));
         }
       });
 
       stream.on('end', () => {
-        filteredStream.push(null);
+        hasEnded = true;
+        checkEnd();
       });
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         filteredStream.destroy(error);
       });
 
@@ -268,12 +282,12 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         try {
           const result = mapper(chunk);
           const mappedValue = result instanceof Promise ? await result : result;
-          
+
           if (mappedValue.isErr()) {
             mappedStream.destroy(new Error(mappedValue.error.message));
             return;
           }
-          
+
           mappedStream.push(mappedValue.value);
         } catch (error) {
           mappedStream.destroy(error instanceof Error ? error : new Error(String(error)));
@@ -284,7 +298,7 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         mappedStream.push(null);
       });
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         mappedStream.destroy(error);
       });
 
@@ -299,14 +313,45 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
     reducer: StreamAccumulator<T, R> | AsyncStreamAccumulator<T, R>,
     initialValue: R
   ): Promise<StreamResult<R>> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let accumulator = initialValue;
       let hasError = false;
+      let isProcessing = false;
+      let hasEnded = false;
+      const queue: T[] = [];
 
       const cleanup = () => {
         stream.removeAllListeners('data');
         stream.removeAllListeners('end');
         stream.removeAllListeners('error');
+      };
+
+      const processQueue = async () => {
+        if (isProcessing || hasError) return;
+        isProcessing = true;
+
+        while (queue.length > 0 && !hasError) {
+          const chunk = queue.shift()!;
+          try {
+            const result = reducer(accumulator, chunk);
+            accumulator = result instanceof Promise ? await result : result;
+          } catch (error) {
+            hasError = true;
+            clearTimeout(timeoutId);
+            cleanup();
+            resolve(err(mapStreamError('reduce', 'readable', error)));
+            return;
+          }
+        }
+
+        isProcessing = false;
+
+        // Check if we can finish now
+        if (hasEnded && queue.length === 0 && !hasError) {
+          clearTimeout(timeoutId);
+          cleanup();
+          resolve(ok(accumulator));
+        }
       };
 
       const timeoutId = setTimeout(() => {
@@ -317,28 +362,18 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         }
       }, readableConfig.timeout);
 
-      stream.on('data', async (chunk: T) => {
+      stream.on('data', (chunk: T) => {
         if (hasError) return;
-
-        try {
-          accumulator = await reducer(accumulator, chunk);
-        } catch (error) {
-          hasError = true;
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(err(mapStreamError('reduce', 'readable', error)));
-        }
+        queue.push(chunk);
+        setImmediate(() => processQueue());
       });
 
       stream.on('end', () => {
-        if (!hasError) {
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(ok(accumulator));
-        }
+        hasEnded = true;
+        setImmediate(() => processQueue());
       });
 
-      stream.on('error', (error) => {
+      stream.on('error', error => {
         if (!hasError) {
           hasError = true;
           clearTimeout(timeoutId);

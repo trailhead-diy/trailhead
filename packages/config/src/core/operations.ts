@@ -75,7 +75,7 @@ export const createConfigOperations = (): ConfigOperations => {
     try {
       const managerResult = create(definition);
       if (managerResult.isErr()) {
-        return managerResult;
+        return err(managerResult.error);
       }
 
       const manager = managerResult.value;
@@ -99,7 +99,7 @@ export const createConfigOperations = (): ConfigOperations => {
     try {
       const managerResult = create(definition);
       if (managerResult.isErr()) {
-        return managerResult;
+        return err(managerResult.error);
       }
 
       const manager = managerResult.value;

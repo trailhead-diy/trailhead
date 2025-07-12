@@ -58,7 +58,7 @@ export const zodErrorToValidationError = (
 ): ValidationError => {
   const firstError = error.errors[0];
   const path = firstError.path.join('.');
-  const field = options?.field || (path ? path : undefined);
+  const field = options?.field || (path !== '' ? path : undefined);
 
   return createValidationError(firstError.message, {
     field,

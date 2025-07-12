@@ -1,5 +1,4 @@
-import { ok, err } from '@trailhead/core';
-import type { MockOperations, MockFunction, MockImplementation, TestResult } from '../types.js';
+import type { MockOperations, MockFunction, MockImplementation } from '../types.js';
 
 // ========================================
 // Mock Operations
@@ -13,7 +12,7 @@ export const createMockOperations = (): MockOperations => {
     implementation?: MockImplementation<TArgs, TReturn>
   ): MockFunction<TArgs, TReturn> => {
     const mockFn = createMockFunction(implementation);
-    activeMocks.add(mockFn);
+    activeMocks.add(mockFn as any);
     return mockFn;
   };
 
@@ -29,13 +28,13 @@ export const createMockOperations = (): MockOperations => {
 
     // Override restore to put back original
     const originalRestore = spy.mock.restore;
-    spy.mock.restore = () => {
+    (spy.mock as any).restore = () => {
       (object as any)[method] = original;
       originalRestore();
     };
 
-    activeMocks.add(spy);
-    return spy;
+    activeMocks.add(spy as any);
+    return spy as any;
   };
 
   const mockModule = (modulePath: string, factory?: () => unknown): void => {
@@ -113,7 +112,7 @@ const createMockFunction = <TArgs extends readonly unknown[], TReturn>(
     }
   }) as MockFunction<TArgs, TReturn>;
 
-  mockFn.mock = {
+  (mockFn as any).mock = {
     calls,
     results,
     instances,

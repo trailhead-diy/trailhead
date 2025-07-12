@@ -21,7 +21,7 @@ export const defaultTransformConfig: Required<TransformConfig> = {
   encoding: 'utf8',
   autoDestroy: true,
   transform: (chunk, encoding, callback) => callback(null, chunk), // Pass-through by default
-  flush: (callback) => callback(), // No-op flush by default
+  flush: callback => callback(), // No-op flush by default
 };
 
 // ========================================
@@ -44,17 +44,17 @@ export type TransformFilterOp = <T>(
   config?: TransformConfig
 ) => StreamResult<Transform>;
 
-export type TransformBatchOp = <T>(
+export type TransformBatchOp = <_T>(
   batchConfig: BatchConfig,
   config?: TransformConfig
 ) => StreamResult<Transform>;
 
-export type TransformDebounceOp = <T>(
+export type TransformDebounceOp = <_T>(
   delayMs: number,
   config?: TransformConfig
 ) => StreamResult<Transform>;
 
-export type TransformThrottleOp = <T>(
+export type TransformThrottleOp = <_T>(
   intervalMs: number,
   config?: TransformConfig
 ) => StreamResult<Transform>;

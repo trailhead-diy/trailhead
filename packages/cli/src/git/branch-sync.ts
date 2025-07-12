@@ -1,5 +1,4 @@
-import { ok, err } from '../core/index.js';
-import { Result } from 'neverthrow';
+import { ok, err, Result } from 'neverthrow';
 import type { CLIError } from '../core/index.js';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
@@ -191,9 +190,9 @@ export function formatSyncStatus(status: BranchSyncStatus): string {
 
   if (status.behind > 0) {
     suggestion = status.canFastForward
-      ? ` (can fast-forward with: git pull --rebase ${status.remoteBranch.split('/')[0]} ${status.remoteBranch.split('/')[1]})`
+      ? ` (can fast-forward with: git pull --rebase ${status.remoteBranch?.split('/')[0]} ${status.remoteBranch?.split('/')[1]})`
       : ` (merge required)`;
   }
 
-  return `Branch '${status.currentBranch}' is ${statusText} compared to '${status.remoteBranch}'${suggestion}`;
+  return `Branch '${status.currentBranch}' is ${statusText} compared to '${status.remoteBranch || 'remote'}'${suggestion}`;
 }

@@ -10,89 +10,76 @@ export const createStreamError = (
   details?: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'StreamError',
-  message,
-  {
+): TrailheadError =>
+  createTrailheadError('StreamError', message, {
     details,
     cause,
     recoverable: true,
     context: metadata,
-  }
-);
+  });
 
 export const createStreamTimeoutError = (
   timeout: number,
   operation: string = 'stream operation',
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'StreamTimeoutError',
-  `Stream operation timed out after ${timeout}ms`,
-  {
+): TrailheadError =>
+  createTrailheadError('StreamTimeoutError', `Stream operation timed out after ${timeout}ms`, {
     details: `The ${operation} did not complete within the specified timeout period`,
     recoverable: false,
     context: { timeout, operation, ...metadata },
-  }
-);
+  });
 
 export const createStreamClosedError = (
   streamType: string = 'stream',
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'StreamClosedError',
-  `Cannot operate on closed ${streamType}`,
-  {
+): TrailheadError =>
+  createTrailheadError('StreamClosedError', `Cannot operate on closed ${streamType}`, {
     details: `The ${streamType} has been closed or destroyed and cannot accept new operations`,
     recoverable: false,
     context: { streamType, ...metadata },
-  }
-);
+  });
 
 export const createInvalidStreamError = (
   expected: string,
   actual: string = 'unknown',
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'InvalidStreamError',
-  `Invalid stream type: expected ${expected}, got ${actual}`,
-  {
-    details: `The provided stream does not meet the requirements for this operation`,
-    recoverable: false,
-    context: { expected, actual, ...metadata },
-  }
-);
+): TrailheadError =>
+  createTrailheadError(
+    'InvalidStreamError',
+    `Invalid stream type: expected ${expected}, got ${actual}`,
+    {
+      details: `The provided stream does not meet the requirements for this operation`,
+      recoverable: false,
+      context: { expected, actual, ...metadata },
+    }
+  );
 
 export const createPipelineError = (
   message: string,
   stageIndex?: number,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'PipelineError',
-  message,
-  {
-    details: stageIndex !== undefined 
-      ? `Pipeline failed at stage ${stageIndex}`
-      : 'Pipeline operation failed',
+): TrailheadError =>
+  createTrailheadError('PipelineError', message, {
+    details:
+      stageIndex !== undefined
+        ? `Pipeline failed at stage ${stageIndex}`
+        : 'Pipeline operation failed',
     cause,
     recoverable: false,
     context: { stageIndex, ...metadata },
-  }
-);
+  });
 
 export const createBackpressureError = (
   streamType: string,
   bufferSize: number,
   metadata?: Record<string, unknown>
-): TrailheadError => createTrailheadError(
-  'BackpressureError',
-  `Backpressure detected in ${streamType}`,
-  {
+): TrailheadError =>
+  createTrailheadError('BackpressureError', `Backpressure detected in ${streamType}`, {
     details: `Stream buffer is full (${bufferSize} bytes), write operation would block`,
     recoverable: true,
     context: { streamType, bufferSize, ...metadata },
-  }
-);
+  });
 
 // ========================================
 // Error Mapping Utilities
@@ -108,19 +95,22 @@ export const mapStreamError = (
     if (error.message.includes('write after end')) {
       return createStreamClosedError(streamType, { operation, originalError: error.message });
     }
-    
+
     if (error.message.includes('Cannot pipe')) {
-      return createInvalidStreamError('pipeable stream', streamType, { operation, originalError: error.message });
+      return createInvalidStreamError('pipeable stream', streamType, {
+        operation,
+        originalError: error.message,
+      });
     }
-    
+
     if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
       return createStreamTimeoutError(0, operation, { streamType, originalError: error.message });
     }
-    
+
     if (error.message.includes('EPIPE') || error.message.includes('broken pipe')) {
       return createStreamClosedError(streamType, { operation, originalError: error.message });
     }
-    
+
     // Generic stream error mapping
     return createStreamError(
       `${operation} failed: ${error.message}`,
@@ -129,7 +119,7 @@ export const mapStreamError = (
       { operation, streamType }
     );
   }
-  
+
   return createStreamError(
     `${operation} failed with unknown error`,
     `Stream operation "${operation}" on ${streamType} failed`,
@@ -144,7 +134,7 @@ export const mapLibraryError = (
   error: unknown
 ): TrailheadError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  
+
   return createStreamError(
     `${library} operation failed`,
     `Library "${library}" failed during "${operation}": ${errorMessage}`,

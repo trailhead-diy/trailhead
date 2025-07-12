@@ -36,12 +36,14 @@
     "format": "prettier --write . --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-path .prettierignore",
     "clean": "rm -rf dist",
-    "pretest": "pnpm --filter=@esteban-url/trailhead-cli build && pnpm build",
+    "pretest": "pnpm --filter='@trailhead/*' build && pnpm build",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test"
   },
   "dependencies": {
-    "@esteban-url/trailhead-cli": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/validation": "workspace:*",
     "@inquirer/prompts": "^7.6.0",
     "chalk": "^5.4.1",
     "execa": "^9.6.0",

@@ -1,15 +1,9 @@
 import { ok, err } from '@trailhead/core';
 import { Duplex, PassThrough } from 'node:stream';
-import type {
-  DuplexConfig,
-  DuplexOperations,
-  StreamResult,
-} from '../types.js';
+import type { DuplexConfig, StreamResult } from '../types.js';
 import type { CreateDuplexOperations } from './types.js';
 import { defaultDuplexConfig } from './types.js';
-import {
-  mapStreamError,
-} from '../errors.js';
+import { mapStreamError } from '../errors.js';
 
 // ========================================
 // Duplex Stream Operations
@@ -34,6 +28,11 @@ export const createDuplexOperations: CreateDuplexOperations = (config = {}) => {
           this.push(chunk);
           callback();
         },
+        final(callback) {
+          // When writable side ends, signal end of readable side
+          this.push(null);
+          callback();
+        },
       });
 
       return ok(stream);
@@ -42,7 +41,10 @@ export const createDuplexOperations: CreateDuplexOperations = (config = {}) => {
     }
   };
 
-  const createBuffer = <T>(bufferSize: number, options: DuplexConfig = {}): StreamResult<Duplex> => {
+  const createBuffer = <T>(
+    bufferSize: number,
+    options: DuplexConfig = {}
+  ): StreamResult<Duplex> => {
     try {
       const mergedOptions = { ...duplexConfig, ...options };
       const buffer: T[] = [];

@@ -29,7 +29,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly",
+    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly --skipLibCheck",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",

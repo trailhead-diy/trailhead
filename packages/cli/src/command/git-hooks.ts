@@ -5,9 +5,10 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { ok, err, type Result, type CLIError } from '../core/errors/index.js';
-import { createError } from '../core/index.js';
-import { createFileSystem } from '../filesystem/index.js';
+import { ok, err, type Result } from 'neverthrow';
+import type { TrailheadError } from '@trailhead/core';
+import { createCLIError } from '@trailhead/core';
+import { fs } from '@trailhead/fs';
 import chalk from 'chalk';
 
 // Types
@@ -36,14 +37,14 @@ const DEFAULT_SCRIPTS_DIR = 'scripts';
 /**
  * Detect project configuration
  */
-async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
-  const fs = createFileSystem();
+async function detectProjectConfig(): Promise<Result<ProjectConfig, TrailheadError>> {
+  // Use fs directly from domain package
 
   try {
     // Detect package manager
     let packageManager = 'npm';
-    const pnpmLockResult = await fs.access('pnpm-lock.yaml');
-    const yarnLockResult = await fs.access('yarn.lock');
+    const pnpmLockResult = await fs.exists('pnpm-lock.yaml');
+    const yarnLockResult = await fs.exists('yarn.lock');
 
     if (pnpmLockResult.isOk()) {
       packageManager = 'pnpm';
@@ -52,20 +53,20 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
     }
 
     // Detect monorepo
-    const turboResult = await fs.access('turbo.json');
-    const pnpmWorkspaceResult = await fs.access('pnpm-workspace.yaml');
-    const lernaResult = await fs.access('lerna.json');
+    const turboResult = await fs.exists('turbo.json');
+    const pnpmWorkspaceResult = await fs.exists('pnpm-workspace.yaml');
+    const lernaResult = await fs.exists('lerna.json');
 
     const isMonorepo = turboResult.isOk() || pnpmWorkspaceResult.isOk() || lernaResult.isOk();
 
     // Detect TypeScript
-    const tsconfigResult = await fs.access('tsconfig.json');
+    const tsconfigResult = await fs.exists('tsconfig.json');
     const hasTypeScript = tsconfigResult.isOk();
 
     // Detect test framework
     let testFramework = 'vitest';
-    const jestConfigJsResult = await fs.access('jest.config.js');
-    const jestConfigTsResult = await fs.access('jest.config.ts');
+    const jestConfigJsResult = await fs.exists('jest.config.js');
+    const jestConfigTsResult = await fs.exists('jest.config.ts');
 
     if (jestConfigJsResult.isOk() || jestConfigTsResult.isOk()) {
       testFramework = 'jest';
@@ -93,9 +94,9 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
 
     if (isMonorepo) {
       try {
-        const packagesDirResult = await fs.access('packages');
+        const packagesDirResult = await fs.exists('packages');
         if (packagesDirResult.isOk()) {
-          const dirResult = await fs.readdir('packages');
+          const dirResult = await fs.readDir('packages');
           if (dirResult.isOk()) {
             packages = dirResult.value;
           }
@@ -114,13 +115,7 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CLIError>> {
       packages,
     });
   } catch (error) {
-    return err(
-      createError(
-        'PROJECT_CONFIG_DETECTION_FAILED',
-        `Failed to detect project configuration: ${error}`,
-        { recoverable: false }
-      )
-    );
+    return err(createCLIError(`Failed to detect project configuration: ${error}`, {}));
   }
 }
 
@@ -291,8 +286,8 @@ function renderTemplate(template: string, vars: Record<string, any>): string {
 /**
  * Install git hooks
  */
-async function installGitHooks(options: GitHooksOptions): Promise<Result<void, CLIError>> {
-  const fs = createFileSystem();
+async function installGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
+  // Use fs directly from domain package
 
   try {
     console.log(chalk.blue('🔧 Installing smart git hooks...'));
@@ -329,10 +324,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const runnerTemplateResult = await fs.readFile(path.join(templatesDir, 'smart-test-runner.sh'));
     if (runnerTemplateResult.isErr()) {
       return err(
-        createError(
-          'TEMPLATE_READ_FAILED',
+        createCLIError(
           `Failed to read smart-test-runner.sh template: ${runnerTemplateResult.error.message}`,
-          { recoverable: false }
+          {}
         )
       );
     }
@@ -343,10 +337,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const writeRunnerResult = await fs.writeFile(runnerPath, runnerContent);
     if (writeRunnerResult.isErr()) {
       return err(
-        createError(
-          'FILE_WRITE_FAILED',
+        createCLIError(
           `Failed to write smart-test-runner.sh: ${writeRunnerResult.error.message}`,
-          { recoverable: false }
+          {}
         )
       );
     }
@@ -355,11 +348,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const outputResult = await fs.outputFile(runnerPath, runnerContent);
     if (outputResult.isErr()) {
       return err(
-        createError(
-          'FILE_PERMISSIONS_FAILED',
-          `Failed to set executable permissions: ${outputResult.error.message}`,
-          { recoverable: false }
-        )
+        createCLIError(`Failed to set executable permissions: ${outputResult.error.message}`, {})
       );
     }
 
@@ -369,10 +358,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     );
     if (lefthookTemplateResult.isErr()) {
       return err(
-        createError(
-          'TEMPLATE_READ_FAILED',
+        createCLIError(
           `Failed to read lefthook.yml.template: ${lefthookTemplateResult.error.message}`,
-          { recoverable: false }
+          {}
         )
       );
     }
@@ -380,18 +368,14 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const lefthookContent = renderTemplate(lefthookTemplateResult.value, vars);
 
     const lefthookPath = 'lefthook.yml';
-    const lefthookResult = await fs.access(lefthookPath);
+    const lefthookResult = await fs.exists(lefthookPath);
     if (lefthookResult.isOk() && !options.force) {
       console.log(chalk.yellow(`⚠️  ${lefthookPath} already exists. Use --force to overwrite.`));
     } else {
       const writeLefthookResult = await fs.writeFile(lefthookPath, lefthookContent);
       if (writeLefthookResult.isErr()) {
         return err(
-          createError(
-            'FILE_WRITE_FAILED',
-            `Failed to write lefthook.yml: ${writeLefthookResult.error.message}`,
-            { recoverable: false }
-          )
+          createCLIError(`Failed to write lefthook.yml: ${writeLefthookResult.error.message}`, {})
         );
       }
     }
@@ -402,10 +386,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     );
     if (configTemplateResult.isErr()) {
       return err(
-        createError(
-          'TEMPLATE_READ_FAILED',
+        createCLIError(
           `Failed to read smart-test-config.json.template: ${configTemplateResult.error.message}`,
-          { recoverable: false }
+          {}
         )
       );
     }
@@ -413,17 +396,16 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const configContent = renderTemplate(configTemplateResult.value, vars);
 
     const configPath = '.smart-test-config.json';
-    const smartConfigResult = await fs.access(configPath);
+    const smartConfigResult = await fs.exists(configPath);
     if (smartConfigResult.isOk() && !options.force) {
       console.log(chalk.yellow(`⚠️  ${configPath} already exists. Use --force to overwrite.`));
     } else {
       const writeConfigResult = await fs.writeFile(configPath, configContent);
       if (writeConfigResult.isErr()) {
         return err(
-          createError(
-            'FILE_WRITE_FAILED',
+          createCLIError(
             `Failed to write .smart-test-config.json: ${writeConfigResult.error.message}`,
-            { recoverable: false }
+            {}
           )
         );
       }
@@ -433,25 +415,20 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const readmeTemplateResult = await fs.readFile(path.join(templatesDir, 'README.md'));
     if (readmeTemplateResult.isErr()) {
       return err(
-        createError(
-          'TEMPLATE_READ_FAILED',
+        createCLIError(
           `Failed to read README.md template: ${readmeTemplateResult.error.message}`,
-          { recoverable: false }
+          {}
         )
       );
     }
 
     const readmePath = path.join(scriptsDir, 'README.md');
-    const readmeResult = await fs.access(readmePath);
+    const readmeResult = await fs.exists(readmePath);
     if (readmeResult.isErr() || options.force) {
       const writeReadmeResult = await fs.writeFile(readmePath, readmeTemplateResult.value);
       if (writeReadmeResult.isErr()) {
         return err(
-          createError(
-            'FILE_WRITE_FAILED',
-            `Failed to write README.md: ${writeReadmeResult.error.message}`,
-            { recoverable: false }
-          )
+          createCLIError(`Failed to write README.md: ${writeReadmeResult.error.message}`, {})
         );
       }
     }
@@ -466,18 +443,14 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     return ok(undefined);
   } catch (error) {
-    return err(
-      createError('GIT_HOOKS_INSTALL_FAILED', `Failed to install git hooks: ${error}`, {
-        recoverable: false,
-      })
-    );
+    return err(createCLIError(`Failed to install git hooks: ${error}`, {}));
   }
 }
 
 /**
  * Update git hooks
  */
-async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, CLIError>> {
+async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
   console.log(chalk.blue('🔄 Updating smart git hooks...'));
 
   // For updates, we force overwrite the scripts but preserve config
@@ -490,8 +463,8 @@ async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, CL
 /**
  * Remove git hooks
  */
-async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CLIError>> {
-  const fs = createFileSystem();
+async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
+  // Use fs directly from domain package
 
   try {
     console.log(chalk.yellow('🗑️  Removing smart git hooks...'));
@@ -515,9 +488,9 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
     ];
 
     for (const file of filesToRemove) {
-      const fileResult = await fs.access(file);
+      const fileResult = await fs.exists(file);
       if (fileResult.isOk()) {
-        const removeResult = await fs.rm(file, {
+        const removeResult = await fs.remove(file, {
           recursive: true,
           force: true,
         });
@@ -529,9 +502,9 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
 
     // Remove scripts directory if empty
     try {
-      const entriesResult = await fs.readdir(scriptsDir);
+      const entriesResult = await fs.readDir(scriptsDir);
       if (entriesResult.isOk() && entriesResult.value.length === 0) {
-        const removeDirResult = await fs.rm(scriptsDir, {
+        const removeDirResult = await fs.remove(scriptsDir, {
           recursive: true,
           force: true,
         });
@@ -550,18 +523,14 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CL
 
     return ok(undefined);
   } catch (error) {
-    return err(
-      createError('GIT_HOOKS_REMOVE_FAILED', `Failed to remove git hooks: ${error}`, {
-        recoverable: false,
-      })
-    );
+    return err(createCLIError(`Failed to remove git hooks: ${error}`, {}));
   }
 }
 
 /**
  * Interactive configuration wizard for git hooks
  */
-async function configureGitHooks(): Promise<Result<void, CLIError>> {
+async function configureGitHooks(): Promise<Result<void, TrailheadError>> {
   try {
     console.log(chalk.blue('🔧 Git Hooks Configuration Wizard'));
     console.log('This wizard will help you configure smart test execution.');
@@ -600,11 +569,7 @@ async function configureGitHooks(): Promise<Result<void, CLIError>> {
 
     return ok(undefined);
   } catch (error) {
-    return err(
-      createError('CONFIG_WIZARD_FAILED', `Configuration wizard failed: ${error}`, {
-        recoverable: false,
-      })
-    );
+    return err(createCLIError(`Configuration wizard failed: ${error}`, {}));
   }
 }
 
@@ -681,14 +646,14 @@ export function createGitHooksCommand(): Command {
     .command('status')
     .description('Show git hooks status')
     .action(async () => {
-      const fs = createFileSystem();
+      // Use fs directly from domain package
 
       console.log(chalk.blue('📊 Git Hooks Status'));
 
       const files = ['scripts/smart-test-runner.sh', 'lefthook.yml', '.smart-test-config.json'];
 
       for (const file of files) {
-        const fileResult = await fs.access(file);
+        const fileResult = await fs.exists(file);
         const status = fileResult.isOk() ? chalk.green('✅ Installed') : chalk.red('❌ Missing');
         console.log(`   ${file}: ${status}`);
       }

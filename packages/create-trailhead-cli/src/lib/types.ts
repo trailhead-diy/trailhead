@@ -73,6 +73,10 @@ export interface ProjectConfig {
   installDependencies: boolean;
   /** Whether to run in dry-run mode (no actual file operations) */
   dryRun: boolean;
+  /** Whether to force overwrite existing directories */
+  force: boolean;
+  /** Whether to enable verbose logging */
+  verbose: boolean;
 }
 
 /**
@@ -224,8 +228,6 @@ export interface TemplateLoaderConfig {
 export interface GeneratorContext {
   /** Logger instance for user feedback and debugging */
   logger: any;
-  /** Filesystem abstraction for file operations */
-  fs: any;
   /** Whether to enable verbose logging output */
   verbose: boolean;
   /** Optional template loader configuration for custom template paths */

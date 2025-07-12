@@ -262,6 +262,7 @@ export const createGitError = (
 export const createCLIError = (
   message: string,
   options?: {
+    code?: string;
     command?: string;
     args?: string[];
     cause?: unknown;
@@ -272,8 +273,81 @@ export const createCLIError = (
   type: 'CLI_ERROR',
   category: 'cli',
   message,
+  code: options?.code,
   command: options?.command,
   args: options?.args,
+  cause: options?.cause,
+  suggestion: options?.suggestion,
+  recoverable: true,
+  context: options?.context,
+});
+
+// Dependency Errors
+export const createDependencyError = (
+  message: string,
+  options?: {
+    packageName?: string;
+    requiredVersion?: string;
+    installedVersion?: string;
+    cause?: unknown;
+    suggestion?: string;
+    context?: Record<string, unknown>;
+  }
+): DependencyError => ({
+  type: 'DEPENDENCY_ERROR',
+  category: 'dependency',
+  message,
+  packageName: options?.packageName,
+  requiredVersion: options?.requiredVersion,
+  installedVersion: options?.installedVersion,
+  cause: options?.cause,
+  suggestion: options?.suggestion,
+  recoverable: true,
+  context: options?.context,
+});
+
+// Execution Errors
+export const createExecutionError = (
+  message: string,
+  options?: {
+    command?: string;
+    exitCode?: number;
+    stdout?: string;
+    stderr?: string;
+    cause?: unknown;
+    suggestion?: string;
+    context?: Record<string, unknown>;
+  }
+): ExecutionError => ({
+  type: 'EXECUTION_ERROR',
+  category: 'execution',
+  message,
+  command: options?.command,
+  exitCode: options?.exitCode,
+  stdout: options?.stdout,
+  stderr: options?.stderr,
+  cause: options?.cause,
+  suggestion: options?.suggestion,
+  recoverable: false,
+  context: options?.context,
+});
+
+// User Input Errors
+export const createUserInputError = (
+  message: string,
+  options?: {
+    input?: string;
+    expectedFormat?: string;
+    cause?: unknown;
+    suggestion?: string;
+    context?: Record<string, unknown>;
+  }
+): UserInputError => ({
+  type: 'USER_INPUT_ERROR',
+  category: 'user-input',
+  message,
+  input: options?.input,
+  expectedFormat: options?.expectedFormat,
   cause: options?.cause,
   suggestion: options?.suggestion,
   recoverable: true,

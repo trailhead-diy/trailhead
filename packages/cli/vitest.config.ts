@@ -27,6 +27,16 @@ const packageSpecificConfig = defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@trailhead/core': path.resolve(__dirname, '../core/src'),
+      '@trailhead/fs': path.resolve(__dirname, '../fs/src'),
+      '@trailhead/validation': path.resolve(__dirname, '../validation/src'),
+      '@trailhead/data': path.resolve(__dirname, '../data/src'),
+      '@trailhead/formats': path.resolve(__dirname, '../formats/src'),
+      '@trailhead/streams': path.resolve(__dirname, '../streams/src'),
+      '@trailhead/watcher': path.resolve(__dirname, '../watcher/src'),
+      '@trailhead/workflows': path.resolve(__dirname, '../workflows/src'),
+      '@trailhead/config': path.resolve(__dirname, '../config/src'),
+      '@trailhead/git': path.resolve(__dirname, '../git/src'),
     },
   },
 });

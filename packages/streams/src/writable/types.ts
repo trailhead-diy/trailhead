@@ -1,8 +1,4 @@
-import type {
-  WritableConfig,
-  WritableOperations,
-  StreamResult,
-} from '../types.js';
+import type { WritableConfig, WritableOperations, StreamResult } from '../types.js';
 import type { Writable } from 'node:stream';
 
 // ========================================
@@ -12,11 +8,11 @@ import type { Writable } from 'node:stream';
 export const defaultWritableConfig: Required<WritableConfig> = {
   timeout: 30000,
   highWaterMark: 16384,
-  objectMode: false,
+  objectMode: true,
   encoding: 'utf8',
   autoDestroy: true,
   write: (chunk, encoding, callback) => callback(), // Default no-op write
-  final: (callback) => callback(), // Default no-op final
+  final: callback => callback(), // Default no-op final
 };
 
 // ========================================
@@ -61,11 +57,7 @@ export interface BufferSink {
   readonly buffer: Buffer[];
 }
 
-export type StreamSink<T> = 
-  | ArraySink<T>
-  | CallbackSink<T>
-  | FileSink
-  | BufferSink;
+export type StreamSink<T> = ArraySink<T> | CallbackSink<T> | FileSink | BufferSink;
 
 // ========================================
 // Writable Stream Operation Types

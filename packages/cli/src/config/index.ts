@@ -1,29 +1,12 @@
-// Delegate to @trailhead/config domain package
-export * from '@trailhead/config/core';
+// Pure delegation to @trailhead/config domain package
+export * from '@trailhead/config';
 
-// Keep CLI-specific templates
-export {
-  configTemplates,
-  getTemplate,
-  getTemplateNames,
-  hasTemplate,
-  dataProcessingTemplate,
-  cliAppTemplate,
-  fileWatcherTemplate,
-  apiClientTemplate,
-  buildToolTemplate,
-  testRunnerTemplate,
-} from './templates.js';
-
-export type {
-  ConfigTemplate,
-  DataProcessingConfig,
-  CliAppConfig,
-  FileWatcherConfig,
-  ApiClientConfig,
-  BuildToolConfig,
-  TestRunnerConfig,
-} from './templates.js';
+// Re-export for backward compatibility
+import { createConfigOperations as createConfig } from '@trailhead/config';
+export { createConfig };
 
 // Re-export z from zod for convenience
 export { z } from 'zod';
+
+// Backward compatibility aliases
+export type { ConfigResult as ConfigLoadResult } from '@trailhead/config';

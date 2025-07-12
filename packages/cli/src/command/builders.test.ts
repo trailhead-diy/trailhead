@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { createMemoryFileSystem } from '../filesystem/index.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createSilentLogger } from '../core/index.js';
 import { ok, err } from 'neverthrow';
 import {
@@ -10,17 +9,53 @@ import {
   type FileProcessingContext,
 } from './builders.js';
 import type { CommandContext } from './types.js';
+import type { FileSystem } from '../filesystem/index.js';
 
 describe('Command Enhancement Suite', () => {
   let context: CommandContext;
+  let mockFs: FileSystem;
 
   beforeEach(() => {
-    const fs = createMemoryFileSystem();
+    // Create mock filesystem that tracks files for realistic testing
+    const files = new Map<string, string>();
+
+    mockFs = {
+      readFile: vi.fn().mockImplementation(async (path: string) => {
+        const content = files.get(path);
+        return content ? ok(content) : err({ message: `File not found: ${path}` });
+      }),
+      writeFile: vi.fn().mockImplementation(async (path: string, content: string) => {
+        files.set(path, content);
+        return ok(undefined);
+      }),
+      mkdir: vi.fn().mockResolvedValue(ok(undefined)),
+      readdir: vi.fn(),
+      access: vi.fn(),
+      exists: vi.fn().mockImplementation(async (path: string) => {
+        return ok(files.has(path));
+      }),
+      stat: vi.fn(),
+      rm: vi.fn().mockImplementation(async (path: string) => {
+        files.delete(path);
+        return ok(undefined);
+      }),
+      cp: vi.fn(),
+      rename: vi.fn(),
+      readJson: vi.fn(),
+      writeJson: vi.fn(),
+      ensureDir: vi.fn().mockResolvedValue(ok(undefined)),
+      emptyDir: vi.fn().mockResolvedValue(ok(undefined)),
+      outputFile: vi.fn().mockImplementation(async (path: string, content: string) => {
+        files.set(path, content);
+        return ok(undefined);
+      }),
+    } as FileSystem;
+
     context = {
       projectRoot: '/test',
       logger: createSilentLogger(),
       verbose: false,
-      fs,
+      fs: mockFs,
       args: [],
     };
   });
@@ -178,7 +213,8 @@ describe('Command Enhancement Suite', () => {
 
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.message).toBe("Required field 'input file' is missing");
+        expect(result.error.message).toBe('input file');
+        expect(result.error.category).toBe('validation');
       }
     });
 

@@ -25,7 +25,11 @@ export interface ReadableConfig extends StreamConfig {
 }
 
 export interface WritableConfig extends StreamConfig {
-  readonly write?: (chunk: any, encoding: BufferEncoding, callback: (error?: Error | null) => void) => void;
+  readonly write?: (
+    chunk: any,
+    encoding: BufferEncoding,
+    callback: (error?: Error | null) => void
+  ) => void;
   readonly final?: (callback: (error?: Error | null) => void) => void;
 }
 
@@ -36,7 +40,11 @@ export interface TransformConfig extends StreamConfig {
 
 export interface DuplexConfig extends StreamConfig {
   readonly read?: (size: number) => void;
-  readonly write?: (chunk: any, encoding: BufferEncoding, callback: (error?: Error | null) => void) => void;
+  readonly write?: (
+    chunk: any,
+    encoding: BufferEncoding,
+    callback: (error?: Error | null) => void
+  ) => void;
   readonly final?: (callback: (error?: Error | null) => void) => void;
   readonly allowHalfOpen?: boolean;
 }
@@ -106,15 +114,18 @@ export interface StreamMetrics {
 // Functional Operation Types
 // ========================================
 
-export type CreateReadableStream<T> = (config?: ReadableConfig) => StreamResult<Readable>;
-export type CreateWritableStream<T> = (config?: WritableConfig) => StreamResult<Writable>;
+export type CreateReadableStream<_T> = (config?: ReadableConfig) => StreamResult<Readable>;
+export type CreateWritableStream<_T> = (config?: WritableConfig) => StreamResult<Writable>;
 export type CreateTransformStream<T, R> = (
   processor: StreamProcessor<T, R> | AsyncStreamProcessor<T, R>,
   config?: TransformConfig
 ) => StreamResult<Transform>;
-export type CreateDuplexStream<T, R> = (config?: DuplexConfig) => StreamResult<Duplex>;
+export type CreateDuplexStream<_T, _R> = (config?: DuplexConfig) => StreamResult<Duplex>;
 
-export type PipelineOp = (streams: PipelineStream[], options?: PipelineOptions) => Promise<StreamResult<void>>;
+export type PipelineOp = (
+  streams: PipelineStream[],
+  options?: PipelineOptions
+) => Promise<StreamResult<void>>;
 export type StreamToArrayOp<T> = (stream: Readable) => Promise<StreamResult<T[]>>;
 export type ArrayToStreamOp<T> = (array: T[], config?: ReadableConfig) => StreamResult<Readable>;
 
@@ -124,41 +135,75 @@ export type ArrayToStreamOp<T> = (array: T[], config?: ReadableConfig) => Stream
 
 export interface ReadableOperations {
   readonly createFromArray: <T>(data: T[], config?: ReadableConfig) => StreamResult<Readable>;
-  readonly createFromIterator: <T>(iterator: Iterable<T>, config?: ReadableConfig) => StreamResult<Readable>;
-  readonly createFromAsyncIterator: <T>(iterator: AsyncIterable<T>, config?: ReadableConfig) => StreamResult<Readable>;
+  readonly createFromIterator: <T>(
+    iterator: Iterable<T>,
+    config?: ReadableConfig
+  ) => StreamResult<Readable>;
+  readonly createFromAsyncIterator: <T>(
+    iterator: AsyncIterable<T>,
+    config?: ReadableConfig
+  ) => StreamResult<Readable>;
   readonly toArray: <T>(stream: Readable) => Promise<StreamResult<T[]>>;
-  readonly forEach: <T>(stream: Readable, fn: StreamProcessor<T, void> | AsyncStreamProcessor<T, void>) => Promise<StreamResult<void>>;
-  readonly filter: <T>(stream: Readable, predicate: StreamPredicate<T> | AsyncStreamPredicate<T>) => StreamResult<Readable>;
-  readonly map: <T, R>(stream: Readable, mapper: StreamProcessor<T, R> | AsyncStreamProcessor<T, R>) => StreamResult<Readable>;
-  readonly reduce: <T, R>(stream: Readable, reducer: StreamAccumulator<T, R> | AsyncStreamAccumulator<T, R>, initialValue: R) => Promise<StreamResult<R>>;
+  readonly forEach: <T>(
+    stream: Readable,
+    fn: StreamProcessor<T, void> | AsyncStreamProcessor<T, void>
+  ) => Promise<StreamResult<void>>;
+  readonly filter: <T>(
+    stream: Readable,
+    predicate: StreamPredicate<T> | AsyncStreamPredicate<T>
+  ) => StreamResult<Readable>;
+  readonly map: <T, R>(
+    stream: Readable,
+    mapper: StreamProcessor<T, R> | AsyncStreamProcessor<T, R>
+  ) => StreamResult<Readable>;
+  readonly reduce: <T, R>(
+    stream: Readable,
+    reducer: StreamAccumulator<T, R> | AsyncStreamAccumulator<T, R>,
+    initialValue: R
+  ) => Promise<StreamResult<R>>;
 }
 
 export interface WritableOperations {
   readonly createToArray: <T>(target: T[], config?: WritableConfig) => StreamResult<Writable>;
-  readonly createToCallback: <T>(callback: (data: T) => void | Promise<void>, config?: WritableConfig) => StreamResult<Writable>;
+  readonly createToCallback: <T>(
+    callback: (data: T) => void | Promise<void>,
+    config?: WritableConfig
+  ) => StreamResult<Writable>;
   readonly writeAll: <T>(stream: Writable, data: T[]) => Promise<StreamResult<void>>;
   readonly end: (stream: Writable) => Promise<StreamResult<void>>;
 }
 
 export interface TransformOperations {
-  readonly map: <T, R>(mapper: StreamProcessor<T, R> | AsyncStreamProcessor<T, R>, config?: TransformConfig) => StreamResult<Transform>;
-  readonly filter: <T>(predicate: StreamPredicate<T> | AsyncStreamPredicate<T>, config?: TransformConfig) => StreamResult<Transform>;
-  readonly batch: <T>(batchConfig: BatchConfig, config?: TransformConfig) => StreamResult<Transform>;
-  readonly debounce: <T>(delayMs: number, config?: TransformConfig) => StreamResult<Transform>;
-  readonly throttle: <T>(intervalMs: number, config?: TransformConfig) => StreamResult<Transform>;
+  readonly map: <T, R>(
+    mapper: StreamProcessor<T, R> | AsyncStreamProcessor<T, R>,
+    config?: TransformConfig
+  ) => StreamResult<Transform>;
+  readonly filter: <T>(
+    predicate: StreamPredicate<T> | AsyncStreamPredicate<T>,
+    config?: TransformConfig
+  ) => StreamResult<Transform>;
+  readonly batch: <_T>(
+    batchConfig: BatchConfig,
+    config?: TransformConfig
+  ) => StreamResult<Transform>;
+  readonly debounce: <_T>(delayMs: number, config?: TransformConfig) => StreamResult<Transform>;
+  readonly throttle: <_T>(intervalMs: number, config?: TransformConfig) => StreamResult<Transform>;
   readonly compress: (config?: TransformConfig) => StreamResult<Transform>;
   readonly decompress: (config?: TransformConfig) => StreamResult<Transform>;
 }
 
 export interface DuplexOperations {
   readonly createEcho: (config?: DuplexConfig) => StreamResult<Duplex>;
-  readonly createBuffer: <T>(bufferSize: number, config?: DuplexConfig) => StreamResult<Duplex>;
+  readonly createBuffer: <_T>(bufferSize: number, config?: DuplexConfig) => StreamResult<Duplex>;
   readonly createPassThrough: (config?: DuplexConfig) => StreamResult<Duplex>;
 }
 
 export interface PipelineOperations {
   readonly pipeline: PipelineOp;
   readonly compose: (...streams: PipelineStream[]) => StreamResult<PipelineStream>;
-  readonly split: <T>(stream: Readable, ...destinations: Writable[]) => Promise<StreamResult<void>>;
+  readonly split: <_T>(
+    stream: Readable,
+    ...destinations: Writable[]
+  ) => Promise<StreamResult<void>>;
   readonly merge: (...streams: Readable[]) => StreamResult<Readable>;
 }

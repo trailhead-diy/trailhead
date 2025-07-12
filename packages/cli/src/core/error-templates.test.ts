@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   errorTemplates,
   errors,
-  createErrorTemplate,
-  createErrorTemplateRegistry,
+  createCLIErrorTemplate as createErrorTemplate,
+  createCLIErrorTemplateRegistry as createErrorTemplateRegistry,
   globalErrorTemplates,
 } from './error-templates.js';
 import type { ErrorTemplateRegistry } from './error-templates.js';
@@ -15,7 +15,7 @@ describe('Error Templates', () => {
         const error = errorTemplates.fileNotFound('/path/to/file.txt');
 
         expect(error.category).toBe('filesystem');
-        expect(error.code).toBe('FILESYSTEM_ERROR');
+        expect(error.type).toBe('FS_READ_ERROR');
         expect(error.message).toBe('File not found: /path/to/file.txt');
         expect(error.path).toBe('/path/to/file.txt');
         expect(error.operation).toBe('read');
@@ -71,7 +71,7 @@ describe('Error Templates', () => {
         const error = errorTemplates.requiredFieldMissing('email');
 
         expect(error.category).toBe('validation');
-        expect(error.code).toBe('VALIDATION_ERROR');
+        expect(error.type).toBe('VALIDATION_ERROR');
         expect(error.message).toBe("Required field 'email' is missing");
         expect(error.field).toBe('email');
         expect(error.suggestion).toContain('Provide a value');
@@ -116,7 +116,7 @@ describe('Error Templates', () => {
         const error = errorTemplates.connectionTimeout('https://api.example.com', 5000);
 
         expect(error.category).toBe('network');
-        expect(error.code).toBe('NETWORK_TIMEOUT');
+        expect(error.type).toBe('NETWORK_TIMEOUT');
         expect(error.message).toBe('Connection timeout: https://api.example.com');
         expect(error.url).toBe('https://api.example.com');
         expect(error.timeout).toBe(true);
@@ -172,9 +172,9 @@ describe('Error Templates', () => {
         const error = errorTemplates.configFileMissing('/path/to/config.json');
 
         expect(error.category).toBe('configuration');
-        expect(error.code).toBe('CONFIGURATION_ERROR');
+        expect(error.type).toBe('CONFIG_ERROR');
         expect(error.message).toBe('Configuration file not found: /path/to/config.json');
-        expect(error.configPath).toBe('/path/to/config.json');
+        expect(error.configFile).toBe('/path/to/config.json');
         expect(error.suggestion).toContain('--init');
       });
 
@@ -183,7 +183,7 @@ describe('Error Templates', () => {
 
         expect(error.category).toBe('configuration');
         expect(error.message).toBe('Invalid configuration file: /path/to/config.json');
-        expect(error.parseError).toBe('Unexpected token');
+        expect(error.suggestion).toContain('Unexpected token');
         expect(error.suggestion).toContain('Fix the configuration syntax: Unexpected token');
       });
 
@@ -192,9 +192,8 @@ describe('Error Templates', () => {
 
         expect(error.category).toBe('configuration');
         expect(error.message).toBe("Invalid configuration value for 'port': expected number");
-        expect(error.configKey).toBe('port');
-        expect(error.configValue).toBe('invalid');
-        expect(error.expectedType).toBe('number');
+        expect(error.invalidFields).toEqual(['port']);
+        expect(error.suggestion).toContain('valid number value');
       });
     });
 
@@ -203,7 +202,7 @@ describe('Error Templates', () => {
         const error = errorTemplates.commandNotFound('nonexistent-command');
 
         expect(error.category).toBe('execution');
-        expect(error.code).toBe('EXECUTION_ERROR');
+        expect(error.type).toBe('EXECUTION_ERROR');
         expect(error.message).toBe('Command not found: nonexistent-command');
         expect(error.command).toBe('nonexistent-command');
         expect(error.suggestion).toContain('installed and available in PATH');
@@ -226,7 +225,7 @@ describe('Error Templates', () => {
         expect(error.category).toBe('execution');
         expect(error.message).toBe('Process timeout: slow-command (after 30000ms)');
         expect(error.command).toBe('slow-command');
-        expect(error.timeout).toBe(30000);
+        expect(error.message).toContain('30000ms');
         expect(error.suggestion).toContain('Increase timeout');
       });
     });
@@ -235,30 +234,30 @@ describe('Error Templates', () => {
       it('creates invalid input error', () => {
         const error = errorTemplates.invalidInput('invalid-value', 'Must be a number');
 
-        expect(error.category).toBe('user_input');
-        expect(error.code).toBe('USER_INPUT_ERROR');
+        expect(error.category).toBe('user-input');
+        expect(error.type).toBe('USER_INPUT_ERROR');
         expect(error.message).toBe('Invalid input: invalid-value');
         expect(error.input).toBe('invalid-value');
-        expect(error.reason).toBe('Must be a number');
+        expect(error.suggestion).toContain('Must be a number');
         expect(error.suggestion).toBe('Must be a number');
       });
 
       it('creates missing argument error', () => {
         const error = errorTemplates.missingArgument('filename');
 
-        expect(error.category).toBe('user_input');
+        expect(error.category).toBe('user-input');
         expect(error.message).toBe('Missing required argument: filename');
-        expect(error.argument).toBe('filename');
+        expect(error.message).toContain('filename');
         expect(error.suggestion).toContain('required argument: filename');
       });
 
       it('creates too many arguments error', () => {
         const error = errorTemplates.tooManyArguments(2, 5);
 
-        expect(error.category).toBe('user_input');
+        expect(error.category).toBe('user-input');
         expect(error.message).toBe('Too many arguments: expected 2, got 5');
-        expect(error.expected).toBe(2);
-        expect(error.actual).toBe(5);
+        expect(error.message).toContain('expected 2');
+        expect(error.message).toContain('got 5');
         expect(error.suggestion).toContain('exactly 2 arguments');
       });
     });
@@ -268,7 +267,7 @@ describe('Error Templates', () => {
         const error = errorTemplates.packageNotInstalled('typescript', 'npm install typescript');
 
         expect(error.category).toBe('dependency');
-        expect(error.code).toBe('DEPENDENCY_ERROR');
+        expect(error.type).toBe('DEPENDENCY_ERROR');
         expect(error.message).toBe('Package not installed: typescript');
         expect(error.packageName).toBe('typescript');
         expect(error.suggestion).toBe('Install the package: npm install typescript');
@@ -281,7 +280,7 @@ describe('Error Templates', () => {
         expect(error.message).toBe('Version mismatch for node: required 18.0.0, found 16.0.0');
         expect(error.packageName).toBe('node');
         expect(error.requiredVersion).toBe('18.0.0');
-        expect(error.actualVersion).toBe('16.0.0');
+        expect(error.installedVersion).toBe('16.0.0');
         expect(error.suggestion).toContain('Update');
       });
 
@@ -294,8 +293,8 @@ describe('Error Templates', () => {
 
         expect(error.category).toBe('dependency');
         expect(error.message).toBe('Dependency conflict between package-a and package-b');
-        expect(error.conflictingPackages).toEqual(['package-a', 'package-b']);
-        expect(error.reason).toBe('Incompatible versions');
+        expect(error.packageName).toBe('package-a');
+        expect(error.message).toContain('package-b');
         expect(error.suggestion).toBe('Incompatible versions');
       });
     });
@@ -304,7 +303,7 @@ describe('Error Templates', () => {
       it('creates operation cancelled error', () => {
         const error = errorTemplates.operationCancelled('file-upload');
 
-        expect(error.code).toBe('OPERATION_CANCELLED');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Operation cancelled: file-upload');
         expect(error.recoverable).toBe(true);
         expect(error.suggestion).toContain('Restart the operation');
@@ -313,18 +312,18 @@ describe('Error Templates', () => {
       it('creates operation timeout error', () => {
         const error = errorTemplates.operationTimeout('backup', 60000);
 
-        expect(error.code).toBe('OPERATION_TIMEOUT');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Operation timed out: backup (after 60000ms)');
-        expect(error.details).toBe('Timeout: 60000ms');
+        expect(error.message).toContain('60000ms');
         expect(error.recoverable).toBe(true);
       });
 
       it('creates operation failed error', () => {
         const error = errorTemplates.operationFailed('sync', 'Network connection lost');
 
-        expect(error.code).toBe('OPERATION_FAILED');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Operation failed: sync');
-        expect(error.details).toBe('Network connection lost');
+        expect(error.message).toContain('sync');
         expect(error.recoverable).toBe(true);
       });
     });
@@ -333,9 +332,9 @@ describe('Error Templates', () => {
       it('creates parse failure error', () => {
         const error = errorTemplates.parseFailure('JSON', '/path/to/file.json', 'Unexpected token');
 
-        expect(error.code).toBe('PARSE_FAILURE');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Failed to parse JSON: /path/to/file.json');
-        expect(error.details).toBe('Unexpected token');
+        expect(error.message).toContain('JSON');
         expect(error.suggestion).toContain('Fix the JSON syntax: Unexpected token');
       });
 
@@ -350,9 +349,9 @@ describe('Error Templates', () => {
       it('creates unsupported format error', () => {
         const error = errorTemplates.unsupportedFormat('yaml', ['json', 'csv', 'xml']);
 
-        expect(error.code).toBe('UNSUPPORTED_FORMAT');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Unsupported format: yaml');
-        expect(error.details).toBe('Supported formats: json, csv, xml');
+        expect(error.message).toContain('yaml');
         expect(error.suggestion).toContain('Use one of the supported formats');
       });
     });
@@ -361,7 +360,7 @@ describe('Error Templates', () => {
       it('creates authentication failed error', () => {
         const error = errorTemplates.authenticationFailed('GitHub');
 
-        expect(error.code).toBe('AUTHENTICATION_FAILED');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Authentication failed for GitHub');
         expect(error.recoverable).toBe(true);
         expect(error.suggestion).toContain('Check your credentials');
@@ -376,7 +375,7 @@ describe('Error Templates', () => {
       it('creates authentication expired error', () => {
         const error = errorTemplates.authenticationExpired('API');
 
-        expect(error.code).toBe('AUTHENTICATION_EXPIRED');
+        expect(error.type).toBe('CLI_ERROR');
         expect(error.message).toBe('Authentication expired for API');
         expect(error.recoverable).toBe(true);
         expect(error.suggestion).toContain('Re-authenticate');

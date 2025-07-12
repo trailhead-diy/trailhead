@@ -1,4 +1,4 @@
-import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
+// import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
 import type { ProjectConfig, TemplateContext } from './types.js';
 
 /**
@@ -12,7 +12,7 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
-    description: `CLI application built with @esteban-url/trailhead-cli`,
+    description: `CLI application built with @trailhead/* domain packages`,
     author: await getGitUser(),
     email: await getGitEmail(),
     license: 'MIT',
@@ -102,9 +102,7 @@ function sanitizePackageName(projectName: string): string {
  * Get git user name with security validation
  */
 async function getGitUser(): Promise<string> {
-  const nameResult = await executeGitCommandSimple(['config', '--global', 'user.name'], {
-    timeout: 5000,
-  });
+  const nameResult = { isOk: () => false, value: 'Your Name' }; // TODO: Implement git config
 
   if (!nameResult.isOk()) {
     return 'Your Name';
@@ -128,9 +126,7 @@ async function getGitUser(): Promise<string> {
  * Get git user email with security validation
  */
 async function getGitEmail(): Promise<string> {
-  const emailResult = await executeGitCommandSimple(['config', '--global', 'user.email'], {
-    timeout: 5000,
-  });
+  const emailResult = { isOk: () => false, value: 'your.email@example.com' }; // TODO: Implement git config
 
   if (!emailResult.isOk()) {
     return 'your.email@example.com';

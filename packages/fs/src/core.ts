@@ -33,21 +33,21 @@ export const defaultFSConfig: FSConfig = {
 
 // Core filesystem operations with dependency injection
 export const readFile =
-  (config: FSConfig = defaultFSConfig): ReadFileOp =>
+  (_config: FSConfig = defaultFSConfig): ReadFileOp =>
   async (path: string): Promise<FSResult<string>> => {
     try {
-      const content = await fs.readFile(path, config.encoding || 'utf8');
-      return ok(content as string);
+      const content = await fs.readFile(path, _config.encoding || 'utf8');
+      return ok(String(content));
     } catch (error) {
       return err(mapNodeError('Read file', path, error));
     }
   };
 
 export const writeFile =
-  (config: FSConfig = defaultFSConfig): WriteFileOp =>
+  (_config: FSConfig = defaultFSConfig): WriteFileOp =>
   async (path: string, content: string): Promise<FSResult<void>> => {
     try {
-      await fs.writeFile(path, content, config.encoding || 'utf8');
+      await fs.writeFile(path, content, _config.encoding || 'utf8');
       return ok(undefined);
     } catch (error) {
       return err(mapNodeError('Write file', path, error));
@@ -55,10 +55,10 @@ export const writeFile =
   };
 
 export const exists =
-  (config: FSConfig = defaultFSConfig): ExistsOp =>
+  (_config: FSConfig = defaultFSConfig): ExistsOp =>
   async (path: string): Promise<FSResult<boolean>> => {
     try {
-      await fs.access(path, config.defaultMode);
+      await fs.access(path, _config.defaultMode);
       return ok(true);
     } catch (error: any) {
       if (error.code === 'ENOENT') {
@@ -69,7 +69,7 @@ export const exists =
   };
 
 export const stat =
-  (config: FSConfig = defaultFSConfig): StatOp =>
+  (_config: FSConfig = defaultFSConfig): StatOp =>
   async (path: string): Promise<FSResult<FileStats>> => {
     try {
       const stats = await fs.stat(path);
@@ -86,7 +86,7 @@ export const stat =
   };
 
 export const mkdir =
-  (config: FSConfig = defaultFSConfig): MkdirOp =>
+  (_config: FSConfig = defaultFSConfig): MkdirOp =>
   async (path: string, options: MkdirOptions = {}): Promise<FSResult<void>> => {
     try {
       await fs.mkdir(path, { recursive: options.recursive });
@@ -97,7 +97,7 @@ export const mkdir =
   };
 
 export const readDir =
-  (config: FSConfig = defaultFSConfig): ReadDirOp =>
+  (_config: FSConfig = defaultFSConfig): ReadDirOp =>
   async (path: string): Promise<FSResult<string[]>> => {
     try {
       const entries = await fs.readdir(path);
@@ -108,7 +108,7 @@ export const readDir =
   };
 
 export const copy =
-  (config: FSConfig = defaultFSConfig): CopyOp =>
+  (_config: FSConfig = defaultFSConfig): CopyOp =>
   async (src: string, dest: string, options: CopyOptions = {}): Promise<FSResult<void>> => {
     try {
       await fs.cp(src, dest, {
@@ -122,7 +122,7 @@ export const copy =
   };
 
 export const move =
-  (config: FSConfig = defaultFSConfig): MoveOp =>
+  (_config: FSConfig = defaultFSConfig): MoveOp =>
   async (src: string, dest: string, options: MoveOptions = {}): Promise<FSResult<void>> => {
     try {
       // Check if destination exists and overwrite is disabled
@@ -152,7 +152,7 @@ export const move =
   };
 
 export const remove =
-  (config: FSConfig = defaultFSConfig): RemoveOp =>
+  (_config: FSConfig = defaultFSConfig): RemoveOp =>
   async (path: string, options: RmOptions = {}): Promise<FSResult<void>> => {
     try {
       await fs.rm(path, {
@@ -166,11 +166,11 @@ export const remove =
   };
 
 export const readJson =
-  (config: FSConfig = defaultFSConfig): ReadJsonOp =>
+  (_config: FSConfig = defaultFSConfig): ReadJsonOp =>
   async <T = any>(path: string): Promise<FSResult<T>> => {
     try {
-      const content = await fs.readFile(path, config.encoding || 'utf8');
-      const data = JSON.parse(content as string) as T;
+      const content = await fs.readFile(path, _config.encoding || 'utf8');
+      const data = JSON.parse(String(content)) as T;
       return ok(data);
     } catch (error: any) {
       if (error.code === 'ENOENT') {
@@ -189,17 +189,17 @@ export const readJson =
   };
 
 export const writeJson =
-  (config: FSConfig = defaultFSConfig): WriteJsonOp =>
+  (_config: FSConfig = defaultFSConfig): WriteJsonOp =>
   async <T = any>(
     path: string,
     data: T,
     options?: { spaces?: number }
   ): Promise<FSResult<void>> => {
     try {
-      const content = JSON.stringify(data, null, options?.spaces ?? config.jsonSpaces);
+      const content = JSON.stringify(data, null, options?.spaces ?? _config.jsonSpaces);
       // Ensure directory exists before writing
       await fs.mkdir(dirname(path), { recursive: true });
-      await fs.writeFile(path, content, config.encoding || 'utf8');
+      await fs.writeFile(path, content, _config.encoding || 'utf8');
       return ok(undefined);
     } catch (error) {
       return err(mapNodeError('Write JSON', path, error));
@@ -208,19 +208,19 @@ export const writeJson =
 
 // Higher-level composed operations
 export const ensureDir =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (path: string): Promise<FSResult<void>> => {
-    const mkdirOp = mkdir(config);
+    const mkdirOp = mkdir(_config);
     return mkdirOp(path, { recursive: true });
   };
 
 export const outputFile =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (path: string, content: string): Promise<FSResult<void>> => {
     try {
       // Ensure directory exists before writing
       await fs.mkdir(dirname(path), { recursive: true });
-      await fs.writeFile(path, content, config.encoding || 'utf8');
+      await fs.writeFile(path, content, _config.encoding || 'utf8');
       return ok(undefined);
     } catch (error) {
       return err(mapNodeError('Output file', path, error));
@@ -228,7 +228,7 @@ export const outputFile =
   };
 
 export const emptyDir =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (path: string): Promise<FSResult<void>> => {
     try {
       const entries = await fs.readdir(path);
@@ -242,7 +242,7 @@ export const emptyDir =
   };
 
 export const findFiles =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (
     pattern: string,
     options?: { cwd?: string; ignore?: string[] }
@@ -267,10 +267,10 @@ export const findFiles =
 
 // Composition utilities
 export const readIfExists =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (path: string): Promise<FSResult<string | null>> => {
-    const existsOp = exists(config);
-    const readOp = readFile(config);
+    const existsOp = exists(_config);
+    const readOp = readFile(_config);
 
     const existsResult = await existsOp(path);
     if (existsResult.isErr()) return err(existsResult.error);
@@ -282,10 +282,10 @@ export const readIfExists =
   };
 
 export const copyIfExists =
-  (config: FSConfig = defaultFSConfig) =>
+  (_config: FSConfig = defaultFSConfig) =>
   async (src: string, dest: string, options: CopyOptions = {}): Promise<FSResult<boolean>> => {
-    const existsOp = exists(config);
-    const copyOp = copy(config);
+    const existsOp = exists(_config);
+    const copyOp = copy(_config);
 
     const existsResult = await existsOp(src);
     if (existsResult.isErr()) return err(existsResult.error);

@@ -63,9 +63,9 @@ export const validate = {
   required: validateRequired<any>(),
   currency: validateCurrency(),
   date: validateDate(),
-  array: <T, R = T>(validator: (value: T) => any) =>
+  array: <T, _R = T>(validator: (value: T) => any) =>
     validateArray(validator, defaultValidationConfig),
-  object: <T extends Record<string, any>>(validators: any) =>
+  object: <_T extends Record<string, any>>(validators: any) =>
     validateObject(validators, defaultValidationConfig),
 };
 

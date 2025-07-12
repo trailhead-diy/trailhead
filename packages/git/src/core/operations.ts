@@ -175,13 +175,19 @@ const createRepository = async (path: string): Promise<GitRepository> => {
     });
     const gitDirectory = gitDirOutput.trim();
 
-    // Get working directory
-    const workingDirOutput = execSync('git rev-parse --show-toplevel', {
-      cwd: resolvedPath,
-      encoding: 'utf-8',
-      stdio: 'pipe',
-    });
-    const workingDirectory = workingDirOutput.trim();
+    // Get working directory (may fail for bare repositories)
+    let workingDirectory = resolvedPath;
+    try {
+      const workingDirOutput = execSync('git rev-parse --show-toplevel', {
+        cwd: resolvedPath,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      });
+      workingDirectory = workingDirOutput.trim();
+    } catch {
+      // Bare repository or other case where working directory doesn't exist
+      workingDirectory = resolvedPath;
+    }
 
     // Get current HEAD
     let head;

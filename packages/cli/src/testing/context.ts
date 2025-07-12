@@ -1,5 +1,6 @@
 import type { CommandContext } from '../command/index.js';
-import type { FileSystem } from '../filesystem/index.js';
+// @ts-expect-error - Domain package types will be available after build
+import type { FileSystem } from '@trailhead/fs';
 import type { Logger } from '../core/index.js';
 import { mockFileSystem, mockLogger } from './mocks.js';
 

@@ -1,5 +1,6 @@
 import { execSync, type ExecSyncOptions } from 'node:child_process';
-import { Result, ok, err, type CLIError } from '../core/index.js';
+import { Result, ok, err, type TrailheadError } from '@trailhead/core';
+import { createCLIError } from '@trailhead/core';
 
 /**
  * Package manager configuration
@@ -34,7 +35,7 @@ const DEFAULT_TIMEOUT_MS = 5000;
  * Cache entry with TTL
  */
 interface CacheEntry {
-  result: Result<PackageManager, CLIError>;
+  result: Result<PackageManager, TrailheadError>;
   timestamp: number;
 }
 
@@ -49,7 +50,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 class PackageManagerCache {
   private cache = new Map<string, CacheEntry>();
 
-  get(key: string): Result<PackageManager, CLIError> | null {
+  get(key: string): Result<PackageManager, TrailheadError> | null {
     const entry = this.cache.get(key);
     if (!entry) return null;
 
@@ -62,7 +63,7 @@ class PackageManagerCache {
     return entry.result;
   }
 
-  set(key: string, result: Result<PackageManager, CLIError>): void {
+  set(key: string, result: Result<PackageManager, TrailheadError>): void {
     this.cache.set(key, {
       result,
       timestamp: Date.now(),
@@ -112,15 +113,11 @@ export class SemVer {
     public readonly prerelease?: string
   ) {}
 
-  static parse(version: string): Result<SemVer, CLIError> {
+  static parse(version: string): Result<SemVer, TrailheadError> {
     // Handle versions with pre-release tags
     const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-(.+))?/);
     if (!match) {
-      return err({
-        code: 'INVALID_VERSION_FORMAT',
-        message: `Invalid version format: ${version}`,
-        recoverable: false,
-      });
+      return err(createCLIError(`Invalid version format: ${version}`));
     }
 
     const [, major, minor, patch, prerelease] = match;
@@ -151,16 +148,16 @@ export class SemVer {
  */
 const validatePackageManagerName = (
   name: string
-): Result<(typeof ALLOWED_MANAGERS)[number], CLIError> => {
+): Result<(typeof ALLOWED_MANAGERS)[number], TrailheadError> => {
   // Remove any potentially dangerous characters
   const sanitized = name.toLowerCase().replace(/[^a-z]/g, '');
 
   if (!ALLOWED_MANAGERS.includes(sanitized as any)) {
-    return err({
-      code: 'INVALID_PACKAGE_MANAGER',
-      message: `Invalid package manager name: ${name}. Allowed values: ${ALLOWED_MANAGERS.join(', ')}`,
-      recoverable: false,
-    });
+    return err(
+      createCLIError(
+        `Invalid package manager name: ${name}. Allowed values: ${ALLOWED_MANAGERS.join(', ')}`
+      )
+    );
   }
 
   return ok(sanitized as (typeof ALLOWED_MANAGERS)[number]);
@@ -172,7 +169,7 @@ const validatePackageManagerName = (
 const execWithTimeout = (
   command: string,
   options: ExecSyncOptions & { timeout?: number }
-): Result<string, CLIError> => {
+): Result<string, TrailheadError> => {
   try {
     const output = execSync(command, {
       ...options,
@@ -181,26 +178,24 @@ const execWithTimeout = (
     return ok(output.toString().trim());
   } catch (error: any) {
     if (error.code === 'ETIMEDOUT') {
-      return err({
-        code: 'COMMAND_TIMEOUT',
-        message: `Command timed out after ${options.timeout ?? DEFAULT_TIMEOUT_MS}ms: ${command}`,
-        cause: error,
-        recoverable: true,
-      });
+      return err(
+        createCLIError(
+          `Command timed out after ${options.timeout ?? DEFAULT_TIMEOUT_MS}ms: ${command}`,
+          { cause: error }
+        )
+      );
     }
-    return err({
-      code: 'COMMAND_FAILED',
-      message: error.message || `Command failed: ${command}`,
-      cause: error,
-      recoverable: false,
-    });
+    return err(createCLIError(error.message || `Command failed: ${command}`, { cause: error }));
   }
 };
 
 /**
  * Check if version meets minimum requirement
  */
-const meetsVersionRequirement = (version: string, required: string): Result<boolean, CLIError> => {
+const meetsVersionRequirement = (
+  version: string,
+  required: string
+): Result<boolean, TrailheadError> => {
   const versionResult = SemVer.parse(version);
   if (versionResult.isErr()) {
     return err(versionResult.error);
@@ -218,7 +213,9 @@ const meetsVersionRequirement = (version: string, required: string): Result<bool
  * Detect available package manager with preference order: pnpm > npm
  * Results are cached for performance. Use FORCE_PACKAGE_MANAGER env var to override.
  */
-export const detectPackageManager = (options?: DetectOptions): Result<PackageManager, CLIError> => {
+export const detectPackageManager = (
+  options?: DetectOptions
+): Result<PackageManager, TrailheadError> => {
   const cache = options?.cache ?? defaultCache;
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT_MS;
 
@@ -240,13 +237,15 @@ export const detectPackageManager = (options?: DetectOptions): Result<PackageMan
     });
 
     if (versionResult.isErr()) {
-      return err({
-        code: 'FORCED_PACKAGE_MANAGER_NOT_FOUND',
-        message: `Forced package manager '${managerName}' is not installed or not responding`,
-        suggestion: `Install ${managerName} or unset FORCE_PACKAGE_MANAGER environment variable`,
-        cause: versionResult.error,
-        recoverable: false,
-      });
+      return err(
+        createCLIError(
+          `Forced package manager '${managerName}' is not installed or not responding`,
+          {
+            suggestion: `Install ${managerName} or unset FORCE_PACKAGE_MANAGER environment variable`,
+            cause: versionResult.error,
+          }
+        )
+      );
     }
 
     const version = versionResult.value;
@@ -254,21 +253,20 @@ export const detectPackageManager = (options?: DetectOptions): Result<PackageMan
     const meetsReqResult = meetsVersionRequirement(version, minVersion);
 
     if (meetsReqResult.isErr()) {
-      return err({
-        code: 'PACKAGE_MANAGER_VERSION_PARSE_ERROR',
-        message: `Failed to parse version for ${managerName}: ${version}`,
-        cause: meetsReqResult.error,
-        recoverable: false,
-      });
+      return err(
+        createCLIError(`Failed to parse version for ${managerName}: ${version}`, {
+          cause: meetsReqResult.error,
+        })
+      );
     }
 
     if (!meetsReqResult.value) {
-      return err({
-        code: 'PACKAGE_MANAGER_VERSION_TOO_OLD',
-        message: `${managerName} version ${version} is below minimum required version ${minVersion}`,
-        suggestion: `Please update ${managerName} to version ${minVersion} or higher`,
-        recoverable: true,
-      });
+      return err(
+        createCLIError(
+          `${managerName} version ${version} is below minimum required version ${minVersion}`,
+          { suggestion: `Please update ${managerName} to version ${minVersion} or higher` }
+        )
+      );
     }
 
     return ok({ ...manager, version });
@@ -335,13 +333,7 @@ export const detectPackageManager = (options?: DetectOptions): Result<PackageMan
       ? 'Please update your package manager to meet the minimum version requirements'
       : 'Please install pnpm (recommended) or npm';
 
-  const error = err({
-    code: 'NO_PACKAGE_MANAGER',
-    message: errorMessage,
-    suggestion,
-    details: `You can also set FORCE_PACKAGE_MANAGER=npm (or pnpm) to override detection`,
-    recoverable: false,
-  });
+  const error = err(createCLIError(errorMessage, { suggestion }));
 
   cache.set(cacheKey, error);
   return error;
@@ -378,7 +370,7 @@ export const getRunCommand = (
   scriptName: string,
   args?: string[],
   options?: DetectOptions
-): Result<string, CLIError> => {
+): Result<string, TrailheadError> => {
   const managerResult = detectPackageManager(options);
   if (managerResult.isErr()) {
     return err(managerResult.error);
@@ -396,7 +388,7 @@ export const execPackageManagerCommand = (
   command: string,
   execOptions?: ExecSyncOptions,
   detectOptions?: DetectOptions
-): Result<string, CLIError> => {
+): Result<string, TrailheadError> => {
   const managerResult = detectPackageManager(detectOptions);
   if (managerResult.isErr()) {
     return err(managerResult.error);
@@ -414,6 +406,6 @@ export const execPackageManagerCommand = (
  */
 export const getPackageManagerInfo = (
   options?: DetectOptions
-): Result<PackageManager, CLIError> => {
+): Result<PackageManager, TrailheadError> => {
   return detectPackageManager(options);
 };

@@ -111,7 +111,7 @@ export const unless =
 export const maybe =
   <T, U>(fn: (value: T) => U) =>
   (value: T | null | undefined): U | null =>
-    value != null ? fn(value) : null;
+    value !== null && value !== undefined ? fn(value) : null;
 
 /**
  * Compose functions that return Result types
@@ -207,7 +207,7 @@ export const retry =
 
       if (attempt < maxAttempts) {
         // Exponential backoff
-        const waitTime = delay * Math.pow(2, attempt - 1);
+        const _waitTime = delay * Math.pow(2, attempt - 1);
         // In a real implementation, you'd want to use a proper sleep function
         // This is simplified for the core package
       }
@@ -232,8 +232,8 @@ export const retryAsync =
         lastError = result.error;
 
         if (attempt < maxAttempts) {
-          const waitTime = delay * Math.pow(2, attempt - 1);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
+          const _waitTime = delay * Math.pow(2, attempt - 1);
+          await new Promise(resolve => setTimeout(resolve, _waitTime));
         }
       }
 

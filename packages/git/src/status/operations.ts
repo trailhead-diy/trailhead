@@ -116,8 +116,18 @@ const parseStatusOutput = (output: string): GitStatus => {
     } else if (line.startsWith('1 ')) {
       // Changed entries
       const parts = line.split('\t');
-      const statusParts = parts[0].split(' ');
-      const path = parts[1];
+      let path: string;
+      let statusParts: string[];
+
+      if (parts.length > 1) {
+        // Tab-separated format
+        statusParts = parts[0].split(' ');
+        path = parts[1];
+      } else {
+        // Space-separated format - path is the last part
+        statusParts = parts[0].split(' ');
+        path = statusParts[statusParts.length - 1];
+      }
 
       const stagedStatus = statusParts[1][0];
       const modifiedStatus = statusParts[1][1];
@@ -139,8 +149,18 @@ const parseStatusOutput = (output: string): GitStatus => {
       // Renamed/copied entries
       const parts = line.split('\t');
       const statusParts = parts[0].split(' ');
-      const oldPath = parts[1];
-      const newPath = parts[2];
+      let oldPath: string;
+      let newPath: string;
+
+      if (parts.length > 2) {
+        // Tab-separated format
+        oldPath = parts[1];
+        newPath = parts[2];
+      } else {
+        // Space-separated format - paths are the last two parts
+        oldPath = statusParts[statusParts.length - 2];
+        newPath = statusParts[statusParts.length - 1];
+      }
 
       const stagedStatus = statusParts[1][0];
 

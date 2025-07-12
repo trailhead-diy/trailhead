@@ -311,15 +311,16 @@ const executeCreateTable = async (
   return { rows: [] };
 };
 
-const createSchemaBuilder = () => {
-  return {
-    createTable: () => ok(undefined),
-    dropTable: () => ok(undefined),
-    alterTable: () => ok(undefined),
-    createIndex: () => ok(undefined),
-    dropIndex: () => ok(undefined),
-    raw: () => ok(undefined),
+const createSchemaBuilder = (): any => {
+  const builder = {
+    createTable: () => builder,
+    dropTable: () => builder,
+    alterTable: () => builder,
+    createIndex: () => builder,
+    dropIndex: () => builder,
+    raw: () => builder,
     toSQL: () => [],
     execute: async () => ok(undefined),
   };
+  return builder;
 };

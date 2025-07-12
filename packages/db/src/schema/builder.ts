@@ -10,6 +10,7 @@ import type {
   DatabaseConnection,
   DbResult,
 } from '../types.js';
+import { getAdapter } from '../core/operations.js';
 
 // ========================================
 // Schema Builder Implementation
@@ -477,10 +478,4 @@ const formatValue = (value: unknown): string => {
   } else {
     return `'${String(value)}'`;
   }
-};
-
-// Simple adapter getter (should be imported from core)
-const getAdapter = (driver: string) => {
-  // This should import from core operations
-  return null;
 };

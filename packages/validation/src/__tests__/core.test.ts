@@ -15,7 +15,6 @@ import {
   allOf,
   createValidator,
   createSchemaValidator,
-  defaultValidationConfig,
 } from '../core.js';
 import { z } from 'zod';
 

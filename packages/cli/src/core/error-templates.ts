@@ -1,5 +1,5 @@
 import type {
-  CLIError,
+  TrailheadError,
   ValidationError,
   FileSystemError,
   NetworkError,
@@ -7,14 +7,17 @@ import type {
   ExecutionError,
   UserInputError,
   DependencyError,
-} from './errors/types.js';
+} from '@trailhead/core';
 import {
-  validationError,
-  fileSystemError,
-  networkError,
-  dependencyError,
-  createError,
-} from './errors/factory.js';
+  createValidationError,
+  createFileSystemError,
+  createNetworkError,
+  createDependencyError,
+  createConfigurationError,
+  createExecutionError,
+  createUserInputError,
+  createCLIError,
+} from '@trailhead/core';
 
 /**
  * Flow Control & Error Handling - addresses GitHub issue #113
@@ -24,7 +27,7 @@ import {
  */
 
 // Error template types for consistent messaging
-export interface ErrorTemplate<T extends CLIError = CLIError> {
+export interface ErrorTemplate<T extends TrailheadError = TrailheadError> {
   create: (...args: any[]) => T;
   code: string;
   category: string;
@@ -37,31 +40,25 @@ export interface ErrorTemplate<T extends CLIError = CLIError> {
 export const errorTemplates = {
   // File System Errors
   fileNotFound: (filePath: string, suggestion?: string): FileSystemError =>
-    ({
-      category: 'filesystem',
-      code: 'FILESYSTEM_ERROR',
-      message: `File not found: ${filePath}`,
-      path: filePath,
-      operation: 'read',
+    createFileSystemError('read', filePath, `File not found: ${filePath}`, {
       errno: -2,
       suggestion: suggestion ?? `Check if the file exists and the path is correct: ${filePath}`,
-      recoverable: false,
-    }) as FileSystemError,
+    }),
 
   directoryNotFound: (dirPath: string): FileSystemError =>
-    fileSystemError('read', dirPath, `Directory not found: ${dirPath}`, {
+    createFileSystemError('read', dirPath, `Directory not found: ${dirPath}`, {
       errno: -2, // ENOENT
       suggestion: `Create the directory or check the path: ${dirPath}`,
     }),
 
   fileAlreadyExists: (filePath: string): FileSystemError =>
-    fileSystemError('write', filePath, `File already exists: ${filePath}`, {
+    createFileSystemError('write', filePath, `File already exists: ${filePath}`, {
       errno: -17, // EEXIST
       suggestion: 'Use --force to overwrite or choose a different filename',
     }),
 
   permissionDenied: (filePath: string, operation: string): FileSystemError =>
-    fileSystemError(
+    createFileSystemError(
       operation as any,
       filePath,
       `Permission denied: cannot ${operation} ${filePath}`,
@@ -72,14 +69,14 @@ export const errorTemplates = {
     ),
 
   diskSpaceFull: (filePath: string): FileSystemError =>
-    fileSystemError('write', filePath, `No space left on device: ${filePath}`, {
+    createFileSystemError('write', filePath, `No space left on device: ${filePath}`, {
       errno: -28, // ENOSPC
       suggestion: 'Free up disk space and try again',
     }),
 
   // Validation Errors
   requiredFieldMissing: (fieldName: string): ValidationError =>
-    validationError(`Required field '${fieldName}' is missing`, {
+    createValidationError(`Required field '${fieldName}' is missing`, {
       field: fieldName,
       suggestion: `Provide a value for '${fieldName}'`,
     }),
@@ -89,7 +86,7 @@ export const errorTemplates = {
     expectedFormat: string,
     actualValue?: unknown
   ): ValidationError =>
-    validationError(`Field '${fieldName}' has invalid format: expected ${expectedFormat}`, {
+    createValidationError(`Field '${fieldName}' has invalid format: expected ${expectedFormat}`, {
       field: fieldName,
       value: actualValue,
       constraints: { expectedFormat },
@@ -102,19 +99,22 @@ export const errorTemplates = {
     max: number | string,
     actualValue?: unknown
   ): ValidationError =>
-    validationError(`Field '${fieldName}' is out of range: must be between ${min} and ${max}`, {
-      field: fieldName,
-      value: actualValue,
-      constraints: { min, max },
-      suggestion: `Provide a value for '${fieldName}' between ${min} and ${max}`,
-    }),
+    createValidationError(
+      `Field '${fieldName}' is out of range: must be between ${min} and ${max}`,
+      {
+        field: fieldName,
+        value: actualValue,
+        constraints: { min, max },
+        suggestion: `Provide a value for '${fieldName}' between ${min} and ${max}`,
+      }
+    ),
 
   invalidChoice: (
     fieldName: string,
     validChoices: string[],
     actualValue?: unknown
   ): ValidationError =>
-    validationError(
+    createValidationError(
       `Field '${fieldName}' has invalid value: must be one of ${validChoices.join(', ')}`,
       {
         field: fieldName,
@@ -126,7 +126,7 @@ export const errorTemplates = {
 
   // Network Errors
   connectionTimeout: (url: string, timeoutMs: number): NetworkError =>
-    networkError(`Connection timeout: ${url}`, {
+    createNetworkError(`Connection timeout: ${url}`, {
       url,
       timeout: true,
       statusCode: 408,
@@ -134,28 +134,28 @@ export const errorTemplates = {
     }),
 
   connectionRefused: (url: string): NetworkError =>
-    networkError(`Connection refused: ${url}`, {
+    createNetworkError(`Connection refused: ${url}`, {
       url,
       statusCode: 0,
       suggestion: 'Check if the server is running and accessible',
     }),
 
   notFound: (url: string): NetworkError =>
-    networkError(`Resource not found: ${url}`, {
+    createNetworkError(`Resource not found: ${url}`, {
       url,
       statusCode: 404,
       suggestion: 'Check the URL and try again',
     }),
 
   unauthorized: (url: string): NetworkError =>
-    networkError(`Unauthorized access: ${url}`, {
+    createNetworkError(`Unauthorized access: ${url}`, {
       url,
       statusCode: 401,
       suggestion: 'Check your authentication credentials',
     }),
 
   rateLimited: (url: string, retryAfter?: number): NetworkError =>
-    networkError(`Rate limit exceeded: ${url}`, {
+    createNetworkError(`Rate limit exceeded: ${url}`, {
       url,
       statusCode: 429,
       suggestion: retryAfter
@@ -165,119 +165,70 @@ export const errorTemplates = {
 
   // Configuration Errors
   configFileMissing: (configPath: string): ConfigurationError =>
-    ({
-      category: 'configuration',
-      code: 'CONFIGURATION_ERROR',
-      message: `Configuration file not found: ${configPath}`,
+    createConfigurationError(`Configuration file not found: ${configPath}`, {
       configFile: configPath,
-      configPath,
       suggestion: `Create a configuration file at ${configPath} or run with --init`,
-      recoverable: true,
-    }) as ConfigurationError & { configPath: string },
+    }),
 
   configFileInvalid: (configPath: string, parseError?: string): ConfigurationError =>
-    ({
-      category: 'configuration',
-      code: 'CONFIGURATION_ERROR',
-      message: `Invalid configuration file: ${configPath}`,
+    createConfigurationError(`Invalid configuration file: ${configPath}`, {
       configFile: configPath,
-      parseError,
       suggestion: parseError
         ? `Fix the configuration syntax: ${parseError}`
         : 'Check the configuration file syntax and try again',
-      recoverable: true,
-    }) as ConfigurationError & { parseError?: string },
+    }),
 
   configValueInvalid: (key: string, value: unknown, expectedType: string): ConfigurationError =>
-    ({
-      category: 'configuration',
-      code: 'CONFIGURATION_ERROR',
-      message: `Invalid configuration value for '${key}': expected ${expectedType}`,
-      configFile: undefined,
+    createConfigurationError(`Invalid configuration value for '${key}': expected ${expectedType}`, {
       invalidFields: [key],
-      configKey: key,
-      configValue: value,
-      expectedType,
       suggestion: `Set '${key}' to a valid ${expectedType} value`,
-      recoverable: true,
-    }) as ConfigurationError & { configKey: string; configValue: unknown; expectedType: string },
+    }),
 
   // Execution Errors
   commandNotFound: (command: string): ExecutionError =>
-    ({
-      category: 'execution',
-      code: 'EXECUTION_ERROR',
-      message: `Command not found: ${command}`,
+    createExecutionError(`Command not found: ${command}`, {
       command,
       exitCode: 127,
       suggestion: `Check if '${command}' is installed and available in PATH`,
-      recoverable: false,
-    }) as ExecutionError,
+    }),
 
   commandFailed: (command: string, exitCode: number, stderr?: string): ExecutionError =>
-    ({
-      category: 'execution',
-      code: 'EXECUTION_ERROR',
-      message: `Command failed: ${command} (exit code ${exitCode})`,
+    createExecutionError(`Command failed: ${command} (exit code ${exitCode})`, {
       command,
       exitCode,
       stderr,
       suggestion: stderr
         ? `Fix the error: ${stderr}`
         : `Command '${command}' failed with exit code ${exitCode}`,
-      recoverable: false,
-    }) as ExecutionError,
+    }),
 
   processTimeout: (command: string, timeoutMs: number): ExecutionError =>
-    ({
-      category: 'execution',
-      code: 'EXECUTION_ERROR',
-      message: `Process timeout: ${command} (after ${timeoutMs}ms)`,
+    createExecutionError(`Process timeout: ${command} (after ${timeoutMs}ms)`, {
       command,
-      timeout: timeoutMs,
       suggestion: `Increase timeout or check if '${command}' is responding`,
-      recoverable: false,
-    }) as ExecutionError & { timeout: number },
+    }),
 
   // User Input Errors
   invalidInput: (input: string, reason?: string): UserInputError =>
-    ({
-      category: 'user_input' as 'user-input',
-      code: 'USER_INPUT_ERROR',
-      message: `Invalid input: ${input}`,
+    createUserInputError(`Invalid input: ${input}`, {
       input,
-      reason,
       suggestion: reason ?? 'Provide valid input and try again',
-      recoverable: true,
-    }) as UserInputError & { reason?: string },
+    }),
 
   missingArgument: (argument: string): UserInputError =>
-    ({
-      category: 'user_input' as 'user-input',
-      code: 'USER_INPUT_ERROR',
-      message: `Missing required argument: ${argument}`,
-      input: undefined,
-      argument,
+    createUserInputError(`Missing required argument: ${argument}`, {
       suggestion: `Provide the required argument: ${argument}`,
-      recoverable: true,
-    }) as UserInputError & { argument: string },
+    }),
 
   tooManyArguments: (expected: number, actual: number): UserInputError =>
-    ({
-      category: 'user_input' as 'user-input',
-      code: 'USER_INPUT_ERROR',
-      message: `Too many arguments: expected ${expected}, got ${actual}`,
-      input: undefined,
+    createUserInputError(`Too many arguments: expected ${expected}, got ${actual}`, {
       expectedFormat: `${expected} argument${expected === 1 ? '' : 's'}`,
-      expected,
-      actual,
       suggestion: `Provide exactly ${expected} argument${expected === 1 ? '' : 's'}`,
-      recoverable: true,
-    }) as UserInputError & { expected: number; actual: number },
+    }),
 
   // Dependency Errors
   packageNotInstalled: (packageName: string, installCommand?: string): DependencyError =>
-    dependencyError(`Package not installed: ${packageName}`, {
+    createDependencyError(`Package not installed: ${packageName}`, {
       packageName,
       suggestion: installCommand
         ? `Install the package: ${installCommand}`
@@ -289,97 +240,71 @@ export const errorTemplates = {
     requiredVersion: string,
     actualVersion: string
   ): DependencyError =>
-    ({
-      category: 'dependency',
-      code: 'DEPENDENCY_ERROR',
-      message: `Version mismatch for ${packageName}: required ${requiredVersion}, found ${actualVersion}`,
-      packageName,
-      requiredVersion,
-      installedVersion: actualVersion,
-      actualVersion,
-      suggestion: `Update '${packageName}' to version ${requiredVersion} or higher`,
-      recoverable: true,
-    }) as DependencyError & { actualVersion: string },
-
-  dependencyConflict: (package1: string, package2: string, reason?: string): DependencyError =>
-    ({
-      category: 'dependency',
-      code: 'DEPENDENCY_ERROR',
-      message: `Dependency conflict between ${package1} and ${package2}`,
-      packageName: package1,
-      conflictingPackages: [package1, package2],
-      reason,
-      suggestion: reason ?? 'Resolve the dependency conflict and try again',
-      recoverable: true,
-    }) as DependencyError & { conflictingPackages: string[]; reason?: string },
-
-  // Operation Errors
-  operationCancelled: (operationName: string): CLIError =>
-    createError('OPERATION_CANCELLED', `Operation cancelled: ${operationName}`, {
-      suggestion: 'Restart the operation if needed',
-      recoverable: true,
-    }),
-
-  operationTimeout: (operationName: string, timeoutMs: number): CLIError =>
-    createError(
-      'OPERATION_TIMEOUT',
-      `Operation timed out: ${operationName} (after ${timeoutMs}ms)`,
+    createDependencyError(
+      `Version mismatch for ${packageName}: required ${requiredVersion}, found ${actualVersion}`,
       {
-        details: `Timeout: ${timeoutMs}ms`,
-        suggestion: `Increase timeout or check if '${operationName}' is responding`,
-        recoverable: true,
+        packageName,
+        requiredVersion,
+        installedVersion: actualVersion,
+        suggestion: `Update '${packageName}' to version ${requiredVersion} or higher`,
       }
     ),
 
-  operationFailed: (operationName: string, reason: string): CLIError =>
-    createError('OPERATION_FAILED', `Operation failed: ${operationName}`, {
-      details: reason,
+  dependencyConflict: (package1: string, package2: string, reason?: string): DependencyError =>
+    createDependencyError(`Dependency conflict between ${package1} and ${package2}`, {
+      packageName: package1,
+      suggestion: reason ?? 'Resolve the dependency conflict and try again',
+    }),
+
+  // Operation Errors
+  operationCancelled: (operationName: string): TrailheadError =>
+    createCLIError(`Operation cancelled: ${operationName}`, {
+      suggestion: 'Restart the operation if needed',
+    }),
+
+  operationTimeout: (operationName: string, timeoutMs: number): TrailheadError =>
+    createCLIError(`Operation timed out: ${operationName} (after ${timeoutMs}ms)`, {
+      suggestion: `Increase timeout or check if '${operationName}' is responding`,
+      context: { timeout: timeoutMs },
+    }),
+
+  operationFailed: (operationName: string, reason: string): TrailheadError =>
+    createCLIError(`Operation failed: ${operationName}`, {
       suggestion: `Fix the issue and retry: ${reason}`,
-      recoverable: true,
+      context: { reason },
     }),
 
   // Parse Errors
-  parseFailure: (format: string, filePath?: string, parseError?: string): CLIError =>
-    createError('PARSE_FAILURE', `Failed to parse ${format}${filePath ? `: ${filePath}` : ''}`, {
-      details: parseError,
+  parseFailure: (format: string, filePath?: string, parseError?: string): TrailheadError =>
+    createCLIError(`Failed to parse ${format}${filePath ? `: ${filePath}` : ''}`, {
       suggestion: parseError
         ? `Fix the ${format} syntax: ${parseError}`
         : `Check the ${format} format and try again`,
     }),
 
   // Format Errors
-  unsupportedFormat: (format: string, supportedFormats: string[]): CLIError =>
-    createError('UNSUPPORTED_FORMAT', `Unsupported format: ${format}`, {
-      details: `Supported formats: ${supportedFormats.join(', ')}`,
+  unsupportedFormat: (format: string, supportedFormats: string[]): TrailheadError =>
+    createCLIError(`Unsupported format: ${format}`, {
       suggestion: `Use one of the supported formats: ${supportedFormats.join(', ')}`,
+      context: { format, supportedFormats },
     }),
 
   // Authentication Errors
-  authenticationFailed: (service?: string): CLIError =>
-    createError(
-      'AUTHENTICATION_FAILED',
-      `Authentication failed${service ? ` for ${service}` : ''}`,
-      {
-        suggestion: 'Check your credentials and try again',
-        recoverable: true,
-      }
-    ),
+  authenticationFailed: (service?: string): TrailheadError =>
+    createCLIError(`Authentication failed${service ? ` for ${service}` : ''}`, {
+      suggestion: 'Check your credentials and try again',
+    }),
 
-  authenticationExpired: (service?: string): CLIError =>
-    createError(
-      'AUTHENTICATION_EXPIRED',
-      `Authentication expired${service ? ` for ${service}` : ''}`,
-      {
-        suggestion: 'Re-authenticate and try again',
-        recoverable: true,
-      }
-    ),
+  authenticationExpired: (service?: string): TrailheadError =>
+    createCLIError(`Authentication expired${service ? ` for ${service}` : ''}`, {
+      suggestion: 'Re-authenticate and try again',
+    }),
 } as const;
 
 /**
  * Create custom error templates with consistent patterns
  */
-export function createErrorTemplate<T extends CLIError>(
+export function createCLIErrorTemplate<T extends TrailheadError>(
   code: string,
   category: string,
   messageTemplate: string,
@@ -403,7 +328,10 @@ export interface ErrorTemplateRegistryState {
  * Error template registry interface (functional)
  */
 export interface ErrorTemplateRegistry {
-  register<T extends CLIError>(name: string, template: ErrorTemplate<T>): ErrorTemplateRegistry;
+  register<T extends TrailheadError>(
+    name: string,
+    template: ErrorTemplate<T>
+  ): ErrorTemplateRegistry;
   get(name: string): ErrorTemplate | undefined;
   has(name: string): boolean;
   list(): readonly string[];
@@ -414,14 +342,17 @@ export interface ErrorTemplateRegistry {
 /**
  * Create a functional error template registry
  */
-export function createErrorTemplateRegistry(
+export function createCLIErrorTemplateRegistry(
   state: ErrorTemplateRegistryState = { templates: new Map() }
 ): ErrorTemplateRegistry {
   return {
-    register<T extends CLIError>(name: string, template: ErrorTemplate<T>): ErrorTemplateRegistry {
+    register<T extends TrailheadError>(
+      name: string,
+      template: ErrorTemplate<T>
+    ): ErrorTemplateRegistry {
       const newTemplates = new Map(state.templates);
       newTemplates.set(name, template);
-      return createErrorTemplateRegistry({ templates: newTemplates });
+      return createCLIErrorTemplateRegistry({ templates: newTemplates });
     },
 
     get(name: string): ErrorTemplate | undefined {
@@ -437,7 +368,7 @@ export function createErrorTemplateRegistry(
     },
 
     clear(): ErrorTemplateRegistry {
-      return createErrorTemplateRegistry({ templates: new Map() });
+      return createCLIErrorTemplateRegistry({ templates: new Map() });
     },
 
     getState(): ErrorTemplateRegistryState {
@@ -449,7 +380,7 @@ export function createErrorTemplateRegistry(
 /**
  * Global error template registry instance
  */
-export const globalErrorTemplates = createErrorTemplateRegistry();
+export const globalErrorTemplates = createCLIErrorTemplateRegistry();
 
 /**
  * Helper function to create errors with consistent formatting
