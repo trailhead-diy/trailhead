@@ -78,9 +78,7 @@ export function CatalystButton({ color = 'blue', children, ...props }) {
     expect(enhancedContent).toContain('muted:');
 
     // Should convert clsx to cn (import path may vary)
-    expect(enhancedContent).toMatch(
-      /import { cn } from ['"]([./]*utils\/cn|[./]*lib\/utils)['"]/
-    );
+    expect(enhancedContent).toMatch(/import { cn } from ['"]([./]*utils\/cn|[./]*lib\/utils)['"]/);
     expect(enhancedContent).not.toContain("import clsx from 'clsx'");
     expect(enhancedContent).toContain('cn(styles.base');
   });
