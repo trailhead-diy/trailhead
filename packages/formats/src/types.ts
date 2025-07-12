@@ -1,5 +1,4 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Configuration Types
@@ -32,7 +31,7 @@ export interface ConversionConfig extends FormatConfig {
 // Result Types
 // ========================================
 
-export type FormatResult<T> = Result<T, TrailheadError>;
+export type FormatResult<T> = Result<T, CoreError>;
 
 // ========================================
 // File Format Types

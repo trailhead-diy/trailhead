@@ -1,5 +1,5 @@
 import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 
 export interface FileStats {
   readonly size: number;
@@ -8,7 +8,7 @@ export interface FileStats {
   readonly mtime: Date;
 }
 
-export interface FileSystemError extends TrailheadError {
+export interface FileSystemError extends CoreError {
   readonly type: 'FILESYSTEM_ERROR';
   readonly operation: string;
   readonly path?: string;

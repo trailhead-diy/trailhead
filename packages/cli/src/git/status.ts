@@ -1,5 +1,5 @@
 import { ok, err, Result } from 'neverthrow';
-import type { CLIError } from '../core/index.js';
+import type { CoreError } from '@trailhead/core';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { GitOptions } from './types.js';
@@ -18,7 +18,7 @@ interface GitStatus {
  */
 export async function getCurrentBranch(
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   return executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD'], options);
 }
 
@@ -27,7 +27,7 @@ export async function getCurrentBranch(
  */
 export async function isWorkingDirectoryClean(
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const result = await executeGitCommandSimple(['status', '--porcelain'], options);
   return result.map(output => output.trim().length === 0);
 }
@@ -35,7 +35,9 @@ export async function isWorkingDirectoryClean(
 /**
  * Get detailed git repository status
  */
-export async function getGitStatus(options: GitOptions = {}): Promise<Result<GitStatus, CLIError>> {
+export async function getGitStatus(
+  options: GitOptions = {}
+): Promise<Result<GitStatus, CoreError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
   if (validationResult.isErr()) {
@@ -103,7 +105,7 @@ export async function getGitStatus(options: GitOptions = {}): Promise<Result<Git
  */
 export async function hasUncommittedChanges(
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const statusResult = await getGitStatus(options);
   return statusResult.map(status => status.staged > 0 || status.modified > 0);
 }
@@ -113,7 +115,7 @@ export async function hasUncommittedChanges(
  */
 export async function hasUntrackedFiles(
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const statusResult = await getGitStatus(options);
   return statusResult.map(status => status.untracked > 0);
 }
@@ -123,7 +125,7 @@ export async function hasUntrackedFiles(
  */
 export async function getModifiedFiles(
   options: GitOptions = {}
-): Promise<Result<string[], CLIError>> {
+): Promise<Result<string[], CoreError>> {
   const result = await executeGitCommandSimple(['diff', '--name-only'], options);
   return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
@@ -135,7 +137,7 @@ export async function getModifiedFiles(
  */
 export async function getStagedFiles(
   options: GitOptions = {}
-): Promise<Result<string[], CLIError>> {
+): Promise<Result<string[], CoreError>> {
   const result = await executeGitCommandSimple(['diff', '--cached', '--name-only'], options);
   return result.map(output => {
     return output.split('\n').filter(line => line.trim().length > 0);
@@ -147,7 +149,7 @@ export async function getStagedFiles(
  */
 export async function getUntrackedFiles(
   options: GitOptions = {}
-): Promise<Result<string[], CLIError>> {
+): Promise<Result<string[], CoreError>> {
   const result = await executeGitCommandSimple(
     ['ls-files', '--others', '--exclude-standard'],
     options

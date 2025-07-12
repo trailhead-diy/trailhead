@@ -1,6 +1,6 @@
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 import { Result, ResultAsync, ok, err } from 'neverthrow';
-import { createCLIError } from '@trailhead/core';
+import { createCoreError } from './index.js';
 
 /**
  * Flow Control & Error Handling - addresses GitHub issue #113
@@ -10,18 +10,16 @@ import { createCLIError } from '@trailhead/core';
  */
 
 // Pipeline utilities for chaining operations without manual error checking
-export type PipelineStep<T, U> = (
-  value: T
-) => ResultAsync<U, TrailheadError> | Result<U, TrailheadError>;
+export type PipelineStep<T, U> = (value: T) => ResultAsync<U, CoreError> | Result<U, CoreError>;
 export type ConditionalStep<T> = (value: T) => boolean | Promise<boolean>;
 export type ErrorHandler<T> = (
-  error: TrailheadError,
+  error: CoreError,
   stepName?: string
-) => ResultAsync<T, TrailheadError> | Result<T, TrailheadError>;
+) => ResultAsync<T, CoreError> | Result<T, CoreError>;
 
 // Internal pipeline configuration (immutable)
 export interface PipelineConfig<T> {
-  readonly initialValue: T | ResultAsync<T, TrailheadError> | Result<T, TrailheadError>;
+  readonly initialValue: T | ResultAsync<T, CoreError> | Result<T, CoreError>;
   readonly steps: readonly PipelineStepConfig[];
   readonly errorHandler?: ErrorHandler<any>;
   readonly progressCallback?: (step: string, progress: number, total: number) => void;
@@ -61,7 +59,7 @@ export interface Pipeline<T> {
   onError<U = T>(handler: ErrorHandler<U>): Pipeline<T>;
   onProgress(callback: (step: string, progress: number, total: number) => void): Pipeline<T>;
   withAbortSignal(signal: AbortSignal): Pipeline<T>;
-  execute(): ResultAsync<T, TrailheadError>;
+  execute(): ResultAsync<T, CoreError>;
 }
 
 /**
@@ -146,12 +144,12 @@ function createPipeline<T>(config: PipelineConfig<T>): Pipeline<T> {
       return createPipeline(updateConfig('abortSignal', signal));
     },
 
-    execute(): ResultAsync<T, TrailheadError> {
+    execute(): ResultAsync<T, CoreError> {
       return ResultAsync.fromPromise(executePipeline(config), e => {
         if (e && typeof e === 'object' && 'type' in e && 'message' in e) {
-          return e as TrailheadError;
+          return e as CoreError;
         }
-        return createCLIError(String(e), {});
+        return createCoreError('PIPELINE_ERROR', String(e), { recoverable: false });
       }).andThen(result => result);
     },
   };
@@ -160,7 +158,7 @@ function createPipeline<T>(config: PipelineConfig<T>): Pipeline<T> {
 /**
  * Execute a pipeline configuration (pure function)
  */
-async function executePipeline<T>(config: PipelineConfig<T>): Promise<Result<T, TrailheadError>> {
+async function executePipeline<T>(config: PipelineConfig<T>): Promise<Result<T, CoreError>> {
   try {
     // Resolve initial value
     const initialResult = await resolveInitialValue(config.initialValue);
@@ -177,7 +175,8 @@ async function executePipeline<T>(config: PipelineConfig<T>): Promise<Result<T, 
       // Check for cancellation
       if (config.abortSignal?.aborted) {
         return err(
-          createCLIError('Pipeline execution was cancelled', {
+          createCoreError('PIPELINE_CANCELLED', 'Pipeline execution was cancelled', {
+            recoverable: false,
             context: { step: step.name },
           })
         );
@@ -218,7 +217,8 @@ async function executePipeline<T>(config: PipelineConfig<T>): Promise<Result<T, 
     return ok(currentValue);
   } catch (error) {
     return err(
-      createCLIError('Pipeline execution failed', {
+      createCoreError('PIPELINE_EXECUTION_FAILED', 'Pipeline execution failed', {
+        recoverable: false,
         cause: error,
         context: { error: error instanceof Error ? error.message : String(error) },
       })
@@ -230,15 +230,15 @@ async function executePipeline<T>(config: PipelineConfig<T>): Promise<Result<T, 
  * Resolve initial value to a Result (pure function)
  */
 async function resolveInitialValue<T>(
-  initialValue: T | ResultAsync<T, TrailheadError> | Result<T, TrailheadError>
-): Promise<Result<T, TrailheadError>> {
+  initialValue: T | ResultAsync<T, CoreError> | Result<T, CoreError>
+): Promise<Result<T, CoreError>> {
   if (
     typeof initialValue === 'object' &&
     initialValue !== null &&
     ('isOk' in initialValue || 'isErr' in initialValue)
   ) {
     // It's a Result
-    return initialValue as Result<T, TrailheadError>;
+    return initialValue as Result<T, CoreError>;
   } else if (initialValue instanceof Promise) {
     // It's a Promise<Result>
     return await initialValue;
@@ -254,9 +254,9 @@ async function resolveInitialValue<T>(
 async function executeStep(
   step: PipelineStepConfig,
   currentValue: any
-): Promise<Result<any, TrailheadError>> {
+): Promise<Result<any, CoreError>> {
   try {
-    let stepResult: ResultAsync<any, TrailheadError> | Result<any, TrailheadError>;
+    let stepResult: ResultAsync<any, CoreError> | Result<any, CoreError>;
 
     if (step.timeout) {
       stepResult = await executeWithTimeout(step.step(currentValue), step.timeout, step.name);
@@ -267,7 +267,8 @@ async function executeStep(
     return stepResult instanceof Promise ? await stepResult : stepResult;
   } catch (error) {
     return err(
-      createCLIError(`Step "${step.name}" threw an exception`, {
+      createCoreError('STEP_EXECUTION_ERROR', `Step "${step.name}" threw an exception`, {
+        recoverable: false,
         cause: error,
         context: { step: step.name, error: error instanceof Error ? error.message : String(error) },
       })
@@ -279,19 +280,20 @@ async function executeStep(
  * Execute operation with timeout (pure function)
  */
 async function executeWithTimeout<U>(
-  operation: ResultAsync<U, TrailheadError> | Result<U, TrailheadError>,
+  operation: ResultAsync<U, CoreError> | Result<U, CoreError>,
   timeout: number,
   stepName: string
-): Promise<Result<U, TrailheadError>> {
+): Promise<Result<U, CoreError>> {
   if (!(operation instanceof Promise)) {
     return operation;
   }
 
-  return new Promise<Result<U, TrailheadError>>(resolve => {
+  return new Promise<Result<U, CoreError>>(resolve => {
     const timer = setTimeout(() => {
       resolve(
         err(
-          createCLIError(`Step "${stepName}" timed out after ${timeout}ms`, {
+          createCoreError('STEP_TIMEOUT', `Step "${stepName}" timed out after ${timeout}ms`, {
+            recoverable: false,
             context: { timeout, stepName },
           })
         )
@@ -309,10 +311,10 @@ async function executeWithTimeout<U>(
  * Create a new pipeline with initial value (pure function)
  */
 export function pipeline<T>(initialValue: T): Pipeline<T>;
-export function pipeline<T>(initialValue: ResultAsync<T, TrailheadError>): Pipeline<T>;
-export function pipeline<T>(initialValue: Result<T, TrailheadError>): Pipeline<T>;
+export function pipeline<T>(initialValue: ResultAsync<T, CoreError>): Pipeline<T>;
+export function pipeline<T>(initialValue: Result<T, CoreError>): Pipeline<T>;
 export function pipeline<T>(
-  initialValue: T | ResultAsync<T, TrailheadError> | Result<T, TrailheadError>
+  initialValue: T | ResultAsync<T, CoreError> | Result<T, CoreError>
 ): Pipeline<T> {
   return createPipeline({
     initialValue,
@@ -324,16 +326,16 @@ export function pipeline<T>(
  * Execute multiple operations in parallel and collect results
  */
 export async function parallel<T>(
-  operations: Record<string, () => ResultAsync<T, TrailheadError>>
-): Promise<Result<Record<string, T>, TrailheadError>>;
+  operations: Record<string, () => ResultAsync<T, CoreError>>
+): Promise<Result<Record<string, T>, CoreError>>;
 export async function parallel<T>(
-  operations: Array<() => ResultAsync<T, TrailheadError>>
-): Promise<Result<T[], TrailheadError>>;
+  operations: Array<() => ResultAsync<T, CoreError>>
+): Promise<Result<T[], CoreError>>;
 export async function parallel<T>(
   operations:
-    | Record<string, () => ResultAsync<T, TrailheadError>>
-    | Array<() => ResultAsync<T, TrailheadError>>
-): Promise<Result<Record<string, T> | T[], TrailheadError>> {
+    | Record<string, () => ResultAsync<T, CoreError>>
+    | Array<() => ResultAsync<T, CoreError>>
+): Promise<Result<Record<string, T> | T[], CoreError>> {
   try {
     if (Array.isArray(operations)) {
       const results = await Promise.all(operations.map(op => op()));
@@ -341,7 +343,7 @@ export async function parallel<T>(
 
       for (const result of results) {
         if (result.isErr()) {
-          return result as Result<T[], TrailheadError>;
+          return result as Result<T[], CoreError>;
         }
         if (result.isOk()) {
           values.push(result.value);
@@ -357,7 +359,7 @@ export async function parallel<T>(
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
         if (result.isErr()) {
-          return result as Result<Record<string, T>, TrailheadError>;
+          return result as Result<Record<string, T>, CoreError>;
         }
         if (result.isOk()) {
           values[entries[i][0]] = result.value;
@@ -368,7 +370,8 @@ export async function parallel<T>(
     }
   } catch (error) {
     return err(
-      createCLIError('Parallel execution failed', {
+      createCoreError('PARALLEL_EXECUTION_FAILED', 'Parallel execution failed', {
+        recoverable: false,
         cause: error,
         context: { error: error instanceof Error ? error.message : String(error) },
       })
@@ -380,23 +383,23 @@ export async function parallel<T>(
  * Execute operations in parallel with failure tolerance
  */
 export async function parallelSettled<T>(
-  operations: Record<string, () => ResultAsync<T, TrailheadError>>
+  operations: Record<string, () => ResultAsync<T, CoreError>>
 ): Promise<
-  Result<{ successes: Record<string, T>; failures: Record<string, TrailheadError> }, TrailheadError>
+  Result<{ successes: Record<string, T>; failures: Record<string, CoreError> }, CoreError>
 >;
 export async function parallelSettled<T>(
-  operations: Array<() => ResultAsync<T, TrailheadError>>
-): Promise<Result<{ successes: T[]; failures: TrailheadError[] }, TrailheadError>>;
+  operations: Array<() => ResultAsync<T, CoreError>>
+): Promise<Result<{ successes: T[]; failures: CoreError[] }, CoreError>>;
 export async function parallelSettled<T>(
   operations:
-    | Record<string, () => ResultAsync<T, TrailheadError>>
-    | Array<() => ResultAsync<T, TrailheadError>>
-): Promise<Result<any, TrailheadError>> {
+    | Record<string, () => ResultAsync<T, CoreError>>
+    | Array<() => ResultAsync<T, CoreError>>
+): Promise<Result<any, CoreError>> {
   try {
     if (Array.isArray(operations)) {
       const results = await Promise.all(operations.map(op => op()));
       const successes: T[] = [];
-      const failures: TrailheadError[] = [];
+      const failures: CoreError[] = [];
 
       for (const result of results) {
         if (result.isOk()) {
@@ -411,7 +414,7 @@ export async function parallelSettled<T>(
       const entries = Object.entries(operations);
       const results = await Promise.all(entries.map(([, op]) => op()));
       const successes: Record<string, T> = {};
-      const failures: Record<string, TrailheadError> = {};
+      const failures: Record<string, CoreError> = {};
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -427,7 +430,8 @@ export async function parallelSettled<T>(
     }
   } catch (error) {
     return err(
-      createCLIError('Parallel settled execution failed', {
+      createCoreError('PARALLEL_SETTLED_EXECUTION_FAILED', 'Parallel settled execution failed', {
+        recoverable: false,
         cause: error,
         context: { error: error instanceof Error ? error.message : String(error) },
       })
@@ -445,9 +449,9 @@ export async function retryPipeline<T>(
     baseDelay?: number;
     maxDelay?: number;
     backoffFactor?: number;
-    onRetry?: (attempt: number, error: TrailheadError) => void;
+    onRetry?: (attempt: number, error: CoreError) => void;
   } = {}
-): Promise<Result<T, TrailheadError>> {
+): Promise<Result<T, CoreError>> {
   const {
     maxAttempts = 3,
     baseDelay = 1000,
@@ -456,7 +460,7 @@ export async function retryPipeline<T>(
     onRetry,
   } = options;
 
-  let lastError: TrailheadError | undefined;
+  let lastError: CoreError | undefined;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const result = await pipelineFactory().execute();
@@ -468,7 +472,12 @@ export async function retryPipeline<T>(
     lastError = result.isOk() ? undefined : result.error;
 
     if (attempt < maxAttempts) {
-      onRetry?.(attempt, result.isOk() ? createCLIError('Unknown error', {}) : result.error);
+      onRetry?.(
+        attempt,
+        result.isOk()
+          ? createCoreError('UNKNOWN_ERROR', 'Unknown error', { recoverable: false })
+          : result.error
+      );
 
       const delay = Math.min(baseDelay * Math.pow(backoffFactor, attempt - 1), maxDelay);
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -476,9 +485,14 @@ export async function retryPipeline<T>(
   }
 
   return err(
-    createCLIError(`Pipeline failed after ${maxAttempts} attempts`, {
-      cause: lastError,
-      context: { maxAttempts, lastError: lastError?.message },
-    })
+    createCoreError(
+      'PIPELINE_MAX_RETRIES_EXCEEDED',
+      `Pipeline failed after ${maxAttempts} attempts`,
+      {
+        recoverable: false,
+        cause: lastError,
+        context: { maxAttempts, lastError: lastError?.message },
+      }
+    )
   );
 }

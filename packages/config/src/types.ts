@@ -1,11 +1,10 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type ConfigResult<T> = Result<T, TrailheadError>;
+export type ConfigResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Configuration Types
@@ -76,14 +75,14 @@ export interface ResolvedSource {
   readonly source: ConfigSource;
   readonly data: Record<string, unknown>;
   readonly loadTime: number;
-  readonly error?: TrailheadError;
+  readonly error?: CoreError;
 }
 
 export interface ConfigMetadata {
   readonly loadTime: number;
   readonly sourceCount: number;
-  readonly validationErrors: readonly TrailheadError[];
-  readonly transformationErrors: readonly TrailheadError[];
+  readonly validationErrors: readonly CoreError[];
+  readonly transformationErrors: readonly CoreError[];
   readonly version?: string;
   readonly checksum?: string;
 }
@@ -101,7 +100,7 @@ export interface ConfigLoader {
   readonly supports: (source: ConfigSource) => boolean;
 }
 
-export type ConfigWatchCallback = (data: Record<string, unknown>, error?: TrailheadError) => void;
+export type ConfigWatchCallback = (data: Record<string, unknown>, error?: CoreError) => void;
 
 export interface ConfigWatcher {
   readonly source: ConfigSource;

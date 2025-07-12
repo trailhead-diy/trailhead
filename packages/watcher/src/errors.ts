@@ -1,5 +1,5 @@
-import { createTrailheadError } from '@trailhead/core/errors';
-import type { TrailheadError } from '@trailhead/core/errors';
+import { createCoreError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 
 // ========================================
 // Watcher Error Factories
@@ -10,8 +10,8 @@ export const createWatcherError = (
   details?: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherError', message, {
+): CoreError =>
+  createCoreError('WatcherError', message, {
     details,
     cause,
     recoverable: true,
@@ -22,8 +22,8 @@ export const createWatcherInitError = (
   path: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherInitError', `Failed to initialize watcher for path: ${path}`, {
+): CoreError =>
+  createCoreError('WatcherInitError', `Failed to initialize watcher for path: ${path}`, {
     details: `The file system watcher could not be started for the specified path`,
     cause,
     recoverable: false,
@@ -34,8 +34,8 @@ export const createWatcherPermissionError = (
   path: string,
   operation: string = 'watch',
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherPermissionError', `Permission denied: cannot ${operation} ${path}`, {
+): CoreError =>
+  createCoreError('WatcherPermissionError', `Permission denied: cannot ${operation} ${path}`, {
     details: `Insufficient permissions to perform ${operation} operation on the specified path`,
     recoverable: false,
     context: { path, operation, ...metadata },
@@ -45,8 +45,8 @@ export const createWatcherPathError = (
   path: string,
   reason: string = 'path does not exist',
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherPathError', `Invalid watch path: ${path}`, {
+): CoreError =>
+  createCoreError('WatcherPathError', `Invalid watch path: ${path}`, {
     details: `Cannot watch path because ${reason}`,
     recoverable: false,
     context: { path, reason, ...metadata },
@@ -57,8 +57,8 @@ export const createWatcherEventError = (
   path: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherEventError', `Error processing ${eventType} event for ${path}`, {
+): CoreError =>
+  createCoreError('WatcherEventError', `Error processing ${eventType} event for ${path}`, {
     details: `An error occurred while handling the file system event`,
     cause,
     recoverable: true,
@@ -69,8 +69,8 @@ export const createWatcherFilterError = (
   filterType: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('WatcherFilterError', `Filter error: ${filterType} filter failed`, {
+): CoreError =>
+  createCoreError('WatcherFilterError', `Filter error: ${filterType} filter failed`, {
     details: `An error occurred while applying the event filter`,
     cause,
     recoverable: true,
@@ -82,8 +82,8 @@ export const createPatternError = (
   operation: string = 'match',
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('PatternError', `Pattern ${operation} failed: ${pattern}`, {
+): CoreError =>
+  createCoreError('PatternError', `Pattern ${operation} failed: ${pattern}`, {
     details: `The pattern could not be processed for the ${operation} operation`,
     cause,
     recoverable: true,
@@ -94,11 +94,7 @@ export const createPatternError = (
 // Error Mapping Utilities
 // ========================================
 
-export const mapChokidarError = (
-  operation: string,
-  path: string,
-  error: unknown
-): TrailheadError => {
+export const mapChokidarError = (operation: string, path: string, error: unknown): CoreError => {
   if (error instanceof Error) {
     // Map common chokidar/fs errors
     if (error.message.includes('ENOENT')) {
@@ -147,11 +143,7 @@ export const mapChokidarError = (
   );
 };
 
-export const mapLibraryError = (
-  library: string,
-  operation: string,
-  error: unknown
-): TrailheadError => {
+export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createWatcherError(

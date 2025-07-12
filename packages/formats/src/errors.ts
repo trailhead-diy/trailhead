@@ -1,5 +1,5 @@
-import { createTrailheadError } from '@trailhead/core/errors';
-import type { TrailheadError } from '@trailhead/core/errors';
+import { createCoreError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 
 // ========================================
 // Error Factory Functions
@@ -10,8 +10,8 @@ export const createFormatError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('FormatError', message, {
+): CoreError =>
+  createCoreError('FormatError', message, {
     details,
     cause,
     context,
@@ -24,8 +24,8 @@ export const createDetectionError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('DetectionError', message, {
+): CoreError =>
+  createCoreError('DetectionError', message, {
     details,
     cause,
     context,
@@ -38,8 +38,8 @@ export const createMimeError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('MimeError', message, {
+): CoreError =>
+  createCoreError('MimeError', message, {
     details,
     cause,
     context,
@@ -52,8 +52,8 @@ export const createConversionError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('ConversionError', message, {
+): CoreError =>
+  createCoreError('ConversionError', message, {
     details,
     cause,
     context,
@@ -61,7 +61,7 @@ export const createConversionError = (
     suggestion: 'Verify format conversion support and options',
   });
 
-export const createUnsupportedFormatError = (format: string, operation: string): TrailheadError =>
+export const createUnsupportedFormatError = (format: string, operation: string): CoreError =>
   createFormatError(
     `Unsupported format for ${operation}`,
     `Format: ${format}, Operation: ${operation}`,
@@ -71,7 +71,7 @@ export const createUnsupportedFormatError = (format: string, operation: string):
 
 export const createInvalidBufferError = (
   message: string = 'Invalid or empty buffer provided'
-): TrailheadError =>
+): CoreError =>
   createDetectionError(
     message,
     'Buffer must contain valid file data for format detection',
@@ -79,7 +79,7 @@ export const createInvalidBufferError = (
     { bufferLength: 0 }
   );
 
-export const createInvalidMimeTypeError = (mimeType: string): TrailheadError =>
+export const createInvalidMimeTypeError = (mimeType: string): CoreError =>
   createMimeError(
     'Invalid MIME type format',
     `MIME type "${mimeType}" does not follow standard format`,
@@ -91,7 +91,7 @@ export const createInvalidMimeTypeError = (mimeType: string): TrailheadError =>
 // Error Mapping Utilities
 // ========================================
 
-export const mapFileError = (operation: string, path: string, error: unknown): TrailheadError => {
+export const mapFileError = (operation: string, path: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createFormatError(
@@ -102,11 +102,7 @@ export const mapFileError = (operation: string, path: string, error: unknown): T
   );
 };
 
-export const mapLibraryError = (
-  library: string,
-  operation: string,
-  error: unknown
-): TrailheadError => {
+export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createFormatError(
@@ -117,11 +113,7 @@ export const mapLibraryError = (
   );
 };
 
-export const mapDetectionError = (
-  source: string,
-  input: string,
-  error: unknown
-): TrailheadError => {
+export const mapDetectionError = (source: string, input: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createDetectionError(

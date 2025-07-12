@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "private": false,
-  "description": "Foundation package for Trailhead System - unified error handling, Result types, and functional programming utilities",
+  "description": "Foundation package for Trailhead System - CoreError interface, Result types, and functional programming utilities",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "@trailhead:registry": "https://npm.pkg.github.com"
@@ -39,6 +39,7 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
+    "fp-ts": "^2.16.10",
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {

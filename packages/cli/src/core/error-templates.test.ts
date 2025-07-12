@@ -14,7 +14,6 @@ describe('Error Templates', () => {
       it('creates file not found error', () => {
         const error = errorTemplates.fileNotFound('/path/to/file.txt');
 
-        expect(error.category).toBe('filesystem');
         expect(error.type).toBe('FS_READ_ERROR');
         expect(error.message).toBe('File not found: /path/to/file.txt');
         expect(error.path).toBe('/path/to/file.txt');
@@ -32,7 +31,7 @@ describe('Error Templates', () => {
       it('creates directory not found error', () => {
         const error = errorTemplates.directoryNotFound('/path/to/dir');
 
-        expect(error.category).toBe('filesystem');
+        expect(error.type).toBe('FS_READ_ERROR');
         expect(error.message).toBe('Directory not found: /path/to/dir');
         expect(error.suggestion).toContain('Create the directory');
       });
@@ -40,7 +39,7 @@ describe('Error Templates', () => {
       it('creates file already exists error', () => {
         const error = errorTemplates.fileAlreadyExists('/path/to/file.txt');
 
-        expect(error.category).toBe('filesystem');
+        expect(error.type).toBe('FS_WRITE_ERROR');
         expect(error.message).toBe('File already exists: /path/to/file.txt');
         expect(error.errno).toBe(-17);
         expect(error.suggestion).toContain('--force');
@@ -49,7 +48,7 @@ describe('Error Templates', () => {
       it('creates permission denied error', () => {
         const error = errorTemplates.permissionDenied('/path/to/file.txt', 'write');
 
-        expect(error.category).toBe('filesystem');
+        expect(error.type).toBe('FS_WRITE_ERROR');
         expect(error.message).toBe('Permission denied: cannot write /path/to/file.txt');
         expect(error.operation).toBe('write');
         expect(error.errno).toBe(-13);
@@ -59,7 +58,7 @@ describe('Error Templates', () => {
       it('creates disk space full error', () => {
         const error = errorTemplates.diskSpaceFull('/path/to/file.txt');
 
-        expect(error.category).toBe('filesystem');
+        expect(error.type).toBe('FS_WRITE_ERROR');
         expect(error.message).toBe('No space left on device: /path/to/file.txt');
         expect(error.errno).toBe(-28);
         expect(error.suggestion).toContain('Free up disk space');
@@ -70,7 +69,6 @@ describe('Error Templates', () => {
       it('creates required field missing error', () => {
         const error = errorTemplates.requiredFieldMissing('email');
 
-        expect(error.category).toBe('validation');
         expect(error.type).toBe('VALIDATION_ERROR');
         expect(error.message).toBe("Required field 'email' is missing");
         expect(error.field).toBe('email');
@@ -80,7 +78,7 @@ describe('Error Templates', () => {
       it('creates invalid format error', () => {
         const error = errorTemplates.invalidFormat('email', 'email format', 'invalid-email');
 
-        expect(error.category).toBe('validation');
+        expect(error.type).toBe('VALIDATION_ERROR');
         expect(error.message).toBe("Field 'email' has invalid format: expected email format");
         expect(error.field).toBe('email');
         expect(error.value).toBe('invalid-email');
@@ -90,7 +88,7 @@ describe('Error Templates', () => {
       it('creates value out of range error', () => {
         const error = errorTemplates.valueOutOfRange('age', 18, 65, 10);
 
-        expect(error.category).toBe('validation');
+        expect(error.type).toBe('VALIDATION_ERROR');
         expect(error.message).toBe("Field 'age' is out of range: must be between 18 and 65");
         expect(error.field).toBe('age');
         expect(error.value).toBe(10);
@@ -100,7 +98,7 @@ describe('Error Templates', () => {
       it('creates invalid choice error', () => {
         const error = errorTemplates.invalidChoice('format', ['json', 'csv', 'xml'], 'yaml');
 
-        expect(error.category).toBe('validation');
+        expect(error.type).toBe('VALIDATION_ERROR');
         expect(error.message).toBe(
           "Field 'format' has invalid value: must be one of json, csv, xml"
         );
@@ -115,7 +113,6 @@ describe('Error Templates', () => {
       it('creates connection timeout error', () => {
         const error = errorTemplates.connectionTimeout('https://api.example.com', 5000);
 
-        expect(error.category).toBe('network');
         expect(error.type).toBe('NETWORK_TIMEOUT');
         expect(error.message).toBe('Connection timeout: https://api.example.com');
         expect(error.url).toBe('https://api.example.com');
@@ -127,7 +124,7 @@ describe('Error Templates', () => {
       it('creates connection refused error', () => {
         const error = errorTemplates.connectionRefused('https://api.example.com');
 
-        expect(error.category).toBe('network');
+        expect(error.type).toBe('NETWORK_ERROR');
         expect(error.message).toBe('Connection refused: https://api.example.com');
         expect(error.statusCode).toBe(0);
         expect(error.suggestion).toContain('server is running');
@@ -136,7 +133,7 @@ describe('Error Templates', () => {
       it('creates not found error', () => {
         const error = errorTemplates.notFound('https://api.example.com/resource');
 
-        expect(error.category).toBe('network');
+        expect(error.type).toBe('NETWORK_ERROR');
         expect(error.message).toBe('Resource not found: https://api.example.com/resource');
         expect(error.statusCode).toBe(404);
         expect(error.suggestion).toContain('Check the URL');
@@ -145,7 +142,7 @@ describe('Error Templates', () => {
       it('creates unauthorized error', () => {
         const error = errorTemplates.unauthorized('https://api.example.com');
 
-        expect(error.category).toBe('network');
+        expect(error.type).toBe('NETWORK_ERROR');
         expect(error.message).toBe('Unauthorized access: https://api.example.com');
         expect(error.statusCode).toBe(401);
         expect(error.suggestion).toContain('authentication credentials');
@@ -154,7 +151,7 @@ describe('Error Templates', () => {
       it('creates rate limited error', () => {
         const error = errorTemplates.rateLimited('https://api.example.com', 60);
 
-        expect(error.category).toBe('network');
+        expect(error.type).toBe('NETWORK_ERROR');
         expect(error.message).toBe('Rate limit exceeded: https://api.example.com');
         expect(error.statusCode).toBe(429);
         expect(error.suggestion).toContain('60 seconds');
@@ -171,7 +168,6 @@ describe('Error Templates', () => {
       it('creates config file missing error', () => {
         const error = errorTemplates.configFileMissing('/path/to/config.json');
 
-        expect(error.category).toBe('configuration');
         expect(error.type).toBe('CONFIG_ERROR');
         expect(error.message).toBe('Configuration file not found: /path/to/config.json');
         expect(error.configFile).toBe('/path/to/config.json');
@@ -181,7 +177,7 @@ describe('Error Templates', () => {
       it('creates config file invalid error', () => {
         const error = errorTemplates.configFileInvalid('/path/to/config.json', 'Unexpected token');
 
-        expect(error.category).toBe('configuration');
+        expect(error.type).toBe('CONFIG_ERROR');
         expect(error.message).toBe('Invalid configuration file: /path/to/config.json');
         expect(error.suggestion).toContain('Unexpected token');
         expect(error.suggestion).toContain('Fix the configuration syntax: Unexpected token');
@@ -190,7 +186,7 @@ describe('Error Templates', () => {
       it('creates config value invalid error', () => {
         const error = errorTemplates.configValueInvalid('port', 'invalid', 'number');
 
-        expect(error.category).toBe('configuration');
+        expect(error.type).toBe('CONFIG_ERROR');
         expect(error.message).toBe("Invalid configuration value for 'port': expected number");
         expect(error.invalidFields).toEqual(['port']);
         expect(error.suggestion).toContain('valid number value');
@@ -201,7 +197,6 @@ describe('Error Templates', () => {
       it('creates command not found error', () => {
         const error = errorTemplates.commandNotFound('nonexistent-command');
 
-        expect(error.category).toBe('execution');
         expect(error.type).toBe('EXECUTION_ERROR');
         expect(error.message).toBe('Command not found: nonexistent-command');
         expect(error.command).toBe('nonexistent-command');
@@ -211,7 +206,7 @@ describe('Error Templates', () => {
       it('creates command failed error', () => {
         const error = errorTemplates.commandFailed('test-command', 1, 'Error output');
 
-        expect(error.category).toBe('execution');
+        expect(error.type).toBe('EXECUTION_ERROR');
         expect(error.message).toBe('Command failed: test-command (exit code 1)');
         expect(error.command).toBe('test-command');
         expect(error.exitCode).toBe(1);
@@ -222,7 +217,7 @@ describe('Error Templates', () => {
       it('creates process timeout error', () => {
         const error = errorTemplates.processTimeout('slow-command', 30000);
 
-        expect(error.category).toBe('execution');
+        expect(error.type).toBe('EXECUTION_ERROR');
         expect(error.message).toBe('Process timeout: slow-command (after 30000ms)');
         expect(error.command).toBe('slow-command');
         expect(error.message).toContain('30000ms');
@@ -234,7 +229,6 @@ describe('Error Templates', () => {
       it('creates invalid input error', () => {
         const error = errorTemplates.invalidInput('invalid-value', 'Must be a number');
 
-        expect(error.category).toBe('user-input');
         expect(error.type).toBe('USER_INPUT_ERROR');
         expect(error.message).toBe('Invalid input: invalid-value');
         expect(error.input).toBe('invalid-value');
@@ -245,7 +239,7 @@ describe('Error Templates', () => {
       it('creates missing argument error', () => {
         const error = errorTemplates.missingArgument('filename');
 
-        expect(error.category).toBe('user-input');
+        expect(error.type).toBe('USER_INPUT_ERROR');
         expect(error.message).toBe('Missing required argument: filename');
         expect(error.message).toContain('filename');
         expect(error.suggestion).toContain('required argument: filename');
@@ -254,7 +248,7 @@ describe('Error Templates', () => {
       it('creates too many arguments error', () => {
         const error = errorTemplates.tooManyArguments(2, 5);
 
-        expect(error.category).toBe('user-input');
+        expect(error.type).toBe('USER_INPUT_ERROR');
         expect(error.message).toBe('Too many arguments: expected 2, got 5');
         expect(error.message).toContain('expected 2');
         expect(error.message).toContain('got 5');
@@ -266,7 +260,6 @@ describe('Error Templates', () => {
       it('creates package not installed error', () => {
         const error = errorTemplates.packageNotInstalled('typescript', 'npm install typescript');
 
-        expect(error.category).toBe('dependency');
         expect(error.type).toBe('DEPENDENCY_ERROR');
         expect(error.message).toBe('Package not installed: typescript');
         expect(error.packageName).toBe('typescript');
@@ -276,7 +269,7 @@ describe('Error Templates', () => {
       it('creates version mismatch error', () => {
         const error = errorTemplates.versionMismatch('node', '18.0.0', '16.0.0');
 
-        expect(error.category).toBe('dependency');
+        expect(error.type).toBe('DEPENDENCY_ERROR');
         expect(error.message).toBe('Version mismatch for node: required 18.0.0, found 16.0.0');
         expect(error.packageName).toBe('node');
         expect(error.requiredVersion).toBe('18.0.0');
@@ -291,7 +284,7 @@ describe('Error Templates', () => {
           'Incompatible versions'
         );
 
-        expect(error.category).toBe('dependency');
+        expect(error.type).toBe('DEPENDENCY_ERROR');
         expect(error.message).toBe('Dependency conflict between package-a and package-b');
         expect(error.packageName).toBe('package-a');
         expect(error.message).toContain('package-b');

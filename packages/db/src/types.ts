@@ -1,11 +1,10 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type DbResult<T> = Result<T, TrailheadError>;
+export type DbResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Database Connection Types

@@ -1,5 +1,5 @@
-import { createTrailheadError } from '@trailhead/core/errors';
-import type { TrailheadError } from '@trailhead/core/errors';
+import { createCoreError } from '@trailhead/core/errors';
+import type { CoreError } from '@trailhead/core/errors';
 
 // ========================================
 // Workflow Error Creators
@@ -10,8 +10,8 @@ export const createWorkflowError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('WorkflowError', message, {
+): CoreError => {
+  return createCoreError('WorkflowError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -24,8 +24,8 @@ export const createWorkflowValidationError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('WorkflowValidationError', message, {
+): CoreError => {
+  return createCoreError('WorkflowValidationError', message, {
     suggestion,
     cause,
     recoverable: true,
@@ -38,8 +38,8 @@ export const createWorkflowExecutionError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('WorkflowExecutionError', message, {
+): CoreError => {
+  return createCoreError('WorkflowExecutionError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -52,8 +52,8 @@ export const createWorkflowTimeoutError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('WorkflowTimeoutError', message, {
+): CoreError => {
+  return createCoreError('WorkflowTimeoutError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -66,8 +66,8 @@ export const createStepError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('StepError', message, {
+): CoreError => {
+  return createCoreError('StepError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -80,8 +80,8 @@ export const createStepValidationError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('StepValidationError', message, {
+): CoreError => {
+  return createCoreError('StepValidationError', message, {
     suggestion,
     cause,
     recoverable: true,
@@ -94,8 +94,8 @@ export const createStepExecutionError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('StepExecutionError', message, {
+): CoreError => {
+  return createCoreError('StepExecutionError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -108,8 +108,8 @@ export const createStepTimeoutError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('StepTimeoutError', message, {
+): CoreError => {
+  return createCoreError('StepTimeoutError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -122,8 +122,8 @@ export const createDependencyError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('DependencyError', message, {
+): CoreError => {
+  return createCoreError('DependencyError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -136,8 +136,8 @@ export const createConcurrencyError = (
   suggestion: string,
   cause?: unknown,
   details?: Record<string, unknown>
-): TrailheadError => {
-  return createTrailheadError('ConcurrencyError', message, {
+): CoreError => {
+  return createCoreError('ConcurrencyError', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -149,11 +149,7 @@ export const createConcurrencyError = (
 // Error Mapping Functions
 // ========================================
 
-export const mapLibraryError = (
-  operation: string,
-  target: string,
-  cause: unknown
-): TrailheadError => {
+export const mapLibraryError = (operation: string, target: string, cause: unknown): CoreError => {
   const message = `Failed to ${operation} ${target}`;
   const suggestion = 'Check the operation parameters and try again';
 
@@ -180,7 +176,7 @@ export const mapLibraryError = (
   return createWorkflowError(message, suggestion, cause, { operation, target });
 };
 
-export const mapStepError = (operation: string, stepId: string, cause: unknown): TrailheadError => {
+export const mapStepError = (operation: string, stepId: string, cause: unknown): CoreError => {
   const message = `Step '${stepId}' failed during ${operation}`;
   const suggestion = 'Check step configuration and dependencies';
 

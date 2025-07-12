@@ -2,25 +2,25 @@
 export * from '@trailhead/fs';
 
 import type { Result } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 
 // FileSystem interface for backward compatibility
 export interface FileSystem {
-  readFile: (path: string) => Promise<Result<string, TrailheadError>>;
-  writeFile: (path: string, content: string) => Promise<Result<void, TrailheadError>>;
-  mkdir: (path: string) => Promise<Result<void, TrailheadError>>;
-  readdir: (path: string) => Promise<Result<string[], TrailheadError>>;
-  access: (path: string) => Promise<Result<void, TrailheadError>>;
-  exists: (path: string) => Promise<Result<boolean, TrailheadError>>;
-  stat: (path: string) => Promise<Result<any, TrailheadError>>;
-  rm: (path: string) => Promise<Result<void, TrailheadError>>;
-  cp: (src: string, dest: string) => Promise<Result<void, TrailheadError>>;
-  rename: (src: string, dest: string) => Promise<Result<void, TrailheadError>>;
-  readJson: <T>(path: string) => Promise<Result<T, TrailheadError>>;
-  writeJson: <T>(path: string, data: T) => Promise<Result<void, TrailheadError>>;
-  ensureDir: (path: string) => Promise<Result<void, TrailheadError>>;
-  emptyDir: (path: string) => Promise<Result<void, TrailheadError>>;
-  outputFile: (path: string, content: string) => Promise<Result<void, TrailheadError>>;
+  readFile: (path: string) => Promise<Result<string, CoreError>>;
+  writeFile: (path: string, content: string) => Promise<Result<void, CoreError>>;
+  mkdir: (path: string) => Promise<Result<void, CoreError>>;
+  readdir: (path: string) => Promise<Result<string[], CoreError>>;
+  access: (path: string) => Promise<Result<void, CoreError>>;
+  exists: (path: string) => Promise<Result<boolean, CoreError>>;
+  stat: (path: string) => Promise<Result<any, CoreError>>;
+  rm: (path: string) => Promise<Result<void, CoreError>>;
+  cp: (src: string, dest: string) => Promise<Result<void, CoreError>>;
+  rename: (src: string, dest: string) => Promise<Result<void, CoreError>>;
+  readJson: <T>(path: string) => Promise<Result<T, CoreError>>;
+  writeJson: <T>(path: string, data: T) => Promise<Result<void, CoreError>>;
+  ensureDir: (path: string) => Promise<Result<void, CoreError>>;
+  emptyDir: (path: string) => Promise<Result<void, CoreError>>;
+  outputFile: (path: string, content: string) => Promise<Result<void, CoreError>>;
 }
 
 // Re-export for backward compatibility
@@ -47,7 +47,7 @@ export interface FileComparison {
 export const compareFiles = async (
   path1: string,
   path2: string
-): Promise<Result<FileComparison, TrailheadError>> => {
+): Promise<Result<FileComparison, CoreError>> => {
   try {
     const file1Result = await readFile(defaultFSConfig)(path1);
     const file2Result = await readFile(defaultFSConfig)(path2);

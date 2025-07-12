@@ -213,8 +213,8 @@ describe('Command Enhancement Suite', () => {
 
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.message).toBe('input file');
-        expect(result.error.category).toBe('validation');
+        expect(result.error.message).toBe("Required field 'input file' is missing");
+        expect(result.error.type).toBe('VALIDATION_ERROR');
       }
     });
 

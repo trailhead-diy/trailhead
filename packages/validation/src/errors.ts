@@ -1,4 +1,4 @@
-import { createTrailheadError } from '@trailhead/core';
+import { createCoreError } from '@trailhead/core';
 import type { ValidationError } from './types.js';
 import type { z } from 'zod';
 
@@ -13,7 +13,7 @@ export const createValidationError = (
     context?: Record<string, unknown>;
   }
 ): ValidationError => ({
-  ...createTrailheadError('VALIDATION_ERROR', message, {
+  ...createCoreError('VALIDATION_ERROR', message, {
     ...options,
     recoverable: true,
     context: {

@@ -1,6 +1,6 @@
 import type { Command, CommandContext } from '../command/index.js';
 import type { Result } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 import { createTestContext } from './context.js';
 
 /**
@@ -10,7 +10,7 @@ export async function runCommand<T>(
   command: Command<T>,
   options: T,
   context?: CommandContext
-): Promise<Result<void, TrailheadError>> {
+): Promise<Result<void, CoreError>> {
   const testContext = context ?? createTestContext();
   return command.execute(options, testContext);
 }
@@ -42,7 +42,7 @@ export function createCommandTestRunner<T>(
 export async function runTestCommand<T>(
   state: CommandTestRunnerState<T>,
   options: T
-): Promise<Result<void, TrailheadError>> {
+): Promise<Result<void, CoreError>> {
   return state.command.execute(options, state.context);
 }
 

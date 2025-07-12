@@ -6,8 +6,8 @@
 import { Command } from 'commander';
 import path from 'path';
 import { ok, err, type Result } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
-import { createCLIError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
+import { createCoreError } from '../core/index.js';
 import { fs } from '@trailhead/fs';
 import chalk from 'chalk';
 
@@ -37,7 +37,7 @@ const DEFAULT_SCRIPTS_DIR = 'scripts';
 /**
  * Detect project configuration
  */
-async function detectProjectConfig(): Promise<Result<ProjectConfig, TrailheadError>> {
+async function detectProjectConfig(): Promise<Result<ProjectConfig, CoreError>> {
   // Use fs directly from domain package
 
   try {
@@ -115,7 +115,9 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, TrailheadErr
       packages,
     });
   } catch (error) {
-    return err(createCLIError(`Failed to detect project configuration: ${error}`, {}));
+    return err(
+      createCoreError('GIT_HOOKS_ERROR', `Failed to detect project configuration: ${error}`, {})
+    );
   }
 }
 
@@ -286,7 +288,7 @@ function renderTemplate(template: string, vars: Record<string, any>): string {
 /**
  * Install git hooks
  */
-async function installGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
+async function installGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   // Use fs directly from domain package
 
   try {
@@ -324,7 +326,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     const runnerTemplateResult = await fs.readFile(path.join(templatesDir, 'smart-test-runner.sh'));
     if (runnerTemplateResult.isErr()) {
       return err(
-        createCLIError(
+        createCoreError(
+          'GIT_HOOKS_ERROR',
           `Failed to read smart-test-runner.sh template: ${runnerTemplateResult.error.message}`,
           {}
         )
@@ -337,7 +340,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     const writeRunnerResult = await fs.writeFile(runnerPath, runnerContent);
     if (writeRunnerResult.isErr()) {
       return err(
-        createCLIError(
+        createCoreError(
+          'GIT_HOOKS_ERROR',
           `Failed to write smart-test-runner.sh: ${writeRunnerResult.error.message}`,
           {}
         )
@@ -348,7 +352,11 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     const outputResult = await fs.outputFile(runnerPath, runnerContent);
     if (outputResult.isErr()) {
       return err(
-        createCLIError(`Failed to set executable permissions: ${outputResult.error.message}`, {})
+        createCoreError(
+          'GIT_HOOKS_ERROR',
+          `Failed to set executable permissions: ${outputResult.error.message}`,
+          {}
+        )
       );
     }
 
@@ -358,7 +366,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     );
     if (lefthookTemplateResult.isErr()) {
       return err(
-        createCLIError(
+        createCoreError(
+          'GIT_HOOKS_ERROR',
           `Failed to read lefthook.yml.template: ${lefthookTemplateResult.error.message}`,
           {}
         )
@@ -375,7 +384,11 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
       const writeLefthookResult = await fs.writeFile(lefthookPath, lefthookContent);
       if (writeLefthookResult.isErr()) {
         return err(
-          createCLIError(`Failed to write lefthook.yml: ${writeLefthookResult.error.message}`, {})
+          createCoreError(
+            'GIT_HOOKS_ERROR',
+            `Failed to write lefthook.yml: ${writeLefthookResult.error.message}`,
+            {}
+          )
         );
       }
     }
@@ -386,7 +399,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     );
     if (configTemplateResult.isErr()) {
       return err(
-        createCLIError(
+        createCoreError(
+          'GIT_HOOKS_ERROR',
           `Failed to read smart-test-config.json.template: ${configTemplateResult.error.message}`,
           {}
         )
@@ -403,7 +417,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
       const writeConfigResult = await fs.writeFile(configPath, configContent);
       if (writeConfigResult.isErr()) {
         return err(
-          createCLIError(
+          createCoreError(
+            'GIT_HOOKS_ERROR',
             `Failed to write .smart-test-config.json: ${writeConfigResult.error.message}`,
             {}
           )
@@ -415,7 +430,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
     const readmeTemplateResult = await fs.readFile(path.join(templatesDir, 'README.md'));
     if (readmeTemplateResult.isErr()) {
       return err(
-        createCLIError(
+        createCoreError(
+          'GIT_HOOKS_ERROR',
           `Failed to read README.md template: ${readmeTemplateResult.error.message}`,
           {}
         )
@@ -428,7 +444,11 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
       const writeReadmeResult = await fs.writeFile(readmePath, readmeTemplateResult.value);
       if (writeReadmeResult.isErr()) {
         return err(
-          createCLIError(`Failed to write README.md: ${writeReadmeResult.error.message}`, {})
+          createCoreError(
+            'GIT_HOOKS_ERROR',
+            `Failed to write README.md: ${writeReadmeResult.error.message}`,
+            {}
+          )
         );
       }
     }
@@ -443,14 +463,14 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, T
 
     return ok(undefined);
   } catch (error) {
-    return err(createCLIError(`Failed to install git hooks: ${error}`, {}));
+    return err(createCoreError('GIT_HOOKS_ERROR', `Failed to install git hooks: ${error}`, {}));
   }
 }
 
 /**
  * Update git hooks
  */
-async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
+async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   console.log(chalk.blue('🔄 Updating smart git hooks...'));
 
   // For updates, we force overwrite the scripts but preserve config
@@ -463,7 +483,7 @@ async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, Tr
 /**
  * Remove git hooks
  */
-async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, TrailheadError>> {
+async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   // Use fs directly from domain package
 
   try {
@@ -523,14 +543,14 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Tr
 
     return ok(undefined);
   } catch (error) {
-    return err(createCLIError(`Failed to remove git hooks: ${error}`, {}));
+    return err(createCoreError('GIT_HOOKS_ERROR', `Failed to remove git hooks: ${error}`, {}));
   }
 }
 
 /**
  * Interactive configuration wizard for git hooks
  */
-async function configureGitHooks(): Promise<Result<void, TrailheadError>> {
+async function configureGitHooks(): Promise<Result<void, CoreError>> {
   try {
     console.log(chalk.blue('🔧 Git Hooks Configuration Wizard'));
     console.log('This wizard will help you configure smart test execution.');
@@ -569,7 +589,7 @@ async function configureGitHooks(): Promise<Result<void, TrailheadError>> {
 
     return ok(undefined);
   } catch (error) {
-    return err(createCLIError(`Configuration wizard failed: ${error}`, {}));
+    return err(createCoreError('GIT_HOOKS_ERROR', `Configuration wizard failed: ${error}`, {}));
   }
 }
 

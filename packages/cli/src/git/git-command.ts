@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { Result, ok, err, CLIError } from '../core/index.js';
+import { Result, ok, err, type CoreError } from '@trailhead/core';
 import { createGitError } from './errors.js';
 import type { GitCommandResult, GitOptions } from './types.js';
 
@@ -14,7 +14,7 @@ const DEFAULT_TIMEOUT = 30_000;
 export async function executeGitCommand(
   args: string[],
   options: GitOptions = {}
-): Promise<Result<GitCommandResult, CLIError>> {
+): Promise<Result<GitCommandResult, CoreError>> {
   const { cwd = process.cwd(), timeout = DEFAULT_TIMEOUT } = options;
 
   try {
@@ -86,7 +86,7 @@ export async function executeGitCommand(
 export async function executeGitCommandSimple(
   args: string[],
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   const result = await executeGitCommand(args, options);
 
   if (result.isErr()) {
@@ -108,7 +108,7 @@ export async function executeGitCommandSimple(
  */
 export async function validateGitEnvironment(
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   // Check if git is available
   const gitVersionResult = await executeGitCommandSimple(['--version'], options);
   if (gitVersionResult.isErr()) {

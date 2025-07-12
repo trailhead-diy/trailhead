@@ -20,6 +20,5 @@ export {
   type ErrorHandler,
 } from './pipeline.js';
 
-// Backward compatibility aliases
-import { createCLIError } from '@trailhead/core';
-export { createCLIError as createError };
+// Direct exports - no backward compatibility
+export { createCoreError } from '@trailhead/core';

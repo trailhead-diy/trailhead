@@ -1,5 +1,5 @@
-import { createTrailheadError } from '@trailhead/core/errors';
-import type { TrailheadError } from '@trailhead/core/errors';
+import { createCoreError } from '@trailhead/core/errors';
+import type { CoreError } from '@trailhead/core/errors';
 
 // ========================================
 // Stream Error Factories
@@ -10,8 +10,8 @@ export const createStreamError = (
   details?: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('StreamError', message, {
+): CoreError =>
+  createCoreError('StreamError', message, {
     details,
     cause,
     recoverable: true,
@@ -22,8 +22,8 @@ export const createStreamTimeoutError = (
   timeout: number,
   operation: string = 'stream operation',
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('StreamTimeoutError', `Stream operation timed out after ${timeout}ms`, {
+): CoreError =>
+  createCoreError('StreamTimeoutError', `Stream operation timed out after ${timeout}ms`, {
     details: `The ${operation} did not complete within the specified timeout period`,
     recoverable: false,
     context: { timeout, operation, ...metadata },
@@ -32,8 +32,8 @@ export const createStreamTimeoutError = (
 export const createStreamClosedError = (
   streamType: string = 'stream',
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('StreamClosedError', `Cannot operate on closed ${streamType}`, {
+): CoreError =>
+  createCoreError('StreamClosedError', `Cannot operate on closed ${streamType}`, {
     details: `The ${streamType} has been closed or destroyed and cannot accept new operations`,
     recoverable: false,
     context: { streamType, ...metadata },
@@ -43,8 +43,8 @@ export const createInvalidStreamError = (
   expected: string,
   actual: string = 'unknown',
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError(
+): CoreError =>
+  createCoreError(
     'InvalidStreamError',
     `Invalid stream type: expected ${expected}, got ${actual}`,
     {
@@ -59,8 +59,8 @@ export const createPipelineError = (
   stageIndex?: number,
   cause?: unknown,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('PipelineError', message, {
+): CoreError =>
+  createCoreError('PipelineError', message, {
     details:
       stageIndex !== undefined
         ? `Pipeline failed at stage ${stageIndex}`
@@ -74,8 +74,8 @@ export const createBackpressureError = (
   streamType: string,
   bufferSize: number,
   metadata?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('BackpressureError', `Backpressure detected in ${streamType}`, {
+): CoreError =>
+  createCoreError('BackpressureError', `Backpressure detected in ${streamType}`, {
     details: `Stream buffer is full (${bufferSize} bytes), write operation would block`,
     recoverable: true,
     context: { streamType, bufferSize, ...metadata },
@@ -89,7 +89,7 @@ export const mapStreamError = (
   operation: string,
   streamType: string,
   error: unknown
-): TrailheadError => {
+): CoreError => {
   if (error instanceof Error) {
     // Map common Node.js stream errors
     if (error.message.includes('write after end')) {
@@ -128,11 +128,7 @@ export const mapStreamError = (
   );
 };
 
-export const mapLibraryError = (
-  library: string,
-  operation: string,
-  error: unknown
-): TrailheadError => {
+export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createStreamError(

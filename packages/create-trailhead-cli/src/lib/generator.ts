@@ -1,5 +1,5 @@
-import { ok, err, createCLIError } from '@trailhead/core';
-import type { Result, CLIError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@trailhead/core';
 import { resolve, dirname } from 'path';
 import { fs } from '@trailhead/fs';
 import { fileURLToPath } from 'url';
@@ -77,7 +77,7 @@ const templateCompiler = new TemplateCompiler();
 export async function generateProject(
   config: ProjectConfig,
   context: GeneratorContext
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, CoreError>> {
   const { logger, verbose } = context;
 
   try {
@@ -177,7 +177,7 @@ export async function generateProject(
   } catch (error) {
     logger.error('Generator failed:', error);
     return err(
-      createCLIError('Project generation failed', {
+      createCoreError('PROJECT_GENERATION_FAILED', 'Project generation failed', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -202,7 +202,7 @@ export async function generateProject(
  * - Template: whitelisted template variants only
  * - Package manager: whitelisted package managers only
  */
-function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
+function validateProjectConfig(config: ProjectConfig): Result<void, CoreError> {
   // Validate project name with security checks
   const nameValidation = validateProjectName(config.projectName);
   if (!nameValidation.isOk()) {
@@ -241,13 +241,13 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CLIError> {
  *
  * @internal
  *
- * @throws {CLIError} When directory creation fails due to permissions or filesystem issues
+ * @throws {CoreError} When directory creation fails due to permissions or filesystem issues
  */
-async function createProjectDirectory(projectPath: string): Promise<Result<void, CLIError>> {
+async function createProjectDirectory(projectPath: string): Promise<Result<void, CoreError>> {
   const result = await fs.ensureDir(projectPath);
   if (result.isErr()) {
     return err(
-      createCLIError('Failed to create project directory', {
+      createCoreError('DIRECTORY_CREATION_FAILED', 'Failed to create project directory', {
         cause: result.error,
       })
     );
@@ -284,7 +284,7 @@ async function processTemplateFile(
   templateContext: TemplateContext,
   config: ProjectConfig,
   context: GeneratorContext
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, CoreError>> {
   try {
     const { logger, verbose } = context;
 
@@ -316,9 +316,13 @@ async function processTemplateFile(
     const ensureDirResult = await fs.ensureDir(dirname(outputPath));
     if (ensureDirResult.isErr()) {
       return err(
-        createCLIError(`Failed to create output directory ${dirname(outputPath)}`, {
-          cause: ensureDirResult.error,
-        })
+        createCoreError(
+          'OUTPUT_DIRECTORY_CREATION_FAILED',
+          `Failed to create output directory ${dirname(outputPath)}`,
+          {
+            cause: ensureDirResult.error,
+          }
+        )
       );
     }
 
@@ -332,7 +336,7 @@ async function processTemplateFile(
       const writeResult = await fs.writeFile(outputPath, processedContent);
       if (writeResult.isErr()) {
         return err(
-          createCLIError(`Failed to write template file ${outputPath}`, {
+          createCoreError('TEMPLATE_WRITE_FAILED', `Failed to write template file ${outputPath}`, {
             cause: writeResult.error,
           })
         );
@@ -346,9 +350,13 @@ async function processTemplateFile(
       const copyResult = await fs.copy(templatePath, outputPath);
       if (copyResult.isErr()) {
         return err(
-          createCLIError(`Failed to copy file ${templatePath} to ${outputPath}`, {
-            cause: copyResult.error,
-          })
+          createCoreError(
+            'FILE_COPY_FAILED',
+            `Failed to copy file ${templatePath} to ${outputPath}`,
+            {
+              cause: copyResult.error,
+            }
+          )
         );
       }
 
@@ -374,10 +382,14 @@ async function processTemplateFile(
     return ok(undefined);
   } catch (error) {
     return err(
-      createCLIError(`Failed to process template file ${templateFile.source}`, {
-        cause: error,
-        context: { details: error instanceof Error ? error.message : String(error) },
-      })
+      createCoreError(
+        'TEMPLATE_PROCESSING_FAILED',
+        `Failed to process template file ${templateFile.source}`,
+        {
+          cause: error,
+          context: { details: error instanceof Error ? error.message : String(error) },
+        }
+      )
     );
   }
 }
@@ -406,7 +418,7 @@ async function processTemplateFile(
 async function initializeGitRepository(
   projectPath: string,
   context: GeneratorContext
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, CoreError>> {
   const { logger: _logger } = context;
 
   // Validate project path to prevent command injection
@@ -423,7 +435,7 @@ async function initializeGitRepository(
   if (envCheck.isErr()) {
     spinner.fail('Git not available');
     return err(
-      createCLIError('Git environment validation failed', {
+      createCoreError('GIT_VALIDATION_FAILED', 'Git environment validation failed', {
         cause: envCheck.error,
       })
     );
@@ -434,7 +446,7 @@ async function initializeGitRepository(
   if (initResult.isErr()) {
     spinner.fail('Failed to initialize git repository');
     return err(
-      createCLIError('Failed to initialize git repository', {
+      createCoreError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
         cause: initResult.error,
       })
     );
@@ -445,7 +457,7 @@ async function initializeGitRepository(
   if (addResult.isErr()) {
     spinner.fail('Failed to stage files');
     return err(
-      createCLIError('Failed to stage files for initial commit', {
+      createCoreError('GIT_STAGE_FAILED', 'Failed to stage files for initial commit', {
         cause: addResult.error,
       })
     );
@@ -456,7 +468,7 @@ async function initializeGitRepository(
   if (commitResult.isErr()) {
     spinner.fail('Failed to create initial commit');
     return err(
-      createCLIError('Failed to create initial commit', {
+      createCoreError('GIT_COMMIT_FAILED', 'Failed to create initial commit', {
         cause: commitResult.error,
       })
     );
@@ -490,7 +502,7 @@ async function initializeGitRepository(
 async function installDependencies(
   config: ProjectConfig,
   context: GeneratorContext
-): Promise<Result<void, CLIError>> {
+): Promise<Result<void, CoreError>> {
   const { logger: _logger } = context;
 
   try {
@@ -505,7 +517,7 @@ async function installDependencies(
     const packageManagerResult = detectPackageManager();
     if (!packageManagerResult.isOk()) {
       return err(
-        createCLIError('No suitable package manager found', {
+        createCoreError('PACKAGE_MANAGER_NOT_FOUND', 'No suitable package manager found', {
           cause: packageManagerResult.error,
           context: { details: 'Package manager detection failed' },
           suggestion: 'Install pnpm or npm and ensure it is available in PATH',
@@ -530,7 +542,7 @@ async function installDependencies(
     return ok(undefined);
   } catch (error) {
     return err(
-      createCLIError('Failed to install dependencies', {
+      createCoreError('DEPENDENCY_INSTALL_FAILED', 'Failed to install dependencies', {
         cause: error,
         context: {
           details:

@@ -1,7 +1,7 @@
 import type { Result } from 'neverthrow';
 import { ok, err } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
-import { createCLIError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
+import { createCoreError } from '@trailhead/core';
 import type { CommandConfig, CommandOptions } from './base.js';
 import type { CommandOption } from './types.js';
 
@@ -32,15 +32,19 @@ import type { CommandOption } from './types.js';
 export function validateCommandOption(
   option: CommandOption,
   index: number
-): Result<void, TrailheadError> {
+): Result<void, CoreError> {
   // Option must have either name or flags
   if (!option.name && !option.flags) {
     return err(
-      createCLIError(`Option at index ${index} must have either 'name' or 'flags' property`, {
-        code: 'INVALID_OPTION_NAME_FORMAT',
-        suggestion: 'Add either a "name" property or a "flags" property to the option',
-        context: { option, index },
-      })
+      createCoreError(
+        'INVALID_OPTION_NAME_FORMAT',
+        `Option at index ${index} must have either 'name' or 'flags' property`,
+        {
+          suggestion: 'Add either a "name" property or a "flags" property to the option',
+          recoverable: true,
+          context: { option, index },
+        }
+      )
     );
   }
 
@@ -48,10 +52,14 @@ export function validateCommandOption(
   if (option.flags) {
     if (typeof option.flags !== 'string') {
       return err(
-        createCLIError(`Option at index ${index}: 'flags' must be a string`, {
-          code: 'INVALID_OPTION_TYPE',
-          context: { option, index },
-        })
+        createCoreError(
+          'INVALID_OPTION_TYPE',
+          `Option at index ${index}: 'flags' must be a string`,
+          {
+            recoverable: true,
+            context: { option, index },
+          }
+        )
       );
     }
 
@@ -59,11 +67,12 @@ export function validateCommandOption(
     const flagPattern = /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
     if (!flagPattern.test(option.flags)) {
       return err(
-        createCLIError(
+        createCoreError(
+          'INVALID_OPTION_TYPE',
           `Option at index ${index}: Invalid flags format '${option.flags}'. Expected format: '--long' or '-s, --long' with optional value placeholder`,
           {
-            code: 'INVALID_OPTION_TYPE',
             suggestion: 'Use formats like "--output", "-o, --output", or "--output <value>"',
+            recoverable: true,
             context: { option, index },
           }
         )
@@ -75,10 +84,14 @@ export function validateCommandOption(
   if (option.name) {
     if (typeof option.name !== 'string' || option.name.length === 0) {
       return err(
-        createCLIError(`Option at index ${index}: 'name' must be a non-empty string`, {
-          code: 'INVALID_OPTION_NAME_FORMAT',
-          context: { option, index },
-        })
+        createCoreError(
+          'INVALID_OPTION_NAME_FORMAT',
+          `Option at index ${index}: 'name' must be a non-empty string`,
+          {
+            recoverable: true,
+            context: { option, index },
+          }
+        )
       );
     }
 
@@ -86,11 +99,12 @@ export function validateCommandOption(
     const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
     if (!namePattern.test(option.name)) {
       return err(
-        createCLIError(
+        createCoreError(
+          'INVALID_OPTION_NAME_FORMAT',
           `Option at index ${index}: Invalid name format '${option.name}'. Use alphanumeric characters and hyphens only`,
           {
-            code: 'INVALID_OPTION_NAME_FORMAT',
             suggestion: 'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
+            recoverable: true,
             context: { option, index },
           }
         )
@@ -106,11 +120,15 @@ export function validateCommandOption(
       !/[a-zA-Z]/.test(option.alias)
     ) {
       return err(
-        createCLIError(`Option at index ${index}: 'alias' must be a single letter`, {
-          code: 'INVALID_OPTION_ALIAS',
-          suggestion: 'Use a single letter like "o" for output or "v" for verbose',
-          context: { option, index },
-        })
+        createCoreError(
+          'INVALID_OPTION_ALIAS',
+          `Option at index ${index}: 'alias' must be a single letter`,
+          {
+            suggestion: 'Use a single letter like "o" for output or "v" for verbose',
+            recoverable: true,
+            context: { option, index },
+          }
+        )
       );
     }
   }
@@ -120,10 +138,11 @@ export function validateCommandOption(
     const validTypes = ['string', 'boolean', 'number'];
     if (!validTypes.includes(option.type)) {
       return err(
-        createCLIError(
+        createCoreError(
+          'INVALID_OPTION_TYPE',
           `Option at index ${index}: Invalid type '${option.type}'. Must be one of: ${validTypes.join(', ')}`,
           {
-            code: 'INVALID_OPTION_TYPE',
+            recoverable: true,
             context: { option, index },
           }
         )
@@ -134,10 +153,14 @@ export function validateCommandOption(
   // Description is required
   if (!option.description || typeof option.description !== 'string') {
     return err(
-      createCLIError(`Option at index ${index}: 'description' is required and must be a string`, {
-        code: 'MISSING_OPTION_DESCRIPTION',
-        context: { option, index },
-      })
+      createCoreError(
+        'MISSING_OPTION_DESCRIPTION',
+        `Option at index ${index}: 'description' is required and must be a string`,
+        {
+          recoverable: true,
+          context: { option, index },
+        }
+      )
     );
   }
 
@@ -176,25 +199,30 @@ export function validateCommandOption(
  */
 export function validateCommandConfig<T extends CommandOptions>(
   config: CommandConfig<T>
-): Result<void, TrailheadError> {
+): Result<void, CoreError> {
   // Validate name
   if (!config.name || typeof config.name !== 'string') {
     return err(
-      createCLIError('Command name is required and must be a non-empty string', {
-        code: 'INVALID_COMMAND_NAME_FORMAT',
-        context: { config },
-      })
+      createCoreError(
+        'INVALID_COMMAND_NAME_FORMAT',
+        'Command name is required and must be a non-empty string',
+        {
+          recoverable: true,
+          context: { config },
+        }
+      )
     );
   }
 
   const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
   if (!namePattern.test(config.name)) {
     return err(
-      createCLIError(
+      createCoreError(
+        'INVALID_COMMAND_NAME_FORMAT',
         `Invalid command name format '${config.name}'. Use alphanumeric characters and hyphens only`,
         {
-          code: 'INVALID_COMMAND_NAME_FORMAT',
           suggestion: 'Use kebab-case like "build-app" or single words like "build"',
+          recoverable: true,
           context: { config },
         }
       )
@@ -204,10 +232,14 @@ export function validateCommandConfig<T extends CommandOptions>(
   // Validate description
   if (!config.description || typeof config.description !== 'string') {
     return err(
-      createCLIError('Command description is required and must be a non-empty string', {
-        code: 'INVALID_COMMAND_DESCRIPTION',
-        context: { config },
-      })
+      createCoreError(
+        'INVALID_COMMAND_DESCRIPTION',
+        'Command description is required and must be a non-empty string',
+        {
+          recoverable: true,
+          context: { config },
+        }
+      )
     );
   }
 
@@ -215,8 +247,8 @@ export function validateCommandConfig<T extends CommandOptions>(
   if (config.options) {
     if (!Array.isArray(config.options)) {
       return err(
-        createCLIError('Command options must be an array', {
-          code: 'INVALID_COMMAND_OPTIONS',
+        createCoreError('INVALID_COMMAND_OPTIONS', 'Command options must be an array', {
+          recoverable: true,
           context: { config },
         })
       );
@@ -239,10 +271,14 @@ export function validateCommandConfig<T extends CommandOptions>(
       if (option.name) {
         if (names.has(option.name)) {
           return err(
-            createCLIError(`Duplicate option name '${option.name}' at index ${i}`, {
-              code: 'DUPLICATE_OPTION_NAME',
-              context: { config, index: i },
-            })
+            createCoreError(
+              'DUPLICATE_OPTION_NAME',
+              `Duplicate option name '${option.name}' at index ${i}`,
+              {
+                recoverable: true,
+                context: { config, index: i },
+              }
+            )
           );
         }
         names.add(option.name);
@@ -251,10 +287,14 @@ export function validateCommandConfig<T extends CommandOptions>(
       if (option.alias) {
         if (aliases.has(option.alias)) {
           return err(
-            createCLIError(`Duplicate option alias '${option.alias}' at index ${i}`, {
-              code: 'DUPLICATE_OPTION_ALIAS',
-              context: { config, index: i },
-            })
+            createCoreError(
+              'DUPLICATE_OPTION_ALIAS',
+              `Duplicate option alias '${option.alias}' at index ${i}`,
+              {
+                recoverable: true,
+                context: { config, index: i },
+              }
+            )
           );
         }
         aliases.add(option.alias);
@@ -266,8 +306,8 @@ export function validateCommandConfig<T extends CommandOptions>(
   if (config.examples) {
     if (!Array.isArray(config.examples)) {
       return err(
-        createCLIError('Command examples must be an array of strings', {
-          code: 'INVALID_EXAMPLE_FORMAT',
+        createCoreError('INVALID_EXAMPLE_FORMAT', 'Command examples must be an array of strings', {
+          recoverable: true,
           context: { config },
         })
       );
@@ -276,8 +316,8 @@ export function validateCommandConfig<T extends CommandOptions>(
     for (let i = 0; i < config.examples.length; i++) {
       if (typeof config.examples[i] !== 'string') {
         return err(
-          createCLIError(`Example at index ${i} must be a string`, {
-            code: 'INVALID_EXAMPLE_FORMAT',
+          createCoreError('INVALID_EXAMPLE_FORMAT', `Example at index ${i} must be a string`, {
+            recoverable: true,
             context: { config, index: i },
           })
         );
@@ -288,18 +328,22 @@ export function validateCommandConfig<T extends CommandOptions>(
   // Validate action
   if (!config.action || typeof config.action !== 'function') {
     return err(
-      createCLIError('Command action is required and must be a function', {
-        code: 'INVALID_COMMAND_ACTION',
-        context: { config },
-      })
+      createCoreError(
+        'INVALID_COMMAND_ACTION',
+        'Command action is required and must be a function',
+        {
+          recoverable: true,
+          context: { config },
+        }
+      )
     );
   }
 
   // Validate validation function if provided
   if (config.validation && typeof config.validation !== 'function') {
     return err(
-      createCLIError('Command validation must be a function', {
-        code: 'INVALID_COMMAND_VALIDATION',
+      createCoreError('INVALID_COMMAND_VALIDATION', 'Command validation must be a function', {
+        recoverable: true,
         context: { config },
       })
     );
@@ -335,7 +379,7 @@ const validationCache = new WeakMap<CommandConfig<any>, boolean>();
  */
 export function validateCommandConfigWithCache<T extends CommandOptions>(
   config: CommandConfig<T>
-): Result<void, TrailheadError> {
+): Result<void, CoreError> {
   // Check cache first
   if (validationCache.has(config)) {
     return ok(undefined);

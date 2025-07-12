@@ -29,7 +29,13 @@ export function getErrorMessage<E = any>(error: E, defaultMessage = 'Unknown err
   const e = error as any;
   if (e?.message) return e.message;
   if (typeof e === 'string') return e;
-  if (e?.toString && typeof e.toString === 'function' && e.toString() !== '[object Object]') {
+  if (
+    e?.toString &&
+    typeof e.toString === 'function' &&
+    e.toString() !== '[object Object]' &&
+    typeof e !== 'number' &&
+    typeof e !== 'boolean'
+  ) {
     return e.toString();
   }
   return defaultMessage;

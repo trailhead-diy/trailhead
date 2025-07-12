@@ -1,5 +1,5 @@
 import type { Result } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 import type { FileSystem } from '../filesystem/index.js';
 import type { Logger } from '../core/index.js';
 
@@ -77,7 +77,7 @@ export interface Command<T = any> {
   /** Array of command options/flags */
   options?: CommandOption[];
   /** Function that implements the command logic */
-  execute: (options: T, context: CommandContext) => Promise<Result<void, TrailheadError>>;
+  execute: (options: T, context: CommandContext) => Promise<Result<void, CoreError>>;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface CommandPhase<T> {
   /** Human-readable name of the phase for logging */
   name: string;
   /** Function that executes the phase logic */
-  execute: (data: T, context: CommandContext) => Promise<Result<T, TrailheadError>>;
+  execute: (data: T, context: CommandContext) => Promise<Result<T, CoreError>>;
 }
 
 /**

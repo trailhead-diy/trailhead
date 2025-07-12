@@ -1,12 +1,10 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
-import type { FSWatcher } from 'chokidar';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type WatcherResult<T> = Result<T, TrailheadError>;
+export type WatcherResult<T> = Result<T, CoreError>;
 
 // ========================================
 // File System Event Types

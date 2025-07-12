@@ -1,4 +1,4 @@
-import { createTrailheadError } from '@trailhead/core';
+import { createCoreError } from '@trailhead/core';
 import type { FileSystemError } from './types.js';
 
 export const createFileSystemError = (
@@ -13,7 +13,7 @@ export const createFileSystemError = (
     context?: Record<string, unknown>;
   }
 ): FileSystemError => ({
-  ...createTrailheadError('FILESYSTEM_ERROR', message, {
+  ...createCoreError('FILESYSTEM_ERROR', message, {
     ...options,
     context: {
       operation,

@@ -48,7 +48,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_NAME_FORMAT');
+        expect(result.error.type).toBe('INVALID_OPTION_NAME_FORMAT');
       }
     });
 
@@ -61,7 +61,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_TYPE');
+        expect(result.error.type).toBe('INVALID_OPTION_TYPE');
       }
     });
 
@@ -74,7 +74,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_NAME_FORMAT');
+        expect(result.error.type).toBe('INVALID_OPTION_NAME_FORMAT');
       }
     });
 
@@ -88,7 +88,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_ALIAS');
+        expect(result.error.type).toBe('INVALID_OPTION_ALIAS');
       }
     });
 
@@ -102,7 +102,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_OPTION_TYPE');
+        expect(result.error.type).toBe('INVALID_OPTION_TYPE');
       }
     });
 
@@ -114,7 +114,7 @@ describe('Command Validation', () => {
       const result = validateCommandOption(option, 0);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('MISSING_OPTION_DESCRIPTION');
+        expect(result.error.type).toBe('MISSING_OPTION_DESCRIPTION');
       }
     });
   });
@@ -176,7 +176,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_COMMAND_NAME_FORMAT');
+        expect(result.error.type).toBe('INVALID_COMMAND_NAME_FORMAT');
       }
     });
 
@@ -189,7 +189,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_COMMAND_DESCRIPTION');
+        expect(result.error.type).toBe('INVALID_COMMAND_DESCRIPTION');
       }
     });
 
@@ -204,7 +204,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_COMMAND_OPTIONS');
+        expect(result.error.type).toBe('INVALID_COMMAND_OPTIONS');
       }
     });
 
@@ -228,7 +228,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('DUPLICATE_OPTION_NAME');
+        expect(result.error.type).toBe('DUPLICATE_OPTION_NAME');
       }
     });
 
@@ -254,7 +254,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('DUPLICATE_OPTION_ALIAS');
+        expect(result.error.type).toBe('DUPLICATE_OPTION_ALIAS');
       }
     });
 
@@ -267,7 +267,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_COMMAND_ACTION');
+        expect(result.error.type).toBe('INVALID_COMMAND_ACTION');
       }
     });
 
@@ -282,7 +282,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_COMMAND_VALIDATION');
+        expect(result.error.type).toBe('INVALID_COMMAND_VALIDATION');
       }
     });
 
@@ -297,7 +297,7 @@ describe('Command Validation', () => {
       const result = validateCommandConfig(config);
       expect(result.isOk()).toBe(false);
       if (result.isErr()) {
-        expect(result.error.code).toBe('INVALID_EXAMPLE_FORMAT');
+        expect(result.error.type).toBe('INVALID_EXAMPLE_FORMAT');
       }
     });
   });

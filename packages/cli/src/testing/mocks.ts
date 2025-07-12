@@ -1,21 +1,21 @@
 import type { Logger } from '../core/logger.js';
 import { ok, err } from 'neverthrow';
 import type { Result } from 'neverthrow';
-import type { TrailheadError } from '../core/index.js';
+import type { CoreError } from '@trailhead/core';
 
-// Local test-specific error interface that extends TrailheadError with a code property
-interface TestTrailheadError extends TrailheadError {
-  readonly code: string;
+// Local test-specific error interface that extends CoreError
+interface TestCoreError extends CoreError {
+  readonly code?: string;
 }
 
 // Local error creation function for testing
-function createMockError(message: string, code: string, context?: any): TestTrailheadError {
+function createMockError(message: string, code: string, context?: any): TestCoreError {
   return {
     type: 'CLI_ERROR',
-    code,
     message,
     recoverable: false,
     context,
+    code,
   };
 }
 import { normalizePath } from './path-utils.js';
@@ -27,20 +27,20 @@ import { vi } from 'vitest';
 // Internal mock filesystem with test helpers
 interface MockFileSystemInternal {
   // Standard filesystem methods (only ones actually implemented)
-  readFile: (path: string) => Promise<Result<string, TestTrailheadError>>;
-  writeFile: (path: string, content: string) => Promise<Result<void, TestTrailheadError>>;
-  mkdir: (path: string) => Promise<Result<void, TestTrailheadError>>;
-  readdir: (path: string) => Promise<Result<string[], TestTrailheadError>>;
-  ensureDir: (path: string) => Promise<Result<void, TestTrailheadError>>;
-  readJson: <T>(path: string) => Promise<Result<T, TestTrailheadError>>;
-  writeJson: <T>(path: string, data: T) => Promise<Result<void, TestTrailheadError>>;
-  access: (path: string, mode?: number) => Promise<Result<void, TestTrailheadError>>;
-  stat: (path: string) => Promise<Result<any, TestTrailheadError>>;
-  rm: (path: string, options?: any) => Promise<Result<void, TestTrailheadError>>;
-  cp: (src: string, dest: string, options?: any) => Promise<Result<void, TestTrailheadError>>;
-  rename: (src: string, dest: string) => Promise<Result<void, TestTrailheadError>>;
-  emptyDir: (path: string) => Promise<Result<void, TestTrailheadError>>;
-  outputFile: (path: string, content: string) => Promise<Result<void, TestTrailheadError>>;
+  readFile: (path: string) => Promise<Result<string, TestCoreError>>;
+  writeFile: (path: string, content: string) => Promise<Result<void, TestCoreError>>;
+  mkdir: (path: string) => Promise<Result<void, TestCoreError>>;
+  readdir: (path: string) => Promise<Result<string[], TestCoreError>>;
+  ensureDir: (path: string) => Promise<Result<void, TestCoreError>>;
+  readJson: <T>(path: string) => Promise<Result<T, TestCoreError>>;
+  writeJson: <T>(path: string, data: T) => Promise<Result<void, TestCoreError>>;
+  access: (path: string, mode?: number) => Promise<Result<void, TestCoreError>>;
+  stat: (path: string) => Promise<Result<any, TestCoreError>>;
+  rm: (path: string, options?: any) => Promise<Result<void, TestCoreError>>;
+  cp: (src: string, dest: string, options?: any) => Promise<Result<void, TestCoreError>>;
+  rename: (src: string, dest: string) => Promise<Result<void, TestCoreError>>;
+  emptyDir: (path: string) => Promise<Result<void, TestCoreError>>;
+  outputFile: (path: string, content: string) => Promise<Result<void, TestCoreError>>;
   clear: () => void;
 
   // Internal test helpers
@@ -76,7 +76,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
   }
 
   return {
-    readFile: async (path: string): Promise<Result<string, TestTrailheadError>> => {
+    readFile: async (path: string): Promise<Result<string, TestCoreError>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
@@ -90,7 +90,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(content);
     },
 
-    writeFile: async (path: string, content: string): Promise<Result<void, TestTrailheadError>> => {
+    writeFile: async (path: string, content: string): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
 
@@ -103,13 +103,13 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(undefined);
     },
 
-    mkdir: async (path: string): Promise<Result<void, TestTrailheadError>> => {
+    mkdir: async (path: string): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
       return ok(undefined);
     },
 
-    readdir: async (path: string): Promise<Result<string[], TestTrailheadError>> => {
+    readdir: async (path: string): Promise<Result<string[], TestCoreError>> => {
       const normalized = normalizePath(path);
       if (!directories.has(normalized) && !files.has(normalized)) {
         return err(
@@ -142,7 +142,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(entries);
     },
 
-    ensureDir: async (path: string): Promise<Result<void, TestTrailheadError>> => {
+    ensureDir: async (path: string): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
 
@@ -155,7 +155,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(undefined);
     },
 
-    readJson: async <T = any>(path: string): Promise<Result<T, TestTrailheadError>> => {
+    readJson: async <T = any>(path: string): Promise<Result<T, TestCoreError>> => {
       const normalized = normalizePath(path);
       const content = files.get(normalized);
       if (content === undefined) {
@@ -180,10 +180,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       }
     },
 
-    writeJson: async <T = any>(
-      path: string,
-      data: T
-    ): Promise<Result<void, TestTrailheadError>> => {
+    writeJson: async <T = any>(path: string, data: T): Promise<Result<void, TestCoreError>> => {
       const content = JSON.stringify(data, null, 2);
       const normalized = normalizePath(path);
       files.set(normalized, content);
@@ -198,7 +195,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
     },
 
     // New node:fs/promises compatible methods
-    access: async (path: string, _mode?: number): Promise<Result<void, TestTrailheadError>> => {
+    access: async (path: string, _mode?: number): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       if (files.has(normalized) || directories.has(normalized)) {
         return ok(undefined);
@@ -211,7 +208,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       );
     },
 
-    stat: async (path: string): Promise<Result<any, TestTrailheadError>> => {
+    stat: async (path: string): Promise<Result<any, TestCoreError>> => {
       const normalized = normalizePath(path);
       if (files.has(normalized)) {
         const content = files.get(normalized) || '';
@@ -240,18 +237,14 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
     rm: async (
       path: string,
       _options?: { recursive?: boolean; force?: boolean }
-    ): Promise<Result<void, TestTrailheadError>> => {
+    ): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       files.delete(normalized);
       directories.delete(normalized);
       return ok(undefined);
     },
 
-    cp: async (
-      src: string,
-      dest: string,
-      _options?: any
-    ): Promise<Result<void, TestTrailheadError>> => {
+    cp: async (src: string, dest: string, _options?: any): Promise<Result<void, TestCoreError>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
@@ -267,7 +260,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(undefined);
     },
 
-    rename: async (src: string, dest: string): Promise<Result<void, TestTrailheadError>> => {
+    rename: async (src: string, dest: string): Promise<Result<void, TestCoreError>> => {
       const normalizedSrc = normalizePath(src);
       const normalizedDest = normalizePath(dest);
       const content = files.get(normalizedSrc);
@@ -286,7 +279,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
 
     // Standard FileSystem methods end here
 
-    emptyDir: async (path: string): Promise<Result<void, TestTrailheadError>> => {
+    emptyDir: async (path: string): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       directories.add(normalized);
       // Remove all files in this directory
@@ -299,10 +292,7 @@ export function mockFileSystem(initialFiles: Record<string, string> = {}): MockF
       return ok(undefined);
     },
 
-    outputFile: async (
-      path: string,
-      content: string
-    ): Promise<Result<void, TestTrailheadError>> => {
+    outputFile: async (path: string, content: string): Promise<Result<void, TestCoreError>> => {
       const normalized = normalizePath(path);
       files.set(normalized, content);
       // Add parent directories
@@ -358,7 +348,7 @@ export interface EnhancedMockFileSystem extends MockFileSystemInternal {
   addDirectory: (path: string) => void;
   simulateError: (operation: string, path: string, error: any) => void;
   getStoredPaths: () => string[];
-  access: (path: string, mode?: number) => Promise<Result<void, TestTrailheadError>>;
+  access: (path: string, mode?: number) => Promise<Result<void, TestCoreError>>;
 }
 
 /**
@@ -421,7 +411,7 @@ export function createEnhancedMockFileSystem(
   const enhancedFs: EnhancedMockFileSystem = {
     ...basicFs,
 
-    readFile: async (path: string): Promise<Result<string, TestTrailheadError>> => {
+    readFile: async (path: string): Promise<Result<string, TestCoreError>> => {
       const simulatedError = checkForSimulatedError('readFile', path);
       if (simulatedError) return err(simulatedError);
       const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();
@@ -451,7 +441,7 @@ export function createEnhancedMockFileSystem(
       return ok(content);
     },
 
-    writeFile: async (path: string, content: string): Promise<Result<void, TestTrailheadError>> => {
+    writeFile: async (path: string, content: string): Promise<Result<void, TestCoreError>> => {
       const simulatedError = checkForSimulatedError('writeFile', path);
       if (simulatedError) return err(simulatedError);
       const normalized = normalizePath(path);
@@ -502,7 +492,7 @@ export function createEnhancedMockFileSystem(
       return Array.from(allPaths).sort();
     },
 
-    access: async (path: string, _mode?: number): Promise<Result<void, TestTrailheadError>> => {
+    access: async (path: string, _mode?: number): Promise<Result<void, TestCoreError>> => {
       const simulatedError = checkForSimulatedError('access', path);
       if (simulatedError) return err(simulatedError);
       const normalized = caseSensitive ? normalizePath(path) : normalizePath(path).toLowerCase();

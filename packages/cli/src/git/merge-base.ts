@@ -1,6 +1,6 @@
 import { ok, err } from '../core/index.js';
 import { Result } from 'neverthrow';
-import type { CLIError } from '../core/index.js';
+import type { CoreError } from '@trailhead/core';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { MergeBaseInfo, GitOptions } from './types.js';
@@ -12,7 +12,7 @@ export async function getMergeBase(
   ref1: string,
   ref2: string,
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
   if (validationResult.isErr()) {
@@ -29,7 +29,7 @@ export async function getAllMergeBases(
   ref1: string,
   ref2: string,
   options: GitOptions = {}
-): Promise<Result<string[], CLIError>> {
+): Promise<Result<string[], CoreError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
   if (validationResult.isErr()) {
@@ -49,7 +49,7 @@ export async function isAncestorMergeBase(
   ancestor: string,
   descendant: string,
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
   if (validationResult.isErr()) {
@@ -82,7 +82,7 @@ export async function getMergeBaseInfo(
   branch1: string,
   branch2: string,
   options: GitOptions = {}
-): Promise<Result<MergeBaseInfo, CLIError>> {
+): Promise<Result<MergeBaseInfo, CoreError>> {
   // Get the merge base commit
   const mergeBaseResult = await getMergeBase(branch1, branch2, options);
   if (mergeBaseResult.isErr()) {
@@ -114,7 +114,7 @@ export async function haveDiverged(
   ref1: string,
   ref2: string,
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const isRef1AncestorResult = await isAncestorMergeBase(ref1, ref2, options);
   const isRef2AncestorResult = await isAncestorMergeBase(ref2, ref1, options);
 
@@ -141,7 +141,7 @@ export async function haveDiverged(
 export async function getCommitMessage(
   commitSha: string,
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   return executeGitCommandSimple(['log', '--format=%s', '-n', '1', commitSha], options);
 }
 

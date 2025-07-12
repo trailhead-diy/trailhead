@@ -1,15 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ok, err } from 'neverthrow';
 import {
-  createTrailheadError,
-  createValidationError,
-  createFileSystemError,
-  createNetworkError,
-  createConfigurationError,
-  createDataError,
-  createGitError,
-  createCLIError,
-  createDatabaseError,
+  createCoreError,
   withContext,
   chainError,
   getErrorMessage,
@@ -18,10 +10,10 @@ import {
   getErrorCategory,
 } from '../src/errors/index.js';
 
-describe('Error System', () => {
+describe('Foundation Error System', () => {
   describe('Base Error Creation', () => {
-    it('should create a basic TrailheadError', () => {
-      const error = createTrailheadError('TEST_ERROR', 'Test message', {
+    it('should create a basic CoreError', () => {
+      const error = createCoreError('TEST_ERROR', 'Test message', {
         details: 'Test details',
         suggestion: 'Test suggestion',
         recoverable: true,
@@ -39,7 +31,7 @@ describe('Error System', () => {
     });
 
     it('should create error with minimal options', () => {
-      const error = createTrailheadError('MINIMAL_ERROR', 'Minimal message');
+      const error = createCoreError('MINIMAL_ERROR', 'Minimal message');
 
       expect(error).toEqual({
         type: 'MINIMAL_ERROR',
@@ -51,163 +43,26 @@ describe('Error System', () => {
         context: undefined,
       });
     });
-  });
 
-  describe('Validation Errors', () => {
-    it('should create validation error', () => {
-      const error = createValidationError('Invalid field', {
-        field: 'email',
-        value: 'not-an-email',
-        constraints: { format: 'email' },
-        suggestion: 'Provide a valid email address',
+    it('should create error with custom context', () => {
+      const error = createCoreError('CONTEXT_ERROR', 'Context message', {
+        context: { userId: '123', operation: 'test' },
+        recoverable: true,
       });
 
-      expect(error.type).toBe('VALIDATION_ERROR');
-      expect(error.category).toBe('validation');
-      expect(error.field).toBe('email');
-      expect(error.value).toBe('not-an-email');
+      expect(error.context).toEqual({ userId: '123', operation: 'test' });
       expect(error.recoverable).toBe(true);
-    });
-  });
-
-  describe('File System Errors', () => {
-    it('should create file system error', () => {
-      const error = createFileSystemError('read', '/test/path', 'File not found', {
-        errno: -2,
-        suggestion: 'Check file path',
-      });
-
-      expect(error.type).toBe('FS_READ_ERROR');
-      expect(error.category).toBe('filesystem');
-      expect(error.path).toBe('/test/path');
-      expect(error.operation).toBe('read');
-      expect(error.errno).toBe(-2);
-      expect(error.recoverable).toBe(false); // read operations are not recoverable
-    });
-
-    it('should make write operations recoverable', () => {
-      const error = createFileSystemError('write', '/test/path', 'Write failed');
-      expect(error.recoverable).toBe(true);
-    });
-  });
-
-  describe('Network Errors', () => {
-    it('should create network error', () => {
-      const error = createNetworkError('Request failed', {
-        url: 'https://api.example.com',
-        statusCode: 404,
-        suggestion: 'Check the URL',
-      });
-
-      expect(error.type).toBe('NETWORK_ERROR');
-      expect(error.category).toBe('network');
-      expect(error.url).toBe('https://api.example.com');
-      expect(error.statusCode).toBe(404);
-      expect(error.recoverable).toBe(true);
-    });
-
-    it('should create timeout error', () => {
-      const error = createNetworkError('Request timed out', {
-        timeout: true,
-      });
-
-      expect(error.type).toBe('NETWORK_TIMEOUT');
-      expect(error.timeout).toBe(true);
-    });
-  });
-
-  describe('Configuration Errors', () => {
-    it('should create configuration error', () => {
-      const error = createConfigurationError('Invalid config', {
-        configFile: 'config.json',
-        missingFields: ['apiKey'],
-        invalidFields: ['port'],
-      });
-
-      expect(error.type).toBe('CONFIG_ERROR');
-      expect(error.category).toBe('configuration');
-      expect(error.configFile).toBe('config.json');
-      expect(error.missingFields).toEqual(['apiKey']);
-      expect(error.invalidFields).toEqual(['port']);
-    });
-  });
-
-  describe('Data Errors', () => {
-    it('should create data error', () => {
-      const error = createDataError('Parse error', {
-        format: 'csv',
-        row: 5,
-        column: 'email',
-      });
-
-      expect(error.type).toBe('DATA_ERROR');
-      expect(error.category).toBe('data');
-      expect(error.format).toBe('csv');
-      expect(error.row).toBe(5);
-      expect(error.column).toBe('email');
-    });
-  });
-
-  describe('Git Errors', () => {
-    it('should create git error', () => {
-      const error = createGitError('Branch not found', {
-        repository: '/path/to/repo',
-        branch: 'feature/test',
-        operation: 'checkout',
-      });
-
-      expect(error.type).toBe('GIT_ERROR');
-      expect(error.category).toBe('git');
-      expect(error.repository).toBe('/path/to/repo');
-      expect(error.branch).toBe('feature/test');
-      expect(error.operation).toBe('checkout');
-    });
-  });
-
-  describe('CLI Errors', () => {
-    it('should create CLI error', () => {
-      const error = createCLIError('Command failed', {
-        command: 'build',
-        args: ['--production'],
-      });
-
-      expect(error.type).toBe('CLI_ERROR');
-      expect(error.category).toBe('cli');
-      expect(error.command).toBe('build');
-      expect(error.args).toEqual(['--production']);
-    });
-  });
-
-  describe('Database Errors', () => {
-    it('should create database error', () => {
-      const error = createDatabaseError('Query failed', {
-        query: 'SELECT * FROM users',
-        table: 'users',
-        operation: 'select',
-      });
-
-      expect(error.type).toBe('DATABASE_ERROR');
-      expect(error.category).toBe('db');
-      expect(error.query).toBe('SELECT * FROM users');
-      expect(error.table).toBe('users');
-      expect(error.operation).toBe('select');
-      expect(error.recoverable).toBe(true);
-    });
-
-    it('should make migrate operations non-recoverable', () => {
-      const error = createDatabaseError('Migration failed', {
-        operation: 'migrate',
-      });
-      expect(error.recoverable).toBe(false);
     });
   });
 
   describe('Error Enhancement', () => {
     it('should add context to error', () => {
-      const baseError = createTrailheadError('TEST_ERROR', 'Test message');
+      const baseError = createCoreError('BASE_ERROR', 'Base message');
+
       const enhancedError = withContext(baseError, {
         operation: 'test-operation',
         component: 'test-component',
+        timestamp: new Date('2023-01-01'),
       });
 
       expect(enhancedError.details).toContain('Operation: test-operation');
@@ -215,28 +70,63 @@ describe('Error System', () => {
       expect(enhancedError.context).toEqual({
         operation: 'test-operation',
         component: 'test-component',
+        timestamp: new Date('2023-01-01'),
       });
     });
 
-    it('should chain errors', () => {
-      const baseError = createTrailheadError('TEST_ERROR', 'Test message');
-      const cause = new Error('Original cause');
-      const chainedError = chainError(baseError, cause);
+    it('should chain errors together', () => {
+      const baseError = createCoreError('BASE_ERROR', 'Base message');
+      const causeError = new Error('Cause error');
 
-      expect(chainedError.cause).toBe(cause);
+      const chainedError = chainError(baseError, causeError);
+
+      expect(chainedError.cause).toBe(causeError);
+      expect(chainedError.type).toBe('BASE_ERROR');
+      expect(chainedError.message).toBe('Base message');
+    });
+
+    it('should merge context when adding to existing context', () => {
+      const baseError = createCoreError('BASE_ERROR', 'Base message', {
+        context: { existingKey: 'existing' },
+      });
+
+      const enhancedError = withContext(baseError, {
+        operation: 'test-operation',
+        component: 'test-component',
+        timestamp: new Date('2023-01-01'),
+        metadata: { newKey: 'new' },
+      });
+
+      expect(enhancedError.context).toEqual({
+        existingKey: 'existing',
+        operation: 'test-operation',
+        component: 'test-component',
+        timestamp: new Date('2023-01-01'),
+        metadata: { newKey: 'new' },
+      });
     });
   });
 
   describe('Error Utilities', () => {
-    it('should extract error message', () => {
-      const error = { message: 'Test error' };
-      expect(getErrorMessage(error)).toBe('Test error');
+    it('should extract error message from various error types', () => {
+      expect(getErrorMessage(new Error('Standard error'))).toBe('Standard error');
+      expect(getErrorMessage('String error')).toBe('String error');
+      expect(getErrorMessage({ message: 'Object with message' })).toBe('Object with message');
+      expect(getErrorMessage(42)).toBe('Unknown error');
+      expect(getErrorMessage(null)).toBe('Unknown error');
+      expect(getErrorMessage(undefined, 'Custom default')).toBe('Custom default');
+    });
 
-      const noMessage = {};
-      expect(getErrorMessage(noMessage)).toBe('Unknown error');
+    it('should extract error message with toString fallback', () => {
+      const customError = {
+        toString: () => 'Custom toString',
+      };
+      expect(getErrorMessage(customError)).toBe('Custom toString');
+    });
 
-      const customDefault = getErrorMessage(noMessage, 'Custom default');
-      expect(customDefault).toBe('Custom default');
+    it('should not use object toString', () => {
+      const plainObject = { someKey: 'someValue' };
+      expect(getErrorMessage(plainObject)).toBe('Unknown error');
     });
 
     it('should check if error is recoverable', () => {
@@ -245,27 +135,46 @@ describe('Error System', () => {
       expect(isRecoverableError({})).toBe(false);
     });
 
-    it('should get error type', () => {
-      expect(getErrorType({ type: 'TEST_ERROR' })).toBe('TEST_ERROR');
+    it('should extract error type', () => {
+      expect(getErrorType({ type: 'CUSTOM_ERROR' })).toBe('CUSTOM_ERROR');
       expect(getErrorType({})).toBe('unknown');
     });
 
-    it('should get error category', () => {
-      expect(getErrorCategory({ category: 'filesystem' })).toBe('filesystem');
+    it('should extract error category', () => {
+      expect(getErrorCategory({ category: 'validation' })).toBe('validation');
       expect(getErrorCategory({})).toBe('unknown');
     });
   });
 
-  describe('Result Integration', () => {
-    it('should work with neverthrow ok/err', () => {
-      const successResult = ok('success');
-      const errorResult = err(createTrailheadError('TEST_ERROR', 'Test error'));
-
-      expect(successResult.isOk()).toBe(true);
-      expect(successResult.value).toBe('success');
+  describe('Result Type Integration', () => {
+    it('should work with neverthrow Result types', () => {
+      const error = createCoreError('RESULT_ERROR', 'Result error message');
+      const errorResult = err(error);
 
       expect(errorResult.isErr()).toBe(true);
-      expect(errorResult.error.type).toBe('TEST_ERROR');
+      if (errorResult.isErr()) {
+        expect(errorResult.error.type).toBe('RESULT_ERROR');
+        expect(errorResult.error.message).toBe('Result error message');
+      }
+    });
+
+    it('should work in Result chains', () => {
+      const processValue = (x: number) => {
+        if (x < 0) {
+          return err(createCoreError('VALIDATION_ERROR', 'Value must be positive'));
+        }
+        return ok(x * 2);
+      };
+
+      const positiveResult = processValue(5);
+      const negativeResult = processValue(-1);
+
+      expect(positiveResult.isOk()).toBe(true);
+      expect(negativeResult.isErr()).toBe(true);
+
+      if (negativeResult.isErr()) {
+        expect(negativeResult.error.type).toBe('VALIDATION_ERROR');
+      }
     });
   });
 });

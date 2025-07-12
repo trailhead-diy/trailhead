@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { pipeline, parallel, parallelSettled, retryPipeline } from './pipeline.js';
 import { ok, err } from 'neverthrow';
-import { createTrailheadError } from '@trailhead/core';
+import { createCoreError } from '@trailhead/core';
 
 describe('Pipeline Utilities', () => {
   describe('pipeline', () => {
@@ -37,7 +37,7 @@ describe('Pipeline Utilities', () => {
     it('stops on first error', async () => {
       const result = await pipeline(10)
         .step('multiply', async (value: number) => ok(value * 2))
-        .step('fail', async () => err(createTrailheadError('TEST_ERROR', 'Test error')))
+        .step('fail', async () => err(createCoreError('TEST_ERROR', 'Test error')))
         .step('should-not-execute', async (value: number) => ok(value + 5))
         .execute();
 
@@ -90,9 +90,7 @@ describe('Pipeline Utilities', () => {
     it('handles error recovery', async () => {
       let errorHandlerCalled = false;
       const result = await pipeline(10)
-        .step('fail', async () =>
-          err(createTrailheadError('RECOVERABLE_ERROR', 'Recoverable error'))
-        )
+        .step('fail', async () => err(createCoreError('RECOVERABLE_ERROR', 'Recoverable error')))
         .onError(async (error, stepName) => {
           errorHandlerCalled = true;
           expect(stepName).toBe('fail');
@@ -137,7 +135,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.type).toBe('CLI_ERROR');
+        expect(result.error.type).toBe('STEP_TIMEOUT');
       }
     });
 
@@ -155,7 +153,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.type).toBe('CLI_ERROR');
+        expect(result.error.type).toBe('PIPELINE_CANCELLED');
       }
     });
 
@@ -172,7 +170,7 @@ describe('Pipeline Utilities', () => {
     });
 
     it('handles pipeline with failed Result as initial value', async () => {
-      const initialResult = err(createTrailheadError('INITIAL_ERROR', 'Initial error'));
+      const initialResult = err(createCoreError('INITIAL_ERROR', 'Initial error'));
       const result = await pipeline(initialResult)
         .map('should-not-execute', (value: string) => `${value}-transformed`)
         .execute();
@@ -192,7 +190,7 @@ describe('Pipeline Utilities', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.type).toBe('CLI_ERROR');
+        expect(result.error.type).toBe('STEP_EXECUTION_ERROR');
         expect(result.error.message).toContain('throwing-step');
       }
     });
@@ -236,7 +234,7 @@ describe('Pipeline Utilities', () => {
     it('fails fast on first error (array)', async () => {
       const operations = [
         async () => ok('result1'),
-        async () => err(createTrailheadError('PARALLEL_ERROR', 'Parallel error')),
+        async () => err(createCoreError('PARALLEL_ERROR', 'Parallel error')),
         async () => ok('result3'),
       ];
 
@@ -251,7 +249,7 @@ describe('Pipeline Utilities', () => {
     it('fails fast on first error (object)', async () => {
       const operations = {
         op1: async () => ok('result1'),
-        op2: async () => err(createTrailheadError('PARALLEL_ERROR', 'Parallel error')),
+        op2: async () => err(createCoreError('PARALLEL_ERROR', 'Parallel error')),
         op3: async () => ok('result3'),
       };
 
@@ -268,9 +266,9 @@ describe('Pipeline Utilities', () => {
     it('collects both successes and failures (array)', async () => {
       const operations = [
         async () => ok('success1'),
-        async () => err(createTrailheadError('ERROR1', 'Error 1')),
+        async () => err(createCoreError('ERROR1', 'Error 1')),
         async () => ok('success2'),
-        async () => err(createTrailheadError('ERROR2', 'Error 2')),
+        async () => err(createCoreError('ERROR2', 'Error 2')),
       ];
 
       const result = await parallelSettled(operations);
@@ -287,9 +285,9 @@ describe('Pipeline Utilities', () => {
     it('collects both successes and failures (object)', async () => {
       const operations = {
         op1: async () => ok('success1'),
-        op2: async () => err(createTrailheadError('ERROR1', 'Error 1')),
+        op2: async () => err(createCoreError('ERROR1', 'Error 1')),
         op3: async () => ok('success2'),
-        op4: async () => err(createTrailheadError('ERROR2', 'Error 2')),
+        op4: async () => err(createCoreError('ERROR2', 'Error 2')),
       };
 
       const result = await parallelSettled(operations);
@@ -326,7 +324,7 @@ describe('Pipeline Utilities', () => {
         pipeline('test').step('flaky', async () => {
           attempts++;
           if (attempts < 3) {
-            return err(createTrailheadError('FLAKY_ERROR', 'Flaky error'));
+            return err(createCoreError('FLAKY_ERROR', 'Flaky error'));
           }
           return ok('success');
         });
@@ -343,14 +341,14 @@ describe('Pipeline Utilities', () => {
     it('exhausts retries and returns last error', async () => {
       const pipelineFactory = () =>
         pipeline('test').step('always-fail', async () =>
-          err(createTrailheadError('PERSISTENT_ERROR', 'Persistent error'))
+          err(createCoreError('PERSISTENT_ERROR', 'Persistent error'))
         );
 
       const result = await retryPipeline(pipelineFactory, { maxAttempts: 2 });
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error.type).toBe('CLI_ERROR');
+        expect(result.error.type).toBe('PIPELINE_MAX_RETRIES_EXCEEDED');
       }
     });
 
@@ -361,7 +359,7 @@ describe('Pipeline Utilities', () => {
       const pipelineFactory = () =>
         pipeline('test').step('fail', async () => {
           attempts++;
-          return err(createTrailheadError('RETRY_ERROR', `Error ${attempts}`));
+          return err(createCoreError('RETRY_ERROR', `Error ${attempts}`));
         });
 
       await retryPipeline(pipelineFactory, {

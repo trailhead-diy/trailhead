@@ -1,7 +1,7 @@
 import { resolve, normalize, isAbsolute, relative } from 'path';
 import { z } from 'zod';
-import { ok, err, createCLIError } from '@trailhead/core';
-import type { Result, CLIError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@trailhead/core';
 
 /**
  * Validation utilities using Zod schemas for type-safe input validation
@@ -96,7 +96,7 @@ function zodResultToResult<T>(
   schema: z.ZodSchema<T>,
   input: unknown,
   operation: string
-): Result<T, CLIError> {
+): Result<T, CoreError> {
   try {
     const result = schema.parse(input);
     return ok(result);
@@ -104,13 +104,13 @@ function zodResultToResult<T>(
     if (error instanceof z.ZodError) {
       const firstIssue = error.issues[0];
       return err(
-        createCLIError(firstIssue.message, {
+        createCoreError('VALIDATION_ERROR', firstIssue.message, {
           context: { operation, details: `${operation} validation failed: ${firstIssue.message}` },
         })
       );
     }
     return err(
-      createCLIError(`${operation} validation failed`, {
+      createCoreError('VALIDATION_FAILED', `${operation} validation failed`, {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -121,14 +121,14 @@ function zodResultToResult<T>(
 /**
  * Validate and sanitize project name
  */
-export function validateProjectName(name: string): Result<string, CLIError> {
+export function validateProjectName(name: string): Result<string, CoreError> {
   return zodResultToResult(projectNameSchema, name, 'Project name');
 }
 
 /**
  * Validate project path with directory traversal protection
  */
-export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CLIError> {
+export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CoreError> {
   // First validate the basic path schema
   const basicValidation = zodResultToResult(pathSchema, inputPath, 'Project path');
   if (!basicValidation.isOk()) {
@@ -142,7 +142,7 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createCLIError('Invalid project path', {
+      createCoreError('INVALID_PROJECT_PATH', 'Invalid project path', {
         cause: error,
         context: { details: 'Unable to resolve project path' },
       })
@@ -153,14 +153,14 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
 /**
  * Validate package manager
  */
-export function validatePackageManager(packageManager: string): Result<string, CLIError> {
+export function validatePackageManager(packageManager: string): Result<string, CoreError> {
   return zodResultToResult(packageManagerSchema, packageManager, 'Package manager');
 }
 
 /**
  * Validate template variant
  */
-export function validateTemplate(template: string): Result<string, CLIError> {
+export function validateTemplate(template: string): Result<string, CoreError> {
   return zodResultToResult(templateSchema, template, 'Template');
 }
 
@@ -170,7 +170,7 @@ export function validateTemplate(template: string): Result<string, CLIError> {
 export function validateTemplatePath(
   filePath: string,
   baseTemplateDir: string
-): Result<string, CLIError> {
+): Result<string, CoreError> {
   // First validate basic path
   const basicValidation = zodResultToResult(pathSchema, filePath, 'Template file path');
   if (!basicValidation.isOk()) {
@@ -184,7 +184,7 @@ export function validateTemplatePath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createCLIError('Invalid template path', {
+        createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
           context: { details: 'Template path must be within the template directory' },
         })
       );
@@ -193,7 +193,7 @@ export function validateTemplatePath(
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createCLIError('Invalid template path', {
+      createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
         cause: error,
         context: { details: 'Unable to resolve template path' },
       })
@@ -207,7 +207,7 @@ export function validateTemplatePath(
 export function validateOutputPath(
   filePath: string,
   baseOutputDir: string
-): Result<string, CLIError> {
+): Result<string, CoreError> {
   // First validate basic path
   const basicValidation = zodResultToResult(pathSchema, filePath, 'Output file path');
   if (!basicValidation.isOk()) {
@@ -219,7 +219,7 @@ export function validateOutputPath(
 
     if (normalizedPath.includes('..') || isAbsolute(normalizedPath)) {
       return err(
-        createCLIError('Invalid output path', {
+        createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
           context: { details: 'Output path must be relative and within the project directory' },
         })
       );
@@ -230,7 +230,7 @@ export function validateOutputPath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createCLIError('Invalid output path', {
+        createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
           context: { details: 'Output path must be within the project directory' },
         })
       );
@@ -239,7 +239,7 @@ export function validateOutputPath(
     return ok(resolvedPath);
   } catch (error) {
     return err(
-      createCLIError('Invalid output path', {
+      createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
         cause: error,
         context: { details: 'Unable to resolve output path' },
       })
@@ -253,10 +253,10 @@ export function validateOutputPath(
 export function sanitizeText(
   input: string,
   _maxLength: number = MAX_TEXT_LENGTH
-): Result<string, CLIError> {
+): Result<string, CoreError> {
   if (!input || typeof input !== 'string') {
     return err(
-      createCLIError('Text input is required', {
+      createCoreError('TEXT_INPUT_REQUIRED', 'Text input is required', {
         context: { details: 'Text input must be a string' },
       })
     );

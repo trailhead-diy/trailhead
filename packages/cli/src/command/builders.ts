@@ -1,11 +1,11 @@
 import type { Result } from 'neverthrow';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 import type { FileSystem } from '../filesystem/index.js';
 import type { CommandContext, CommandOption } from './types.js';
 import type { CommandConfig, CommandOptions } from './base.js';
 import { createCommand } from './base.js';
 import { err } from 'neverthrow';
-import { createValidationError, createFileSystemError } from '@trailhead/core';
+import { errors } from '../core/error-templates.js';
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112
@@ -132,7 +132,7 @@ export interface FileProcessingConfig<T extends FileProcessingOptions> {
     options: T,
     context: CommandContext,
     processing: FileProcessingContext
-  ) => Promise<Result<void, TrailheadError>>;
+  ) => Promise<Result<void, CoreError>>;
 }
 
 /**
@@ -175,17 +175,17 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
       const [inputFile] = context.args;
 
       if (config.inputFile.required !== false && !inputFile) {
-        return err(createValidationError('input file'));
+        return err(errors.requiredFieldMissing('input file'));
       }
 
       // Validate file exists if provided
       if (inputFile) {
         const fileCheck = await context.fs.exists(inputFile);
         if (fileCheck.isErr()) {
-          return err(createFileSystemError('read', inputFile, `File not found: ${inputFile}`));
+          return err(errors.fileNotFound(inputFile));
         }
         if (fileCheck.isOk() && !fileCheck.value) {
-          return err(createFileSystemError('read', inputFile, `File not found: ${inputFile}`));
+          return err(errors.fileNotFound(inputFile));
         }
       }
 

@@ -1,5 +1,5 @@
 import { ok, err, Result } from 'neverthrow';
-import type { CLIError } from '../core/index.js';
+import type { CoreError } from '@trailhead/core';
 import { executeGitCommandSimple, validateGitEnvironment } from './git-command.js';
 import { createGitError } from './errors.js';
 import type { BranchSyncStatus, GitOptions } from './types.js';
@@ -9,7 +9,7 @@ import type { BranchSyncStatus, GitOptions } from './types.js';
  */
 export async function getCurrentBranch(
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   return executeGitCommandSimple(['rev-parse', '--abbrev-ref', 'HEAD'], options);
 }
 
@@ -19,7 +19,7 @@ export async function getCurrentBranch(
 export async function fetchRemote(
   remote = 'origin',
   options: GitOptions = {}
-): Promise<Result<string, CLIError>> {
+): Promise<Result<string, CoreError>> {
   return executeGitCommandSimple(['fetch', remote], options);
 }
 
@@ -29,7 +29,7 @@ export async function fetchRemote(
 export async function branchExists(
   branch: string,
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const result = await executeGitCommandSimple(['rev-parse', '--verify', branch], options);
   return result.map(() => true);
 }
@@ -40,7 +40,7 @@ export async function branchExists(
 export async function remoteBranchExists(
   remoteBranch: string,
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const result = await executeGitCommandSimple(['rev-parse', '--verify', remoteBranch], options);
   return result.map(() => true);
 }
@@ -52,7 +52,7 @@ async function getCommitCount(
   from: string,
   to: string,
   options: GitOptions = {}
-): Promise<Result<number, CLIError>> {
+): Promise<Result<number, CoreError>> {
   const result = await executeGitCommandSimple(['rev-list', '--count', `${from}..${to}`], options);
   return result.map(output => {
     const count = parseInt(output.trim(), 10);
@@ -70,7 +70,7 @@ export async function isAncestor(
   ancestor: string,
   descendant: string,
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const result = await executeGitCommandSimple(
     ['merge-base', '--is-ancestor', ancestor, descendant],
     options
@@ -99,7 +99,7 @@ export async function isAncestor(
 export async function checkBranchSync(
   remoteBranch = 'origin/main',
   options: GitOptions = {}
-): Promise<Result<BranchSyncStatus, CLIError>> {
+): Promise<Result<BranchSyncStatus, CoreError>> {
   // Validate git environment first
   const validationResult = await validateGitEnvironment(options);
   if (validationResult.isErr()) {
@@ -164,7 +164,7 @@ export async function checkBranchSync(
 export async function needsSync(
   remoteBranch = 'origin/main',
   options: GitOptions = {}
-): Promise<Result<boolean, CLIError>> {
+): Promise<Result<boolean, CoreError>> {
   const syncResult = await checkBranchSync(remoteBranch, options);
   return syncResult.map(status => status.behind > 0);
 }

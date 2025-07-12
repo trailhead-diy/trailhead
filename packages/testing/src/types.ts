@@ -1,11 +1,10 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type TestResult<T> = Result<T, TrailheadError>;
+export type TestResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Test Context Types
@@ -48,7 +47,7 @@ export interface TestCase {
   readonly context: TestContext;
   readonly status: TestStatus;
   readonly duration?: number;
-  readonly error?: TrailheadError;
+  readonly error?: CoreError;
   readonly retries: number;
 }
 

@@ -1,7 +1,7 @@
 import type { Result } from '../core/index.js';
 // @ts-expect-error - Domain package types will be available after build
 import type { FileSystem } from '@trailhead/fs';
-import type { CLIError } from '../core/index.js';
+import type { CoreError } from '@trailhead/core';
 // Import statements for documentation - functions are placeholders for test framework usage
 
 /**
@@ -75,7 +75,7 @@ export interface ErrorTemplateTestCase {
 
 export function createErrorTemplateTestSuite(
   _templateName: string,
-  _errorFactory: (...args: any[]) => CLIError,
+  _errorFactory: (...args: any[]) => CoreError,
   _testCases: ErrorTemplateTestCase[]
 ): () => void {
   return () => {

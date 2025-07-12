@@ -1,5 +1,4 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Configuration Types
@@ -53,7 +52,7 @@ export interface ProcessingOptions {
   readonly skipEmptyLines?: boolean;
   readonly errorTolerant?: boolean;
   readonly maxRows?: number;
-  readonly onError?: (error: TrailheadError, context?: Record<string, unknown>) => void;
+  readonly onError?: (error: CoreError, context?: Record<string, unknown>) => void;
 }
 
 export interface CSVProcessingOptions extends ProcessingOptions {
@@ -102,7 +101,7 @@ export interface ExcelProcessingOptions extends ProcessingOptions {
 // Result Types
 // ========================================
 
-export type DataResult<T> = Result<T, TrailheadError>;
+export type DataResult<T> = Result<T, CoreError>;
 
 export interface FormatDetectionResult {
   readonly format: 'csv' | 'json' | 'excel' | 'unknown';

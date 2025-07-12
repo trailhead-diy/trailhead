@@ -1,5 +1,5 @@
-import { createTrailheadError } from '@trailhead/core/errors';
-import type { TrailheadError } from '@trailhead/core/errors';
+import { createCoreError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 
 // ========================================
 // Error Factory Functions
@@ -10,8 +10,8 @@ export const createDataError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('DataError', message, {
+): CoreError =>
+  createCoreError('DataError', message, {
     details,
     cause,
     context,
@@ -24,8 +24,8 @@ export const createCSVError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('CSVError', message, {
+): CoreError =>
+  createCoreError('CSVError', message, {
     details,
     cause,
     context,
@@ -38,8 +38,8 @@ export const createJSONError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('JSONError', message, {
+): CoreError =>
+  createCoreError('JSONError', message, {
     details,
     cause,
     context,
@@ -52,8 +52,8 @@ export const createExcelError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('ExcelError', message, {
+): CoreError =>
+  createCoreError('ExcelError', message, {
     details,
     cause,
     context,
@@ -66,8 +66,8 @@ export const createParsingError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('ParsingError', message, {
+): CoreError =>
+  createCoreError('ParsingError', message, {
     details,
     cause,
     context,
@@ -80,8 +80,8 @@ export const createValidationError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('ValidationError', message, {
+): CoreError =>
+  createCoreError('ValidationError', message, {
     details,
     cause,
     context,
@@ -94,8 +94,8 @@ export const createFormatDetectionError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('FormatDetectionError', message, {
+): CoreError =>
+  createCoreError('FormatDetectionError', message, {
     details,
     cause,
     context,
@@ -108,8 +108,8 @@ export const createConversionError = (
   details?: string,
   cause?: unknown,
   context?: Record<string, unknown>
-): TrailheadError =>
-  createTrailheadError('ConversionError', message, {
+): CoreError =>
+  createCoreError('ConversionError', message, {
     details,
     cause,
     context,
@@ -121,7 +121,7 @@ export const createConversionError = (
 // Error Mapping Utilities
 // ========================================
 
-export const mapNodeError = (operation: string, path: string, error: unknown): TrailheadError => {
+export const mapNodeError = (operation: string, path: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createDataError(
@@ -132,11 +132,7 @@ export const mapNodeError = (operation: string, path: string, error: unknown): T
   );
 };
 
-export const mapLibraryError = (
-  library: string,
-  operation: string,
-  error: unknown
-): TrailheadError => {
+export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createDataError(
@@ -147,11 +143,7 @@ export const mapLibraryError = (
   );
 };
 
-export const mapValidationError = (
-  field: string,
-  value: unknown,
-  error: unknown
-): TrailheadError => {
+export const mapValidationError = (field: string, value: unknown, error: unknown): CoreError => {
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return createValidationError(

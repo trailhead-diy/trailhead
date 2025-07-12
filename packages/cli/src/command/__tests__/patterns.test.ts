@@ -103,7 +103,7 @@ describe('Command Patterns', () => {
 
       expect(result.isErr()).toBe(true);
       if (result.isErr()) {
-        expect(result.error?.type).toBe('CLI_ERROR');
+        expect(result.error?.type).toBe('PROMPT_ERROR');
         expect(result.error?.message).toBe('Interactive prompts failed');
       }
       expect(executeFn).not.toHaveBeenCalled();
@@ -291,7 +291,7 @@ describe('Command Patterns', () => {
       const result = await executeFileSystemOperations(operations, mockContext);
 
       expect(result.isOk()).toBe(false);
-      expect(result.error?.type).toBe('CLI_ERROR');
+      expect(result.error?.type).toBe('OPERATION_ERROR');
       expect(result.error?.message).toBe('Operation failed: operation1');
     });
   });
@@ -363,7 +363,7 @@ describe('Command Patterns', () => {
       const result = await executeSubprocess(config, mockContext);
 
       expect(result.isOk()).toBe(false);
-      expect(result.error?.type).toBe('CLI_ERROR');
+      expect(result.error?.type).toBe('SUBPROCESS_EXIT_ERROR');
       expect(result.error?.message).toBe('false exited with code 1');
     });
 
@@ -389,7 +389,7 @@ describe('Command Patterns', () => {
       const result = await executeSubprocess(config, mockContext);
 
       expect(result.isOk()).toBe(false);
-      expect(result.error?.type).toBe('CLI_ERROR');
+      expect(result.error?.type).toBe('SUBPROCESS_ERROR');
       expect(result.error?.message).toBe('Failed to spawn nonexistent');
     });
 

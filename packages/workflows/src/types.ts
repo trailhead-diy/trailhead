@@ -1,11 +1,11 @@
 import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { CoreError } from '@trailhead/core/errors';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type WorkflowResult<T> = Result<T, TrailheadError>;
+export type WorkflowResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Workflow State Types
@@ -48,7 +48,7 @@ export interface StepResult<T = unknown> {
   readonly stepId: string;
   readonly status: StepStatus;
   readonly output?: T;
-  readonly error?: TrailheadError;
+  readonly error?: CoreError;
   readonly duration: number;
   readonly metadata: Record<string, unknown>;
 }
@@ -64,7 +64,7 @@ export interface StepDefinition<TInput = unknown, TOutput = unknown> {
   readonly condition?: StepCondition<TInput>;
   readonly execute: StepExecutor<TInput, TOutput>;
   readonly onSuccess?: StepHook<TOutput>;
-  readonly onFailure?: StepHook<TrailheadError>;
+  readonly onFailure?: StepHook<CoreError>;
   readonly onSkip?: StepHook<string>;
   readonly cleanup?: StepCleanup;
 }
@@ -96,7 +96,7 @@ export interface WorkflowDefinition<TInput = unknown, TOutput = unknown> {
   readonly steps: readonly StepDefinition[];
   readonly onStart?: WorkflowHook<TInput>;
   readonly onComplete?: WorkflowHook<TOutput>;
-  readonly onFailure?: WorkflowHook<TrailheadError>;
+  readonly onFailure?: WorkflowHook<CoreError>;
   readonly onCancel?: WorkflowHook<string>;
   readonly cleanup?: WorkflowCleanup;
 }

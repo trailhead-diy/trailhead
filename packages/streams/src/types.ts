@@ -1,12 +1,12 @@
 import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { CoreError } from '@trailhead/core/errors';
 import type { Readable, Writable, Transform, Duplex } from 'node:stream';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type StreamResult<T> = Result<T, TrailheadError>;
+export type StreamResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Configuration Types

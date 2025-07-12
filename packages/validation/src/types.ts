@@ -1,8 +1,8 @@
 import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core';
+import type { CoreError } from '@trailhead/core';
 import type { z } from 'zod';
 
-export interface ValidationError extends TrailheadError {
+export interface ValidationError extends CoreError {
   readonly type: 'VALIDATION_ERROR';
   readonly field?: string;
   readonly value?: unknown;

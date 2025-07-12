@@ -1,11 +1,10 @@
-import type { Result } from '@trailhead/core';
-import type { TrailheadError } from '@trailhead/core/errors';
+import type { Result, CoreError } from '@trailhead/core';
 
 // ========================================
 // Result Type Alias
 // ========================================
 
-export type GitResult<T> = Result<T, TrailheadError>;
+export type GitResult<T> = Result<T, CoreError>;
 
 // ========================================
 // Git Repository Types
