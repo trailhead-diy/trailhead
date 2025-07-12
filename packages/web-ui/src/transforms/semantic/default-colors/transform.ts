@@ -502,7 +502,7 @@ function addHookCallToBlock(
           undefined,
           ts.factory.createCallExpression(
             ts.factory.createIdentifier('useDefaultColor'),
-            [ts.factory.createTypeReferenceNode(typeArgument)],
+            [typeArgument],
             [createSingleQuoteStringLiteral(config.componentType)]
           )
         ),

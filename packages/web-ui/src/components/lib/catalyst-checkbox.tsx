@@ -3,8 +3,8 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
-import { useDefaultColor } from '../default-colors';
 import type React from 'react';
+import { useDefaultColor } from '../default-colors';
 export function CatalystCheckboxGroup({
   className,
   ...props

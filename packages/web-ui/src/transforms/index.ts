@@ -22,6 +22,7 @@ import {
   removeDuplicatePropsTransform,
 } from './format/remove-duplicate-props.js';
 import { transformReorderCnArgs, reorderCnArgsTransform } from './format/reorder-cn-args.js';
+import { transformFlattenNestedCn } from './format/flatten-nested-cn/index.js';
 import { addUseClientDirective } from './format/use-client.js';
 
 /**
@@ -114,6 +115,12 @@ export async function runMainPipelineWithFs(
         transform: addUseClientDirective,
       },
       { ...clsxToCnTransform, transform: transformClsxToCn },
+      {
+        name: 'flatten-nested-cn',
+        description: 'Flatten nested cn() and clsx() calls within cn() calls',
+        category: 'format',
+        transform: transformFlattenNestedCn,
+      },
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
       { ...defaultColorsTransform, transform: transformDefaultColors },
@@ -255,6 +262,11 @@ export function getMainPipelineInfo(): {
       name: clsxToCnTransform.name,
       description: clsxToCnTransform.description,
       type: clsxToCnTransform.category,
+    },
+    {
+      name: 'flatten-nested-cn',
+      description: 'Flatten nested cn() and clsx() calls within cn() calls',
+      type: 'format',
     },
     {
       name: catalystPrefixTransform.name,
