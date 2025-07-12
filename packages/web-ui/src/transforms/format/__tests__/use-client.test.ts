@@ -66,11 +66,11 @@ export function Combobox() {
     it('should not add use client to input component', () => {
       const input = `import React from 'react';
 
-export function Input() {
-  return <input />;
+export function Text() {
+  return <text />;
 }`;
 
-      const result = addUseClientDirective(input, 'input.tsx');
+      const result = addUseClientDirective(input, 'text.tsx');
       const { content, changed } = expectSuccess(result);
 
       expect(changed).toBe(false);
