@@ -6,7 +6,7 @@ import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystTouchTarget } from './catalyst-button';
 import { CatalystLink } from './catalyst-link';
-import { useDefaultColor } from '../theme/default-colors';
+import { useThemeColor } from '../theme/theme-colors';
 const colors = {
   red: 'bg-red-500/15 text-red-700 group-data-hover:bg-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:group-data-hover:bg-red-500/20',
   orange:
@@ -54,7 +54,7 @@ export function CatalystBadge({
   className,
   ...props
 }: CatalystBadgeProps & React.ComponentPropsWithoutRef<'span'>) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
+  const defaultColor = useThemeColor<keyof typeof colors>('badge');
   return (
     <span
       {...props}
@@ -81,7 +81,7 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton(
     ),
   ref: React.ForwardedRef<HTMLElement>
 ) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
+  const defaultColor = useThemeColor<keyof typeof colors>('badge');
   let classes = cn(
     'group relative inline-flex rounded-md focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500',
     className

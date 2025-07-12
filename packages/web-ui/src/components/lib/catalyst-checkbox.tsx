@@ -4,7 +4,7 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
-import { useDefaultColor } from '../theme/default-colors';
+import { useThemeColor } from '../theme/theme-colors';
 export function CatalystCheckboxGroup({
   className,
   ...props
@@ -135,7 +135,7 @@ export function CatalystCheckbox({
   color?: Color;
   className?: string;
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('checkbox');
+  const defaultColor = useThemeColor<keyof typeof colors>('checkbox');
   return (
     <Headless.Checkbox
       data-slot="control"

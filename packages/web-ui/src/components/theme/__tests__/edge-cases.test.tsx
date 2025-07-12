@@ -1,196 +1,120 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, renderHook, act } from '@testing-library/react';
-import { type ReactNode } from 'react';
 import {
-  DefaultColorProvider,
-  useDefaultColor,
-  useDefaultColors,
+  useThemeColor,
+  useThemeColors,
   AVAILABLE_COLORS,
   type AvailableColor,
-} from '../default-colors';
-import { DefaultColorSelector } from '../default-color-selector';
+} from '../theme-colors';
+import { ThemeSelector } from '../theme-selector';
 
 // Mock heroicons
 vi.mock('@heroicons/react/16/solid', () => ({
   ChevronDownIcon: () => <svg data-testid="chevron-icon" />,
 }));
 
-function TestWrapper({ children }: { children: ReactNode }) {
-  return <DefaultColorProvider>{children}</DefaultColorProvider>;
-}
-
-describe('Edge Cases and Error Handling', () => {
-  it('handles undefined initial colors gracefully', () => {
-    expect(() => {
-      render(
-        <DefaultColorProvider colors={undefined}>
-          <div>Test</div>
-        </DefaultColorProvider>
-      );
-    }).not.toThrow();
-  });
-
-  it('handles empty initial colors object', () => {
-    const { result } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => (
-        <DefaultColorProvider colors={{}}>{children}</DefaultColorProvider>
-      ),
-    });
-
-    expect(result.current.colors).toEqual({
+beforeEach(() => {
+  // Reset Zustand store state before each test
+  useThemeColors.setState({
+    colors: {
       button: 'primary',
       badge: 'zinc',
       checkbox: 'primary',
       radio: 'primary',
       switch: 'primary',
-    });
+    },
+    isLoaded: true,
   });
+});
 
-  it('handles partial initial colors correctly', () => {
-    const { result } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => (
-        <DefaultColorProvider colors={{ button: 'red' }}>{children}</DefaultColorProvider>
-      ),
-    });
-
-    expect(result.current.colors).toEqual({
-      button: 'red',
-      badge: 'zinc',
-      checkbox: 'primary',
-      radio: 'primary',
-      switch: 'primary',
-    });
-  });
-
+describe('Edge Cases and Error Handling', () => {
   it('handles invalid color values by accepting them as strings', () => {
-    const { result } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+    const { result } = renderHook(() => useThemeColors());
 
-    // TypeScript would prevent this, but runtime should handle it
     act(() => {
-      result.current.setGlobalColor('invalid-color' as AvailableColor);
+      // TypeScript would catch this, but JavaScript/runtime should handle it
+      result.current.setComponentColor('button', 'invalid-color' as AvailableColor);
     });
 
     expect(result.current.colors.button).toBe('invalid-color');
   });
 
-  it('useDefaultColor returns correct type even with invalid component key', () => {
-    const { result } = renderHook(() => useDefaultColor('nonexistent' as any), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+  it('useThemeColor returns correct type even with invalid component key', () => {
+    const { result } = renderHook(() => useThemeColor('nonexistent' as any));
 
-    // Should return undefined for non-existent keys
+    // Should not crash, though TypeScript would catch this
     expect(result.current).toBeUndefined();
   });
 
-  it('context functions work consistently across re-renders', () => {
-    const { result, rerender } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
-
-    const originalColors = result.current.colors;
-
-    rerender();
-
-    // Functions may be recreated but should work the same way
-    act(() => {
-      result.current.setGlobalColor('red');
-    });
-
-    expect(result.current.colors.button).toBe('red');
-    expect(result.current.colors).not.toBe(originalColors);
-  });
-
   it('handles rapid successive color changes', () => {
-    const { result } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+    const { result } = renderHook(() => useThemeColors());
 
     act(() => {
       result.current.setGlobalColor('red');
-      result.current.setGlobalColor('green');
       result.current.setGlobalColor('blue');
+      result.current.setGlobalColor('green');
+      result.current.setComponentColor('button', 'yellow');
     });
 
-    // Should end up with the last color
-    expect(result.current.colors.button).toBe('blue');
+    expect(result.current.colors.button).toBe('yellow');
+    expect(result.current.colors.badge).toBe('green');
   });
 
   it('handles mixed global and component color changes', () => {
-    const { result } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+    const { result } = renderHook(() => useThemeColors());
 
     act(() => {
-      result.current.setGlobalColor('red');
-      result.current.setComponentColor('badge', 'blue');
-      result.current.setGlobalColor('green');
+      result.current.setGlobalColor('blue');
+      result.current.setComponentColor('badge', 'red');
+      result.current.setComponentColor('button', 'green');
     });
 
-    // Global change should override component-specific change
     expect(result.current.colors).toEqual({
       button: 'green',
-      badge: 'green',
-      checkbox: 'green',
-      radio: 'green',
-      switch: 'green',
+      badge: 'red',
+      checkbox: 'blue',
+      radio: 'blue',
+      switch: 'blue',
     });
   });
 
-  it('DefaultColorSelector handles missing context gracefully', () => {
-    // Render without DefaultColorProvider
+  it('ThemeSelector handles missing context gracefully', () => {
+    // Should not crash even without provider (using global store)
     expect(() => {
-      render(<DefaultColorSelector />);
+      render(<ThemeSelector />);
     }).not.toThrow();
-
-    // Should show default values
-    expect(screen.getByRole('button')).toHaveTextContent('Default Color: Primary');
   });
 
   it('formatColorName handles edge cases', () => {
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    // Import the function if it's exported, or test through the component
+    render(<ThemeSelector />);
 
-    // The formatting function should be tested indirectly through the component
-    expect(() => {
-      screen.getByRole('button');
-    }).not.toThrow();
+    // Should handle compound colors like 'dark/zinc'
+    const button = screen.getByRole('button');
+    expect(button).toBeInTheDocument();
   });
 
   it('AVAILABLE_COLORS array contains expected values', () => {
     expect(AVAILABLE_COLORS).toContain('primary');
-    expect(AVAILABLE_COLORS).toContain('red');
-    expect(AVAILABLE_COLORS).toContain('zinc');
-    expect(AVAILABLE_COLORS.length).toBeGreaterThan(20);
+    expect(AVAILABLE_COLORS).toContain('dark/zinc');
+    expect(AVAILABLE_COLORS.length).toBeGreaterThan(25);
   });
 
-  it('context provides working functions across re-renders', () => {
-    let contextValues: any[] = [];
+  it('store functions work consistently across re-renders', () => {
+    const contextValues: any[] = [];
 
-    function TestComponent() {
-      const colors = useDefaultColors();
-      contextValues.push(colors);
+    const TestComponent = () => {
+      const context = useThemeColors();
+      contextValues.push(context);
       return null;
-    }
+    };
 
-    const { rerender } = render(
-      <TestWrapper>
-        <TestComponent />
-      </TestWrapper>
-    );
+    const { rerender } = render(<TestComponent />);
 
-    rerender(
-      <TestWrapper>
-        <TestComponent />
-      </TestWrapper>
-    );
+    rerender(<TestComponent />);
 
-    // Should have captured context from both renders
-    expect(contextValues.length).toBe(2);
+    // Should have captured context from renders
+    expect(contextValues.length).toBeGreaterThanOrEqual(2);
 
     // Functions should work even if recreated
     expect(typeof contextValues[0].setGlobalColor).toBe('function');
@@ -198,9 +122,7 @@ describe('Edge Cases and Error Handling', () => {
   });
 
   it('handles component unmounting during color change', () => {
-    const { result, unmount } = renderHook(() => useDefaultColors(), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+    const { result, unmount } = renderHook(() => useThemeColors());
 
     act(() => {
       result.current.setGlobalColor('red');
@@ -211,79 +133,73 @@ describe('Edge Cases and Error Handling', () => {
     }).not.toThrow();
   });
 
-  it('maintains type safety with generic useDefaultColor', () => {
-    const { result: stringResult } = renderHook(() => useDefaultColor<string>('button'), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
+  it('maintains type safety with generic useThemeColor', () => {
+    const { result } = renderHook(() => useThemeColor<string>('button'));
 
-    const { result: anyResult } = renderHook(() => useDefaultColor<any>('badge'), {
-      wrapper: ({ children }) => <TestWrapper>{children}</TestWrapper>,
-    });
-
-    expect(typeof stringResult.current).toBe('string');
-    expect(anyResult.current).toBeDefined();
+    expect(typeof result.current).toBe('string');
+    expect(result.current).toBe('primary');
   });
 
-  it('handles provider nesting with different initial values', () => {
-    function NestedTest() {
-      const outerColors = useDefaultColors();
+  it('handles store direct access', () => {
+    const store = useThemeColors.getState();
 
-      return (
-        <div>
-          <span data-testid="outer-button">{outerColors.colors.button}</span>
-          <DefaultColorProvider colors={{ button: 'nested-color' as AvailableColor }}>
-            <InnerTest />
-          </DefaultColorProvider>
-        </div>
-      );
-    }
+    expect(store.colors.button).toBe('primary');
+    expect(typeof store.setGlobalColor).toBe('function');
 
-    function InnerTest() {
-      const innerColors = useDefaultColors();
-      return <span data-testid="inner-button">{innerColors.colors.button}</span>;
-    }
+    // Direct store manipulation should work
+    act(() => {
+      store.setComponentColor('button', 'orange');
+    });
 
-    render(
-      <DefaultColorProvider colors={{ button: 'outer-color' as AvailableColor }}>
-        <NestedTest />
-      </DefaultColorProvider>
-    );
-
-    expect(screen.getByTestId('outer-button')).toHaveTextContent('outer-color');
-    expect(screen.getByTestId('inner-button')).toHaveTextContent('nested-color');
+    expect(useThemeColors.getState().colors.button).toBe('orange');
   });
 
-  it('preserves referential equality for unchanged context values', () => {
-    let renderCount = 0;
-    let lastColors: any = null;
+  it('store subscription works correctly', () => {
+    let callCount = 0;
+    const unsubscribe = useThemeColors.subscribe(() => {
+      callCount++;
+    });
 
-    function TestComponent() {
-      renderCount++;
-      const { colors } = useDefaultColors();
+    act(() => {
+      useThemeColors.getState().setGlobalColor('red');
+    });
 
-      if (lastColors && lastColors !== colors) {
-        // Colors object should only change when actual values change
-      }
-      lastColors = colors;
+    expect(callCount).toBeGreaterThan(0);
+    unsubscribe();
+  });
 
-      return null;
-    }
+  it('resetToDefaults with partial overrides works correctly', () => {
+    const { result } = renderHook(() => useThemeColors());
 
-    const { rerender } = render(
-      <TestWrapper>
-        <TestComponent />
-      </TestWrapper>
-    );
+    // Set some colors
+    act(() => {
+      result.current.setGlobalColor('red');
+    });
 
-    const initialRenderCount = renderCount;
+    // Reset with partial overrides
+    act(() => {
+      result.current.resetToDefaults({ button: 'blue', badge: 'green' });
+    });
 
-    // Re-render without changes
-    rerender(
-      <TestWrapper>
-        <TestComponent />
-      </TestWrapper>
-    );
+    expect(result.current.colors).toEqual({
+      button: 'blue',
+      badge: 'green',
+      checkbox: 'primary',
+      radio: 'primary',
+      switch: 'primary',
+    });
+  });
 
-    expect(renderCount).toBe(initialRenderCount + 1);
+  it('handles selector performance with multiple subscriptions', () => {
+    const { result: result1 } = renderHook(() => useThemeColor('button'));
+    const { result: result2 } = renderHook(() => useThemeColor('badge'));
+    const { result: result3 } = renderHook(() => useThemeColors());
+
+    act(() => {
+      result3.current.setComponentColor('button', 'red');
+    });
+
+    expect(result1.current).toBe('red');
+    expect(result2.current).toBe('zinc'); // Should remain unchanged
   });
 });

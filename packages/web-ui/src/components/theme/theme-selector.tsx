@@ -2,7 +2,7 @@
 
 import { Dropdown, DropdownButton, DropdownMenu, DropdownItem } from '../dropdown';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
-import { useDefaultColors, AVAILABLE_COLORS } from './default-colors';
+import { useThemeColors, AVAILABLE_COLORS } from './theme-colors';
 
 /**
  * Format color name for display
@@ -55,10 +55,27 @@ function getColorPreviewStyles(color: string): string {
   return colorMap[color] || 'bg-zinc-400';
 }
 
+function ColorPreview({ color, className = '' }: { color: string; className?: string }) {
+  return (
+    <div
+      className={`size-3 rounded-full flex-shrink-0 ${getColorPreviewStyles(color)} ${className}`}
+    />
+  );
+}
+
+function ColorDisplay({ color, className = '' }: { color: string; className?: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <ColorPreview color={color} />
+      {formatColorName(color)}
+    </div>
+  );
+}
+
 /**
- * Props for DefaultColorSelector
+ * Props for ThemeSelector
  */
-export interface DefaultColorSelectorProps {
+export interface ThemeSelectorProps {
   className?: string;
   label?: string;
 }
@@ -67,11 +84,8 @@ export interface DefaultColorSelectorProps {
  * Default color selector component using dropdown
  * Changes the default color for all components when selection changes
  */
-export function DefaultColorSelector({
-  className,
-  label = 'Default Color',
-}: DefaultColorSelectorProps) {
-  const { colors, setGlobalColor } = useDefaultColors();
+export function ThemeSelector({ className, label = 'Default Color' }: ThemeSelectorProps) {
+  const { colors, setGlobalColor } = useThemeColors();
 
   // Use button color as the representative global color
   const currentColor = colors.button;
@@ -80,9 +94,7 @@ export function DefaultColorSelector({
     <Dropdown>
       <DropdownButton className={className}>
         <div className="flex items-center gap-2">
-          <div
-            className={`size-3 rounded-full flex-shrink-0 ${getColorPreviewStyles(currentColor)}`}
-          />
+          <ColorPreview color={currentColor} />
           {label}: {formatColorName(currentColor)}
         </div>
         <ChevronDownIcon className="size-4" />
@@ -90,12 +102,7 @@ export function DefaultColorSelector({
       <DropdownMenu>
         {AVAILABLE_COLORS.map(color => (
           <DropdownItem key={color} onClick={() => setGlobalColor(color)}>
-            <div className="flex items-center gap-3">
-              <div
-                className={`size-3 rounded-full flex-shrink-0 ${getColorPreviewStyles(color)}`}
-              />
-              {formatColorName(color)}
-            </div>
+            <ColorDisplay color={color} className="gap-3" />
           </DropdownItem>
         ))}
       </DropdownMenu>

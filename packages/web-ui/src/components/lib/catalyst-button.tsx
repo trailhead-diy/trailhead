@@ -5,7 +5,7 @@ import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import React, { forwardRef } from 'react';
 import { CatalystLink } from './catalyst-link';
-import { useDefaultColor } from '../theme/default-colors';
+import { useThemeColor } from '../theme/theme-colors';
 const styles = {
   base: [
     // Base
@@ -207,7 +207,7 @@ export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: CatalystButtonProps,
   ref: React.ForwardedRef<HTMLElement>
 ) {
-  const defaultColor = useDefaultColor<keyof typeof styles.colors>('button');
+  const defaultColor = useThemeColor<keyof typeof styles.colors>('button');
   let classes = cn(
     styles.base,
     outline

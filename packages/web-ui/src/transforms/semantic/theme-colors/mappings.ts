@@ -9,7 +9,7 @@
  * Configuration for a component's default color transformation
  */
 export interface DefaultColorComponentConfig {
-  /** The useDefaultColor hook call with proper typing */
+  /** The useThemeColor hook call with proper typing */
   hookCall: string;
   /** Pattern to match color array access (e.g., 'colors[', 'styles.colors[') */
   colorPattern: string;
@@ -27,7 +27,7 @@ function createColorConfig(
   stylePattern: 'colors' | 'styles.colors' = 'colors'
 ): DefaultColorComponentConfig {
   const colorPattern = `${stylePattern}[`;
-  const hookCall = `useDefaultColor<keyof typeof ${stylePattern}>('${componentType}')`;
+  const hookCall = `useThemeColor<keyof typeof ${stylePattern}>('${componentType}')`;
 
   return {
     hookCall,

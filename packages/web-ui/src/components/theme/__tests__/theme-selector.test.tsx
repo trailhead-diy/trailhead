@@ -1,22 +1,31 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { type ReactNode } from 'react';
-import { DefaultColorProvider, useDefaultColors } from '../default-colors';
-import { DefaultColorSelector } from '../default-color-selector';
+import { useThemeColors } from '../theme-colors';
+import { ThemeSelector } from '../theme-selector';
 
 // Mock heroicons to avoid import issues in tests
 vi.mock('@heroicons/react/16/solid', () => ({
   ChevronDownIcon: () => <svg data-testid="chevron-icon" />,
 }));
 
-function TestWrapper({ children }: { children: ReactNode }) {
-  return <DefaultColorProvider>{children}</DefaultColorProvider>;
-}
+beforeEach(() => {
+  // Reset Zustand store state before each test
+  useThemeColors.setState({
+    colors: {
+      button: 'primary',
+      badge: 'zinc',
+      checkbox: 'primary',
+      radio: 'primary',
+      switch: 'primary',
+    },
+    isLoaded: true,
+  });
+});
 
 // Test component to verify color changes
 function ColorDisplay() {
-  const { colors } = useDefaultColors();
+  const { colors } = useThemeColors();
   return (
     <div>
       <span data-testid="current-button-color">{colors.button}</span>
@@ -25,13 +34,9 @@ function ColorDisplay() {
   );
 }
 
-describe('DefaultColorSelector', () => {
+describe('ThemeSelector', () => {
   it('renders with default label and current color', () => {
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    render(<ThemeSelector />);
 
     expect(screen.getByRole('button')).toHaveTextContent('Default Color: Primary');
     expect(screen.getByTestId('chevron-icon')).toBeInTheDocument();
@@ -43,11 +48,7 @@ describe('DefaultColorSelector', () => {
   });
 
   it('renders with custom label', () => {
-    render(
-      <TestWrapper>
-        <DefaultColorSelector label="Theme Color" />
-      </TestWrapper>
-    );
+    render(<ThemeSelector label="Theme Color" />);
 
     expect(screen.getByRole('button')).toHaveTextContent('Theme Color: Primary');
   });
@@ -55,11 +56,7 @@ describe('DefaultColorSelector', () => {
   it('shows dropdown menu when clicked', async () => {
     const user = userEvent.setup();
 
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    render(<ThemeSelector />);
 
     const button = screen.getByRole('button');
     await user.click(button);
@@ -76,10 +73,10 @@ describe('DefaultColorSelector', () => {
     const user = userEvent.setup();
 
     render(
-      <TestWrapper>
-        <DefaultColorSelector />
+      <>
+        <ThemeSelector />
         <ColorDisplay />
-      </TestWrapper>
+      </>
     );
 
     // Verify initial state
@@ -108,11 +105,7 @@ describe('DefaultColorSelector', () => {
   it('formats color names correctly', async () => {
     const user = userEvent.setup();
 
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    render(<ThemeSelector />);
 
     const button = screen.getByRole('button');
     await user.click(button);
@@ -131,11 +124,7 @@ describe('DefaultColorSelector', () => {
   it('displays all available colors in dropdown with color circles', async () => {
     const user = userEvent.setup();
 
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    render(<ThemeSelector />);
 
     const button = screen.getByRole('button');
     await user.click(button);
@@ -157,11 +146,7 @@ describe('DefaultColorSelector', () => {
   });
 
   it('applies custom className when provided', () => {
-    render(
-      <TestWrapper>
-        <DefaultColorSelector className="custom-class" />
-      </TestWrapper>
-    );
+    render(<ThemeSelector className="custom-class" />);
 
     const button = screen.getByRole('button');
     expect(button).toHaveClass('custom-class');
@@ -170,11 +155,7 @@ describe('DefaultColorSelector', () => {
   it('shows color preview circles with appropriate styling', async () => {
     const user = userEvent.setup();
 
-    render(
-      <TestWrapper>
-        <DefaultColorSelector />
-      </TestWrapper>
-    );
+    render(<ThemeSelector />);
 
     const button = screen.getByRole('button');
 
@@ -201,10 +182,10 @@ describe('DefaultColorSelector', () => {
     const user = userEvent.setup();
 
     render(
-      <TestWrapper>
-        <DefaultColorSelector />
+      <>
+        <ThemeSelector />
         <ColorDisplay />
-      </TestWrapper>
+      </>
     );
 
     const button = screen.getByRole('button');
@@ -230,10 +211,10 @@ describe('DefaultColorSelector', () => {
     const user = userEvent.setup();
 
     const { rerender } = render(
-      <TestWrapper>
-        <DefaultColorSelector />
+      <>
+        <ThemeSelector />
         <ColorDisplay />
-      </TestWrapper>
+      </>
     );
 
     // Change color
@@ -247,10 +228,10 @@ describe('DefaultColorSelector', () => {
 
     // Re-render and verify color persists
     rerender(
-      <TestWrapper>
-        <DefaultColorSelector />
+      <>
+        <ThemeSelector />
         <ColorDisplay />
-      </TestWrapper>
+      </>
     );
 
     expect(screen.getByTestId('current-button-color')).toHaveTextContent('purple');
@@ -258,16 +239,16 @@ describe('DefaultColorSelector', () => {
   });
 });
 
-describe('DefaultColorSelector integration', () => {
+describe('ThemeSelector integration', () => {
   it('works with multiple selectors sharing same context', async () => {
     const user = userEvent.setup();
 
     render(
-      <TestWrapper>
-        <DefaultColorSelector label="Selector 1" />
-        <DefaultColorSelector label="Selector 2" />
+      <>
+        <ThemeSelector label="Selector 1" />
+        <ThemeSelector label="Selector 2" />
         <ColorDisplay />
-      </TestWrapper>
+      </>
     );
 
     // Both selectors should show same initial color

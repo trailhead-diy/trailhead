@@ -10,7 +10,7 @@
  * - High-ROI testing approach focusing on user interactions and business logic
  *
  * Test Files:
- * 1. default-colors.test.tsx - Core context functionality (13 tests)
+ * 1. theme-colors.test.tsx - Core context functionality (13 tests)
  * 2. default-color-selector.test.tsx - UI interactions (10 tests)
  * 3. integration.test.tsx - Component integration (9 tests)
  * 4. edge-cases.test.tsx - Error handling & edge cases (16 tests)
@@ -67,14 +67,14 @@ describe('Theme System Test Suite', () => {
 
   it('validates test file organization', () => {
     const testFiles = [
-      'default-colors.test.tsx',
+      'theme-colors.test.tsx',
       'default-color-selector.test.tsx',
       'integration.test.tsx',
       'edge-cases.test.tsx',
     ];
 
     expect(testFiles).toHaveLength(4);
-    expect(testFiles).toContain('default-colors.test.tsx');
+    expect(testFiles).toContain('theme-colors.test.tsx');
     expect(testFiles).toContain('integration.test.tsx');
   });
 });

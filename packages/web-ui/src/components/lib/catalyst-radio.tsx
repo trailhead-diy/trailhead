@@ -3,7 +3,7 @@
 
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
-import { useDefaultColor } from '../theme/default-colors';
+import { useThemeColor } from '../theme/theme-colors';
 export function CatalystRadioGroup({
   className,
   ...props
@@ -137,7 +137,7 @@ export function CatalystRadio({
   color?: Color;
   className?: string;
 } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('radio');
+  const defaultColor = useThemeColor<keyof typeof colors>('radio');
   return (
     <Headless.Radio
       data-slot="control"

@@ -4,7 +4,7 @@
 import * as Headless from '@headlessui/react';
 import { cn } from '../utils/cn';
 import type React from 'react';
-import { useDefaultColor } from '../theme/default-colors';
+import { useThemeColor } from '../theme/theme-colors';
 export function CatalystSwitchGroup({
   className,
   ...props
@@ -168,7 +168,7 @@ export function CatalystSwitch({
   color?: Color;
   className?: string;
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('switch');
+  const defaultColor = useThemeColor<keyof typeof colors>('switch');
   return (
     <Headless.Switch
       data-slot="control"

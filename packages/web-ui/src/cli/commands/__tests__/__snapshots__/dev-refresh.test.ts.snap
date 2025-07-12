@@ -85,14 +85,14 @@ export function CatalystAvatar({ className, src, alt }: { className?: string;
 
 import { cn } from "../utils/cn";
 import React from 'react';
-import { useDefaultColor } from "../default-colors";
+import { useThemeColor } from "../theme-colors";
 // Complex Badge component designed for semantic color detection after prefixing
 export function CatalystBadge({ color, className, children, ...props }: {
     color?: 'red' | 'blue' | 'gray' | 'zinc' | 'green' | 'yellow' | 'orange' | 'purple';
     className?: string;
     children: React.ReactNode;
 } & React.ComponentPropsWithoutRef<'span'>) {
-    const defaultColor = useDefaultColor<keyof typeof colors>("badge");
+    const defaultColor = useThemeColor<keyof typeof colors>("badge");
     return (<span className={cn(
         // This specific pattern should trigger CatalystBadge detection after prefixing
         'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs/5 font-medium sm:text-[0.8125rem]/5 forced-colors:outline', {
@@ -116,7 +116,7 @@ import * as Headless from '@headlessui/react';
 import { cn } from "../utils/cn";
 import React, { forwardRef } from 'react';
 import { CatalystLink } from "./catalyst-link";
-import { useDefaultColor } from "../default-colors";
+import { useThemeColor } from "../theme-colors";
 const styles = { base: [
         'relative isolate inline-flex items-baseline justify-center gap-x-2 rounded-lg border text-base/6 font-semibold',
     ],
@@ -154,7 +154,7 @@ export type CatalystButtonProps = ({
     children: React.ReactNode;
 } & (Omit<Headless.ButtonProps, 'as' | 'className'> | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>);
 export const CatalystButton = forwardRef(function CatalystButton({ color, outline, plain, className, children, ...props }: CatalystButtonProps, ref: React.ForwardedRef<HTMLElement>) {
-    const defaultColor = useDefaultColor<keyof typeof styles.colors>("button");
+    const defaultColor = useThemeColor<keyof typeof styles.colors>("button");
     let classes = cn(styles.base, outline
         ? styles.outline
         : plain
@@ -180,11 +180,11 @@ export function CatalystTouchTarget({ children }: {
 
 import { cn } from "../utils/cn";
 import React, { forwardRef } from 'react';
-import { useDefaultColor } from "../default-colors";
+import { useThemeColor } from "../theme-colors";
 export const CatalystCheckbox = forwardRef<HTMLInputElement, {
     className?: string;
 } & React.ComponentPropsWithoutRef<'input'>>(function CatalystCheckbox({ className, ...props }, ref) {
-    const defaultColor = useDefaultColor<keyof typeof colors>("checkbox");
+    const defaultColor = useThemeColor<keyof typeof colors>("checkbox");
     return (<input ref={ref} type="checkbox" className={cn('h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props}/>);
 });
 ",
@@ -433,11 +433,11 @@ export function CatalystPagination({ className, children }: { className?: string
 
 import { cn } from "../utils/cn";
 import React, { forwardRef } from 'react';
-import { useDefaultColor } from "../default-colors";
+import { useThemeColor } from "../theme-colors";
 export const CatalystRadio = forwardRef<HTMLInputElement, {
     className?: string;
 } & React.ComponentPropsWithoutRef<'input'>>(function CatalystRadio({ className, ...props }, ref) {
-    const defaultColor = useDefaultColor<keyof typeof colors>("radio");
+    const defaultColor = useThemeColor<keyof typeof colors>("radio");
     return (<input ref={ref} type="radio" className={cn('h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600', className)} {...props}/>);
 });
 ",
@@ -500,11 +500,11 @@ export function CatalystStackedLayout({ navbar, children }: { navbar: React.Reac
 
 import { cn } from "../utils/cn";
 import React, { forwardRef } from 'react';
-import { useDefaultColor } from "../default-colors";
+import { useThemeColor } from "../theme-colors";
 export const CatalystSwitch = forwardRef<HTMLInputElement, {
     className?: string;
 } & React.ComponentPropsWithoutRef<'input'>>(function CatalystSwitch({ className, ...props }, ref) {
-    const defaultColor = useDefaultColor<keyof typeof colors>("switch");
+    const defaultColor = useThemeColor<keyof typeof colors>("switch");
     return (<input ref={ref} type="checkbox" role="switch" className={cn('h-6 w-11 rounded-full border-2 border-transparent bg-gray-200 dark:bg-gray-700', className)} {...props}/>);
 });
 ",

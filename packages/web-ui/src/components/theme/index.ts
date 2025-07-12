@@ -1,11 +1,9 @@
 export {
-  DefaultColorProvider,
-  useDefaultColor,
-  useDefaultColors,
+  useThemeColor,
+  useThemeColors,
   AVAILABLE_COLORS,
-  type DefaultColors,
+  type ThemeColors,
   type AvailableColor,
-  type DefaultColorProviderProps,
-} from './default-colors';
+} from './theme-colors';
 
-export { DefaultColorSelector, type DefaultColorSelectorProps } from './default-color-selector';
+export { ThemeSelector, type ThemeSelectorProps } from './theme-selector';

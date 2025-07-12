@@ -4,15 +4,15 @@
  * Uses TypeScript's native compiler API for reliable AST parsing and transformation,
  * following the same pattern as the prefixing transforms.
  *
- * Transforms components to use the useDefaultColor hook instead of hardcoded default values.
+ * Transforms components to use the useThemeColor hook instead of hardcoded default values.
  * This enables consistent default color management across all components.
  *
  * Transform process:
  * 1. Parse code into TypeScript AST using ts.createSourceFile
  * 2. Find supported component function declarations
- * 3. Add useDefaultColor import if needed
+ * 3. Add useThemeColor import if needed
  * 4. Remove default values from color parameters
- * 5. Add useDefaultColor hook calls at function start
+ * 5. Add useThemeColor hook calls at function start
  * 6. Update color usage patterns to use fallback
  * 7. Generate transformed code from modified AST using ts.createPrinter
  */
@@ -67,7 +67,7 @@ function createDefaultColorsContext(input: string): Result<DefaultColorsContext,
  * @param input - The source code content to transform
  * @returns Object containing transformed content, change status, and any warnings
  */
-export function executeDefaultColorsTransform(input: string): {
+export function executeThemeColorsTransform(input: string): {
   content: string;
   changed: boolean;
   warnings: string[];
@@ -88,15 +88,15 @@ export function executeDefaultColorsTransform(input: string): {
   }
 
   // Check if we already have the import
-  const hasImport = hasUseDefaultColorImport(context.sourceFile);
+  const hasImport = hasUseThemeColorImport(context.sourceFile);
 
   // Process the AST
-  const transformedSourceFile = processDefaultColorsTransformation(context, supportedFunctions);
+  const transformedSourceFile = processThemeColorsTransformation(context, supportedFunctions);
 
   // Add import if needed
   let finalSourceFile = transformedSourceFile;
   if (context.needsImport && !hasImport) {
-    finalSourceFile = addUseDefaultColorImport(finalSourceFile);
+    finalSourceFile = addUseThemeColorImport(finalSourceFile);
   }
 
   // Convert back to string
@@ -149,22 +149,22 @@ function findSupportedComponents(sourceFile: ts.SourceFile): string[] {
 }
 
 /**
- * Check if the file already has useDefaultColor import
+ * Check if the file already has useThemeColor import
  */
-function hasUseDefaultColorImport(sourceFile: ts.SourceFile): boolean {
+function hasUseThemeColorImport(sourceFile: ts.SourceFile): boolean {
   for (const statement of sourceFile.statements) {
     if (
       ts.isImportDeclaration(statement) &&
       statement.moduleSpecifier &&
       ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === '../default-colors'
+      statement.moduleSpecifier.text === '../theme-colors'
     ) {
       if (
         statement.importClause?.namedBindings &&
         ts.isNamedImports(statement.importClause.namedBindings)
       ) {
         return statement.importClause.namedBindings.elements.some(
-          element => element.name.text === 'useDefaultColor'
+          element => element.name.text === 'useThemeColor'
         );
       }
     }
@@ -175,7 +175,7 @@ function hasUseDefaultColorImport(sourceFile: ts.SourceFile): boolean {
 /**
  * Process default colors transformation using TypeScript AST
  */
-function processDefaultColorsTransformation(
+function processThemeColorsTransformation(
   context: DefaultColorsContext,
   supportedFunctions: string[]
 ): ts.SourceFile {
@@ -263,7 +263,7 @@ function isAlreadyTransformed(
   const config = getComponentConfig(componentType);
   if (!config) return false;
 
-  // Check if the function body contains useDefaultColor call with the right component type
+  // Check if the function body contains useThemeColor call with the right component type
   if (node.body && ts.isBlock(node.body)) {
     for (const statement of node.body.statements) {
       if (ts.isVariableStatement(statement)) {
@@ -279,7 +279,7 @@ function isAlreadyTransformed(
           const callExpr = declaration.initializer;
           if (
             ts.isIdentifier(callExpr.expression) &&
-            callExpr.expression.text === 'useDefaultColor' &&
+            callExpr.expression.text === 'useThemeColor' &&
             callExpr.arguments.length > 0 &&
             ts.isStringLiteral(callExpr.arguments[0]) &&
             callExpr.arguments[0].text === config.componentType
@@ -478,7 +478,7 @@ function transformFunctionExpression(
 }
 
 /**
- * Add useDefaultColor hook call to the beginning of a block
+ * Add useThemeColor hook call to the beginning of a block
  */
 function addHookCallToBlock(
   block: ts.Block,
@@ -486,7 +486,7 @@ function addHookCallToBlock(
 ): ts.Block {
   if (!config) return block;
 
-  // Create the hook call: const defaultColor = useDefaultColor<keyof typeof colors>('badge');
+  // Create the hook call: const defaultColor = useThemeColor<keyof typeof colors>('badge');
   const typeArgument = ts.factory.createTypeOperatorNode(
     ts.SyntaxKind.KeyOfKeyword,
     ts.factory.createTypeQueryNode(ts.factory.createIdentifier(config.stylePattern))
@@ -501,7 +501,7 @@ function addHookCallToBlock(
           undefined,
           undefined,
           ts.factory.createCallExpression(
-            ts.factory.createIdentifier('useDefaultColor'),
+            ts.factory.createIdentifier('useThemeColor'),
             [typeArgument],
             [createSingleQuoteStringLiteral(config.componentType)]
           )
@@ -650,9 +650,9 @@ function createSingleQuoteStringLiteral(text: string): ts.StringLiteral {
 }
 
 /**
- * Add useDefaultColor import to the source file
+ * Add useThemeColor import to the source file
  */
-function addUseDefaultColorImport(sourceFile: ts.SourceFile): ts.SourceFile {
+function addUseThemeColorImport(sourceFile: ts.SourceFile): ts.SourceFile {
   const importDeclaration = ts.factory.createImportDeclaration(
     undefined,
     ts.factory.createImportClause(
@@ -662,11 +662,11 @@ function addUseDefaultColorImport(sourceFile: ts.SourceFile): ts.SourceFile {
         ts.factory.createImportSpecifier(
           false,
           undefined,
-          ts.factory.createIdentifier('useDefaultColor')
+          ts.factory.createIdentifier('useThemeColor')
         ),
       ])
     ),
-    createSingleQuoteStringLiteral('../default-colors'),
+    createSingleQuoteStringLiteral('../theme-colors'),
     undefined
   );
 

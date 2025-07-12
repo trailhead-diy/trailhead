@@ -14,7 +14,7 @@ import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
 import { transformClsxToCn, clsxToCnTransform } from './imports/clsx-to-cn.js';
 import { transformCatalystPrefix, catalystPrefixTransform } from './format/prefixing/index.js';
 import { transformSemanticColors, semanticColorsTransform } from './semantic/color-tokens/index.js';
-import { transformDefaultColors, defaultColorsTransform } from './semantic/default-colors/index.js';
+import { transformDefaultColors, themeColorsTransform } from './semantic/theme-colors/index.js';
 import { transformFileHeaders, fileHeadersTransform } from './format/file-headers.js';
 import { transformTsNocheck, tsNocheckTransform } from './format/ts-nocheck.js';
 import {
@@ -116,7 +116,7 @@ export async function runMainPipelineWithFs(
       { ...clsxToCnTransform, transform: transformClsxToCn },
       { ...catalystPrefixTransform, transform: transformCatalystPrefix },
       { ...semanticColorsTransform, transform: transformSemanticColors },
-      { ...defaultColorsTransform, transform: transformDefaultColors },
+      { ...themeColorsTransform, transform: transformDefaultColors },
       { ...removeDuplicatePropsTransform, transform: transformRemoveDuplicateProps },
       { ...reorderCnArgsTransform, transform: transformReorderCnArgs },
       { ...tsNocheckTransform, transform: transformTsNocheck },
@@ -267,9 +267,9 @@ export function getMainPipelineInfo(): {
       type: semanticColorsTransform.category,
     },
     {
-      name: defaultColorsTransform.name,
-      description: defaultColorsTransform.description,
-      type: defaultColorsTransform.category,
+      name: themeColorsTransform.name,
+      description: themeColorsTransform.description,
+      type: themeColorsTransform.category,
     },
     {
       name: removeDuplicatePropsTransform.name,

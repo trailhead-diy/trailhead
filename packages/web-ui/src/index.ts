@@ -26,9 +26,8 @@ export {
   Table,
   Text,
   Textarea,
-  DefaultColorProvider,
-  useDefaultColor,
-  useDefaultColors,
+  useThemeColor,
+  useThemeColors,
 } from './components/index.js';
 
 export { cn } from './components/utils/cn.js';

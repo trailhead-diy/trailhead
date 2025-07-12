@@ -1,20 +1,20 @@
 /**
  * Default colors transform - main export
  *
- * Transforms components to use the useDefaultColor hook system instead of hardcoded defaults.
+ * Transforms components to use the useThemeColor hook system instead of hardcoded defaults.
  * This enables centralized default color management and consistent theming.
  */
 
 import { type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
 import { executeTransform, createTransformMetadata, type TransformResult } from '../../utils.js';
-import { executeDefaultColorsTransform } from './transform.js';
+import { executeThemeColorsTransform } from './transform.js';
 
 /**
  * Transform metadata for default colors support
  */
-export const defaultColorsTransform = createTransformMetadata(
-  'default-colors',
-  'Add default color support using useDefaultColor hook',
+export const themeColorsTransform = createTransformMetadata(
+  'theme-colors',
+  'Add default color support using useThemeColor hook',
   'semantic'
 );
 
@@ -22,9 +22,9 @@ export const defaultColorsTransform = createTransformMetadata(
  * Main transform function for default colors support
  *
  * Transforms component functions to use the default color system by:
- * - Adding useDefaultColor import statements
+ * - Adding useThemeColor import statements
  * - Removing hardcoded default values from color parameters
- * - Adding useDefaultColor hook calls
+ * - Adding useThemeColor hook calls
  * - Updating color usage patterns to include fallback values
  *
  * @param input - The source code to transform
@@ -40,11 +40,11 @@ export const defaultColorsTransform = createTransformMetadata(
  * ```
  */
 export function transformDefaultColors(input: string): Result<TransformResult, CLIError> {
-  return executeTransform(() => executeDefaultColorsTransform(input));
+  return executeTransform(() => executeThemeColorsTransform(input));
 }
 
 // Re-export utilities for testing
-export { executeDefaultColorsTransform } from './transform.js';
+export { executeThemeColorsTransform } from './transform.js';
 export {
   getComponentType,
   getComponentConfig,

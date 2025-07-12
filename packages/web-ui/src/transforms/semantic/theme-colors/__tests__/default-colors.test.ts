@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { executeDefaultColorsTransform } from '../transform.js';
+import { executeThemeColorsTransform } from '../transform.js';
 import { getComponentType, supportsDefaultColors } from '../mappings.js';
 
 describe('Default Colors Transform', () => {
@@ -48,14 +48,12 @@ export function CatalystBadge({
   );
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
 
       expect(result.changed).toBe(true);
-      expect(result.content).toContain('import { useDefaultColor } from');
-      expect(result.content).toContain('../default-colors');
-      expect(result.content).toContain(
-        'const defaultColor = useDefaultColor<keyof typeof colors>('
-      );
+      expect(result.content).toContain('import { useThemeColor } from');
+      expect(result.content).toContain('../theme-colors');
+      expect(result.content).toContain('const defaultColor = useThemeColor<keyof typeof colors>(');
       expect(result.content).toContain('badge');
       expect(result.content).toContain('color,'); // Default value removed
       expect(result.content).not.toContain("color = 'zinc'");
@@ -70,7 +68,7 @@ import { cn } from '../utils/cn';
 const colors = { red: 'bg-red-500' };
 
 export function CatalystBadge({ color, ...props }) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
+  const defaultColor = useThemeColor<keyof typeof colors>('badge');
   return <span className={cn(colors[color ?? defaultColor])} />;
 }
 
@@ -86,7 +84,7 @@ export const CatalystBadgeButton = forwardRef(function CatalystBadgeButton({
   );
 });`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
       expect(result.changed).toBe(true);
       expect(result.content).toContain('color,'); // Default removed from CatalystBadgeButton
       expect(result.content).toContain('CatalystBadge color={color ?? defaultColor}');
@@ -116,10 +114,10 @@ export function CatalystButton({
   );
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
 
       expect(result.changed).toBe(true);
-      expect(result.content).toContain('useDefaultColor<keyof typeof styles.colors>');
+      expect(result.content).toContain('useThemeColor<keyof typeof styles.colors>');
       expect(result.content).toContain('button');
       expect(result.content).toContain('styles.colors[color ?? defaultColor]');
       expect(result.content).not.toContain("color = 'primary'");
@@ -147,10 +145,10 @@ export function CatalystButton({
   );
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
 
       expect(result.changed).toBe(true);
-      expect(result.content).toContain('useDefaultColor<keyof typeof styles.colors>');
+      expect(result.content).toContain('useThemeColor<keyof typeof styles.colors>');
       expect(result.content).toContain('button');
       expect(result.content).toContain('styles.colors[color ?? defaultColor]');
       expect(result.content).not.toContain("color ?? 'primary'");
@@ -164,7 +162,7 @@ export function CatalystAlert({ color = 'red' }) {
   return <div>Alert</div>;
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
       expect(result.changed).toBe(false);
       expect(result.warnings).toContain(
         'No supported components found for default colors transform'
@@ -173,27 +171,27 @@ export function CatalystAlert({ color = 'red' }) {
 
     it('should not add duplicate imports', () => {
       const input = `
-import { useDefaultColor } from '../default-colors';
+import { useThemeColor } from '../theme-colors';
 
 export function CatalystBadge({ color = 'zinc' }) {
   return <span />;
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
       // Should still transform the function but not add duplicate import
-      expect((result.content.match(/import.*useDefaultColor/g) || []).length).toBe(1);
+      expect((result.content.match(/import.*useThemeColor/g) || []).length).toBe(1);
     });
 
     it('should handle already transformed components', () => {
       const input = `
-import { useDefaultColor } from '../default-colors';
+import { useThemeColor } from '../theme-colors';
 
 export function CatalystBadge({ color, ...props }) {
-  const defaultColor = useDefaultColor<keyof typeof colors>('badge');
+  const defaultColor = useThemeColor<keyof typeof colors>('badge');
   return <span className={cn(colors[color ?? defaultColor])} />;
 }`;
 
-      const result = executeDefaultColorsTransform(input);
+      const result = executeThemeColorsTransform(input);
       expect(result.changed).toBe(false);
     });
   });
