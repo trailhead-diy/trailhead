@@ -1,7 +1,7 @@
 import type { CoreError, ErrorContext } from './types.js';
 
 /**
- * Foundation error factory - minimal and extensible
+ * Foundation error factory - enhanced with better context
  */
 export const createCoreError = (
   type: string,
@@ -12,6 +12,9 @@ export const createCoreError = (
     suggestion?: string;
     recoverable?: boolean;
     context?: Record<string, unknown>;
+    component?: string;
+    operation?: string;
+    severity?: 'low' | 'medium' | 'high' | 'critical';
   }
 ): CoreError => ({
   type,
@@ -21,6 +24,10 @@ export const createCoreError = (
   suggestion: options?.suggestion,
   recoverable: options?.recoverable ?? false,
   context: options?.context,
+  component: options?.component,
+  operation: options?.operation,
+  timestamp: new Date(),
+  severity: options?.severity ?? 'medium',
 });
 
 /**
@@ -28,6 +35,9 @@ export const createCoreError = (
  */
 export const withContext = <E extends CoreError>(error: E, context: Partial<ErrorContext>): E => ({
   ...error,
+  component: context.component ?? error.component,
+  operation: context.operation ?? error.operation,
+  timestamp: context.timestamp ?? error.timestamp ?? new Date(),
   details: [
     error.details,
     context.operation && `Operation: ${context.operation}`,

@@ -19,7 +19,7 @@ describe('Foundation Error System', () => {
         recoverable: true,
       });
 
-      expect(error).toEqual({
+      expect(error).toMatchObject({
         type: 'TEST_ERROR',
         message: 'Test message',
         details: 'Test details',
@@ -27,13 +27,17 @@ describe('Foundation Error System', () => {
         recoverable: true,
         cause: undefined,
         context: undefined,
+        component: undefined,
+        operation: undefined,
+        severity: 'medium',
       });
+      expect(error.timestamp).toBeInstanceOf(Date);
     });
 
     it('should create error with minimal options', () => {
       const error = createCoreError('MINIMAL_ERROR', 'Minimal message');
 
-      expect(error).toEqual({
+      expect(error).toMatchObject({
         type: 'MINIMAL_ERROR',
         message: 'Minimal message',
         details: undefined,
@@ -41,7 +45,11 @@ describe('Foundation Error System', () => {
         recoverable: false,
         cause: undefined,
         context: undefined,
+        component: undefined,
+        operation: undefined,
+        severity: 'medium',
       });
+      expect(error.timestamp).toBeInstanceOf(Date);
     });
 
     it('should create error with custom context', () => {
