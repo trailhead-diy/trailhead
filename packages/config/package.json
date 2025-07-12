@@ -23,6 +23,18 @@
     "./transformers": {
       "types": "./dist/transformers/index.d.ts",
       "default": "./dist/transformers/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "default": "./dist/validation/index.js"
+    },
+    "./docs": {
+      "types": "./dist/docs/index.d.ts",
+      "default": "./dist/docs/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "default": "./dist/cli/index.js"
     }
   },
   "files": [

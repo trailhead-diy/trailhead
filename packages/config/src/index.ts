@@ -6,6 +6,50 @@ export { createConfigOperations } from './core/operations.js';
 export { createConfigManager } from './core/manager.js';
 
 // ========================================
+// Enhanced Schema Builder Exports (Recommended)
+// ========================================
+
+// Zod-powered schema builders
+export {
+  defineSchema,
+  createSchema,
+  validate,
+  validateAsync,
+  string,
+  number,
+  boolean,
+  array,
+  object,
+} from './core/index.js';
+
+export type {
+  ZodConfigSchema,
+  ZodSchemaBuilder,
+  ZodStringFieldBuilder,
+  ZodNumberFieldBuilder,
+  ZodBooleanFieldBuilder,
+  ZodArrayFieldBuilder,
+  ZodObjectFieldBuilder,
+  ZodFieldBuilder,
+} from './core/index.js';
+
+// Enhanced documentation generation
+export { generateDocs, generateJsonSchemaFromZod } from './docs/index.js';
+
+export type {
+  ZodConfigDocs,
+  ZodDocumentationSection,
+  ZodFieldDocumentation,
+  ZodFieldConstraints,
+  ZodValidationInfo,
+  ZodExampleConfig,
+  ZodDocsMetadata,
+  ZodDocsGeneratorOptions,
+  ZodJsonSchema,
+  ZodJsonSchemaProperty,
+} from './docs/index.js';
+
+// ========================================
 // Sub-module Exports
 // ========================================
 
