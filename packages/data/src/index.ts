@@ -98,3 +98,42 @@ export type {
   ExcelParseOptions,
   ExcelWriteOptions,
 } from './excel/index.js';
+
+// ========================================
+// Streaming Operations
+// ========================================
+
+export {
+  createDataStreamingOperations,
+  createCSVStreaming,
+  createJSONStreaming,
+  createExcelStreaming,
+  checkStreamAvailability,
+  getStreamOperations,
+  isStreamingEnabled,
+  defaultStreamingConfig,
+  createProgressTracker,
+  createCSVStreamingOperations,
+  createJSONStreamingOperations,
+  createExcelStreamingOperations,
+} from './streaming/index.js';
+
+export type {
+  StreamResult,
+  StreamingConfig,
+  StreamingCSVConfig,
+  StreamingJSONConfig,
+  StreamingExcelConfig,
+  StreamOperations,
+  CSVStreamingOperations,
+  JSONStreamingOperations,
+  ExcelStreamingOperations,
+  DataStreamingOperations,
+  CreateCSVStreamingOperations,
+  CreateJSONStreamingOperations,
+  CreateExcelStreamingOperations,
+  CreateDataStreamingOperations,
+  StreamProgress,
+  StreamMetrics,
+  StreamEventHandlers,
+} from './streaming/index.js';

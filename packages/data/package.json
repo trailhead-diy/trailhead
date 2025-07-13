@@ -27,6 +27,22 @@
     "./excel": {
       "types": "./dist/excel/index.d.ts",
       "default": "./dist/excel/index.js"
+    },
+    "./streaming": {
+      "types": "./dist/streaming/index.d.ts",
+      "default": "./dist/streaming/index.js"
+    },
+    "./streaming/csv": {
+      "types": "./dist/streaming/csv-streaming.d.ts",
+      "default": "./dist/streaming/csv-streaming.js"
+    },
+    "./streaming/json": {
+      "types": "./dist/streaming/json-streaming.d.ts",
+      "default": "./dist/streaming/json-streaming.js"
+    },
+    "./streaming/excel": {
+      "types": "./dist/streaming/excel-streaming.d.ts",
+      "default": "./dist/streaming/excel-streaming.js"
     }
   },
   "scripts": {
@@ -47,6 +63,14 @@
     "@trailhead/fs": "workspace:*",
     "papaparse": "^5.4.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "peerDependencies": {
+    "@trailhead/streams": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@trailhead/streams": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@repo/oxlint-config": "workspace:*",
