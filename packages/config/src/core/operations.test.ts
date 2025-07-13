@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { z } from '@trailhead/validation';
 import { createConfigOperations } from './operations.js';
 
 describe('Config Operations', () => {
@@ -18,6 +19,12 @@ describe('Config Operations', () => {
       };
 
       const result = configOps.create(definition);
+
+      console.log('Result isOk:', result.isOk());
+      console.log('Result isErr:', result.isErr());
+      if (result.isErr()) {
+        console.log('Error details:', JSON.stringify(result.error, null, 2));
+      }
 
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {
@@ -136,11 +143,11 @@ describe('Config Operations', () => {
     it('should validate configuration against schema', () => {
       const config = { name: 'test', age: 25 };
       const schema = {
-        properties: {
-          name: { type: 'string' as const, required: true },
-          age: { type: 'number' as const, required: true },
-        },
-        required: ['name', 'age'],
+        name: 'TestSchema',
+        zodSchema: z.object({
+          name: z.string(),
+          age: z.number(),
+        }),
       };
 
       const result = configOps.validate(config, schema);

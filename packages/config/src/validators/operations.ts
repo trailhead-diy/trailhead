@@ -3,11 +3,10 @@ import type { Result, CoreError } from '@trailhead/core';
 import {
   createValidationError,
   createSchemaValidationError,
-  createMissingFieldError,
   type ValidationError,
-} from '../validation/errors.js';
-import { validateWithSchema } from '../core/schema.js';
-import type { ConfigValidator, ConfigSchema } from '../core/operations.js';
+} from '../validation/index.js';
+import { validate } from '../core/zod-schema.js';
+import type { ConfigValidator, ZodConfigSchema } from '../core/zod-schema.js';
 
 // ========================================
 // Enhanced Validator Operations
@@ -20,7 +19,7 @@ export interface ValidatorOperations {
     config: T,
     validators: readonly ConfigValidator<T>[]
   ) => Result<void, CoreError>;
-  readonly validateSchema: <T>(config: T, schema: ConfigSchema<T>) => Result<void, CoreError>;
+  readonly validateSchema: <T>(config: T, schema: ZodConfigSchema<T>) => Result<void, CoreError>;
   readonly getRegisteredValidators: () => readonly string[];
   readonly hasValidator: (name: string) => boolean;
 }
@@ -90,9 +89,9 @@ export const createValidatorOperations = (): ValidatorOperations => {
     }
   };
 
-  const validateSchema = <T>(config: T, schema: ConfigSchema<T>): Result<void, CoreError> => {
+  const validateSchema = <T>(config: T, schema: ZodConfigSchema<T>): Result<void, CoreError> => {
     // Use the enhanced schema validation from core/schema.ts
-    return validateWithSchema(config, schema).map(() => undefined);
+    return validate(config, schema).map(() => undefined);
   };
 
   const getRegisteredValidators = (): readonly string[] => {
@@ -201,7 +200,7 @@ export const createUrlValidator = (): ConfigValidator<any> => ({
         }
 
         try {
-          new URL(config[field]);
+          void new URL(config[field]);
         } catch {
           return err(
             createValidationError({

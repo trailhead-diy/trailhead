@@ -1,7 +1,7 @@
 import type { ConfigValidationError } from './errors.js';
 import { isConfigValidationError } from './errors.js';
 // Stub color functions - would normally come from @trailhead/cli/utils
-const error = (text: string): string => `\x1b[31m${text}\x1b[0m`;
+const redColor = (text: string): string => `\x1b[31m${text}\x1b[0m`;
 const _success = (text: string): string => `\x1b[32m${text}\x1b[0m`;
 const warning = (text: string): string => `\x1b[33m${text}\x1b[0m`;
 const info = (text: string): string => `\x1b[36m${text}\x1b[0m`;
@@ -80,7 +80,7 @@ export const createValidationErrorFormatter = (
 
     // Header
     if (includeColors) {
-      message += `${error('✗')} Invalid ${info(error.expectedType)} for field ${warning(`"${error.field}"`)}${pathStr}${valueStr}${muted(ruleStr)}\n`;
+      message += `${redColor('✗')} Invalid ${info(error.expectedType)} for field ${warning(`"${error.field}"`)}${pathStr}${valueStr}${muted(ruleStr)}\n`;
     } else {
       message += `✗ Invalid ${error.expectedType} for field "${error.field}"${pathStr}${valueStr}${ruleStr}\n`;
     }
@@ -131,7 +131,7 @@ export const createValidationErrorFormatter = (
 
     // Header
     if (includeColors) {
-      summary += `${error(`Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:`)}\n\n`;
+      summary += `${redColor(`Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:`)}\n\n`;
     } else {
       summary += `Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:\n\n`;
     }
@@ -163,7 +163,7 @@ export const createValidationErrorFormatter = (
     let summary = '';
 
     if (includeColors) {
-      summary += `${error(`Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}`)}\n\n`;
+      summary += `${redColor(`Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}`)}\n\n`;
     } else {
       summary += `Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}\n\n`;
     }
@@ -209,7 +209,7 @@ export const createValidationErrorFormatter = (
   };
 
   const formatJson = (error: ConfigValidationError): ValidationErrorJson => ({
-    field: error.field,
+    field: error.field || 'unknown',
     path: error.path,
     value: error.value,
     expectedType: error.expectedType,
@@ -282,7 +282,7 @@ const groupErrorsByField = (errors: readonly ConfigValidationError[]): Record<st
   const groups: Record<string, number> = {};
 
   for (const error of errors) {
-    const field = error.path.length > 0 ? formatPath(error.path) : error.field;
+    const field = error.path.length > 0 ? formatPath(error.path) : error.field || 'unknown';
     groups[field] = (groups[field] || 0) + 1;
   }
 

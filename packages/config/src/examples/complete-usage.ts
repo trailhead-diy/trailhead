@@ -14,7 +14,7 @@ import {
 
   // Enhanced documentation generation
   generateDocs,
-  generateJsonSchemaFromZod,
+  generateJsonSchema,
 
   // Configuration operations
   createConfigOperations,
@@ -237,8 +237,8 @@ async function generateDocumentation() {
   }
 
   // Generate JSON Schema
-  const jsonSchema = generateJsonSchemaFromZod(
-    serverConfigSchema.zodSchema,
+  const jsonSchema = generateJsonSchema(
+    serverConfigSchema,
     'ServerConfiguration',
     'Complete server configuration schema'
   );

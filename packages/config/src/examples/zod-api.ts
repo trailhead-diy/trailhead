@@ -213,7 +213,7 @@ type AppConfig = typeof appConfigSchema.zodSchema._type;
 function processAppConfig(config: AppConfig) {
   // Process configuration
   const { name, version, port, debug } = config;
-  void name, version, port, debug; // Use config properties
+  (void name, version, port, debug); // Use config properties
 }
 
 export {

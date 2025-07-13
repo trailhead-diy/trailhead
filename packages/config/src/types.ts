@@ -14,7 +14,7 @@ export interface ConfigDefinition<T = Record<string, unknown>> {
   readonly name: string;
   readonly version?: string;
   readonly description?: string;
-  readonly schema?: ConfigSchema<T>;
+  readonly schema?: unknown; // Will be properly typed when imported in operations
   readonly sources: readonly ConfigSource[];
   readonly defaults?: Partial<T>;
   readonly transformers?: readonly ConfigTransformer<T>[];
@@ -123,7 +123,8 @@ export interface ConfigTransformer<T = Record<string, unknown>> {
 
 export interface ConfigValidator<T = Record<string, unknown>> {
   readonly name: string;
-  readonly validate: (config: T) => ConfigResult<void>;
+  readonly schema?: unknown; // Schema will be properly typed when imported
+  readonly validate: (config: unknown) => Promise<ConfigResult<T>>;
   readonly priority?: number;
 }
 
@@ -158,8 +159,10 @@ export interface ValidatorOperations {
   readonly validate: <T>(
     config: T,
     validators: readonly ConfigValidator<T>[]
-  ) => ConfigResult<void>;
-  readonly validateSchema: <T>(config: T, schema: ConfigSchema<T>) => ConfigResult<void>;
+  ) => Result<void, CoreError>;
+  readonly validateSchema: <T>(config: T, schema: unknown) => Result<void, CoreError>;
+  readonly getRegisteredValidators: () => readonly string[];
+  readonly hasValidator: (name: string) => boolean;
 }
 
 export interface TransformerOperations {

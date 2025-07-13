@@ -1,27 +1,29 @@
 // ========================================
-// Validation Module Exports
+// Enhanced Config Validation Module
 // ========================================
 
-// Core validation error types and functions
+// Enhanced configuration validation error types
 export type {
   ConfigValidationError as ValidationError,
-  ConfigValidationContext as ValidationErrorContext,
+  ConfigValidationContext as ValidationContext,
 } from './errors.js';
 
+// Enhanced error creation functions
 export {
-  createValidationError,
+  createConfigValidationError as createValidationError,
   createSchemaValidationError,
+  enhanceZodError,
   createMissingFieldError,
   createTypeError,
   createEnumError,
   createRangeError,
   createLengthError,
   createPatternError,
-  isValidationError,
+  isConfigValidationError as isValidationError,
   isSchemaValidationError,
 } from './errors.js';
 
-// Validation error formatting
+// Enhanced validation error formatting
 export type {
   ValidationErrorFormatter,
   InteractiveErrorInfo,

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  createValidationError,
+  createConfigValidationError,
   createSchemaValidationError,
   createMissingFieldError,
   createTypeError,
@@ -8,9 +8,9 @@ import {
   createRangeError,
   createLengthError,
   createPatternError,
-  isValidationError,
+  isConfigValidationError,
   isSchemaValidationError,
-  type ValidationError,
+  type ConfigValidationError,
 } from '../validation/errors.js';
 import {
   createValidationErrorFormatter,
@@ -23,7 +23,7 @@ import {
 
 describe('ValidationError Creation', () => {
   it('should create a basic validation error', () => {
-    const error = createValidationError({
+    const error = createConfigValidationError({
       field: 'username',
       value: 123,
       expectedType: 'string',
@@ -44,7 +44,7 @@ describe('ValidationError Creation', () => {
   });
 
   it('should create a validation error with rule and constraints', () => {
-    const error = createValidationError({
+    const error = createConfigValidationError({
       field: 'port',
       value: 70000,
       expectedType: 'number',
@@ -53,20 +53,20 @@ describe('ValidationError Creation', () => {
       constraints: { min: 1, max: 65535 },
     });
 
-    expect(error.rule).toBe('range');
-    expect(error.constraints).toEqual({ min: 1, max: 65535 });
-    expect(error.message).toContain('[range]');
+    expect(error.code).toBe('range');
+    expect(error.data).toEqual({ min: 1, max: 65535 });
+    expect(error.message).toContain('[rule: range]');
   });
 
   it('should create a schema validation error with multiple nested errors', () => {
-    const validationErrors: ValidationError[] = [
+    const validationErrors: ConfigValidationError[] = [
       createMissingFieldError('name', 'string'),
       createTypeError('age', 'not a number', 'number'),
     ];
 
     const schemaError = createSchemaValidationError(validationErrors, 'UserConfig');
 
-    expect(schemaError.code).toBe('SCHEMA_VALIDATION_FAILED');
+    expect(schemaError.type).toBe('SCHEMA_VALIDATION_FAILED');
     expect(schemaError.message).toContain('UserConfig');
     expect(schemaError.message).toContain('2 error');
     expect(schemaError.context?.errors).toHaveLength(2);
@@ -80,7 +80,7 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('apiKey');
     expect(error.value).toBeUndefined();
     expect(error.expectedType).toBe('string');
-    expect(error.rule).toBe('required');
+    expect(error.code).toBe('required');
     expect(error.path).toEqual(['auth']);
     expect(error.suggestion).toContain('Add required field "apiKey"');
   });
@@ -91,7 +91,7 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('count');
     expect(error.value).toBe('invalid');
     expect(error.expectedType).toBe('number');
-    expect(error.rule).toBe('type');
+    expect(error.code).toBe('type');
     expect(error.path).toEqual(['stats']);
     expect(error.suggestion).toContain('valid number');
   });
@@ -103,7 +103,7 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('logLevel');
     expect(error.value).toBe('trace');
     expect(error.expectedType).toBe('enum');
-    expect(error.rule).toBe('enum');
+    expect(error.code).toBe('enum');
     expect(error.examples).toEqual(allowedValues);
     expect(error.suggestion).toContain('debug');
     expect(error.suggestion).toContain('info');
@@ -115,8 +115,8 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('timeout');
     expect(error.value).toBe(5000);
     expect(error.expectedType).toBe('number');
-    expect(error.rule).toBe('range');
-    expect(error.constraints).toEqual({ min: 100, max: 3000 });
+    expect(error.code).toBe('range');
+    expect(error.data).toEqual({ min: 100, max: 3000 });
     expect(error.suggestion).toContain('between 100 and 3000');
     expect(error.examples).toHaveLength(3); // min, middle, max
   });
@@ -125,7 +125,7 @@ describe('Specific Error Factories', () => {
     const error = createRangeError('port', -1, 1);
 
     expect(error.suggestion).toContain('at least 1');
-    expect(error.constraints).toEqual({ min: 1, max: undefined });
+    expect(error.data).toEqual({ min: 1, max: undefined });
   });
 
   it('should create length error', () => {
@@ -134,8 +134,8 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('password');
     expect(error.value).toBe('abc');
     expect(error.expectedType).toBe('string');
-    expect(error.rule).toBe('length');
-    expect(error.constraints).toEqual({ minLength: 8, maxLength: 64 });
+    expect(error.code).toBe('length');
+    expect(error.data).toEqual({ minLength: 8, maxLength: 64 });
     expect(error.suggestion).toContain('between 8 and 64 characters');
   });
 
@@ -150,15 +150,15 @@ describe('Specific Error Factories', () => {
     expect(error.field).toBe('email');
     expect(error.value).toBe('invalid-email');
     expect(error.expectedType).toBe('string');
-    expect(error.rule).toBe('pattern');
-    expect(error.constraints?.pattern).toBe('^[^@]+@[^@]+$');
+    expect(error.code).toBe('pattern');
+    expect(error.data?.pattern).toBe('^[^@]+@[^@]+$');
     expect(error.suggestion).toBe('Valid email format');
   });
 });
 
 describe('Error Predicates', () => {
   it('should identify validation errors', () => {
-    const validationError = createValidationError({
+    const validationError = createConfigValidationError({
       field: 'test',
       value: 'test',
       expectedType: 'number',
@@ -167,10 +167,10 @@ describe('Error Predicates', () => {
 
     const regularError = new Error('Regular error');
 
-    expect(isValidationError(validationError)).toBe(true);
-    expect(isValidationError(regularError)).toBe(false);
-    expect(isValidationError(null)).toBe(false);
-    expect(isValidationError(undefined)).toBe(false);
+    expect(isConfigValidationError(validationError)).toBe(true);
+    expect(isConfigValidationError(regularError)).toBe(false);
+    expect(isConfigValidationError(null)).toBe(false);
+    expect(isConfigValidationError(undefined)).toBe(false);
   });
 
   it('should identify schema validation errors', () => {
@@ -183,7 +183,7 @@ describe('Error Predicates', () => {
 });
 
 describe('Error Formatting', () => {
-  const sampleError = createValidationError({
+  const sampleError = createConfigValidationError({
     field: 'database.port',
     value: 'invalid',
     expectedType: 'number',
@@ -358,7 +358,7 @@ describe('Error Formatting', () => {
 
 describe('Error Extraction', () => {
   it('should extract validation error from single error', () => {
-    const validationError = createValidationError({
+    const validationError = createConfigValidationError({
       field: 'test',
       value: 'test',
       expectedType: 'number',
@@ -412,7 +412,7 @@ describe('Value Serialization', () => {
     ];
 
     testCases.forEach(({ value, expected }) => {
-      const error = createValidationError({
+      const error = createConfigValidationError({
         field: 'test',
         value,
         expectedType: 'string',
@@ -433,7 +433,7 @@ describe('Value Serialization', () => {
     const circular: any = { name: 'test' };
     circular.self = circular;
 
-    const error = createValidationError({
+    const error = createConfigValidationError({
       field: 'test',
       value: circular,
       expectedType: 'string',
@@ -447,14 +447,14 @@ describe('Value Serialization', () => {
     const func = () => 'test';
     const symbol = Symbol('test');
 
-    const funcError = createValidationError({
+    const funcError = createConfigValidationError({
       field: 'func',
       value: func,
       expectedType: 'string',
       suggestion: 'Test',
     });
 
-    const symbolError = createValidationError({
+    const symbolError = createConfigValidationError({
       field: 'symbol',
       value: symbol,
       expectedType: 'string',

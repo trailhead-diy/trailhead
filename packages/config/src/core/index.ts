@@ -1,65 +1,33 @@
 // ========================================
-// Legacy Schema Builder (Backwards Compatibility)
+// Core Schema Builder Exports (Zod-Powered)
 // ========================================
 
+// Enhanced Zod-powered schema builder
 export {
-  defineConfigSchema,
-  createSchemaBuilder,
-  validateWithSchema,
-  string as legacyString,
-  number as legacyNumber,
-  boolean as legacyBoolean,
-  array as legacyArray,
-  object as legacyObject,
-} from './schema.js';
-
-export type {
-  ConfigResult,
-  SchemaField,
-  SchemaFieldType,
-  ConfigSchema,
-  SchemaFields,
-  OptionalSchemaFields,
-  SchemaBuilder,
-  FieldBuilder,
-  StringFieldBuilder,
-  NumberFieldBuilder,
-  ArrayFieldBuilder,
-  ObjectFieldBuilder,
-} from './schema.js';
-
-// ========================================
-// Enhanced Zod-Powered Schema Builder (Recommended)
-// ========================================
-
-export {
-  defineZodConfigSchema,
-  createZodSchemaBuilder,
-  validateWithZodSchema,
-  validateWithZodSchemaAsync,
+  defineZodConfigSchema as defineSchema,
+  createZodSchemaBuilder as createSchema,
+  validateWithZodSchema as validate,
+  validateWithZodSchemaAsync as validateAsync,
   createZodSchema,
-  zodString,
-  zodNumber,
-  zodBoolean,
-  zodArray,
-  zodObject,
+  zodString as string,
+  zodNumber as number,
+  zodBoolean as boolean,
+  zodArray as array,
+  zodObject as object,
 } from './zod-schema.js';
 
 export type {
-  ZodConfigSchema,
-  ZodSchemaBuilder,
-  ZodStringFieldBuilder,
-  ZodNumberFieldBuilder,
-  ZodBooleanFieldBuilder,
-  ZodArrayFieldBuilder,
-  ZodObjectFieldBuilder,
-  ZodFieldBuilder,
+  ZodConfigSchema as ConfigSchema,
+  ZodSchemaBuilder as SchemaBuilder,
+  ZodStringFieldBuilder as StringFieldBuilder,
+  ZodNumberFieldBuilder as NumberFieldBuilder,
+  ZodBooleanFieldBuilder as BooleanFieldBuilder,
+  ZodArrayFieldBuilder as ArrayFieldBuilder,
+  ZodObjectFieldBuilder as ObjectFieldBuilder,
+  ZodFieldBuilder as FieldBuilder,
 } from './zod-schema.js';
 
-// ========================================
-// Configuration Operations
-// ========================================
-
+// Configuration operations
 export { createConfigOperations } from './operations.js';
 export { createConfigManager } from './manager.js';
 
@@ -69,20 +37,3 @@ export type {
   ConfigChangeCallback,
   ConfigChange,
 } from '../types.js';
-
-// ========================================
-// Recommended API (Zod-Based)
-// ========================================
-
-// Re-export the recommended Zod-based API with cleaner names
-export {
-  defineZodConfigSchema as defineSchema,
-  createZodSchemaBuilder as createSchema,
-  validateWithZodSchema as validate,
-  validateWithZodSchemaAsync as validateAsync,
-  zodString as string,
-  zodNumber as number,
-  zodBoolean as boolean,
-  zodArray as array,
-  zodObject as object,
-} from './zod-schema.js';

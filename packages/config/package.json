@@ -1,7 +1,7 @@
 {
   "name": "@trailhead/config",
   "version": "1.0.0",
-  "description": "Functional configuration management for CLI applications",
+  "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
   "exports": {
     ".": {
@@ -31,10 +31,6 @@
     "./docs": {
       "types": "./dist/docs/index.d.ts",
       "default": "./dist/docs/index.js"
-    },
-    "./cli": {
-      "types": "./dist/cli/index.d.ts",
-      "default": "./dist/cli/index.js"
     }
   },
   "files": [
@@ -63,6 +59,8 @@
   "keywords": [
     "configuration",
     "config",
+    "zod",
+    "validation",
     "functional-programming",
     "cli",
     "typescript"

@@ -32,19 +32,21 @@ export const createConfigManager = <T>(
   const watchers: ConfigWatcher[] = [];
 
   const load = async (): Promise<ConfigResult<ConfigState<T>>> => {
+    const operationStartTime = Date.now();
+
     try {
       // Load from all sources
       const resolvedSources: ResolvedSource[] = [];
 
       for (const source of definition.sources) {
-        const startTime = Date.now();
+        const sourceStartTime = Date.now();
         const loadResult = await deps.loaderOps.load(source);
 
         if (loadResult.isOk()) {
           resolvedSources.push({
             source,
             data: loadResult.value,
-            loadTime: Date.now() - startTime,
+            loadTime: Date.now() - sourceStartTime,
           });
         } else {
           if (!source.optional) {
@@ -61,14 +63,20 @@ export const createConfigManager = <T>(
           resolvedSources.push({
             source,
             data: {},
-            loadTime: Date.now() - startTime,
+            loadTime: Date.now() - sourceStartTime,
             error: loadResult.error,
           });
         }
       }
 
-      // Merge configurations
-      const rawConfig = mergeConfigs(resolvedSources);
+      // Merge configurations from resolved sources
+      const rawConfig = resolvedSources
+        .filter(source => !source.error)
+        .sort((a, b) => a.source.priority - b.source.priority)
+        .reduce(
+          (merged, source) => mergeConfigs(merged, source.data),
+          {} as Record<string, unknown>
+        );
 
       // Apply defaults
       const configWithDefaults = {
@@ -111,7 +119,13 @@ export const createConfigManager = <T>(
         raw: rawConfig,
         resolved: transformedConfig,
         sources: resolvedSources,
-        metadata: createConfigMetadata(resolvedSources),
+        metadata: createConfigMetadata(
+          Date.now() - operationStartTime,
+          resolvedSources.length,
+          [],
+          [],
+          definition.version
+        ),
       };
 
       currentState = state;

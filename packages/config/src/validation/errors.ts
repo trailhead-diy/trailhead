@@ -1,8 +1,4 @@
-import {
-  createValidationError as baseCreateValidationError,
-  zodErrorToValidationError,
-  z,
-} from '@trailhead/validation';
+import { createValidationError as baseCreateValidationError, z } from '@trailhead/validation';
 import type { ValidationError as BaseValidationError } from '@trailhead/validation';
 import { createCoreError, type CoreError } from '@trailhead/core';
 
@@ -57,12 +53,11 @@ export const createConfigValidationError = (
   } = context;
 
   // Create base validation error
-  const baseError = baseCreateValidationError({
+  const message = generateErrorMessage({ field, value, expectedType, suggestion, path, rule });
+  const baseError = baseCreateValidationError(message, {
     field,
     value,
-    expectedType,
-    message: generateErrorMessage({ field, value, expectedType, suggestion, path, rule }),
-    path,
+    constraints: { expectedType, rule },
     cause,
   });
 
@@ -71,6 +66,10 @@ export const createConfigValidationError = (
     ...baseError,
     suggestion,
     examples,
+    expectedType,
+    path,
+    code: rule,
+    data: constraints,
     fixCommand: fixCommand || generateFixCommand(field, rule, examples),
     learnMoreUrl: learnMoreUrl || generateLearnMoreUrl(rule),
   };
@@ -89,7 +88,7 @@ export const createSchemaValidationError = (
     operation: 'schema-validation',
     context: {
       errorCount: errors.length,
-      errors: errors.map(serializeValidationError),
+      errors: errors, // Store original errors, not serialized
       schemaName,
     },
     recoverable: true,
@@ -114,7 +113,7 @@ const generateErrorMessage = (context: MessageContext): string => {
   const { field, value, expectedType, suggestion, path, rule } = context;
 
   const pathStr = path.length > 0 ? ` at "${path.join('.')}"` : '';
-  const valueStr = value !== undefined ? ` (received: ${serializeValue(value)})` : '';
+  const valueStr = ` (received: ${serializeValue(value)})`;
   const ruleStr = rule ? ` [rule: ${rule}]` : '';
 
   return `Invalid ${expectedType} for field "${field}"${pathStr}${valueStr}${ruleStr}. ${suggestion}`;
@@ -130,7 +129,7 @@ export const enhanceZodError = (zodError: z.ZodError, schemaName?: string): Core
     const rule = issue.code;
 
     let suggestion: string;
-    let examples: unknown[] = [];
+    let examples: readonly unknown[] = [];
 
     switch (issue.code) {
       case 'invalid_type':
@@ -176,7 +175,7 @@ export const enhanceZodError = (zodError: z.ZodError, schemaName?: string): Core
       expectedType: getExpectedType(issue),
       suggestion,
       examples,
-      path: issue.path,
+      path: issue.path.map(String),
       rule,
     });
   });
@@ -417,12 +416,9 @@ export const isSchemaValidationError = (error: unknown): error is CoreError => {
   return (
     typeof error === 'object' &&
     error !== null &&
-    'code' in error &&
-    (error as any).code === 'SCHEMA_VALIDATION_FAILED'
+    'type' in error &&
+    (error as any).type === 'SCHEMA_VALIDATION_FAILED'
   );
 };
 
-// Re-export for backwards compatibility
-export const createValidationError = createConfigValidationError;
-export const isValidationError = isConfigValidationError;
-export type ValidationError = ConfigValidationError;
+// Clean exports - no legacy compatibility needed

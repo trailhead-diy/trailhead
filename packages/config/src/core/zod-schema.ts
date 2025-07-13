@@ -1,7 +1,7 @@
 import { z } from '@trailhead/validation';
-import { ok, err, type Result } from '@trailhead/core';
+import { ok, err, createCoreError, type Result } from '@trailhead/core';
 import type { CoreError } from '@trailhead/core';
-import { enhanceZodError, type ConfigValidationError } from '../validation/errors.js';
+import { enhanceZodError } from '../validation/errors.js';
 
 // ========================================
 // Enhanced Zod-Based Schema Types
@@ -51,7 +51,7 @@ export interface ZodStringFieldBuilder {
   readonly trim: () => ZodStringFieldBuilder;
   readonly toLowerCase: () => ZodStringFieldBuilder;
   readonly toUpperCase: () => ZodStringFieldBuilder;
-  readonly build: () => z.ZodString;
+  readonly build: () => z.ZodType<string | undefined>;
 }
 
 export interface ZodNumberFieldBuilder {
@@ -72,7 +72,7 @@ export interface ZodNumberFieldBuilder {
   readonly nonPositive: (message?: string) => ZodNumberFieldBuilder;
   readonly finite: (message?: string) => ZodNumberFieldBuilder;
   readonly multipleOf: (divisor: number, message?: string) => ZodNumberFieldBuilder;
-  readonly build: () => z.ZodNumber;
+  readonly build: () => z.ZodType<number | undefined>;
 }
 
 export interface ZodBooleanFieldBuilder {
@@ -80,7 +80,7 @@ export interface ZodBooleanFieldBuilder {
   readonly optional: () => ZodBooleanFieldBuilder;
   readonly default: (defaultValue: boolean) => ZodBooleanFieldBuilder;
   readonly examples: (...examples: boolean[]) => ZodBooleanFieldBuilder;
-  readonly build: () => z.ZodBoolean;
+  readonly build: () => z.ZodType<boolean | undefined>;
 }
 
 export interface ZodArrayFieldBuilder<T> {
@@ -92,7 +92,7 @@ export interface ZodArrayFieldBuilder<T> {
   readonly maxLength: (max: number, message?: string) => ZodArrayFieldBuilder<T>;
   readonly length: (length: number, message?: string) => ZodArrayFieldBuilder<T>;
   readonly nonempty: (message?: string) => ZodArrayFieldBuilder<T>;
-  readonly build: () => z.ZodArray<z.ZodType<T>>;
+  readonly build: () => z.ZodType<T[] | undefined>;
 }
 
 export interface ZodObjectFieldBuilder<T> {
@@ -103,7 +103,7 @@ export interface ZodObjectFieldBuilder<T> {
   readonly strict: () => ZodObjectFieldBuilder<T>;
   readonly passthrough: () => ZodObjectFieldBuilder<T>;
   readonly strip: () => ZodObjectFieldBuilder<T>;
-  readonly build: () => z.ZodObject<any>;
+  readonly build: () => z.ZodType<T | undefined>;
 }
 
 export interface ZodFieldBuilder<T> {
@@ -111,14 +111,14 @@ export interface ZodFieldBuilder<T> {
   readonly optional: () => ZodFieldBuilder<T>;
   readonly default: (defaultValue: T) => ZodFieldBuilder<T>;
   readonly examples: (...examples: T[]) => ZodFieldBuilder<T>;
-  readonly build: () => z.ZodType<T>;
+  readonly build: () => z.ZodType<T | undefined>;
 }
 
 // ========================================
 // Enhanced Schema Definition API
 // ========================================
 
-export const defineZodConfigSchema = <T extends Record<string, unknown>>() => ({
+export const defineZodConfigSchema = <_T extends Record<string, unknown>>() => ({
   object: <K extends z.ZodRawShape>(shape: K) =>
     createZodSchemaBuilder<z.infer<z.ZodObject<K>>>(z.object(shape)),
 });
@@ -167,12 +167,13 @@ export const createZodSchemaBuilder = <T>(zodSchema: z.ZodSchema<T>): ZodSchemaB
 // ========================================
 
 export const zodString = (): ZodStringFieldBuilder => {
-  let schema = z.string();
+  let baseSchema = z.string();
   let isOptional = false;
+  let defaultValue: string | undefined = undefined;
 
   const builder: ZodStringFieldBuilder = {
     description: (description: string) => {
-      schema = schema.describe(description);
+      baseSchema = baseSchema.describe(description);
       return builder;
     },
 
@@ -181,14 +182,14 @@ export const zodString = (): ZodStringFieldBuilder => {
       return builder;
     },
 
-    default: (defaultValue: string) => {
-      schema = schema.default(defaultValue);
+    default: (value: string) => {
+      defaultValue = value;
       return builder;
     },
 
     examples: (...examples: string[]) => {
       // Store examples as metadata - Zod doesn't have native examples support
-      (schema as any)._def.examples = examples;
+      (baseSchema as any)._def.examples = examples;
       return builder;
     },
 
@@ -210,68 +211,76 @@ export const zodString = (): ZodStringFieldBuilder => {
     },
 
     pattern: (pattern: RegExp, message?: string) => {
-      schema = schema.regex(pattern, message);
+      baseSchema = baseSchema.regex(pattern, message);
       return builder;
     },
 
     minLength: (min: number, message?: string) => {
-      schema = schema.min(min, message);
+      baseSchema = baseSchema.min(min, message);
       return builder;
     },
 
     maxLength: (max: number, message?: string) => {
-      schema = schema.max(max, message);
+      baseSchema = baseSchema.max(max, message);
       return builder;
     },
 
     length: (min: number, max: number) => {
-      schema = schema.min(min).max(max);
+      baseSchema = baseSchema.min(min).max(max);
       return builder;
     },
 
     email: (message?: string) => {
-      schema = schema.email(message);
+      baseSchema = baseSchema.email(message);
       return builder;
     },
 
     url: (message?: string) => {
-      schema = schema.url(message);
+      baseSchema = baseSchema.url(message);
       return builder;
     },
 
     uuid: (message?: string) => {
-      schema = schema.uuid(message);
+      baseSchema = baseSchema.uuid(message);
       return builder;
     },
 
     trim: () => {
-      schema = schema.trim();
+      baseSchema = baseSchema.trim();
       return builder;
     },
 
     toLowerCase: () => {
-      schema = schema.toLowerCase();
+      baseSchema = baseSchema.toLowerCase();
       return builder;
     },
 
     toUpperCase: () => {
-      schema = schema.toUpperCase();
+      baseSchema = baseSchema.toUpperCase();
       return builder;
     },
 
-    build: () => (isOptional ? (schema.optional() as z.ZodString) : schema),
+    build: () => {
+      if (defaultValue !== undefined) {
+        return baseSchema.default(defaultValue);
+      } else if (isOptional) {
+        return baseSchema.optional();
+      }
+      return baseSchema;
+    },
   };
 
   return builder;
 };
 
 export const zodNumber = (): ZodNumberFieldBuilder => {
-  let schema = z.number();
+  let baseSchema = z.number();
   let isOptional = false;
+  let defaultValue: number | undefined = undefined;
 
   const builder: ZodNumberFieldBuilder = {
     description: (description: string) => {
-      schema = schema.describe(description);
+      baseSchema = baseSchema.describe(description);
       return builder;
     },
 
@@ -280,13 +289,13 @@ export const zodNumber = (): ZodNumberFieldBuilder => {
       return builder;
     },
 
-    default: (defaultValue: number) => {
-      schema = schema.default(defaultValue);
+    default: (value: number) => {
+      defaultValue = value;
       return builder;
     },
 
     examples: (...examples: number[]) => {
-      (schema as any)._def.examples = examples;
+      (baseSchema as any)._def.examples = examples;
       return builder;
     },
 
@@ -308,68 +317,76 @@ export const zodNumber = (): ZodNumberFieldBuilder => {
     },
 
     min: (min: number, message?: string) => {
-      schema = schema.min(min, message);
+      baseSchema = baseSchema.min(min, message);
       return builder;
     },
 
     max: (max: number, message?: string) => {
-      schema = schema.max(max, message);
+      baseSchema = baseSchema.max(max, message);
       return builder;
     },
 
     range: (min: number, max: number) => {
-      schema = schema.min(min).max(max);
+      baseSchema = baseSchema.min(min).max(max);
       return builder;
     },
 
     int: (message?: string) => {
-      schema = schema.int(message);
+      baseSchema = baseSchema.int(message);
       return builder;
     },
 
     positive: (message?: string) => {
-      schema = schema.positive(message);
+      baseSchema = baseSchema.positive(message);
       return builder;
     },
 
     negative: (message?: string) => {
-      schema = schema.negative(message);
+      baseSchema = baseSchema.negative(message);
       return builder;
     },
 
     nonNegative: (message?: string) => {
-      schema = schema.nonnegative(message);
+      baseSchema = baseSchema.nonnegative(message);
       return builder;
     },
 
     nonPositive: (message?: string) => {
-      schema = schema.nonpositive(message);
+      baseSchema = baseSchema.nonpositive(message);
       return builder;
     },
 
     finite: (message?: string) => {
-      schema = schema.finite(message);
+      baseSchema = baseSchema.finite(message);
       return builder;
     },
 
     multipleOf: (divisor: number, message?: string) => {
-      schema = schema.multipleOf(divisor, message);
+      baseSchema = baseSchema.multipleOf(divisor, message);
       return builder;
     },
 
-    build: () => (isOptional ? (schema.optional() as z.ZodNumber) : schema),
+    build: () => {
+      if (defaultValue !== undefined) {
+        return baseSchema.default(defaultValue);
+      } else if (isOptional) {
+        return baseSchema.optional();
+      }
+      return baseSchema;
+    },
   };
 
   return builder;
 };
 
 export const zodBoolean = (): ZodBooleanFieldBuilder => {
-  let schema = z.boolean();
+  let baseSchema = z.boolean();
   let isOptional = false;
+  let defaultValue: boolean | undefined = undefined;
 
   const builder: ZodBooleanFieldBuilder = {
     description: (description: string) => {
-      schema = schema.describe(description);
+      baseSchema = baseSchema.describe(description);
       return builder;
     },
 
@@ -378,29 +395,37 @@ export const zodBoolean = (): ZodBooleanFieldBuilder => {
       return builder;
     },
 
-    default: (defaultValue: boolean) => {
-      schema = schema.default(defaultValue);
+    default: (value: boolean) => {
+      defaultValue = value;
       return builder;
     },
 
     examples: (...examples: boolean[]) => {
-      (schema as any)._def.examples = examples;
+      (baseSchema as any)._def.examples = examples;
       return builder;
     },
 
-    build: () => (isOptional ? (schema.optional() as z.ZodBoolean) : schema),
+    build: () => {
+      if (defaultValue !== undefined) {
+        return baseSchema.default(defaultValue);
+      } else if (isOptional) {
+        return baseSchema.optional();
+      }
+      return baseSchema;
+    },
   };
 
   return builder;
 };
 
 export const zodArray = <T>(elementSchema: z.ZodType<T>): ZodArrayFieldBuilder<T> => {
-  let schema = z.array(elementSchema);
+  let baseSchema: z.ZodArray<z.ZodType<T>> = z.array(elementSchema);
   let isOptional = false;
+  let defaultValue: T[] | undefined = undefined;
 
   const builder: ZodArrayFieldBuilder<T> = {
     description: (description: string) => {
-      schema = schema.describe(description);
+      baseSchema = baseSchema.describe(description);
       return builder;
     },
 
@@ -409,37 +434,44 @@ export const zodArray = <T>(elementSchema: z.ZodType<T>): ZodArrayFieldBuilder<T
       return builder;
     },
 
-    default: (defaultValue: T[]) => {
-      schema = schema.default(defaultValue);
+    default: (value: T[]) => {
+      defaultValue = value;
       return builder;
     },
 
     examples: (...examples: T[][]) => {
-      (schema as any)._def.examples = examples;
+      (baseSchema as any)._def.examples = examples;
       return builder;
     },
 
     minLength: (min: number, message?: string) => {
-      schema = schema.min(min, message);
+      baseSchema = baseSchema.min(min, message);
       return builder;
     },
 
     maxLength: (max: number, message?: string) => {
-      schema = schema.max(max, message);
+      baseSchema = baseSchema.max(max, message);
       return builder;
     },
 
     length: (length: number, message?: string) => {
-      schema = schema.length(length, message);
+      baseSchema = baseSchema.length(length, message);
       return builder;
     },
 
     nonempty: (message?: string) => {
-      schema = schema.nonempty(message);
+      baseSchema = baseSchema.nonempty(message) as any; // Type assertion needed as nonempty changes cardinality
       return builder;
     },
 
-    build: () => (isOptional ? (schema.optional() as any) : schema),
+    build: () => {
+      if (defaultValue !== undefined) {
+        return baseSchema.default(defaultValue);
+      } else if (isOptional) {
+        return baseSchema.optional();
+      }
+      return baseSchema;
+    },
   };
 
   return builder;
@@ -448,12 +480,13 @@ export const zodArray = <T>(elementSchema: z.ZodType<T>): ZodArrayFieldBuilder<T
 export const zodObject = <T extends z.ZodRawShape>(
   shape: T
 ): ZodObjectFieldBuilder<z.infer<z.ZodObject<T>>> => {
-  let schema = z.object(shape);
+  let baseSchema: z.ZodObject<T> = z.object(shape);
   let isOptional = false;
+  let defaultValue: z.infer<z.ZodObject<T>> | undefined = undefined;
 
   const builder: ZodObjectFieldBuilder<z.infer<z.ZodObject<T>>> = {
     description: (description: string) => {
-      schema = schema.describe(description);
+      baseSchema = baseSchema.describe(description);
       return builder;
     },
 
@@ -462,32 +495,39 @@ export const zodObject = <T extends z.ZodRawShape>(
       return builder;
     },
 
-    default: (defaultValue: z.infer<z.ZodObject<T>>) => {
-      schema = schema.default(defaultValue);
+    default: (value: z.infer<z.ZodObject<T>>) => {
+      defaultValue = value;
       return builder;
     },
 
     examples: (...examples: z.infer<z.ZodObject<T>>[]) => {
-      (schema as any)._def.examples = examples;
+      (baseSchema as any)._def.examples = examples;
       return builder;
     },
 
     strict: () => {
-      schema = schema.strict();
+      baseSchema = baseSchema.strict() as any; // Type assertion needed as strict changes catch mode
       return builder;
     },
 
     passthrough: () => {
-      schema = schema.passthrough();
+      baseSchema = baseSchema.passthrough() as any; // Type assertion needed as passthrough changes catch mode
       return builder;
     },
 
     strip: () => {
-      schema = schema.strip();
+      baseSchema = baseSchema.strip() as any; // Type assertion needed for consistency
       return builder;
     },
 
-    build: () => (isOptional ? (schema.optional() as any) : schema),
+    build: () => {
+      if (defaultValue !== undefined) {
+        return baseSchema.default(defaultValue);
+      } else if (isOptional) {
+        return baseSchema.optional();
+      }
+      return baseSchema;
+    },
   };
 
   return builder;
@@ -511,13 +551,13 @@ export const validateWithZodSchema = <T>(
     }
 
     // Handle unexpected errors
-    return err({
-      code: 'VALIDATION_FAILED',
-      message: 'Validation failed due to unexpected error',
-      component: '@trailhead/config',
-      operation: 'schema-validation',
-      cause: error instanceof Error ? error : undefined,
-    } as CoreError);
+    return err(
+      createCoreError('VALIDATION_FAILED', 'Validation failed due to unexpected error', {
+        component: '@trailhead/config',
+        operation: 'schema-validation',
+        cause: error instanceof Error ? error : undefined,
+      })
+    );
   }
 };
 
@@ -534,13 +574,13 @@ export const validateWithZodSchemaAsync = async <T>(
       return err(enhancedError);
     }
 
-    return err({
-      code: 'VALIDATION_FAILED',
-      message: 'Async validation failed due to unexpected error',
-      component: '@trailhead/config',
-      operation: 'async-schema-validation',
-      cause: error instanceof Error ? error : undefined,
-    } as CoreError);
+    return err(
+      createCoreError('VALIDATION_FAILED', 'Async validation failed due to unexpected error', {
+        component: '@trailhead/config',
+        operation: 'async-schema-validation',
+        cause: error instanceof Error ? error : undefined,
+      })
+    );
   }
 };
 
@@ -557,3 +597,27 @@ export const number = zodNumber;
 export const boolean = zodBoolean;
 export const array = zodArray;
 export const object = zodObject;
+
+// Additional exports for validator operations
+export type ConfigValidator<T> = {
+  readonly name: string;
+  readonly schema: ZodConfigSchema<T>;
+  readonly validate: (config: unknown) => Promise<Result<T, CoreError>>;
+};
+
+export const validate = <T>(config: unknown, schema: ZodConfigSchema<T>): Result<T, CoreError> => {
+  try {
+    const result = schema.zodSchema.safeParse(config);
+    if (result.success) {
+      return ok(result.data);
+    } else {
+      return err(enhanceZodError(result.error, schema.name));
+    }
+  } catch (error) {
+    return err(
+      createCoreError('VALIDATION_ERROR', 'Validation failed', {
+        cause: error instanceof Error ? error : undefined,
+      })
+    );
+  }
+};
