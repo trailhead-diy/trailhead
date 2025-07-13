@@ -18,8 +18,11 @@ import {
   formatValidationErrors,
   formatValidationErrorsJson,
   extractValidationErrors,
-  type FormatterOptions,
+  // type FormatterOptions, // Removed unused import
 } from '../validation/formatters.js';
+
+// Helper function for testing
+const testFunc = () => 'test';
 
 describe('ValidationError Creation', () => {
   it('should create a basic validation error', () => {
@@ -443,25 +446,29 @@ describe('Value Serialization', () => {
     expect(error.message).toContain('[Circular Reference]');
   });
 
-  it('should handle functions and symbols', () => {
-    const func = () => 'test';
-    const symbol = Symbol('test');
+  // Helper function already moved to top of file
 
-    const funcError = createConfigValidationError({
-      field: 'func',
-      value: func,
-      expectedType: 'string',
-      suggestion: 'Test',
+  describe('Complex Value Serialization', () => {
+    it('should handle functions and symbols', () => {
+      const func = testFunc;
+      const symbol = Symbol('test');
+
+      const funcError = createConfigValidationError({
+        field: 'func',
+        value: func,
+        expectedType: 'string',
+        suggestion: 'Test',
+      });
+
+      const symbolError = createConfigValidationError({
+        field: 'symbol',
+        value: symbol,
+        expectedType: 'string',
+        suggestion: 'Test',
+      });
+
+      expect(funcError.message).toContain('[Function]');
+      expect(symbolError.message).toContain('Symbol(test)');
     });
-
-    const symbolError = createConfigValidationError({
-      field: 'symbol',
-      value: symbol,
-      expectedType: 'string',
-      suggestion: 'Test',
-    });
-
-    expect(funcError.message).toContain('[Function]');
-    expect(symbolError.message).toContain('Symbol(test)');
   });
 });

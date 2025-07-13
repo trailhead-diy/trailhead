@@ -81,6 +81,7 @@ export interface ResolvedSource {
 export interface ConfigMetadata {
   readonly loadTime: number;
   readonly sourceCount: number;
+  readonly valid: boolean;
   readonly validationErrors: readonly CoreError[];
   readonly transformationErrors: readonly CoreError[];
   readonly version?: string;
@@ -159,7 +160,7 @@ export interface ValidatorOperations {
   readonly validate: <T>(
     config: T,
     validators: readonly ConfigValidator<T>[]
-  ) => Result<void, CoreError>;
+  ) => Promise<Result<void, CoreError>>;
   readonly validateSchema: <T>(config: T, schema: unknown) => Result<void, CoreError>;
   readonly getRegisteredValidators: () => readonly string[];
   readonly hasValidator: (name: string) => boolean;
@@ -186,7 +187,7 @@ export interface ConfigManager<T = Record<string, unknown>> {
   readonly set: <K extends keyof T>(key: K, value: T[K]) => ConfigResult<void>;
   readonly has: (key: keyof T) => boolean;
   readonly watch: (callback: ConfigChangeCallback<T>) => Promise<ConfigResult<ConfigWatcher[]>>;
-  readonly validate: () => ConfigResult<void>;
+  readonly validate: () => Promise<ConfigResult<void>>;
   readonly getState: () => ConfigState<T> | undefined;
   readonly getMetadata: () => ConfigMetadata | undefined;
 }

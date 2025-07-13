@@ -20,11 +20,7 @@ describe('Config Operations', () => {
 
       const result = configOps.create(definition);
 
-      console.log('Result isOk:', result.isOk());
-      console.log('Result isErr:', result.isErr());
-      if (result.isErr()) {
-        console.log('Error details:', JSON.stringify(result.error, null, 2));
-      }
+      // Debug output removed for production
 
       expect(result.isOk()).toBe(true);
       if (result.isOk()) {

@@ -123,7 +123,11 @@ const generateErrorMessage = (context: MessageContext): string => {
 // Enhanced Configuration Error Factories
 // ========================================
 
-export const enhanceZodError = (zodError: z.ZodError, schemaName?: string): CoreError => {
+export const enhanceZodError = (
+  zodError: z.ZodError,
+  schemaName?: string,
+  schema?: z.ZodSchema
+): CoreError => {
   const configErrors = zodError.errors.map(issue => {
     const field = issue.path.join('.');
     const rule = issue.code;
@@ -131,10 +135,40 @@ export const enhanceZodError = (zodError: z.ZodError, schemaName?: string): Core
     let suggestion: string;
     let examples: readonly unknown[] = [];
 
+    // Try to get examples from schema for this field
+    if (schema && issue.path.length > 0) {
+      try {
+        let currentSchema = schema;
+        for (const pathSegment of issue.path) {
+          if (currentSchema instanceof z.ZodObject) {
+            const shape = currentSchema.shape;
+            currentSchema = shape[pathSegment];
+          }
+        }
+        // Check if the final schema has examples in its _def
+        if (currentSchema) {
+          let schemaToCheck = currentSchema;
+
+          // If it's a ZodDefault (field with .default()), check the innerType
+          if ((currentSchema as any)._def?.typeName === 'ZodDefault') {
+            schemaToCheck = (currentSchema as any)._def.innerType;
+          }
+
+          if ((schemaToCheck as any)._def?.examples) {
+            examples = (schemaToCheck as any)._def.examples;
+          }
+        }
+      } catch {
+        // If path navigation fails, fall back to default examples
+      }
+    }
+
     switch (issue.code) {
       case 'invalid_type':
         suggestion = `Expected ${issue.expected}, received ${issue.received}`;
-        examples = getTypeExamples(issue.expected);
+        if (examples.length === 0) {
+          examples = getTypeExamples(issue.expected);
+        }
         break;
       case 'too_small':
         if (issue.type === 'string') {
@@ -152,15 +186,21 @@ export const enhanceZodError = (zodError: z.ZodError, schemaName?: string): Core
         break;
       case 'invalid_enum_value':
         suggestion = `Must be one of: ${issue.options.map(v => JSON.stringify(v)).join(', ')}`;
-        examples = issue.options;
+        if (examples.length === 0) {
+          examples = issue.options;
+        }
         break;
       case 'invalid_string':
         if (issue.validation === 'email') {
           suggestion = 'Must be a valid email address';
-          examples = ['user@example.com', 'admin@company.org'];
+          if (examples.length === 0) {
+            examples = ['user@example.com', 'admin@company.org'];
+          }
         } else if (issue.validation === 'url') {
           suggestion = 'Must be a valid URL';
-          examples = ['https://example.com', 'http://localhost:3000'];
+          if (examples.length === 0) {
+            examples = ['https://example.com', 'http://localhost:3000'];
+          }
         } else {
           suggestion = `Invalid ${issue.validation} format`;
         }
@@ -375,7 +415,7 @@ const serializeValue = (value: unknown): string => {
   }
 };
 
-const serializeValidationError = (error: ConfigValidationError) => ({
+const _serializeValidationError = (error: ConfigValidationError) => ({
   field: error.field,
   value: serializeValue(error.value),
   expectedType: error.expectedType,

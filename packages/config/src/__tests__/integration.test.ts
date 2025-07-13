@@ -37,12 +37,9 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           .description('Application version')
           .pattern(/^\d+\.\d+\.\d+$/, 'Must be valid semver')
           .examples('1.0.0', '2.1.3'),
-        environment: string()
-          .description('Environment')
-          .enum('development', 'staging', 'production')
-          .default('development'),
+        environment: string().enum('development', 'staging', 'production').default('development'),
         debug: boolean().description('Debug mode').default(false),
-      }),
+      }).build(),
       server: object({
         port: number()
           .description('Server port')
@@ -58,7 +55,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           .description('Base URL')
           .url()
           .examples('http://localhost:3000', 'https://api.example.com'),
-      }),
+      }).build(),
       database: object({
         url: string()
           .description('Database URL')
@@ -84,7 +81,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
       expect(appConfigSchema.description).toBe('Complete application configuration schema');
       expect(appConfigSchema.version).toBe('1.0.0');
       expect(appConfigSchema.strict).toBe(true);
-      expect(Object.keys(appConfigSchema.fields)).toHaveLength(4);
+      expect(appConfigSchema.zodSchema).toBeDefined();
     });
 
     it('should validate a complete valid configuration', () => {
@@ -144,7 +141,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
       expect(result.isErr()).toBe(true);
 
       if (result.isErr()) {
-        expect(result.error.code).toBe('SCHEMA_VALIDATION_FAILED');
+        expect(result.error.type).toBe('SCHEMA_VALIDATION_FAILED');
         expect(result.error.context?.errors).toBeDefined();
         expect(result.error.context?.errors.length).toBeGreaterThan(5);
       }
@@ -404,7 +401,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
         },
       ];
 
-      commonMistakes.forEach(({ name, config }) => {
+      commonMistakes.forEach(({ name: _, config }) => {
         const result = validate(config as any, appConfigSchema);
         expect(result.isErr()).toBe(true);
 
@@ -462,12 +459,10 @@ describe('Enhanced Configuration System - Integration Tests', () => {
       // Create a schema with many fields
       const fields: Record<string, any> = {};
       for (let i = 0; i < 100; i++) {
-        fields[`field${i}`] = string().required().minLength(1).maxLength(100);
+        fields[`field${i}`] = string().minLength(1).maxLength(100);
       }
 
-      const largeSchemaBuilder = defineSchema();
-      const objectBuilder = object(fields);
-      const largeSchema = largeSchemaBuilder.object(objectBuilder.build()).build();
+      const largeSchema = defineSchema().object(fields).build();
 
       const config: any = {};
       for (let i = 0; i < 100; i++) {

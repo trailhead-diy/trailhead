@@ -162,7 +162,7 @@ export const generateZodConfigDocs = <T>(
     });
 
     if (fieldsResult.isErr()) {
-      return fieldsResult;
+      return err(fieldsResult.error);
     }
 
     const fields = fieldsResult.value;
@@ -205,7 +205,7 @@ export const generateZodConfigDocs = <T>(
       schemaVersion: schema.version,
       generator: '@trailhead/config/zod',
       generatorVersion: '2.0.0',
-      zodVersion: z.version || 'unknown',
+      zodVersion: 'unknown', // z.version is not available
     };
 
     const docs: ZodConfigDocs = {
@@ -348,7 +348,7 @@ const generateZodFieldDocumentation = (
       path,
       zodType: zodTypeName,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -381,7 +381,17 @@ const getZodTypeString = (schema: z.ZodTypeAny): string => {
 };
 
 const extractZodConstraints = (schema: z.ZodTypeAny): ZodFieldConstraints | undefined => {
-  const constraints: Partial<ZodFieldConstraints> = {};
+  const constraints: {
+    enum?: unknown[];
+    pattern?: string;
+    minimum?: number;
+    maximum?: number;
+    minLength?: number;
+    maxLength?: number;
+    format?: string;
+    multipleOf?: number;
+    inclusive?: { min?: boolean; max?: boolean };
+  } = {};
 
   // String constraints
   if (schema instanceof z.ZodString) {
@@ -603,32 +613,61 @@ export const generateZodJsonSchema = (
   title?: string,
   description?: string
 ): ZodJsonSchema => {
-  const jsonSchema: ZodJsonSchema = {
+  let jsonSchema: ZodJsonSchema = {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     type: 'object',
     title,
     description,
   };
 
-  if (zodSchema instanceof z.ZodObject) {
+  // Check if this is actually a ZodConfigSchema object containing the real zodSchema
+  let actualZodSchema = zodSchema;
+  if (zodSchema && typeof zodSchema === 'object' && 'zodSchema' in zodSchema) {
+    actualZodSchema = (zodSchema as any).zodSchema;
+  }
+
+  // Handle both real Zod objects and serialized/deserialized objects
+  const isZodObject =
+    actualZodSchema instanceof z.ZodObject ||
+    (actualZodSchema as any)._def?.typeName === 'ZodObject';
+
+  if (isZodObject) {
+    // Try to get shape from the actual Zod object first, then fallback to _def
+    let shape: Record<string, any>;
+
+    if (actualZodSchema instanceof z.ZodObject) {
+      shape = actualZodSchema.shape;
+    } else {
+      // Handle deserialized Zod objects
+      shape = (actualZodSchema as any)._def?.shape || {};
+    }
+
     const properties: Record<string, ZodJsonSchemaProperty> = {};
     const required: string[] = [];
-    const shape = zodSchema.shape;
 
     for (const [key, fieldSchema] of Object.entries(shape)) {
       const property = zodSchemaToJsonSchemaProperty(fieldSchema as z.ZodTypeAny);
       properties[key] = property;
 
-      // Check if field is required
-      if (!(fieldSchema instanceof z.ZodOptional)) {
+      // Check if field is required (check both instance and _def for deserialized objects)
+      const isOptional =
+        fieldSchema instanceof z.ZodOptional ||
+        (fieldSchema as any)._def?.typeName === 'ZodOptional';
+
+      if (!isOptional) {
         required.push(key);
       }
     }
 
-    jsonSchema.properties = properties;
-    if (required.length > 0) {
-      jsonSchema.required = required;
-    }
+    // Check if the original schema was strict (for additionalProperties)
+    const isStrict = (zodSchema as any).strict === true;
+
+    jsonSchema = {
+      ...jsonSchema,
+      properties,
+      ...(required.length > 0 && { required }),
+      ...(isStrict && { additionalProperties: false }),
+    };
   }
 
   return jsonSchema;
@@ -650,26 +689,24 @@ const zodSchemaToJsonSchemaProperty = (schema: z.ZodTypeAny): ZodJsonSchemaPrope
 
   // Handle base types
   if (schema instanceof z.ZodString) {
-    const property: ZodJsonSchemaProperty = { type: 'string' };
     const constraints = extractZodConstraints(schema);
-    if (constraints) {
-      if (constraints.pattern) property.pattern = constraints.pattern;
-      if (constraints.minLength !== undefined) property.minLength = constraints.minLength;
-      if (constraints.maxLength !== undefined) property.maxLength = constraints.maxLength;
-      if (constraints.format) property.format = constraints.format;
-    }
-    return property;
+    return {
+      type: 'string',
+      ...(constraints?.pattern && { pattern: constraints.pattern }),
+      ...(constraints?.minLength !== undefined && { minLength: constraints.minLength }),
+      ...(constraints?.maxLength !== undefined && { maxLength: constraints.maxLength }),
+      ...(constraints?.format && { format: constraints.format }),
+    };
   }
 
   if (schema instanceof z.ZodNumber) {
-    const property: ZodJsonSchemaProperty = { type: 'number' };
     const constraints = extractZodConstraints(schema);
-    if (constraints) {
-      if (constraints.minimum !== undefined) property.minimum = constraints.minimum;
-      if (constraints.maximum !== undefined) property.maximum = constraints.maximum;
-      if (constraints.multipleOf !== undefined) property.multipleOf = constraints.multipleOf;
-    }
-    return property;
+    return {
+      type: 'number',
+      ...(constraints?.minimum !== undefined && { minimum: constraints.minimum }),
+      ...(constraints?.maximum !== undefined && { maximum: constraints.maximum }),
+      ...(constraints?.multipleOf !== undefined && { multipleOf: constraints.multipleOf }),
+    };
   }
 
   if (schema instanceof z.ZodBoolean) {
@@ -716,15 +753,4 @@ const zodSchemaToJsonSchemaProperty = (schema: z.ZodTypeAny): ZodJsonSchemaPrope
 // Export Types & Functions
 // ========================================
 
-export type {
-  ZodConfigDocs,
-  ZodDocumentationSection,
-  ZodFieldDocumentation,
-  ZodFieldConstraints,
-  ZodValidationInfo,
-  ZodExampleConfig,
-  ZodDocsMetadata,
-  ZodDocsGeneratorOptions,
-  ZodJsonSchema,
-  ZodJsonSchemaProperty,
-};
+// Types are already exported individually above

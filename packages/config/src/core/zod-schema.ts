@@ -119,8 +119,18 @@ export interface ZodFieldBuilder<T> {
 // ========================================
 
 export const defineZodConfigSchema = <_T extends Record<string, unknown>>() => ({
-  object: <K extends z.ZodRawShape>(shape: K) =>
-    createZodSchemaBuilder<z.infer<z.ZodObject<K>>>(z.object(shape)),
+  object: <K extends Record<string, any>>(shape: K) => {
+    // Build any builder objects in the shape
+    const builtShape: Record<string, any> = {};
+    for (const [key, value] of Object.entries(shape)) {
+      if (value && typeof value === 'object' && typeof value.build === 'function') {
+        builtShape[key] = value.build();
+      } else {
+        builtShape[key] = value;
+      }
+    }
+    return createZodSchemaBuilder<z.infer<z.ZodObject<any>>>(z.object(builtShape));
+  },
 });
 
 export const createZodSchemaBuilder = <T>(zodSchema: z.ZodSchema<T>): ZodSchemaBuilder<T> => {
@@ -194,20 +204,27 @@ export const zodString = (): ZodStringFieldBuilder => {
     },
 
     enum: <T extends readonly [string, ...string[]]>(...values: T) => {
-      const enumSchema = z.enum(values);
-      return {
+      let enumSchema: any = z.enum(values);
+      const enumBuilder = {
         description: (description: string) => {
-          enumSchema.describe(description);
-          return enumSchema as any;
+          enumSchema = enumSchema.describe(description);
+          return enumBuilder;
         },
-        optional: () => enumSchema.optional() as any,
-        default: (defaultValue: T[number]) => enumSchema.default(defaultValue) as any,
+        optional: () => {
+          enumSchema = enumSchema.optional();
+          return enumBuilder as any;
+        },
+        default: (defaultValue: T[number]) => {
+          enumSchema = enumSchema.default(defaultValue);
+          return enumBuilder as any;
+        },
         examples: (...examples: T[number][]) => {
           (enumSchema as any)._def.examples = examples;
-          return enumSchema as any;
+          return enumBuilder;
         },
         build: () => enumSchema,
       } as ZodFieldBuilder<T[number]>;
+      return enumBuilder;
     },
 
     pattern: (pattern: RegExp, message?: string) => {
@@ -300,20 +317,27 @@ export const zodNumber = (): ZodNumberFieldBuilder => {
     },
 
     enum: <T extends readonly [number, ...number[]]>(...values: T) => {
-      const enumSchema = z.enum(values as any);
-      return {
+      let enumSchema: any = z.enum(values as any);
+      const enumBuilder = {
         description: (description: string) => {
-          enumSchema.describe(description);
-          return enumSchema as any;
+          enumSchema = enumSchema.describe(description);
+          return enumBuilder;
         },
-        optional: () => enumSchema.optional() as any,
-        default: (defaultValue: T[number]) => enumSchema.default(defaultValue) as any,
+        optional: () => {
+          enumSchema = enumSchema.optional();
+          return enumBuilder as any;
+        },
+        default: (defaultValue: T[number]) => {
+          enumSchema = enumSchema.default(defaultValue);
+          return enumBuilder as any;
+        },
         examples: (...examples: T[number][]) => {
           (enumSchema as any)._def.examples = examples;
-          return enumSchema as any;
+          return enumBuilder;
         },
         build: () => enumSchema,
       } as ZodFieldBuilder<T[number]>;
+      return enumBuilder;
     },
 
     min: (min: number, message?: string) => {
@@ -477,14 +501,22 @@ export const zodArray = <T>(elementSchema: z.ZodType<T>): ZodArrayFieldBuilder<T
   return builder;
 };
 
-export const zodObject = <T extends z.ZodRawShape>(
-  shape: T
-): ZodObjectFieldBuilder<z.infer<z.ZodObject<T>>> => {
-  let baseSchema: z.ZodObject<T> = z.object(shape);
-  let isOptional = false;
-  let defaultValue: z.infer<z.ZodObject<T>> | undefined = undefined;
+export const zodObject = <T extends Record<string, any>>(shape: T): ZodObjectFieldBuilder<any> => {
+  // Build any builder objects in the shape
+  const builtShape: Record<string, any> = {};
+  for (const [key, value] of Object.entries(shape)) {
+    if (value && typeof value === 'object' && typeof value.build === 'function') {
+      builtShape[key] = value.build();
+    } else {
+      builtShape[key] = value;
+    }
+  }
 
-  const builder: ZodObjectFieldBuilder<z.infer<z.ZodObject<T>>> = {
+  let baseSchema: z.ZodObject<any> = z.object(builtShape);
+  let isOptional = false;
+  let defaultValue: any | undefined = undefined;
+
+  const builder: ZodObjectFieldBuilder<any> = {
     description: (description: string) => {
       baseSchema = baseSchema.describe(description);
       return builder;
@@ -495,12 +527,12 @@ export const zodObject = <T extends z.ZodRawShape>(
       return builder;
     },
 
-    default: (value: z.infer<z.ZodObject<T>>) => {
+    default: (value: any) => {
       defaultValue = value;
       return builder;
     },
 
-    examples: (...examples: z.infer<z.ZodObject<T>>[]) => {
+    examples: (...examples: any[]) => {
       (baseSchema as any)._def.examples = examples;
       return builder;
     },
@@ -522,15 +554,15 @@ export const zodObject = <T extends z.ZodRawShape>(
 
     build: () => {
       if (defaultValue !== undefined) {
-        return baseSchema.default(defaultValue);
+        return baseSchema.default(defaultValue) as any;
       } else if (isOptional) {
-        return baseSchema.optional();
+        return baseSchema.optional() as any;
       }
-      return baseSchema;
+      return baseSchema as any;
     },
   };
 
-  return builder;
+  return builder as any;
 };
 
 // ========================================
@@ -546,7 +578,7 @@ export const validateWithZodSchema = <T>(
     return ok(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const enhancedError = enhanceZodError(error, schema.name);
+      const enhancedError = enhanceZodError(error, schema.name, schema.zodSchema);
       return err(enhancedError);
     }
 
@@ -570,7 +602,7 @@ export const validateWithZodSchemaAsync = async <T>(
     return ok(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const enhancedError = enhanceZodError(error, schema.name);
+      const enhancedError = enhanceZodError(error, schema.name, schema.zodSchema);
       return err(enhancedError);
     }
 

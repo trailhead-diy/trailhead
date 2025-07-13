@@ -2,22 +2,8 @@
 // Documentation Module Exports
 // ========================================
 
-// Legacy documentation generation (backwards compatibility)
-export type {
-  ConfigDocs,
-  DocumentationSection,
-  FieldDocumentation,
-  FieldConstraints,
-  ValidationInfo,
-  ExampleConfig,
-  DocsMetadata,
-  DocsGeneratorOptions,
-  MarkdownOptions,
-  JsonSchemaOutput,
-  JsonSchemaProperty,
-} from './generator.js';
-
-export { generateConfigDocs, generateMarkdown, generateJsonSchema } from './generator.js';
+// Legacy type definitions for backwards compatibility
+export type { JsonSchemaOutput, JsonSchemaProperty } from './generator.js';
 
 // Enhanced Zod-powered documentation generation (recommended)
 export type {
@@ -40,31 +26,3 @@ export {
   generateZodConfigDocs as generateDocs,
   generateZodJsonSchema as generateJsonSchemaFromZod,
 } from './zod-generator.js';
-
-// Schema introspection
-export type {
-  SchemaIntrospection,
-  SchemaStructure,
-  FieldIntrospection,
-  SchemaBranch,
-  FieldConstraintSummary,
-  FieldValidationInfo,
-  FieldComplexity,
-  ComplexityFactor,
-  SchemaStatistics,
-  FieldRelationship,
-  ValidationRules,
-  CrossFieldRule,
-  CustomValidatorInfo,
-  ComplexityMetrics,
-  IntrospectionOptions,
-} from './introspection.js';
-
-export {
-  introspectSchema,
-  findFieldsByType,
-  findFieldsByComplexity,
-  findFieldsWithConstraints,
-  findFieldsWithCustomValidation,
-  getFieldByPath,
-} from './introspection.js';

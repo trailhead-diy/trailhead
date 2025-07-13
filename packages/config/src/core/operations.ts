@@ -20,13 +20,13 @@ import type {
   ConfigState,
   ConfigMetadata,
   ResolvedSource,
-  ConfigValidator,
   ConfigTransformer,
   ConfigChangeCallback,
   ConfigWatcher,
   ConfigWatchCallback,
   ConfigManager,
 } from '../types.js';
+// ConfigValidator type imported via relative import in interface definitions
 
 // Enhanced ConfigDefinition with proper Zod schema typing
 export interface ConfigDefinition<T = Record<string, unknown>>
@@ -68,13 +68,13 @@ export interface LoaderOperations {
 }
 
 export interface ValidatorOperations {
-  readonly register: <T>(validator: ConfigValidator<T>) => void;
+  readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void;
   readonly unregister: (name: string) => void;
   readonly validate: <T>(
     config: T,
-    validators: readonly ConfigValidator<T>[]
+    validators: readonly import('../types.js').ConfigValidator<T>[]
   ) => ConfigResult<void>;
-  readonly validateSchema: <T>(config: T, schema: ConfigSchema<T>) => ConfigResult<void>;
+  readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>;
 }
 
 export interface TransformerOperations {
@@ -229,7 +229,7 @@ export const createConfigOperations = (): ConfigOperations => {
       // Run additional validators
       const additionalValidationErrors: CoreError[] = [];
       if (definition.validators && definition.validators.length > 0) {
-        const additionalValidationResult = validatorOps.validate(
+        const additionalValidationResult = await validatorOps.validate(
           validatedConfig,
           definition.validators
         );
@@ -242,6 +242,7 @@ export const createConfigOperations = (): ConfigOperations => {
       const metadata: ConfigMetadata = {
         loadTime: Date.now() - startTime,
         sourceCount: sourceResults.length,
+        valid: validationErrors.length === 0 && additionalValidationErrors.length === 0,
         validationErrors,
         transformationErrors: additionalValidationErrors,
         version: definition.version,
@@ -534,6 +535,7 @@ export const createConfigMetadata = (
   return {
     loadTime,
     sourceCount,
+    valid: validationErrors.length === 0 && transformationErrors.length === 0,
     validationErrors,
     transformationErrors,
     version,

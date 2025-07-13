@@ -103,7 +103,7 @@ export const createConfigManager = <T>(
 
       // Validate configuration
       if (definition.validators && definition.validators.length > 0) {
-        const validationResult = deps.validatorOps.validate(
+        const validationResult = await deps.validatorOps.validate(
           transformedConfig,
           definition.validators
         );
@@ -240,7 +240,7 @@ export const createConfigManager = <T>(
     }
   };
 
-  const validate = (): ConfigResult<void> => {
+  const validate = async (): Promise<ConfigResult<void>> => {
     if (!currentState) {
       return err({
         type: 'ConfigError',
@@ -252,7 +252,7 @@ export const createConfigManager = <T>(
     }
 
     if (definition.validators && definition.validators.length > 0) {
-      return deps.validatorOps.validate(currentState.resolved, definition.validators);
+      return await deps.validatorOps.validate(currentState.resolved, definition.validators);
     }
 
     return ok(undefined);

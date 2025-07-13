@@ -52,6 +52,23 @@ export interface FormatterOptions {
 }
 
 // ========================================
+// ========================================
+// Helper Functions
+// ========================================
+
+const formatJson = (error: ConfigValidationError): ValidationErrorJson => ({
+  field: error.field || 'unknown',
+  path: error.path,
+  value: error.value,
+  expectedType: error.expectedType,
+  rule: error.code,
+  message: error.message,
+  suggestion: error.suggestion,
+  examples: error.examples,
+  constraints: error.data,
+});
+
+// ========================================
 // Default Formatter Implementation
 // ========================================
 
@@ -207,18 +224,6 @@ export const createValidationErrorFormatter = (
       learnMoreUrl: error.learnMoreUrl,
     };
   };
-
-  const formatJson = (error: ConfigValidationError): ValidationErrorJson => ({
-    field: error.field || 'unknown',
-    path: error.path,
-    value: error.value,
-    expectedType: error.expectedType,
-    rule: error.code,
-    message: error.message,
-    suggestion: error.suggestion,
-    examples: error.examples,
-    constraints: error.data,
-  });
 
   return {
     formatError,
