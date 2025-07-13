@@ -20,7 +20,6 @@ export {
 export {
   defaultValidationConfig,
   createValidator,
-  createSchemaValidator,
   validateEmail,
   validateUrl,
   validatePhoneNumber,
@@ -68,6 +67,36 @@ export const validate = {
   object: <_T extends Record<string, any>>(validators: any) =>
     validateObject(validators, defaultValidationConfig),
 };
+
+// Enhanced validation schemas and utilities
+export {
+  // Schema building blocks
+  emailSchema,
+  urlSchema,
+  phoneSchema,
+  stringLengthSchema,
+  nonEmptyStringSchema,
+  trimmedStringSchema,
+  projectNameSchema,
+  packageManagerSchema,
+  filePathSchema,
+  authorSchema,
+  portSchema,
+  positiveIntegerSchema,
+  dateSchema,
+  arraySchema,
+
+  // Schema composition utilities
+  optionalSchema,
+  withDefault,
+  mergeSchemas,
+  conditionalSchema,
+  createSchemaValidator,
+  validationPresets,
+  schemaRegistry,
+} from './schemas.js';
+
+export type { SchemaRegistryKey } from './schemas.js';
 
 // Re-export Zod for custom schemas
 export { z } from 'zod';
