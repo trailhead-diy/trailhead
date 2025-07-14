@@ -2,7 +2,8 @@ import type { CommandContext } from '../command/index.js'
 // @ts-expect-error - Domain package types will be available after build
 import type { FileSystem } from '@esteban-url/fs'
 import type { Logger } from '../utils/logger.js'
-import { mockFileSystem, mockLogger } from './mocks.js'
+import { createMockFileSystem } from '@esteban-url/fs/testing'
+// import { mockLogger } from './mocks.js' // Temporarily disabled
 
 export interface TestContextOptions {
   projectRoot?: string
@@ -18,9 +19,11 @@ export interface TestContextOptions {
 export function createTestContext(options: TestContextOptions = {}): CommandContext {
   return {
     projectRoot: options.projectRoot ?? '/test/project',
-    logger: options.logger ?? mockLogger(),
+    logger:
+      options.logger ??
+      ({ info: () => {}, error: () => {}, debug: () => {}, warn: () => {} } as any),
     verbose: options.verbose ?? false,
-    fs: options.filesystem ?? mockFileSystem(),
+    fs: options.filesystem ?? createMockFileSystem(),
     args: options.args ?? [],
   }
 }
@@ -34,6 +37,6 @@ export function createTestContextWithFiles(
 ): CommandContext {
   return createTestContext({
     ...options,
-    filesystem: mockFileSystem(files),
+    filesystem: createMockFileSystem(files),
   })
 }

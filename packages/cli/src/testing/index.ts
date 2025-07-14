@@ -14,22 +14,22 @@ export {
 export type { CommandTestRunnerState } from './runner.js'
 
 export type { TestContextOptions } from './context.js'
-export {
-  mockFileSystem,
-  createEnhancedMockFileSystem,
-  createTestMockFileSystem,
-  createCLIMockFileSystem,
-  createCrossPlatformMockFileSystem,
-  mockLogger,
-  mockPrompts,
-} from './mocks.js'
-
-export type {
-  MockFileSystemOptions,
-  EnhancedMockFileSystem,
-  MockConfigOptions,
-  CreateConfigMockOptions,
-} from './mocks.js'
+// Mock exports temporarily disabled - will be re-implemented following hybrid approach
+// export {
+//   createEnhancedMockFileSystem,
+//   createTestMockFileSystem,
+//   createCLIMockFileSystem,
+//   createCrossPlatformMockFileSystem,
+//   mockLogger,
+//   mockPrompts,
+// } from './mocks.js'
+//
+// export type {
+//   MockFileSystemOptions,
+//   EnhancedMockFileSystem,
+//   MockConfigOptions,
+//   CreateConfigMockOptions,
+// } from './mocks.js'
 
 export {
   expectResult,

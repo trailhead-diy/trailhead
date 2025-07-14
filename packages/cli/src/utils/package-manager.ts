@@ -117,7 +117,9 @@ export class SemVer {
     // Handle versions with pre-release tags
     const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-(.+))?/)
     if (!match) {
-      return err(createCoreError('PACKAGE_MANAGER_ERROR', `Invalid version format: ${version}`))
+      return err(
+        createCoreError('PACKAGE_MANAGER_ERROR', 'CLI_ERROR', `Invalid version format: ${version}`)
+      )
     }
 
     const [, major, minor, patch, prerelease] = match
@@ -154,6 +156,7 @@ const validatePackageManagerName = (
     return err(
       createCoreError(
         'PACKAGE_MANAGER_ERROR',
+        'CLI_ERROR',
         `Invalid package manager name: ${name}. Allowed values: ${ALLOWED_MANAGERS.join(', ')}`
       )
     )
@@ -180,15 +183,21 @@ const execWithTimeout = (
       return err(
         createCoreError(
           'PACKAGE_MANAGER_ERROR',
+          'CLI_ERROR',
           `Command timed out after ${options.timeout ?? DEFAULT_TIMEOUT_MS}ms: ${command}`,
           { cause: error }
         )
       )
     }
     return err(
-      createCoreError('PACKAGE_MANAGER_ERROR', error.message || `Command failed: ${command}`, {
-        cause: error,
-      })
+      createCoreError(
+        'PACKAGE_MANAGER_ERROR',
+        'CLI_ERROR',
+        error.message || `Command failed: ${command}`,
+        {
+          cause: error,
+        }
+      )
     )
   }
 }
@@ -241,6 +250,7 @@ export const detectPackageManager = (
       return err(
         createCoreError(
           'PACKAGE_MANAGER_ERROR',
+          'CLI_ERROR',
           `Forced package manager '${managerName}' is not installed or not responding`,
           {
             suggestion: `Install ${managerName} or unset FORCE_PACKAGE_MANAGER environment variable`,
@@ -258,6 +268,7 @@ export const detectPackageManager = (
       return err(
         createCoreError(
           'PACKAGE_MANAGER_ERROR',
+          'CLI_ERROR',
           `Failed to parse version for ${managerName}: ${version}`,
           {
             cause: meetsReqResult.error,
@@ -270,6 +281,7 @@ export const detectPackageManager = (
       return err(
         createCoreError(
           'PACKAGE_MANAGER_ERROR',
+          'CLI_ERROR',
           `${managerName} version ${version} is below minimum required version ${minVersion}`,
           { suggestion: `Please update ${managerName} to version ${minVersion} or higher` }
         )
@@ -340,7 +352,9 @@ export const detectPackageManager = (
       ? 'Please update your package manager to meet the minimum version requirements'
       : 'Please install pnpm (recommended) or npm'
 
-  const error = err(createCoreError('PACKAGE_MANAGER_ERROR', errorMessage, { suggestion }))
+  const error = err(
+    createCoreError('PACKAGE_MANAGER_ERROR', 'CLI_ERROR', errorMessage, { suggestion })
+  )
 
   cache.set(cacheKey, error)
   return error
