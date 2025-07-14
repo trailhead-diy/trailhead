@@ -33,11 +33,11 @@ Start with import optimization as it provides the biggest wins:
 
 ```typescript
 // ❌ Imports entire package (large bundle)
-import { createCLI, Ok, Err, createCommand } from '@esteban-url/trailhead-cli';
+import { createCLI, Ok, Err, createCommand } from '@esteban-url/trailhead-cli'
 
 // ✅ Import only what you need (minimal bundle)
-import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 ```
 
 **Bundle size comparison:**
@@ -58,59 +58,59 @@ Load expensive modules only when needed:
 
 ```typescript
 // ❌ Always loads inquirer (heavy)
-import { multiselect } from '@esteban-url/trailhead-cli/prompts';
+import { multiselect } from '@esteban-url/trailhead-cli/prompts'
 
 const command: Command = {
   execute: async (options, context) => {
     if (options.interactive) {
       const choices = await multiselect({
         /* config */
-      });
+      })
     }
     // Regular logic
   },
-};
+}
 
 // ✅ Load prompts only when needed
 const command: Command = {
   execute: async (options, context) => {
     if (options.interactive) {
-      const { multiselect } = await import('@esteban-url/trailhead-cli/prompts');
+      const { multiselect } = await import('@esteban-url/trailhead-cli/prompts')
       const choices = await multiselect({
         /* config */
-      });
+      })
     }
     // Regular logic
   },
-};
+}
 ```
 
 ### Optimize FileSystem Operations
 
 ```typescript
 // ❌ Loads filesystem even for help commands
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
 
 // ✅ Use context.fs (provided by framework)
 const command: Command = {
   execute: async (options, context) => {
     // context.fs is already optimized
-    const result = await context.fs.readFile('config.json');
+    const result = await context.fs.readFile('config.json')
   },
-};
+}
 ```
 
 ### Tree-Shaking Best Practices
 
 ```typescript
 // ❌ Imports that prevent tree-shaking
-import * as utils from '@esteban-url/trailhead-cli/utils';
-import { createSpinner } from '@esteban-url/trailhead-cli/utils';
-const chalk = require('chalk'); // CommonJS prevents optimization
+import * as utils from '@esteban-url/trailhead-cli/utils'
+import { createSpinner } from '@esteban-url/trailhead-cli/utils'
+const chalk = require('chalk') // CommonJS prevents optimization
 
 // ✅ Tree-shake friendly imports
-import { createSpinner } from '@esteban-url/trailhead-cli/utils';
-import { chalk } from '@esteban-url/trailhead-cli/utils'; // Re-exported ES modules
+import { createSpinner } from '@esteban-url/trailhead-cli/utils'
+import { chalk } from '@esteban-url/trailhead-cli/utils' // Re-exported ES modules
 ```
 
 ### Method 2: Runtime Performance Optimization
@@ -119,29 +119,29 @@ import { chalk } from '@esteban-url/trailhead-cli/utils'; // Re-exported ES modu
 
 ```typescript
 // ❌ Heavy operations during import
-const config = loadComplexConfig(); // Blocks startup
-const cache = new Map(expensiveData); // Memory allocation
+const config = loadComplexConfig() // Blocks startup
+const cache = new Map(expensiveData) // Memory allocation
 
 const command: Command = {
   execute: async (options, context) => {
     // Uses pre-loaded data
   },
-};
+}
 
 // ✅ Lazy initialization
-let configCache: Config | null = null;
+let configCache: Config | null = null
 
 const command: Command = {
   execute: async (options, context) => {
     // Load only when needed
     if (!configCache) {
-      const result = await loadConfig(context.fs);
-      if (!result.success) return result;
-      configCache = result.value;
+      const result = await loadConfig(context.fs)
+      if (!result.success) return result
+      configCache = result.value
     }
     // Use cached config
   },
-};
+}
 ```
 
 ### Efficient Error Handling
@@ -149,74 +149,74 @@ const command: Command = {
 ```typescript
 // ❌ Exception-based flow control (slow)
 try {
-  const config = await loadConfig();
-  const data = await processData(config);
-  const result = await saveResult(data);
+  const config = await loadConfig()
+  const data = await processData(config)
+  const result = await saveResult(data)
 } catch (error) {
   // Handle any error
 }
 
 // ✅ Early returns with Results (fast)
-const configResult = await loadConfig();
-if (!configResult.success) return configResult;
+const configResult = await loadConfig()
+if (!configResult.success) return configResult
 
-const dataResult = await processData(configResult.value);
-if (!dataResult.success) return dataResult;
+const dataResult = await processData(configResult.value)
+if (!dataResult.success) return dataResult
 
-return saveResult(dataResult.value);
+return saveResult(dataResult.value)
 ```
 
 ### Parallel Operations
 
 ```typescript
 // ❌ Sequential processing (slow)
-const files = ['a.txt', 'b.txt', 'c.txt'];
-const results = [];
+const files = ['a.txt', 'b.txt', 'c.txt']
+const results = []
 for (const file of files) {
-  const result = await processFile(file, context.fs);
-  results.push(result);
+  const result = await processFile(file, context.fs)
+  results.push(result)
 }
 
 // ✅ Parallel processing (fast)
-const files = ['a.txt', 'b.txt', 'c.txt'];
-const results = await Promise.all(files.map(file => processFile(file, context.fs)));
+const files = ['a.txt', 'b.txt', 'c.txt']
+const results = await Promise.all(files.map((file) => processFile(file, context.fs)))
 
 // ✅ Controlled concurrency (balanced)
-import pLimit from 'p-limit';
-const limit = pLimit(3); // Max 3 concurrent operations
+import pLimit from 'p-limit'
+const limit = pLimit(3) // Max 3 concurrent operations
 
-const results = await Promise.all(files.map(file => limit(() => processFile(file, context.fs))));
+const results = await Promise.all(files.map((file) => limit(() => processFile(file, context.fs))))
 ```
 
 ### Memory Management
 
 ```typescript
 // ❌ Memory leaks
-const cache = new Map(); // Never cleared
-let fileHandles = []; // Accumulates handles
+const cache = new Map() // Never cleared
+let fileHandles = [] // Accumulates handles
 
 const processLargeFile = async (path: string) => {
-  const content = await fs.readFile(path); // Entire file in memory
-  return processContent(content);
-};
+  const content = await fs.readFile(path) // Entire file in memory
+  return processContent(content)
+}
 
 // ✅ Proper cleanup
-const cache = new Map();
-const MAX_CACHE_SIZE = 100;
+const cache = new Map()
+const MAX_CACHE_SIZE = 100
 
 const processLargeFile = async (path: string, fs: FileSystem) => {
   // Stream processing for large files
-  const stream = await fs.createReadStream(path);
+  const stream = await fs.createReadStream(path)
   try {
-    return await processStream(stream);
+    return await processStream(stream)
   } finally {
-    stream.destroy(); // Cleanup
+    stream.destroy() // Cleanup
   }
-};
+}
 
 // Clear cache when it gets too large
 if (cache.size > MAX_CACHE_SIZE) {
-  cache.clear();
+  cache.clear()
 }
 ```
 
@@ -229,26 +229,26 @@ if (cache.size > MAX_CACHE_SIZE) {
 ```typescript
 const command: Command = {
   execute: async (options, context) => {
-    const spinner = createSpinner('Initializing...');
+    const spinner = createSpinner('Initializing...')
 
     // Show immediate feedback
-    const configResult = await context.fs.readFile('config.json');
+    const configResult = await context.fs.readFile('config.json')
     if (!configResult.success) {
-      spinner.fail('Config not found');
-      return configResult;
+      spinner.fail('Config not found')
+      return configResult
     }
 
-    spinner.text = 'Processing data...';
-    const processed = await processData(configResult.value);
+    spinner.text = 'Processing data...'
+    const processed = await processData(configResult.value)
     if (!processed.success) {
-      spinner.fail('Processing failed');
-      return processed;
+      spinner.fail('Processing failed')
+      return processed
     }
 
-    spinner.succeed('Complete!');
-    return Ok(undefined);
+    spinner.succeed('Complete!')
+    return Ok(undefined)
   },
-};
+}
 ```
 
 ### Intelligent Defaults
@@ -262,7 +262,7 @@ const command: Command = {
     { name: 'format', required: true },
     { name: 'compression', required: true },
   ],
-};
+}
 
 // ✅ Smart defaults
 const command: Command = {
@@ -274,9 +274,9 @@ const command: Command = {
   ],
   execute: async (options, context) => {
     // Auto-detect output from input if not specified
-    const output = options.output === './output' ? `${options.input}.processed` : options.output;
+    const output = options.output === './output' ? `${options.input}.processed` : options.output
   },
-};
+}
 ```
 
 ### Caching Strategies
@@ -284,44 +284,44 @@ const command: Command = {
 ```typescript
 // File-based caching
 const getCachedData = async (key: string, fs: FileSystem): Promise<Result<any>> => {
-  const cacheFile = `.cache/${key}.json`;
+  const cacheFile = `.cache/${key}.json`
 
   // Check cache first
-  const cached = await fs.readJson(cacheFile);
+  const cached = await fs.readJson(cacheFile)
   if (cached.success) {
-    const data = cached.value;
-    const age = Date.now() - data.timestamp;
+    const data = cached.value
+    const age = Date.now() - data.timestamp
 
     // Use cache if less than 1 hour old
     if (age < 60 * 60 * 1000) {
-      return Ok(data.value);
+      return Ok(data.value)
     }
   }
 
   // Cache miss or expired - fetch fresh data
-  const fresh = await fetchFreshData(key);
-  if (!fresh.success) return fresh;
+  const fresh = await fetchFreshData(key)
+  if (!fresh.success) return fresh
 
   // Save to cache
   await fs.writeJson(cacheFile, {
     timestamp: Date.now(),
     value: fresh.value,
-  });
+  })
 
-  return fresh;
-};
+  return fresh
+}
 
 // Memory caching with LRU
-import { LRUCache } from 'lru-cache';
+import { LRUCache } from 'lru-cache'
 
 const memoryCache = new LRUCache<string, any>({
   max: 100, // Max 100 items
   ttl: 10 * 60 * 1000, // 10 minutes
-});
+})
 
 const getCachedInMemory = async (key: string): Promise<any | null> => {
-  return memoryCache.get(key) || null;
-};
+  return memoryCache.get(key) || null
+}
 ```
 
 ### Variation 2: Development Optimization
@@ -357,26 +357,26 @@ const getCachedInMemory = async (key: string): Promise<any | null> => {
 ```typescript
 // ❌ Slow tests with real I/O
 test('processes files', async () => {
-  await fs.writeFile('/tmp/test.txt', 'content');
-  const result = await command.execute({ input: '/tmp/test.txt' });
-  const output = await fs.readFile('/tmp/output.txt');
+  await fs.writeFile('/tmp/test.txt', 'content')
+  const result = await command.execute({ input: '/tmp/test.txt' })
+  const output = await fs.readFile('/tmp/output.txt')
   // Cleanup...
-});
+})
 
 // ✅ Fast tests with memory filesystem
-import { mockFileSystem, createTestContext } from '@esteban-url/trailhead-cli/testing';
+import { mockFileSystem, createTestContext } from '@esteban-url/trailhead-cli/testing'
 
 test('processes files', async () => {
   const fs = mockFileSystem({
     'test.txt': 'content',
-  });
+  })
 
-  const context = createTestContext({ filesystem: fs });
-  const result = await command.execute({ input: 'test.txt' }, context);
+  const context = createTestContext({ filesystem: fs })
+  const result = await command.execute({ input: 'test.txt' }, context)
 
-  const output = await fs.readFile('output.txt');
+  const output = await fs.readFile('output.txt')
   // No cleanup needed - memory only
-});
+})
 ```
 
 ### Variation 3: Production Optimization
@@ -385,7 +385,7 @@ test('processes files', async () => {
 
 ```typescript
 // esbuild configuration for optimal bundles
-import { build } from 'esbuild';
+import { build } from 'esbuild'
 
 await build({
   entryPoints: ['src/cli.ts'],
@@ -404,40 +404,40 @@ await build({
   // Analyze bundle
   metafile: true,
   write: false,
-}).then(result => {
+}).then((result) => {
   // Analyze what's in your bundle
-  console.log(require('esbuild').analyzeMetafile(result.metafile));
-});
+  console.log(require('esbuild').analyzeMetafile(result.metafile))
+})
 ```
 
 ### Error Reporting
 
 ```typescript
 // Efficient error collection
-const errors: Error[] = [];
-const warnings: string[] = [];
+const errors: Error[] = []
+const warnings: string[] = []
 
 const command: Command = {
   execute: async (options, context) => {
-    const results = await Promise.allSettled([operation1(), operation2(), operation3()]);
+    const results = await Promise.allSettled([operation1(), operation2(), operation3()])
 
     // Collect all errors at once
     results.forEach((result, index) => {
       if (result.status === 'rejected') {
-        errors.push(new Error(`Operation ${index + 1} failed: ${result.reason}`));
+        errors.push(new Error(`Operation ${index + 1} failed: ${result.reason}`))
       }
-    });
+    })
 
     if (errors.length > 0) {
       // Report all errors together
-      context.logger.error(`${errors.length} operations failed:`);
-      errors.forEach(err => context.logger.error(`  - ${err.message}`));
-      return Err(new Error(`${errors.length} operations failed`));
+      context.logger.error(`${errors.length} operations failed:`)
+      errors.forEach((err) => context.logger.error(`  - ${err.message}`))
+      return Err(new Error(`${errors.length} operations failed`))
     }
 
-    return Ok(undefined);
+    return Ok(undefined)
   },
-};
+}
 ```
 
 ### Variation 4: Monitoring and Profiling
@@ -445,32 +445,32 @@ const command: Command = {
 #### Performance Monitoring
 
 ```typescript
-import { createStats } from '@esteban-url/trailhead-cli/utils';
+import { createStats } from '@esteban-url/trailhead-cli/utils'
 
 const command: Command = {
   execute: async (options, context) => {
-    const stats = createStats();
+    const stats = createStats()
 
-    stats.startTimer('total');
-    stats.startTimer('config-load');
+    stats.startTimer('total')
+    stats.startTimer('config-load')
 
-    const config = await loadConfig();
-    stats.endTimer('config-load');
+    const config = await loadConfig()
+    stats.endTimer('config-load')
 
-    stats.startTimer('processing');
-    const result = await processData(config);
-    stats.endTimer('processing');
+    stats.startTimer('processing')
+    const result = await processData(config)
+    stats.endTimer('processing')
 
-    stats.endTimer('total');
+    stats.endTimer('total')
 
     if (context.verbose) {
-      const summary = stats.getSummary();
-      context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`);
+      const summary = stats.getSummary()
+      context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`)
     }
 
-    return result;
+    return result
   },
-};
+}
 ```
 
 ### Bundle Analysis
@@ -492,27 +492,27 @@ node --prof-process isolate-*.log > profile.txt
 ```typescript
 // Memory usage monitoring
 const getMemoryUsage = () => {
-  const usage = process.memoryUsage();
+  const usage = process.memoryUsage()
   return {
     rss: Math.round(usage.rss / 1024 / 1024) + 'MB',
     heapUsed: Math.round(usage.heapUsed / 1024 / 1024) + 'MB',
     heapTotal: Math.round(usage.heapTotal / 1024 / 1024) + 'MB',
-  };
-};
+  }
+}
 
 const command: Command = {
   execute: async (options, context) => {
     if (context.verbose) {
-      context.logger.info(`Memory start: ${JSON.stringify(getMemoryUsage())}`);
+      context.logger.info(`Memory start: ${JSON.stringify(getMemoryUsage())}`)
     }
 
     // Your operations...
 
     if (context.verbose) {
-      context.logger.info(`Memory end: ${JSON.stringify(getMemoryUsage())}`);
+      context.logger.info(`Memory end: ${JSON.stringify(getMemoryUsage())}`)
     }
   },
-};
+}
 ```
 
 ## Common Issues
@@ -525,14 +525,14 @@ const command: Command = {
 
 ```typescript
 // ❌ Heavy imports at startup
-import { complexOperation } from './heavy-module';
-import '@inquirer/prompts'; // Loads even for simple commands
+import { complexOperation } from './heavy-module'
+import '@inquirer/prompts' // Loads even for simple commands
 
 const cli = createCLI({
   commands: [
     /* all commands loaded upfront */
   ],
-});
+})
 
 // ✅ Lazy loading approach
 const cli = createCLI({
@@ -542,12 +542,12 @@ const cli = createCLI({
       name: 'build',
       description: 'Build the project',
       async action(options, context) {
-        const { buildCommand } = await import('./commands/build.js');
-        return buildCommand.action(options, context);
+        const { buildCommand } = await import('./commands/build.js')
+        return buildCommand.action(options, context)
       },
     },
   ],
-});
+})
 ```
 
 ### Issue: Memory leaks during long operations
@@ -561,27 +561,27 @@ const cli = createCLI({
 ```typescript
 // ❌ Accumulates memory
 const processFiles = async (files: string[]) => {
-  const allContent = [];
+  const allContent = []
   for (const file of files) {
-    const content = await fs.readFile(file); // Keeps all in memory
-    allContent.push(processContent(content));
+    const content = await fs.readFile(file) // Keeps all in memory
+    allContent.push(processContent(content))
   }
-  return allContent;
-};
+  return allContent
+}
 
 // ✅ Streaming approach
 const processFiles = async (files: string[], context: CommandContext) => {
-  const results = [];
+  const results = []
   for (const file of files) {
-    const result = await fs.readFile(file);
+    const result = await fs.readFile(file)
     if (result.success) {
-      const processed = await processAndSave(result.value);
-      results.push(processed);
+      const processed = await processAndSave(result.value)
+      results.push(processed)
       // content goes out of scope and can be GC'd
     }
   }
-  return results;
-};
+  return results
+}
 ```
 
 ### Issue: Bundle size larger than expected
@@ -592,12 +592,12 @@ const processFiles = async (files: string[], context: CommandContext) => {
 
 ```typescript
 // ❌ Large bundle
-import * as cli from '@esteban-url/trailhead-cli';
-import { inquirer } from 'inquirer'; // Full inquirer package
+import * as cli from '@esteban-url/trailhead-cli'
+import { inquirer } from 'inquirer' // Full inquirer package
 
 // ✅ Optimized imports
-import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli';
-import { prompt } from '@esteban-url/trailhead-cli/prompts'; // Re-exported optimized version
+import { createCLI, Ok, Err } from '@esteban-url/trailhead-cli'
+import { prompt } from '@esteban-url/trailhead-cli/prompts' // Re-exported optimized version
 ```
 
 ### Common Performance Pitfalls
@@ -606,30 +606,30 @@ import { prompt } from '@esteban-url/trailhead-cli/prompts'; // Re-exported opti
 
 ```typescript
 // ❌ Blocks event loop
-const data = fs.readFileSync('large-file.json');
-const parsed = JSON.parse(data);
+const data = fs.readFileSync('large-file.json')
+const parsed = JSON.parse(data)
 
 // ✅ Non-blocking
-const result = await fs.readFile('large-file.json');
-if (!result.success) return result;
-const parsed = JSON.parse(result.value);
+const result = await fs.readFile('large-file.json')
+if (!result.success) return result
+const parsed = JSON.parse(result.value)
 ```
 
 ### 2. Memory Leaks in Loops
 
 ```typescript
 // ❌ Accumulates memory
-const allResults = [];
+const allResults = []
 for (const file of largeFileList) {
-  const content = await fs.readFile(file); // Keeps all in memory
-  allResults.push(processContent(content.value));
+  const content = await fs.readFile(file) // Keeps all in memory
+  allResults.push(processContent(content.value))
 }
 
 // ✅ Process and release
 for (const file of largeFileList) {
-  const content = await fs.readFile(file);
+  const content = await fs.readFile(file)
   if (content.success) {
-    await processAndSave(content.value);
+    await processAndSave(content.value)
     // content goes out of scope and can be GC'd
   }
 }
@@ -639,14 +639,14 @@ for (const file of largeFileList) {
 
 ```typescript
 // ❌ Quadratic complexity
-let output = '';
+let output = ''
 for (const item of items) {
-  output += formatItem(item); // Creates new string each time
+  output += formatItem(item) // Creates new string each time
 }
 
 // ✅ Linear complexity
-const parts = items.map(formatItem);
-const output = parts.join('');
+const parts = items.map(formatItem)
+const output = parts.join('')
 ```
 
 ## Complete Example
@@ -655,7 +655,7 @@ Here's a fully optimized CLI application:
 
 ```typescript
 // cli.ts - Optimized entry point
-import { createCLI } from '@esteban-url/trailhead-cli';
+import { createCLI } from '@esteban-url/trailhead-cli'
 
 // Lazy load commands to reduce startup time
 const cli = createCLI({
@@ -673,83 +673,83 @@ const cli = createCLI({
       ],
       async action(options, context) {
         // Lazy load the actual implementation
-        const { processCommand } = await import('./commands/process.js');
-        return processCommand(options, context);
+        const { processCommand } = await import('./commands/process.js')
+        return processCommand(options, context)
       },
     },
   ],
-});
+})
 
-export default cli;
+export default cli
 
 // commands/process.ts - Optimized command implementation
-import { Ok, Err } from '@esteban-url/trailhead-cli';
-import type { CommandContext } from '@esteban-url/trailhead-cli/command';
-import pLimit from 'p-limit';
+import { Ok, Err } from '@esteban-url/trailhead-cli'
+import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import pLimit from 'p-limit'
 
 export async function processCommand(options: any, context: CommandContext) {
   // Optional performance monitoring
-  let stats: any = null;
+  let stats: any = null
   if (options.profile) {
-    const { createStats } = await import('@esteban-url/trailhead-cli/utils');
-    stats = createStats();
-    stats.startTimer('total');
+    const { createStats } = await import('@esteban-url/trailhead-cli/utils')
+    stats = createStats()
+    stats.startTimer('total')
   }
 
   // Controlled concurrency to prevent memory issues
-  const limit = pLimit(options.parallel);
+  const limit = pLimit(options.parallel)
 
   // Lazy load filesystem when needed
-  const { createFileSystem } = await import('@esteban-url/trailhead-cli/filesystem');
-  const fs = createFileSystem();
+  const { createFileSystem } = await import('@esteban-url/trailhead-cli/filesystem')
+  const fs = createFileSystem()
 
   // Get file list
-  const filesResult = await fs.glob(`${options.input}/**/*`);
+  const filesResult = await fs.glob(`${options.input}/**/*`)
   if (!filesResult.success) {
-    return Err(new Error(`Failed to find files: ${filesResult.error.message}`));
+    return Err(new Error(`Failed to find files: ${filesResult.error.message}`))
   }
 
-  const files = filesResult.value.filter(f => f.endsWith('.txt'));
+  const files = filesResult.value.filter((f) => f.endsWith('.txt'))
 
   // Process with progress indication
-  const { createSpinner } = await import('@esteban-url/trailhead-cli/utils');
-  const spinner = createSpinner(`Processing ${files.length} files...`);
+  const { createSpinner } = await import('@esteban-url/trailhead-cli/utils')
+  const spinner = createSpinner(`Processing ${files.length} files...`)
 
   try {
     // Parallel processing with memory management
     const results = await Promise.all(
-      files.map(file =>
+      files.map((file) =>
         limit(async () => {
-          const content = await fs.readFile(file);
+          const content = await fs.readFile(file)
           if (!content.success) {
-            context.logger.warning(`Skipped ${file}: ${content.error.message}`);
-            return null;
+            context.logger.warning(`Skipped ${file}: ${content.error.message}`)
+            return null
           }
 
           // Process and immediately save to avoid memory accumulation
-          const processed = processContent(content.value);
-          const outputPath = `${options.output}/${file.replace(options.input, '').replace('.txt', '.processed.txt')}`;
+          const processed = processContent(content.value)
+          const outputPath = `${options.output}/${file.replace(options.input, '').replace('.txt', '.processed.txt')}`
 
-          const saveResult = await fs.writeFile(outputPath, processed);
-          return saveResult.success ? outputPath : null;
+          const saveResult = await fs.writeFile(outputPath, processed)
+          return saveResult.success ? outputPath : null
         })
       )
-    );
+    )
 
-    const successful = results.filter(r => r !== null).length;
-    spinner.succeed(`Processed ${successful}/${files.length} files`);
+    const successful = results.filter((r) => r !== null).length
+    spinner.succeed(`Processed ${successful}/${files.length} files`)
 
     // Performance reporting
     if (stats) {
-      stats.endTimer('total');
-      const summary = stats.getSummary();
-      context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`);
+      stats.endTimer('total')
+      const summary = stats.getSummary()
+      context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`)
     }
 
-    return Ok(undefined);
+    return Ok(undefined)
   } catch (error) {
-    spinner.fail('Processing failed');
-    return Err(new Error(`Processing failed: ${error.message}`));
+    spinner.fail('Processing failed')
+    return Err(new Error(`Processing failed: ${error.message}`))
   }
 }
 
@@ -757,9 +757,9 @@ export async function processCommand(options: any, context: CommandContext) {
 function processContent(content: string): string {
   return content
     .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join('\n');
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .join('\n')
 }
 ```
 

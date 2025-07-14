@@ -28,19 +28,19 @@ yarn add @trailhead/config
 ### Define a Schema
 
 ```typescript
-import { defineConfigSchema, string, number, boolean } from '@trailhead/config/core';
+import { defineConfigSchema, string, number, boolean } from '@trailhead/config/core'
 
 const appSchema = defineConfigSchema<{
   app: {
-    name: string;
-    version: string;
-    environment: string;
-    debug: boolean;
-  };
+    name: string
+    version: string
+    environment: string
+    debug: boolean
+  }
   server: {
-    port: number;
-    host: string;
-  };
+    port: number
+    host: string
+  }
 }>()
   .object({
     app: {
@@ -67,15 +67,15 @@ const appSchema = defineConfigSchema<{
   .description('Main application configuration schema')
   .version('1.0.0')
   .strict(true)
-  .build();
+  .build()
 ```
 
 ### Load and Validate Configuration
 
 ```typescript
-import { createConfigOperations } from '@trailhead/config/core';
+import { createConfigOperations } from '@trailhead/config/core'
 
-const configOps = createConfigOperations();
+const configOps = createConfigOperations()
 
 const definition = {
   name: 'app-config',
@@ -92,37 +92,37 @@ const definition = {
     },
   ],
   validators: [createEnvironmentValidator(), createPortValidator()],
-};
+}
 
-const result = await configOps.load(definition);
+const result = await configOps.load(definition)
 
 if (result.isOk()) {
-  const config = result.value.resolved;
-  console.log('Configuration loaded:', config.app.name);
+  const config = result.value.resolved
+  console.log('Configuration loaded:', config.app.name)
 } else {
   // Beautiful error formatting automatically applied
-  console.error('Configuration error:', result.error.message);
+  console.error('Configuration error:', result.error.message)
 }
 ```
 
 ### Generate Documentation
 
 ```typescript
-import { generateConfigDocs, generateMarkdown } from '@trailhead/config/docs';
+import { generateConfigDocs, generateMarkdown } from '@trailhead/config/docs'
 
 // Generate documentation
 const docsResult = generateConfigDocs(appSchema, {
   title: 'My App Configuration',
   includeExamples: true,
   includeConstraints: true,
-});
+})
 
 if (docsResult.isOk()) {
   // Convert to markdown
-  const markdownResult = generateMarkdown(docsResult.value);
+  const markdownResult = generateMarkdown(docsResult.value)
 
   if (markdownResult.isOk()) {
-    console.log(markdownResult.value);
+    console.log(markdownResult.value)
   }
 }
 ```
@@ -146,19 +146,19 @@ The enhanced validation system provides contextual, helpful error messages:
 ### Multiple Output Formats
 
 ```typescript
-import { formatValidationError } from '@trailhead/config/validation';
+import { formatValidationError } from '@trailhead/config/validation'
 
 // Colored CLI output (default)
-const cliOutput = formatValidationError(error);
+const cliOutput = formatValidationError(error)
 
 // Compact format
-const compact = formatValidationError(error, { compact: true });
+const compact = formatValidationError(error, { compact: true })
 
 // JSON format for programmatic use
-const json = formatValidationError(error, { format: 'json' });
+const json = formatValidationError(error, { format: 'json' })
 
 // Interactive format for prompts
-const interactive = formatValidationError(error, { format: 'interactive' });
+const interactive = formatValidationError(error, { format: 'interactive' })
 ```
 
 ## Schema Builder API
@@ -166,7 +166,7 @@ const interactive = formatValidationError(error, { format: 'interactive' });
 ### Fluent Field Builders
 
 ```typescript
-import { string, number, boolean, array, object } from '@trailhead/config/core';
+import { string, number, boolean, array, object } from '@trailhead/config/core'
 
 // String fields with validation
 const nameField = string()
@@ -175,7 +175,7 @@ const nameField = string()
   .maxLength(50)
   .pattern('^[a-zA-Z0-9-_]+$')
   .examples('my-app', 'awesome-service')
-  .description('Application name');
+  .description('Application name')
 
 // Number fields with constraints
 const portField = number()
@@ -184,14 +184,14 @@ const portField = number()
   .integer()
   .default(3000)
   .examples(3000, 8080, 9000)
-  .description('Server port');
+  .description('Server port')
 
 // Enum fields
 const envField = string()
   .required()
   .enum('development', 'staging', 'production')
   .default('development')
-  .description('Application environment');
+  .description('Application environment')
 
 // Array fields
 const tagsField = array()
@@ -199,7 +199,7 @@ const tagsField = array()
   .minItems(1)
   .maxItems(10)
   .unique()
-  .examples(['web', 'api'], ['frontend', 'backend']);
+  .examples(['web', 'api'], ['frontend', 'backend'])
 
 // Object fields
 const dbField = object()
@@ -208,7 +208,7 @@ const dbField = object()
     port: number().range(1, 65535),
     database: string().required(),
   })
-  .additionalProperties(false);
+  .additionalProperties(false)
 ```
 
 ## Documentation Generation
@@ -218,7 +218,7 @@ const dbField = object()
 Generate comprehensive documentation from your schemas:
 
 ```typescript
-import { generateConfigDocs, generateMarkdown, generateJsonSchema } from '@trailhead/config/docs';
+import { generateConfigDocs, generateMarkdown, generateJsonSchema } from '@trailhead/config/docs'
 
 // Generate complete documentation
 const docs = generateConfigDocs(schema, {
@@ -226,11 +226,11 @@ const docs = generateConfigDocs(schema, {
   includeExamples: true,
   includeConstraints: true,
   includeValidation: true,
-});
+})
 
 // Multiple output formats
-const markdown = generateMarkdown(docs.value);
-const jsonSchema = generateJsonSchema(schema);
+const markdown = generateMarkdown(docs.value)
+const jsonSchema = generateJsonSchema(schema)
 ```
 
 ### CLI Documentation Command
@@ -255,25 +255,25 @@ npx trailhead-config introspect --schema ./config.schema.ts
 Analyze schema complexity and structure:
 
 ```typescript
-import { introspectSchema } from '@trailhead/config/docs';
+import { introspectSchema } from '@trailhead/config/docs'
 
 const introspection = introspectSchema(schema, {
   includeComplexityAnalysis: true,
   includeRelationships: true,
-});
+})
 
 if (introspection.isOk()) {
-  const analysis = introspection.value;
+  const analysis = introspection.value
 
-  console.log(`Schema: ${analysis.name}`);
-  console.log(`Fields: ${analysis.statistics.totalFields}`);
-  console.log(`Complexity: ${analysis.complexity.overall.toFixed(1)}`);
+  console.log(`Schema: ${analysis.name}`)
+  console.log(`Fields: ${analysis.statistics.totalFields}`)
+  console.log(`Complexity: ${analysis.complexity.overall.toFixed(1)}`)
 
   if (analysis.complexity.recommendations.length > 0) {
-    console.log('Recommendations:');
-    analysis.complexity.recommendations.forEach(rec => {
-      console.log(`  • ${rec}`);
-    });
+    console.log('Recommendations:')
+    analysis.complexity.recommendations.forEach((rec) => {
+      console.log(`  • ${rec}`)
+    })
   }
 }
 ```
@@ -311,7 +311,7 @@ const definition = {
 const customValidator: ConfigValidator<AppConfig> = {
   name: 'business-rules',
   priority: 5,
-  validate: config => {
+  validate: (config) => {
     if (config.app.environment === 'production' && config.app.debug) {
       return err(
         createValidationError({
@@ -322,41 +322,41 @@ const customValidator: ConfigValidator<AppConfig> = {
           examples: [false],
           rule: 'production-security',
         })
-      );
+      )
     }
 
-    return ok(undefined);
+    return ok(undefined)
   },
-};
+}
 ```
 
 ### Error Recovery
 
 ```typescript
-const result = await configOps.load(definition);
+const result = await configOps.load(definition)
 
 if (result.isErr()) {
   // Extract specific validation errors
-  const validationErrors = extractValidationErrors(result.error);
+  const validationErrors = extractValidationErrors(result.error)
 
   // Format for display
   const formatted = formatValidationErrors(validationErrors, {
     includeColors: true,
     includeExamples: true,
     maxExamples: 3,
-  });
+  })
 
-  console.error(formatted);
+  console.error(formatted)
 
   // Or get JSON for programmatic handling
-  const jsonErrors = formatValidationErrorsJson(validationErrors);
+  const jsonErrors = formatValidationErrorsJson(validationErrors)
 
   // Interactive error handling
   for (const error of validationErrors) {
-    const interactive = createValidationErrorFormatter().formatInteractive(error);
-    console.log(interactive.title);
-    console.log(interactive.suggestion);
-    console.log(`Fix: ${interactive.fixCommand}`);
+    const interactive = createValidationErrorFormatter().formatInteractive(error)
+    console.log(interactive.title)
+    console.log(interactive.suggestion)
+    console.log(`Fix: ${interactive.fixCommand}`)
   }
 }
 ```
@@ -391,7 +391,7 @@ const definition = {
     { type: 'remote', path: 'https://config.example.com/app', priority: 5 },
   ],
   // Sources are merged by priority (higher overwrites lower)
-};
+}
 ```
 
 ## TypeScript Integration
@@ -401,15 +401,15 @@ Full TypeScript support with strict typing:
 ```typescript
 interface AppConfig {
   app: {
-    name: string;
-    version: string;
-    environment: 'development' | 'staging' | 'production';
-    debug: boolean;
-  };
+    name: string
+    version: string
+    environment: 'development' | 'staging' | 'production'
+    debug: boolean
+  }
   server: {
-    port: number;
-    host: string;
-  };
+    port: number
+    host: string
+  }
 }
 
 // Schema is fully typed
@@ -423,11 +423,11 @@ const schema = defineConfigSchema<AppConfig>()
       /* ... */
     },
   })
-  .build();
+  .build()
 
 // Configuration is fully typed
-const config: AppConfig = result.value.resolved;
-console.log(config.app.name); // TypeScript knows this is a string
+const config: AppConfig = result.value.resolved
+console.log(config.app.name) // TypeScript knows this is a string
 ```
 
 ## Testing Utilities
@@ -435,8 +435,8 @@ console.log(config.app.name); // TypeScript knows this is a string
 Built-in testing support:
 
 ```typescript
-import { validateWithSchema } from '@trailhead/config/core';
-import { describe, it, expect } from 'vitest';
+import { validateWithSchema } from '@trailhead/config/core'
+import { describe, it, expect } from 'vitest'
 
 describe('Configuration Validation', () => {
   it('should validate correct configuration', () => {
@@ -451,11 +451,11 @@ describe('Configuration Validation', () => {
         port: 3000,
         host: 'localhost',
       },
-    };
+    }
 
-    const result = validateWithSchema(validConfig, appSchema);
-    expect(result.isOk()).toBe(true);
-  });
+    const result = validateWithSchema(validConfig, appSchema)
+    expect(result.isOk()).toBe(true)
+  })
 
   it('should provide helpful error messages', () => {
     const invalidConfig = {
@@ -469,20 +469,20 @@ describe('Configuration Validation', () => {
         port: 70000, // Out of range
         host: 'localhost',
       },
-    };
+    }
 
-    const result = validateWithSchema(invalidConfig, appSchema);
-    expect(result.isErr()).toBe(true);
+    const result = validateWithSchema(invalidConfig, appSchema)
+    expect(result.isErr()).toBe(true)
 
     if (result.isErr()) {
-      const errors = result.error.context?.errors || [];
-      expect(errors).toHaveLength(3); // name, environment, port
+      const errors = result.error.context?.errors || []
+      expect(errors).toHaveLength(3) // name, environment, port
 
-      const nameError = errors.find(e => e.field === 'name');
-      expect(nameError?.suggestion).toContain('at least 3 characters');
+      const nameError = errors.find((e) => e.field === 'name')
+      expect(nameError?.suggestion).toContain('at least 3 characters')
     }
-  });
-});
+  })
+})
 ```
 
 ## Performance
@@ -501,10 +501,10 @@ Optimized for production use:
 
 ```typescript
 // Schema definition
-import { defineConfigSchema, string, number, boolean, array, object } from '@trailhead/config/core';
+import { defineConfigSchema, string, number, boolean, array, object } from '@trailhead/config/core'
 
 // Configuration operations
-import { createConfigOperations } from '@trailhead/config/core';
+import { createConfigOperations } from '@trailhead/config/core'
 
 // Validation errors
 import {
@@ -512,7 +512,7 @@ import {
   formatValidationError,
   formatValidationErrors,
   extractValidationErrors,
-} from '@trailhead/config/validation';
+} from '@trailhead/config/validation'
 
 // Documentation
 import {
@@ -520,7 +520,7 @@ import {
   generateMarkdown,
   generateJsonSchema,
   introspectSchema,
-} from '@trailhead/config/docs';
+} from '@trailhead/config/docs'
 
 // Validators
 import {
@@ -528,10 +528,10 @@ import {
   createPortValidator,
   createUrlValidator,
   createSecurityValidator,
-} from '@trailhead/config/validators';
+} from '@trailhead/config/validators'
 
 // CLI commands
-import { createDocsCommand, createIntrospectCommand } from '@trailhead/config/cli';
+import { createDocsCommand, createIntrospectCommand } from '@trailhead/config/cli'
 ```
 
 ## Contributing

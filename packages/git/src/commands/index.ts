@@ -1,4 +1,4 @@
-export { createGitCommandOperations } from './operations.js';
+export { createGitCommandOperations } from './operations.js'
 export type {
   GitCommandOperations,
   GitCommitOptions,
@@ -11,4 +11,4 @@ export type {
   GitRevertOptions,
   GitMergeOptions,
   GitResetMode,
-} from '../types.js';
+} from '../types.js'

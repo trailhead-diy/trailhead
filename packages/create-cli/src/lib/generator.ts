@@ -1,12 +1,12 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result, CoreError } from '@esteban-url/core';
-import { resolve, dirname } from 'path';
-import { fs } from '@esteban-url/fs';
-import { fileURLToPath } from 'url';
-import { execa } from 'execa';
-import chalk from 'chalk';
-import ora from 'ora';
-import { createGeneratorGitOperations } from './git-operations.js';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { resolve, dirname } from 'path'
+import { fs } from '@esteban-url/fs'
+import { fileURLToPath } from 'url'
+import { execa } from 'execa'
+import chalk from 'chalk'
+import ora from 'ora'
+import { createGeneratorGitOperations } from './git-operations.js'
 import {
   validateProjectName,
   validateProjectPath,
@@ -14,17 +14,17 @@ import {
   validateTemplate,
   validateOutputPath,
   validateTemplatePath,
-} from './validation.js';
+} from './validation.js'
 
-import type { ProjectConfig, TemplateContext, GeneratorContext } from './types.js';
-import type { ModernProjectConfig } from './interactive-prompts.js';
-import { createTemplateContext } from './template-context.js';
-import { getTemplateFiles } from './template-loader.js';
-import { composeTemplate } from './modular-templates.js';
-import { TemplateCompiler } from './template-compiler.js';
+import type { ProjectConfig, TemplateContext, GeneratorContext } from './types.js'
+import type { ModernProjectConfig } from './interactive-prompts.js'
+import { createTemplateContext } from './template-context.js'
+import { getTemplateFiles } from './template-loader.js'
+import { composeTemplate } from './modular-templates.js'
+import { TemplateCompiler } from './template-compiler.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 /**
  * Simple package manager detection
@@ -33,16 +33,16 @@ function detectPackageManager(): Result<string, Error> {
   try {
     // For now, just return the configured package manager
     // In a full implementation, this would check for lock files, etc.
-    return ok('pnpm');
+    return ok('pnpm')
   } catch {
-    return err(new Error('No package manager detected'));
+    return err(new Error('No package manager detected'))
   }
 }
 
 // Filesystem operations are now imported directly
 
 // Global template compiler instance for caching
-const templateCompiler = new TemplateCompiler();
+const templateCompiler = new TemplateCompiler()
 
 /**
  * Generate a new CLI project from templates
@@ -82,53 +82,53 @@ export async function generateProject(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger, verbose } = context;
+  const { logger, verbose } = context
 
   try {
     // Phase 0: Validate configuration
-    const validationResult = validateProjectConfig(config);
+    const validationResult = validateProjectConfig(config)
     if (!validationResult.isOk()) {
-      return validationResult;
+      return validationResult
     }
 
-    logger.info(`Generating ${config.template} CLI project: ${chalk.cyan(config.projectName)}`);
+    logger.info(`Generating ${config.template} CLI project: ${chalk.cyan(config.projectName)}`)
 
     if (config.dryRun) {
-      logger.info(chalk.yellow('DRY RUN MODE - No files will be created'));
+      logger.info(chalk.yellow('DRY RUN MODE - No files will be created'))
     }
 
     // Phase 1: Prepare template context
-    const templateContext = await createTemplateContext(config);
+    const templateContext = await createTemplateContext(config)
     if (verbose) {
-      logger.debug('Template context:', templateContext);
+      logger.debug('Template context:', templateContext)
     }
 
     // Phase 2: Load template files
-    let templateFiles;
+    let templateFiles
 
     // Check if this is a ModernProjectConfig (has features property)
     if ('features' in config) {
       // Use new modular template system
-      const composedResult = composeTemplate(config as ModernProjectConfig);
+      const composedResult = composeTemplate(config as ModernProjectConfig)
       if (composedResult.isErr()) {
-        return err(composedResult.error);
+        return err(composedResult.error)
       }
 
-      const composedTemplate = composedResult.value;
-      templateFiles = composedTemplate.files;
+      const composedTemplate = composedResult.value
+      templateFiles = composedTemplate.files
       logger.info(
         `Composed template with ${composedTemplate.modules.length} modules and ${templateFiles.length} files`
-      );
+      )
     } else {
       // Use legacy template system
-      templateFiles = await getTemplateFiles(config.template, context.templateConfig);
-      logger.info(`Found ${templateFiles.length} template files`);
+      templateFiles = await getTemplateFiles(config.template, context.templateConfig)
+      logger.info(`Found ${templateFiles.length} template files`)
     }
 
     // Phase 2.5: Pre-compile templates for better performance
     // Get the resolved template directory from template loader
-    const { resolveTemplatePaths } = await import('./template-loader.js');
-    const { paths } = resolveTemplatePaths(config.template, context.templateConfig);
+    const { resolveTemplatePaths } = await import('./template-loader.js')
+    const { paths } = resolveTemplatePaths(config.template, context.templateConfig)
 
     // For modular templates, resolve template paths correctly
     const templatePaths = templateFiles
@@ -136,104 +136,104 @@ export async function generateProject(
       .map((f: any) => {
         // Handle modular template paths (modules/module-name/...)
         if (f.source.startsWith('modules/')) {
-          return resolve(paths.base, f.source);
+          return resolve(paths.base, f.source)
         }
         // Handle legacy template paths
-        return resolve(paths.base, f.source);
-      });
+        return resolve(paths.base, f.source)
+      })
 
     if (templatePaths.length > 0) {
-      const precompileSpinner = ora('Pre-compiling templates...').start();
-      await templateCompiler.precompileTemplates(templatePaths);
-      precompileSpinner.succeed(`Pre-compiled ${templatePaths.length} templates`);
+      const precompileSpinner = ora('Pre-compiling templates...').start()
+      await templateCompiler.precompileTemplates(templatePaths)
+      precompileSpinner.succeed(`Pre-compiled ${templatePaths.length} templates`)
     }
 
     // Phase 3: Create project directory
     if (!config.dryRun) {
-      const createDirResult = await createProjectDirectory(config.projectPath);
+      const createDirResult = await createProjectDirectory(config.projectPath)
       if (!createDirResult.isOk()) {
-        return createDirResult;
+        return createDirResult
       }
     }
 
     // Phase 4: Process and copy files
-    const spinner = ora('Processing template files...').start();
-    const startTime = performance.now();
+    const spinner = ora('Processing template files...').start()
+    const startTime = performance.now()
 
     for (const templateFile of templateFiles) {
-      const result = await processTemplateFile(templateFile, templateContext, config, context);
+      const result = await processTemplateFile(templateFile, templateContext, config, context)
 
       if (!result.isOk()) {
-        spinner.fail(`Failed to process ${templateFile.source}`);
-        return result;
+        spinner.fail(`Failed to process ${templateFile.source}`)
+        return result
       }
 
       if (verbose) {
-        spinner.text = `Processed ${templateFile.destination}`;
+        spinner.text = `Processed ${templateFile.destination}`
       }
     }
 
-    const processingTime = performance.now() - startTime;
-    const avgTimePerFile = processingTime / templateFiles.length;
+    const processingTime = performance.now() - startTime
+    const avgTimePerFile = processingTime / templateFiles.length
 
     spinner.succeed(
       `Template files processed (${Math.round(processingTime)}ms, ${Math.round(avgTimePerFile)}ms avg)`
-    );
+    )
 
     if (verbose) {
-      const cacheStats = templateCompiler.getCacheStats();
-      logger.debug(`Template cache: ${cacheStats.size} entries cached`);
+      const cacheStats = templateCompiler.getCacheStats()
+      logger.debug(`Template cache: ${cacheStats.size} entries cached`)
     }
 
     // Phase 5: Initialize git repository
     if (config.initGit && !config.dryRun) {
-      const gitResult = await initializeGitRepository(config.projectPath, context);
+      const gitResult = await initializeGitRepository(config.projectPath, context)
       if (!gitResult.isOk()) {
-        logger.warning('Failed to initialize git repository');
+        logger.warning('Failed to initialize git repository')
       }
     }
 
     // Phase 6: Install dependencies
     if (config.installDependencies && !config.dryRun) {
-      const installResult = await installDependencies(config, context);
+      const installResult = await installDependencies(config, context)
       if (!installResult.isOk()) {
-        logger.warning('Failed to install dependencies');
+        logger.warning('Failed to install dependencies')
       }
     }
 
     // Phase 7: Configure development environment
     if (!config.dryRun) {
-      const devSetupResult = await setupDevelopmentEnvironment(config, context);
+      const devSetupResult = await setupDevelopmentEnvironment(config, context)
       if (!devSetupResult.isOk()) {
-        logger.warning('Failed to configure development environment');
+        logger.warning('Failed to configure development environment')
       }
     }
 
     // Phase 8: Verify project readiness
     if (!config.dryRun) {
-      const verificationResult = await verifyProjectReadiness(config, context);
+      const verificationResult = await verifyProjectReadiness(config, context)
       if (!verificationResult.isOk()) {
-        logger.warning('Project verification failed - project may not be ready for development');
+        logger.warning('Project verification failed - project may not be ready for development')
         if (verbose) {
-          logger.debug('Verification error:', verificationResult.error);
+          logger.debug('Verification error:', verificationResult.error)
         }
       } else {
-        logger.info('✅ Project is ready for development');
+        logger.info('✅ Project is ready for development')
       }
     }
 
     // Phase 9: Cleanup template cache if needed
-    templateCompiler.cleanup(50); // Keep max 50 entries
+    templateCompiler.cleanup(50) // Keep max 50 entries
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
-    logger.error('Generator failed:', error);
+    logger.error('Generator failed:', error)
     return err(
       createCoreError('PROJECT_GENERATION_FAILED', 'Project generation failed', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -256,30 +256,30 @@ export async function generateProject(
  */
 function validateProjectConfig(config: ProjectConfig): Result<void, CoreError> {
   // Validate project name with security checks
-  const nameValidation = validateProjectName(config.projectName);
+  const nameValidation = validateProjectName(config.projectName)
   if (!nameValidation.isOk()) {
-    return err(nameValidation.error);
+    return err(nameValidation.error)
   }
 
   // Validate project path with directory traversal protection
-  const pathValidation = validateProjectPath(config.projectPath, process.cwd());
+  const pathValidation = validateProjectPath(config.projectPath, process.cwd())
   if (!pathValidation.isOk()) {
-    return err(pathValidation.error);
+    return err(pathValidation.error)
   }
 
   // Validate template with whitelist
-  const templateValidation = validateTemplate(config.template);
+  const templateValidation = validateTemplate(config.template)
   if (!templateValidation.isOk()) {
-    return err(templateValidation.error);
+    return err(templateValidation.error)
   }
 
   // Validate package manager with whitelist
-  const packageManagerValidation = validatePackageManager(config.packageManager);
+  const packageManagerValidation = validatePackageManager(config.packageManager)
   if (!packageManagerValidation.isOk()) {
-    return err(packageManagerValidation.error);
+    return err(packageManagerValidation.error)
   }
 
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
@@ -296,15 +296,15 @@ function validateProjectConfig(config: ProjectConfig): Result<void, CoreError> {
  * @throws {CoreError} When directory creation fails due to permissions or filesystem issues
  */
 async function createProjectDirectory(projectPath: string): Promise<Result<void, CoreError>> {
-  const result = await fs.ensureDir(projectPath);
+  const result = await fs.ensureDir(projectPath)
   if (result.isErr()) {
     return err(
       createCoreError('DIRECTORY_CREATION_FAILED', 'Failed to create project directory', {
         cause: result.error,
       })
-    );
+    )
   }
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
@@ -338,43 +338,43 @@ async function processTemplateFile(
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
   try {
-    const { logger, verbose } = context;
+    const { logger, verbose } = context
 
     // Validate template source path to prevent directory traversal
     // Get the resolved template directory from template loader
-    const { resolveTemplatePaths } = await import('./template-loader.js');
-    const { paths } = resolveTemplatePaths(config.template, context.templateConfig);
-    const baseTemplateDir = paths.base;
+    const { resolveTemplatePaths } = await import('./template-loader.js')
+    const { paths } = resolveTemplatePaths(config.template, context.templateConfig)
+    const baseTemplateDir = paths.base
 
     // Resolve the full template path (handle modular vs legacy paths)
-    let fullTemplatePath;
+    let fullTemplatePath
     if (templateFile.source.startsWith('modules/')) {
-      fullTemplatePath = resolve(baseTemplateDir, templateFile.source);
+      fullTemplatePath = resolve(baseTemplateDir, templateFile.source)
     } else {
-      fullTemplatePath = resolve(baseTemplateDir, templateFile.source);
+      fullTemplatePath = resolve(baseTemplateDir, templateFile.source)
     }
 
-    const templatePathValidation = validateTemplatePath(templateFile.source, baseTemplateDir);
+    const templatePathValidation = validateTemplatePath(templateFile.source, baseTemplateDir)
     if (!templatePathValidation.isOk()) {
-      return err(templatePathValidation.error);
+      return err(templatePathValidation.error)
     }
 
     // Validate output destination path to prevent directory traversal
-    const outputPathValidation = validateOutputPath(templateFile.destination, config.projectPath);
+    const outputPathValidation = validateOutputPath(templateFile.destination, config.projectPath)
     if (!outputPathValidation.isOk()) {
-      return err(outputPathValidation.error);
+      return err(outputPathValidation.error)
     }
-    const outputPath = outputPathValidation.value;
+    const outputPath = outputPathValidation.value
 
-    const templatePath = fullTemplatePath;
+    const templatePath = fullTemplatePath
 
     if (config.dryRun) {
-      logger.info(`Would create: ${templateFile.destination}`);
-      return ok(undefined);
+      logger.info(`Would create: ${templateFile.destination}`)
+      return ok(undefined)
     }
 
     // Ensure output directory exists
-    const ensureDirResult = await fs.ensureDir(dirname(outputPath));
+    const ensureDirResult = await fs.ensureDir(dirname(outputPath))
     if (ensureDirResult.isErr()) {
       return err(
         createCoreError(
@@ -384,31 +384,28 @@ async function processTemplateFile(
             cause: ensureDirResult.error,
           }
         )
-      );
+      )
     }
 
     if (templateFile.isTemplate) {
       // Process template with optimized compiler
-      const processedContent = await templateCompiler.compileTemplate(
-        templatePath,
-        templateContext
-      );
+      const processedContent = await templateCompiler.compileTemplate(templatePath, templateContext)
 
-      const writeResult = await fs.writeFile(outputPath, processedContent);
+      const writeResult = await fs.writeFile(outputPath, processedContent)
       if (writeResult.isErr()) {
         return err(
           createCoreError('TEMPLATE_WRITE_FAILED', `Failed to write template file ${outputPath}`, {
             cause: writeResult.error,
           })
-        );
+        )
       }
 
       if (verbose) {
-        logger.debug(`Processed template: ${templateFile.source} -> ${templateFile.destination}`);
+        logger.debug(`Processed template: ${templateFile.source} -> ${templateFile.destination}`)
       }
     } else {
       // Copy file as-is
-      const copyResult = await fs.copy(templatePath, outputPath);
+      const copyResult = await fs.copy(templatePath, outputPath)
       if (copyResult.isErr()) {
         return err(
           createCoreError(
@@ -418,11 +415,11 @@ async function processTemplateFile(
               cause: copyResult.error,
             }
           )
-        );
+        )
       }
 
       if (verbose) {
-        logger.debug(`Copied file: ${templateFile.source} -> ${templateFile.destination}`);
+        logger.debug(`Copied file: ${templateFile.source} -> ${templateFile.destination}`)
       }
     }
 
@@ -430,17 +427,17 @@ async function processTemplateFile(
     // Note: CLI filesystem doesn't expose chmod, so we'll use fs directly for now
     if (templateFile.executable) {
       try {
-        const { chmod } = await import('node:fs/promises');
-        await chmod(outputPath, 0o755);
+        const { chmod } = await import('node:fs/promises')
+        await chmod(outputPath, 0o755)
       } catch {
         // Non-critical error, just log it
         if (verbose) {
-          logger.debug(`Warning: Could not set executable permissions for ${outputPath}`);
+          logger.debug(`Warning: Could not set executable permissions for ${outputPath}`)
         }
       }
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError(
@@ -451,7 +448,7 @@ async function processTemplateFile(
           context: { details: error instanceof Error ? error.message : String(error) },
         }
       )
-    );
+    )
   }
 }
 
@@ -480,45 +477,45 @@ async function initializeGitRepository(
   projectPath: string,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context;
+  const { logger: _logger } = context
 
   // Validate project path to prevent command injection
-  const pathValidation = validateProjectPath(projectPath, process.cwd());
+  const pathValidation = validateProjectPath(projectPath, process.cwd())
   if (!pathValidation.isOk()) {
-    return err(pathValidation.error);
+    return err(pathValidation.error)
   }
-  const _safePath = pathValidation.value;
+  const _safePath = pathValidation.value
 
-  const spinner = ora('Initializing git repository...').start();
+  const spinner = ora('Initializing git repository...').start()
 
-  const gitOps = createGeneratorGitOperations();
+  const gitOps = createGeneratorGitOperations()
 
   // Initialize git repository
-  const initResult = await gitOps.initRepository(projectPath);
+  const initResult = await gitOps.initRepository(projectPath)
   if (initResult.isErr()) {
-    spinner.fail('Failed to initialize git repository');
-    return err(initResult.error);
+    spinner.fail('Failed to initialize git repository')
+    return err(initResult.error)
   }
 
   // Stage all files
-  const stageResult = await gitOps.stageFiles(projectPath, ['.']);
+  const stageResult = await gitOps.stageFiles(projectPath, ['.'])
   if (stageResult.isErr()) {
-    spinner.fail('Failed to stage files');
-    return err(stageResult.error);
+    spinner.fail('Failed to stage files')
+    return err(stageResult.error)
   }
 
   // Create initial commit with conventional commit format
   const commitResult = await gitOps.createCommit(
     projectPath,
     'feat: initial project setup\n\nGenerated using create-trailhead-cli with modern architecture'
-  );
+  )
   if (commitResult.isErr()) {
-    spinner.fail('Failed to create initial commit');
-    return err(commitResult.error);
+    spinner.fail('Failed to create initial commit')
+    return err(commitResult.error)
   }
 
-  spinner.succeed('Git repository initialized');
-  return ok(undefined);
+  spinner.succeed('Git repository initialized')
+  return ok(undefined)
 }
 
 /**
@@ -546,18 +543,18 @@ async function installDependencies(
   config: ProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context;
+  const { logger: _logger } = context
 
   try {
     // Validate project path to prevent command injection
-    const pathValidation = validateProjectPath(config.projectPath, process.cwd());
+    const pathValidation = validateProjectPath(config.projectPath, process.cwd())
     if (!pathValidation.isOk()) {
-      return err(pathValidation.error);
+      return err(pathValidation.error)
     }
-    const safePath = pathValidation.value;
+    const safePath = pathValidation.value
 
     // Use CLI package manager detection instead of manual validation
-    const packageManagerResult = detectPackageManager();
+    const packageManagerResult = detectPackageManager()
     if (!packageManagerResult.isOk()) {
       return err(
         createCoreError('PACKAGE_MANAGER_NOT_FOUND', 'No suitable package manager found', {
@@ -565,24 +562,24 @@ async function installDependencies(
           context: { details: 'Package manager detection failed' },
           suggestion: 'Install pnpm or npm and ensure it is available in PATH',
         })
-      );
+      )
     }
 
-    const packageManager = packageManagerResult.value;
-    const spinner = ora(`Installing dependencies with ${packageManager}...`).start();
+    const packageManager = packageManagerResult.value
+    const spinner = ora(`Installing dependencies with ${packageManager}...`).start()
 
     // Use CLI package manager configuration
-    const installArgs = packageManager === 'pnpm' ? ['install', '--ignore-workspace'] : ['install'];
+    const installArgs = packageManager === 'pnpm' ? ['install', '--ignore-workspace'] : ['install']
 
     await execa(packageManager, installArgs, {
       cwd: safePath,
       stdio: 'pipe', // Prevent output injection
       shell: false, // Disable shell interpretation
       timeout: 300000, // 5 minute timeout for security
-    });
+    })
 
-    spinner.succeed('Dependencies installed');
-    return ok(undefined);
+    spinner.succeed('Dependencies installed')
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('DEPENDENCY_INSTALL_FAILED', 'Failed to install dependencies', {
@@ -592,7 +589,7 @@ async function installDependencies(
             'Dependency installation failed - ensure the package manager is installed and accessible',
         },
       })
-    );
+    )
   }
 }
 
@@ -618,36 +615,36 @@ async function setupDevelopmentEnvironment(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
-  const spinner = ora('Setting up development environment...').start();
+  const { logger } = context
+  const spinner = ora('Setting up development environment...').start()
 
   try {
     // IDE configuration is handled through template files in modules/vscode/
 
     // Setup Git configuration
-    const gitConfigResult = await setupGitConfiguration(config, context);
+    const gitConfigResult = await setupGitConfiguration(config, context)
     if (!gitConfigResult.isOk()) {
-      spinner.text = 'Git configuration failed, continuing...';
-      logger.debug('Git config error:', gitConfigResult.error);
+      spinner.text = 'Git configuration failed, continuing...'
+      logger.debug('Git config error:', gitConfigResult.error)
     }
 
     // Setup development scripts
-    const scriptsResult = await setupDevelopmentScripts(config, context);
+    const scriptsResult = await setupDevelopmentScripts(config, context)
     if (!scriptsResult.isOk()) {
-      spinner.text = 'Development scripts setup failed, continuing...';
-      logger.debug('Scripts setup error:', scriptsResult.error);
+      spinner.text = 'Development scripts setup failed, continuing...'
+      logger.debug('Scripts setup error:', scriptsResult.error)
     }
 
-    spinner.succeed('Development environment configured');
-    return ok(undefined);
+    spinner.succeed('Development environment configured')
+    return ok(undefined)
   } catch (error) {
-    spinner.fail('Failed to setup development environment');
+    spinner.fail('Failed to setup development environment')
     return err(
       createCoreError('DEV_ENVIRONMENT_SETUP_FAILED', 'Failed to setup development environment', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -658,17 +655,17 @@ async function setupGitConfiguration(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
+  const { logger } = context
 
   try {
     // Set up git user configuration if it's not already set globally
-    const modernConfig = 'author' in config ? (config as ModernProjectConfig) : null;
+    const modernConfig = 'author' in config ? (config as ModernProjectConfig) : null
 
     if (modernConfig?.author) {
-      const gitOps = createGeneratorGitOperations();
+      const gitOps = createGeneratorGitOperations()
 
       // Check if git user is already configured
-      const userNameResult = await gitOps.getConfig(config.projectPath, 'user.name');
+      const userNameResult = await gitOps.getConfig(config.projectPath, 'user.name')
 
       if (userNameResult.isErr()) {
         // If no user configured, set it from project config
@@ -676,28 +673,28 @@ async function setupGitConfiguration(
           config.projectPath,
           modernConfig.author.name,
           modernConfig.author.email
-        );
+        )
 
         if (configResult.isOk()) {
           if (context.verbose) {
             logger.info(
               `Git user configured: ${modernConfig.author.name} <${modernConfig.author.email}>`
-            );
+            )
           }
         } else {
-          logger.debug('Failed to set git user configuration:', configResult.error);
+          logger.debug('Failed to set git user configuration:', configResult.error)
         }
       }
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('GIT_CONFIG_FAILED', 'Failed to setup git configuration', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -708,7 +705,7 @@ async function setupDevelopmentScripts(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
+  const { logger } = context
 
   try {
     // Development scripts are already included in package.json template
@@ -719,17 +716,17 @@ async function setupDevelopmentScripts(
     // - Setup testing environment
 
     if (context.verbose) {
-      logger.info('Development scripts configured in package.json');
+      logger.info('Development scripts configured in package.json')
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('DEV_SCRIPTS_SETUP_FAILED', 'Failed to setup development scripts', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -757,59 +754,59 @@ async function verifyProjectReadiness(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context;
-  const spinner = ora('Verifying project readiness...').start();
+  const { logger: _logger } = context
+  const spinner = ora('Verifying project readiness...').start()
 
   try {
     // Verify package.json exists and is valid
-    const packageJsonResult = await verifyPackageJson(config.projectPath);
+    const packageJsonResult = await verifyPackageJson(config.projectPath)
     if (!packageJsonResult.isOk()) {
-      spinner.fail('Package.json verification failed');
-      return err(packageJsonResult.error);
+      spinner.fail('Package.json verification failed')
+      return err(packageJsonResult.error)
     }
 
     // Verify TypeScript configuration
-    const tsConfigResult = await verifyTypeScriptConfig(config.projectPath);
+    const tsConfigResult = await verifyTypeScriptConfig(config.projectPath)
     if (!tsConfigResult.isOk()) {
-      spinner.fail('TypeScript configuration verification failed');
-      return err(tsConfigResult.error);
+      spinner.fail('TypeScript configuration verification failed')
+      return err(tsConfigResult.error)
     }
 
     // Verify Git repository
     if ('initGit' in config && config.initGit) {
-      const gitResult = await verifyGitRepository(config.projectPath);
+      const gitResult = await verifyGitRepository(config.projectPath)
       if (!gitResult.isOk()) {
-        spinner.fail('Git repository verification failed');
-        return err(gitResult.error);
+        spinner.fail('Git repository verification failed')
+        return err(gitResult.error)
       }
     }
 
     // Verify project structure
-    const structureResult = await verifyProjectStructure(config);
+    const structureResult = await verifyProjectStructure(config)
     if (!structureResult.isOk()) {
-      spinner.fail('Project structure verification failed');
-      return err(structureResult.error);
+      spinner.fail('Project structure verification failed')
+      return err(structureResult.error)
     }
 
     // Verify build and test execution
     if (config.installDependencies) {
-      const buildResult = await verifyBuildAndTest(config, context);
+      const buildResult = await verifyBuildAndTest(config, context)
       if (!buildResult.isOk()) {
-        spinner.fail('Build and test verification failed');
-        return err(buildResult.error);
+        spinner.fail('Build and test verification failed')
+        return err(buildResult.error)
       }
     }
 
-    spinner.succeed('Project verification completed');
-    return ok(undefined);
+    spinner.succeed('Project verification completed')
+    return ok(undefined)
   } catch (error) {
-    spinner.fail('Project verification failed');
+    spinner.fail('Project verification failed')
     return err(
       createCoreError('PROJECT_VERIFICATION_FAILED', 'Project verification failed', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -818,20 +815,20 @@ async function verifyProjectReadiness(
  */
 async function verifyPackageJson(projectPath: string): Promise<Result<void, CoreError>> {
   try {
-    const packageJsonPath = resolve(projectPath, 'package.json');
-    const readResult = await fs.readFile(packageJsonPath);
+    const packageJsonPath = resolve(projectPath, 'package.json')
+    const readResult = await fs.readFile(packageJsonPath)
 
     if (readResult.isErr()) {
       return err(
         createCoreError('PACKAGE_JSON_MISSING', 'package.json not found', {
           context: { details: 'package.json is required for the project' },
         })
-      );
+      )
     }
 
     // Verify it's valid JSON
     try {
-      const packageJson = JSON.parse(readResult.value);
+      const packageJson = JSON.parse(readResult.value)
 
       // Check required fields
       if (!packageJson.name || !packageJson.version || !packageJson.scripts) {
@@ -839,23 +836,23 @@ async function verifyPackageJson(projectPath: string): Promise<Result<void, Core
           createCoreError('PACKAGE_JSON_INVALID', 'package.json is missing required fields', {
             context: { details: 'name, version, and scripts are required' },
           })
-        );
+        )
       }
     } catch (parseError) {
       return err(
         createCoreError('PACKAGE_JSON_INVALID', 'package.json is not valid JSON', {
           cause: parseError,
         })
-      );
+      )
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('PACKAGE_JSON_VERIFICATION_FAILED', 'Failed to verify package.json', {
         cause: error,
       })
-    );
+    )
   }
 }
 
@@ -864,35 +861,35 @@ async function verifyPackageJson(projectPath: string): Promise<Result<void, Core
  */
 async function verifyTypeScriptConfig(projectPath: string): Promise<Result<void, CoreError>> {
   try {
-    const tsConfigPath = resolve(projectPath, 'tsconfig.json');
-    const readResult = await fs.readFile(tsConfigPath);
+    const tsConfigPath = resolve(projectPath, 'tsconfig.json')
+    const readResult = await fs.readFile(tsConfigPath)
 
     if (readResult.isErr()) {
       return err(
         createCoreError('TSCONFIG_MISSING', 'tsconfig.json not found', {
           context: { details: 'TypeScript configuration is required' },
         })
-      );
+      )
     }
 
     // Verify it's valid JSON
     try {
-      JSON.parse(readResult.value);
+      JSON.parse(readResult.value)
     } catch (parseError) {
       return err(
         createCoreError('TSCONFIG_INVALID', 'tsconfig.json is not valid JSON', {
           cause: parseError,
         })
-      );
+      )
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('TSCONFIG_VERIFICATION_FAILED', 'Failed to verify TypeScript configuration', {
         cause: error,
       })
-    );
+    )
   }
 }
 
@@ -902,31 +899,31 @@ async function verifyTypeScriptConfig(projectPath: string): Promise<Result<void,
 async function verifyGitRepository(projectPath: string): Promise<Result<void, CoreError>> {
   try {
     // Check if .git directory exists
-    const gitDirPath = resolve(projectPath, '.git');
-    const gitDirResult = await fs.exists(gitDirPath);
+    const gitDirPath = resolve(projectPath, '.git')
+    const gitDirResult = await fs.exists(gitDirPath)
 
     if (gitDirResult.isErr() || !gitDirResult.value) {
       return err(
         createCoreError('GIT_REPO_MISSING', 'Git repository not found', {
           context: { details: '.git directory is missing' },
         })
-      );
+      )
     }
 
     // Verify git status
-    const gitOps = createGeneratorGitOperations();
-    const statusResult = await gitOps.verifyStatus(projectPath);
+    const gitOps = createGeneratorGitOperations()
+    const statusResult = await gitOps.verifyStatus(projectPath)
     if (statusResult.isErr()) {
-      return err(statusResult.error);
+      return err(statusResult.error)
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('GIT_VERIFICATION_FAILED', 'Failed to verify Git repository', {
         cause: error,
       })
-    );
+    )
   }
 }
 
@@ -937,22 +934,22 @@ async function verifyProjectStructure(
   config: ProjectConfig | ModernProjectConfig
 ): Promise<Result<void, CoreError>> {
   try {
-    const requiredFiles = ['package.json', 'tsconfig.json', 'src/index.ts', 'bin/cli.js'];
+    const requiredFiles = ['package.json', 'tsconfig.json', 'src/index.ts', 'bin/cli.js']
 
     for (const file of requiredFiles) {
-      const filePath = resolve(config.projectPath, file);
-      const existsResult = await fs.exists(filePath);
+      const filePath = resolve(config.projectPath, file)
+      const existsResult = await fs.exists(filePath)
 
       if (existsResult.isErr() || !existsResult.value) {
         return err(
           createCoreError('PROJECT_STRUCTURE_INVALID', `Required file missing: ${file}`, {
             context: { details: `File ${file} is required for the project` },
           })
-        );
+        )
       }
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError(
@@ -962,7 +959,7 @@ async function verifyProjectStructure(
           cause: error,
         }
       )
-    );
+    )
   }
 }
 
@@ -980,43 +977,43 @@ async function verifyBuildAndTest(
   config: ProjectConfig | ModernProjectConfig,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context;
+  const { logger: _logger } = context
 
   try {
     // Get package manager
-    const packageManagerResult = detectPackageManager();
+    const packageManagerResult = detectPackageManager()
     if (!packageManagerResult.isOk()) {
       return err(
         createCoreError('PACKAGE_MANAGER_DETECTION_FAILED', 'Failed to detect package manager', {
           cause: packageManagerResult.error,
         })
-      );
+      )
     }
 
-    const packageManager = packageManagerResult.value;
+    const packageManager = packageManagerResult.value
 
     // Verify TypeScript compilation
-    const typeCheckResult = await runTypeCheck(config.projectPath, packageManager, context);
+    const typeCheckResult = await runTypeCheck(config.projectPath, packageManager, context)
     if (!typeCheckResult.isOk()) {
-      return err(typeCheckResult.error);
+      return err(typeCheckResult.error)
     }
 
     // Verify build execution
-    const buildResult = await runBuild(config.projectPath, packageManager, context);
+    const buildResult = await runBuild(config.projectPath, packageManager, context)
     if (!buildResult.isOk()) {
-      return err(buildResult.error);
+      return err(buildResult.error)
     }
 
     // Verify test execution if tests are enabled
-    const modernConfig = 'features' in config ? (config as ModernProjectConfig) : null;
+    const modernConfig = 'features' in config ? (config as ModernProjectConfig) : null
     if (modernConfig?.features?.testing) {
-      const testResult = await runTests(config.projectPath, packageManager, context);
+      const testResult = await runTests(config.projectPath, packageManager, context)
       if (!testResult.isOk()) {
-        return err(testResult.error);
+        return err(testResult.error)
       }
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError(
@@ -1026,7 +1023,7 @@ async function verifyBuildAndTest(
           cause: error,
         }
       )
-    );
+    )
   }
 }
 
@@ -1038,11 +1035,11 @@ async function runTypeCheck(
   packageManager: string,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
+  const { logger } = context
 
   try {
     if (context.verbose) {
-      logger.info('Running TypeScript type check...');
+      logger.info('Running TypeScript type check...')
     }
 
     await execa(packageManager, ['run', 'types'], {
@@ -1050,20 +1047,20 @@ async function runTypeCheck(
       stdio: 'pipe',
       shell: false,
       timeout: 60000, // 1 minute timeout
-    });
+    })
 
     if (context.verbose) {
-      logger.info('TypeScript type check passed');
+      logger.info('TypeScript type check passed')
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('TYPE_CHECK_FAILED', 'TypeScript type check failed', {
         cause: error,
         context: { details: 'Generated project has TypeScript compilation errors' },
       })
-    );
+    )
   }
 }
 
@@ -1075,11 +1072,11 @@ async function runBuild(
   packageManager: string,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
+  const { logger } = context
 
   try {
     if (context.verbose) {
-      logger.info('Running project build...');
+      logger.info('Running project build...')
     }
 
     await execa(packageManager, ['run', 'build'], {
@@ -1087,20 +1084,20 @@ async function runBuild(
       stdio: 'pipe',
       shell: false,
       timeout: 120000, // 2 minute timeout
-    });
+    })
 
     if (context.verbose) {
-      logger.info('Project build completed successfully');
+      logger.info('Project build completed successfully')
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('BUILD_FAILED', 'Project build failed', {
         cause: error,
         context: { details: 'Generated project build script failed' },
       })
-    );
+    )
   }
 }
 
@@ -1112,11 +1109,11 @@ async function runTests(
   packageManager: string,
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
-  const { logger } = context;
+  const { logger } = context
 
   try {
     if (context.verbose) {
-      logger.info('Running project tests...');
+      logger.info('Running project tests...')
     }
 
     await execa(packageManager, ['run', 'test'], {
@@ -1124,20 +1121,20 @@ async function runTests(
       stdio: 'pipe',
       shell: false,
       timeout: 180000, // 3 minute timeout
-    });
+    })
 
     if (context.verbose) {
-      logger.info('All tests passed');
+      logger.info('All tests passed')
     }
 
-    return ok(undefined);
+    return ok(undefined)
   } catch (error) {
     return err(
       createCoreError('TESTS_FAILED', 'Project tests failed', {
         cause: error,
         context: { details: 'Generated project tests are failing' },
       })
-    );
+    )
   }
 }
 

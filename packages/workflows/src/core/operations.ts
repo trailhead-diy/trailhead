@@ -1,4 +1,4 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   WorkflowOperations,
   WorkflowDefinition,
@@ -7,8 +7,8 @@ import type {
   ExecutionPlan,
   ExecutionOptions,
   StepExecutionPlan,
-} from '../types.js';
-import { createWorkflowValidationError, createDependencyError } from '../errors.js';
+} from '../types.js'
+import { createWorkflowValidationError, createDependencyError } from '../errors.js'
 
 // ========================================
 // Workflow Operations
@@ -21,8 +21,8 @@ export const createWorkflowOperations = (): WorkflowOperations => {
     return {
       id: `workflow_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       ...definition,
-    };
-  };
+    }
+  }
 
   const createStep = <TInput, TOutput>(
     definition: Omit<StepDefinition<TInput, TOutput>, 'id'>
@@ -30,8 +30,8 @@ export const createWorkflowOperations = (): WorkflowOperations => {
     return {
       id: `step_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       ...definition,
-    };
-  };
+    }
+  }
 
   const validateWorkflow = (workflow: WorkflowDefinition): WorkflowResult<void> => {
     try {
@@ -42,7 +42,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
             'Workflow ID is required',
             'Provide a unique identifier for the workflow'
           )
-        );
+        )
       }
 
       if (!workflow.name) {
@@ -51,7 +51,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
             'Workflow name is required',
             'Provide a descriptive name for the workflow'
           )
-        );
+        )
       }
 
       if (!workflow.steps || workflow.steps.length === 0) {
@@ -60,11 +60,11 @@ export const createWorkflowOperations = (): WorkflowOperations => {
             'Workflow must have at least one step',
             'Add step definitions to the workflow'
           )
-        );
+        )
       }
 
       // Validate steps
-      const stepIds = new Set<string>();
+      const stepIds = new Set<string>()
       for (const step of workflow.steps) {
         if (!step.id) {
           return err(
@@ -72,7 +72,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
               'Step ID is required',
               'Provide a unique identifier for each step'
             )
-          );
+          )
         }
 
         if (stepIds.has(step.id)) {
@@ -81,9 +81,9 @@ export const createWorkflowOperations = (): WorkflowOperations => {
               `Duplicate step ID: ${step.id}`,
               'Ensure all step IDs are unique within the workflow'
             )
-          );
+          )
         }
-        stepIds.add(step.id);
+        stepIds.add(step.id)
 
         if (!step.name) {
           return err(
@@ -91,7 +91,7 @@ export const createWorkflowOperations = (): WorkflowOperations => {
               `Step '${step.id}' is missing a name`,
               'Provide a descriptive name for each step'
             )
-          );
+          )
         }
 
         if (!step.execute) {
@@ -100,17 +100,17 @@ export const createWorkflowOperations = (): WorkflowOperations => {
               `Step '${step.id}' is missing an execute function`,
               'Provide an execute function for each step'
             )
-          );
+          )
         }
       }
 
       // Validate dependencies
-      const dependencyValidation = validateDependencies(workflow.steps);
+      const dependencyValidation = validateDependencies(workflow.steps)
       if (dependencyValidation.isErr()) {
-        return dependencyValidation;
+        return dependencyValidation
       }
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err(
         createWorkflowValidationError(
@@ -118,46 +118,46 @@ export const createWorkflowOperations = (): WorkflowOperations => {
           'Check the workflow definition and fix any issues',
           error
         )
-      );
+      )
     }
-  };
+  }
 
   const planExecution = (
     workflow: WorkflowDefinition,
     options: ExecutionOptions = {}
   ): WorkflowResult<ExecutionPlan> => {
     try {
-      const validation = validateWorkflow(workflow);
+      const validation = validateWorkflow(workflow)
       if (validation.isErr()) {
-        return err(validation.error);
+        return err(validation.error)
       }
 
       // Build dependency graph
-      const dependencies = new Map<string, readonly string[]>();
-      const stepMap = new Map<string, StepDefinition>();
+      const dependencies = new Map<string, readonly string[]>()
+      const stepMap = new Map<string, StepDefinition>()
 
       for (const step of workflow.steps) {
-        stepMap.set(step.id, step);
-        dependencies.set(step.id, step.dependencies || []);
+        stepMap.set(step.id, step)
+        dependencies.set(step.id, step.dependencies || [])
       }
 
       // Topological sort to determine execution order
-      const sorted = topologicalSort(dependencies);
+      const sorted = topologicalSort(dependencies)
       if (sorted.isErr()) {
-        return err(sorted.error);
+        return err(sorted.error)
       }
 
-      const executionOrder = sorted.value;
+      const executionOrder = sorted.value
 
       // Create step execution plans
       const stepPlans: StepExecutionPlan[] = executionOrder.map((stepId, index) => {
-        const step = stepMap.get(stepId)!;
-        const stepDependencies = step.dependencies || [];
+        const step = stepMap.get(stepId)!
+        const stepDependencies = step.dependencies || []
 
         // Determine if step can run in parallel
         const canRunInParallel =
           options.parallel !== false &&
-          stepDependencies.every(depId => executionOrder.indexOf(depId) < index);
+          stepDependencies.every((depId) => executionOrder.indexOf(depId) < index)
 
         return {
           stepId,
@@ -165,8 +165,8 @@ export const createWorkflowOperations = (): WorkflowOperations => {
           dependencies: stepDependencies,
           canRunInParallel,
           estimatedDuration: step.timeout,
-        };
-      });
+        }
+      })
 
       const plan: ExecutionPlan = {
         workflowId: workflow.id,
@@ -174,9 +174,9 @@ export const createWorkflowOperations = (): WorkflowOperations => {
         dependencies,
         parallel: options.parallel !== false,
         estimatedDuration: workflow.timeout,
-      };
+      }
 
-      return ok(plan);
+      return ok(plan)
     } catch (error) {
       return err(
         createWorkflowValidationError(
@@ -184,24 +184,24 @@ export const createWorkflowOperations = (): WorkflowOperations => {
           'Check the workflow definition and options',
           error
         )
-      );
+      )
     }
-  };
+  }
 
   return {
     createWorkflow,
     createStep,
     validateWorkflow,
     planExecution,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
 // ========================================
 
 const validateDependencies = (steps: readonly StepDefinition[]): WorkflowResult<void> => {
-  const stepIds = new Set(steps.map(step => step.id));
+  const stepIds = new Set(steps.map((step) => step.id))
 
   for (const step of steps) {
     if (step.dependencies) {
@@ -212,39 +212,39 @@ const validateDependencies = (steps: readonly StepDefinition[]): WorkflowResult<
               `Step '${step.id}' depends on non-existent step '${depId}'`,
               'Ensure all step dependencies reference valid step IDs'
             )
-          );
+          )
         }
       }
     }
   }
 
   // Check for circular dependencies
-  const visited = new Set<string>();
-  const recursionStack = new Set<string>();
+  const visited = new Set<string>()
+  const recursionStack = new Set<string>()
 
   const hasCycle = (stepId: string): boolean => {
     if (recursionStack.has(stepId)) {
-      return true;
+      return true
     }
     if (visited.has(stepId)) {
-      return false;
+      return false
     }
 
-    visited.add(stepId);
-    recursionStack.add(stepId);
+    visited.add(stepId)
+    recursionStack.add(stepId)
 
-    const step = steps.find(s => s.id === stepId);
+    const step = steps.find((s) => s.id === stepId)
     if (step?.dependencies) {
       for (const depId of step.dependencies) {
         if (hasCycle(depId)) {
-          return true;
+          return true
         }
       }
     }
 
-    recursionStack.delete(stepId);
-    return false;
-  };
+    recursionStack.delete(stepId)
+    return false
+  }
 
   for (const step of steps) {
     if (hasCycle(step.id)) {
@@ -253,43 +253,43 @@ const validateDependencies = (steps: readonly StepDefinition[]): WorkflowResult<
           'Circular dependency detected in workflow',
           'Remove circular dependencies between steps'
         )
-      );
+      )
     }
   }
 
-  return ok(undefined);
-};
+  return ok(undefined)
+}
 
 const topologicalSort = (
   dependencies: Map<string, readonly string[]>
 ): WorkflowResult<string[]> => {
-  const result: string[] = [];
-  const visited = new Set<string>();
-  const visiting = new Set<string>();
+  const result: string[] = []
+  const visited = new Set<string>()
+  const visiting = new Set<string>()
 
   const visit = (stepId: string): boolean => {
     if (visiting.has(stepId)) {
-      return false; // Circular dependency
+      return false // Circular dependency
     }
     if (visited.has(stepId)) {
-      return true;
+      return true
     }
 
-    visiting.add(stepId);
+    visiting.add(stepId)
 
-    const deps = dependencies.get(stepId) || [];
+    const deps = dependencies.get(stepId) || []
     for (const depId of deps) {
       if (!visit(depId)) {
-        return false;
+        return false
       }
     }
 
-    visiting.delete(stepId);
-    visited.add(stepId);
-    result.push(stepId);
+    visiting.delete(stepId)
+    visited.add(stepId)
+    result.push(stepId)
 
-    return true;
-  };
+    return true
+  }
 
   for (const stepId of dependencies.keys()) {
     if (!visited.has(stepId)) {
@@ -299,10 +299,10 @@ const topologicalSort = (
             'Circular dependency detected during topological sort',
             'Remove circular dependencies between steps'
           )
-        );
+        )
       }
     }
   }
 
-  return ok(result);
-};
+  return ok(result)
+}

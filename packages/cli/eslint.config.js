@@ -1,5 +1,5 @@
-import neverthrow from '@ninoseki/eslint-plugin-neverthrow';
-import parser from '@typescript-eslint/parser';
+import neverthrow from '@ninoseki/eslint-plugin-neverthrow'
+import parser from '@typescript-eslint/parser'
 
 export default [
   {
@@ -36,4 +36,4 @@ export default [
       'neverthrow/must-use-result': 'off',
     },
   },
-];
+]

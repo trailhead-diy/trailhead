@@ -1,25 +1,25 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { tmpdir } from 'os';
-import { join } from 'path';
-import { rmSync, existsSync } from 'fs';
-import { generateProject } from '../lib/generator.js';
-import { createLogger } from '../lib/logger.js';
-import type { ModernProjectConfig } from '../lib/interactive-prompts.js';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { tmpdir } from 'os'
+import { join } from 'path'
+import { rmSync, existsSync } from 'fs'
+import { generateProject } from '../lib/generator.js'
+import { createLogger } from '../lib/logger.js'
+import type { ModernProjectConfig } from '../lib/interactive-prompts.js'
 
 describe('Generator Integration', () => {
-  let testDir: string;
-  let logger: any;
+  let testDir: string
+  let logger: any
 
   beforeEach(() => {
-    testDir = join(tmpdir(), `create-trailhead-cli-test-${Date.now()}`);
-    logger = createLogger();
-  });
+    testDir = join(tmpdir(), `create-trailhead-cli-test-${Date.now()}`)
+    logger = createLogger()
+  })
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true })
     }
-  });
+  })
 
   it('should generate a basic project successfully', async () => {
     const config: ModernProjectConfig = {
@@ -47,15 +47,15 @@ describe('Generator Integration', () => {
       force: false,
       dryRun: true, // Use dry run for test
       verbose: false,
-    };
+    }
 
-    const result = await generateProject(config, { logger, verbose: false });
+    const result = await generateProject(config, { logger, verbose: false })
 
     if (result.isErr()) {
-      console.error('Generator error:', result.error);
+      console.error('Generator error:', result.error)
     }
-    expect(result.isOk()).toBe(true);
-  });
+    expect(result.isOk()).toBe(true)
+  })
 
   it('should generate an advanced project successfully', async () => {
     const config: ModernProjectConfig = {
@@ -86,15 +86,15 @@ describe('Generator Integration', () => {
       force: false,
       dryRun: true, // Use dry run for test
       verbose: false,
-    };
+    }
 
-    const result = await generateProject(config, { logger, verbose: false });
+    const result = await generateProject(config, { logger, verbose: false })
 
     if (result.isErr()) {
-      console.error('Generator error:', result.error);
+      console.error('Generator error:', result.error)
     }
-    expect(result.isOk()).toBe(true);
-  });
+    expect(result.isOk()).toBe(true)
+  })
 
   it('should validate project configuration', async () => {
     const config: ModernProjectConfig = {
@@ -121,10 +121,10 @@ describe('Generator Integration', () => {
       force: false,
       dryRun: true,
       verbose: false,
-    };
+    }
 
-    const result = await generateProject(config, { logger, verbose: false });
+    const result = await generateProject(config, { logger, verbose: false })
 
-    expect(result.isErr()).toBe(true);
-  });
-});
+    expect(result.isErr()).toBe(true)
+  })
+})

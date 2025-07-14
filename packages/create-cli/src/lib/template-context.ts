@@ -1,13 +1,13 @@
 // import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
-import type { ProjectConfig, TemplateContext } from './types.js';
+import type { ProjectConfig, TemplateContext } from './types.js'
 
 /**
  * Create template context for Handlebars processing
  */
 export async function createTemplateContext(config: ProjectConfig): Promise<TemplateContext> {
-  const isMonorepo = false; // No monorepo templates in simplified CLI generator
-  const hasTypeScript = true; // All templates use TypeScript
-  const isAdvanced = config.template === 'advanced';
+  const isMonorepo = false // No monorepo templates in simplified CLI generator
+  const hasTypeScript = true // All templates use TypeScript
+  const isAdvanced = config.template === 'advanced'
 
   return {
     projectName: config.projectName,
@@ -84,7 +84,7 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
     CHANGESET_REMINDER: isMonorepo,
     CONVENTIONAL_COMMITS: true,
     LOCKFILE_VALIDATION: config.packageManager === 'pnpm',
-  };
+  }
 }
 
 /**
@@ -95,58 +95,58 @@ function sanitizePackageName(projectName: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/^-+|-+$/g, '')
-    .replace(/-+/g, '-');
+    .replace(/-+/g, '-')
 }
 
 /**
  * Get git user name with security validation
  */
 async function getGitUser(): Promise<string> {
-  const nameResult = { isOk: () => false, value: 'Your Name' }; // TODO: Implement git config
+  const nameResult = { isOk: () => false, value: 'Your Name' } // TODO: Implement git config
 
   if (!nameResult.isOk()) {
-    return 'Your Name';
+    return 'Your Name'
   }
 
-  const name = nameResult.value.trim();
+  const name = nameResult.value.trim()
   if (!name) {
-    return 'Your Name';
+    return 'Your Name'
   }
 
   // Basic validation to ensure it's not empty or suspicious
   if (name.length > 100 || name.includes('\n') || name.includes('\0')) {
-    console.warn('Invalid git user.name, using default');
-    return 'Your Name';
+    console.warn('Invalid git user.name, using default')
+    return 'Your Name'
   }
 
-  return name;
+  return name
 }
 
 /**
  * Get git user email with security validation
  */
 async function getGitEmail(): Promise<string> {
-  const emailResult = { isOk: () => false, value: 'your.email@example.com' }; // TODO: Implement git config
+  const emailResult = { isOk: () => false, value: 'your.email@example.com' } // TODO: Implement git config
 
   if (!emailResult.isOk()) {
-    return 'your.email@example.com';
+    return 'your.email@example.com'
   }
 
-  const email = emailResult.value.trim();
+  const email = emailResult.value.trim()
   if (!email) {
-    return 'your.email@example.com';
+    return 'your.email@example.com'
   }
 
   // Basic email validation
   if (!email.includes('@') || email.length > 254 || email.length < 3) {
-    return 'your.email@example.com';
+    return 'your.email@example.com'
   }
 
   // Security validation to prevent dangerous characters
   if (email.includes('\n') || email.includes('\0') || email.includes(';') || email.includes('|')) {
-    console.warn('Invalid git user.email, using default');
-    return 'your.email@example.com';
+    console.warn('Invalid git user.email, using default')
+    return 'your.email@example.com'
   }
 
-  return email;
+  return email
 }

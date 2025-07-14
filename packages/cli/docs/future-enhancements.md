@@ -16,26 +16,26 @@ _Opportunities discovered during CSV processor example development_
 // Current repetitive pattern in all CLI projects
 createTask('Loading data', async (ctx: MySpecificContext) => {
   // Task implementation
-});
+})
 
 // Proposed framework enhancement
-export type TaskHandler<T> = (ctx: T) => Promise<void>;
+export type TaskHandler<T> = (ctx: T) => Promise<void>
 
 export function createTypedTask<T>(name: string, handler: TaskHandler<T>) {
-  return createTask(name, handler);
+  return createTask(name, handler)
 }
 
 // Enhanced command-specific helpers
 export function createTaskBuilder<T>() {
-  return (name: string, handler: TaskHandler<T>) => createTask(name, handler);
+  return (name: string, handler: TaskHandler<T>) => createTask(name, handler)
 }
 
 // Usage becomes clean and elegant
-const createMyTask = createTaskBuilder<MyContext>();
-createMyTask('Loading data', async ctx => {
+const createMyTask = createTaskBuilder<MyContext>()
+createMyTask('Loading data', async (ctx) => {
   // ctx is automatically inferred as MyContext
   // No repetitive type annotations needed
-});
+})
 ```
 
 **Benefits**:
@@ -71,20 +71,20 @@ export const myCommand = createCommand<MyOptions>({
     // ... more common options
   ],
   action: async (options, context) => {
-    const [inputFile] = context.args;
+    const [inputFile] = context.args
     if (!inputFile) {
-      return Err(new Error('Input file is required'));
+      return Err(new Error('Input file is required'))
     }
 
-    const fs = createFileSystem();
-    const fileCheck = await fs.access(inputFile);
+    const fs = createFileSystem()
+    const fileCheck = await fs.access(inputFile)
     if (!fileCheck.success) {
-      return Err(new Error(`File does not exist: ${inputFile}`));
+      return Err(new Error(`File does not exist: ${inputFile}`))
     }
 
     // actual logic starts here...
   },
-});
+})
 
 // Proposed framework enhancement
 export const myCommand = createFileProcessingCommand<MyOptions>({
@@ -99,7 +99,7 @@ export const myCommand = createFileProcessingCommand<MyOptions>({
     // File validation done, filesystem ready, paths resolved
     // Jump straight to business logic
   },
-});
+})
 ```
 
 **Benefits**: Eliminates 15-20 lines of boilerplate per command, automatic file validation, standardized option patterns.
@@ -117,10 +117,10 @@ options: [
   { name: 'format', alias: 'f', type: 'string', choices: ['json', 'csv'], default: 'json' },
   { name: 'verbose', alias: 'v', type: 'boolean', default: false },
   // ... custom options
-];
+]
 
 // Proposed enhancement
-import { commonOptions } from '@esteban-url/trailhead-cli/command';
+import { commonOptions } from '@esteban-url/trailhead-cli/command'
 
 options: [
   ...commonOptions.output(),
@@ -129,14 +129,14 @@ options: [
   ...commonOptions.dryRun(),
   // Only custom options here
   { name: 'custom-option', type: 'string' },
-];
+]
 
 // Or even better - fluent API
 options: defineOptions()
   .common(['output', 'format', 'verbose', 'dry-run'])
   .format(['json', 'csv', 'yaml', 'tsv'])
   .custom([{ name: 'interactive', type: 'boolean' }])
-  .build();
+  .build()
 ```
 
 **Benefits**: Consistent option behavior, automatic validation, reduced definition overhead by ~70%.
@@ -149,32 +149,32 @@ options: defineOptions()
 
 ```typescript
 // Current repetitive pattern everywhere
-const step1Result = await parseFile();
+const step1Result = await parseFile()
 if (!step1Result.success) {
-  return Err(new Error(`Parse failed: ${step1Result.error.message}`));
+  return Err(new Error(`Parse failed: ${step1Result.error.message}`))
 }
 
-const step2Result = await validateData(step1Result.value);
+const step2Result = await validateData(step1Result.value)
 if (!step2Result.success) {
-  return Err(new Error(`Validation failed: ${step2Result.error.message}`));
+  return Err(new Error(`Validation failed: ${step2Result.error.message}`))
 }
 
-const step3Result = await writeOutput(step2Result.value);
+const step3Result = await writeOutput(step2Result.value)
 if (!step3Result.success) {
-  return Err(new Error(`Write failed: ${step3Result.error.message}`));
+  return Err(new Error(`Write failed: ${step3Result.error.message}`))
 }
 
-return step3Result;
+return step3Result
 
 // Proposed pipeline enhancement
-import { pipeline } from '@esteban-url/trailhead-cli/core';
+import { pipeline } from '@esteban-url/trailhead-cli/core'
 
 return await pipeline()
   .step(parseFile())
   .step(validateData)
   .step(writeOutput)
   .onError((error, step) => `${step} failed: ${error.message}`)
-  .execute();
+  .execute()
 
 // Or with context passing
 return await pipeline(inputFile)
@@ -182,7 +182,7 @@ return await pipeline(inputFile)
   .pipe(validateData)
   .pipe(transformData)
   .pipe(writeOutput)
-  .execute();
+  .execute()
 ```
 
 **Benefits**: Eliminates 5-10 lines per operation chain, automatic error propagation, cleaner async flow.
@@ -198,26 +198,26 @@ return await pipeline(inputFile)
 function getExtensionForFormat(format: OutputFormat): string {
   switch (format) {
     case 'json':
-      return '.json';
+      return '.json'
     case 'yaml':
-      return '.yml';
+      return '.yml'
     case 'csv':
-      return '.csv';
+      return '.csv'
     case 'tsv':
-      return '.tsv';
+      return '.tsv'
     default:
-      return '.json';
+      return '.json'
   }
 }
 
 // Proposed format utilities
-import { formatUtils } from '@esteban-url/trailhead-cli/formats';
+import { formatUtils } from '@esteban-url/trailhead-cli/formats'
 
-const extension = formatUtils.getExtension(format);
-const mimeType = formatUtils.getMimeType(format);
-const outputPath = formatUtils.changeExtension(inputPath, format);
-const isSupported = formatUtils.isSupported(format);
-const validator = formatUtils.createValidator(format);
+const extension = formatUtils.getExtension(format)
+const mimeType = formatUtils.getMimeType(format)
+const outputPath = formatUtils.changeExtension(inputPath, format)
+const isSupported = formatUtils.isSupported(format)
+const validator = formatUtils.createValidator(format)
 ```
 
 **Benefits**: DRY format handling, consistent behavior, extensible format support.
@@ -231,28 +231,28 @@ const validator = formatUtils.createValidator(format);
 ```typescript
 // Current repetitive test patterns
 describe('My Command', () => {
-  let fs: ReturnType<typeof createMemoryFileSystem>;
+  let fs: ReturnType<typeof createMemoryFileSystem>
 
   beforeEach(() => {
-    fs = createMemoryFileSystem();
-  });
+    fs = createMemoryFileSystem()
+  })
 
   afterEach(() => {
-    fs.cleanup();
-  });
+    fs.cleanup()
+  })
 
   it('processes files', async () => {
-    await fs.writeFile('/test.csv', csvContent);
-    const result = await processFile('/test.csv');
-    expect(result.success).toBe(true);
+    await fs.writeFile('/test.csv', csvContent)
+    const result = await processFile('/test.csv')
+    expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.value.length).toBeGreaterThan(0);
+      expect(result.value.length).toBeGreaterThan(0)
     }
-  });
-});
+  })
+})
 
 // Proposed enhanced testing
-import { createTestSuite, fixtures } from '@esteban-url/trailhead-cli/testing';
+import { createTestSuite, fixtures } from '@esteban-url/trailhead-cli/testing'
 
 const testSuite = createTestSuite({
   filesystem: 'memory',
@@ -260,21 +260,21 @@ const testSuite = createTestSuite({
     'sample.csv': csvData,
     'invalid.csv': malformedData,
   }),
-});
+})
 
 testSuite('My Command', ({ fs, fixtures }) => {
   it('processes files', async () => {
-    const result = await processFile(fixtures.get('sample.csv'));
-    expect(result).toBeOk();
-    expect(result).toHaveLength(5);
-  });
+    const result = await processFile(fixtures.get('sample.csv'))
+    expect(result).toBeOk()
+    expect(result).toHaveLength(5)
+  })
 
   it('handles errors gracefully', async () => {
-    const result = await processFile(fixtures.get('invalid.csv'));
-    expect(result).toBeErr();
-    expect(result).toHaveErrorMessage(/parsing failed/i);
-  });
-});
+    const result = await processFile(fixtures.get('invalid.csv'))
+    expect(result).toBeErr()
+    expect(result).toHaveErrorMessage(/parsing failed/i)
+  })
+})
 ```
 
 **Benefits**: Reduces test boilerplate by ~50%, standardized assertions, better fixture management.
@@ -288,29 +288,29 @@ testSuite('My Command', ({ fs, fixtures }) => {
 ```typescript
 // Current verbose pattern
 const tasks = createTaskList([
-  createValidateTask('Step 1', async ctx => {
-    ctx.data = await load();
+  createValidateTask('Step 1', async (ctx) => {
+    ctx.data = await load()
   }),
-  createValidateTask('Step 2', async ctx => {
-    ctx.processed = process(ctx.data);
+  createValidateTask('Step 2', async (ctx) => {
+    ctx.processed = process(ctx.data)
   }),
-  createValidateTask('Step 3', async ctx => {
-    await save(ctx.processed);
+  createValidateTask('Step 3', async (ctx) => {
+    await save(ctx.processed)
   }),
-]);
+])
 
-const context_data: ValidateTaskContext = {} as ValidateTaskContext;
-await tasks.run(context_data);
+const context_data: ValidateTaskContext = {} as ValidateTaskContext
+await tasks.run(context_data)
 
 // Proposed workflow builder
-import { createWorkflow } from '@esteban-url/trailhead-cli/workflows';
+import { createWorkflow } from '@esteban-url/trailhead-cli/workflows'
 
 const result = await createWorkflow<ValidateTaskContext>()
-  .step('Load data', async ctx => ctx.set('data', await load()))
-  .step('Process data', async ctx => ctx.set('processed', process(ctx.get('data'))))
-  .step('Save results', async ctx => await save(ctx.get('processed')))
+  .step('Load data', async (ctx) => ctx.set('data', await load()))
+  .step('Process data', async (ctx) => ctx.set('processed', process(ctx.get('data'))))
+  .step('Save results', async (ctx) => await save(ctx.get('processed')))
   .onProgress((step, progress) => logger.info(`${step}: ${progress}%`))
-  .execute();
+  .execute()
 ```
 
 **Benefits**: Type-safe context management, cleaner API, automatic progress tracking.
@@ -323,18 +323,18 @@ const result = await createWorkflow<ValidateTaskContext>()
 
 ```typescript
 // Current inconsistent error patterns
-return Err(new Error(`Failed to parse CSV: ${result.error.message}`));
-return Err(new Error(`Input file does not exist: ${inputFile}`));
-return Err(new Error(`Unsupported format: ${format}`));
+return Err(new Error(`Failed to parse CSV: ${result.error.message}`))
+return Err(new Error(`Input file does not exist: ${inputFile}`))
+return Err(new Error(`Unsupported format: ${format}`))
 
 // Proposed error templates
-import { errors } from '@esteban-url/trailhead-cli/core';
+import { errors } from '@esteban-url/trailhead-cli/core'
 
-return errors.parseFailure('CSV', result.error);
-return errors.fileNotFound(inputFile);
-return errors.unsupportedFormat(format, ['json', 'csv', 'yaml']);
-return errors.validationFailed(fieldName, value, rule);
-return errors.operationCancelled('transformation');
+return errors.parseFailure('CSV', result.error)
+return errors.fileNotFound(inputFile)
+return errors.unsupportedFormat(format, ['json', 'csv', 'yaml'])
+return errors.validationFailed(fieldName, value, rule)
+return errors.operationCancelled('transformation')
 ```
 
 **Benefits**: Consistent error UX, internationalization ready, automatic error codes.
@@ -347,27 +347,27 @@ return errors.operationCancelled('transformation');
 
 ```typescript
 // Current repetitive validation
-const errors: ValidationError[] = [];
+const errors: ValidationError[] = []
 for (const [index, row] of rows.entries()) {
   if (!row.email || !isValidEmail(row.email)) {
-    errors.push({ row: index, field: 'email', message: 'Invalid email' });
+    errors.push({ row: index, field: 'email', message: 'Invalid email' })
   }
   if (!row.age || row.age < 0 || row.age > 120) {
-    errors.push({ row: index, field: 'age', message: 'Age out of range' });
+    errors.push({ row: index, field: 'age', message: 'Age out of range' })
   }
 }
 
 // Proposed validation builder
-import { createValidator, rules } from '@esteban-url/trailhead-cli/validation';
+import { createValidator, rules } from '@esteban-url/trailhead-cli/validation'
 
 const result = await createValidator<RowType>()
   .field('email', rules.email().required())
   .field('age', rules.number().range(0, 120))
   .field('date', rules.date().after('1900-01-01'))
-  .validateRows(rows);
+  .validateRows(rows)
 
 if (!result.success) {
-  return errors.validationFailed(result.errors);
+  return errors.validationFailed(result.errors)
 }
 ```
 
@@ -380,16 +380,16 @@ if (!result.success) {
 
 ```typescript
 // Proposed API
-import { createCSVProcessor, createJSONProcessor } from '@esteban-url/trailhead-cli/data';
+import { createCSVProcessor, createJSONProcessor } from '@esteban-url/trailhead-cli/data'
 
 const csvProcessor = createCSVProcessor({
   autoTrim: true,
   skipEmptyLines: true,
   errorTolerant: true,
-});
+})
 
-const result = await csvProcessor.parse('data.csv'); // Returns Result<T[], Error>
-const output = csvProcessor.stringify(data, { format: 'tsv' });
+const result = await csvProcessor.parse('data.csv') // Returns Result<T[], Error>
+const output = csvProcessor.stringify(data, { format: 'tsv' })
 ```
 
 **Libraries to wrap**:
@@ -408,13 +408,13 @@ const output = csvProcessor.stringify(data, { format: 'tsv' });
 
 ```typescript
 // Proposed API
-import { createReadStream, createWriteStream } from '@esteban-url/trailhead-cli/streams';
+import { createReadStream, createWriteStream } from '@esteban-url/trailhead-cli/streams'
 
-const readStream = createReadStream('large-file.csv');
-const transformStream = createTransformStream(transformFunction);
-const writeStream = createWriteStream('output.json');
+const readStream = createReadStream('large-file.csv')
+const transformStream = createTransformStream(transformFunction)
+const writeStream = createWriteStream('output.json')
 
-await pipeline(readStream, transformStream, writeStream);
+await pipeline(readStream, transformStream, writeStream)
 ```
 
 #### 12. File Watching (`/watcher` module)
@@ -424,16 +424,16 @@ await pipeline(readStream, transformStream, writeStream);
 
 ```typescript
 // Proposed API
-import { createWatcher } from '@esteban-url/trailhead-cli/watcher';
+import { createWatcher } from '@esteban-url/trailhead-cli/watcher'
 
 const watcher = createWatcher({
   paths: ['src/**/*.csv'],
   ignored: ['node_modules/**'],
-});
+})
 
-watcher.on('change', async filePath => {
-  await processFile(filePath);
-});
+watcher.on('change', async (filePath) => {
+  await processFile(filePath)
+})
 ```
 
 #### 13. Enhanced Progress Tracking
@@ -443,16 +443,16 @@ watcher.on('change', async filePath => {
 
 ```typescript
 // Enhanced API
-import { createMultiStepProgress } from '@esteban-url/trailhead-cli/utils';
+import { createMultiStepProgress } from '@esteban-url/trailhead-cli/utils'
 
 const progress = createMultiStepProgress([
   { name: 'Parsing', weight: 0.3 },
   { name: 'Transforming', weight: 0.5 },
   { name: 'Writing', weight: 0.2 },
-]);
+])
 
-progress.startStep('Parsing');
-progress.updateStep(50); // 50% of parsing step
+progress.startStep('Parsing')
+progress.updateStep(50) // 50% of parsing step
 ```
 
 #### 14. Data Validation Helpers (`/validation` expansion)
@@ -462,14 +462,14 @@ progress.updateStep(50); // 50% of parsing step
 
 ```typescript
 // Enhanced validation API
-import { validators } from '@esteban-url/trailhead-cli/validation';
+import { validators } from '@esteban-url/trailhead-cli/validation'
 
 const rules = [
   validators.email('email_field'),
   validators.dateRange('birth_date', { min: '1900-01-01', max: '2023-12-31' }),
   validators.phoneNumber('phone', { format: 'US' }),
   validators.creditCard('card_number'),
-];
+]
 ```
 
 #### 15. Configuration Templates
@@ -479,11 +479,11 @@ const rules = [
 
 ```typescript
 // Configuration templates
-import { templates } from '@esteban-url/trailhead-cli/config';
+import { templates } from '@esteban-url/trailhead-cli/config'
 
 const config = defineConfig(templates.dataProcessing, {
   // User overrides
-});
+})
 ```
 
 ### Low Priority
@@ -495,15 +495,15 @@ const config = defineConfig(templates.dataProcessing, {
 
 ```typescript
 // Plugin API concept
-import { createPlugin } from '@esteban-url/trailhead-cli/plugins';
+import { createPlugin } from '@esteban-url/trailhead-cli/plugins'
 
 export const myPlugin = createPlugin({
   name: 'custom-parser',
   commands: [customParseCommand],
   hooks: {
-    beforeParse: data => preprocessData(data),
+    beforeParse: (data) => preprocessData(data),
   },
-});
+})
 ```
 
 #### 17. Enhanced Error Recovery
@@ -513,7 +513,7 @@ export const myPlugin = createPlugin({
 
 ```typescript
 // Enhanced error recovery
-import { createSmartRetry } from '@esteban-url/trailhead-cli/error-recovery';
+import { createSmartRetry } from '@esteban-url/trailhead-cli/error-recovery'
 
 const retry = createSmartRetry({
   strategies: ['exponential', 'linear', 'immediate'],
@@ -522,7 +522,7 @@ const retry = createSmartRetry({
     filesystem: 'immediate',
     validation: 'none',
   },
-});
+})
 ```
 
 ## Developer Experience Improvements
@@ -554,12 +554,12 @@ const retry = createSmartRetry({
 
 ```typescript
 // Proposed testing API
-import { createCLISnapshot } from '@esteban-url/trailhead-cli/testing';
+import { createCLISnapshot } from '@esteban-url/trailhead-cli/testing'
 
 test('transform command output', async () => {
-  const result = await runCLI(['transform', 'test.csv', '--format', 'json']);
-  expect(result).toMatchCLISnapshot();
-});
+  const result = await runCLI(['transform', 'test.csv', '--format', 'json'])
+  expect(result).toMatchCLISnapshot()
+})
 ```
 
 #### 2. Integration Test Helpers
@@ -568,15 +568,15 @@ test('transform command output', async () => {
 
 ```typescript
 // Integration testing
-import { createTestCLI } from '@esteban-url/trailhead-cli/testing';
+import { createTestCLI } from '@esteban-url/trailhead-cli/testing'
 
 const testCLI = createTestCLI({
   filesystem: 'memory',
   stdio: 'capture',
-});
+})
 
-await testCLI.run(['transform', 'input.csv']);
-expect(testCLI.stdout).toContain('Successfully transformed');
+await testCLI.run(['transform', 'input.csv'])
+expect(testCLI.stdout).toContain('Successfully transformed')
 ```
 
 ## Performance Optimizations
@@ -612,10 +612,10 @@ expect(testCLI.stdout).toContain('Successfully transformed');
 
 ```typescript
 // Express.js integration
-import { createExpressAdapter } from '@esteban-url/trailhead-cli/adapters';
+import { createExpressAdapter } from '@esteban-url/trailhead-cli/adapters'
 
-const app = express();
-app.use('/api/csv', createExpressAdapter(csvProcessor));
+const app = express()
+app.use('/api/csv', createExpressAdapter(csvProcessor))
 ```
 
 ### 2. CI/CD Helpers
@@ -738,13 +738,13 @@ export const myCommand = createCommand<MyOptions>({
   ],
   action: async (options, context) => {
     // 20+ lines of file validation, error handling, setup
-    const step1 = await operation1();
-    if (!step1.success) return Err(/*...*/);
-    const step2 = await operation2(step1.value);
-    if (!step2.success) return Err(/*...*/);
+    const step1 = await operation1()
+    if (!step1.success) return Err(/*...*/)
+    const step2 = await operation2(step1.value)
+    if (!step2.success) return Err(/*...*/)
     // ... more boilerplate
   },
-});
+})
 
 // After: 10 lines of pure business logic
 export const myCommand = createFileProcessingCommand<MyOptions>({
@@ -756,9 +756,9 @@ export const myCommand = createFileProcessingCommand<MyOptions>({
       .pipe(validateWith(rules.email('email').required()))
       .pipe(transformData)
       .pipe(writeOutput)
-      .execute();
+      .execute()
   },
-});
+})
 ```
 
 ### **Framework Positioning:**

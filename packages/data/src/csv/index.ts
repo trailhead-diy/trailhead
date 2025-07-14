@@ -1,5 +1,5 @@
-export { createCSVOperations } from './core.js';
-export { defaultCSVConfig } from './types.js';
+export { createCSVOperations } from './core.js'
+export { defaultCSVConfig } from './types.js'
 export type {
   CSVConfigProvider,
   CSVParseFunction,
@@ -11,4 +11,4 @@ export type {
   CreateCSVOperations,
   CSVParseResult,
   CSVStringifyOptions,
-} from './types.js';
+} from './types.js'

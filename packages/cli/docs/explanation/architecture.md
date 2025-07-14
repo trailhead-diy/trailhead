@@ -24,9 +24,9 @@ Traditional JavaScript packages often use "barrel exports" - a single index file
 
 ```typescript
 // ❌ Traditional barrel export
-export * from './core';
-export * from './command';
-export * from './filesystem';
+export * from './core'
+export * from './command'
+export * from './filesystem'
 // ... etc
 ```
 
@@ -78,7 +78,7 @@ const command: Command = {
   execute: async (options, context) => {
     // Pure function with explicit dependencies
   },
-};
+}
 ```
 
 **Key insight**: Functional patterns create predictable, testable code that composes naturally and optimizes well during bundling.
@@ -194,8 +194,8 @@ The architecture is like a **well-organized toolbox** where:
 When building a CLI that processes files, you only import what you need:
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command';
-import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem';
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem'
 
 // Only file and command modules are bundled
 ```
@@ -207,9 +207,9 @@ The modular architecture ensures your CLI doesn't include prompt functionality, 
 ```typescript
 const result = await chain(
   readConfig(configPath),
-  config => validateConfig(config),
-  config => applyConfig(config)
-);
+  (config) => validateConfig(config),
+  (config) => applyConfig(config)
+)
 
 // Each step can fail, but composition remains clean
 ```

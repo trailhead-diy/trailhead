@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-import { generateProject } from './lib/generator.js';
-import { parseArgumentsModern, gatherProjectConfig } from './lib/interactive-prompts.js';
-import { createLogger } from './lib/logger.js';
-import { configCommand } from './commands/config.js';
+import { generateProject } from './lib/generator.js'
+import { parseArgumentsModern, gatherProjectConfig } from './lib/interactive-prompts.js'
+import { createLogger } from './lib/logger.js'
+import { configCommand } from './commands/config.js'
 
 // Export utilities for programmatic use
-export { generateProject } from './lib/generator.js';
-export { getTemplateFiles } from './lib/template-loader.js';
+export { generateProject } from './lib/generator.js'
+export { getTemplateFiles } from './lib/template-loader.js'
 export {
   createTemplateConfig,
   createTestTemplateConfig,
   createDevTemplateConfig,
   validateTemplateConfig,
   getTemplateConfigSummary,
-} from './lib/template-config.js';
+} from './lib/template-config.js'
 export type {
   ProjectConfig,
   TemplateContext,
@@ -23,8 +23,8 @@ export type {
   TemplateVariant,
   PackageManager,
   GeneratorContext,
-} from './lib/types.js';
-export type { ModernProjectConfig } from './lib/interactive-prompts.js';
+} from './lib/types.js'
+export type { ModernProjectConfig } from './lib/interactive-prompts.js'
 
 /**
  * Create Trailhead CLI Generator
@@ -33,10 +33,10 @@ export type { ModernProjectConfig } from './lib/interactive-prompts.js';
  * Built with functional programming principles and explicit error handling
  */
 async function main() {
-  const logger = createLogger();
+  const logger = createLogger()
 
   try {
-    const args = process.argv.slice(2);
+    const args = process.argv.slice(2)
 
     // Handle config command separately
     if (args.length > 0 && args[0] === 'config') {
@@ -44,99 +44,99 @@ async function main() {
         args: args.slice(1),
         flags: parseConfigFlags(args.slice(1)),
         context: {},
-      });
+      })
 
       if (configResult.isErr()) {
-        logger.error(configResult.error.message);
-        process.exit(1);
+        logger.error(configResult.error.message)
+        process.exit(1)
       }
 
-      process.exit(0);
+      process.exit(0)
     }
 
-    const parseResult = parseArgumentsModern(args);
+    const parseResult = parseArgumentsModern(args)
 
     if (parseResult.isErr()) {
-      logger.error(parseResult.error.message);
-      process.exit(1);
+      logger.error(parseResult.error.message)
+      process.exit(1)
     }
 
-    const { projectName, flags, interactive, help, version } = parseResult.value;
+    const { projectName, flags, interactive, help, version } = parseResult.value
 
     if (help) {
-      showHelp();
-      process.exit(0);
+      showHelp()
+      process.exit(0)
     }
 
     if (version) {
-      console.log('0.1.0');
-      process.exit(0);
+      console.log('0.1.0')
+      process.exit(0)
     }
 
     // Validate project name if not interactive
     if (!interactive && !projectName) {
-      logger.error('Project name is required when not in interactive mode');
-      process.exit(1);
+      logger.error('Project name is required when not in interactive mode')
+      process.exit(1)
     }
 
     // Gather configuration (interactive or from flags)
-    const configResult = await gatherProjectConfig(projectName, flags);
+    const configResult = await gatherProjectConfig(projectName, flags)
 
     if (configResult.isErr()) {
-      logger.error(`Failed to configure project: ${configResult.error.message}`);
-      process.exit(1);
+      logger.error(`Failed to configure project: ${configResult.error.message}`)
+      process.exit(1)
     }
 
-    const config = configResult.value;
+    const config = configResult.value
 
     // Show configuration summary
     if (!config.dryRun) {
-      logger.info('');
-      logger.info('📋 Project Configuration:');
-      logger.info(`   Name: ${config.projectName}`);
-      logger.info(`   Type: ${config.projectType}`);
-      logger.info(`   Template: ${config.template}`);
-      logger.info(`   Package Manager: ${config.packageManager}`);
-      logger.info(`   Author: ${config.author.name} <${config.author.email}>`);
-      logger.info(`   License: ${config.license}`);
+      logger.info('')
+      logger.info('📋 Project Configuration:')
+      logger.info(`   Name: ${config.projectName}`)
+      logger.info(`   Type: ${config.projectType}`)
+      logger.info(`   Template: ${config.template}`)
+      logger.info(`   Package Manager: ${config.packageManager}`)
+      logger.info(`   Author: ${config.author.name} <${config.author.email}>`)
+      logger.info(`   License: ${config.license}`)
       logger.info(
         `   Features: ${Object.entries(config.features)
           .filter(([, enabled]) => enabled)
           .map(([name]) => name)
           .join(', ')}`
-      );
-      logger.info('');
+      )
+      logger.info('')
     }
 
     const result = await generateProject(config, {
       logger,
       verbose: config.verbose,
       templateConfig: undefined,
-    });
+    })
 
     if (result.isErr()) {
-      logger.error(`Failed to generate project: ${result.error.message}`);
-      process.exit(1);
+      logger.error(`Failed to generate project: ${result.error.message}`)
+      process.exit(1)
     }
 
     if (!config.dryRun) {
-      logger.success(`Successfully generated '${config.projectName}' 🎉`);
-      logger.info('');
-      logger.info('🚀 Next steps:');
-      logger.info(`   cd ${config.projectName}`);
+      logger.success(`Successfully generated '${config.projectName}' 🎉`)
+      logger.info('')
+      logger.info('🚀 Next steps:')
+      logger.info(`   cd ${config.projectName}`)
       if (!config.installDependencies) {
-        logger.info(`   ${config.packageManager} install`);
+        logger.info(`   ${config.packageManager} install`)
       }
-      logger.info(`   ${config.packageManager} dev`);
+      logger.info(`   ${config.packageManager} dev`)
       if (config.features.testing) {
-        logger.info(`   ${config.packageManager} test`);
+        logger.info(`   ${config.packageManager} test`)
       }
-      logger.info('');
-      logger.info('Happy coding! ✨');
+      logger.info('')
+      logger.info('Happy coding! ✨')
     }
   } catch (error) {
-    logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`);
-    process.exit(1);
+    logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`)
+    process.exit(1)
   }
 }
 
@@ -187,52 +187,52 @@ Examples:
   create-trailhead-cli config --list-presets        # Show available presets
   create-trailhead-cli config --preset advanced-cli # Show preset details
   create-trailhead-cli config --generate-schema     # Generate JSON schema
-`);
+`)
 }
 
 /**
  * Parse config command flags
  */
 function parseConfigFlags(args: string[]): Record<string, any> {
-  const flags: Record<string, any> = {};
+  const flags: Record<string, any> = {}
 
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+    const arg = args[i]
 
     switch (arg) {
       case '--list':
       case '--list-presets':
-        flags['list-presets'] = true;
-        break;
+        flags['list-presets'] = true
+        break
       case '--generate-schema':
-        flags['generate-schema'] = true;
-        break;
+        flags['generate-schema'] = true
+        break
       case '--cleanup':
-        flags.cleanup = true;
-        break;
+        flags.cleanup = true
+        break
       case '--verbose':
-        flags.verbose = true;
-        break;
+        flags.verbose = true
+        break
       case '--preset':
         if (i + 1 < args.length) {
-          flags.preset = args[i + 1];
-          i++; // Skip next arg
+          flags.preset = args[i + 1]
+          i++ // Skip next arg
         }
-        break;
+        break
       case '--config-dir':
         if (i + 1 < args.length) {
-          flags['config-dir'] = args[i + 1];
-          i++; // Skip next arg
+          flags['config-dir'] = args[i + 1]
+          i++ // Skip next arg
         }
-        break;
+        break
     }
   }
 
-  return flags;
+  return flags
 }
 
 // Run the CLI
-main().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+main().catch((error) => {
+  console.error('Fatal error:', error)
+  process.exit(1)
+})

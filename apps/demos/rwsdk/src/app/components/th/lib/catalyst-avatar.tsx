@@ -1,17 +1,17 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
-import { CatalystTouchTarget } from './catalyst-button';
-import { CatalystLink } from './catalyst-link';
-import { cn } from '../utils/cn';
+import * as Headless from '@headlessui/react'
+import React, { forwardRef } from 'react'
+import { CatalystTouchTarget } from './catalyst-button'
+import { CatalystLink } from './catalyst-link'
+import { cn } from '../utils/cn'
 
 type AvatarProps = {
-  src?: string | null;
-  square?: boolean;
-  initials?: string;
-  alt?: string;
-  className?: string;
-};
+  src?: string | null
+  square?: boolean
+  initials?: string
+  alt?: string
+  className?: string
+}
 
 export function CatalystAvatar({
   src = null,
@@ -59,7 +59,7 @@ export function CatalystAvatar({
       )}
       {src && <img className={cn('size-full')} src={src} alt={alt} />}
     </span>
-  );
+  )
 }
 
 export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
@@ -81,7 +81,7 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
     square ? 'rounded-[20%]' : 'rounded-full',
     'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-primary',
     className
-  );
+  )
 
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
@@ -95,5 +95,5 @@ export const CatalystAvatarButton = forwardRef(function CatalystAvatarButton(
         <CatalystAvatar src={src} square={square} initials={initials} alt={alt} />
       </CatalystTouchTarget>
     </Headless.Button>
-  );
-});
+  )
+})

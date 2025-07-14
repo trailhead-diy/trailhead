@@ -1,5 +1,5 @@
 // Foundation functional utilities
-export * from './composition.js';
+export * from './composition.js'
 
 // Async utilities with Result types
-export * from './async.js';
+export * from './async.js'

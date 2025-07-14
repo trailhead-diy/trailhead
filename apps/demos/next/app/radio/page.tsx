@@ -1,8 +1,8 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Description, Fieldset, Label, Legend } from '@/components/th/fieldset';
-import { Radio, RadioField, RadioGroup } from '@/components/th/radio';
-import { Text } from '@/components/th/text';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Description, Fieldset, Label, Legend } from '@/components/th/fieldset'
+import { Radio, RadioField, RadioGroup } from '@/components/th/radio'
+import { Text } from '@/components/th/text'
 
 export default function RadioPage(): React.JSX.Element {
   return (
@@ -32,5 +32,5 @@ export default function RadioPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

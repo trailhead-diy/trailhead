@@ -1,4 +1,4 @@
-import type { PatternOperations } from '../types.js';
+import type { PatternOperations } from '../types.js'
 
 // ========================================
 // Pattern Configuration Defaults
@@ -10,7 +10,7 @@ export const defaultPatternConfig = {
   noglobstar: false,
   matchBase: false,
   nocase: false,
-} as const;
+} as const
 
 // ========================================
 // Pattern Creation Types
@@ -18,14 +18,14 @@ export const defaultPatternConfig = {
 
 export type CreatePatternOperations = (
   config?: Partial<typeof defaultPatternConfig>
-) => PatternOperations;
+) => PatternOperations
 
 export interface PatternConfig {
-  readonly caseSensitive?: boolean;
-  readonly dot?: boolean;
-  readonly noglobstar?: boolean;
-  readonly matchBase?: boolean;
-  readonly nocase?: boolean;
+  readonly caseSensitive?: boolean
+  readonly dot?: boolean
+  readonly noglobstar?: boolean
+  readonly matchBase?: boolean
+  readonly nocase?: boolean
 }
 
 // ========================================
@@ -33,17 +33,17 @@ export interface PatternConfig {
 // ========================================
 
 export interface CompiledPattern {
-  readonly pattern: string | RegExp;
-  readonly matcher: (path: string) => boolean;
-  readonly source: string;
-  readonly flags?: string;
+  readonly pattern: string | RegExp
+  readonly matcher: (path: string) => boolean
+  readonly source: string
+  readonly flags?: string
 }
 
 export interface PatternCache {
-  readonly get: (pattern: string) => CompiledPattern | undefined;
-  readonly set: (pattern: string, compiled: CompiledPattern) => void;
-  readonly clear: () => void;
-  readonly size: number;
+  readonly get: (pattern: string) => CompiledPattern | undefined
+  readonly set: (pattern: string, compiled: CompiledPattern) => void
+  readonly clear: () => void
+  readonly size: number
 }
 
 // ========================================
@@ -51,14 +51,14 @@ export interface PatternCache {
 // ========================================
 
 export interface GlobOptions {
-  readonly dot?: boolean;
-  readonly noglobstar?: boolean;
-  readonly matchBase?: boolean;
-  readonly nocase?: boolean;
-  readonly nonegate?: boolean;
-  readonly noext?: boolean;
-  readonly nonull?: boolean;
-  readonly windowsPathsNoEscape?: boolean;
+  readonly dot?: boolean
+  readonly noglobstar?: boolean
+  readonly matchBase?: boolean
+  readonly nocase?: boolean
+  readonly nonegate?: boolean
+  readonly noext?: boolean
+  readonly nonull?: boolean
+  readonly windowsPathsNoEscape?: boolean
 }
 
 // ========================================
@@ -66,9 +66,9 @@ export interface GlobOptions {
 // ========================================
 
 export interface PathNormalizer {
-  readonly normalize: (path: string) => string;
-  readonly denormalize: (path: string) => string;
-  readonly isNormalized: (path: string) => boolean;
+  readonly normalize: (path: string) => string
+  readonly denormalize: (path: string) => string
+  readonly isNormalized: (path: string) => boolean
 }
 
 // ========================================
@@ -76,12 +76,12 @@ export interface PathNormalizer {
 // ========================================
 
 export interface PatternAnalysis {
-  readonly isGlob: boolean;
-  readonly isRegex: boolean;
-  readonly isLiteral: boolean;
-  readonly hasWildcards: boolean;
-  readonly hasNegation: boolean;
-  readonly segments: readonly string[];
-  readonly depth: number;
-  readonly specificity: number;
+  readonly isGlob: boolean
+  readonly isRegex: boolean
+  readonly isLiteral: boolean
+  readonly hasWildcards: boolean
+  readonly hasNegation: boolean
+  readonly segments: readonly string[]
+  readonly depth: number
+  readonly specificity: number
 }

@@ -2,9 +2,9 @@
   "name": "@repo/prettier-config",
   "version": "0.1.0",
   "private": true,
-  "main": "index.json",
+  "main": "index.js",
   "files": [
-    "index.json"
+    "index.js"
   ],
   "scripts": {
     "build": "echo 'Config package - no build required'",

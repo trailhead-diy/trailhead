@@ -1,6 +1,6 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Strong, Text, TextLink } from '@/components/th/text';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Strong, Text, TextLink } from '@/components/th/text'
 
 export default function TextPage(): React.JSX.Element {
   return (
@@ -14,5 +14,5 @@ export default function TextPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

@@ -1,9 +1,9 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
-import { CatalystLink } from './catalyst-link';
+import * as Headless from '@headlessui/react'
+import React, { forwardRef } from 'react'
+import { CatalystLink } from './catalyst-link'
 // Semantic token imports removed - not used in this component
-import { cn } from '../utils/cn';
+import { cn } from '../utils/cn'
 
 const styles = {
   base: [
@@ -175,7 +175,7 @@ const styles = {
       '[--btn-icon:var(--color-destructive-foreground)]/80 data-active:[--btn-icon:var(--color-destructive-foreground)] data-hover:[--btn-icon:var(--color-destructive-foreground)]',
     ],
   },
-};
+}
 
 type ButtonProps = (
   | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
@@ -184,7 +184,7 @@ type ButtonProps = (
 ) & { className?: string; children: React.ReactNode } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
-  );
+  )
 
 export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: ButtonProps,
@@ -198,7 +198,7 @@ export const CatalystButton = forwardRef(function CatalystButton(
         ? styles.plain
         : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
     className
-  );
+  )
 
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
@@ -208,8 +208,8 @@ export const CatalystButton = forwardRef(function CatalystButton(
     <Headless.Button {...props} className={cn(classes, 'cursor-default')} ref={ref}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
     </Headless.Button>
-  );
-});
+  )
+})
 
 /**
  * Expand the hit area to at least 44×44px on touch devices
@@ -225,5 +225,5 @@ export function CatalystTouchTarget({ children }: { children: React.ReactNode })
       />
       {children}
     </>
-  );
+  )
 }

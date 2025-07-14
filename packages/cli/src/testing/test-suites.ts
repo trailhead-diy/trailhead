@@ -1,7 +1,7 @@
-import type { Result } from '@esteban-url/core';
+import type { Result } from '@esteban-url/core'
 // @ts-expect-error - Domain package types will be available after build
-import type { FileSystem } from '@esteban-url/fs';
-import type { CoreError } from '@esteban-url/core';
+import type { FileSystem } from '@esteban-url/fs'
+import type { CoreError } from '@esteban-url/core'
 // Import statements for documentation - functions are placeholders for test framework usage
 
 /**
@@ -9,13 +9,13 @@ import type { CoreError } from '@esteban-url/core';
  * Reduces boilerplate by 60-70% for Result testing patterns
  */
 export interface ResultTestCase<T, E = any> {
-  name: string;
-  operation: () => Promise<Result<T, E>> | Result<T, E>;
-  shouldSucceed: boolean;
-  expectedValue?: (value: T) => void;
-  expectedError?: (error: E) => void;
-  expectedErrorCode?: string;
-  expectedErrorMessage?: string | RegExp;
+  name: string
+  operation: () => Promise<Result<T, E>> | Result<T, E>
+  shouldSucceed: boolean
+  expectedValue?: (value: T) => void
+  expectedError?: (error: E) => void
+  expectedErrorCode?: string
+  expectedErrorMessage?: string | RegExp
 }
 
 export function createResultTestSuite<T, E = any>(
@@ -27,8 +27,8 @@ export function createResultTestSuite<T, E = any>(
     // The actual test framework functions (describe, it, expect) need to be available
     throw new Error(
       'createResultTestSuite should be used in test files with test framework available'
-    );
-  };
+    )
+  }
 }
 
 /**
@@ -36,10 +36,10 @@ export function createResultTestSuite<T, E = any>(
  * Eliminates repetitive filesystem setup and teardown
  */
 export interface FileSystemTestCase {
-  name: string;
-  setup?: (fs: FileSystem) => Promise<void>;
-  operation: (fs: FileSystem) => Promise<any>;
-  expectations: (result: any, fs: FileSystem) => void | Promise<void>;
+  name: string
+  setup?: (fs: FileSystem) => Promise<void>
+  operation: (fs: FileSystem) => Promise<any>
+  expectations: (result: any, fs: FileSystem) => void | Promise<void>
 }
 
 export function createFileSystemTestSuite(
@@ -52,8 +52,8 @@ export function createFileSystemTestSuite(
     // The actual test framework functions (describe, it, beforeEach) need to be available
     throw new Error(
       'createFileSystemTestSuite should be used in test files with test framework available'
-    );
-  };
+    )
+  }
 }
 
 /**
@@ -61,16 +61,16 @@ export function createFileSystemTestSuite(
  * Standardizes error testing patterns
  */
 export interface ErrorTemplateTestCase {
-  name: string;
-  args: any[];
+  name: string
+  args: any[]
   expectations: {
-    category?: string;
-    code?: string;
-    message?: string | RegExp;
-    recoverable?: boolean;
-    suggestion?: string | RegExp;
-    metadata?: Record<string, any>;
-  };
+    category?: string
+    code?: string
+    message?: string | RegExp
+    recoverable?: boolean
+    suggestion?: string | RegExp
+    metadata?: Record<string, any>
+  }
 }
 
 export function createErrorTemplateTestSuite(
@@ -83,8 +83,8 @@ export function createErrorTemplateTestSuite(
     // The actual test framework functions (describe, it, expect) need to be available
     throw new Error(
       'createErrorTemplateTestSuite should be used in test files with test framework available'
-    );
-  };
+    )
+  }
 }
 
 /**
@@ -92,10 +92,10 @@ export function createErrorTemplateTestSuite(
  * Eliminates repetitive validation testing patterns
  */
 export interface ValidationTestCase<T> {
-  name: string;
-  input: T;
-  shouldPass: boolean;
-  expectedErrors?: string[];
+  name: string
+  input: T
+  shouldPass: boolean
+  expectedErrors?: string[]
 }
 
 export function createValidationTestSuite<T>(
@@ -108,8 +108,8 @@ export function createValidationTestSuite<T>(
     // The actual test framework functions (describe, it, expect) need to be available
     throw new Error(
       'createValidationTestSuite should be used in test files with test framework available'
-    );
-  };
+    )
+  }
 }
 
 /**
@@ -117,10 +117,10 @@ export function createValidationTestSuite<T>(
  * Reduces mock management boilerplate
  */
 export interface MockFactory<T> {
-  setup: () => T;
-  beforeEach: () => void;
-  afterEach: () => void;
-  reset: () => void;
+  setup: () => T
+  beforeEach: () => void
+  afterEach: () => void
+  reset: () => void
 }
 
 export function createMockFactory<T>(
@@ -128,18 +128,18 @@ export function createMockFactory<T>(
   mockImplementation: () => T,
   resetBehavior?: () => void
 ): MockFactory<T> {
-  let mockInstance: T;
+  let mockInstance: T
 
   return {
     setup: () => {
-      mockInstance = mockImplementation();
-      return mockInstance;
+      mockInstance = mockImplementation()
+      return mockInstance
     },
 
     beforeEach: () => {
       // vi.clearAllMocks(); - requires test framework
       if (resetBehavior) {
-        resetBehavior();
+        resetBehavior()
       }
     },
 
@@ -150,10 +150,10 @@ export function createMockFactory<T>(
     reset: () => {
       // vi.clearAllMocks(); - requires test framework
       if (resetBehavior) {
-        resetBehavior();
+        resetBehavior()
       }
     },
-  };
+  }
 }
 
 /**
@@ -161,10 +161,10 @@ export function createMockFactory<T>(
  * Provides pre-configured test environments
  */
 export interface TestContextConfig {
-  filesystem?: 'memory' | 'real';
-  mocks?: string[];
-  fixtures?: Record<string, string>;
-  cleanup?: boolean;
+  filesystem?: 'memory' | 'real'
+  mocks?: string[]
+  fixtures?: Record<string, string>
+  cleanup?: boolean
 }
 
 export function createTestSuite(config: TestContextConfig = {}) {
@@ -173,11 +173,11 @@ export function createTestSuite(config: TestContextConfig = {}) {
     mocks: _mocks = [],
     fixtures: _fixtures = {},
     cleanup: _cleanup = true,
-  } = config;
+  } = config
 
   return (_suiteName: string, _testFn: (context: any) => void) => {
     // This function returns a test suite that should be executed in a test environment
     // The actual test framework functions (describe, beforeEach, afterEach) need to be available
-    throw new Error('createTestSuite should be used in test files with test framework available');
-  };
+    throw new Error('createTestSuite should be used in test files with test framework available')
+  }
 }

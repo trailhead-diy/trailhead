@@ -83,69 +83,69 @@ First, let's define what we're dealing with. Create `src/lib/types.ts`:
 
 ```typescript
 export interface CSVRow {
-  [key: string]: string | number | boolean | null;
+  [key: string]: string | number | boolean | null
 }
 
 export interface FieldMapping {
-  [originalField: string]: string; // "First Name   " -> "firstName"
+  [originalField: string]: string // "First Name   " -> "firstName"
 }
 
-export type OutputFormat = 'json' | 'csv' | 'tsv' | 'yaml';
+export type OutputFormat = 'json' | 'csv' | 'tsv' | 'yaml'
 
 export interface ValidationRule {
-  field: string;
-  type: 'required' | 'email' | 'number' | 'date' | 'enum';
+  field: string
+  type: 'required' | 'email' | 'number' | 'date' | 'enum'
   options?: {
-    values?: string[]; // For enum validation
-    min?: number; // For number ranges
-    max?: number;
-    pattern?: string; // For custom regex
-  };
+    values?: string[] // For enum validation
+    min?: number // For number ranges
+    max?: number
+    pattern?: string // For custom regex
+  }
 }
 
 export interface ValidationResult {
-  isValid: boolean;
-  errors: ValidationError[];
-  warnings: ValidationWarning[];
+  isValid: boolean
+  errors: ValidationError[]
+  warnings: ValidationWarning[]
   summary: {
-    totalRows: number;
-    validRows: number;
-    errorRows: number;
-    warningRows: number;
-  };
+    totalRows: number
+    validRows: number
+    errorRows: number
+    warningRows: number
+  }
 }
 
 export interface ValidationError {
-  row: number;
-  field: string;
-  value: any;
-  rule: string;
-  message: string; // Human-readable explanation
+  row: number
+  field: string
+  value: any
+  rule: string
+  message: string // Human-readable explanation
 }
 
 // Command Option Interfaces for Type Safety
 export interface TransformCommandOptions {
-  output?: string;
-  format?: OutputFormat;
-  interactive?: boolean;
-  config?: string;
-  clean?: boolean;
-  preview?: boolean;
+  output?: string
+  format?: OutputFormat
+  interactive?: boolean
+  config?: string
+  clean?: boolean
+  preview?: boolean
 }
 
 export interface ValidateCommandOptions {
-  rules?: string;
-  'auto-detect'?: boolean;
-  interactive?: boolean;
-  output?: string;
-  strict?: boolean;
+  rules?: string
+  'auto-detect'?: boolean
+  interactive?: boolean
+  output?: string
+  strict?: boolean
 }
 
 export interface AnalyzeCommandOptions {
-  output?: string;
-  format?: 'json' | 'markdown' | 'text';
-  detailed?: boolean;
-  'sample-size'?: number;
+  output?: string
+  format?: 'json' | 'markdown' | 'text'
+  detailed?: boolean
+  'sample-size'?: number
 }
 ```
 
@@ -156,31 +156,31 @@ export interface AnalyzeCommandOptions {
 Create `src/lib/csv-parser.ts`. This is where the magic happens:
 
 ```typescript
-import { readFile, writeFile } from 'fs/promises';
-import Papa from 'papaparse';
-import { stringify as stringifyYaml } from 'yaml';
-import { Ok, Err, Result } from '@esteban-url/trailhead-cli';
-import type { CSVRow, FieldMapping, OutputFormat } from './types.js';
+import { readFile, writeFile } from 'fs/promises'
+import Papa from 'papaparse'
+import { stringify as stringifyYaml } from 'yaml'
+import { Ok, Err, Result } from '@esteban-url/trailhead-cli'
+import type { CSVRow, FieldMapping, OutputFormat } from './types.js'
 
 export async function parseCSV(filePath: string): Promise<Result<CSVRow[], Error>> {
   try {
-    const content = await readFile(filePath, 'utf-8');
+    const content = await readFile(filePath, 'utf-8')
 
     const result = Papa.parse(content, {
       header: true, // First row becomes column names
       skipEmptyLines: true, // Ignore completely empty rows
       transform: (value: string) => value.trim(), // Auto-trim whitespace!
       dynamicTyping: false, // Keep everything as strings for consistency
-    });
+    })
 
     if (result.errors.length > 0) {
-      const errorMessages = result.errors.map(err => `Row ${err.row}: ${err.message}`).join(', ');
-      return Err(new Error(`CSV parsing errors: ${errorMessages}`));
+      const errorMessages = result.errors.map((err) => `Row ${err.row}: ${err.message}`).join(', ')
+      return Err(new Error(`CSV parsing errors: ${errorMessages}`))
     }
 
-    return Ok(result.data as CSVRow[]);
+    return Ok(result.data as CSVRow[])
   } catch (error) {
-    return Err(new Error(`Failed to read CSV file: ${(error as Error).message}`));
+    return Err(new Error(`Failed to read CSV file: ${(error as Error).message}`))
   }
 }
 ```
@@ -193,25 +193,25 @@ Now add the transformation function:
 
 ```typescript
 export function transformFields(rows: CSVRow[], fieldMapping: FieldMapping): CSVRow[] {
-  return rows.map(row => {
-    const transformedRow: CSVRow = {};
+  return rows.map((row) => {
+    const transformedRow: CSVRow = {}
 
     // Apply field mappings
     for (const [originalField, newField] of Object.entries(fieldMapping)) {
       if (originalField in row) {
-        transformedRow[newField] = row[originalField];
+        transformedRow[newField] = row[originalField]
       }
     }
 
     // Keep fields not in mapping
     for (const [field, value] of Object.entries(row)) {
       if (!fieldMapping[field]) {
-        transformedRow[field] = value;
+        transformedRow[field] = value
       }
     }
 
-    return transformedRow;
-  });
+    return transformedRow
+  })
 }
 ```
 
@@ -221,25 +221,25 @@ Add the data cleaning function:
 
 ```typescript
 export function cleanData(rows: CSVRow[], shouldClean: boolean = false): CSVRow[] {
-  if (!shouldClean) return rows;
+  if (!shouldClean) return rows
 
   return (
     rows
       // Remove completely empty rows
-      .filter(row =>
+      .filter((row) =>
         Object.values(row).some(
-          value => value !== null && value !== undefined && String(value) !== ''
+          (value) => value !== null && value !== undefined && String(value) !== ''
         )
       )
       // Convert empty strings to null (papaparse already trimmed for us!)
-      .map(row => {
-        const cleanedRow: CSVRow = {};
+      .map((row) => {
+        const cleanedRow: CSVRow = {}
         for (const [key, value] of Object.entries(row)) {
-          cleanedRow[key] = typeof value === 'string' && value === '' ? null : value;
+          cleanedRow[key] = typeof value === 'string' && value === '' ? null : value
         }
-        return cleanedRow;
+        return cleanedRow
       })
-  );
+  )
 }
 ```
 
@@ -256,41 +256,41 @@ export async function writeOutput(
   format: OutputFormat
 ): Promise<Result<void, Error>> {
   try {
-    let output: string;
+    let output: string
 
     switch (format) {
       case 'json':
-        output = JSON.stringify(data, null, 2);
-        break;
+        output = JSON.stringify(data, null, 2)
+        break
 
       case 'yaml':
-        output = stringifyYaml(data);
-        break;
+        output = stringifyYaml(data)
+        break
 
       case 'csv':
         output = Papa.unparse(data, {
           header: true,
           delimiter: ',',
           quotes: true, // Quote all fields for safety
-        });
-        break;
+        })
+        break
 
       case 'tsv':
         output = Papa.unparse(data, {
           header: true,
           delimiter: '\t',
           quotes: false, // TSV typically doesn't quote
-        });
-        break;
+        })
+        break
 
       default:
-        return Err(new Error(`Unsupported output format: ${format}`));
+        return Err(new Error(`Unsupported output format: ${format}`))
     }
 
-    await writeFile(outputPath, output);
-    return Ok(undefined);
+    await writeFile(outputPath, output)
+    return Ok(undefined)
   } catch (error) {
-    return Err(new Error(`Failed to write output: ${(error as Error).message}`));
+    return Err(new Error(`Failed to write output: ${(error as Error).message}`))
   }
 }
 ```
@@ -452,42 +452,42 @@ Now add the workflow tasks:
 Create `src/lib/validators.ts`:
 
 ```typescript
-import { Ok, Err, Result } from '@esteban-url/trailhead-cli';
-import type { CSVRow, ValidationResult, ValidationError, ValidationRule } from './types.js';
+import { Ok, Err, Result } from '@esteban-url/trailhead-cli'
+import type { CSVRow, ValidationResult, ValidationError, ValidationRule } from './types.js'
 
 export function validateData(
   rows: CSVRow[],
   rules: ValidationRule[]
 ): Result<ValidationResult, Error> {
   try {
-    const errors: ValidationError[] = [];
+    const errors: ValidationError[] = []
 
     rows.forEach((row, rowIndex) => {
-      rules.forEach(rule => {
-        const value = row[rule.field];
-        const validation = validateField(value, rule, rowIndex + 2); // +2 for header and 1-based
+      rules.forEach((rule) => {
+        const value = row[rule.field]
+        const validation = validateField(value, rule, rowIndex + 2) // +2 for header and 1-based
 
         if (!validation.success && validation.error) {
-          errors.push(validation.error);
+          errors.push(validation.error)
         }
-      });
-    });
+      })
+    })
 
     const summary = {
       totalRows: rows.length,
       validRows: rows.length - getUniqueErrorRows(errors).size,
       errorRows: getUniqueErrorRows(errors).size,
       warningRows: 0, // We'll add warnings later
-    };
+    }
 
     return Ok({
       isValid: errors.length === 0,
       errors,
       warnings: [], // For now
       summary,
-    });
+    })
   } catch (error) {
-    return Err(new Error(`Validation failed: ${(error as Error).message}`));
+    return Err(new Error(`Validation failed: ${(error as Error).message}`))
   }
 }
 
@@ -504,9 +504,9 @@ function validateField(value: any, rule: ValidationRule, rowNumber: number) {
             rule: 'required',
             message: `Field '${rule.field}' is required but is empty`,
           },
-        };
+        }
       }
-      break;
+      break
 
     case 'email':
       if (value && !isValidEmail(String(value))) {
@@ -519,9 +519,9 @@ function validateField(value: any, rule: ValidationRule, rowNumber: number) {
             rule: 'email',
             message: `Field '${rule.field}' must be a valid email address`,
           },
-        };
+        }
       }
-      break;
+      break
 
     case 'number':
       if (value && isNaN(Number(value))) {
@@ -534,17 +534,17 @@ function validateField(value: any, rule: ValidationRule, rowNumber: number) {
             rule: 'number',
             message: `Field '${rule.field}' must be a valid number`,
           },
-        };
+        }
       }
-      break;
+      break
   }
 
-  return { success: true };
+  return { success: true }
 }
 
 function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
 }
 ```
 
@@ -557,17 +557,17 @@ Create `src/index.ts`:
 ```typescript
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/trailhead-cli';
-import { transformCommand } from './commands/transform.js';
+import { createCLI } from '@esteban-url/trailhead-cli'
+import { transformCommand } from './commands/transform.js'
 
 const cli = createCLI({
   name: 'csv-processor',
   version: '1.0.0',
   description: 'Transform CSV files to multiple formats with validation and analysis',
   commands: [transformCommand],
-});
+})
 
-cli.run(process.argv);
+cli.run(process.argv)
 ```
 
 **Simple and clean.** The CLI framework handles help text, version display, and error handling for you.
@@ -605,9 +605,9 @@ node dist/index.js transform test-data.csv --format json --clean --interactive
 Create `src/commands/validate.ts` (abbreviated for space):
 
 ```typescript
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
-import { validateData } from '../lib/validators.js';
-import type { ValidateCommandOptions } from './types.js';
+import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
+import { validateData } from '../lib/validators.js'
+import type { ValidateCommandOptions } from './types.js'
 
 export const validateCommand = createCommand<ValidateCommandOptions>({
   name: 'validate',
@@ -631,18 +631,18 @@ export const validateCommand = createCommand<ValidateCommandOptions>({
     // Parse CSV, apply validation rules, show results
     // (Full implementation in the complete example)
   },
-});
+})
 ```
 
 Add it to your main CLI in `src/index.ts`:
 
 ```typescript
-import { validateCommand } from './commands/validate.js';
+import { validateCommand } from './commands/validate.js'
 
 const cli = createCLI({
   // ... existing config
   commands: [transformCommand, validateCommand],
-});
+})
 ```
 
 ## Step 10: Real-World Usage
@@ -682,52 +682,52 @@ You now have a CLI that:
 
 ```typescript
 // Two dependencies to manage
-import csvParser from 'csv-parser';
-import { stringify } from 'csv-stringify';
+import csvParser from 'csv-parser'
+import { stringify } from 'csv-stringify'
 
 // Complex stream-based parsing
 createReadStream(filePath)
   .pipe(csvParser())
-  .on('data', row => rows.push(row))
+  .on('data', (row) => rows.push(row))
   .on('end', () => resolve(Ok(rows)))
-  .on('error', error => resolve(Err(error)));
+  .on('error', (error) => resolve(Err(error)))
 
 // Separate Promise-based stringification
 stringify(data, { header: true }, (err, output) => {
-  if (err) reject(err);
-  else resolve(output);
-});
+  if (err) reject(err)
+  else resolve(output)
+})
 
 // Manual whitespace trimming
-const trimmed = value.trim();
+const trimmed = value.trim()
 ```
 
 ### After (papaparse)
 
 ```typescript
 // Single dependency
-import Papa from 'papaparse';
+import Papa from 'papaparse'
 
 // Simple async/await parsing
 const result = Papa.parse(content, {
   header: true,
   skipEmptyLines: true,
-  transform: value => value.trim(), // Built-in trimming!
-});
+  transform: (value) => value.trim(), // Built-in trimming!
+})
 
 // Synchronous stringification
 const output = Papa.unparse(data, {
   header: true,
   quotes: true,
-});
+})
 
 // Detailed error information
 if (result.errors.length > 0) {
   const errorMessages = result.errors
     .map(
-      err => `Row ${err.row}: ${err.message}` // Row numbers included!
+      (err) => `Row ${err.row}: ${err.message}` // Row numbers included!
     )
-    .join(', ');
+    .join(', ')
 }
 ```
 

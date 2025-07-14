@@ -2,23 +2,23 @@
 // Main Watcher Operations Exports
 // ========================================
 
-export { createWatcherOperations } from './core.js';
+export { createWatcherOperations } from './core.js'
 
 // ========================================
 // Sub-module Exports
 // ========================================
 
-export { createEventOperations } from './events/index.js';
-export { createPatternOperations } from './patterns/index.js';
-export { createFilterOperations } from './filters/index.js';
+export { createEventOperations } from './events/index.js'
+export { createPatternOperations } from './patterns/index.js'
+export { createFilterOperations } from './filters/index.js'
 
 // ========================================
 // Configuration Defaults
 // ========================================
 
-export { defaultEventConfig } from './events/index.js';
-export { defaultPatternConfig } from './patterns/index.js';
-export { defaultFilterConfig } from './filters/index.js';
+export { defaultEventConfig } from './events/index.js'
+export { defaultPatternConfig } from './patterns/index.js'
+export { defaultFilterConfig } from './filters/index.js'
 
 // ========================================
 // Error Utilities
@@ -34,7 +34,7 @@ export {
   createPatternError,
   mapChokidarError,
   mapLibraryError,
-} from './errors.js';
+} from './errors.js'
 
 // ========================================
 // Type Exports
@@ -87,7 +87,7 @@ export type {
   WatchOp,
   WatchWithFilterOp,
   WatchBatchOp,
-} from './types.js';
+} from './types.js'
 
 // ========================================
 // Event Types
@@ -100,7 +100,7 @@ export type {
   EventAggregator,
   EventStream,
   EventMetrics,
-} from './events/index.js';
+} from './events/index.js'
 
 // ========================================
 // Pattern Types
@@ -114,7 +114,7 @@ export type {
   GlobOptions,
   PathNormalizer,
   PatternAnalysis,
-} from './patterns/index.js';
+} from './patterns/index.js'
 
 // ========================================
 // Filter Types
@@ -130,4 +130,4 @@ export type {
   SizeRangeFilter,
   ExtensionFilter,
   DirectoryFilter,
-} from './filters/index.js';
+} from './filters/index.js'

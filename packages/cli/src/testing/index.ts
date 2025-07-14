@@ -1,5 +1,5 @@
 // CLI-specific testing utilities (domain package temporarily disabled due to build issues)
-export { createTestContext, createTestContextWithFiles } from './context.js';
+export { createTestContext, createTestContextWithFiles } from './context.js'
 export {
   runCommand,
   createCommandTestRunner,
@@ -9,11 +9,11 @@ export {
   getTestContext,
   getTestFiles,
   getTestLogs,
-} from './runner.js';
+} from './runner.js'
 
-export type { CommandTestRunnerState } from './runner.js';
+export type { CommandTestRunnerState } from './runner.js'
 
-export type { TestContextOptions } from './context.js';
+export type { TestContextOptions } from './context.js'
 export {
   mockFileSystem,
   createEnhancedMockFileSystem,
@@ -22,14 +22,14 @@ export {
   createCrossPlatformMockFileSystem,
   mockLogger,
   mockPrompts,
-} from './mocks.js';
+} from './mocks.js'
 
 export type {
   MockFileSystemOptions,
   EnhancedMockFileSystem,
   MockConfigOptions,
   CreateConfigMockOptions,
-} from './mocks.js';
+} from './mocks.js'
 
 export {
   expectResult,
@@ -38,7 +38,7 @@ export {
   expectFailure,
   expectErrorCode,
   expectErrorMessage,
-} from './assertions.js';
+} from './assertions.js'
 
 // Test suite builders
 export {
@@ -48,7 +48,7 @@ export {
   createValidationTestSuite,
   createMockFactory,
   createTestSuite,
-} from './test-suites.js';
+} from './test-suites.js'
 
 export type {
   ResultTestCase,
@@ -57,7 +57,7 @@ export type {
   ValidationTestCase,
   MockFactory,
   TestContextConfig,
-} from './test-suites.js';
+} from './test-suites.js'
 
 // CLI testing utilities
 export {
@@ -66,7 +66,7 @@ export {
   createWorkflowTest,
   createCommandTestSuite,
   createInteractiveTest,
-} from './cli-testing.js';
+} from './cli-testing.js'
 
 // Interactive testing
 export {
@@ -79,14 +79,14 @@ export {
   sendRaw,
   killProcess,
   createInteractiveTestHelper,
-} from './interactive.js';
+} from './interactive.js'
 
 export type {
   InteractiveTestConfig,
   PromptResponse,
   InteractiveTestResult,
   InteractiveTestRunnerState,
-} from './interactive.js';
+} from './interactive.js'
 
 // Performance monitoring
 export {
@@ -99,13 +99,13 @@ export {
   checkPerformanceThresholds,
   withPerformanceMonitoring,
   createCLIPerformanceMonitor,
-} from './performance.js';
+} from './performance.js'
 
 export type {
   PerformanceMetrics,
   PerformanceReport,
   PerformanceMonitorState as CLIPerformanceMonitorState,
-} from './performance.js';
+} from './performance.js'
 
 export type {
   CLISnapshotOptions,
@@ -113,10 +113,10 @@ export type {
   WorkflowStep,
   CommandTestCase,
   InteractiveTestStep,
-} from './cli-testing.js';
+} from './cli-testing.js'
 
 // Vitest matchers
-export { resultMatchers, setupResultMatchers } from './vitest-matchers.js';
+export { resultMatchers, setupResultMatchers } from './vitest-matchers.js'
 
 // Fixture management
 export {
@@ -132,9 +132,9 @@ export {
   addDirectory,
   buildFixtures,
   fixtureBuilder,
-} from './fixtures.js';
+} from './fixtures.js'
 
-export type { FixtureManager, FixtureBuilderState } from './fixtures.js';
+export type { FixtureManager, FixtureBuilderState } from './fixtures.js'
 
 // Test debugging and profiling
 export {
@@ -164,14 +164,14 @@ export {
   testUtils,
   profileTest,
   debugTest,
-} from './test-debugging.js';
+} from './test-debugging.js'
 
 export type {
   PerformanceMonitorState as TestPerformanceMonitorState,
   TestDebuggerState,
   TestStateInspectorState,
   TestUtilsState,
-} from './test-debugging.js';
+} from './test-debugging.js'
 
 // Cross-platform path utilities
 export {
@@ -183,4 +183,4 @@ export {
   pathAssertions,
   testPaths,
   isWindows,
-} from './path-utils.js';
+} from './path-utils.js'

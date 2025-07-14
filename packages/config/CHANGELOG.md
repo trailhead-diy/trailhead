@@ -138,7 +138,7 @@ const schema = {
     name: { type: 'string', required: true },
     port: { type: 'number', min: 1, max: 65535 },
   },
-};
+}
 
 // After (enhanced)
 const schema = defineConfigSchema<AppConfig>()
@@ -147,7 +147,7 @@ const schema = defineConfigSchema<AppConfig>()
     port: number().required().range(1, 65535).default(3000),
   })
   .optional({})
-  .build();
+  .build()
 ```
 
 **Error Handling**
@@ -155,14 +155,14 @@ const schema = defineConfigSchema<AppConfig>()
 ```typescript
 // Before (legacy)
 if (result.isErr()) {
-  console.error('Validation failed:', result.error.message);
+  console.error('Validation failed:', result.error.message)
 }
 
 // After (enhanced)
 if (result.isErr()) {
-  const errors = extractValidationErrors(result.error);
-  const formatted = formatValidationErrors(errors);
-  console.error(formatted); // Beautiful, contextual error messages
+  const errors = extractValidationErrors(result.error)
+  const formatted = formatValidationErrors(errors)
+  console.error(formatted) // Beautiful, contextual error messages
 }
 ```
 

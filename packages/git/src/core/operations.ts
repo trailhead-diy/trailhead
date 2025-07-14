@@ -1,14 +1,14 @@
-import { ok, err, fromThrowable } from '@esteban-url/core';
-import { join, resolve } from 'node:path';
-import { access, constants } from 'node:fs/promises';
-import { execSync } from 'node:child_process';
+import { ok, err, fromThrowable } from '@esteban-url/core'
+import { join, resolve } from 'node:path'
+import { access, constants } from 'node:fs/promises'
+import { execSync } from 'node:child_process'
 import type {
   GitOperations,
   GitRepository,
   GitResult,
   GitInitOptions,
   GitCloneOptions,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Git Operations
@@ -19,19 +19,19 @@ export const createGitOperations = (): GitOperations => {
     path: string,
     options: GitInitOptions = {}
   ): Promise<GitResult<GitRepository>> => {
-    const resolvedPath = resolve(path);
+    const resolvedPath = resolve(path)
 
     // Build git init command
-    const args = ['init'];
-    if (options.bare) args.push('--bare');
-    if (options.template) args.push(`--template=${options.template}`);
-    if (options.separateGitDir) args.push(`--separate-git-dir=${options.separateGitDir}`);
-    if (options.branch) args.push(`--initial-branch=${options.branch}`);
+    const args = ['init']
+    if (options.bare) args.push('--bare')
+    if (options.template) args.push(`--template=${options.template}`)
+    if (options.separateGitDir) args.push(`--separate-git-dir=${options.separateGitDir}`)
+    if (options.branch) args.push(`--initial-branch=${options.branch}`)
 
     // Execute git init
-    const command = `git ${args.join(' ')} "${resolvedPath}"`;
-    const safeExec = fromThrowable(() => execSync(command, { stdio: 'pipe' }));
-    const result = safeExec();
+    const command = `git ${args.join(' ')} "${resolvedPath}"`
+    const safeExec = fromThrowable(() => execSync(command, { stdio: 'pipe' }))
+    const result = safeExec()
 
     if (result.isErr()) {
       return err({
@@ -41,35 +41,35 @@ export const createGitOperations = (): GitOperations => {
         suggestion: 'Check if the path is valid and you have write permissions',
         cause: result.error,
         recoverable: false,
-      } as any);
+      } as any)
     }
 
     // Return repository info
-    const repo = await createRepository(resolvedPath);
-    return ok(repo);
-  };
+    const repo = await createRepository(resolvedPath)
+    return ok(repo)
+  }
 
   const clone = async (
     url: string,
     path: string,
     options: GitCloneOptions = {}
   ): Promise<GitResult<GitRepository>> => {
-    const resolvedPath = resolve(path);
+    const resolvedPath = resolve(path)
 
     // Build git clone command
-    const args = ['clone'];
-    if (options.branch) args.push(`--branch=${options.branch}`);
-    if (options.depth) args.push(`--depth=${options.depth}`);
-    if (options.recursive) args.push('--recursive');
-    if (options.bare) args.push('--bare');
-    if (options.mirror) args.push('--mirror');
+    const args = ['clone']
+    if (options.branch) args.push(`--branch=${options.branch}`)
+    if (options.depth) args.push(`--depth=${options.depth}`)
+    if (options.recursive) args.push('--recursive')
+    if (options.bare) args.push('--bare')
+    if (options.mirror) args.push('--mirror')
 
-    args.push(url, `"${resolvedPath}"`);
+    args.push(url, `"${resolvedPath}"`)
 
     // Execute git clone
-    const command = `git ${args.join(' ')}`;
-    const safeExec = fromThrowable(() => execSync(command, { stdio: 'pipe' }));
-    const result = safeExec();
+    const command = `git ${args.join(' ')}`
+    const safeExec = fromThrowable(() => execSync(command, { stdio: 'pipe' }))
+    const result = safeExec()
 
     if (result.isErr()) {
       return err({
@@ -79,18 +79,18 @@ export const createGitOperations = (): GitOperations => {
         suggestion: 'Check if the URL is valid and you have network access',
         cause: result.error,
         recoverable: false,
-      } as any);
+      } as any)
     }
 
     // Return repository info
-    const repo = await createRepository(resolvedPath);
-    return ok(repo);
-  };
+    const repo = await createRepository(resolvedPath)
+    return ok(repo)
+  }
 
   const open = async (path: string): Promise<GitResult<GitRepository>> => {
     const safeOpen = fromThrowable(async () => {
-      const resolvedPath = resolve(path);
-      const isRepo = await isRepository(resolvedPath);
+      const resolvedPath = resolve(path)
+      const isRepo = await isRepository(resolvedPath)
 
       if (isRepo.isErr()) {
         return err({
@@ -100,7 +100,7 @@ export const createGitOperations = (): GitOperations => {
           suggestion: 'Check if the path exists and is accessible',
           cause: isRepo.error,
           recoverable: true,
-        } as any);
+        } as any)
       }
 
       if (!isRepo.value) {
@@ -110,14 +110,14 @@ export const createGitOperations = (): GitOperations => {
           message: `Path ${path} is not a Git repository`,
           suggestion: 'Initialize a repository or navigate to an existing one',
           recoverable: true,
-        } as any);
+        } as any)
       }
 
-      const repo = await createRepository(resolvedPath);
-      return ok(repo);
-    });
+      const repo = await createRepository(resolvedPath)
+      return ok(repo)
+    })
 
-    const result = await safeOpen();
+    const result = await safeOpen()
     if (result.isErr()) {
       return err({
         type: 'GitError',
@@ -126,20 +126,20 @@ export const createGitOperations = (): GitOperations => {
         suggestion: 'Check if the path exists and is a valid Git repository',
         cause: result.error,
         recoverable: false,
-      } as any);
+      } as any)
     }
 
-    return result.value;
-  };
+    return result.value
+  }
 
   const isRepository = async (path: string): Promise<GitResult<boolean>> => {
-    const resolvedPath = resolve(path);
-    const gitDir = join(resolvedPath, '.git');
+    const resolvedPath = resolve(path)
+    const gitDir = join(resolvedPath, '.git')
 
     // First check for .git directory
     try {
-      await access(gitDir, constants.F_OK);
-      return ok(true);
+      await access(gitDir, constants.F_OK)
+      return ok(true)
     } catch {
       // .git directory doesn't exist, continue to git command check
     }
@@ -150,19 +150,19 @@ export const createGitOperations = (): GitOperations => {
         cwd: path,
         stdio: 'pipe',
       })
-    );
-    const gitResult = safeGitCheck();
+    )
+    const gitResult = safeGitCheck()
 
     if (gitResult.isOk() && gitResult.value) {
-      return ok(true);
+      return ok(true)
     }
 
-    return ok(false);
-  };
+    return ok(false)
+  }
 
   const getRepository = async (path: string): Promise<GitResult<GitRepository>> => {
-    return open(path);
-  };
+    return open(path)
+  }
 
   return {
     init,
@@ -170,15 +170,15 @@ export const createGitOperations = (): GitOperations => {
     open,
     isRepository,
     getRepository,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
 // ========================================
 
 const createRepository = async (path: string): Promise<GitRepository> => {
-  const resolvedPath = resolve(path);
+  const resolvedPath = resolve(path)
 
   const safeGitDir = fromThrowable(
     () =>
@@ -187,22 +187,22 @@ const createRepository = async (path: string): Promise<GitRepository> => {
         encoding: 'utf-8',
         stdio: 'pipe',
       }) as string
-  );
+  )
 
-  const gitDirResult = safeGitDir();
+  const gitDirResult = safeGitDir()
   if (gitDirResult.isErr()) {
     return {
       path: resolvedPath,
       isValid: false,
       workingDirectory: resolvedPath,
       gitDirectory: join(resolvedPath, '.git'),
-    };
+    }
   }
 
-  const gitDirectory = gitDirResult.value.trim();
+  const gitDirectory = gitDirResult.value.trim()
 
   // Get working directory (may fail for bare repositories)
-  let workingDirectory = resolvedPath;
+  let workingDirectory = resolvedPath
   const safeWorkingDir = fromThrowable(
     () =>
       execSync('git rev-parse --show-toplevel', {
@@ -210,15 +210,15 @@ const createRepository = async (path: string): Promise<GitRepository> => {
         encoding: 'utf-8',
         stdio: 'pipe',
       }) as string
-  );
+  )
 
-  const workingDirResult = safeWorkingDir();
+  const workingDirResult = safeWorkingDir()
   if (workingDirResult.isOk()) {
-    workingDirectory = workingDirResult.value.trim();
+    workingDirectory = workingDirResult.value.trim()
   }
 
   // Get current HEAD
-  let head;
+  let head
   const safeHeadRef = fromThrowable(
     () =>
       execSync('git symbolic-ref HEAD', {
@@ -226,11 +226,11 @@ const createRepository = async (path: string): Promise<GitRepository> => {
         encoding: 'utf-8',
         stdio: 'pipe',
       }) as string
-  );
+  )
 
-  const headRefResult = safeHeadRef();
+  const headRefResult = safeHeadRef()
   if (headRefResult.isOk()) {
-    const branchName = headRefResult.value.trim().replace('refs/heads/', '');
+    const branchName = headRefResult.value.trim().replace('refs/heads/', '')
 
     const safeSha = fromThrowable(
       () =>
@@ -239,16 +239,16 @@ const createRepository = async (path: string): Promise<GitRepository> => {
           encoding: 'utf-8',
           stdio: 'pipe',
         }) as string
-    );
+    )
 
-    const shaResult = safeSha();
+    const shaResult = safeSha()
     if (shaResult.isOk()) {
-      const sha = shaResult.value.trim();
+      const sha = shaResult.value.trim()
       head = {
         name: branchName,
         sha,
         type: 'branch' as const,
-      };
+      }
     }
   }
 
@@ -258,5 +258,5 @@ const createRepository = async (path: string): Promise<GitRepository> => {
     head,
     workingDirectory,
     gitDirectory: join(workingDirectory, gitDirectory),
-  };
-};
+  }
+}

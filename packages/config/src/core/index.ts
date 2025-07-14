@@ -14,7 +14,7 @@ export {
   zodBoolean as boolean,
   zodArray as array,
   zodObject as object,
-} from './zod-schema.js';
+} from './zod-schema.js'
 
 export type {
   ZodConfigSchema as ConfigSchema,
@@ -25,15 +25,15 @@ export type {
   ZodArrayFieldBuilder as ArrayFieldBuilder,
   ZodObjectFieldBuilder as ObjectFieldBuilder,
   ZodFieldBuilder as FieldBuilder,
-} from './zod-schema.js';
+} from './zod-schema.js'
 
 // Configuration operations
-export { createConfigOperations } from './operations.js';
-export { createConfigManager } from './manager.js';
+export { createConfigOperations } from './operations.js'
+export { createConfigManager } from './manager.js'
 
 export type {
   ConfigOperations,
   ConfigManager,
   ConfigChangeCallback,
   ConfigChange,
-} from '../types.js';
+} from '../types.js'

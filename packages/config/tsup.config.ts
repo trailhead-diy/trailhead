@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
@@ -16,4 +16,4 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   target: 'node18',
-});
+})

@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
@@ -13,4 +13,4 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   target: 'node18',
-});
+})

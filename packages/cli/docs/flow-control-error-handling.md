@@ -12,35 +12,35 @@ Eliminates 5-10 lines of manual error checking per operation chain through autom
 
 ```typescript
 // Manual error handling with repetitive checks
-const step1Result = await parseFile();
+const step1Result = await parseFile()
 if (!step1Result.success) {
-  return Err(new Error(`Parse failed: ${step1Result.error.message}`));
+  return Err(new Error(`Parse failed: ${step1Result.error.message}`))
 }
 
-const step2Result = await validateData(step1Result.value);
+const step2Result = await validateData(step1Result.value)
 if (!step2Result.success) {
-  return Err(new Error(`Validation failed: ${step2Result.error.message}`));
+  return Err(new Error(`Validation failed: ${step2Result.error.message}`))
 }
 
-const step3Result = await writeOutput(step2Result.value);
+const step3Result = await writeOutput(step2Result.value)
 if (!step3Result.success) {
-  return Err(new Error(`Write failed: ${step3Result.error.message}`));
+  return Err(new Error(`Write failed: ${step3Result.error.message}`))
 }
 
-return step3Result;
+return step3Result
 ```
 
 #### After
 
 ```typescript
 // Streamlined pipeline with automatic error propagation
-import { pipeline } from '@esteban-url/trailhead-cli/core';
+import { pipeline } from '@esteban-url/trailhead-cli/core'
 
 return pipeline(inputFile)
   .step('Parse file', parseFile)
   .step('Validate data', validateData)
   .step('Write output', writeOutput)
-  .execute();
+  .execute()
 ```
 
 **Boilerplate Reduction**: 5-10 lines eliminated per operation chain with automatic error propagation.
@@ -53,20 +53,20 @@ Provides consistent error UX across the framework with predefined templates for 
 
 ```typescript
 // Inconsistent error messages
-return Err(new Error(`Failed to parse CSV: ${result.error.message}`));
-return Err(new Error(`Input file does not exist: ${inputFile}`));
-return Err(new Error(`Unsupported format: ${format}`));
+return Err(new Error(`Failed to parse CSV: ${result.error.message}`))
+return Err(new Error(`Input file does not exist: ${inputFile}`))
+return Err(new Error(`Unsupported format: ${format}`))
 ```
 
 #### After
 
 ```typescript
 // Consistent error templates
-import { errors } from '@esteban-url/trailhead-cli/core';
+import { errors } from '@esteban-url/trailhead-cli/core'
 
-return Err(errors.parseFailure('CSV', inputFile, result.error.message));
-return Err(errors.fileNotFound(inputFile));
-return Err(errors.unsupportedFormat(format, ['json', 'csv', 'yaml']));
+return Err(errors.parseFailure('CSV', inputFile, result.error.message))
+return Err(errors.fileNotFound(inputFile))
+return Err(errors.unsupportedFormat(format, ['json', 'csv', 'yaml']))
 ```
 
 **Benefits**: Consistent error UX, helpful suggestions, internationalization ready, proper error categorization.
@@ -125,14 +125,14 @@ const result = await parallel([
   async () => fetchData1(),
   async () => fetchData2(),
   async () => fetchData3(),
-]);
+])
 
 // Object of named operations
 const result = await parallel({
   users: async () => fetchUsers(),
   posts: async () => fetchPosts(),
   comments: async () => fetchComments(),
-});
+})
 ```
 
 ##### `parallelSettled(operations)`
@@ -144,11 +144,11 @@ const result = await parallelSettled([
   async () => fetchData1(),
   async () => fetchData2(), // May fail
   async () => fetchData3(),
-]);
+])
 
 if (result.success) {
-  console.log('Successes:', result.value.successes);
-  console.log('Failures:', result.value.failures);
+  console.log('Successes:', result.value.successes)
+  console.log('Failures:', result.value.failures)
 }
 ```
 
@@ -161,7 +161,7 @@ const result = await retryPipeline(() => pipeline(data).step('process', processD
   maxAttempts: 3,
   baseDelay: 1000,
   onRetry: (attempt, error) => console.log(`Retry ${attempt}: ${error.message}`),
-});
+})
 ```
 
 ### Error Templates
@@ -252,94 +252,94 @@ Global registry instance for application-wide custom templates.
 ### Complete Pipeline Workflow
 
 ```typescript
-import { pipeline, errors } from '@esteban-url/trailhead-cli/core';
+import { pipeline, errors } from '@esteban-url/trailhead-cli/core'
 
 interface ProcessContext {
-  inputFile: string;
-  data?: any[];
-  processedData?: any[];
-  outputFile?: string;
+  inputFile: string
+  data?: any[]
+  processedData?: any[]
+  outputFile?: string
 }
 
 const result = await pipeline({ inputFile: 'data.csv' })
-  .step('Read file', async ctx => {
-    const fileResult = await fs.readFile(ctx.inputFile);
+  .step('Read file', async (ctx) => {
+    const fileResult = await fs.readFile(ctx.inputFile)
     if (!fileResult.success) {
-      return Err(errors.fileNotFound(ctx.inputFile));
+      return Err(errors.fileNotFound(ctx.inputFile))
     }
-    ctx.data = parseCSV(fileResult.value);
-    return Ok(ctx);
+    ctx.data = parseCSV(fileResult.value)
+    return Ok(ctx)
   })
-  .step('Validate data', async ctx => {
+  .step('Validate data', async (ctx) => {
     if (!ctx.data?.length) {
-      return Err(errors.invalidInput('CSV data', 'File contains no data'));
+      return Err(errors.invalidInput('CSV data', 'File contains no data'))
     }
-    return Ok(ctx);
+    return Ok(ctx)
   })
-  .step('Process data', async ctx => {
-    ctx.processedData = ctx.data!.map(row => processRow(row));
-    return Ok(ctx);
+  .step('Process data', async (ctx) => {
+    ctx.processedData = ctx.data!.map((row) => processRow(row))
+    return Ok(ctx)
   })
   .stepIf(
     'Write output',
-    ctx => !!ctx.processedData?.length,
-    async ctx => {
-      const outputFile = ctx.inputFile.replace('.csv', '-processed.json');
-      const writeResult = await fs.writeFile(outputFile, JSON.stringify(ctx.processedData));
+    (ctx) => !!ctx.processedData?.length,
+    async (ctx) => {
+      const outputFile = ctx.inputFile.replace('.csv', '-processed.json')
+      const writeResult = await fs.writeFile(outputFile, JSON.stringify(ctx.processedData))
       if (!writeResult.success) {
-        return Err(errors.permissionDenied(outputFile, 'write'));
+        return Err(errors.permissionDenied(outputFile, 'write'))
       }
-      ctx.outputFile = outputFile;
-      return Ok(ctx);
+      ctx.outputFile = outputFile
+      return Ok(ctx)
     }
   )
   .onProgress((step, progress, total) => {
-    console.log(`${step}: ${Math.round((progress / total) * 100)}%`);
+    console.log(`${step}: ${Math.round((progress / total) * 100)}%`)
   })
   .onError(async (error, stepName) => {
-    console.error(`Error in ${stepName}: ${error.message}`);
+    console.error(`Error in ${stepName}: ${error.message}`)
     // Attempt recovery for certain error types
     if (error.recoverable) {
-      console.log('Attempting recovery...');
-      return Ok({ inputFile: 'fallback.csv' });
+      console.log('Attempting recovery...')
+      return Ok({ inputFile: 'fallback.csv' })
     }
-    return Err(error);
+    return Err(error)
   })
-  .execute();
+  .execute()
 ```
 
 ### Parallel Processing with Error Handling
 
 ```typescript
-import { parallelSettled, errors } from '@esteban-url/trailhead-cli/core';
+import { parallelSettled, errors } from '@esteban-url/trailhead-cli/core'
 
 const result = await parallelSettled({
   users: async () => fetchUsers(),
   posts: async () => fetchPosts(),
   comments: async () => fetchComments(),
-});
+})
 
 if (result.success) {
-  const { successes, failures } = result.value;
+  const { successes, failures } = result.value
 
   // Process successful results
-  console.log('Loaded data:', successes);
+  console.log('Loaded data:', successes)
 
   // Handle failures gracefully
   Object.entries(failures).forEach(([operation, error]) => {
     if (error.code === 'NETWORK_TIMEOUT') {
-      console.warn(`${operation} timed out, using cached data`);
+      console.warn(`${operation} timed out, using cached data`)
     } else {
-      console.error(`${operation} failed:`, error.message);
+      console.error(`${operation} failed:`, error.message)
     }
-  });
+  })
 }
 ```
 
 ### Custom Error Templates
 
 ```typescript
-import { createErrorTemplate, globalErrorTemplates } from '@esteban-url/trailhead-cli/core';
+import { createErrorTemplate, globalErrorTemplates } from '@esteban-url/trailhead-cli/core'
 
 // Register custom error template
 const customErrorTemplate = createErrorTemplate(
@@ -356,12 +356,12 @@ const customErrorTemplate = createErrorTemplate(
       suggestion: `Fix the ${rule} validation for ${field}`,
       recoverable: true,
     }) as any
-);
+)
 
-globalErrorTemplates.register('customValidation', customErrorTemplate);
+globalErrorTemplates.register('customValidation', customErrorTemplate)
 
 // Use custom template
-const error = globalErrorTemplates.get('customValidation')?.create('email', 'must be unique');
+const error = globalErrorTemplates.get('customValidation')?.create('email', 'must be unique')
 ```
 
 ## Migration Guide

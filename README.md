@@ -159,7 +159,7 @@ pnpm test --filter=@esteban-url/trailhead-web-ui
 ### Functional CLI with Result Types
 
 ```typescript
-import { createCommand, Result } from '@esteban-url/cli';
+import { createCommand, Result } from '@esteban-url/cli'
 
 const deployCommand = createCommand({
   name: 'deploy',
@@ -173,15 +173,15 @@ const deployCommand = createCommand({
   },
   action: async ({ env }): Promise<Result<string, Error>> => {
     // Explicit error handling
-    const buildResult = await buildApp();
+    const buildResult = await buildApp()
     if (!buildResult.success) {
-      return buildResult; // Propagate error
+      return buildResult // Propagate error
     }
 
-    const deployResult = await deployToEnv(env);
-    return deployResult;
+    const deployResult = await deployToEnv(env)
+    return deployResult
   },
-});
+})
 ```
 
 ### Advanced Theme Switching

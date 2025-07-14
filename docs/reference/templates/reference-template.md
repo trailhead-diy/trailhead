@@ -37,7 +37,7 @@ import { [exports] } from '@esteban-url/trailhead-[package]/[module]';
 <!-- Each function/method gets its own section -->
 
 ```typescript
-function functionName(param1: Type1, param2: Type2): ReturnType;
+function functionName(param1: Type1, param2: Type2): ReturnType
 ```
 
 [Brief description of what the function does]
@@ -58,7 +58,7 @@ function functionName(param1: Type1, param2: Type2): ReturnType;
 #### Example
 
 ```typescript
-const result = functionName('value1', 'value2');
+const result = functionName('value1', 'value2')
 ```
 
 #### Throws
@@ -77,9 +77,9 @@ const result = functionName('value1', 'value2');
 
 ```typescript
 interface TypeName {
-  property1: string;
-  property2?: number;
-  property3: 'option1' | 'option2';
+  property1: string
+  property2?: number
+  property3: 'option1' | 'option2'
 }
 ```
 
@@ -95,7 +95,7 @@ interface TypeName {
 const example: TypeName = {
   property1: 'value',
   property3: 'option1',
-};
+}
 ```
 
 ## Constants
@@ -103,7 +103,7 @@ const example: TypeName = {
 ### `CONSTANT_NAME`
 
 ```typescript
-const CONSTANT_NAME: Type = value;
+const CONSTANT_NAME: Type = value
 ```
 
 [Description of the constant and its purpose]
@@ -125,7 +125,7 @@ const CONSTANT_NAME: Type = value;
 const config = {
   option1: 'custom-value',
   option2: true,
-};
+}
 ```
 
 ## Error Codes

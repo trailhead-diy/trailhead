@@ -1,24 +1,24 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result } from '@esteban-url/core';
-import type { ModernProjectConfig } from './interactive-prompts.js';
-import type { TemplateFile } from './types.js';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result } from '@esteban-url/core'
+import type { ModernProjectConfig } from './interactive-prompts.js'
+import type { TemplateFile } from './types.js'
 
 export interface FeatureModule {
-  name: string;
-  description: string;
-  dependencies: string[]; // Other feature modules this depends on
-  conflicts: string[]; // Features that conflict with this one
-  files: TemplateFile[];
-  packageDependencies?: string[]; // Additional npm dependencies needed
-  scripts?: Record<string, string>; // Additional package.json scripts
+  name: string
+  description: string
+  dependencies: string[] // Other feature modules this depends on
+  conflicts: string[] // Features that conflict with this one
+  files: TemplateFile[]
+  packageDependencies?: string[] // Additional npm dependencies needed
+  scripts?: Record<string, string> // Additional package.json scripts
 }
 
 export interface ComposedTemplate {
-  name: string;
-  modules: FeatureModule[];
-  files: TemplateFile[];
-  packageDependencies: string[];
-  scripts: Record<string, string>;
+  name: string
+  modules: FeatureModule[]
+  files: TemplateFile[]
+  packageDependencies: string[]
+  scripts: Record<string, string>
 }
 
 /**
@@ -238,75 +238,75 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
       },
     ],
   },
-};
+}
 
 /**
  * Compose template from selected features
  */
 export function composeTemplate(config: ModernProjectConfig): Result<ComposedTemplate, any> {
   try {
-    const selectedModules: FeatureModule[] = [];
-    const allFiles: TemplateFile[] = [];
-    const allDependencies = new Set<string>();
-    const allScripts: Record<string, string> = {};
+    const selectedModules: FeatureModule[] = []
+    const allFiles: TemplateFile[] = []
+    const allDependencies = new Set<string>()
+    const allScripts: Record<string, string> = {}
 
     // Always include core module
-    const coreModule = FEATURE_MODULES.core;
-    selectedModules.push(coreModule);
+    const coreModule = FEATURE_MODULES.core
+    selectedModules.push(coreModule)
 
     // Add selected features
     for (const [featureName, enabled] of Object.entries(config.features)) {
       if (enabled && featureName !== 'core') {
-        const module = FEATURE_MODULES[featureName];
+        const module = FEATURE_MODULES[featureName]
         if (!module) {
           return err(
             createCoreError('UNKNOWN_FEATURE', `Unknown feature: ${featureName}`, {
               component: 'create-trailhead-cli',
               operation: 'composeTemplate',
             })
-          );
+          )
         }
-        selectedModules.push(module);
+        selectedModules.push(module)
       }
     }
 
     // Add template-based modules (basic vs advanced)
     if (config.template === 'advanced') {
       // Advanced template gets more example commands and features
-      selectedModules.push(FEATURE_MODULES.examples);
+      selectedModules.push(FEATURE_MODULES.examples)
       if (!config.features.config) {
-        selectedModules.push(FEATURE_MODULES.config);
+        selectedModules.push(FEATURE_MODULES.config)
       }
       if (!config.features.validation) {
-        selectedModules.push(FEATURE_MODULES.validation);
+        selectedModules.push(FEATURE_MODULES.validation)
       }
     } else {
       // Basic template gets simple examples
-      selectedModules.push(FEATURE_MODULES.examples);
+      selectedModules.push(FEATURE_MODULES.examples)
     }
 
     // Validate dependencies
-    const dependencyResult = validateDependencies(selectedModules);
+    const dependencyResult = validateDependencies(selectedModules)
     if (dependencyResult.isErr()) {
-      return err(dependencyResult.error);
+      return err(dependencyResult.error)
     }
 
     // Check for conflicts
-    const conflictResult = checkConflicts(selectedModules);
+    const conflictResult = checkConflicts(selectedModules)
     if (conflictResult.isErr()) {
-      return err(conflictResult.error);
+      return err(conflictResult.error)
     }
 
     // Collect all files, dependencies, and scripts
     for (const module of selectedModules) {
-      allFiles.push(...module.files);
+      allFiles.push(...module.files)
 
       if (module.packageDependencies) {
-        module.packageDependencies.forEach(dep => allDependencies.add(dep));
+        module.packageDependencies.forEach((dep) => allDependencies.add(dep))
       }
 
       if (module.scripts) {
-        Object.assign(allScripts, module.scripts);
+        Object.assign(allScripts, module.scripts)
       }
     }
 
@@ -336,7 +336,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
         isTemplate: false,
         executable: false,
       }
-    );
+    )
 
     // Add project type specific files
     if (config.projectType === 'monorepo-package') {
@@ -345,7 +345,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
         destination: 'turbo.json',
         isTemplate: true,
         executable: false,
-      });
+      })
     }
 
     // Add IDE configuration
@@ -363,7 +363,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
           isTemplate: false,
           executable: false,
         }
-      );
+      )
     }
 
     return ok({
@@ -372,7 +372,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
       files: allFiles,
       packageDependencies: Array.from(allDependencies),
       scripts: allScripts,
-    });
+    })
   } catch (error) {
     return err(
       createCoreError('TEMPLATE_COMPOSITION_FAILED', 'Failed to compose template', {
@@ -381,7 +381,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
         cause: error,
         recoverable: false,
       })
-    );
+    )
   }
 }
 
@@ -389,7 +389,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
  * Validate that all module dependencies are satisfied
  */
 function validateDependencies(modules: FeatureModule[]): Result<void, any> {
-  const moduleNames = new Set(modules.map(m => m.name));
+  const moduleNames = new Set(modules.map((m) => m.name))
 
   for (const module of modules) {
     for (const dependency of module.dependencies) {
@@ -404,19 +404,19 @@ function validateDependencies(modules: FeatureModule[]): Result<void, any> {
               details: `Add the '${dependency}' feature or its dependencies`,
             }
           )
-        );
+        )
       }
     }
   }
 
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
  * Check for conflicting modules
  */
 function checkConflicts(modules: FeatureModule[]): Result<void, any> {
-  const moduleNames = new Set(modules.map(m => m.name));
+  const moduleNames = new Set(modules.map((m) => m.name))
 
   for (const module of modules) {
     for (const conflict of module.conflicts) {
@@ -431,37 +431,37 @@ function checkConflicts(modules: FeatureModule[]): Result<void, any> {
               details: `Choose either '${module.name}' or '${conflict}', not both`,
             }
           )
-        );
+        )
       }
     }
   }
 
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
  * Get recommended modules for a project type
  */
 export function getRecommendedModules(projectType: string, template: string): string[] {
-  const base = ['core'];
+  const base = ['core']
 
   switch (projectType) {
     case 'standalone-cli':
       if (template === 'advanced') {
-        return [...base, 'config', 'validation', 'testing', 'docs', 'cicd', 'examples'];
+        return [...base, 'config', 'validation', 'testing', 'docs', 'cicd', 'examples']
       }
-      return [...base, 'testing', 'examples'];
+      return [...base, 'testing', 'examples']
 
     case 'library':
       if (template === 'advanced') {
-        return [...base, 'validation', 'testing', 'docs', 'cicd'];
+        return [...base, 'validation', 'testing', 'docs', 'cicd']
       }
-      return [...base, 'testing', 'docs'];
+      return [...base, 'testing', 'docs']
 
     case 'monorepo-package':
-      return [...base, 'testing'];
+      return [...base, 'testing']
 
     default:
-      return base;
+      return base
   }
 }

@@ -1,28 +1,28 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   LoaderOperations,
   ConfigLoader,
   ConfigSource,
   ConfigResult,
   ConfigSourceType,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Loader Operations
 // ========================================
 
 export const createLoaderOperations = (): LoaderOperations => {
-  const loaders = new Map<ConfigSourceType, ConfigLoader>();
+  const loaders = new Map<ConfigSourceType, ConfigLoader>()
 
   // Register default loaders
-  registerDefaultLoaders();
+  registerDefaultLoaders()
 
   function registerDefaultLoaders() {
     // Object loader
     const objectLoader: ConfigLoader = {
       load: async (source: ConfigSource) => {
         if (source.data) {
-          return ok(source.data);
+          return ok(source.data)
         }
         return err({
           type: 'ConfigLoadError',
@@ -30,31 +30,31 @@ export const createLoaderOperations = (): LoaderOperations => {
           message: 'Object source has no data',
           suggestion: 'Provide data in the source configuration',
           recoverable: true,
-        } as any);
+        } as any)
       },
       supports: (source: ConfigSource) => source.type === 'object',
-    };
+    }
 
     // Environment loader
     const envLoader: ConfigLoader = {
       load: async (source: ConfigSource) => {
-        const data: Record<string, unknown> = {};
-        const prefix = source.env || '';
+        const data: Record<string, unknown> = {}
+        const prefix = source.env || ''
 
         for (const [key, value] of Object.entries(process.env)) {
           if (key.startsWith(prefix)) {
-            const configKey = key.slice(prefix.length).toLowerCase();
-            data[configKey] = value;
+            const configKey = key.slice(prefix.length).toLowerCase()
+            data[configKey] = value
           }
         }
 
-        return ok(data);
+        return ok(data)
       },
       supports: (source: ConfigSource) => source.type === 'env',
-    };
+    }
 
-    loaders.set('object', objectLoader);
-    loaders.set('env', envLoader);
+    loaders.set('object', objectLoader)
+    loaders.set('env', envLoader)
   }
 
   const register = (loader: ConfigLoader): void => {
@@ -66,25 +66,25 @@ export const createLoaderOperations = (): LoaderOperations => {
       { type: 'object', priority: 0 },
       { type: 'remote', priority: 0 },
       { type: 'vault', priority: 0 },
-    ];
+    ]
 
     for (const source of testSources) {
       if (loader.supports(source)) {
-        loaders.set(source.type, loader);
+        loaders.set(source.type, loader)
       }
     }
-  };
+  }
 
   const unregister = (type: ConfigSourceType): void => {
-    loaders.delete(type);
-  };
+    loaders.delete(type)
+  }
 
   const getLoader = (source: ConfigSource): ConfigLoader | undefined => {
-    return loaders.get(source.type);
-  };
+    return loaders.get(source.type)
+  }
 
   const load = async (source: ConfigSource): Promise<ConfigResult<Record<string, unknown>>> => {
-    const loader = getLoader(source);
+    const loader = getLoader(source)
 
     if (!loader) {
       return err({
@@ -93,16 +93,16 @@ export const createLoaderOperations = (): LoaderOperations => {
         message: `No loader found for source type: ${source.type}`,
         suggestion: 'Register a loader for this source type',
         recoverable: false,
-      } as any);
+      } as any)
     }
 
-    return loader.load(source);
-  };
+    return loader.load(source)
+  }
 
   return {
     register,
     unregister,
     getLoader,
     load,
-  };
-};
+  }
+}

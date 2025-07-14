@@ -1,4 +1,4 @@
-export { createTestOperations } from './operations.js';
+export { createTestOperations } from './operations.js'
 export type {
   TestOperations,
   TestSuiteBuilder,
@@ -14,4 +14,4 @@ export type {
   TestHooks,
   TestHookFn,
   TestCleanupFn,
-} from '../types.js';
+} from '../types.js'

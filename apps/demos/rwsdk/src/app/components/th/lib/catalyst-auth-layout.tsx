@@ -1,6 +1,6 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import type React from 'react';
-import { cn } from '../utils/cn';
+import type React from 'react'
+import { cn } from '../utils/cn'
 
 export function CatalystAuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,5 +13,5 @@ export function CatalystAuthLayout({ children }: { children: React.ReactNode }) 
         {children}
       </div>
     </main>
-  );
+  )
 }

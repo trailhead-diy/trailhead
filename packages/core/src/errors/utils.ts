@@ -1,5 +1,5 @@
 // Import neverthrow for re-exports
-import { Result } from 'neverthrow';
+import { Result } from 'neverthrow'
 
 // Direct neverthrow exports - use these patterns throughout the Trailhead ecosystem
 export {
@@ -16,19 +16,19 @@ export {
   fromPromise,
   fromSafePromise,
   safeTry,
-} from 'neverthrow';
+} from 'neverthrow'
 
 // Convenience re-exports for static methods
-export const combine = Result.combine;
-export const combineWithAllErrors = Result.combineWithAllErrors;
+export const combine = Result.combine
+export const combineWithAllErrors = Result.combineWithAllErrors
 
 /**
  * Extract a human-readable error message from any error type
  */
 export function getErrorMessage<E = any>(error: E, defaultMessage = 'Unknown error'): string {
-  const e = error as any;
-  if (e?.message) return e.message;
-  if (typeof e === 'string') return e;
+  const e = error as any
+  if (e?.message) return e.message
+  if (typeof e === 'string') return e
   if (
     e?.toString &&
     typeof e.toString === 'function' &&
@@ -36,30 +36,30 @@ export function getErrorMessage<E = any>(error: E, defaultMessage = 'Unknown err
     typeof e !== 'number' &&
     typeof e !== 'boolean'
   ) {
-    return e.toString();
+    return e.toString()
   }
-  return defaultMessage;
+  return defaultMessage
 }
 
 /**
  * Check if an error is recoverable
  */
 export function isRecoverableError(error: { recoverable?: boolean }): boolean {
-  return error.recoverable === true;
+  return error.recoverable === true
 }
 
 /**
  * Extract error type for pattern matching
  */
 export function getErrorType(error: { type?: string }): string {
-  return error.type || 'unknown';
+  return error.type || 'unknown'
 }
 
 /**
  * Extract error category for categorization
  */
 export function getErrorCategory(error: { category?: string }): string {
-  return error.category || 'unknown';
+  return error.category || 'unknown'
 }
 
 // Performance-optimized type guards for zero-overhead validation
@@ -69,7 +69,7 @@ export function getErrorCategory(error: { category?: string }): string {
  * Optimized for hot paths where performance matters
  */
 export function isDefined<T>(value: T | null | undefined): value is T {
-  return value !== null && value !== undefined;
+  return value !== null && value !== undefined
 }
 
 /**
@@ -77,7 +77,7 @@ export function isDefined<T>(value: T | null | undefined): value is T {
  * Uses compile-time optimizations when possible
  */
 export function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.length > 0;
+  return typeof value === 'string' && value.length > 0
 }
 
 /**
@@ -85,7 +85,7 @@ export function isNonEmptyString(value: unknown): value is string {
  * Minimizes property access for better V8 optimization
  */
 export function isObject(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
 }
 
 /**
@@ -93,7 +93,7 @@ export function isObject(value: unknown): value is Record<string, unknown> {
  * Optimized for frequent validation in data processing
  */
 export function isNonEmptyArray<T>(value: unknown): value is T[] {
-  return Array.isArray(value) && value.length > 0;
+  return Array.isArray(value) && value.length > 0
 }
 
 /**
@@ -110,14 +110,14 @@ export type IsValidInput<T> = T extends string
       : true
     : T extends null | undefined
       ? false
-      : true;
+      : true
 
 /**
  * Production-optimized error checking
  * Avoids object property access in critical paths
  */
 export function hasErrorShape(value: unknown): value is { type: string; message: string } {
-  if (!isObject(value)) return false;
-  const obj = value as Record<string, unknown>;
-  return typeof obj.type === 'string' && typeof obj.message === 'string';
+  if (!isObject(value)) return false
+  const obj = value as Record<string, unknown>
+  return typeof obj.type === 'string' && typeof obj.message === 'string'
 }

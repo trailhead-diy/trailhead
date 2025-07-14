@@ -1,20 +1,20 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   StreamResult,
   StreamOperations,
   DataStreamingOperations,
   CreateDataStreamingOperations,
   StreamingConfig,
-} from './types.js';
+} from './types.js'
 import {
   getStreamOperations,
   isStreamingEnabled,
   createStreamingNotAvailableError,
   createStreamOpsUnavailableError,
-} from './utils.js';
-import { createCSVStreamingOperations } from './csv-streaming.js';
-import { createJSONStreamingOperations } from './json-streaming.js';
-import { createExcelStreamingOperations } from './excel-streaming.js';
+} from './utils.js'
+import { createCSVStreamingOperations } from './csv-streaming.js'
+import { createJSONStreamingOperations } from './json-streaming.js'
+import { createExcelStreamingOperations } from './excel-streaming.js'
 
 // ========================================
 // Streaming Operations Exports
@@ -45,7 +45,7 @@ export type {
   StreamProgress,
   StreamMetrics,
   StreamEventHandlers,
-} from './types.js';
+} from './types.js'
 
 export {
   // Utility functions
@@ -54,16 +54,16 @@ export {
   isStreamingEnabled,
   defaultStreamingConfig,
   createProgressTracker,
-} from './utils.js';
+} from './utils.js'
 
 export {
   // Individual streaming operation factories
   createCSVStreamingOperations,
-} from './csv-streaming.js';
+} from './csv-streaming.js'
 
-export { createJSONStreamingOperations } from './json-streaming.js';
+export { createJSONStreamingOperations } from './json-streaming.js'
 
-export { createExcelStreamingOperations } from './excel-streaming.js';
+export { createExcelStreamingOperations } from './excel-streaming.js'
 
 // ========================================
 // Main Data Streaming Factory
@@ -81,32 +81,32 @@ export const createDataStreamingOperations: CreateDataStreamingOperations = asyn
           enabled: config?.enabled,
           availabilityChecked: true,
         })
-      );
+      )
     }
 
     // Get stream operations (either provided or auto-detected)
-    const streamOps = providedStreamOps || (await getStreamOperations());
+    const streamOps = providedStreamOps || (await getStreamOperations())
     if (!streamOps) {
-      return err(createStreamOpsUnavailableError());
+      return err(createStreamOpsUnavailableError())
     }
 
     // Create individual streaming operations
-    const csvStreamingOps = createCSVStreamingOperations(streamOps, config);
-    const jsonStreamingOps = createJSONStreamingOperations(streamOps, config);
-    const excelStreamingOps = createExcelStreamingOperations(streamOps, config);
+    const csvStreamingOps = createCSVStreamingOperations(streamOps, config)
+    const jsonStreamingOps = createJSONStreamingOperations(streamOps, config)
+    const excelStreamingOps = createExcelStreamingOperations(streamOps, config)
 
     const dataStreamingOperations: DataStreamingOperations = {
       csv: csvStreamingOps,
       json: jsonStreamingOps,
       excel: excelStreamingOps,
       stream: streamOps,
-    };
+    }
 
-    return ok(dataStreamingOperations);
+    return ok(dataStreamingOperations)
   } catch (error) {
-    return err(createStreamOpsUnavailableError({ originalError: error }));
+    return err(createStreamOpsUnavailableError({ originalError: error }))
   }
-};
+}
 
 // ========================================
 // Convenience Factory Functions
@@ -115,41 +115,41 @@ export const createDataStreamingOperations: CreateDataStreamingOperations = asyn
 export const createCSVStreaming = async (
   config?: StreamingConfig
 ): Promise<StreamResult<import('./types.js').CSVStreamingOperations>> => {
-  const streamOps = await getStreamOperations();
+  const streamOps = await getStreamOperations()
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
         message: 'CSV streaming requires @esteban-url/streams to be installed',
       })
-    );
+    )
   }
-  return ok(createCSVStreamingOperations(streamOps, config));
-};
+  return ok(createCSVStreamingOperations(streamOps, config))
+}
 
 export const createJSONStreaming = async (
   config?: StreamingConfig
 ): Promise<StreamResult<import('./types.js').JSONStreamingOperations>> => {
-  const streamOps = await getStreamOperations();
+  const streamOps = await getStreamOperations()
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
         message: 'JSON streaming requires @esteban-url/streams to be installed',
       })
-    );
+    )
   }
-  return ok(createJSONStreamingOperations(streamOps, config));
-};
+  return ok(createJSONStreamingOperations(streamOps, config))
+}
 
 export const createExcelStreaming = async (
   config?: StreamingConfig
 ): Promise<StreamResult<import('./types.js').ExcelStreamingOperations>> => {
-  const streamOps = await getStreamOperations();
+  const streamOps = await getStreamOperations()
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
         message: 'Excel streaming requires @esteban-url/streams to be installed',
       })
-    );
+    )
   }
-  return ok(createExcelStreamingOperations(streamOps, config));
-};
+  return ok(createExcelStreamingOperations(streamOps, config))
+}

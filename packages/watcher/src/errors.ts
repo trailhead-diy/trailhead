@@ -1,5 +1,5 @@
-import { createCoreError } from '@esteban-url/core';
-import type { CoreError } from '@esteban-url/core';
+import { createCoreError } from '@esteban-url/core'
+import type { CoreError } from '@esteban-url/core'
 
 // ========================================
 // Watcher Error Factories
@@ -16,7 +16,7 @@ export const createWatcherError = (
     cause,
     recoverable: true,
     context: metadata,
-  });
+  })
 
 export const createWatcherInitError = (
   path: string,
@@ -28,7 +28,7 @@ export const createWatcherInitError = (
     cause,
     recoverable: false,
     context: { path, ...metadata },
-  });
+  })
 
 export const createWatcherPermissionError = (
   path: string,
@@ -39,7 +39,7 @@ export const createWatcherPermissionError = (
     details: `Insufficient permissions to perform ${operation} operation on the specified path`,
     recoverable: false,
     context: { path, operation, ...metadata },
-  });
+  })
 
 export const createWatcherPathError = (
   path: string,
@@ -50,7 +50,7 @@ export const createWatcherPathError = (
     details: `Cannot watch path because ${reason}`,
     recoverable: false,
     context: { path, reason, ...metadata },
-  });
+  })
 
 export const createWatcherEventError = (
   eventType: string,
@@ -63,7 +63,7 @@ export const createWatcherEventError = (
     cause,
     recoverable: true,
     context: { eventType, path, ...metadata },
-  });
+  })
 
 export const createWatcherFilterError = (
   filterType: string,
@@ -75,7 +75,7 @@ export const createWatcherFilterError = (
     cause,
     recoverable: true,
     context: { filterType, ...metadata },
-  });
+  })
 
 export const createPatternError = (
   pattern: string,
@@ -88,7 +88,7 @@ export const createPatternError = (
     cause,
     recoverable: true,
     context: { pattern, operation, ...metadata },
-  });
+  })
 
 // ========================================
 // Error Mapping Utilities
@@ -101,11 +101,11 @@ export const mapChokidarError = (operation: string, path: string, error: unknown
       return createWatcherPathError(path, 'path does not exist', {
         operation,
         originalError: error.message,
-      });
+      })
     }
 
     if (error.message.includes('EACCES') || error.message.includes('EPERM')) {
-      return createWatcherPermissionError(path, operation, { originalError: error.message });
+      return createWatcherPermissionError(path, operation, { originalError: error.message })
     }
 
     if (error.message.includes('EMFILE') || error.message.includes('ENFILE')) {
@@ -114,7 +114,7 @@ export const mapChokidarError = (operation: string, path: string, error: unknown
         'The system has reached the maximum number of open file descriptors',
         error,
         { operation, path }
-      );
+      )
     }
 
     if (error.message.includes('ENOSPC')) {
@@ -123,7 +123,7 @@ export const mapChokidarError = (operation: string, path: string, error: unknown
         'The file system watcher cannot allocate resources due to insufficient space',
         error,
         { operation, path }
-      );
+      )
     }
 
     // Generic chokidar error mapping
@@ -132,7 +132,7 @@ export const mapChokidarError = (operation: string, path: string, error: unknown
       `File system watcher operation "${operation}" encountered an error`,
       error,
       { operation, path }
-    );
+    )
   }
 
   return createWatcherError(
@@ -140,16 +140,16 @@ export const mapChokidarError = (operation: string, path: string, error: unknown
     `File system watcher operation "${operation}" failed`,
     error,
     { operation, path }
-  );
-};
+  )
+}
 
 export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error)
 
   return createWatcherError(
     `${library} operation failed`,
     `Library "${library}" failed during "${operation}": ${errorMessage}`,
     error,
     { library, operation }
-  );
-};
+  )
+}

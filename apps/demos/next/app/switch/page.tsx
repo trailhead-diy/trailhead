@@ -1,7 +1,7 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Description, Label } from '@/components/th/';
-import { Switch, SwitchField } from '@/components/th/';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Description, Label } from '@/components/th/'
+import { Switch, SwitchField } from '@/components/th/'
 
 export default function SwitchPage(): React.JSX.Element {
   return (
@@ -16,5 +16,5 @@ export default function SwitchPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

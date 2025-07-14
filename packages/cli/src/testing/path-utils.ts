@@ -5,17 +5,17 @@
  * in tests, ensuring CLIs work correctly on all platforms.
  */
 
-import { join, normalize, sep, posix, win32 } from 'path';
+import { join, normalize, sep, posix, win32 } from 'path'
 
 // Platform detection
-export const isWindows = process.platform === 'win32';
+export const isWindows = process.platform === 'win32'
 
 /**
  * Normalizes paths for cross-platform compatibility
  * Converts all path separators to forward slashes for consistent string comparisons
  */
 export function normalizePath(path: string): string {
-  return path.split(win32.sep).join(posix.sep);
+  return path.split(win32.sep).join(posix.sep)
 }
 
 /**
@@ -23,7 +23,7 @@ export function normalizePath(path: string): string {
  * Useful for string comparisons in tests
  */
 export function toPosixPath(path: string): string {
-  return path.split(win32.sep).join(posix.sep);
+  return path.split(win32.sep).join(posix.sep)
 }
 
 /**
@@ -31,14 +31,14 @@ export function toPosixPath(path: string): string {
  * Useful for Windows-specific testing
  */
 export function toWindowsPath(path: string): string {
-  return path.split(posix.sep).join(win32.sep);
+  return path.split(posix.sep).join(win32.sep)
 }
 
 /**
  * Creates normalized test paths that work on all platforms
  */
 export function createTestPath(...segments: string[]): string {
-  return normalize(join(...segments));
+  return normalize(join(...segments))
 }
 
 /**
@@ -52,9 +52,9 @@ export const pathAssertions = {
    * pathAssertions.contains('C:\\user\\docs\\file.txt', 'docs') // true
    */
   contains(actualPath: string, expectedSegment: string): boolean {
-    const normalized = normalizePath(actualPath);
-    const segment = normalizePath(expectedSegment);
-    return normalized.includes(segment);
+    const normalized = normalizePath(actualPath)
+    const segment = normalizePath(expectedSegment)
+    return normalized.includes(segment)
   },
 
   /**
@@ -63,7 +63,7 @@ export const pathAssertions = {
    * pathAssertions.equal('/user/file.txt', 'C:\\user\\file.txt') // true on Windows
    */
   equal(path1: string, path2: string): boolean {
-    return normalizePath(path1) === normalizePath(path2);
+    return normalizePath(path1) === normalizePath(path2)
   },
 
   /**
@@ -72,9 +72,9 @@ export const pathAssertions = {
    * pathAssertions.endsWith('/user/docs/readme.md', 'docs/readme.md') // true
    */
   endsWith(path: string, suffix: string): boolean {
-    const normalizedPath = normalizePath(path);
-    const normalizedSuffix = normalizePath(suffix);
-    return normalizedPath.endsWith(normalizedSuffix);
+    const normalizedPath = normalizePath(path)
+    const normalizedSuffix = normalizePath(suffix)
+    return normalizedPath.endsWith(normalizedSuffix)
   },
 
   /**
@@ -84,12 +84,12 @@ export const pathAssertions = {
   hasCorrectSeparators(path: string): boolean {
     if (isWindows) {
       // Windows accepts both separators
-      return true;
+      return true
     }
     // Unix systems should only use forward slashes
-    return !path.includes('\\');
+    return !path.includes('\\')
   },
-};
+}
 
 /**
  * Creates cross-platform regex patterns for path matching
@@ -100,18 +100,18 @@ export const pathAssertions = {
  */
 export function createPathRegex(pathPattern: string): RegExp {
   // First replace wildcards with placeholders
-  let pattern = pathPattern.replace(/\*/g, '__WILDCARD__');
+  let pattern = pathPattern.replace(/\*/g, '__WILDCARD__')
 
   // Escape special regex characters
-  pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+  pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&')
 
   // Handle separators - both forward and back slashes
-  pattern = pattern.replace(/\//g, '[/\\\\]');
+  pattern = pattern.replace(/\//g, '[/\\\\]')
 
   // Replace wildcard placeholders with proper regex
-  pattern = pattern.replace(/__WILDCARD__/g, '[^/\\\\]*');
+  pattern = pattern.replace(/__WILDCARD__/g, '[^/\\\\]*')
 
-  return new RegExp(`^${pattern}$`);
+  return new RegExp(`^${pattern}$`)
 }
 
 /**
@@ -130,4 +130,4 @@ export const testPaths = {
   project: (...segments: string[]) => join(testPaths.mockProject, ...segments),
   home: (...segments: string[]) => join(testPaths.mockHome, ...segments),
   config: (...segments: string[]) => join(testPaths.mockConfig, ...segments),
-};
+}

@@ -1,4 +1,4 @@
-export { createDatabaseOperations, registerAdapter, getAdapter } from './operations.js';
+export { createDatabaseOperations, registerAdapter, getAdapter } from './operations.js'
 export type {
   DatabaseOperations,
   DatabaseConnection,
@@ -10,4 +10,4 @@ export type {
   Migration,
   MigrationStatus,
   SchemaBuilder,
-} from '../types.js';
+} from '../types.js'

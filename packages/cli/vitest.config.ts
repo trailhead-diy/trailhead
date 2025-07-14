@@ -1,8 +1,8 @@
-import { createVitestConfig } from '@repo/vitest-config';
-import { defineConfig, mergeConfig } from 'vitest/config';
-import path from 'path';
+import { createVitestConfig } from '@repo/vitest-config'
+import { defineConfig, mergeConfig } from 'vitest/config'
+import path from 'path'
 
-const baseConfig = createVitestConfig();
+const baseConfig = createVitestConfig()
 
 const packageSpecificConfig = defineConfig({
   test: {
@@ -41,6 +41,6 @@ const packageSpecificConfig = defineConfig({
       '@esteban-url/git': path.resolve(__dirname, '../git/src'),
     },
   },
-});
+})
 
-export default mergeConfig(baseConfig, packageSpecificConfig);
+export default mergeConfig(baseConfig, packageSpecificConfig)

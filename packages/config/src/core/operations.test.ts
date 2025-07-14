@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { z } from '@esteban-url/validation';
-import { createConfigOperations } from './operations.js';
+import { describe, it, expect } from 'vitest'
+import { z } from '@esteban-url/validation'
+import { createConfigOperations } from './operations.js'
 
 describe('Config Operations', () => {
-  const configOps = createConfigOperations();
+  const configOps = createConfigOperations()
 
   describe('create', () => {
     it('should create a config manager successfully', () => {
@@ -16,18 +16,18 @@ describe('Config Operations', () => {
             priority: 1,
           },
         ],
-      };
+      }
 
-      const result = configOps.create(definition);
+      const result = configOps.create(definition)
 
       // Debug output removed for production
 
-      expect(result.isOk()).toBe(true);
+      expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        const manager = result.value;
-        expect(manager.definition.name).toBe('test-config');
+        const manager = result.value
+        expect(manager.definition.name).toBe('test-config')
       }
-    });
+    })
 
     it('should reject config without name', () => {
       const definition = {
@@ -39,22 +39,22 @@ describe('Config Operations', () => {
             priority: 1,
           },
         ],
-      };
+      }
 
-      const result = configOps.create(definition);
-      expect(result.isErr()).toBe(true);
-    });
+      const result = configOps.create(definition)
+      expect(result.isErr()).toBe(true)
+    })
 
     it('should reject config without sources', () => {
       const definition = {
         name: 'test-config',
         sources: [],
-      };
+      }
 
-      const result = configOps.create(definition);
-      expect(result.isErr()).toBe(true);
-    });
-  });
+      const result = configOps.create(definition)
+      expect(result.isErr()).toBe(true)
+    })
+  })
 
   describe('load', () => {
     it('should load configuration from object source', async () => {
@@ -67,18 +67,18 @@ describe('Config Operations', () => {
             priority: 1,
           },
         ],
-      };
-
-      const result = await configOps.load(definition);
-
-      expect(result.isOk()).toBe(true);
-      if (result.isOk()) {
-        const state = result.value;
-        expect(state.resolved.key).toBe('value');
-        expect(state.resolved.number).toBe(42);
-        expect(state.sources).toHaveLength(1);
       }
-    });
+
+      const result = await configOps.load(definition)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        const state = result.value
+        expect(state.resolved.key).toBe('value')
+        expect(state.resolved.number).toBe(42)
+        expect(state.sources).toHaveLength(1)
+      }
+    })
 
     it('should merge multiple sources by priority', async () => {
       const definition = {
@@ -95,18 +95,18 @@ describe('Config Operations', () => {
             priority: 2,
           },
         ],
-      };
-
-      const result = await configOps.load(definition);
-
-      expect(result.isOk()).toBe(true);
-      if (result.isOk()) {
-        const state = result.value;
-        expect(state.resolved.key).toBe('high-priority'); // Higher priority wins
-        expect(state.resolved.common).toBe('base');
-        expect(state.resolved.extra).toBe('additional');
       }
-    });
+
+      const result = await configOps.load(definition)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        const state = result.value
+        expect(state.resolved.key).toBe('high-priority') // Higher priority wins
+        expect(state.resolved.common).toBe('base')
+        expect(state.resolved.extra).toBe('additional')
+      }
+    })
 
     it('should apply defaults', async () => {
       const definition = {
@@ -122,38 +122,38 @@ describe('Config Operations', () => {
           defaultKey: 'defaultValue',
           key: 'shouldBeOverridden',
         },
-      };
-
-      const result = await configOps.load(definition);
-
-      expect(result.isOk()).toBe(true);
-      if (result.isOk()) {
-        const state = result.value;
-        expect(state.resolved.key).toBe('value'); // Source overrides default
-        expect(state.resolved.defaultKey).toBe('defaultValue');
       }
-    });
-  });
+
+      const result = await configOps.load(definition)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        const state = result.value
+        expect(state.resolved.key).toBe('value') // Source overrides default
+        expect(state.resolved.defaultKey).toBe('defaultValue')
+      }
+    })
+  })
 
   describe('validate', () => {
     it('should validate configuration against schema', () => {
-      const config = { name: 'test', age: 25 };
+      const config = { name: 'test', age: 25 }
       const schema = {
         name: 'TestSchema',
         zodSchema: z.object({
           name: z.string(),
           age: z.number(),
         }),
-      };
+      }
 
-      const result = configOps.validate(config, schema);
-      expect(result.isOk()).toBe(true);
-    });
-  });
+      const result = configOps.validate(config, schema)
+      expect(result.isOk()).toBe(true)
+    })
+  })
 
   describe('transform', () => {
     it('should transform configuration using transformers', () => {
-      const config = { name: 'test', count: '42' };
+      const config = { name: 'test', count: '42' }
       const transformers = [
         {
           name: 'parseNumbers',
@@ -165,16 +165,16 @@ describe('Config Operations', () => {
                 ...cfg,
                 count: parseInt(cfg.count, 10),
               },
-            } as any;
+            } as any
           },
         },
-      ];
+      ]
 
-      const result = configOps.transform(config, transformers as any);
-      expect(result.isOk()).toBe(true);
+      const result = configOps.transform(config, transformers as any)
+      expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value.count).toBe(42);
+        expect(result.value.count).toBe(42)
       }
-    });
-  });
-});
+    })
+  })
+})

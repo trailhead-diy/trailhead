@@ -1,45 +1,45 @@
-import type { TemplateVariant, TemplateFile } from './types.js';
-import { getTemplateFiles } from './template-loader.js';
+import type { TemplateVariant, TemplateFile } from './types.js'
+import { getTemplateFiles } from './template-loader.js'
 
 /**
  * Validation result for template structure analysis
  */
 export interface TemplateValidationResult {
-  valid: boolean;
-  variant: TemplateVariant;
-  commands: CommandCoverage[];
-  missing: MissingTest[];
-  statistics: ValidationStatistics;
-  warnings: ValidationWarning[];
+  valid: boolean
+  variant: TemplateVariant
+  commands: CommandCoverage[]
+  missing: MissingTest[]
+  statistics: ValidationStatistics
+  warnings: ValidationWarning[]
 }
 
 interface CommandCoverage {
-  commandFile: string;
-  testFile: string | null;
-  hasTest: boolean;
-  testLocation: 'colocated' | 'separate' | 'missing';
+  commandFile: string
+  testFile: string | null
+  hasTest: boolean
+  testLocation: 'colocated' | 'separate' | 'missing'
 }
 
 interface MissingTest {
-  commandFile: string;
-  expectedTestPath: string;
-  suggestion: string;
+  commandFile: string
+  expectedTestPath: string
+  suggestion: string
 }
 
 interface ValidationStatistics {
-  totalCommands: number;
-  testedCommands: number;
-  coverage: number;
-  colocatedTests: number;
-  separateTests: number;
-  integrationTests: number;
+  totalCommands: number
+  testedCommands: number
+  coverage: number
+  colocatedTests: number
+  separateTests: number
+  integrationTests: number
 }
 
 interface ValidationWarning {
-  type: 'deprecated-pattern' | 'missing-integration' | 'orphaned-test';
-  file: string;
-  message: string;
-  suggestion?: string;
+  type: 'deprecated-pattern' | 'missing-integration' | 'orphaned-test'
+  file: string
+  message: string
+  suggestion?: string
 }
 
 /**
@@ -70,23 +70,23 @@ interface ValidationWarning {
 export async function validateTemplateStructure(
   variant: TemplateVariant
 ): Promise<TemplateValidationResult> {
-  const templateFiles = await getTemplateFiles(variant);
+  const templateFiles = await getTemplateFiles(variant)
 
   // Extract command and test files
-  const commandFiles = extractCommandFiles(templateFiles, variant);
-  const testFiles = extractTestFiles(templateFiles);
+  const commandFiles = extractCommandFiles(templateFiles, variant)
+  const testFiles = extractTestFiles(templateFiles)
 
   // Analyze command coverage
-  const commands = analyzeCommandCoverage(commandFiles, testFiles);
+  const commands = analyzeCommandCoverage(commandFiles, testFiles)
 
   // Identify missing tests
-  const missing = identifyMissingTests(commands);
+  const missing = identifyMissingTests(commands)
 
   // Calculate statistics
-  const statistics = calculateStatistics(commands, testFiles);
+  const statistics = calculateStatistics(commands, testFiles)
 
   // Generate warnings
-  const warnings = generateWarnings(testFiles, commands);
+  const warnings = generateWarnings(testFiles, commands)
 
   return {
     valid: missing.length === 0,
@@ -95,7 +95,7 @@ export async function validateTemplateStructure(
     missing,
     statistics,
     warnings,
-  };
+  }
 }
 
 /**
@@ -104,11 +104,11 @@ export async function validateTemplateStructure(
  * @returns Promise resolving to validation results for all variants
  */
 export async function validateAllTemplates(): Promise<TemplateValidationResult[]> {
-  const variants: TemplateVariant[] = ['basic', 'advanced'];
+  const variants: TemplateVariant[] = ['basic', 'advanced']
 
-  const results = await Promise.all(variants.map(variant => validateTemplateStructure(variant)));
+  const results = await Promise.all(variants.map((variant) => validateTemplateStructure(variant)))
 
-  return results;
+  return results
 }
 
 /**
@@ -117,12 +117,12 @@ export async function validateAllTemplates(): Promise<TemplateValidationResult[]
 function extractCommandFiles(templateFiles: TemplateFile[], variant: TemplateVariant): string[] {
   return templateFiles
     .filter(
-      file =>
+      (file) =>
         file.source.includes(`${variant}/src/commands/`) &&
         file.source.endsWith('.ts.hbs') &&
         !file.source.includes('__tests__')
     )
-    .map(file => file.source);
+    .map((file) => file.source)
 }
 
 /**
@@ -131,44 +131,44 @@ function extractCommandFiles(templateFiles: TemplateFile[], variant: TemplateVar
 function extractTestFiles(templateFiles: TemplateFile[]): string[] {
   return templateFiles
     .filter(
-      file =>
+      (file) =>
         file.source.includes('test.ts.hbs') ||
         file.source.includes('spec.ts.hbs') ||
         file.source.includes('__tests__')
     )
-    .map(file => file.source);
+    .map((file) => file.source)
 }
 
 /**
  * Analyze command test coverage
  */
 function analyzeCommandCoverage(commandFiles: string[], testFiles: string[]): CommandCoverage[] {
-  return commandFiles.map(commandFile => {
+  return commandFiles.map((commandFile) => {
     // Look for colocated test
     const colocatedTestPattern = commandFile.replace(
       /\/commands\/([^/]+)\.ts\.hbs$/,
       '/commands/__tests__/$1.test.ts.hbs'
-    );
+    )
 
     // Look for separate test patterns (deprecated)
     const separateTestPatterns = [
       commandFile.replace(/\/commands\/([^/]+)\.ts\.hbs$/, '/tests/unit/$1.test.ts.hbs'),
       commandFile.replace(/\/commands\/([^/]+)\.ts\.hbs$/, '/__tests__/unit/$1.test.ts.hbs'),
-    ];
+    ]
 
     // Find matching test file
-    let testFile: string | null = null;
-    let testLocation: 'colocated' | 'separate' | 'missing' = 'missing';
+    let testFile: string | null = null
+    let testLocation: 'colocated' | 'separate' | 'missing' = 'missing'
 
     if (testFiles.includes(colocatedTestPattern)) {
-      testFile = colocatedTestPattern;
-      testLocation = 'colocated';
+      testFile = colocatedTestPattern
+      testLocation = 'colocated'
     } else {
       for (const pattern of separateTestPatterns) {
         if (testFiles.includes(pattern)) {
-          testFile = pattern;
-          testLocation = 'separate';
-          break;
+          testFile = pattern
+          testLocation = 'separate'
+          break
         }
       }
     }
@@ -178,8 +178,8 @@ function analyzeCommandCoverage(commandFiles: string[], testFiles: string[]): Co
       testFile,
       hasTest: testFile !== null,
       testLocation,
-    };
-  });
+    }
+  })
 }
 
 /**
@@ -187,19 +187,19 @@ function analyzeCommandCoverage(commandFiles: string[], testFiles: string[]): Co
  */
 function identifyMissingTests(commands: CommandCoverage[]): MissingTest[] {
   return commands
-    .filter(cmd => !cmd.hasTest)
-    .map(cmd => {
+    .filter((cmd) => !cmd.hasTest)
+    .map((cmd) => {
       const expectedTestPath = cmd.commandFile.replace(
         /\/commands\/([^/]+)\.ts\.hbs$/,
         '/commands/__tests__/$1.test.ts.hbs'
-      );
+      )
 
       return {
         commandFile: cmd.commandFile,
         expectedTestPath,
         suggestion: `Create test file at ${expectedTestPath} following colocation pattern`,
-      };
-    });
+      }
+    })
 }
 
 /**
@@ -209,15 +209,15 @@ function calculateStatistics(
   commands: CommandCoverage[],
   testFiles: string[]
 ): ValidationStatistics {
-  const totalCommands = commands.length;
-  const testedCommands = commands.filter(cmd => cmd.hasTest).length;
-  const colocatedTests = commands.filter(cmd => cmd.testLocation === 'colocated').length;
-  const separateTests = commands.filter(cmd => cmd.testLocation === 'separate').length;
+  const totalCommands = commands.length
+  const testedCommands = commands.filter((cmd) => cmd.hasTest).length
+  const colocatedTests = commands.filter((cmd) => cmd.testLocation === 'colocated').length
+  const separateTests = commands.filter((cmd) => cmd.testLocation === 'separate').length
 
   // Count integration tests
   const integrationTests = testFiles.filter(
-    file => file.includes('integration') || file.includes('e2e')
-  ).length;
+    (file) => file.includes('integration') || file.includes('e2e')
+  ).length
 
   return {
     totalCommands,
@@ -226,19 +226,19 @@ function calculateStatistics(
     colocatedTests,
     separateTests,
     integrationTests,
-  };
+  }
 }
 
 /**
  * Generate validation warnings
  */
 function generateWarnings(testFiles: string[], commands: CommandCoverage[]): ValidationWarning[] {
-  const warnings: ValidationWarning[] = [];
+  const warnings: ValidationWarning[] = []
 
   // Warn about deprecated test patterns
   commands
-    .filter(cmd => cmd.testLocation === 'separate')
-    .forEach(cmd => {
+    .filter((cmd) => cmd.testLocation === 'separate')
+    .forEach((cmd) => {
       warnings.push({
         type: 'deprecated-pattern',
         file: cmd.testFile!,
@@ -247,13 +247,13 @@ function generateWarnings(testFiles: string[], commands: CommandCoverage[]): Val
           /\/commands\/([^/]+)\.ts\.hbs$/,
           '/commands/__tests__/$1.test.ts.hbs'
         )}`,
-      });
-    });
+      })
+    })
 
   // Check for missing integration tests
   const hasIntegrationTests = testFiles.some(
-    file => file.includes('integration') || file.includes('cli.test.ts')
-  );
+    (file) => file.includes('integration') || file.includes('cli.test.ts')
+  )
 
   if (!hasIntegrationTests) {
     warnings.push({
@@ -261,39 +261,39 @@ function generateWarnings(testFiles: string[], commands: CommandCoverage[]): Val
       file: 'N/A',
       message: 'No integration tests found',
       suggestion: 'Add CLI integration tests at src/__tests__/integration/cli.test.ts.hbs',
-    });
+    })
   }
 
   // Find orphaned test files (tests without corresponding commands)
-  const commandNames = commands.map(cmd => extractCommandName(cmd.commandFile));
-  const orphanedTests = testFiles.filter(testFile => {
-    const testName = extractTestName(testFile);
+  const commandNames = commands.map((cmd) => extractCommandName(cmd.commandFile))
+  const orphanedTests = testFiles.filter((testFile) => {
+    const testName = extractTestName(testFile)
     return (
       testName &&
       !testName.includes('integration') &&
       !testName.includes('cli') &&
       !commandNames.includes(testName)
-    );
-  });
+    )
+  })
 
-  orphanedTests.forEach(testFile => {
+  orphanedTests.forEach((testFile) => {
     warnings.push({
       type: 'orphaned-test',
       file: testFile,
       message: 'Test file has no corresponding command file',
       suggestion: 'Remove orphaned test or create corresponding command',
-    });
-  });
+    })
+  })
 
-  return warnings;
+  return warnings
 }
 
 /**
  * Extract command name from file path
  */
 function extractCommandName(filePath: string): string {
-  const match = filePath.match(/\/commands\/([^/]+)\.ts\.hbs$/);
-  return match ? match[1] : '';
+  const match = filePath.match(/\/commands\/([^/]+)\.ts\.hbs$/)
+  return match ? match[1] : ''
 }
 
 /**
@@ -301,18 +301,18 @@ function extractCommandName(filePath: string): string {
  */
 function extractTestName(filePath: string): string | null {
   // Extract from colocated pattern
-  let match = filePath.match(/\/commands\/__tests__\/([^/]+)\.test\.ts\.hbs$/);
-  if (match) return match[1];
+  let match = filePath.match(/\/commands\/__tests__\/([^/]+)\.test\.ts\.hbs$/)
+  if (match) return match[1]
 
   // Extract from separate pattern
-  match = filePath.match(/\/tests\/unit\/([^/]+)\.test\.ts\.hbs$/);
-  if (match) return match[1];
+  match = filePath.match(/\/tests\/unit\/([^/]+)\.test\.ts\.hbs$/)
+  if (match) return match[1]
 
   // Extract from other test patterns
-  match = filePath.match(/\/__tests__\/unit\/([^/]+)\.test\.ts\.hbs$/);
-  if (match) return match[1];
+  match = filePath.match(/\/__tests__\/unit\/([^/]+)\.test\.ts\.hbs$/)
+  if (match) return match[1]
 
-  return null;
+  return null
 }
 
 /**
@@ -322,78 +322,78 @@ function extractTestName(filePath: string): string | null {
  * @returns Formatted report string
  */
 export function formatValidationReport(results: TemplateValidationResult[]): string {
-  const lines: string[] = [];
+  const lines: string[] = []
 
-  lines.push('# Template Structure Validation Report');
-  lines.push('');
+  lines.push('# Template Structure Validation Report')
+  lines.push('')
 
   // Overall summary
-  const totalValid = results.filter(r => r.valid).length;
-  const overallValid = totalValid === results.length;
+  const totalValid = results.filter((r) => r.valid).length
+  const overallValid = totalValid === results.length
   lines.push(
     `**Overall Status**: ${overallValid ? '✅ VALID' : '❌ INVALID'} (${totalValid}/${results.length} variants)`
-  );
-  lines.push('');
+  )
+  lines.push('')
 
   // Per-variant analysis
-  results.forEach(result => {
-    lines.push(`## ${result.variant.toUpperCase()} Template`);
-    lines.push('');
-    lines.push(`**Status**: ${result.valid ? '✅ Valid' : '❌ Invalid'}`);
+  results.forEach((result) => {
+    lines.push(`## ${result.variant.toUpperCase()} Template`)
+    lines.push('')
+    lines.push(`**Status**: ${result.valid ? '✅ Valid' : '❌ Invalid'}`)
     lines.push(
       `**Test Coverage**: ${result.statistics.coverage}% (${result.statistics.testedCommands}/${result.statistics.totalCommands} commands)`
-    );
+    )
     lines.push(
       `**Colocation Compliance**: ${result.statistics.colocatedTests}/${result.statistics.testedCommands} tests colocated`
-    );
+    )
 
     if (result.statistics.integrationTests > 0) {
-      lines.push(`**Integration Tests**: ${result.statistics.integrationTests} found`);
+      lines.push(`**Integration Tests**: ${result.statistics.integrationTests} found`)
     }
-    lines.push('');
+    lines.push('')
 
     // Missing tests
     if (result.missing.length > 0) {
-      lines.push('**Missing Tests**:');
-      result.missing.forEach(missing => {
-        lines.push(`- \`${missing.commandFile}\` → Missing \`${missing.expectedTestPath}\``);
-      });
-      lines.push('');
+      lines.push('**Missing Tests**:')
+      result.missing.forEach((missing) => {
+        lines.push(`- \`${missing.commandFile}\` → Missing \`${missing.expectedTestPath}\``)
+      })
+      lines.push('')
     }
 
     // Warnings
     if (result.warnings.length > 0) {
-      lines.push('**Warnings**:');
-      result.warnings.forEach(warning => {
+      lines.push('**Warnings**:')
+      result.warnings.forEach((warning) => {
         const icon =
           warning.type === 'deprecated-pattern'
             ? '⚠️'
             : warning.type === 'missing-integration'
               ? '📋'
-              : '🔍';
-        lines.push(`- ${icon} ${warning.message}`);
+              : '🔍'
+        lines.push(`- ${icon} ${warning.message}`)
         if (warning.suggestion) {
-          lines.push(`  *Suggestion: ${warning.suggestion}*`);
+          lines.push(`  *Suggestion: ${warning.suggestion}*`)
         }
-      });
-      lines.push('');
+      })
+      lines.push('')
     }
-  });
+  })
 
   // Summary statistics
-  const totalCommands = results.reduce((sum, r) => sum + r.statistics.totalCommands, 0);
-  const totalTested = results.reduce((sum, r) => sum + r.statistics.testedCommands, 0);
-  const totalColocated = results.reduce((sum, r) => sum + r.statistics.colocatedTests, 0);
-  const overallCoverage = totalCommands > 0 ? Math.round((totalTested / totalCommands) * 100) : 100;
+  const totalCommands = results.reduce((sum, r) => sum + r.statistics.totalCommands, 0)
+  const totalTested = results.reduce((sum, r) => sum + r.statistics.testedCommands, 0)
+  const totalColocated = results.reduce((sum, r) => sum + r.statistics.colocatedTests, 0)
+  const overallCoverage = totalCommands > 0 ? Math.round((totalTested / totalCommands) * 100) : 100
 
-  lines.push('## Summary Statistics');
-  lines.push('');
-  lines.push(`- **Total Commands**: ${totalCommands}`);
-  lines.push(`- **Total Tested**: ${totalTested} (${overallCoverage}%)`);
+  lines.push('## Summary Statistics')
+  lines.push('')
+  lines.push(`- **Total Commands**: ${totalCommands}`)
+  lines.push(`- **Total Tested**: ${totalTested} (${overallCoverage}%)`)
   lines.push(
     `- **Colocated Tests**: ${totalColocated}/${totalTested} (${totalTested > 0 ? Math.round((totalColocated / totalTested) * 100) : 0}%)`
-  );
-  lines.push(`- **Template Variants**: ${results.length}`);
+  )
+  lines.push(`- **Template Variants**: ${results.length}`)
 
-  return lines.join('\n');
+  return lines.join('\n')
 }

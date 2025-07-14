@@ -19,10 +19,10 @@ export type {
   RemoveOp,
   ReadJsonOp,
   WriteJsonOp,
-} from './types.js';
+} from './types.js'
 
 // Error utilities
-export { createFileSystemError, mapNodeError } from './errors.js';
+export { createFileSystemError, mapNodeError } from './errors.js'
 
 // Core operations (with dependency injection)
 export {
@@ -44,7 +44,7 @@ export {
   findFiles,
   readIfExists,
   copyIfExists,
-} from './core.js';
+} from './core.js'
 
 // Import for convenience object
 import {
@@ -65,7 +65,7 @@ import {
   findFiles,
   readIfExists,
   copyIfExists,
-} from './core.js';
+} from './core.js'
 
 // Convenience exports with default config (for drop-in replacement)
 export const fs = {
@@ -86,4 +86,4 @@ export const fs = {
   findFiles: findFiles(),
   readIfExists: readIfExists(),
   copyIfExists: copyIfExists(),
-};
+}

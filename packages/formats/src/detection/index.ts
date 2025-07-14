@@ -1,6 +1,6 @@
-export { createDetectionOperations } from './core.js';
-export { defaultDetectionConfig } from './types.js';
-export { FORMAT_DATABASE } from './database.js';
+export { createDetectionOperations } from './core.js'
+export { defaultDetectionConfig } from './types.js'
+export { FORMAT_DATABASE } from './database.js'
 export type {
   MagicNumberPattern,
   ExtensionMapping,
@@ -9,4 +9,4 @@ export type {
   DetectionStrategy,
   MagicNumberDetector,
   ExtensionDetector,
-} from './types.js';
+} from './types.js'

@@ -60,12 +60,12 @@ Ensures `Result` types are explicitly handled with one of:
 
 ```typescript
 // ❌ Warning: Result not handled
-const result = validateInput(data);
+const result = validateInput(data)
 
 // ✅ Correct: Explicit handling
-const result = validateInput(data);
+const result = validateInput(data)
 if (result.isErr()) {
-  return err(result.error);
+  return err(result.error)
 }
 ```
 

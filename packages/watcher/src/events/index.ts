@@ -1,5 +1,5 @@
-export { createEventOperations } from './core.js';
-export { defaultEventConfig } from './types.js';
+export { createEventOperations } from './core.js'
+export { defaultEventConfig } from './types.js'
 export type {
   CreateEventOperations,
   EventConfig,
@@ -7,4 +7,4 @@ export type {
   EventAggregator,
   EventStream,
   EventMetrics,
-} from './types.js';
+} from './types.js'

@@ -41,8 +41,8 @@ npx create-cli my-cli
 ### Basic CLI in 30 Seconds
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command';
-import { ok, err } from '@esteban-url/cli/core';
+import { createCommand } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/cli/core'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -55,13 +55,13 @@ const greetCommand = createCommand({
     },
   },
   action: async ({ name }) => {
-    console.log(`Hello, ${name}!`);
-    return ok(undefined);
+    console.log(`Hello, ${name}!`)
+    return ok(undefined)
   },
-});
+})
 
 // Run your command
-await greetCommand.execute(['--name', 'World']);
+await greetCommand.execute(['--name', 'World'])
 ```
 
 ## Core Concepts
@@ -69,35 +69,35 @@ await greetCommand.execute(['--name', 'World']);
 ### Result Types - No Exceptions
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/cli/core';
+import { Result, ok, err } from '@esteban-url/cli/core'
 
 // Functions return Results instead of throwing
 async function deployApp(env: string): Promise<Result<string, Error>> {
   if (!env) {
-    return err(new Error('Environment required'));
+    return err(new Error('Environment required'))
   }
 
   // Simulate deployment
   if (env === 'production') {
-    return ok('Deployed to production successfully');
+    return ok('Deployed to production successfully')
   }
 
-  return err(new Error(`Unknown environment: ${env}`));
+  return err(new Error(`Unknown environment: ${env}`))
 }
 
 // Handle results explicitly
-const result = await deployApp('staging');
+const result = await deployApp('staging')
 if (result.isOk()) {
-  console.log(result.value);
+  console.log(result.value)
 } else {
-  console.error('Deploy failed:', result.error.message);
+  console.error('Deploy failed:', result.error.message)
 }
 ```
 
 ### Command Composition
 
 ```typescript
-import { createCommand, executeWithPhases } from '@esteban-url/cli/command';
+import { createCommand, executeWithPhases } from '@esteban-url/cli/command'
 
 const buildCommand = createCommand({
   name: 'build',
@@ -125,9 +125,9 @@ const buildCommand = createCommand({
       ],
       {},
       context
-    );
+    )
   },
-});
+})
 ```
 
 ## Module Reference
@@ -137,14 +137,14 @@ const buildCommand = createCommand({
 Result types, error handling, and validation pipelines
 
 ```typescript
-import { Result, ok, err, createValidationPipeline } from '@esteban-url/cli/core';
+import { Result, ok, err, createValidationPipeline } from '@esteban-url/cli/core'
 
 // Create validation pipeline
 const validateUser = createValidationPipeline([
-  data => (data.email ? ok(data) : err(new Error('Email required'))),
-  data => (data.email.includes('@') ? ok(data) : err(new Error('Invalid email'))),
-  data => (data.age >= 18 ? ok(data) : err(new Error('Must be 18+'))),
-]);
+  (data) => (data.email ? ok(data) : err(new Error('Email required'))),
+  (data) => (data.email.includes('@') ? ok(data) : err(new Error('Invalid email'))),
+  (data) => (data.age >= 18 ? ok(data) : err(new Error('Must be 18+'))),
+])
 ```
 
 ### Command (`@esteban-url/cli/command`)
@@ -157,27 +157,27 @@ import {
   executeWithPhases,
   executeWithValidation,
   executeWithDryRun,
-} from '@esteban-url/cli/command';
+} from '@esteban-url/cli/command'
 
 // Advanced command with validation
 const processCommand = createCommand({
   name: 'process',
   validation: {
-    inputFile: value => (fs.existsSync(value) ? ok(value) : err(new Error('File not found'))),
-    outputDir: value =>
+    inputFile: (value) => (fs.existsSync(value) ? ok(value) : err(new Error('File not found'))),
+    outputDir: (value) =>
       value.length > 0 ? ok(value) : err(new Error('Output directory required')),
   },
   action: async (options, context) => {
     return executeWithDryRun(
       async () => {
         // Process files
-        return processFiles(options.inputFile, options.outputDir);
+        return processFiles(options.inputFile, options.outputDir)
       },
       options.dryRun,
       context
-    );
+    )
   },
-});
+})
 ```
 
 ### Testing (`@esteban-url/cli/testing`)
@@ -190,22 +190,22 @@ import {
   createMockFileSystem,
   expectSuccess,
   expectError,
-} from '@esteban-url/cli/testing';
+} from '@esteban-url/cli/testing'
 
 describe('my command', () => {
   test('should process files successfully', async () => {
     const mockFs = createMockFileSystem({
       '/input.txt': 'test content',
       '/output/': null, // directory
-    });
+    })
 
-    const context = createTestContext({ fileSystem: mockFs });
-    const result = await myCommand.execute(['--input', '/input.txt'], context);
+    const context = createTestContext({ fileSystem: mockFs })
+    const result = await myCommand.execute(['--input', '/input.txt'], context)
 
-    expectSuccess(result);
-    expect(mockFs.readFile('/output/processed.txt')).toBeDefined();
-  });
-});
+    expectSuccess(result)
+    expect(mockFs.readFile('/output/processed.txt')).toBeDefined()
+  })
+})
 ```
 
 ### Progress (`@esteban-url/cli/progress`)
@@ -213,17 +213,17 @@ describe('my command', () => {
 Progress tracking with enhanced capabilities
 
 ```typescript
-import { createProgressTracker } from '@esteban-url/cli/progress';
+import { createProgressTracker } from '@esteban-url/cli/progress'
 
 const progress = createProgressTracker({
   total: 100,
   format: 'Processing [{bar}] {percentage}% | ETA: {eta}s',
-});
+})
 
 // Use with async operations
 for (let i = 0; i < 100; i++) {
-  await processItem(i);
-  progress.increment();
+  await processItem(i)
+  progress.increment()
 }
 ```
 
@@ -232,17 +232,17 @@ for (let i = 0; i < 100; i++) {
 Utilities for styling, package detection, and more
 
 ```typescript
-import { chalk, createSpinner, detectPackageManager, createLogger } from '@esteban-url/cli/utils';
+import { chalk, createSpinner, detectPackageManager, createLogger } from '@esteban-url/cli/utils'
 
 // Rich terminal output
-console.log(chalk.success('✓ Build completed'));
-console.log(chalk.error('✗ Deploy failed'));
+console.log(chalk.success('✓ Build completed'))
+console.log(chalk.error('✗ Deploy failed'))
 
 // Spinners for long operations
-const spinner = createSpinner('Deploying...');
-spinner.start();
-await deploy();
-spinner.stop('Deployed successfully');
+const spinner = createSpinner('Deploying...')
+spinner.start()
+await deploy()
+spinner.stop('Deployed successfully')
 ```
 
 ## Advanced Features
@@ -252,7 +252,7 @@ spinner.stop('Deployed successfully');
 For complex workflows that need progress tracking:
 
 ```typescript
-import { executeWithPhases } from '@esteban-url/cli/command';
+import { executeWithPhases } from '@esteban-url/cli/command'
 
 const phases = [
   {
@@ -270,52 +270,52 @@ const phases = [
     weight: 30,
     action: async (data, context) => deployProject(data.env, context),
   },
-];
+]
 
-const result = await executeWithPhases(phases, { env: 'production' }, context);
+const result = await executeWithPhases(phases, { env: 'production' }, context)
 ```
 
 ### Interactive Prompts
 
 ```typescript
-import { createInteractiveCommand } from '@esteban-url/cli/command';
+import { createInteractiveCommand } from '@esteban-url/cli/command'
 
 const setupCommand = createInteractiveCommand({
   name: 'setup',
-  prompts: async options => {
-    const name = await input('Project name:', { default: 'my-project' });
+  prompts: async (options) => {
+    const name = await input('Project name:', { default: 'my-project' })
     const framework = await select('Framework:', {
       choices: ['react', 'vue', 'svelte'],
-    });
-    return { name, framework };
+    })
+    return { name, framework }
   },
   action: async (answers, context) => {
-    return generateProject(answers, context);
+    return generateProject(answers, context)
   },
-});
+})
 ```
 
 ### File System Operations
 
 ```typescript
-import { createFileSystem } from '@esteban-url/cli/filesystem';
+import { createFileSystem } from '@esteban-url/cli/filesystem'
 
-const fs = createFileSystem();
+const fs = createFileSystem()
 
 // All operations return Results
-const readResult = await fs.readFile('config.json');
+const readResult = await fs.readFile('config.json')
 if (readResult.isOk()) {
-  const config = JSON.parse(readResult.value);
-  console.log('Config loaded:', config);
+  const config = JSON.parse(readResult.value)
+  console.log('Config loaded:', config)
 } else {
-  console.error('Failed to read config:', readResult.error.message);
+  console.error('Failed to read config:', readResult.error.message)
 }
 
 // Batch operations
 const copyResult = await fs.copyFiles([
   { from: 'src/template.tsx', to: 'dist/template.tsx' },
   { from: 'src/styles.css', to: 'dist/styles.css' },
-]);
+])
 ```
 
 ## Testing Best Practices
@@ -325,46 +325,46 @@ const copyResult = await fs.copyFiles([
 Focus on testing business logic and user interactions:
 
 ```typescript
-import { createTestRunner } from '@esteban-url/cli/testing';
+import { createTestRunner } from '@esteban-url/cli/testing'
 
 describe('build command', () => {
-  const testRunner = createTestRunner();
+  const testRunner = createTestRunner()
 
   test('builds project successfully', async () => {
-    const result = await testRunner.runCommand('build', ['--env', 'production']);
+    const result = await testRunner.runCommand('build', ['--env', 'production'])
 
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('Build completed');
-    expect(result.files).toInclude('dist/index.js');
-  });
+    expect(result.exitCode).toBe(0)
+    expect(result.stdout).toContain('Build completed')
+    expect(result.files).toInclude('dist/index.js')
+  })
 
   test('fails with invalid environment', async () => {
-    const result = await testRunner.runCommand('build', ['--env', 'invalid']);
+    const result = await testRunner.runCommand('build', ['--env', 'invalid'])
 
-    expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain('Unknown environment');
-  });
-});
+    expect(result.exitCode).toBe(1)
+    expect(result.stderr).toContain('Unknown environment')
+  })
+})
 ```
 
 ### Mock File System
 
 ```typescript
-import { createMockFileSystem } from '@esteban-url/cli/testing';
+import { createMockFileSystem } from '@esteban-url/cli/testing'
 
 test('processes configuration file', async () => {
   const mockFs = createMockFileSystem({
     '/project/config.json': JSON.stringify({ name: 'test-project' }),
     '/project/src/': null, // directory
     '/project/src/index.ts': 'export default "hello";',
-  });
+  })
 
-  const context = createTestContext({ fileSystem: mockFs });
-  const result = await processProject('/project', context);
+  const context = createTestContext({ fileSystem: mockFs })
+  const result = await processProject('/project', context)
 
-  expect(result.isOk()).toBe(true);
-  expect(mockFs.exists('/project/dist/index.js')).toBe(true);
-});
+  expect(result.isOk()).toBe(true)
+  expect(mockFs.exists('/project/dist/index.js')).toBe(true)
+})
 ```
 
 ## Performance Features
@@ -378,14 +378,14 @@ const command = createCommand({
   name: 'analyze',
   caching: {
     enabled: true,
-    keyFn: options => `${options.file}-${options.mode}`,
+    keyFn: (options) => `${options.file}-${options.mode}`,
     ttl: 300000, // 5 minutes
   },
-  action: async options => {
+  action: async (options) => {
     // Expensive analysis only runs when cache misses
-    return analyzeFile(options.file, options.mode);
+    return analyzeFile(options.file, options.mode)
   },
-});
+})
 ```
 
 ### Streaming Operations
@@ -393,19 +393,19 @@ const command = createCommand({
 For large file processing:
 
 ```typescript
-import { createProcessingStream } from '@esteban-url/cli/command';
+import { createProcessingStream } from '@esteban-url/cli/command'
 
 const processLargeFile = createCommand({
   name: 'process-large',
   action: async (options, context) => {
     const stream = createProcessingStream({
       chunkSize: 1024 * 64, // 64KB chunks
-      transform: chunk => processChunk(chunk),
-    });
+      transform: (chunk) => processChunk(chunk),
+    })
 
-    return stream.processFile(options.inputFile, options.outputFile);
+    return stream.processFile(options.inputFile, options.outputFile)
   },
-});
+})
 ```
 
 ## Development Commands
@@ -452,12 +452,12 @@ Check out the [examples directory](./examples/) for complete applications:
 program
   .command('deploy')
   .option('-e, --env <env>', 'Environment')
-  .action(options => {
+  .action((options) => {
     if (!options.env) {
-      throw new Error('Environment required');
+      throw new Error('Environment required')
     }
-    deploy(options.env);
-  });
+    deploy(options.env)
+  })
 
 // After (@esteban-url/cli)
 const deployCommand = createCommand({
@@ -466,10 +466,10 @@ const deployCommand = createCommand({
     env: { type: 'string', required: true, description: 'Environment' },
   },
   action: async ({ env }) => {
-    const result = await deploy(env);
-    return result; // Returns Result<T, E>
+    const result = await deploy(env)
+    return result // Returns Result<T, E>
   },
-});
+})
 ```
 
 ### From Yargs
@@ -479,25 +479,25 @@ const deployCommand = createCommand({
 yargs.command(
   'build [env]',
   'Build project',
-  yargs => yargs.positional('env', { type: 'string' }),
-  argv => {
+  (yargs) => yargs.positional('env', { type: 'string' }),
+  (argv) => {
     try {
-      build(argv.env);
+      build(argv.env)
     } catch (error) {
-      console.error(error.message);
-      process.exit(1);
+      console.error(error.message)
+      process.exit(1)
     }
   }
-);
+)
 
 // After (@esteban-url/cli)
 const buildCommand = createCommand({
   name: 'build',
   arguments: [{ name: 'env', type: 'string', description: 'Target environment' }],
   action: async ({ env }) => {
-    return build(env); // Returns Result<T, E>
+    return build(env) // Returns Result<T, E>
   },
-});
+})
 ```
 
 ## Architecture Principles

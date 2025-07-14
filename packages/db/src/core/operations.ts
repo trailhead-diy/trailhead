@@ -1,4 +1,4 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   DatabaseOperations,
   DbResult,
@@ -11,7 +11,7 @@ import type {
   MigrationStatus,
   SchemaBuilder,
   DatabaseDriver,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Database Operations
@@ -29,9 +29,9 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         timeout: 5000,
         retries: 3,
         ...options,
-      };
+      }
 
-      const adapter = getAdapter(connectionOptions.driver);
+      const adapter = getAdapter(connectionOptions.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
@@ -39,15 +39,15 @@ export const createDatabaseOperations = (): DatabaseOperations => {
           message: `No adapter found for driver: ${connectionOptions.driver}`,
           suggestion: 'Register an adapter for this database driver',
           recoverable: false,
-        } as any);
+        } as any)
       }
 
-      const connectionResult = await adapter.connect(url, connectionOptions);
+      const connectionResult = await adapter.connect(url, connectionOptions)
       if (connectionResult.isErr()) {
-        return connectionResult;
+        return connectionResult
       }
 
-      return ok(connectionResult.value);
+      return ok(connectionResult.value)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -56,23 +56,23 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         suggestion: 'Check connection string and database availability',
         cause: error,
         recoverable: true,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const disconnect = async (connection: DatabaseConnection): Promise<DbResult<void>> => {
     try {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
           code: 'ADAPTER_NOT_FOUND',
           message: `No adapter found for driver: ${connection.options.driver}`,
           recoverable: false,
-        } as any);
+        } as any)
       }
 
-      return await adapter.disconnect(connection);
+      return await adapter.disconnect(connection)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -80,27 +80,27 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         message: 'Failed to disconnect from database',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const ping = async (connection: DatabaseConnection): Promise<DbResult<boolean>> => {
     try {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
-        return ok(false);
+        return ok(false)
       }
 
-      const result = await adapter.execute(connection, 'SELECT 1 as ping');
-      return ok(result.isOk());
+      const result = await adapter.execute(connection, 'SELECT 1 as ping')
+      return ok(result.isOk())
     } catch {
-      return ok(false);
+      return ok(false)
     }
-  };
+  }
 
   const query = <T = unknown>(table?: string): QueryBuilder<T> => {
-    return createQueryBuilder<T>(table);
-  };
+    return createQueryBuilder<T>(table)
+  }
 
   const transaction = async (
     connection: DatabaseConnection,
@@ -108,24 +108,24 @@ export const createDatabaseOperations = (): DatabaseOperations => {
     options: TransactionOptions = {}
   ): Promise<DbResult<unknown>> => {
     try {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
           code: 'ADAPTER_NOT_FOUND',
           message: `No adapter found for driver: ${connection.options.driver}`,
           recoverable: false,
-        } as any);
+        } as any)
       }
 
       return await adapter.transaction(
         connection,
         async (txConnection: any) => {
-          const tx = createTransaction(txConnection, options);
-          return await fn(tx);
+          const tx = createTransaction(txConnection, options)
+          return await fn(tx)
         },
         options
-      );
+      )
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -133,38 +133,38 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         message: 'Transaction failed',
         cause: error,
         recoverable: true,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const migrate = async (
     connection: DatabaseConnection,
     migrations: readonly Migration[]
   ): Promise<DbResult<MigrationStatus>> => {
     try {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
           code: 'ADAPTER_NOT_FOUND',
           message: `No adapter found for driver: ${connection.options.driver}`,
           recoverable: false,
-        } as any);
+        } as any)
       }
 
       // Get applied migrations
-      const appliedResult = await getAppliedMigrations(connection);
+      const appliedResult = await getAppliedMigrations(connection)
       if (appliedResult.isErr()) {
-        return err(appliedResult.error);
+        return err(appliedResult.error)
       }
 
-      const applied = appliedResult.value;
-      const appliedIds = new Set(applied.map(m => m.id));
-      const pending = migrations.filter(m => !appliedIds.has(m.id));
+      const applied = appliedResult.value
+      const appliedIds = new Set(applied.map((m) => m.id))
+      const pending = migrations.filter((m) => !appliedIds.has(m.id))
 
       // Apply pending migrations
       for (const migration of pending) {
-        const result = await adapter.migrate(connection, migration);
+        const result = await adapter.migrate(connection, migration)
         if (result.isErr()) {
           return err({
             type: 'DatabaseError',
@@ -172,26 +172,26 @@ export const createDatabaseOperations = (): DatabaseOperations => {
             message: `Migration ${migration.name} failed`,
             cause: result.error,
             recoverable: false,
-          } as any);
+          } as any)
         }
       }
 
       const status: MigrationStatus = {
         applied: [
           ...applied,
-          ...pending.map(m => ({
+          ...pending.map((m) => ({
             id: m.id,
             name: m.name,
             version: m.version,
             appliedAt: new Date(),
-            batch: Math.max(...applied.map(a => a.batch), 0) + 1,
+            batch: Math.max(...applied.map((a) => a.batch), 0) + 1,
           })),
         ],
         pending: [],
         conflicts: [],
-      };
+      }
 
-      return ok(status);
+      return ok(status)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -199,13 +199,13 @@ export const createDatabaseOperations = (): DatabaseOperations => {
         message: 'Migration process failed',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const schema = (): SchemaBuilder => {
-    return createSchemaBuilder();
-  };
+    return createSchemaBuilder()
+  }
 
   return {
     connect,
@@ -215,38 +215,38 @@ export const createDatabaseOperations = (): DatabaseOperations => {
     transaction,
     migrate,
     schema,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
 // ========================================
 
 // Simple adapter registry
-const adapters = new Map<DatabaseDriver, any>();
+const adapters = new Map<DatabaseDriver, any>()
 
 const getAdapter = (driver: DatabaseDriver) => {
-  return adapters.get(driver);
-};
+  return adapters.get(driver)
+}
 
 const registerAdapter = (driver: DatabaseDriver, adapter: any) => {
-  adapters.set(driver, adapter);
-};
+  adapters.set(driver, adapter)
+}
 
 const createQueryBuilder = <T>(table?: string): QueryBuilder<T> => {
   return {
-    select: columns => createSelectQuery<any>(table, columns),
-    insert: data => createInsertQuery<T>(table, data),
-    update: data => createUpdateQuery<T>(table, data),
+    select: (columns) => createSelectQuery<any>(table, columns),
+    insert: (data) => createInsertQuery<T>(table, data),
+    update: (data) => createUpdateQuery<T>(table, data),
     delete: () => createDeleteQuery<T>(table),
     raw: (sql, params) => createRawQuery<T>(sql, params),
-  };
-};
+  }
+}
 
 const createSelectQuery = <T>(table?: string, columns?: readonly (keyof T)[]) => {
-  let sql = 'SELECT ';
-  sql += columns ? columns.map(c => String(c)).join(', ') : '*';
-  if (table) sql += ` FROM ${table}`;
+  let sql = 'SELECT '
+  sql += columns ? columns.map((c) => String(c)).join(', ') : '*'
+  if (table) sql += ` FROM ${table}`
 
   const query = {
     from: (tableName: string) => createSelectQuery<T>(tableName, columns),
@@ -259,31 +259,31 @@ const createSelectQuery = <T>(table?: string, columns?: readonly (keyof T)[]) =>
     having: (condition: any) => query,
     toSQL: () => ({ sql, params: [] }),
     execute: async (connection: any) => {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
           code: 'ADAPTER_NOT_FOUND',
           message: 'No database adapter found',
           recoverable: false,
-        } as any);
+        } as any)
       }
 
-      const result = await adapter.execute(connection, sql, []);
-      if (result.isErr()) return result;
+      const result = await adapter.execute(connection, sql, [])
+      if (result.isErr()) return result
 
-      return ok(result.value.rows as T[]);
+      return ok(result.value.rows as T[])
     },
     first: async (connection: any) => {
-      const result = await query.limit(1).execute(connection);
-      if (result.isErr()) return result;
+      const result = await query.limit(1).execute(connection)
+      if (result.isErr()) return result
 
-      return ok(result.value[0]);
+      return ok(result.value[0])
     },
-  };
+  }
 
-  return query;
-};
+  return query
+}
 
 const createInsertQuery = <T>(table?: string, data?: any) => {
   const query = {
@@ -292,104 +292,104 @@ const createInsertQuery = <T>(table?: string, data?: any) => {
     returning: (columns: any) => query,
     toSQL: () => ({ sql: 'INSERT INTO ' + (table || 'table'), params: [] }),
     execute: async (connection: any) => {
-      return ok({ insertedCount: 1, insertedId: 1 });
+      return ok({ insertedCount: 1, insertedId: 1 })
     },
-  };
+  }
 
-  return query;
-};
+  return query
+}
 
 const createUpdateQuery = <T>(table?: string, data?: any) => {
-  let whereConditions: any[] = [];
+  let whereConditions: any[] = []
 
   const query = {
     table: (tableName: string) => createUpdateQuery<T>(tableName, data),
     where: (condition: any) => {
-      whereConditions.push(condition);
-      return query;
+      whereConditions.push(condition)
+      return query
     },
     returning: (columns: any) => query,
     toSQL: () => {
-      let sql = 'UPDATE ' + (table || 'table');
+      let sql = 'UPDATE ' + (table || 'table')
 
       // Add SET clause if data is provided
       if (data && Object.keys(data).length > 0) {
         const setClause = Object.keys(data)
-          .map(key => `${key} = ?`)
-          .join(', ');
-        sql += ` SET ${setClause}`;
+          .map((key) => `${key} = ?`)
+          .join(', ')
+        sql += ` SET ${setClause}`
       }
 
       // Add WHERE clause if conditions exist
       if (whereConditions.length > 0) {
         const whereClause = whereConditions
-          .map(condition => `${condition.column} ${condition.operator} ?`)
-          .join(' AND ');
-        sql += ` WHERE ${whereClause}`;
+          .map((condition) => `${condition.column} ${condition.operator} ?`)
+          .join(' AND ')
+        sql += ` WHERE ${whereClause}`
       }
 
-      return { sql, params: [] };
+      return { sql, params: [] }
     },
     execute: async (connection: any) => {
-      return ok({ updatedCount: 1, changedRows: 1 });
+      return ok({ updatedCount: 1, changedRows: 1 })
     },
-  };
+  }
 
-  return query;
-};
+  return query
+}
 
 const createDeleteQuery = <T>(table?: string) => {
-  let whereConditions: any[] = [];
+  let whereConditions: any[] = []
 
   const query = {
     from: (tableName: string) => createDeleteQuery<T>(tableName),
     where: (condition: any) => {
-      whereConditions.push(condition);
-      return query;
+      whereConditions.push(condition)
+      return query
     },
     returning: (columns: any) => query,
     toSQL: () => {
-      let sql = 'DELETE FROM ' + (table || 'table');
+      let sql = 'DELETE FROM ' + (table || 'table')
 
       // Add WHERE clause if conditions exist
       if (whereConditions.length > 0) {
         const whereClause = whereConditions
-          .map(condition => `${condition.column} ${condition.operator} ?`)
-          .join(' AND ');
-        sql += ` WHERE ${whereClause}`;
+          .map((condition) => `${condition.column} ${condition.operator} ?`)
+          .join(' AND ')
+        sql += ` WHERE ${whereClause}`
       }
 
-      return { sql, params: [] };
+      return { sql, params: [] }
     },
     execute: async (connection: any) => {
-      return ok({ deletedCount: 1 });
+      return ok({ deletedCount: 1 })
     },
-  };
+  }
 
-  return query;
-};
+  return query
+}
 
 const createRawQuery = <T>(sql: string, params?: readonly unknown[]) => {
   return {
     toSQL: () => ({ sql, params: params || [] }),
     execute: async (connection: any) => {
-      const adapter = getAdapter(connection.options.driver);
+      const adapter = getAdapter(connection.options.driver)
       if (!adapter) {
         return err({
           type: 'DatabaseError',
           code: 'ADAPTER_NOT_FOUND',
           message: 'No database adapter found',
           recoverable: false,
-        } as any);
+        } as any)
       }
 
-      const result = await adapter.execute(connection, sql, params);
-      if (result.isErr()) return result;
+      const result = await adapter.execute(connection, sql, params)
+      if (result.isErr()) return result
 
-      return ok(result.value.rows as T[]);
+      return ok(result.value.rows as T[])
     },
-  };
-};
+  }
+}
 
 const createTransaction = (connection: any, options: TransactionOptions): Transaction => {
   const tx: Transaction = {
@@ -402,65 +402,65 @@ const createTransaction = (connection: any, options: TransactionOptions): Transa
     rollback: async () => ok(undefined),
     savepoint: async (name: string) => ok(undefined),
     rollbackTo: async (name: string) => ok(undefined),
-  };
+  }
 
-  return tx;
-};
+  return tx
+}
 
 const createSchemaBuilder = (): SchemaBuilder => {
-  const statements: string[] = [];
+  const statements: string[] = []
 
   const builder: SchemaBuilder = {
     createTable: (name, callback) => {
-      const tableBuilder = createTableBuilder();
-      callback(tableBuilder);
-      statements.push(`CREATE TABLE ${name} (...)`);
-      return builder;
+      const tableBuilder = createTableBuilder()
+      callback(tableBuilder)
+      statements.push(`CREATE TABLE ${name} (...)`)
+      return builder
     },
     dropTable: (name, ifExists) => {
-      statements.push(`DROP TABLE ${ifExists ? 'IF EXISTS ' : ''}${name}`);
-      return builder;
+      statements.push(`DROP TABLE ${ifExists ? 'IF EXISTS ' : ''}${name}`)
+      return builder
     },
     alterTable: (name, callback) => {
-      const alterBuilder = createAlterTableBuilder();
-      callback(alterBuilder);
-      statements.push(`ALTER TABLE ${name} ...`);
-      return builder;
+      const alterBuilder = createAlterTableBuilder()
+      callback(alterBuilder)
+      statements.push(`ALTER TABLE ${name} ...`)
+      return builder
     },
     createIndex: (name, table, columns, unique) => {
-      const indexType = unique ? 'UNIQUE INDEX' : 'INDEX';
-      statements.push(`CREATE ${indexType} ${name} ON ${table} (${columns.join(', ')})`);
-      return builder;
+      const indexType = unique ? 'UNIQUE INDEX' : 'INDEX'
+      statements.push(`CREATE ${indexType} ${name} ON ${table} (${columns.join(', ')})`)
+      return builder
     },
     dropIndex: (name, ifExists) => {
-      statements.push(`DROP INDEX ${ifExists ? 'IF EXISTS ' : ''}${name}`);
-      return builder;
+      statements.push(`DROP INDEX ${ifExists ? 'IF EXISTS ' : ''}${name}`)
+      return builder
     },
-    raw: sql => {
-      statements.push(sql);
-      return builder;
+    raw: (sql) => {
+      statements.push(sql)
+      return builder
     },
     toSQL: () => statements,
-    execute: async connection => {
+    execute: async (connection) => {
       try {
-        const adapter = getAdapter(connection.options.driver);
+        const adapter = getAdapter(connection.options.driver)
         if (!adapter) {
           return err({
             type: 'DatabaseError',
             code: 'ADAPTER_NOT_FOUND',
             message: 'No database adapter found',
             recoverable: false,
-          } as any);
+          } as any)
         }
 
         for (const statement of statements) {
-          const result = await adapter.execute(connection, statement);
+          const result = await adapter.execute(connection, statement)
           if (result.isErr()) {
-            return result;
+            return result
           }
         }
 
-        return ok(undefined);
+        return ok(undefined)
       } catch (error) {
         return err({
           type: 'DatabaseError',
@@ -468,13 +468,13 @@ const createSchemaBuilder = (): SchemaBuilder => {
           message: 'Failed to execute schema changes',
           cause: error,
           recoverable: false,
-        } as any);
+        } as any)
       }
     },
-  };
+  }
 
-  return builder;
-};
+  return builder
+}
 
 const createTableBuilder = () => {
   return {
@@ -493,8 +493,8 @@ const createTableBuilder = () => {
     unique: (columns: readonly string[], name?: string) => createTableBuilder(),
     index: (columns: readonly string[], name?: string, unique?: boolean) => createTableBuilder(),
     check: (name: string, expression: string) => createTableBuilder(),
-  };
-};
+  }
+}
 
 const createAlterTableBuilder = () => {
   return {
@@ -507,13 +507,13 @@ const createAlterTableBuilder = () => {
     dropIndex: (name: string) => createAlterTableBuilder(),
     addConstraint: (constraint: any) => createAlterTableBuilder(),
     dropConstraint: (name: string) => createAlterTableBuilder(),
-  };
-};
+  }
+}
 
 const getAppliedMigrations = async (connection: any): Promise<DbResult<readonly any[]>> => {
   // Simplified implementation
-  return ok([]);
-};
+  return ok([])
+}
 
 // Export adapter registration functions
-export { registerAdapter, getAdapter };
+export { registerAdapter, getAdapter }

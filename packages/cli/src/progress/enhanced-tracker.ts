@@ -1,16 +1,16 @@
-import { SingleBar, Presets } from 'cli-progress';
-import type { ProgressTracker, ProgressState, ProgressOptions } from './types.js';
+import { SingleBar, Presets } from 'cli-progress'
+import type { ProgressTracker, ProgressState, ProgressOptions } from './types.js'
 
 /**
  * Enhanced progress step configuration
  */
 export interface EnhancedProgressStep {
   /** Step name for display */
-  name: string;
+  name: string
   /** Step weight for progress calculation */
-  weight: number;
+  weight: number
   /** Estimated duration in milliseconds */
-  estimatedDuration?: number;
+  estimatedDuration?: number
 }
 
 /**
@@ -18,21 +18,21 @@ export interface EnhancedProgressStep {
  */
 export interface EnhancedProgressState extends ProgressState {
   /** Current step being executed */
-  currentStepIndex: number;
+  currentStepIndex: number
   /** Steps configuration */
-  steps: EnhancedProgressStep[];
+  steps: EnhancedProgressStep[]
   /** Step-specific progress (0-100) */
-  stepProgress: number;
+  stepProgress: number
   /** Estimated time remaining in milliseconds */
-  estimatedTimeRemaining?: number;
+  estimatedTimeRemaining?: number
   /** Time elapsed in milliseconds */
-  timeElapsed: number;
+  timeElapsed: number
   /** Average time per step */
-  averageStepTime?: number;
+  averageStepTime?: number
   /** Step start time */
-  stepStartTime?: number;
+  stepStartTime?: number
   /** Step completion times */
-  stepCompletionTimes: number[];
+  stepCompletionTimes: number[]
 }
 
 /**
@@ -40,11 +40,11 @@ export interface EnhancedProgressState extends ProgressState {
  */
 export interface EnhancedProgressOptions extends ProgressOptions {
   /** Progress steps configuration */
-  steps: EnhancedProgressStep[];
+  steps: EnhancedProgressStep[]
   /** Whether to show time estimates */
-  showTimeEstimates?: boolean;
+  showTimeEstimates?: boolean
   /** Custom format template */
-  enhancedFormat?: string;
+  enhancedFormat?: string
 }
 
 /**
@@ -52,19 +52,19 @@ export interface EnhancedProgressOptions extends ProgressOptions {
  */
 export interface EnhancedProgressTracker extends ProgressTracker {
   /** Get enhanced progress state */
-  getEnhancedState: () => EnhancedProgressState;
+  getEnhancedState: () => EnhancedProgressState
   /** Update progress within current step */
-  updateStepProgress: (progress: number) => EnhancedProgressState;
+  updateStepProgress: (progress: number) => EnhancedProgressState
   /** Start next step with automatic time tracking */
-  startNextStep: (stepName?: string) => EnhancedProgressState;
+  startNextStep: (stepName?: string) => EnhancedProgressState
   /** Complete current step and move to next */
-  completeStep: (stepName?: string) => EnhancedProgressState;
+  completeStep: (stepName?: string) => EnhancedProgressState
   /** Get time estimate for remaining steps */
   getTimeEstimate: () => {
-    remaining: number;
-    total: number;
-    elapsed: number;
-  };
+    remaining: number
+    total: number
+    elapsed: number
+  }
 }
 
 /**
@@ -74,7 +74,7 @@ const DEFAULT_ENHANCED_OPTIONS: Partial<EnhancedProgressOptions> = {
   showTimeEstimates: true,
   enhancedFormat: 'Progress [{bar}] {percentage}% | {step}/{total} | {stepName} | ETA: {eta}',
   showStepNames: true,
-};
+}
 
 /**
  * Create enhanced progress tracker with multi-step progress and time estimates
@@ -82,9 +82,9 @@ const DEFAULT_ENHANCED_OPTIONS: Partial<EnhancedProgressOptions> = {
 export function createEnhancedProgressTracker(
   options: EnhancedProgressOptions
 ): EnhancedProgressTracker {
-  const config = { ...DEFAULT_ENHANCED_OPTIONS, ...options };
+  const config = { ...DEFAULT_ENHANCED_OPTIONS, ...options }
 
-  let state: EnhancedProgressState = createInitialEnhancedState(config);
+  let state: EnhancedProgressState = createInitialEnhancedState(config)
 
   // Initialize cli-progress bar
   const progressBar = new SingleBar({
@@ -94,7 +94,7 @@ export function createEnhancedProgressTracker(
     barIncompleteChar: '\u2591',
     hideCursor: true,
     ...config.barOptions,
-  });
+  })
 
   // Start the progress bar
   progressBar.start(100, 0, {
@@ -102,12 +102,12 @@ export function createEnhancedProgressTracker(
     total: config.steps.length,
     stepName: config.steps[0]?.name || 'Starting...',
     eta: 'calculating...',
-  });
+  })
 
   return {
     nextStep: (stepName: string, metadata: Record<string, unknown> = {}) => {
-      const nextIndex = Math.min(state.currentStepIndex + 1, state.steps.length - 1);
-      const nextStep = state.steps[nextIndex];
+      const nextIndex = Math.min(state.currentStepIndex + 1, state.steps.length - 1)
+      const nextStep = state.steps[nextIndex]
 
       state = updateEnhancedProgress(state, {
         currentStepIndex: nextIndex,
@@ -115,15 +115,15 @@ export function createEnhancedProgressTracker(
         stepProgress: 0,
         stepStartTime: Date.now(),
         metadata,
-      });
+      })
 
-      updateEnhancedProgressBar(progressBar, state, config);
-      return state;
+      updateEnhancedProgressBar(progressBar, state, config)
+      return state
     },
 
     setStep: (step: number, stepName: string, metadata: Record<string, unknown> = {}) => {
-      const stepIndex = Math.max(0, Math.min(step - 1, state.steps.length - 1));
-      const stepConfig = state.steps[stepIndex];
+      const stepIndex = Math.max(0, Math.min(step - 1, state.steps.length - 1))
+      const stepConfig = state.steps[stepIndex]
 
       state = updateEnhancedProgress(state, {
         currentStepIndex: stepIndex,
@@ -131,10 +131,10 @@ export function createEnhancedProgressTracker(
         stepProgress: 0,
         stepStartTime: Date.now(),
         metadata,
-      });
+      })
 
-      updateEnhancedProgressBar(progressBar, state, config);
-      return state;
+      updateEnhancedProgressBar(progressBar, state, config)
+      return state
     },
 
     complete: () => {
@@ -144,65 +144,65 @@ export function createEnhancedProgressTracker(
         stepProgress: 100,
         percentage: 100,
         completed: true,
-      });
+      })
 
       progressBar.update(100, {
         step: state.steps.length,
         total: state.steps.length,
         stepName: 'Complete',
         eta: '0s',
-      });
+      })
 
-      progressBar.stop();
-      return state;
+      progressBar.stop()
+      return state
     },
 
     getState: () => ({ ...state }),
 
     reset: (totalSteps: number) => {
-      progressBar.stop();
+      progressBar.stop()
       // Create new steps with equal weights if not provided
       const newSteps = Array.from({ length: totalSteps }, (_, i) => ({
         name: `Step ${i + 1}`,
         weight: 1,
-      }));
+      }))
 
-      state = createInitialEnhancedState({ ...config, steps: newSteps });
+      state = createInitialEnhancedState({ ...config, steps: newSteps })
 
       progressBar.start(100, 0, {
         step: 1,
         total: totalSteps,
         stepName: 'Starting...',
         eta: 'calculating...',
-      });
+      })
 
-      return state;
+      return state
     },
 
     stop: () => {
-      progressBar.stop();
+      progressBar.stop()
     },
 
     // Enhanced methods
     getEnhancedState: () => ({ ...state }),
 
     updateStepProgress: (progress: number) => {
-      const clampedProgress = Math.max(0, Math.min(100, progress));
+      const clampedProgress = Math.max(0, Math.min(100, progress))
       state = updateEnhancedProgress(state, {
         stepProgress: clampedProgress,
-      });
+      })
 
-      updateEnhancedProgressBar(progressBar, state, config);
-      return state;
+      updateEnhancedProgressBar(progressBar, state, config)
+      return state
     },
 
     startNextStep: (stepName?: string) => {
-      const nextIndex = Math.min(state.currentStepIndex + 1, state.steps.length - 1);
-      const nextStep = state.steps[nextIndex];
+      const nextIndex = Math.min(state.currentStepIndex + 1, state.steps.length - 1)
+      const nextStep = state.steps[nextIndex]
 
       // Record completion time of previous step
-      const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0;
-      const newCompletionTimes = [...state.stepCompletionTimes, completionTime];
+      const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0
+      const newCompletionTimes = [...state.stepCompletionTimes, completionTime]
 
       state = updateEnhancedProgress(state, {
         currentStepIndex: nextIndex,
@@ -210,43 +210,43 @@ export function createEnhancedProgressTracker(
         stepProgress: 0,
         stepStartTime: Date.now(),
         stepCompletionTimes: newCompletionTimes,
-      });
+      })
 
-      updateEnhancedProgressBar(progressBar, state, config);
-      return state;
+      updateEnhancedProgressBar(progressBar, state, config)
+      return state
     },
 
     completeStep: (stepName?: string) => {
       // Record completion time
-      const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0;
-      const newCompletionTimes = [...state.stepCompletionTimes, completionTime];
+      const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0
+      const newCompletionTimes = [...state.stepCompletionTimes, completionTime]
 
       state = updateEnhancedProgress(state, {
         stepProgress: 100,
         stepName: stepName || state.stepName,
         stepCompletionTimes: newCompletionTimes,
-      });
+      })
 
-      updateEnhancedProgressBar(progressBar, state, config);
-      return state;
+      updateEnhancedProgressBar(progressBar, state, config)
+      return state
     },
 
     getTimeEstimate: () => {
-      const elapsed = state.timeElapsed;
-      const remaining = state.estimatedTimeRemaining || 0;
-      const total = elapsed + remaining;
+      const elapsed = state.timeElapsed
+      const remaining = state.estimatedTimeRemaining || 0
+      const total = elapsed + remaining
 
-      return { remaining, total, elapsed };
+      return { remaining, total, elapsed }
     },
-  };
+  }
 }
 
 /**
  * Create initial enhanced progress state
  */
 function createInitialEnhancedState(options: EnhancedProgressOptions): EnhancedProgressState {
-  const startTime = Date.now();
-  const firstStep = options.steps[0];
+  const startTime = Date.now()
+  const firstStep = options.steps[0]
 
   return {
     currentStep: 0,
@@ -264,7 +264,7 @@ function createInitialEnhancedState(options: EnhancedProgressOptions): EnhancedP
     stepCompletionTimes: [],
     estimatedTimeRemaining: undefined,
     averageStepTime: undefined,
-  };
+  }
 }
 
 /**
@@ -274,35 +274,35 @@ function updateEnhancedProgress(
   currentState: EnhancedProgressState,
   updates: Partial<EnhancedProgressState>
 ): EnhancedProgressState {
-  const now = Date.now();
-  const timeElapsed = now - currentState.startTime;
+  const now = Date.now()
+  const timeElapsed = now - currentState.startTime
 
   // Calculate overall progress based on step weights and current step progress
-  const currentStepIndex = updates.currentStepIndex ?? currentState.currentStepIndex;
-  const stepProgress = updates.stepProgress ?? currentState.stepProgress;
-  const steps = updates.steps ?? currentState.steps;
+  const currentStepIndex = updates.currentStepIndex ?? currentState.currentStepIndex
+  const stepProgress = updates.stepProgress ?? currentState.stepProgress
+  const steps = updates.steps ?? currentState.steps
 
-  const totalWeight = steps.reduce((sum, step) => sum + step.weight, 0);
+  const totalWeight = steps.reduce((sum, step) => sum + step.weight, 0)
   const completedWeight = steps
     .slice(0, currentStepIndex)
-    .reduce((sum, step) => sum + step.weight, 0);
-  const currentStepWeight = steps[currentStepIndex]?.weight || 0;
-  const currentStepWeightedProgress = (currentStepWeight * stepProgress) / 100;
+    .reduce((sum, step) => sum + step.weight, 0)
+  const currentStepWeight = steps[currentStepIndex]?.weight || 0
+  const currentStepWeightedProgress = (currentStepWeight * stepProgress) / 100
 
   const overallProgress =
-    totalWeight > 0 ? ((completedWeight + currentStepWeightedProgress) / totalWeight) * 100 : 0;
+    totalWeight > 0 ? ((completedWeight + currentStepWeightedProgress) / totalWeight) * 100 : 0
 
   // Calculate time estimates
-  const completionTimes = updates.stepCompletionTimes ?? currentState.stepCompletionTimes;
+  const completionTimes = updates.stepCompletionTimes ?? currentState.stepCompletionTimes
   const averageStepTime =
     completionTimes.length > 0
       ? completionTimes.reduce((sum, time) => sum + time, 0) / completionTimes.length
-      : undefined;
+      : undefined
 
   // Estimate remaining time based on remaining steps and average completion time
-  const remainingSteps = steps.length - currentStepIndex - stepProgress / 100;
+  const remainingSteps = steps.length - currentStepIndex - stepProgress / 100
   const estimatedTimeRemaining =
-    averageStepTime && remainingSteps > 0 ? averageStepTime * remainingSteps : undefined;
+    averageStepTime && remainingSteps > 0 ? averageStepTime * remainingSteps : undefined
 
   return {
     ...currentState,
@@ -313,7 +313,7 @@ function updateEnhancedProgress(
     estimatedTimeRemaining,
     currentStep: currentStepIndex + 1,
     completed: updates.completed ?? overallProgress >= 100,
-  };
+  }
 }
 
 /**
@@ -324,7 +324,7 @@ function updateEnhancedProgressBar(
   state: EnhancedProgressState,
   config: EnhancedProgressOptions
 ): void {
-  const eta = formatTimeEstimate(state.estimatedTimeRemaining);
+  const eta = formatTimeEstimate(state.estimatedTimeRemaining)
 
   const payload = {
     step: state.currentStep,
@@ -333,26 +333,26 @@ function updateEnhancedProgressBar(
     eta: config.showTimeEstimates ? eta : '',
     stepProgress: state.stepProgress,
     timeElapsed: formatTimeEstimate(state.timeElapsed),
-  };
+  }
 
-  progressBar.update(state.percentage, payload);
+  progressBar.update(state.percentage, payload)
 }
 
 /**
  * Format time estimate for display
  */
 function formatTimeEstimate(ms?: number): string {
-  if (!ms || ms < 0) return 'calculating...';
+  if (!ms || ms < 0) return 'calculating...'
 
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
 
   if (hours > 0) {
-    return `${hours}h ${minutes % 60}m`;
+    return `${hours}h ${minutes % 60}m`
   } else if (minutes > 0) {
-    return `${minutes}m ${seconds % 60}s`;
+    return `${minutes}m ${seconds % 60}s`
   } else {
-    return `${seconds}s`;
+    return `${seconds}s`
   }
 }

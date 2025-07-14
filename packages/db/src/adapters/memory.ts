@@ -1,4 +1,4 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   DatabaseAdapter,
   DatabaseConnection,
@@ -7,24 +7,24 @@ import type {
   QueryResult,
   Migration,
   TransactionOptions,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Memory Database Adapter
 // ========================================
 
 export const createMemoryAdapter = (): DatabaseAdapter => {
-  const databases = new Map<string, MemoryDatabase>();
+  const databases = new Map<string, MemoryDatabase>()
 
   const connect = async (
     url: string,
     options: ConnectionOptions
   ): Promise<DbResult<DatabaseConnection>> => {
     try {
-      const dbName = extractDatabaseName(url);
+      const dbName = extractDatabaseName(url)
 
       if (!databases.has(dbName)) {
-        databases.set(dbName, createMemoryDatabase());
+        databases.set(dbName, createMemoryDatabase())
       }
 
       const connection: DatabaseConnection = {
@@ -40,9 +40,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
           queryCount: 0,
           errorCount: 0,
         },
-      };
+      }
 
-      return ok(connection);
+      return ok(connection)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -50,14 +50,14 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
         message: 'Failed to create memory database connection',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const disconnect = async (connection: DatabaseConnection): Promise<DbResult<void>> => {
     try {
       // For memory databases, we don't need to do anything special
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -65,9 +65,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
         message: 'Failed to disconnect from memory database',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const execute = async (
     connection: DatabaseConnection,
@@ -75,9 +75,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
     params: readonly unknown[] = []
   ): Promise<DbResult<QueryResult>> => {
     try {
-      const startTime = Date.now();
-      const dbName = extractDatabaseName(connection.url);
-      const db = databases.get(dbName);
+      const startTime = Date.now()
+      const dbName = extractDatabaseName(connection.url)
+      const db = databases.get(dbName)
 
       if (!db) {
         return err({
@@ -85,11 +85,11 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
           code: 'DATABASE_NOT_FOUND',
           message: `Memory database ${dbName} not found`,
           recoverable: false,
-        } as any);
+        } as any)
       }
 
       // Simple SQL parsing for memory database
-      const result = await executeQuery(db, sql, params);
+      const result = await executeQuery(db, sql, params)
 
       const queryResult: QueryResult = {
         rows: result.rows,
@@ -102,9 +102,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
           rowCount: result.rows.length,
           timestamp: new Date(),
         },
-      };
+      }
 
-      return ok(queryResult);
+      return ok(queryResult)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -112,9 +112,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
         message: 'Query execution failed',
         cause: error,
         recoverable: true,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const transaction = async (
     connection: DatabaseConnection,
@@ -124,7 +124,7 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
     try {
       // For memory database, transactions are simplified
       // In a real implementation, this would handle rollback/commit
-      return await fn(connection);
+      return await fn(connection)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -132,9 +132,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
         message: 'Transaction failed',
         cause: error,
         recoverable: true,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const migrate = async (
     connection: DatabaseConnection,
@@ -142,14 +142,14 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
   ): Promise<DbResult<void>> => {
     try {
       // Simple migration execution
-      const schemaBuilder = createSchemaBuilder();
-      const result = await migration.up(schemaBuilder);
+      const schemaBuilder = createSchemaBuilder()
+      const result = await migration.up(schemaBuilder)
 
       if (result.isErr()) {
-        return result;
+        return result
       }
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err({
         type: 'DatabaseError',
@@ -157,9 +157,9 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
         message: `Migration ${migration.name} failed`,
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   return {
     driver: 'memory',
@@ -168,58 +168,58 @@ export const createMemoryAdapter = (): DatabaseAdapter => {
     execute,
     transaction,
     migrate,
-  };
-};
+  }
+}
 
 // ========================================
 // Memory Database Implementation
 // ========================================
 
 interface MemoryDatabase {
-  tables: Map<string, MemoryTable>;
-  autoIncrement: number;
+  tables: Map<string, MemoryTable>
+  autoIncrement: number
 }
 
 interface MemoryTable {
-  name: string;
-  columns: readonly string[];
-  rows: Record<string, unknown>[];
-  primaryKey?: string;
+  name: string
+  columns: readonly string[]
+  rows: Record<string, unknown>[]
+  primaryKey?: string
 }
 
 const createMemoryDatabase = (): MemoryDatabase => ({
   tables: new Map(),
   autoIncrement: 1,
-});
+})
 
 const extractDatabaseName = (url: string): string => {
   // Extract database name from URL (e.g., "memory://test" -> "test")
-  const match = url.match(/memory:\/\/(.+)/);
-  return match ? match[1] : 'default';
-};
+  const match = url.match(/memory:\/\/(.+)/)
+  return match ? match[1] : 'default'
+}
 
 const executeQuery = async (
   db: MemoryDatabase,
   sql: string,
   params: readonly unknown[]
 ): Promise<{ rows: Record<string, unknown>[]; insertId?: number }> => {
-  const normalizedSql = sql.trim().toLowerCase();
+  const normalizedSql = sql.trim().toLowerCase()
 
   if (normalizedSql.startsWith('select')) {
-    return executeSelect(db, sql, params);
+    return executeSelect(db, sql, params)
   } else if (normalizedSql.startsWith('insert')) {
-    return executeInsert(db, sql, params);
+    return executeInsert(db, sql, params)
   } else if (normalizedSql.startsWith('update')) {
-    return executeUpdate(db, sql, params);
+    return executeUpdate(db, sql, params)
   } else if (normalizedSql.startsWith('delete')) {
-    return executeDelete(db, sql, params);
+    return executeDelete(db, sql, params)
   } else if (normalizedSql.startsWith('create table')) {
-    return executeCreateTable(db, sql, params);
+    return executeCreateTable(db, sql, params)
   } else {
     // For other queries, return empty result
-    return { rows: [] };
+    return { rows: [] }
   }
-};
+}
 
 const executeSelect = async (
   db: MemoryDatabase,
@@ -228,20 +228,20 @@ const executeSelect = async (
 ): Promise<{ rows: Record<string, unknown>[] }> => {
   // Simple SELECT implementation
   // In a real implementation, this would parse the SQL properly
-  const match = sql.match(/FROM\s+(\w+)/i);
+  const match = sql.match(/FROM\s+(\w+)/i)
   if (!match) {
-    return { rows: [] };
+    return { rows: [] }
   }
 
-  const tableName = match[1];
-  const table = db.tables.get(tableName);
+  const tableName = match[1]
+  const table = db.tables.get(tableName)
 
   if (!table) {
-    return { rows: [] };
+    return { rows: [] }
   }
 
-  return { rows: [...table.rows] };
-};
+  return { rows: [...table.rows] }
+}
 
 const executeInsert = async (
   db: MemoryDatabase,
@@ -249,25 +249,25 @@ const executeInsert = async (
   params: readonly unknown[]
 ): Promise<{ rows: Record<string, unknown>[]; insertId: number }> => {
   // Simple INSERT implementation
-  const match = sql.match(/INSERT INTO\s+(\w+)/i);
+  const match = sql.match(/INSERT INTO\s+(\w+)/i)
   if (!match) {
-    return { rows: [], insertId: 0 };
+    return { rows: [], insertId: 0 }
   }
 
-  const tableName = match[1];
-  const table = db.tables.get(tableName);
+  const tableName = match[1]
+  const table = db.tables.get(tableName)
 
   if (!table) {
-    return { rows: [], insertId: 0 };
+    return { rows: [], insertId: 0 }
   }
 
-  const insertId = db.autoIncrement++;
-  const row = { id: insertId, ...Object.fromEntries(params.map((p, i) => [`col${i}`, p])) };
+  const insertId = db.autoIncrement++
+  const row = { id: insertId, ...Object.fromEntries(params.map((p, i) => [`col${i}`, p])) }
 
-  table.rows.push(row);
+  table.rows.push(row)
 
-  return { rows: [row], insertId };
-};
+  return { rows: [row], insertId }
+}
 
 const executeUpdate = async (
   db: MemoryDatabase,
@@ -275,8 +275,8 @@ const executeUpdate = async (
   params: readonly unknown[]
 ): Promise<{ rows: Record<string, unknown>[] }> => {
   // Simple UPDATE implementation
-  return { rows: [] };
-};
+  return { rows: [] }
+}
 
 const executeDelete = async (
   db: MemoryDatabase,
@@ -284,8 +284,8 @@ const executeDelete = async (
   params: readonly unknown[]
 ): Promise<{ rows: Record<string, unknown>[] }> => {
   // Simple DELETE implementation
-  return { rows: [] };
-};
+  return { rows: [] }
+}
 
 const executeCreateTable = async (
   db: MemoryDatabase,
@@ -293,23 +293,23 @@ const executeCreateTable = async (
   params: readonly unknown[]
 ): Promise<{ rows: Record<string, unknown>[] }> => {
   // Simple CREATE TABLE implementation
-  const match = sql.match(/CREATE TABLE\s+(\w+)/i);
+  const match = sql.match(/CREATE TABLE\s+(\w+)/i)
   if (!match) {
-    return { rows: [] };
+    return { rows: [] }
   }
 
-  const tableName = match[1];
+  const tableName = match[1]
   const table: MemoryTable = {
     name: tableName,
     columns: ['id'], // Simplified
     rows: [],
     primaryKey: 'id',
-  };
+  }
 
-  db.tables.set(tableName, table);
+  db.tables.set(tableName, table)
 
-  return { rows: [] };
-};
+  return { rows: [] }
+}
 
 const createSchemaBuilder = (): any => {
   const builder = {
@@ -321,6 +321,6 @@ const createSchemaBuilder = (): any => {
     raw: () => builder,
     toSQL: () => [],
     execute: async () => ok(undefined),
-  };
-  return builder;
-};
+  }
+  return builder
+}

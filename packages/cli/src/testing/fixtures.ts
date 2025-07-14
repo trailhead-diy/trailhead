@@ -4,11 +4,11 @@
  */
 
 export interface FixtureManager {
-  get(path: string): string;
-  has(path: string): boolean;
-  list(): string[];
-  setup(fs: any): Promise<void>;
-  cleanup(fs: any): Promise<void>;
+  get(path: string): string
+  has(path: string): boolean
+  list(): string[]
+  setup(fs: any): Promise<void>
+  cleanup(fs: any): Promise<void>
 }
 
 /**
@@ -18,35 +18,35 @@ export function createFixtureManager(fixtures: Record<string, string>): FixtureM
   return {
     get(path: string): string {
       if (!(path in fixtures)) {
-        throw new Error(`Fixture not found: ${path}`);
+        throw new Error(`Fixture not found: ${path}`)
       }
-      return fixtures[path];
+      return fixtures[path]
     },
 
     has(path: string): boolean {
-      return path in fixtures;
+      return path in fixtures
     },
 
     list(): string[] {
-      return Object.keys(fixtures);
+      return Object.keys(fixtures)
     },
 
     async setup(fs: any): Promise<void> {
       for (const [path, content] of Object.entries(fixtures)) {
-        await fs.writeFile(path, content);
+        await fs.writeFile(path, content)
       }
     },
 
     async cleanup(fs: any): Promise<void> {
       for (const path of Object.keys(fixtures)) {
         try {
-          await fs.remove(path);
+          await fs.remove(path)
         } catch {
           // Ignore cleanup errors
         }
       }
     },
-  };
+  }
 }
 
 /**
@@ -73,17 +73,17 @@ export const fixtures = {
    */
   yaml: (data: Record<string, object>) => {
     try {
-      const yaml = require('yaml');
+      const yaml = require('yaml')
       return createFixtureManager(
         Object.fromEntries(Object.entries(data).map(([path, obj]) => [path, yaml.stringify(obj)]))
-      );
+      )
     } catch {
       // Fallback to JSON if yaml package is not available
       return createFixtureManager(
         Object.fromEntries(
           Object.entries(data).map(([path, obj]) => [path, JSON.stringify(obj, null, 2)])
         )
-      );
+      )
     }
   },
 
@@ -112,11 +112,11 @@ export const fixtures = {
     configs: Record<
       string,
       Partial<{
-        name: string;
-        version: string;
-        scripts: Record<string, string>;
-        dependencies: Record<string, string>;
-        devDependencies: Record<string, string>;
+        name: string
+        version: string
+        scripts: Record<string, string>
+        dependencies: Record<string, string>
+        devDependencies: Record<string, string>
       }>
     >
   ) => {
@@ -126,7 +126,7 @@ export const fixtures = {
       scripts: {},
       dependencies: {},
       devDependencies: {},
-    };
+    }
 
     return createFixtureManager(
       Object.fromEntries(
@@ -135,7 +135,7 @@ export const fixtures = {
           JSON.stringify({ ...defaultPackageJson, ...config }, null, 2),
         ])
       )
-    );
+    )
   },
 
   /**
@@ -171,7 +171,7 @@ export const fixtures = {
         'name,value\n' + Array.from({ length: 10000 }, (_, i) => `item${i},${i}`).join('\n'),
     }),
   },
-};
+}
 
 /**
  * Test data factories for common CLI testing scenarios
@@ -184,16 +184,16 @@ export const testData = {
     simple: () => 'name,age,city\nJohn,25,NYC\nJane,30,LA',
 
     withHeaders: (headers: string[], rows: string[][]) => {
-      return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+      return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')
     },
 
     largeCsv: (rows: number = 1000) => {
-      const headers = 'id,name,email,age,city';
+      const headers = 'id,name,email,age,city'
       const data = Array.from(
         { length: rows },
         (_, i) => `${i},User${i},user${i}@example.com,${20 + (i % 60)},City${i % 10}`
-      ).join('\n');
-      return `${headers}\n${data}`;
+      ).join('\n')
+      return `${headers}\n${data}`
     },
   },
 
@@ -216,11 +216,11 @@ export const testData = {
     array: (items: any[]) => items,
 
     nested: (depth: number = 3) => {
-      let obj: any = { value: 'leaf' };
+      let obj: any = { value: 'leaf' }
       for (let i = 0; i < depth; i++) {
-        obj = { [`level${i}`]: obj };
+        obj = { [`level${i}`]: obj }
       }
-      return obj;
+      return obj
     },
   },
 
@@ -242,45 +242,45 @@ export const testData = {
       message: `Invalid value for ${field}: ${value}`,
     }),
   },
-};
+}
 
 /**
  * Factory for creating temporary test files
  */
 export function createTempFixture(content: string, extension: string = '.txt') {
-  const path = `/tmp/test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}${extension}`;
+  const path = `/tmp/test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}${extension}`
 
   return {
     path,
     content,
 
     async setup(fs: any) {
-      await fs.writeFile(path, content);
-      return path;
+      await fs.writeFile(path, content)
+      return path
     },
 
     async cleanup(fs: any) {
       try {
-        await fs.remove(path);
+        await fs.remove(path)
       } catch {
         // Ignore cleanup errors
       }
     },
-  };
+  }
 }
 
 /**
  * Fixture builder state
  */
 export interface FixtureBuilderState {
-  readonly fixtures: Record<string, string>;
+  readonly fixtures: Record<string, string>
 }
 
 /**
  * Create initial fixture builder state
  */
 export function createFixtureBuilder(): FixtureBuilderState {
-  return { fixtures: {} };
+  return { fixtures: {} }
 }
 
 /**
@@ -293,7 +293,7 @@ export function addFile(
 ): FixtureBuilderState {
   return {
     fixtures: { ...state.fixtures, [path]: content },
-  };
+  }
 }
 
 /**
@@ -305,8 +305,8 @@ export function addCsv(
   headers: string[],
   rows: string[][]
 ): FixtureBuilderState {
-  const content = testData.csv.withHeaders(headers, rows);
-  return addFile(state, path, content);
+  const content = testData.csv.withHeaders(headers, rows)
+  return addFile(state, path, content)
 }
 
 /**
@@ -317,7 +317,7 @@ export function addJson(
   path: string,
   data: object
 ): FixtureBuilderState {
-  return addFile(state, path, JSON.stringify(data, null, 2));
+  return addFile(state, path, JSON.stringify(data, null, 2))
 }
 
 /**
@@ -332,8 +332,8 @@ export function addPackageJson(
     name: 'test-package',
     version: '1.0.0',
     scripts: {},
-  };
-  return addJson(state, path, { ...defaultConfig, ...config });
+  }
+  return addJson(state, path, { ...defaultConfig, ...config })
 }
 
 /**
@@ -344,18 +344,18 @@ export function addDirectory(
   dirPath: string,
   files: Record<string, string>
 ): FixtureBuilderState {
-  let newState = state;
+  let newState = state
   for (const [fileName, content] of Object.entries(files)) {
-    newState = addFile(newState, `${dirPath}/${fileName}`, content);
+    newState = addFile(newState, `${dirPath}/${fileName}`, content)
   }
-  return newState;
+  return newState
 }
 
 /**
  * Build the fixture manager from the builder state
  */
 export function buildFixtures(state: FixtureBuilderState): FixtureManager {
-  return createFixtureManager(state.fixtures);
+  return createFixtureManager(state.fixtures)
 }
 
 /**
@@ -370,5 +370,5 @@ export function fixtureBuilder() {
     addPackageJson,
     addDirectory,
     build: buildFixtures,
-  };
+  }
 }

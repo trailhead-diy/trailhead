@@ -1,5 +1,5 @@
-import { ok, err } from '@esteban-url/core';
-import { Readable } from 'node:stream';
+import { ok, err } from '@esteban-url/core'
+import { Readable } from 'node:stream'
 import type {
   ReadableConfig,
   StreamResult,
@@ -9,211 +9,211 @@ import type {
   AsyncStreamPredicate,
   StreamAccumulator,
   AsyncStreamAccumulator,
-} from '../types.js';
-import type { CreateReadableOperations } from './types.js';
-import { defaultReadableConfig } from './types.js';
-import { createStreamTimeoutError, mapStreamError } from '../errors.js';
+} from '../types.js'
+import type { CreateReadableOperations } from './types.js'
+import { defaultReadableConfig } from './types.js'
+import { createStreamTimeoutError, mapStreamError } from '../errors.js'
 
 // ========================================
 // Readable Stream Operations
 // ========================================
 
 export const createReadableOperations: CreateReadableOperations = (config = {}) => {
-  const readableConfig = { ...defaultReadableConfig, ...config };
+  const readableConfig = { ...defaultReadableConfig, ...config }
 
   const createFromArray = <T>(data: T[], options: ReadableConfig = {}): StreamResult<Readable> => {
     try {
-      const mergedOptions = { ...readableConfig, ...options };
-      let index = 0;
+      const mergedOptions = { ...readableConfig, ...options }
+      let index = 0
 
       const stream = new Readable({
         objectMode: mergedOptions.objectMode,
         highWaterMark: mergedOptions.highWaterMark,
         read() {
           if (index < data.length) {
-            this.push(data[index++]);
+            this.push(data[index++])
           } else {
-            this.push(null); // End the stream
+            this.push(null) // End the stream
           }
         },
-      });
+      })
 
-      return ok(stream);
+      return ok(stream)
     } catch (error) {
-      return err(mapStreamError('createFromArray', 'readable', error));
+      return err(mapStreamError('createFromArray', 'readable', error))
     }
-  };
+  }
 
   const createFromIterator = <T>(
     iterator: Iterable<T>,
     options: ReadableConfig = {}
   ): StreamResult<Readable> => {
     try {
-      const mergedOptions = { ...readableConfig, ...options };
-      const iter = iterator[Symbol.iterator]();
+      const mergedOptions = { ...readableConfig, ...options }
+      const iter = iterator[Symbol.iterator]()
 
       const stream = new Readable({
         objectMode: mergedOptions.objectMode,
         highWaterMark: mergedOptions.highWaterMark,
         read() {
-          const result = iter.next();
+          const result = iter.next()
           if (result.done) {
-            this.push(null);
+            this.push(null)
           } else {
-            this.push(result.value);
+            this.push(result.value)
           }
         },
-      });
+      })
 
-      return ok(stream);
+      return ok(stream)
     } catch (error) {
-      return err(mapStreamError('createFromIterator', 'readable', error));
+      return err(mapStreamError('createFromIterator', 'readable', error))
     }
-  };
+  }
 
   const createFromAsyncIterator = <T>(
     iterator: AsyncIterable<T>,
     options: ReadableConfig = {}
   ): StreamResult<Readable> => {
     try {
-      const mergedOptions = { ...readableConfig, ...options };
-      const iter = iterator[Symbol.asyncIterator]();
+      const mergedOptions = { ...readableConfig, ...options }
+      const iter = iterator[Symbol.asyncIterator]()
 
       const stream = new Readable({
         objectMode: mergedOptions.objectMode,
         highWaterMark: mergedOptions.highWaterMark,
         async read() {
           try {
-            const result = await iter.next();
+            const result = await iter.next()
             if (result.done) {
-              this.push(null);
+              this.push(null)
             } else {
-              this.push(result.value);
+              this.push(result.value)
             }
           } catch (error) {
-            this.destroy(error instanceof Error ? error : new Error(String(error)));
+            this.destroy(error instanceof Error ? error : new Error(String(error)))
           }
         },
-      });
+      })
 
-      return ok(stream);
+      return ok(stream)
     } catch (error) {
-      return err(mapStreamError('createFromAsyncIterator', 'readable', error));
+      return err(mapStreamError('createFromAsyncIterator', 'readable', error))
     }
-  };
+  }
 
   const toArray = <T>(stream: Readable): Promise<StreamResult<T[]>> => {
-    return new Promise(resolve => {
-      const chunks: T[] = [];
-      let hasError = false;
+    return new Promise((resolve) => {
+      const chunks: T[] = []
+      let hasError = false
 
       const cleanup = () => {
-        stream.removeAllListeners('data');
-        stream.removeAllListeners('end');
-        stream.removeAllListeners('error');
-      };
+        stream.removeAllListeners('data')
+        stream.removeAllListeners('end')
+        stream.removeAllListeners('error')
+      }
 
       const timeoutId = setTimeout(() => {
         if (!hasError) {
-          hasError = true;
-          cleanup();
-          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'toArray')));
+          hasError = true
+          cleanup()
+          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'toArray')))
         }
-      }, readableConfig.timeout);
+      }, readableConfig.timeout)
 
       stream.on('data', (chunk: T) => {
         if (!hasError) {
-          chunks.push(chunk);
+          chunks.push(chunk)
         }
-      });
+      })
 
       stream.on('end', () => {
         if (!hasError) {
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(ok(chunks));
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(ok(chunks))
         }
-      });
+      })
 
-      stream.on('error', error => {
+      stream.on('error', (error) => {
         if (!hasError) {
-          hasError = true;
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(err(mapStreamError('toArray', 'readable', error)));
+          hasError = true
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(err(mapStreamError('toArray', 'readable', error)))
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   const forEach = <T>(
     stream: Readable,
     fn: StreamProcessor<T, void> | AsyncStreamProcessor<T, void>
   ): Promise<StreamResult<void>> => {
-    return new Promise(resolve => {
-      let hasError = false;
+    return new Promise((resolve) => {
+      let hasError = false
 
       const cleanup = () => {
-        stream.removeAllListeners('data');
-        stream.removeAllListeners('end');
-        stream.removeAllListeners('error');
-      };
+        stream.removeAllListeners('data')
+        stream.removeAllListeners('end')
+        stream.removeAllListeners('error')
+      }
 
       const timeoutId = setTimeout(() => {
         if (!hasError) {
-          hasError = true;
-          cleanup();
-          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'forEach')));
+          hasError = true
+          cleanup()
+          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'forEach')))
         }
-      }, readableConfig.timeout);
+      }, readableConfig.timeout)
 
       stream.on('data', async (chunk: T) => {
-        if (hasError) return;
+        if (hasError) return
 
         try {
-          const result = fn(chunk);
+          const result = fn(chunk)
           if (result instanceof Promise) {
-            const awaitedResult = await result;
+            const awaitedResult = await result
             if (awaitedResult.isErr()) {
-              hasError = true;
-              clearTimeout(timeoutId);
-              cleanup();
-              resolve(err(awaitedResult.error));
-              return;
+              hasError = true
+              clearTimeout(timeoutId)
+              cleanup()
+              resolve(err(awaitedResult.error))
+              return
             }
           } else if (result.isErr()) {
-            hasError = true;
-            clearTimeout(timeoutId);
-            cleanup();
-            resolve(err(result.error));
-            return;
+            hasError = true
+            clearTimeout(timeoutId)
+            cleanup()
+            resolve(err(result.error))
+            return
           }
         } catch (error) {
-          hasError = true;
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(err(mapStreamError('forEach', 'readable', error)));
+          hasError = true
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(err(mapStreamError('forEach', 'readable', error)))
         }
-      });
+      })
 
       stream.on('end', () => {
         if (!hasError) {
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(ok(undefined));
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(ok(undefined))
         }
-      });
+      })
 
-      stream.on('error', error => {
+      stream.on('error', (error) => {
         if (!hasError) {
-          hasError = true;
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(err(mapStreamError('forEach', 'readable', error)));
+          hasError = true
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(err(mapStreamError('forEach', 'readable', error)))
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   const filter = <T>(
     stream: Readable,
@@ -225,46 +225,46 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         read() {
           // The filtering is handled in the data event
         },
-      });
+      })
 
-      let pendingOperations = 0;
-      let hasEnded = false;
+      let pendingOperations = 0
+      let hasEnded = false
 
       const checkEnd = () => {
         if (hasEnded && pendingOperations === 0) {
-          filteredStream.push(null);
+          filteredStream.push(null)
         }
-      };
+      }
 
       stream.on('data', async (chunk: T) => {
         try {
-          pendingOperations++;
-          const result = predicate(chunk);
-          const shouldInclude = result instanceof Promise ? await result : result;
+          pendingOperations++
+          const result = predicate(chunk)
+          const shouldInclude = result instanceof Promise ? await result : result
           if (shouldInclude) {
-            filteredStream.push(chunk);
+            filteredStream.push(chunk)
           }
-          pendingOperations--;
-          checkEnd();
+          pendingOperations--
+          checkEnd()
         } catch (error) {
-          filteredStream.destroy(error instanceof Error ? error : new Error(String(error)));
+          filteredStream.destroy(error instanceof Error ? error : new Error(String(error)))
         }
-      });
+      })
 
       stream.on('end', () => {
-        hasEnded = true;
-        checkEnd();
-      });
+        hasEnded = true
+        checkEnd()
+      })
 
-      stream.on('error', error => {
-        filteredStream.destroy(error);
-      });
+      stream.on('error', (error) => {
+        filteredStream.destroy(error)
+      })
 
-      return ok(filteredStream);
+      return ok(filteredStream)
     } catch (error) {
-      return err(mapStreamError('filter', 'readable', error));
+      return err(mapStreamError('filter', 'readable', error))
     }
-  };
+  }
 
   const map = <T, R>(
     stream: Readable,
@@ -276,113 +276,113 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
         read() {
           // The mapping is handled in the data event
         },
-      });
+      })
 
       stream.on('data', async (chunk: T) => {
         try {
-          const result = mapper(chunk);
-          const mappedValue = result instanceof Promise ? await result : result;
+          const result = mapper(chunk)
+          const mappedValue = result instanceof Promise ? await result : result
 
           if (mappedValue.isErr()) {
-            mappedStream.destroy(new Error(mappedValue.error.message));
-            return;
+            mappedStream.destroy(new Error(mappedValue.error.message))
+            return
           }
 
-          mappedStream.push(mappedValue.value);
+          mappedStream.push(mappedValue.value)
         } catch (error) {
-          mappedStream.destroy(error instanceof Error ? error : new Error(String(error)));
+          mappedStream.destroy(error instanceof Error ? error : new Error(String(error)))
         }
-      });
+      })
 
       stream.on('end', () => {
-        mappedStream.push(null);
-      });
+        mappedStream.push(null)
+      })
 
-      stream.on('error', error => {
-        mappedStream.destroy(error);
-      });
+      stream.on('error', (error) => {
+        mappedStream.destroy(error)
+      })
 
-      return ok(mappedStream);
+      return ok(mappedStream)
     } catch (error) {
-      return err(mapStreamError('map', 'readable', error));
+      return err(mapStreamError('map', 'readable', error))
     }
-  };
+  }
 
   const reduce = <T, R>(
     stream: Readable,
     reducer: StreamAccumulator<T, R> | AsyncStreamAccumulator<T, R>,
     initialValue: R
   ): Promise<StreamResult<R>> => {
-    return new Promise(resolve => {
-      let accumulator = initialValue;
-      let hasError = false;
-      let isProcessing = false;
-      let hasEnded = false;
-      const queue: T[] = [];
+    return new Promise((resolve) => {
+      let accumulator = initialValue
+      let hasError = false
+      let isProcessing = false
+      let hasEnded = false
+      const queue: T[] = []
 
       const cleanup = () => {
-        stream.removeAllListeners('data');
-        stream.removeAllListeners('end');
-        stream.removeAllListeners('error');
-      };
+        stream.removeAllListeners('data')
+        stream.removeAllListeners('end')
+        stream.removeAllListeners('error')
+      }
 
       const processQueue = async () => {
-        if (isProcessing || hasError) return;
-        isProcessing = true;
+        if (isProcessing || hasError) return
+        isProcessing = true
 
         while (queue.length > 0 && !hasError) {
-          const chunk = queue.shift()!;
+          const chunk = queue.shift()!
           try {
-            const result = reducer(accumulator, chunk);
-            accumulator = result instanceof Promise ? await result : result;
+            const result = reducer(accumulator, chunk)
+            accumulator = result instanceof Promise ? await result : result
           } catch (error) {
-            hasError = true;
-            clearTimeout(timeoutId);
-            cleanup();
-            resolve(err(mapStreamError('reduce', 'readable', error)));
-            return;
+            hasError = true
+            clearTimeout(timeoutId)
+            cleanup()
+            resolve(err(mapStreamError('reduce', 'readable', error)))
+            return
           }
         }
 
-        isProcessing = false;
+        isProcessing = false
 
         // Check if we can finish now
         if (hasEnded && queue.length === 0 && !hasError) {
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(ok(accumulator));
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(ok(accumulator))
         }
-      };
+      }
 
       const timeoutId = setTimeout(() => {
         if (!hasError) {
-          hasError = true;
-          cleanup();
-          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'reduce')));
+          hasError = true
+          cleanup()
+          resolve(err(createStreamTimeoutError(readableConfig.timeout, 'reduce')))
         }
-      }, readableConfig.timeout);
+      }, readableConfig.timeout)
 
       stream.on('data', (chunk: T) => {
-        if (hasError) return;
-        queue.push(chunk);
-        setImmediate(() => processQueue());
-      });
+        if (hasError) return
+        queue.push(chunk)
+        setImmediate(() => processQueue())
+      })
 
       stream.on('end', () => {
-        hasEnded = true;
-        setImmediate(() => processQueue());
-      });
+        hasEnded = true
+        setImmediate(() => processQueue())
+      })
 
-      stream.on('error', error => {
+      stream.on('error', (error) => {
         if (!hasError) {
-          hasError = true;
-          clearTimeout(timeoutId);
-          cleanup();
-          resolve(err(mapStreamError('reduce', 'readable', error)));
+          hasError = true
+          clearTimeout(timeoutId)
+          cleanup()
+          resolve(err(mapStreamError('reduce', 'readable', error)))
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   return {
     createFromArray,
@@ -393,5 +393,5 @@ export const createReadableOperations: CreateReadableOperations = (config = {}) 
     filter,
     map,
     reduce,
-  };
-};
+  }
+}

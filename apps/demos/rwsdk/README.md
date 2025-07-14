@@ -24,11 +24,11 @@ pnpm trailhead-ui install
 Create a new file `src/app/components/layout.tsx`:
 
 ```tsx
-import { ThemeProvider } from '@/app/components/th';
+import { ThemeProvider } from '@/app/components/th'
 
 export const Layout = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider>{children}</ThemeProvider>
-);
+)
 ```
 
 ### 3. Update Home Page
@@ -36,15 +36,15 @@ export const Layout = ({ children }: { children: React.ReactNode }) => (
 Update `src/app/pages/Home.tsx`:
 
 ```tsx
-import { RequestInfo } from 'rwsdk/worker';
-import { Layout } from '../components/layout';
+import { RequestInfo } from 'rwsdk/worker'
+import { Layout } from '../components/layout'
 
 export function Home({ ctx }: RequestInfo) {
   return (
     <Layout>
       <h1>Hello World</h1>
     </Layout>
-  );
+  )
 }
 ```
 
@@ -53,10 +53,10 @@ export function Home({ ctx }: RequestInfo) {
 Update `vite.config.mts`:
 
 ```ts
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
-import { redwood } from 'rwsdk/vite';
-import { cloudflare } from '@cloudflare/vite-plugin';
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+import { redwood } from 'rwsdk/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
 export default defineConfig({
   environments: {
@@ -69,7 +69,7 @@ export default defineConfig({
     redwood(),
     tailwindcss(),
   ],
-});
+})
 ```
 
 ### 5. Create CSS File

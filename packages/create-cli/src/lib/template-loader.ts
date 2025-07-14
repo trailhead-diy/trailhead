@@ -1,12 +1,12 @@
-import { resolve, dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-import { existsSync } from 'fs';
-import fg from 'fast-glob';
-import { validateTemplatePath } from './validation.js';
-import type { TemplateVariant, TemplateFile, TemplateLoaderConfig } from './types.js';
+import { resolve, dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+import { existsSync } from 'fs'
+import fg from 'fast-glob'
+import { validateTemplatePath } from './validation.js'
+import type { TemplateVariant, TemplateFile, TemplateLoaderConfig } from './types.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 /**
  * Load and discover template files for a specific template variant
@@ -57,25 +57,25 @@ export async function getTemplateFiles(
   variant: TemplateVariant,
   config?: TemplateLoaderConfig
 ): Promise<TemplateFile[]> {
-  const { paths, dirs } = resolveTemplatePaths(variant, config);
+  const { paths, dirs } = resolveTemplatePaths(variant, config)
 
-  const files: TemplateFile[] = [];
+  const files: TemplateFile[] = []
 
   // Load variant-specific files
   const variantFiles = await loadTemplateFilesFromDirectory(
     dirs.variant,
     variant,
     paths.base // Pass base templates directory for security validation
-  );
-  files.push(...variantFiles);
+  )
+  files.push(...variantFiles)
 
   // Load shared files
   const sharedFiles = await loadTemplateFilesFromDirectory(
     dirs.shared,
     'shared',
     paths.base // Pass base templates directory for security validation
-  );
-  files.push(...sharedFiles);
+  )
+  files.push(...sharedFiles)
 
   // Load additional files if configured
   if (config?.additionalDirs) {
@@ -84,14 +84,14 @@ export async function getTemplateFiles(
         additionalDir,
         'additional',
         paths.base // Pass base templates directory for security validation
-      );
-      files.push(...additionalFiles);
+      )
+      files.push(...additionalFiles)
     }
   }
 
   // Filter files based on template variant
-  const filteredFiles = files.filter(file => {
-    const isMonorepo = false; // No monorepo support in simplified CLI generator
+  const filteredFiles = files.filter((file) => {
+    const isMonorepo = false // No monorepo support in simplified CLI generator
 
     // Skip monorepo-specific files for non-monorepo templates
     if (!isMonorepo) {
@@ -100,17 +100,17 @@ export async function getTemplateFiles(
         'turbo.json',
         'package.root.json',
         '.changeset/config.json',
-      ];
+      ]
 
-      if (monorepoOnlyFiles.some(filename => file.destination === filename)) {
-        return false;
+      if (monorepoOnlyFiles.some((filename) => file.destination === filename)) {
+        return false
       }
     }
 
-    return true;
-  });
+    return true
+  })
 
-  return filteredFiles;
+  return filteredFiles
 }
 
 /**
@@ -148,19 +148,19 @@ export function resolveTemplatePaths(variant: TemplateVariant, config?: Template
     resolve(__dirname, '../templates'), // dist/lib -> dist/templates
     resolve(__dirname, '../../templates'), // src/lib -> templates (during tests)
     resolve(__dirname, '../../dist/templates'), // src/lib -> dist/templates (during tests)
-  ];
+  ]
 
   // Find the first path that exists
-  const defaultTemplatesDir = candidatePaths.find(path => existsSync(path)) || candidatePaths[0];
+  const defaultTemplatesDir = candidatePaths.find((path) => existsSync(path)) || candidatePaths[0]
 
   // Use custom base directory if provided, otherwise use built-in
-  const baseTemplatesDir = config?.templatesDir || defaultTemplatesDir;
+  const baseTemplatesDir = config?.templatesDir || defaultTemplatesDir
 
   // Resolve variant directory
-  const variantDir = config?.variantDirs?.[variant] || join(baseTemplatesDir, variant);
+  const variantDir = config?.variantDirs?.[variant] || join(baseTemplatesDir, variant)
 
   // Resolve shared directory
-  const sharedDir = config?.sharedDir || join(baseTemplatesDir, 'shared');
+  const sharedDir = config?.sharedDir || join(baseTemplatesDir, 'shared')
 
   return {
     paths: {
@@ -171,7 +171,7 @@ export function resolveTemplatePaths(variant: TemplateVariant, config?: Template
       variant: variantDir,
       shared: sharedDir,
     },
-  };
+  }
 }
 
 /**
@@ -214,54 +214,54 @@ async function loadTemplateFilesFromDirectory(
   try {
     // Only validate if baseTemplatesDir is provided
     if (baseTemplatesDir) {
-      const dirValidation = validateTemplatePath(dir, baseTemplatesDir);
+      const dirValidation = validateTemplatePath(dir, baseTemplatesDir)
       if (!dirValidation.isOk()) {
-        console.warn(`Skipping invalid template directory: ${dir}`);
-        return [];
+        console.warn(`Skipping invalid template directory: ${dir}`)
+        return []
       }
     }
 
-    const pattern = join(dir, '**/*');
+    const pattern = join(dir, '**/*')
     const filePaths = await fg(pattern, {
       dot: true,
       onlyFiles: true,
       followSymbolicLinks: false,
       absolute: true, // Use absolute paths for security
-    });
+    })
 
     return filePaths
-      .map(filePath => {
+      .map((filePath) => {
         // Validate each file path if baseTemplatesDir is provided
         if (baseTemplatesDir) {
-          const fileValidation = validateTemplatePath(filePath, baseTemplatesDir);
+          const fileValidation = validateTemplatePath(filePath, baseTemplatesDir)
           if (!fileValidation.isOk()) {
-            console.warn(`Skipping invalid template file: ${filePath}`);
-            return null;
+            console.warn(`Skipping invalid template file: ${filePath}`)
+            return null
           }
         }
 
-        const relativePath = filePath.replace(dir + '/', '');
+        const relativePath = filePath.replace(dir + '/', '')
 
         // Additional validation of relative path
         if (relativePath.includes('..') || relativePath.startsWith('/')) {
-          console.warn(`Skipping suspicious template file: ${relativePath}`);
-          return null;
+          console.warn(`Skipping suspicious template file: ${relativePath}`)
+          return null
         }
 
-        const executableValue = isExecutableFile(filePath);
+        const executableValue = isExecutableFile(filePath)
         const templateFile: TemplateFile = {
           source: `${prefix}/${relativePath}`,
           destination: processDestinationPath(relativePath),
           isTemplate: isTemplateFile(filePath),
           executable: executableValue, // Always set executable property
-        };
+        }
 
-        return templateFile;
+        return templateFile
       })
-      .filter((file): file is NonNullable<typeof file> => file !== null);
+      .filter((file): file is NonNullable<typeof file> => file !== null)
   } catch {
     // Directory doesn't exist, return empty array
-    return [];
+    return []
   }
 }
 
@@ -269,36 +269,36 @@ async function loadTemplateFilesFromDirectory(
  * Process destination path (remove .hbs extension, handle special cases)
  */
 function processDestinationPath(relativePath: string): string {
-  let destination = relativePath;
+  let destination = relativePath
 
   // Remove .hbs extension from template files
   if (destination.endsWith('.hbs')) {
-    destination = destination.slice(0, -4);
+    destination = destination.slice(0, -4)
   }
 
   // Handle special filename replacements
-  destination = destination.replace(/^_/, '.'); // _gitignore -> .gitignore
-  destination = destination.replace(/DOT_/, '.'); // DOT_env -> .env
+  destination = destination.replace(/^_/, '.') // _gitignore -> .gitignore
+  destination = destination.replace(/DOT_/, '.') // DOT_env -> .env
 
-  return destination;
+  return destination
 }
 
 /**
  * Check if file is a Handlebars template
  */
 function isTemplateFile(filePath: string): boolean {
-  return filePath.endsWith('.hbs');
+  return filePath.endsWith('.hbs')
 }
 
 /**
  * Check if file should be executable
  */
 function isExecutableFile(filePath: string): boolean {
-  const executablePaths = ['bin/', 'scripts/', '.husky/'];
+  const executablePaths = ['bin/', 'scripts/', '.husky/']
 
   return (
-    executablePaths.some(path => filePath.includes(path)) ||
+    executablePaths.some((path) => filePath.includes(path)) ||
     filePath.endsWith('.sh') ||
     filePath.includes('lefthook')
-  );
+  )
 }

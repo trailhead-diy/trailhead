@@ -1,20 +1,20 @@
-import type { CommandOption } from './types.js';
+import type { CommandOption } from './types.js'
 
 /**
  * Processed option configuration for Commander.js registration
  */
 interface ProcessedOption {
   /** Commander.js compatible flags string */
-  flags: string;
+  flags: string
   /** Option name for internal reference */
-  name: string;
+  name: string
   /** Option value type */
-  type?: 'string' | 'boolean' | 'number';
+  type?: 'string' | 'boolean' | 'number'
   /** Whether the option is required */
-  required: boolean;
+  required: boolean
 }
 
-const optionProcessingCache = new WeakMap<CommandOption, ProcessedOption>();
+const optionProcessingCache = new WeakMap<CommandOption, ProcessedOption>()
 
 /**
  * Process option configuration with caching
@@ -56,27 +56,27 @@ const optionProcessingCache = new WeakMap<CommandOption, ProcessedOption>();
  * ```
  */
 export function processOptionWithCache(option: CommandOption, index: number): ProcessedOption {
-  const cached = optionProcessingCache.get(option);
+  const cached = optionProcessingCache.get(option)
   if (cached) {
-    return cached;
+    return cached
   }
 
-  let flags: string;
-  let name: string;
+  let flags: string
+  let name: string
 
   if (option.flags) {
-    flags = option.flags;
-    const match = option.flags.match(/--([a-zA-Z][a-zA-Z0-9-]*)/);
-    name = option.name || (match ? match[1] : `option_${index}`);
+    flags = option.flags
+    const match = option.flags.match(/--([a-zA-Z][a-zA-Z0-9-]*)/)
+    name = option.name || (match ? match[1] : `option_${index}`)
   } else if (option.name) {
-    name = option.name;
-    flags = option.alias ? `-${option.alias}, --${option.name}` : `--${option.name}`;
+    name = option.name
+    flags = option.alias ? `-${option.alias}, --${option.name}` : `--${option.name}`
 
     if (option.type !== 'boolean') {
-      flags += ' <value>';
+      flags += ' <value>'
     }
   } else {
-    throw new Error(`Option at index ${index} has no name or flags`);
+    throw new Error(`Option at index ${index} has no name or flags`)
   }
 
   const processed: ProcessedOption = {
@@ -84,10 +84,10 @@ export function processOptionWithCache(option: CommandOption, index: number): Pr
     name,
     type: option.type,
     required: option.required || false,
-  };
+  }
 
-  optionProcessingCache.set(option, processed);
-  return processed;
+  optionProcessingCache.set(option, processed)
+  return processed
 }
 
 /**
@@ -111,5 +111,5 @@ export function processOptionWithCache(option: CommandOption, index: number): Pr
  * ```
  */
 export function processCommandOptionsWithCache(options: CommandOption[]): ProcessedOption[] {
-  return options.map((option, index) => processOptionWithCache(option, index));
+  return options.map((option, index) => processOptionWithCache(option, index))
 }

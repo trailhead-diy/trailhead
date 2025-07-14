@@ -1,5 +1,5 @@
-import type { MagicNumberPattern, ExtensionMapping, FormatDatabase } from './types.js';
-import type { FileFormatInfo } from '../types.js';
+import type { MagicNumberPattern, ExtensionMapping, FormatDatabase } from './types.js'
+import type { FileFormatInfo } from '../types.js'
 
 // ========================================
 // Helper Functions
@@ -16,7 +16,7 @@ const createFormat = (
   description,
   category,
   confidence: 1.0,
-});
+})
 
 const createMagicPattern = (
   signature: number[],
@@ -28,68 +28,68 @@ const createMagicPattern = (
   offset,
   mask: mask ? new Uint8Array(mask) : undefined,
   format,
-});
+})
 
 // ========================================
 // Format Definitions
 // ========================================
 
 // Image formats
-const JPEG_FORMAT = createFormat('jpg', 'image/jpeg', 'JPEG Image', 'image');
-const PNG_FORMAT = createFormat('png', 'image/png', 'PNG Image', 'image');
-const GIF_FORMAT = createFormat('gif', 'image/gif', 'GIF Image', 'image');
-const BMP_FORMAT = createFormat('bmp', 'image/bmp', 'Bitmap Image', 'image');
-const WEBP_FORMAT = createFormat('webp', 'image/webp', 'WebP Image', 'image');
-const SVG_FORMAT = createFormat('svg', 'image/svg+xml', 'SVG Vector Image', 'image');
-const ICO_FORMAT = createFormat('ico', 'image/x-icon', 'Icon', 'image');
-const TIFF_FORMAT = createFormat('tiff', 'image/tiff', 'TIFF Image', 'image');
+const JPEG_FORMAT = createFormat('jpg', 'image/jpeg', 'JPEG Image', 'image')
+const PNG_FORMAT = createFormat('png', 'image/png', 'PNG Image', 'image')
+const GIF_FORMAT = createFormat('gif', 'image/gif', 'GIF Image', 'image')
+const BMP_FORMAT = createFormat('bmp', 'image/bmp', 'Bitmap Image', 'image')
+const WEBP_FORMAT = createFormat('webp', 'image/webp', 'WebP Image', 'image')
+const SVG_FORMAT = createFormat('svg', 'image/svg+xml', 'SVG Vector Image', 'image')
+const ICO_FORMAT = createFormat('ico', 'image/x-icon', 'Icon', 'image')
+const TIFF_FORMAT = createFormat('tiff', 'image/tiff', 'TIFF Image', 'image')
 
 // Document formats
-const PDF_FORMAT = createFormat('pdf', 'application/pdf', 'PDF Document', 'document');
-const DOC_FORMAT = createFormat('doc', 'application/msword', 'Microsoft Word Document', 'document');
+const PDF_FORMAT = createFormat('pdf', 'application/pdf', 'PDF Document', 'document')
+const DOC_FORMAT = createFormat('doc', 'application/msword', 'Microsoft Word Document', 'document')
 const DOCX_FORMAT = createFormat(
   'docx',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'Microsoft Word Document (OOXML)',
   'document'
-);
+)
 const XLS_FORMAT = createFormat(
   'xls',
   'application/vnd.ms-excel',
   'Microsoft Excel Spreadsheet',
   'document'
-);
+)
 const XLSX_FORMAT = createFormat(
   'xlsx',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   'Microsoft Excel Spreadsheet (OOXML)',
   'document'
-);
+)
 
 // Archive formats
-const ZIP_FORMAT = createFormat('zip', 'application/zip', 'ZIP Archive', 'archive');
-const RAR_FORMAT = createFormat('rar', 'application/vnd.rar', 'RAR Archive', 'archive');
-const TAR_FORMAT = createFormat('tar', 'application/x-tar', 'TAR Archive', 'archive');
-const GZIP_FORMAT = createFormat('gz', 'application/gzip', 'GZIP Archive', 'archive');
-const SEVENZ_FORMAT = createFormat('7z', 'application/x-7z-compressed', '7-Zip Archive', 'archive');
+const ZIP_FORMAT = createFormat('zip', 'application/zip', 'ZIP Archive', 'archive')
+const RAR_FORMAT = createFormat('rar', 'application/vnd.rar', 'RAR Archive', 'archive')
+const TAR_FORMAT = createFormat('tar', 'application/x-tar', 'TAR Archive', 'archive')
+const GZIP_FORMAT = createFormat('gz', 'application/gzip', 'GZIP Archive', 'archive')
+const SEVENZ_FORMAT = createFormat('7z', 'application/x-7z-compressed', '7-Zip Archive', 'archive')
 
 // Audio formats
-const MP3_FORMAT = createFormat('mp3', 'audio/mpeg', 'MP3 Audio', 'audio');
-const WAV_FORMAT = createFormat('wav', 'audio/wav', 'WAV Audio', 'audio');
-const FLAC_FORMAT = createFormat('flac', 'audio/flac', 'FLAC Audio', 'audio');
-const OGG_FORMAT = createFormat('ogg', 'audio/ogg', 'OGG Audio', 'audio');
+const MP3_FORMAT = createFormat('mp3', 'audio/mpeg', 'MP3 Audio', 'audio')
+const WAV_FORMAT = createFormat('wav', 'audio/wav', 'WAV Audio', 'audio')
+const FLAC_FORMAT = createFormat('flac', 'audio/flac', 'FLAC Audio', 'audio')
+const OGG_FORMAT = createFormat('ogg', 'audio/ogg', 'OGG Audio', 'audio')
 
 // Video formats
-const MP4_FORMAT = createFormat('mp4', 'video/mp4', 'MP4 Video', 'video');
-const AVI_FORMAT = createFormat('avi', 'video/x-msvideo', 'AVI Video', 'video');
-const MOV_FORMAT = createFormat('mov', 'video/quicktime', 'QuickTime Video', 'video');
-const WEBM_FORMAT = createFormat('webm', 'video/webm', 'WebM Video', 'video');
+const MP4_FORMAT = createFormat('mp4', 'video/mp4', 'MP4 Video', 'video')
+const AVI_FORMAT = createFormat('avi', 'video/x-msvideo', 'AVI Video', 'video')
+const MOV_FORMAT = createFormat('mov', 'video/quicktime', 'QuickTime Video', 'video')
+const WEBM_FORMAT = createFormat('webm', 'video/webm', 'WebM Video', 'video')
 
 // Data formats
-const JSON_FORMAT = createFormat('json', 'application/json', 'JSON Data', 'data');
-const XML_FORMAT = createFormat('xml', 'application/xml', 'XML Data', 'data');
-const CSV_FORMAT = createFormat('csv', 'text/csv', 'CSV Data', 'data');
-const YAML_FORMAT = createFormat('yaml', 'application/x-yaml', 'YAML Data', 'data');
+const JSON_FORMAT = createFormat('json', 'application/json', 'JSON Data', 'data')
+const XML_FORMAT = createFormat('xml', 'application/xml', 'XML Data', 'data')
+const CSV_FORMAT = createFormat('csv', 'text/csv', 'CSV Data', 'data')
+const YAML_FORMAT = createFormat('yaml', 'application/x-yaml', 'YAML Data', 'data')
 
 // Executable formats
 const EXE_FORMAT = createFormat(
@@ -97,8 +97,8 @@ const EXE_FORMAT = createFormat(
   'application/x-msdownload',
   'Windows Executable',
   'executable'
-);
-const ELF_FORMAT = createFormat('', 'application/x-executable', 'Linux Executable', 'executable');
+)
+const ELF_FORMAT = createFormat('', 'application/x-executable', 'Linux Executable', 'executable')
 
 // ========================================
 // Magic Number Patterns
@@ -148,7 +148,7 @@ export const MAGIC_PATTERNS: readonly MagicNumberPattern[] = [
   // Executable formats
   createMagicPattern([0x4d, 0x5a], EXE_FORMAT), // MZ header
   createMagicPattern([0x7f, 0x45, 0x4c, 0x46], ELF_FORMAT), // ELF header
-];
+]
 
 // ========================================
 // Extension Mappings
@@ -202,7 +202,7 @@ export const EXTENSION_MAPPINGS: readonly ExtensionMapping[] = [
 
   // Executable
   { extension: '.exe', format: EXE_FORMAT, reliability: 'high' },
-];
+]
 
 // ========================================
 // MIME Type Mappings
@@ -241,7 +241,7 @@ export const MIME_TYPE_MAP = new Map<string, FileFormatInfo>([
   ['application/x-yaml', YAML_FORMAT],
   ['application/x-msdownload', EXE_FORMAT],
   ['application/x-executable', ELF_FORMAT],
-]);
+])
 
 // ========================================
 // Format Database
@@ -251,4 +251,4 @@ export const FORMAT_DATABASE: FormatDatabase = {
   magicNumbers: MAGIC_PATTERNS,
   extensions: EXTENSION_MAPPINGS,
   mimeTypes: MIME_TYPE_MAP,
-};
+}

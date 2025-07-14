@@ -1,8 +1,8 @@
-import { fs } from '@esteban-url/fs';
-import { createHash } from 'crypto';
-import Handlebars from 'handlebars';
-import { sanitizeText } from './validation.js';
-import type { TemplateContext } from './types.js';
+import { fs } from '@esteban-url/fs'
+import { createHash } from 'crypto'
+import Handlebars from 'handlebars'
+import { sanitizeText } from './validation.js'
+import type { TemplateContext } from './types.js'
 
 /**
  * Cache entry structure for compiled Handlebars templates
@@ -11,11 +11,11 @@ import type { TemplateContext } from './types.js';
  */
 interface CacheEntry {
   /** Compiled Handlebars template function */
-  template: HandlebarsTemplateDelegate;
+  template: HandlebarsTemplateDelegate
   /** File modification time for cache invalidation */
-  mtime: number;
+  mtime: number
   /** SHA-256 hash of template content for integrity verification */
-  hash: string;
+  hash: string
 }
 
 /**
@@ -55,11 +55,11 @@ interface CacheEntry {
  * @see {@link https://handlebarsjs.com/} for Handlebars documentation
  */
 export class TemplateCompiler {
-  private cache = new Map<string, CacheEntry>();
-  private initialized = false;
+  private cache = new Map<string, CacheEntry>()
+  private initialized = false
 
   constructor() {
-    this.initializeHelpers();
+    this.initializeHelpers()
   }
 
   /**
@@ -86,138 +86,138 @@ export class TemplateCompiler {
    * @see {@link https://handlebarsjs.com/guide/builtin-helpers.html} for built-in helpers
    */
   private initializeHelpers(): void {
-    if (this.initialized) return;
+    if (this.initialized) return
 
     // Equality helper for conditional rendering
-    Handlebars.registerHelper('eq', (a: any, b: any) => a === b);
+    Handlebars.registerHelper('eq', (a: any, b: any) => a === b)
 
     // Not equal helper
-    Handlebars.registerHelper('ne', (a: any, b: any) => a !== b);
+    Handlebars.registerHelper('ne', (a: any, b: any) => a !== b)
 
     // Greater than helper
-    Handlebars.registerHelper('gt', (a: number, b: number) => a > b);
+    Handlebars.registerHelper('gt', (a: number, b: number) => a > b)
 
     // Less than helper
-    Handlebars.registerHelper('lt', (a: number, b: number) => a < b);
+    Handlebars.registerHelper('lt', (a: number, b: number) => a < b)
 
     // Array includes helper
     Handlebars.registerHelper(
       'includes',
       (array: any[], value: any) => Array.isArray(array) && array.includes(value)
-    );
+    )
 
     // String helper for text manipulation with sanitization
     Handlebars.registerHelper('uppercase', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      return sanitized.isOk() ? sanitized.value.toUpperCase() : str;
-    });
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      return sanitized.isOk() ? sanitized.value.toUpperCase() : str
+    })
 
     Handlebars.registerHelper('lowercase', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      return sanitized.isOk() ? sanitized.value.toLowerCase() : str;
-    });
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      return sanitized.isOk() ? sanitized.value.toLowerCase() : str
+    })
 
     Handlebars.registerHelper('capitalize', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      if (!sanitized.isOk()) return str;
-      const clean = sanitized.value;
-      return clean.charAt(0).toUpperCase() + clean.slice(1);
-    });
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      if (!sanitized.isOk()) return str
+      const clean = sanitized.value
+      return clean.charAt(0).toUpperCase() + clean.slice(1)
+    })
 
     // Kebab case helper with sanitization
     Handlebars.registerHelper('kebab', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      if (!sanitized.isOk()) return str;
-      return sanitized.value.replace(/[A-Z]/g, '-$&').toLowerCase().replace(/^-/, '');
-    });
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      if (!sanitized.isOk()) return str
+      return sanitized.value.replace(/[A-Z]/g, '-$&').toLowerCase().replace(/^-/, '')
+    })
 
     // Pascal case helper with sanitization
     Handlebars.registerHelper('pascal', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      if (!sanitized.isOk()) return str;
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      if (!sanitized.isOk()) return str
       return sanitized.value
         .split(/[-_\s]+/)
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join('');
-    });
+        .join('')
+    })
 
     // Camel case helper with sanitization
     Handlebars.registerHelper('camel', (str: string) => {
-      if (typeof str !== 'string') return str;
-      const sanitized = sanitizeText(str);
-      if (!sanitized.isOk()) return str;
+      if (typeof str !== 'string') return str
+      const sanitized = sanitizeText(str)
+      if (!sanitized.isOk()) return str
       const pascal = sanitized.value
         .split(/[-_\s]+/)
         .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join('');
-      return pascal.charAt(0).toLowerCase() + pascal.slice(1);
-    });
+        .join('')
+      return pascal.charAt(0).toLowerCase() + pascal.slice(1)
+    })
 
     // JSON helper for safe JSON output
     Handlebars.registerHelper('json', (obj: any) => {
       try {
         // Sanitize object properties to prevent injection
-        const safeObj = this.sanitizeObject(obj);
-        return JSON.stringify(safeObj, null, 2);
+        const safeObj = this.sanitizeObject(obj)
+        return JSON.stringify(safeObj, null, 2)
       } catch {
-        return '{}';
+        return '{}'
       }
-    });
+    })
 
     // Date helper
     Handlebars.registerHelper('date', (format?: string) => {
-      const now = new Date();
+      const now = new Date()
       if (format === 'iso') {
-        return now.toISOString();
+        return now.toISOString()
       } else if (format === 'year') {
-        return now.getFullYear().toString();
+        return now.getFullYear().toString()
       }
-      return now.toLocaleDateString();
-    });
+      return now.toLocaleDateString()
+    })
 
     // Conditional block helper
     Handlebars.registerHelper('if-eq', function (this: any, a: any, b: any, options: any) {
       if (a === b) {
-        return options.fn(this);
+        return options.fn(this)
       } else {
-        return options.inverse(this);
+        return options.inverse(this)
       }
-    });
+    })
 
     // Multiple condition helper
     Handlebars.registerHelper('if-any', function (this: any, ...args: any[]) {
-      const options = args.pop();
-      const conditions = args.slice(0, -1);
+      const options = args.pop()
+      const conditions = args.slice(0, -1)
 
       if (conditions.some(Boolean)) {
-        return options.fn(this);
+        return options.fn(this)
       } else {
-        return options.inverse(this);
+        return options.inverse(this)
       }
-    });
+    })
 
     // Array iteration with index
     Handlebars.registerHelper('each-with-index', function (this: any, array: any[], options: any) {
-      if (!Array.isArray(array)) return options.inverse(this);
+      if (!Array.isArray(array)) return options.inverse(this)
 
-      let result = '';
+      let result = ''
       for (let i = 0; i < array.length; i++) {
         result += options.fn({
           ...array[i],
           index: i,
           isFirst: i === 0,
           isLast: i === array.length - 1,
-        });
+        })
       }
-      return result;
-    });
+      return result
+    })
 
-    this.initialized = true;
+    this.initialized = true
   }
 
   /**
@@ -254,20 +254,20 @@ export class TemplateCompiler {
    * @see {@link cacheTemplate} for cache storage logic
    */
   async compileTemplate(templatePath: string, context: TemplateContext): Promise<string> {
-    const cached = await this.getCachedTemplate(templatePath);
+    const cached = await this.getCachedTemplate(templatePath)
     if (cached) {
-      return cached(context);
+      return cached(context)
     }
 
     // Read and compile template
-    const contentResult = await fs.readFile(templatePath);
+    const contentResult = await fs.readFile(templatePath)
     if (contentResult.isErr()) {
-      throw new Error(`Failed to read template file: ${contentResult.error.message}`);
+      throw new Error(`Failed to read template file: ${contentResult.error.message}`)
     }
-    const templateContent = contentResult.value;
+    const templateContent = contentResult.value
 
     // Sanitize template context before compilation
-    const sanitizedContext = this.sanitizeContext(context);
+    const sanitizedContext = this.sanitizeContext(context)
 
     const template = Handlebars.compile(templateContent, {
       // Security-focused configuration
@@ -277,12 +277,12 @@ export class TemplateCompiler {
       preventIndent: false,
       ignoreStandalone: true,
       explicitPartialContext: true,
-    });
+    })
 
     // Cache the compiled template
-    await this.cacheTemplate(templatePath, template);
+    await this.cacheTemplate(templatePath, template)
 
-    return template(sanitizedContext);
+    return template(sanitizedContext)
   }
 
   /**
@@ -291,27 +291,27 @@ export class TemplateCompiler {
   private async getCachedTemplate(
     templatePath: string
   ): Promise<HandlebarsTemplateDelegate | null> {
-    const cached = this.cache.get(templatePath);
-    if (!cached) return null;
+    const cached = this.cache.get(templatePath)
+    if (!cached) return null
 
     try {
       // Use node:fs/promises for stat since CLI filesystem doesn't expose it
-      const { stat } = await import('node:fs/promises');
-      const stats = await stat(templatePath);
-      const currentMtime = stats.mtime.getTime();
+      const { stat } = await import('node:fs/promises')
+      const stats = await stat(templatePath)
+      const currentMtime = stats.mtime.getTime()
 
       // Check if file has been modified
       if (currentMtime === cached.mtime) {
-        return cached.template;
+        return cached.template
       }
 
       // File modified, remove from cache
-      this.cache.delete(templatePath);
-      return null;
+      this.cache.delete(templatePath)
+      return null
     } catch {
       // File doesn't exist or can't be accessed
-      this.cache.delete(templatePath);
-      return null;
+      this.cache.delete(templatePath)
+      return null
     }
   }
 
@@ -324,21 +324,21 @@ export class TemplateCompiler {
   ): Promise<void> {
     try {
       // Use node:fs/promises for stat since CLI filesystem doesn't expose it
-      const { stat } = await import('node:fs/promises');
-      const stats = await stat(templatePath);
+      const { stat } = await import('node:fs/promises')
+      const stats = await stat(templatePath)
 
-      const contentResult = await fs.readFile(templatePath);
+      const contentResult = await fs.readFile(templatePath)
       if (contentResult.isErr()) {
-        return; // Can't cache if we can't read the file
+        return // Can't cache if we can't read the file
       }
 
-      const hash = createHash('sha256').update(contentResult.value).digest('hex');
+      const hash = createHash('sha256').update(contentResult.value).digest('hex')
 
       this.cache.set(templatePath, {
         template,
         mtime: stats.mtime.getTime(),
         hash,
-      });
+      })
     } catch {
       // If we can't cache, just continue
     }
@@ -348,11 +348,11 @@ export class TemplateCompiler {
    * Pre-compile multiple templates for better performance
    */
   async precompileTemplates(templatePaths: string[]): Promise<void> {
-    const promises = templatePaths.map(async templatePath => {
+    const promises = templatePaths.map(async (templatePath) => {
       try {
-        const contentResult = await fs.readFile(templatePath);
+        const contentResult = await fs.readFile(templatePath)
         if (contentResult.isErr()) {
-          return; // Skip files that can't be read
+          return // Skip files that can't be read
         }
 
         const template = Handlebars.compile(contentResult.value, {
@@ -363,22 +363,22 @@ export class TemplateCompiler {
           preventIndent: false,
           ignoreStandalone: true,
           explicitPartialContext: true,
-        });
+        })
 
-        await this.cacheTemplate(templatePath, template);
+        await this.cacheTemplate(templatePath, template)
       } catch {
         // Skip files that can't be read
       }
-    });
+    })
 
-    await Promise.all(promises);
+    await Promise.all(promises)
   }
 
   /**
    * Clear template cache
    */
   clearCache(): void {
-    this.cache.clear();
+    this.cache.clear()
   }
 
   /**
@@ -388,21 +388,21 @@ export class TemplateCompiler {
     return {
       size: this.cache.size,
       entries: Array.from(this.cache.keys()),
-    };
+    }
   }
 
   /**
    * Cleanup old cache entries based on memory pressure
    */
   cleanup(maxEntries: number = 100): void {
-    if (this.cache.size <= maxEntries) return;
+    if (this.cache.size <= maxEntries) return
 
     // Convert to array and sort by access time (approximate)
-    const entries = Array.from(this.cache.entries());
-    const toRemove = entries.slice(0, entries.length - maxEntries);
+    const entries = Array.from(this.cache.entries())
+    const toRemove = entries.slice(0, entries.length - maxEntries)
 
     for (const [key] of toRemove) {
-      this.cache.delete(key);
+      this.cache.delete(key)
     }
   }
 
@@ -410,23 +410,23 @@ export class TemplateCompiler {
    * Sanitize template context to prevent injection attacks
    */
   private sanitizeContext(context: TemplateContext): TemplateContext {
-    const sanitized: any = {};
+    const sanitized: any = {}
 
     for (const [key, value] of Object.entries(context)) {
       if (typeof value === 'string') {
-        const sanitizedValue = sanitizeText(value);
-        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : '';
+        const sanitizedValue = sanitizeText(value)
+        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : ''
       } else if (typeof value === 'object' && value !== null) {
-        sanitized[key] = this.sanitizeObject(value);
+        sanitized[key] = this.sanitizeObject(value)
       } else if (typeof value === 'number' || typeof value === 'boolean') {
-        sanitized[key] = value;
+        sanitized[key] = value
       } else {
         // Skip functions, undefined, null, symbols, etc.
-        sanitized[key] = '';
+        sanitized[key] = ''
       }
     }
 
-    return sanitized as TemplateContext;
+    return sanitized as TemplateContext
   }
 
   /**
@@ -434,28 +434,28 @@ export class TemplateCompiler {
    */
   private sanitizeObject(obj: any): any {
     if (obj === null || typeof obj !== 'object') {
-      return obj;
+      return obj
     }
 
     if (Array.isArray(obj)) {
-      return obj.map(item => this.sanitizeObject(item));
+      return obj.map((item) => this.sanitizeObject(item))
     }
 
-    const sanitized: any = {};
+    const sanitized: any = {}
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === 'string') {
-        const sanitizedValue = sanitizeText(value);
-        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : '';
+        const sanitizedValue = sanitizeText(value)
+        sanitized[key] = sanitizedValue.isOk() ? sanitizedValue.value : ''
       } else if (typeof value === 'object' && value !== null) {
-        sanitized[key] = this.sanitizeObject(value);
+        sanitized[key] = this.sanitizeObject(value)
       } else if (typeof value === 'number' || typeof value === 'boolean') {
-        sanitized[key] = value;
+        sanitized[key] = value
       } else {
         // Skip functions, undefined, symbols, etc.
-        sanitized[key] = '';
+        sanitized[key] = ''
       }
     }
 
-    return sanitized;
+    return sanitized
   }
 }

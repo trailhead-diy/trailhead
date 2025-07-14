@@ -1,16 +1,16 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result, CoreError } from '@esteban-url/core';
-import { execa } from 'execa';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { execa } from 'execa'
 
 // TODO: Replace with @esteban-url/git when workspace dependencies are resolved
 // import { createGitOperations, createGitCommandOperations } from '@esteban-url/git';
 // import type { GitRepository } from '@esteban-url/git';
 
 interface GitRepository {
-  path: string;
-  isValid: boolean;
-  workingDirectory: string;
-  gitDirectory: string;
+  path: string
+  isValid: boolean
+  workingDirectory: string
+  gitDirectory: string
 }
 
 /**
@@ -22,12 +22,12 @@ interface GitRepository {
  */
 
 interface GitOperationsForGenerator {
-  initRepository(projectPath: string): Promise<Result<GitRepository, CoreError>>;
-  stageFiles(projectPath: string, files: string[]): Promise<Result<void, CoreError>>;
-  createCommit(projectPath: string, message: string): Promise<Result<string, CoreError>>;
-  configureUser(projectPath: string, name: string, email: string): Promise<Result<void, CoreError>>;
-  getConfig(projectPath: string, key: string): Promise<Result<string, CoreError>>;
-  verifyStatus(projectPath: string): Promise<Result<void, CoreError>>;
+  initRepository(projectPath: string): Promise<Result<GitRepository, CoreError>>
+  stageFiles(projectPath: string, files: string[]): Promise<Result<void, CoreError>>
+  createCommit(projectPath: string, message: string): Promise<Result<string, CoreError>>
+  configureUser(projectPath: string, name: string, email: string): Promise<Result<void, CoreError>>
+  getConfig(projectPath: string, key: string): Promise<Result<string, CoreError>>
+  verifyStatus(projectPath: string): Promise<Result<void, CoreError>>
 }
 
 /**
@@ -43,7 +43,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 10000,
-      });
+      })
 
       // Return basic repository info
       const repo: GitRepository = {
@@ -51,18 +51,18 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         isValid: true,
         workingDirectory: projectPath,
         gitDirectory: `${projectPath}/.git`,
-      };
+      }
 
-      return ok(repo);
+      return ok(repo)
     } catch (error) {
       return err(
         createCoreError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
           cause: error,
           context: { projectPath },
         })
-      );
+      )
     }
-  };
+  }
 
   const stageFiles = async (
     projectPath: string,
@@ -74,18 +74,18 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 30000,
-      });
+      })
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err(
         createCoreError('GIT_ADD_FAILED', 'Failed to stage files', {
           cause: error,
           context: { projectPath, files },
         })
-      );
+      )
     }
-  };
+  }
 
   const createCommit = async (
     projectPath: string,
@@ -97,18 +97,18 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 15000,
-      });
+      })
 
-      return ok(result.stdout || 'commit created');
+      return ok(result.stdout || 'commit created')
     } catch (error) {
       return err(
         createCoreError('GIT_COMMIT_FAILED', 'Failed to create commit', {
           cause: error,
           context: { projectPath, message },
         })
-      );
+      )
     }
-  };
+  }
 
   // FIXME: @esteban-url/git missing config operations - using execa fallback
   const configureUser = async (
@@ -122,25 +122,25 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 5000,
-      });
+      })
 
       await execa('git', ['config', 'user.email', email], {
         cwd: projectPath,
         stdio: 'pipe',
         shell: false,
         timeout: 5000,
-      });
+      })
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err(
         createCoreError('GIT_CONFIG_FAILED', 'Failed to configure git user', {
           cause: error,
           context: { projectPath, name, email },
         })
-      );
+      )
     }
-  };
+  }
 
   // FIXME: @esteban-url/git missing config operations - using execa fallback
   const getConfig = async (
@@ -153,18 +153,18 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 5000,
-      });
+      })
 
-      return ok(result.stdout.trim());
+      return ok(result.stdout.trim())
     } catch (error) {
       return err(
         createCoreError('GIT_CONFIG_GET_FAILED', `Failed to get git config ${key}`, {
           cause: error,
           context: { projectPath, key },
         })
-      );
+      )
     }
-  };
+  }
 
   // FIXME: @esteban-url/git missing status operations - using execa fallback
   const verifyStatus = async (projectPath: string): Promise<Result<void, CoreError>> => {
@@ -174,18 +174,18 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
         stdio: 'pipe',
         shell: false,
         timeout: 10000,
-      });
+      })
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err(
         createCoreError('GIT_STATUS_FAILED', 'Failed to get git status', {
           cause: error,
           context: { projectPath },
         })
-      );
+      )
     }
-  };
+  }
 
   return {
     initRepository,
@@ -194,7 +194,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     configureUser,
     getConfig,
     verifyStatus,
-  };
+  }
 }
 
 /**

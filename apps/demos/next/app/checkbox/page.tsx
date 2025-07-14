@@ -1,5 +1,5 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
 import {
   Description,
   Fieldset,
@@ -9,7 +9,7 @@ import {
   Checkbox,
   CheckboxField,
   CheckboxGroup,
-} from '@/components/th';
+} from '@/components/th'
 
 export default function CheckboxPage(): React.JSX.Element {
   return (
@@ -37,5 +37,5 @@ export default function CheckboxPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

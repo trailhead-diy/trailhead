@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import type { ValidationConfig } from './types.js';
-import { createValidator } from './core.js';
-import type { ValidatorFn } from './types.js';
+import { z } from 'zod'
+import type { ValidationConfig } from './types.js'
+import { createValidator } from './core.js'
+import type { ValidatorFn } from './types.js'
 
 /**
  * Reusable schema building blocks to eliminate duplication across packages.
@@ -18,20 +18,20 @@ export const emailSchema = () =>
     .string()
     .min(1, 'Email is required')
     .email('Please enter a valid email address')
-    .max(254, 'Email address is too long'); // RFC 5321 limit
+    .max(254, 'Email address is too long') // RFC 5321 limit
 
 /**
  * URL validation schema with protocol requirements
  */
 export const urlSchema = (options: { requireHttps?: boolean } = {}) => {
-  const baseSchema = z.string().url('Please enter a valid URL');
+  const baseSchema = z.string().url('Please enter a valid URL')
 
   if (options.requireHttps) {
-    return baseSchema.refine(url => url.startsWith('https://'), 'URL must use HTTPS protocol');
+    return baseSchema.refine((url) => url.startsWith('https://'), 'URL must use HTTPS protocol')
   }
 
-  return baseSchema;
-};
+  return baseSchema
+}
 
 /**
  * Phone number validation schema with international support
@@ -40,7 +40,7 @@ export const phoneSchema = () =>
   z
     .string()
     .min(1, 'Phone number is required')
-    .regex(/^[+]?[1-9][\d\s\-()]{7,15}$/, 'Please enter a valid phone number');
+    .regex(/^[+]?[1-9][\d\s\-()]{7,15}$/, 'Please enter a valid phone number')
 
 // === String Validation Schemas ===
 
@@ -48,20 +48,20 @@ export const phoneSchema = () =>
  * String length validation with configurable min/max
  */
 export const stringLengthSchema = (min: number = 1, max?: number, fieldName: string = 'Value') => {
-  let schema = z.string().min(min, `${fieldName} must be at least ${min} characters`);
+  let schema = z.string().min(min, `${fieldName} must be at least ${min} characters`)
 
   if (max !== undefined) {
-    schema = schema.max(max, `${fieldName} must be no more than ${max} characters`);
+    schema = schema.max(max, `${fieldName} must be no more than ${max} characters`)
   }
 
-  return schema;
-};
+  return schema
+}
 
 /**
  * Non-empty string schema
  */
 export const nonEmptyStringSchema = (fieldName: string = 'Value') =>
-  z.string().min(1, `${fieldName} cannot be empty`);
+  z.string().min(1, `${fieldName} cannot be empty`)
 
 /**
  * Trimmed string schema that normalizes whitespace
@@ -69,8 +69,8 @@ export const nonEmptyStringSchema = (fieldName: string = 'Value') =>
 export const trimmedStringSchema = (fieldName: string = 'Value') =>
   z
     .string()
-    .transform(val => val.trim())
-    .refine(val => val.length > 0, `${fieldName} cannot be empty or only whitespace`);
+    .transform((val) => val.trim())
+    .refine((val) => val.length > 0, `${fieldName} cannot be empty or only whitespace`)
 
 // === Project and Path Schemas ===
 
@@ -87,13 +87,13 @@ export const projectNameSchema = () =>
       'Project name must start with a letter or number and contain only lowercase letters, numbers, dots, hyphens, and underscores'
     )
     .refine(
-      name => !name.startsWith('.') && !name.startsWith('_'),
+      (name) => !name.startsWith('.') && !name.startsWith('_'),
       'Project name cannot start with a dot or underscore'
     )
     .refine(
-      name => !['node_modules', 'favicon.ico'].includes(name),
+      (name) => !['node_modules', 'favicon.ico'].includes(name),
       'Project name cannot be a reserved name'
-    );
+    )
 
 /**
  * Package manager validation schema
@@ -101,31 +101,31 @@ export const projectNameSchema = () =>
 export const packageManagerSchema = () =>
   z.enum(['npm', 'yarn', 'pnpm'], {
     errorMap: () => ({ message: 'Package manager must be npm, yarn, or pnpm' }),
-  });
+  })
 
 /**
  * File path validation schema with security checks
  */
 export const filePathSchema = (
   options: {
-    allowAbsolute?: boolean;
-    allowTraversal?: boolean;
-    baseDir?: string;
+    allowAbsolute?: boolean
+    allowTraversal?: boolean
+    baseDir?: string
   } = {}
 ) => {
-  const { allowAbsolute = false, allowTraversal = false, baseDir } = options;
+  const { allowAbsolute = false, allowTraversal = false, baseDir } = options
 
   return z
     .string()
     .min(1, 'File path cannot be empty')
-    .refine(path => allowAbsolute || !path.startsWith('/'), 'Absolute paths are not allowed')
-    .refine(path => allowTraversal || !path.includes('../'), 'Path traversal (..) is not allowed')
-    .refine(path => !path.includes('\0'), 'Path cannot contain null bytes')
+    .refine((path) => allowAbsolute || !path.startsWith('/'), 'Absolute paths are not allowed')
+    .refine((path) => allowTraversal || !path.includes('../'), 'Path traversal (..) is not allowed')
+    .refine((path) => !path.includes('\0'), 'Path cannot contain null bytes')
     .refine(
-      path => (baseDir ? path.startsWith(baseDir) : true),
+      (path) => (baseDir ? path.startsWith(baseDir) : true),
       baseDir ? `Path must be within ${baseDir}` : 'Invalid path'
-    );
-};
+    )
+}
 
 // === Author and Contact Schemas ===
 
@@ -137,7 +137,7 @@ export const authorSchema = () =>
     name: stringLengthSchema(1, 100, 'Author name'),
     email: emailSchema().optional(),
     url: urlSchema().optional(),
-  });
+  })
 
 // === Numeric Schemas ===
 
@@ -149,13 +149,13 @@ export const portSchema = () =>
     .number()
     .int('Port must be an integer')
     .min(1, 'Port must be greater than 0')
-    .max(65535, 'Port must be less than 65536');
+    .max(65535, 'Port must be less than 65536')
 
 /**
  * Positive integer schema
  */
 export const positiveIntegerSchema = (fieldName: string = 'Value') =>
-  z.number().int(`${fieldName} must be an integer`).positive(`${fieldName} must be positive`);
+  z.number().int(`${fieldName} must be an integer`).positive(`${fieldName} must be positive`)
 
 // === Date and Time Schemas ===
 
@@ -164,69 +164,69 @@ export const positiveIntegerSchema = (fieldName: string = 'Value') =>
  */
 export const dateSchema = (
   options: {
-    allowFuture?: boolean;
-    allowPast?: boolean;
-    format?: 'iso' | 'date-only' | 'any';
+    allowFuture?: boolean
+    allowPast?: boolean
+    format?: 'iso' | 'date-only' | 'any'
   } = {}
 ) => {
-  const { allowFuture = true, allowPast = true, format = 'any' } = options;
-  const now = new Date();
+  const { allowFuture = true, allowPast = true, format = 'any' } = options
+  const now = new Date()
 
   if (format === 'iso') {
     return z
       .string()
       .datetime()
-      .transform(str => {
-        const date = new Date(str);
+      .transform((str) => {
+        const date = new Date(str)
         if (!allowFuture && date > now) {
-          throw new Error('Date cannot be in the future');
+          throw new Error('Date cannot be in the future')
         }
         if (!allowPast && date < now) {
-          throw new Error('Date cannot be in the past');
+          throw new Error('Date cannot be in the past')
         }
-        return date;
-      });
+        return date
+      })
   } else if (format === 'date-only') {
     return z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
-      .transform(str => {
-        const date = new Date(str + 'T00:00:00.000Z');
+      .transform((str) => {
+        const date = new Date(str + 'T00:00:00.000Z')
         if (!allowFuture && date > now) {
-          throw new Error('Date cannot be in the future');
+          throw new Error('Date cannot be in the future')
         }
         if (!allowPast && date < now) {
-          throw new Error('Date cannot be in the past');
+          throw new Error('Date cannot be in the past')
         }
-        return date;
-      });
+        return date
+      })
   } else {
     return z
       .union([z.string().datetime(), z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.date()])
-      .transform(input => {
-        let date: Date;
+      .transform((input) => {
+        let date: Date
         if (input instanceof Date) {
-          date = input;
+          date = input
         } else if (typeof input === 'string') {
           if (input.includes('T')) {
-            date = new Date(input);
+            date = new Date(input)
           } else {
-            date = new Date(input + 'T00:00:00.000Z');
+            date = new Date(input + 'T00:00:00.000Z')
           }
         } else {
-          throw new Error('Invalid date input');
+          throw new Error('Invalid date input')
         }
 
         if (!allowFuture && date > now) {
-          throw new Error('Date cannot be in the future');
+          throw new Error('Date cannot be in the future')
         }
         if (!allowPast && date < now) {
-          throw new Error('Date cannot be in the past');
+          throw new Error('Date cannot be in the past')
         }
-        return date;
-      });
+        return date
+      })
   }
-};
+}
 
 // === Collection Schemas ===
 
@@ -236,46 +236,46 @@ export const dateSchema = (
 export const arraySchema = <T>(
   itemSchema: z.ZodSchema<T>,
   options: {
-    minLength?: number;
-    maxLength?: number;
-    unique?: boolean;
-    fieldName?: string;
+    minLength?: number
+    maxLength?: number
+    unique?: boolean
+    fieldName?: string
   } = {}
 ) => {
-  const { minLength, maxLength, unique = false, fieldName = 'Array' } = options;
+  const { minLength, maxLength, unique = false, fieldName = 'Array' } = options
 
-  let schema = z.array(itemSchema);
+  let schema = z.array(itemSchema)
 
   if (minLength !== undefined) {
-    schema = schema.min(minLength, `${fieldName} must have at least ${minLength} items`);
+    schema = schema.min(minLength, `${fieldName} must have at least ${minLength} items`)
   }
 
   if (maxLength !== undefined) {
-    schema = schema.max(maxLength, `${fieldName} must have no more than ${maxLength} items`);
+    schema = schema.max(maxLength, `${fieldName} must have no more than ${maxLength} items`)
   }
 
   if (unique) {
     return schema.refine(
-      arr => new Set(arr).size === arr.length,
+      (arr) => new Set(arr).size === arr.length,
       `${fieldName} items must be unique`
-    );
+    )
   }
 
-  return schema;
-};
+  return schema
+}
 
 // === Schema Composition Utilities ===
 
 /**
  * Create a schema with optional fields
  */
-export const optionalSchema = <T>(schema: z.ZodSchema<T>) => schema.optional();
+export const optionalSchema = <T>(schema: z.ZodSchema<T>) => schema.optional()
 
 /**
  * Create a schema with default value
  */
 export const withDefault = <T>(schema: z.ZodSchema<T>, defaultValue: T) =>
-  schema.default(defaultValue as z.util.noUndefined<T>);
+  schema.default(defaultValue as z.util.noUndefined<T>)
 
 /**
  * Merge multiple object schemas
@@ -283,7 +283,7 @@ export const withDefault = <T>(schema: z.ZodSchema<T>, defaultValue: T) =>
 export const mergeSchemas = <T extends z.ZodRawShape, U extends z.ZodRawShape>(
   schemaA: z.ZodObject<T>,
   schemaB: z.ZodObject<U>
-) => schemaA.merge(schemaB);
+) => schemaA.merge(schemaB)
 
 /**
  * Create conditional schema based on another field
@@ -298,19 +298,19 @@ export const conditionalSchema = <T>(
   const baseSchema = z.object({
     [conditionField]: z.literal(conditionValue),
     value: thenSchema,
-  });
+  })
 
   if (elseSchema) {
     const elseSchemaObj = z.object({
-      [conditionField]: z.any().refine(val => val !== conditionValue),
+      [conditionField]: z.any().refine((val) => val !== conditionValue),
       value: elseSchema,
-    });
+    })
 
-    return z.union([baseSchema, elseSchemaObj]);
+    return z.union([baseSchema, elseSchemaObj])
   }
 
-  return baseSchema;
-};
+  return baseSchema
+}
 
 // === Validator Factory Functions ===
 
@@ -321,8 +321,8 @@ export const createSchemaValidator = <T>(
   schema: z.ZodSchema<T>,
   config?: ValidationConfig
 ): ValidatorFn<unknown, T> => {
-  return createValidator(schema, config);
-};
+  return createValidator(schema, config)
+}
 
 /**
  * Common validation presets for frequent use cases
@@ -349,7 +349,7 @@ export const validationPresets = {
   // Collection validations
   array: <T>(itemSchema: z.ZodSchema<T>, options?: Parameters<typeof arraySchema>[1]) =>
     createSchemaValidator(arraySchema(itemSchema, options)),
-};
+}
 
 /**
  * Schema registry for dynamic schema lookup
@@ -369,6 +369,6 @@ export const schemaRegistry = {
   stringLength: stringLengthSchema,
   nonEmptyString: nonEmptyStringSchema,
   trimmedString: trimmedStringSchema,
-} as const;
+} as const
 
-export type SchemaRegistryKey = keyof typeof schemaRegistry;
+export type SchemaRegistryKey = keyof typeof schemaRegistry

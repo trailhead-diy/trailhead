@@ -1,5 +1,5 @@
-export { createDuplexOperations } from './core.js';
-export { defaultDuplexConfig } from './types.js';
+export { createDuplexOperations } from './core.js'
+export { defaultDuplexConfig } from './types.js'
 export type {
   CreateDuplexOperations,
   DuplexEchoOp,
@@ -7,4 +7,4 @@ export type {
   DuplexPassThroughOp,
   DuplexStreamInfo,
   DuplexMetrics,
-} from './types.js';
+} from './types.js'

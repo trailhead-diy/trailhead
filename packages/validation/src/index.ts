@@ -6,7 +6,7 @@ export type {
   AsyncValidatorFn,
   SchemaValidator,
   ValidationConfig,
-} from './types.js';
+} from './types.js'
 
 // Error utilities
 export {
@@ -14,7 +14,7 @@ export {
   createRequiredFieldError,
   createInvalidTypeError,
   zodErrorToValidationError,
-} from './errors.js';
+} from './errors.js'
 
 // Core validation functions
 export {
@@ -33,7 +33,7 @@ export {
   composeValidators,
   anyOf,
   allOf,
-} from './core.js';
+} from './core.js'
 
 // Import for convenience object
 import {
@@ -48,7 +48,7 @@ import {
   validateDate,
   validateArray,
   validateObject,
-} from './core.js';
+} from './core.js'
 
 // Convenience exports with default config (for drop-in replacement)
 export const validate = {
@@ -66,7 +66,7 @@ export const validate = {
     validateArray(validator, defaultValidationConfig),
   object: <_T extends Record<string, any>>(validators: any) =>
     validateObject(validators, defaultValidationConfig),
-};
+}
 
 // Enhanced validation schemas and utilities
 export {
@@ -94,13 +94,13 @@ export {
   createSchemaValidator,
   validationPresets,
   schemaRegistry,
-} from './schemas.js';
+} from './schemas.js'
 
-export type { SchemaRegistryKey } from './schemas.js';
+export type { SchemaRegistryKey } from './schemas.js'
 
 // Re-export Zod for custom schemas
-export { z } from 'zod';
+export { z } from 'zod'
 
 // Re-export Result types for convenience
-export { ok, err } from '@esteban-url/core';
-export type { Result } from '@esteban-url/core';
+export { ok, err } from '@esteban-url/core'
+export type { Result } from '@esteban-url/core'

@@ -1,42 +1,42 @@
-import { spawn, ChildProcess } from 'child_process';
-import { EventEmitter } from 'events';
+import { spawn, ChildProcess } from 'child_process'
+import { EventEmitter } from 'events'
 
 /**
  * Interactive CLI test runner for testing prompt-based commands
  */
 export interface InteractiveTestConfig {
-  command: string;
-  args: string[];
-  cwd?: string;
-  timeout?: number;
-  env?: Record<string, string>;
+  command: string
+  args: string[]
+  cwd?: string
+  timeout?: number
+  env?: Record<string, string>
 }
 
 export interface PromptResponse {
-  prompt: string | RegExp;
-  response: string;
-  delay?: number;
+  prompt: string | RegExp
+  response: string
+  delay?: number
 }
 
 export interface InteractiveTestResult {
-  exitCode: number | null;
-  stdout: string;
-  stderr: string;
-  duration: number;
+  exitCode: number | null
+  stdout: string
+  stderr: string
+  duration: number
 }
 
 /**
  * Interactive test runner state
  */
 export interface InteractiveTestRunnerState {
-  readonly config: InteractiveTestConfig;
-  readonly responses: PromptResponse[];
-  readonly child: ChildProcess | null;
-  readonly stdout: string;
-  readonly stderr: string;
-  readonly startTime: number;
-  readonly currentResponseIndex: number;
-  readonly eventEmitter: EventEmitter;
+  readonly config: InteractiveTestConfig
+  readonly responses: PromptResponse[]
+  readonly child: ChildProcess | null
+  readonly stdout: string
+  readonly stderr: string
+  readonly startTime: number
+  readonly currentResponseIndex: number
+  readonly eventEmitter: EventEmitter
 }
 
 /**
@@ -54,7 +54,7 @@ export function createInteractiveTestRunner(
     startTime: 0,
     currentResponseIndex: 0,
     eventEmitter: new EventEmitter(),
-  };
+  }
 }
 
 /**
@@ -69,7 +69,7 @@ export function addResponse(
   return {
     ...state,
     responses: [...state.responses, { prompt, response, delay }],
-  };
+  }
 }
 
 /**
@@ -78,15 +78,15 @@ export function addResponse(
 export function addResponses(
   state: InteractiveTestRunnerState,
   responses: Array<{
-    prompt: string | RegExp;
-    response: string;
-    delay?: number;
+    prompt: string | RegExp
+    response: string
+    delay?: number
   }>
 ): InteractiveTestRunnerState {
   return {
     ...state,
-    responses: [...state.responses, ...responses.map(r => ({ delay: 100, ...r }))],
-  };
+    responses: [...state.responses, ...responses.map((r) => ({ delay: 100, ...r }))],
+  }
 }
 
 /**
@@ -96,85 +96,85 @@ export async function runInteractiveTestRunner(
   state: InteractiveTestRunnerState
 ): Promise<InteractiveTestResult> {
   return new Promise((resolve, reject) => {
-    const startTime = Date.now();
+    const startTime = Date.now()
 
     const child = spawn(state.config.command, state.config.args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       cwd: state.config.cwd || process.cwd(),
       env: { ...process.env, ...state.config.env },
-    });
+    })
 
     if (!child.stdout || !child.stderr || !child.stdin) {
-      reject(new Error('Failed to create child process streams'));
-      return;
+      reject(new Error('Failed to create child process streams'))
+      return
     }
 
-    let stdout = '';
-    let stderr = '';
-    let currentResponseIndex = 0;
+    let stdout = ''
+    let stderr = ''
+    let currentResponseIndex = 0
 
     // Set up timeout
-    const timeout = state.config.timeout || 30000;
+    const timeout = state.config.timeout || 30000
     const timeoutHandle = setTimeout(() => {
-      cleanup(child);
-      reject(new Error(`Test timed out after ${timeout}ms`));
-    }, timeout);
+      cleanup(child)
+      reject(new Error(`Test timed out after ${timeout}ms`))
+    }, timeout)
 
     // Process output and respond to prompts
     const processOutput = (text: string): void => {
       if (currentResponseIndex >= state.responses.length) {
-        return;
+        return
       }
 
-      const response = state.responses[currentResponseIndex];
+      const response = state.responses[currentResponseIndex]
       const matches =
         typeof response.prompt === 'string'
           ? text.includes(response.prompt)
-          : response.prompt.test(text);
+          : response.prompt.test(text)
 
       if (matches) {
         setTimeout(() => {
           if (child?.stdin) {
-            child.stdin.write(response.response + '\n');
-            state.eventEmitter.emit('response', response.prompt, response.response);
+            child.stdin.write(response.response + '\n')
+            state.eventEmitter.emit('response', response.prompt, response.response)
           }
-        }, response.delay);
+        }, response.delay)
 
-        currentResponseIndex++;
+        currentResponseIndex++
       }
-    };
+    }
 
     // Capture output
     child.stdout.on('data', (data: Buffer) => {
-      const text = data.toString();
-      stdout += text;
-      state.eventEmitter.emit('stdout', text);
-      processOutput(text);
-    });
+      const text = data.toString()
+      stdout += text
+      state.eventEmitter.emit('stdout', text)
+      processOutput(text)
+    })
 
     child.stderr.on('data', (data: Buffer) => {
-      const text = data.toString();
-      stderr += text;
-      state.eventEmitter.emit('stderr', text);
-    });
+      const text = data.toString()
+      stderr += text
+      state.eventEmitter.emit('stderr', text)
+    })
 
     child.on('close', (code: number | null) => {
-      clearTimeout(timeoutHandle);
+      clearTimeout(timeoutHandle)
 
       resolve({
         exitCode: code,
         stdout,
         stderr,
         duration: Date.now() - startTime,
-      });
-    });
+      })
+    })
 
     child.on('error', (error: Error) => {
-      clearTimeout(timeoutHandle);
-      cleanup(child);
-      reject(error);
-    });
-  });
+      clearTimeout(timeoutHandle)
+      cleanup(child)
+      reject(error)
+    })
+  })
 }
 
 /**
@@ -182,7 +182,7 @@ export async function runInteractiveTestRunner(
  */
 export function sendInput(state: InteractiveTestRunnerState, input: string): void {
   if (state.child?.stdin) {
-    state.child.stdin.write(input + '\n');
+    state.child.stdin.write(input + '\n')
   }
 }
 
@@ -191,7 +191,7 @@ export function sendInput(state: InteractiveTestRunnerState, input: string): voi
  */
 export function sendRaw(state: InteractiveTestRunnerState, input: string): void {
   if (state.child?.stdin) {
-    state.child.stdin.write(input);
+    state.child.stdin.write(input)
   }
 }
 
@@ -200,7 +200,7 @@ export function sendRaw(state: InteractiveTestRunnerState, input: string): void 
  */
 function cleanup(child: ChildProcess): void {
   if (child) {
-    child.kill('SIGTERM');
+    child.kill('SIGTERM')
   }
 }
 
@@ -209,7 +209,7 @@ function cleanup(child: ChildProcess): void {
  */
 export function killProcess(state: InteractiveTestRunnerState): void {
   if (state.child) {
-    cleanup(state.child);
+    cleanup(state.child)
   }
 }
 
@@ -219,14 +219,14 @@ export function killProcess(state: InteractiveTestRunnerState): void {
 export async function runInteractiveTest(
   config: InteractiveTestConfig,
   responses: Array<{
-    prompt: string | RegExp;
-    response: string;
-    delay?: number;
+    prompt: string | RegExp
+    response: string
+    delay?: number
   }>
 ): Promise<InteractiveTestResult> {
-  let runner = createInteractiveTestRunner(config);
-  runner = addResponses(runner, responses);
-  return runInteractiveTestRunner(runner);
+  let runner = createInteractiveTestRunner(config)
+  runner = addResponses(runner, responses)
+  return runInteractiveTestRunner(runner)
 }
 
 /**
@@ -250,7 +250,7 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
           timeout,
         },
         responses
-      );
+      )
     },
 
     /**
@@ -269,7 +269,7 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
           timeout,
         },
         responses
-      );
+      )
     },
 
     /**
@@ -283,7 +283,7 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
       const responses = Array.from({ length: promptCount }, () => ({
         prompt: new RegExp('.+[?:]\\s*$', 'm'), // Match lines ending with ? or :
         response: '', // Just press enter for defaults
-      }));
+      }))
 
       return runInteractiveTest(
         {
@@ -293,7 +293,7 @@ export function createInteractiveTestHelper(baseCommand: string, baseCwd?: strin
           timeout,
         },
         responses
-      );
+      )
     },
-  };
+  }
 }

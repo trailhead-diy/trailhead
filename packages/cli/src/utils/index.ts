@@ -9,9 +9,9 @@ export {
   dim,
   italic,
   underline,
-} from './chalk.js';
-export { createSpinner, withSpinner } from './spinner.js';
-export { createDefaultLogger, type Logger } from './logger.js';
+} from './chalk.js'
+export { createSpinner, withSpinner } from './spinner.js'
+export { createDefaultLogger, type Logger } from './logger.js'
 
 export {
   createStats,
@@ -19,14 +19,14 @@ export {
   getElapsedTime,
   formatStats,
   type StatsTracker,
-} from './stats.js';
+} from './stats.js'
 
 export {
   filterUndefined,
   mergeOptionsWithDefaults,
   coerceOptionType,
   processCommandOptions,
-} from './options.js';
+} from './options.js'
 
 // Package manager utilities
 export {
@@ -39,4 +39,4 @@ export {
   SemVer,
   type PackageManager,
   type DetectOptions,
-} from './package-manager.js';
+} from './package-manager.js'

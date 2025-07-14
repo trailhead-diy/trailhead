@@ -15,7 +15,7 @@
  * - **basic**: Minimal CLI with essential features
  * - **advanced**: Basic features plus configuration and validation utilities
  */
-export type TemplateVariant = 'basic' | 'advanced';
+export type TemplateVariant = 'basic' | 'advanced'
 
 /**
  * Supported package managers for dependency installation
@@ -24,7 +24,7 @@ export type TemplateVariant = 'basic' | 'advanced';
  * - npm: Universal compatibility, industry standard
  * - pnpm: Modern, efficient, monorepo-ready
  */
-export type PackageManager = 'npm' | 'pnpm';
+export type PackageManager = 'npm' | 'pnpm'
 
 /**
  * User-facing generation options from interactive prompts or CLI flags
@@ -36,15 +36,15 @@ export type PackageManager = 'npm' | 'pnpm';
  */
 export interface GenerateOptions {
   /** Template variant to use for project generation */
-  template: TemplateVariant;
+  template: TemplateVariant
   /** Package manager for dependency installation */
-  packageManager: PackageManager;
+  packageManager: PackageManager
   /** Whether to include comprehensive documentation */
-  includeDocs: boolean;
+  includeDocs: boolean
   /** Whether to initialize a Git repository */
-  initGit: boolean;
+  initGit: boolean
   /** Whether to install dependencies after generation */
-  installDependencies: boolean;
+  installDependencies: boolean
 }
 
 /**
@@ -58,25 +58,25 @@ export interface GenerateOptions {
  */
 export interface ProjectConfig {
   /** Name of the project (used for directory and package naming) */
-  projectName: string;
+  projectName: string
   /** Absolute path where the project will be created */
-  projectPath: string;
+  projectPath: string
   /** Template variant to use for project generation */
-  template: TemplateVariant;
+  template: TemplateVariant
   /** Package manager for dependency installation */
-  packageManager: PackageManager;
+  packageManager: PackageManager
   /** Whether to include comprehensive documentation */
-  includeDocs: boolean;
+  includeDocs: boolean
   /** Whether to initialize a Git repository */
-  initGit: boolean;
+  initGit: boolean
   /** Whether to install dependencies after generation */
-  installDependencies: boolean;
+  installDependencies: boolean
   /** Whether to run in dry-run mode (no actual file operations) */
-  dryRun: boolean;
+  dryRun: boolean
   /** Whether to force overwrite existing directories */
-  force: boolean;
+  force: boolean
   /** Whether to enable verbose logging */
-  verbose: boolean;
+  verbose: boolean
 }
 
 /**
@@ -100,81 +100,81 @@ export interface ProjectConfig {
  */
 export interface TemplateContext {
   /** Project name as provided by user */
-  projectName: string;
+  projectName: string
   /** Sanitized package name (kebab-case, npm-compatible) */
-  packageName: string;
+  packageName: string
   /** Project description */
-  description: string;
+  description: string
   /** Author name */
-  author: string;
+  author: string
   /** Author email address */
-  email: string;
+  email: string
   /** License identifier (SPDX format) */
-  license: string;
+  license: string
   /** Initial project version */
-  version: string;
+  version: string
   /** Selected package manager */
-  packageManager: PackageManager;
+  packageManager: PackageManager
   /** Current year for copyright notices */
-  currentYear: number;
+  currentYear: number
   /** Whether Git initialization is enabled */
-  hasGit: boolean;
+  hasGit: boolean
   /** Whether documentation generation is enabled */
-  hasDocs: boolean;
+  hasDocs: boolean
   /** Whether using advanced template */
-  isAdvanced: boolean;
+  isAdvanced: boolean
 
   // Git hooks configuration
   /** CLI version for smart test runner */
-  CLI_VERSION: string;
+  CLI_VERSION: string
   /** Project name for template context */
-  PROJECT_NAME: string;
+  PROJECT_NAME: string
   /** Whether project is a monorepo */
-  IS_MONOREPO: boolean;
+  IS_MONOREPO: boolean
   /** Package manager command */
-  PACKAGE_MANAGER: string;
+  PACKAGE_MANAGER: string
   /** Package manager version */
-  PACKAGE_MANAGER_VERSION: string;
+  PACKAGE_MANAGER_VERSION: string
   /** Directory containing packages (for monorepos) */
-  PACKAGES_DIR: string;
+  PACKAGES_DIR: string
   /** Regex pattern to match package files */
-  PACKAGES_PATTERN: string;
+  PACKAGES_PATTERN: string
   /** Test command to execute */
-  TEST_COMMAND: string;
+  TEST_COMMAND: string
   /** Test execution timeout in seconds */
-  TIMEOUT: number;
+  TIMEOUT: number
   /** File patterns for template processing */
-  FILE_PATTERNS: string;
+  FILE_PATTERNS: string
   /** High-risk file patterns that trigger full tests */
-  HIGH_RISK_PATTERNS: string[];
+  HIGH_RISK_PATTERNS: string[]
   /** File patterns to skip for test execution */
-  SKIP_PATTERNS: string[];
+  SKIP_PATTERNS: string[]
   /** Whether project has subpath exports */
-  HAS_SUBPATH_EXPORTS: boolean;
+  HAS_SUBPATH_EXPORTS: boolean
   /** List of subpath exports */
-  SUBPATH_EXPORTS: string[];
+  SUBPATH_EXPORTS: string[]
   /** Package name mappings (for monorepos) */
-  PACKAGE_MAPPINGS?: Record<string, string>;
+  PACKAGE_MAPPINGS?: Record<string, string>
   /** Lint command */
-  LINT_COMMAND: string;
+  LINT_COMMAND: string
   /** TypeScript type checking command */
-  TYPECHECK_COMMAND: string;
+  TYPECHECK_COMMAND: string
   /** Smart test runner script path */
-  SMART_TEST_COMMAND: string;
+  SMART_TEST_COMMAND: string
   /** Secrets scanning priority */
-  SECRETS_PRIORITY: number;
+  SECRETS_PRIORITY: number
   /** File size check priority */
-  FILESIZE_PRIORITY: number;
+  FILESIZE_PRIORITY: number
   /** Tests execution priority */
-  TESTS_PRIORITY: number;
+  TESTS_PRIORITY: number
   /** Whether docs validation is enabled */
-  DOCS_VALIDATION: boolean;
+  DOCS_VALIDATION: boolean
   /** Whether changeset reminder is enabled */
-  CHANGESET_REMINDER: boolean;
+  CHANGESET_REMINDER: boolean
   /** Whether conventional commits are enforced */
-  CONVENTIONAL_COMMITS: boolean;
+  CONVENTIONAL_COMMITS: boolean
   /** Whether lockfile validation is enabled */
-  LOCKFILE_VALIDATION: boolean;
+  LOCKFILE_VALIDATION: boolean
 }
 
 /**
@@ -188,13 +188,13 @@ export interface TemplateContext {
  */
 export interface TemplateFile {
   /** Source path relative to templates directory */
-  source: string;
+  source: string
   /** Destination path relative to project root */
-  destination: string;
+  destination: string
   /** Whether file requires Handlebars template processing */
-  isTemplate: boolean;
+  isTemplate: boolean
   /** Whether file should be marked as executable */
-  executable: boolean;
+  executable: boolean
 }
 
 /**
@@ -207,13 +207,13 @@ export interface TemplateFile {
  */
 export interface TemplateLoaderConfig {
   /** Base directory containing template files (defaults to built-in templates) */
-  templatesDir?: string;
+  templatesDir?: string
   /** Custom template variant directories (overrides default variant paths) */
-  variantDirs?: Partial<Record<TemplateVariant, string>>;
+  variantDirs?: Partial<Record<TemplateVariant, string>>
   /** Custom shared template directory (overrides default shared path) */
-  sharedDir?: string;
+  sharedDir?: string
   /** Additional template search directories (appended to default paths) */
-  additionalDirs?: string[];
+  additionalDirs?: string[]
 }
 
 /**
@@ -227,9 +227,9 @@ export interface TemplateLoaderConfig {
  */
 export interface GeneratorContext {
   /** Logger instance for user feedback and debugging */
-  logger: any;
+  logger: any
   /** Whether to enable verbose logging output */
-  verbose: boolean;
+  verbose: boolean
   /** Optional template loader configuration for custom template paths */
-  templateConfig?: TemplateLoaderConfig;
+  templateConfig?: TemplateLoaderConfig
 }

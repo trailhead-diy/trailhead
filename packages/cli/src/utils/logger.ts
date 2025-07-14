@@ -1,21 +1,21 @@
-import chalk from 'chalk';
+import chalk from 'chalk'
 
 /**
  * Logger interface for consistent CLI output
  */
 export interface Logger {
   /** Log informational messages */
-  info: (message: string) => void;
+  info: (message: string) => void
   /** Log success messages with checkmark */
-  success: (message: string) => void;
+  success: (message: string) => void
   /** Log warning messages with warning symbol */
-  warning: (message: string) => void;
+  warning: (message: string) => void
   /** Log error messages with error symbol */
-  error: (message: string) => void;
+  error: (message: string) => void
   /** Log debug messages (only shown in verbose mode) */
-  debug: (message: string) => void;
+  debug: (message: string) => void
   /** Log step/progress messages with arrow */
-  step: (message: string) => void;
+  step: (message: string) => void
 }
 
 /**
@@ -31,9 +31,9 @@ export function createDefaultLogger(verbose = false): Logger {
     error: (message: string) => console.error(chalk.red('✗'), message),
     debug: (message: string) => {
       if (verbose) {
-        console.log(chalk.gray('→'), chalk.gray(message));
+        console.log(chalk.gray('→'), chalk.gray(message))
       }
     },
     step: (message: string) => console.log(chalk.cyan('→'), message),
-  };
+  }
 }

@@ -1,34 +1,34 @@
-import { createValidationError as baseCreateValidationError, z } from '@esteban-url/validation';
-import type { ValidationError as BaseValidationError } from '@esteban-url/validation';
-import { createCoreError, type CoreError } from '@esteban-url/core';
+import { createValidationError as baseCreateValidationError, z } from '@esteban-url/validation'
+import type { ValidationError as BaseValidationError } from '@esteban-url/validation'
+import { createCoreError, type CoreError } from '@esteban-url/core'
 
 // ========================================
 // Enhanced Configuration Validation Errors
 // ========================================
 
 export interface ConfigValidationError extends BaseValidationError {
-  readonly suggestion: string;
-  readonly examples: readonly unknown[];
-  readonly fixCommand?: string;
-  readonly learnMoreUrl?: string;
-  readonly expectedType: string;
-  readonly path: readonly string[];
-  readonly code?: string;
-  readonly data?: Record<string, unknown>;
+  readonly suggestion: string
+  readonly examples: readonly unknown[]
+  readonly fixCommand?: string
+  readonly learnMoreUrl?: string
+  readonly expectedType: string
+  readonly path: readonly string[]
+  readonly code?: string
+  readonly data?: Record<string, unknown>
 }
 
 export interface ConfigValidationContext {
-  readonly field: string;
-  readonly value: unknown;
-  readonly expectedType: string;
-  readonly suggestion: string;
-  readonly examples?: readonly unknown[];
-  readonly path?: readonly string[];
-  readonly rule?: string;
-  readonly constraints?: Record<string, unknown>;
-  readonly cause?: Error | CoreError;
-  readonly fixCommand?: string;
-  readonly learnMoreUrl?: string;
+  readonly field: string
+  readonly value: unknown
+  readonly expectedType: string
+  readonly suggestion: string
+  readonly examples?: readonly unknown[]
+  readonly path?: readonly string[]
+  readonly rule?: string
+  readonly constraints?: Record<string, unknown>
+  readonly cause?: Error | CoreError
+  readonly fixCommand?: string
+  readonly learnMoreUrl?: string
 }
 
 // ========================================
@@ -50,16 +50,16 @@ export const createConfigValidationError = (
     cause,
     fixCommand,
     learnMoreUrl,
-  } = context;
+  } = context
 
   // Create base validation error
-  const message = generateErrorMessage({ field, value, expectedType, suggestion, path, rule });
+  const message = generateErrorMessage({ field, value, expectedType, suggestion, path, rule })
   const baseError = baseCreateValidationError(message, {
     field,
     value,
     constraints: { expectedType, rule },
     cause,
-  });
+  })
 
   // Enhance with config-specific features
   return {
@@ -72,8 +72,8 @@ export const createConfigValidationError = (
     data: constraints,
     fixCommand: fixCommand || generateFixCommand(field, rule, examples),
     learnMoreUrl: learnMoreUrl || generateLearnMoreUrl(rule),
-  };
-};
+  }
+}
 
 export const createSchemaValidationError = (
   errors: readonly ConfigValidationError[],
@@ -81,7 +81,7 @@ export const createSchemaValidationError = (
 ): CoreError => {
   const message = schemaName
     ? `Schema validation failed for "${schemaName}" with ${errors.length} error(s)`
-    : `Schema validation failed with ${errors.length} error(s)`;
+    : `Schema validation failed with ${errors.length} error(s)`
 
   return createCoreError('SCHEMA_VALIDATION_FAILED', message, {
     component: '@esteban-url/config',
@@ -93,31 +93,31 @@ export const createSchemaValidationError = (
     },
     recoverable: true,
     severity: 'high',
-  });
-};
+  })
+}
 
 // ========================================
 // Error Message Generation
 // ========================================
 
 interface MessageContext {
-  readonly field: string;
-  readonly value: unknown;
-  readonly expectedType: string;
-  readonly suggestion: string;
-  readonly path: readonly string[];
-  readonly rule?: string;
+  readonly field: string
+  readonly value: unknown
+  readonly expectedType: string
+  readonly suggestion: string
+  readonly path: readonly string[]
+  readonly rule?: string
 }
 
 const generateErrorMessage = (context: MessageContext): string => {
-  const { field, value, expectedType, suggestion, path, rule } = context;
+  const { field, value, expectedType, suggestion, path, rule } = context
 
-  const pathStr = path.length > 0 ? ` at "${path.join('.')}"` : '';
-  const valueStr = ` (received: ${serializeValue(value)})`;
-  const ruleStr = rule ? ` [rule: ${rule}]` : '';
+  const pathStr = path.length > 0 ? ` at "${path.join('.')}"` : ''
+  const valueStr = ` (received: ${serializeValue(value)})`
+  const ruleStr = rule ? ` [rule: ${rule}]` : ''
 
-  return `Invalid ${expectedType} for field "${field}"${pathStr}${valueStr}${ruleStr}. ${suggestion}`;
-};
+  return `Invalid ${expectedType} for field "${field}"${pathStr}${valueStr}${ruleStr}. ${suggestion}`
+}
 
 // ========================================
 // Enhanced Configuration Error Factories
@@ -128,34 +128,34 @@ export const enhanceZodError = (
   schemaName?: string,
   schema?: z.ZodSchema
 ): CoreError => {
-  const configErrors = zodError.errors.map(issue => {
-    const field = issue.path.join('.');
-    const rule = issue.code;
+  const configErrors = zodError.errors.map((issue) => {
+    const field = issue.path.join('.')
+    const rule = issue.code
 
-    let suggestion: string;
-    let examples: readonly unknown[] = [];
+    let suggestion: string
+    let examples: readonly unknown[] = []
 
     // Try to get examples from schema for this field
     if (schema && issue.path.length > 0) {
       try {
-        let currentSchema = schema;
+        let currentSchema = schema
         for (const pathSegment of issue.path) {
           if (currentSchema instanceof z.ZodObject) {
-            const shape = currentSchema.shape;
-            currentSchema = shape[pathSegment];
+            const shape = currentSchema.shape
+            currentSchema = shape[pathSegment]
           }
         }
         // Check if the final schema has examples in its _def
         if (currentSchema) {
-          let schemaToCheck = currentSchema;
+          let schemaToCheck = currentSchema
 
           // If it's a ZodDefault (field with .default()), check the innerType
           if ((currentSchema as any)._def?.typeName === 'ZodDefault') {
-            schemaToCheck = (currentSchema as any)._def.innerType;
+            schemaToCheck = (currentSchema as any)._def.innerType
           }
 
           if ((schemaToCheck as any)._def?.examples) {
-            examples = (schemaToCheck as any)._def.examples;
+            examples = (schemaToCheck as any)._def.examples
           }
         }
       } catch {
@@ -165,48 +165,48 @@ export const enhanceZodError = (
 
     switch (issue.code) {
       case 'invalid_type':
-        suggestion = `Expected ${issue.expected}, received ${issue.received}`;
+        suggestion = `Expected ${issue.expected}, received ${issue.received}`
         if (examples.length === 0) {
-          examples = getTypeExamples(issue.expected);
+          examples = getTypeExamples(issue.expected)
         }
-        break;
+        break
       case 'too_small':
         if (issue.type === 'string') {
-          suggestion = `Must be at least ${issue.minimum} characters`;
+          suggestion = `Must be at least ${issue.minimum} characters`
         } else {
-          suggestion = `Must be at least ${issue.minimum}`;
+          suggestion = `Must be at least ${issue.minimum}`
         }
-        break;
+        break
       case 'too_big':
         if (issue.type === 'string') {
-          suggestion = `Must be at most ${issue.maximum} characters`;
+          suggestion = `Must be at most ${issue.maximum} characters`
         } else {
-          suggestion = `Must be at most ${issue.maximum}`;
+          suggestion = `Must be at most ${issue.maximum}`
         }
-        break;
+        break
       case 'invalid_enum_value':
-        suggestion = `Must be one of: ${issue.options.map(v => JSON.stringify(v)).join(', ')}`;
+        suggestion = `Must be one of: ${issue.options.map((v) => JSON.stringify(v)).join(', ')}`
         if (examples.length === 0) {
-          examples = issue.options;
+          examples = issue.options
         }
-        break;
+        break
       case 'invalid_string':
         if (issue.validation === 'email') {
-          suggestion = 'Must be a valid email address';
+          suggestion = 'Must be a valid email address'
           if (examples.length === 0) {
-            examples = ['user@example.com', 'admin@company.org'];
+            examples = ['user@example.com', 'admin@company.org']
           }
         } else if (issue.validation === 'url') {
-          suggestion = 'Must be a valid URL';
+          suggestion = 'Must be a valid URL'
           if (examples.length === 0) {
-            examples = ['https://example.com', 'http://localhost:3000'];
+            examples = ['https://example.com', 'http://localhost:3000']
           }
         } else {
-          suggestion = `Invalid ${issue.validation} format`;
+          suggestion = `Invalid ${issue.validation} format`
         }
-        break;
+        break
       default:
-        suggestion = issue.message;
+        suggestion = issue.message
     }
 
     return createConfigValidationError({
@@ -217,11 +217,11 @@ export const enhanceZodError = (
       examples,
       path: issue.path.map(String),
       rule,
-    });
-  });
+    })
+  })
 
-  return createSchemaValidationError(configErrors, schemaName);
-};
+  return createSchemaValidationError(configErrors, schemaName)
+}
 
 export const createMissingFieldError = (
   field: string,
@@ -236,7 +236,7 @@ export const createMissingFieldError = (
     examples: getTypeExamples(expectedType),
     path,
     rule: 'required',
-  });
+  })
 
 export const createTypeError = (
   field: string,
@@ -252,7 +252,7 @@ export const createTypeError = (
     examples: getTypeExamples(expectedType),
     path,
     rule: 'type',
-  });
+  })
 
 export const createEnumError = (
   field: string,
@@ -264,12 +264,12 @@ export const createEnumError = (
     field,
     value,
     expectedType: 'enum',
-    suggestion: `Value must be one of: ${allowedValues.map(v => JSON.stringify(v)).join(', ')}`,
+    suggestion: `Value must be one of: ${allowedValues.map((v) => JSON.stringify(v)).join(', ')}`,
     examples: allowedValues,
     path,
     rule: 'enum',
     constraints: { allowedValues },
-  });
+  })
 
 export const createRangeError = (
   field: string,
@@ -278,15 +278,15 @@ export const createRangeError = (
   max?: number,
   path: readonly string[] = []
 ): ConfigValidationError => {
-  let suggestion: string;
+  let suggestion: string
   if (min !== undefined && max !== undefined) {
-    suggestion = `Value must be between ${min} and ${max}`;
+    suggestion = `Value must be between ${min} and ${max}`
   } else if (min !== undefined) {
-    suggestion = `Value must be at least ${min}`;
+    suggestion = `Value must be at least ${min}`
   } else if (max !== undefined) {
-    suggestion = `Value must be at most ${max}`;
+    suggestion = `Value must be at most ${max}`
   } else {
-    suggestion = 'Value is out of range';
+    suggestion = 'Value is out of range'
   }
 
   return createConfigValidationError({
@@ -298,8 +298,8 @@ export const createRangeError = (
     path,
     rule: 'range',
     constraints: { min, max },
-  });
-};
+  })
+}
 
 export const createLengthError = (
   field: string,
@@ -308,15 +308,15 @@ export const createLengthError = (
   maxLength?: number,
   path: readonly string[] = []
 ): ConfigValidationError => {
-  let suggestion: string;
+  let suggestion: string
   if (minLength !== undefined && maxLength !== undefined) {
-    suggestion = `Length must be between ${minLength} and ${maxLength} characters`;
+    suggestion = `Length must be between ${minLength} and ${maxLength} characters`
   } else if (minLength !== undefined) {
-    suggestion = `Length must be at least ${minLength} characters`;
+    suggestion = `Length must be at least ${minLength} characters`
   } else if (maxLength !== undefined) {
-    suggestion = `Length must be at most ${maxLength} characters`;
+    suggestion = `Length must be at most ${maxLength} characters`
   } else {
-    suggestion = 'Length is invalid';
+    suggestion = 'Length is invalid'
   }
 
   return createConfigValidationError({
@@ -328,8 +328,8 @@ export const createLengthError = (
     path,
     rule: 'length',
     constraints: { minLength, maxLength },
-  });
-};
+  })
+}
 
 export const createPatternError = (
   field: string,
@@ -347,7 +347,7 @@ export const createPatternError = (
     path,
     rule: 'pattern',
     constraints: { pattern, description },
-  });
+  })
 
 // ========================================
 // Utility Functions
@@ -358,62 +358,62 @@ const generateFixCommand = (
   rule?: string,
   examples?: readonly unknown[]
 ): string => {
-  const fieldPath = field;
+  const fieldPath = field
 
   switch (rule) {
     case 'required':
-      return `config set ${fieldPath} <value>`;
+      return `config set ${fieldPath} <value>`
     case 'type':
-      const example = examples?.[0];
+      const example = examples?.[0]
       if (example !== undefined) {
-        return `config set ${fieldPath} ${JSON.stringify(example)}`;
+        return `config set ${fieldPath} ${JSON.stringify(example)}`
       }
-      return `config set ${fieldPath} <value>`;
+      return `config set ${fieldPath} <value>`
     case 'enum':
-      const firstOption = examples?.[0];
+      const firstOption = examples?.[0]
       if (firstOption !== undefined) {
-        return `config set ${fieldPath} ${JSON.stringify(firstOption)}`;
+        return `config set ${fieldPath} ${JSON.stringify(firstOption)}`
       }
-      return `config set ${fieldPath} <value>`;
+      return `config set ${fieldPath} <value>`
     default:
-      return `config set ${fieldPath} <value>`;
+      return `config set ${fieldPath} <value>`
   }
-};
+}
 
 const generateLearnMoreUrl = (rule?: string): string => {
-  const baseUrl = 'https://trailhead.dev/config/rules';
-  return rule ? `${baseUrl}/${rule}` : baseUrl;
-};
+  const baseUrl = 'https://trailhead.dev/config/rules'
+  return rule ? `${baseUrl}/${rule}` : baseUrl
+}
 
 const getExpectedType = (issue: z.ZodIssue): string => {
   switch (issue.code) {
     case 'invalid_type':
-      return issue.expected;
+      return issue.expected
     case 'invalid_enum_value':
-      return 'enum';
+      return 'enum'
     case 'too_small':
     case 'too_big':
-      return issue.type;
+      return issue.type
     default:
-      return 'unknown';
+      return 'unknown'
   }
-};
+}
 
 const serializeValue = (value: unknown): string => {
-  if (value === undefined) return 'undefined';
-  if (value === null) return 'null';
-  if (typeof value === 'string') return `"${value}"`;
-  if (typeof value === 'function') return '[Function]';
-  if (typeof value === 'symbol') return value.toString();
-  if (value instanceof Date) return value.toISOString();
-  if (value instanceof Error) return `[Error: ${value.message}]`;
+  if (value === undefined) return 'undefined'
+  if (value === null) return 'null'
+  if (typeof value === 'string') return `"${value}"`
+  if (typeof value === 'function') return '[Function]'
+  if (typeof value === 'symbol') return value.toString()
+  if (value instanceof Date) return value.toISOString()
+  if (value instanceof Error) return `[Error: ${value.message}]`
 
   try {
-    return JSON.stringify(value);
+    return JSON.stringify(value)
   } catch {
-    return '[Circular Reference]';
+    return '[Circular Reference]'
   }
-};
+}
 
 const _serializeValidationError = (error: ConfigValidationError) => ({
   field: error.field,
@@ -423,34 +423,32 @@ const _serializeValidationError = (error: ConfigValidationError) => ({
   path: error.path,
   rule: error.code,
   constraints: error.data,
-});
+})
 
 const getTypeExamples = (type: string): readonly unknown[] => {
   switch (type) {
     case 'string':
-      return ['example-string', 'hello-world'];
+      return ['example-string', 'hello-world']
     case 'number':
-      return [42, 3.14, 0];
+      return [42, 3.14, 0]
     case 'boolean':
-      return [true, false];
+      return [true, false]
     case 'array':
-      return [[], ['item1', 'item2']];
+      return [[], ['item1', 'item2']]
     case 'object':
-      return [{}, { key: 'value' }];
+      return [{}, { key: 'value' }]
     default:
-      return [];
+      return []
   }
-};
+}
 
 // ========================================
 // Validation Error Predicates
 // ========================================
 
 export const isConfigValidationError = (error: unknown): error is ConfigValidationError => {
-  return (
-    typeof error === 'object' && error !== null && 'suggestion' in error && 'examples' in error
-  );
-};
+  return typeof error === 'object' && error !== null && 'suggestion' in error && 'examples' in error
+}
 
 export const isSchemaValidationError = (error: unknown): error is CoreError => {
   return (
@@ -458,7 +456,7 @@ export const isSchemaValidationError = (error: unknown): error is CoreError => {
     error !== null &&
     'type' in error &&
     (error as any).type === 'SCHEMA_VALIDATION_FAILED'
-  );
-};
+  )
+}
 
 // Clean exports - no legacy compatibility needed

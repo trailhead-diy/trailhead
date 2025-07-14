@@ -1,7 +1,7 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Field, Label } from '@/components/th/fieldset';
-import { Input } from '@/components/th/input';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Field, Label } from '@/components/th/fieldset'
+import { Input } from '@/components/th/input'
 
 export default function InputPage(): React.JSX.Element {
   return (
@@ -15,5 +15,5 @@ export default function InputPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

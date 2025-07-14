@@ -11,41 +11,41 @@ Eliminates repetitive context type annotations in task handlers.
 #### Before
 
 ```typescript
-import { createTask } from '@esteban-url/trailhead-cli/workflows';
+import { createTask } from '@esteban-url/trailhead-cli/workflows'
 
 interface MyContext {
-  data: string;
-  result?: string;
+  data: string
+  result?: string
 }
 
 const task1 = createTask('Loading data', async (ctx: MyContext) => {
-  ctx.result = await loadData(ctx.data);
-});
+  ctx.result = await loadData(ctx.data)
+})
 
 const task2 = createTask('Processing data', async (ctx: MyContext) => {
-  ctx.result = processData(ctx.data);
-});
+  ctx.result = processData(ctx.data)
+})
 ```
 
 #### After
 
 ```typescript
-import { createTaskBuilder } from '@esteban-url/trailhead-cli/workflows';
+import { createTaskBuilder } from '@esteban-url/trailhead-cli/workflows'
 
 interface MyContext {
-  data: string;
-  result?: string;
+  data: string
+  result?: string
 }
 
-const createMyTask = createTaskBuilder<MyContext>();
+const createMyTask = createTaskBuilder<MyContext>()
 
-const task1 = createMyTask('Loading data', async ctx => {
-  ctx.result = await loadData(ctx.data);
-});
+const task1 = createMyTask('Loading data', async (ctx) => {
+  ctx.result = await loadData(ctx.data)
+})
 
-const task2 = createMyTask('Processing data', async ctx => {
-  ctx.result = processData(ctx.data);
-});
+const task2 = createMyTask('Processing data', async (ctx) => {
+  ctx.result = processData(ctx.data)
+})
 ```
 
 **Boilerplate Reduction**: 60% fewer type annotations while maintaining full type safety.
@@ -57,7 +57,7 @@ Eliminates 15-20 lines of file validation boilerplate per command.
 #### Before
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 
 export const processCommand = createCommand<ProcessOptions>({
   name: 'process',
@@ -69,25 +69,25 @@ export const processCommand = createCommand<ProcessOptions>({
     // ... more options
   ],
   action: async (options, context) => {
-    const [inputFile] = context.args;
+    const [inputFile] = context.args
     if (!inputFile) {
-      return Err(new Error('Input file is required'));
+      return Err(new Error('Input file is required'))
     }
 
-    const fileCheck = await context.fs.access(inputFile);
+    const fileCheck = await context.fs.access(inputFile)
     if (!fileCheck.success) {
-      return Err(new Error(`File does not exist: ${inputFile}`));
+      return Err(new Error(`File does not exist: ${inputFile}`))
     }
 
     // Actual logic starts here...
   },
-});
+})
 ```
 
 #### After
 
 ```typescript
-import { createFileProcessingCommand } from '@esteban-url/trailhead-cli/command';
+import { createFileProcessingCommand } from '@esteban-url/trailhead-cli/command'
 
 export const processCommand = createFileProcessingCommand<ProcessOptions>({
   name: 'process',
@@ -98,7 +98,7 @@ export const processCommand = createFileProcessingCommand<ProcessOptions>({
     // File validation done, filesystem ready, paths resolved
     // Jump straight to business logic
   },
-});
+})
 ```
 
 **Boilerplate Reduction**: 15-20 lines eliminated per command with automatic file validation and path resolution.
@@ -116,13 +116,13 @@ options: [
   { name: 'verbose', alias: 'v', type: 'boolean', default: false },
   { name: 'dryRun', alias: 'd', type: 'boolean', default: false },
   // Custom options...
-];
+]
 ```
 
 #### After - Object Syntax
 
 ```typescript
-import { commonOptions } from '@esteban-url/trailhead-cli/command';
+import { commonOptions } from '@esteban-url/trailhead-cli/command'
 
 options: [
   commonOptions.output(),
@@ -130,19 +130,19 @@ options: [
   commonOptions.verbose(),
   commonOptions.dryRun(),
   // Custom options...
-];
+]
 ```
 
 #### After - Fluent API
 
 ```typescript
-import { defineOptions } from '@esteban-url/trailhead-cli/command';
+import { defineOptions } from '@esteban-url/trailhead-cli/command'
 
 options: defineOptions()
   .common(['output', 'format', 'verbose', 'dryRun'])
   .format(['json', 'csv', 'yaml'])
   .custom([{ name: 'interactive', type: 'boolean' }])
-  .build();
+  .build()
 ```
 
 **Boilerplate Reduction**: 70% fewer option definitions with consistent behavior across commands.
@@ -154,7 +154,7 @@ options: defineOptions()
 #### `TaskHandler<T>`
 
 ```typescript
-type TaskHandler<T> = (ctx: T) => Promise<void> | void;
+type TaskHandler<T> = (ctx: T) => Promise<void> | void
 ```
 
 #### `createTypedTask<T>(title, handler, options?)`
@@ -171,11 +171,11 @@ Returns a task builder function with bound context type.
 
 ```typescript
 interface FileProcessingOptions extends CommandOptions {
-  output?: string;
-  format?: string;
-  verbose?: boolean;
-  dryRun?: boolean;
-  force?: boolean;
+  output?: string
+  format?: string
+  verbose?: boolean
+  dryRun?: boolean
+  force?: boolean
 }
 ```
 
@@ -183,9 +183,9 @@ interface FileProcessingOptions extends CommandOptions {
 
 ```typescript
 interface FileProcessingContext {
-  inputFile: string;
-  outputPath?: string;
-  fs: FileSystem;
+  inputFile: string
+  outputPath?: string
+  fs: FileSystem
 }
 ```
 
@@ -193,19 +193,19 @@ interface FileProcessingContext {
 
 ```typescript
 interface FileProcessingConfig<T extends FileProcessingOptions> {
-  name: string;
-  description: string;
+  name: string
+  description: string
   inputFile: {
-    required?: boolean;
-    description?: string;
-  };
-  commonOptions?: (keyof typeof commonOptions)[];
-  customOptions?: CommandOption[];
+    required?: boolean
+    description?: string
+  }
+  commonOptions?: (keyof typeof commonOptions)[]
+  customOptions?: CommandOption[]
   action: (
     options: T,
     context: CommandContext,
     processing: FileProcessingContext
-  ) => Promise<Result<void>>;
+  ) => Promise<Result<void>>
 }
 ```
 
@@ -240,11 +240,11 @@ import {
   createFileProcessingCommand,
   defineOptions,
   type FileProcessingOptions,
-} from '@esteban-url/trailhead-cli/command';
+} from '@esteban-url/trailhead-cli/command'
 
 interface TransformOptions extends FileProcessingOptions {
-  transform?: string;
-  parallel?: boolean;
+  transform?: string
+  parallel?: boolean
 }
 
 export const transformCommand = createFileProcessingCommand<TransformOptions>({
@@ -264,46 +264,46 @@ export const transformCommand = createFileProcessingCommand<TransformOptions>({
     .build(),
   action: async (options, context, { inputFile, outputPath, fs }) => {
     // File validation complete, jump to business logic
-    const data = await parseFile(inputFile, options.format);
-    const transformed = await transform(data, options.transform);
+    const data = await parseFile(inputFile, options.format)
+    const transformed = await transform(data, options.transform)
 
     if (outputPath) {
-      await writeFile(outputPath, transformed);
+      await writeFile(outputPath, transformed)
     }
 
-    return Ok(undefined);
+    return Ok(undefined)
   },
-});
+})
 ```
 
 ### Workflow with Typed Tasks
 
 ```typescript
-import { createTaskBuilder } from '@esteban-url/trailhead-cli/workflows';
+import { createTaskBuilder } from '@esteban-url/trailhead-cli/workflows'
 
 interface ProcessContext {
-  inputPath: string;
-  data?: any[];
-  result?: any[];
+  inputPath: string
+  data?: any[]
+  result?: any[]
 }
 
-const createTask = createTaskBuilder<ProcessContext>();
+const createTask = createTaskBuilder<ProcessContext>()
 
 const workflow = [
-  createTask('Loading data', async ctx => {
-    ctx.data = await loadFile(ctx.inputPath);
+  createTask('Loading data', async (ctx) => {
+    ctx.data = await loadFile(ctx.inputPath)
   }),
 
-  createTask('Validating data', async ctx => {
+  createTask('Validating data', async (ctx) => {
     if (!ctx.data?.length) {
-      throw new Error('No data to process');
+      throw new Error('No data to process')
     }
   }),
 
-  createTask('Processing data', async ctx => {
-    ctx.result = processData(ctx.data!);
+  createTask('Processing data', async (ctx) => {
+    ctx.result = processData(ctx.data!)
   }),
-];
+]
 ```
 
 ## Migration Guide

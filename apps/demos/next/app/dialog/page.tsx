@@ -1,19 +1,19 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Button } from '@/components/th/button';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Button } from '@/components/th/button'
 import {
   Dialog,
   DialogActions,
   DialogBody,
   DialogDescription,
   DialogTitle,
-} from '@/components/th/dialog';
-import { Field, Label } from '@/components/th/fieldset';
-import { Input } from '@/components/th/input';
-import { useState } from 'react';
+} from '@/components/th/dialog'
+import { Field, Label } from '@/components/th/fieldset'
+import { Input } from '@/components/th/input'
+import { useState } from 'react'
 
 export default function DialogPage(): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <DemoLayout>
       <List title="Dialog">
@@ -43,5 +43,5 @@ export default function DialogPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

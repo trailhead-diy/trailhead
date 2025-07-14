@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result } from '@esteban-url/core';
-import type { ModernProjectConfig } from './interactive-prompts.js';
+import { z } from 'zod'
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result } from '@esteban-url/core'
+import type { ModernProjectConfig } from './interactive-prompts.js'
 
 /**
  * Comprehensive configuration schema for create-trailhead-cli
@@ -12,42 +12,42 @@ export const projectNameSchema = z
   .string()
   .min(1, 'Project name is required')
   .regex(/^[a-z0-9-]+$/, 'Project name must be lowercase alphanumeric with hyphens only')
-  .max(214, 'Project name must be less than 214 characters'); // npm package name limit
+  .max(214, 'Project name must be less than 214 characters') // npm package name limit
 
-export const emailSchema = z.string().email('Invalid email format').min(1, 'Email is required');
+export const emailSchema = z.string().email('Invalid email format').min(1, 'Email is required')
 
 export const packageManagerSchema = z.enum(['npm', 'pnpm'], {
   errorMap: () => ({ message: 'Package manager must be "npm" or "pnpm"' }),
-});
+})
 
 export const templateVariantSchema = z.enum(['basic', 'advanced'], {
   errorMap: () => ({ message: 'Template must be "basic" or "advanced"' }),
-});
+})
 
 export const projectTypeSchema = z.enum(['standalone-cli', 'library', 'monorepo-package'], {
   errorMap: () => ({
     message: 'Project type must be "standalone-cli", "library", or "monorepo-package"',
   }),
-});
+})
 
 export const licenseSchema = z.enum(['MIT', 'Apache-2.0', 'ISC', 'custom'], {
   errorMap: () => ({ message: 'License must be "MIT", "Apache-2.0", "ISC", or "custom"' }),
-});
+})
 
 export const ideSchema = z.enum(['vscode', 'none'], {
   errorMap: () => ({ message: 'IDE must be "vscode" or "none"' }),
-});
+})
 
 export const nodeVersionSchema = z
   .string()
   .regex(/^\d+$/, 'Node version must be a number')
-  .refine(val => parseInt(val) >= 14, 'Node version must be 14 or higher');
+  .refine((val) => parseInt(val) >= 14, 'Node version must be 14 or higher')
 
 // Author information schema
 export const authorSchema = z.object({
   name: z.string().min(1, 'Author name is required').max(100, 'Author name too long'),
   email: emailSchema,
-});
+})
 
 // Feature flags schema with validation
 export const featuresSchema = z.object({
@@ -57,7 +57,7 @@ export const featuresSchema = z.object({
   testing: z.boolean().optional(),
   docs: z.boolean().optional(),
   cicd: z.boolean().optional(),
-});
+})
 
 // Main project configuration schema
 export const modernProjectConfigSchema = z.object({
@@ -92,7 +92,7 @@ export const modernProjectConfigSchema = z.object({
   dryRun: z.boolean().default(false),
   force: z.boolean().default(false),
   verbose: z.boolean().default(false),
-});
+})
 
 // Configuration file schema (subset for saving to disk)
 export const configFileSchema = z.object({
@@ -110,7 +110,7 @@ export const configFileSchema = z.object({
   includeDocs: z.boolean(),
   initGit: z.boolean(),
   installDependencies: z.boolean(),
-});
+})
 
 // Preset configuration schema for templates
 export const presetConfigSchema = z.object({
@@ -125,12 +125,12 @@ export const presetConfigSchema = z.object({
   includeDocs: z.boolean().optional(),
   initGit: z.boolean().optional(),
   installDependencies: z.boolean().optional(),
-});
+})
 
 // Type exports
-export type ModernProjectConfigValidated = z.infer<typeof modernProjectConfigSchema>;
-export type ConfigFile = z.infer<typeof configFileSchema>;
-export type PresetConfig = z.infer<typeof presetConfigSchema>;
+export type ModernProjectConfigValidated = z.infer<typeof modernProjectConfigSchema>
+export type ConfigFile = z.infer<typeof configFileSchema>
+export type PresetConfig = z.infer<typeof presetConfigSchema>
 
 /**
  * Validate a modern project configuration
@@ -139,12 +139,12 @@ export function validateModernProjectConfig(
   config: unknown
 ): Result<ModernProjectConfigValidated, any> {
   try {
-    const result = modernProjectConfigSchema.safeParse(config);
+    const result = modernProjectConfigSchema.safeParse(config)
 
     if (!result.success) {
       const errors = result.error.errors
-        .map(err => `${err.path.join('.')}: ${err.message}`)
-        .join(', ');
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
 
       return err(
         createCoreError('CONFIG_VALIDATION_FAILED', errors, {
@@ -154,10 +154,10 @@ export function validateModernProjectConfig(
           recoverable: true,
           severity: 'high',
         })
-      );
+      )
     }
 
-    return ok(result.data);
+    return ok(result.data)
   } catch (error) {
     return err(
       createCoreError('CONFIG_VALIDATION_ERROR', 'Configuration validation error', {
@@ -167,7 +167,7 @@ export function validateModernProjectConfig(
         recoverable: false,
         severity: 'high',
       })
-    );
+    )
   }
 }
 
@@ -176,12 +176,12 @@ export function validateModernProjectConfig(
  */
 export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
   try {
-    const result = configFileSchema.safeParse(config);
+    const result = configFileSchema.safeParse(config)
 
     if (!result.success) {
       const errors = result.error.errors
-        .map(err => `${err.path.join('.')}: ${err.message}`)
-        .join(', ');
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
 
       return err(
         createCoreError('CONFIG_FILE_VALIDATION_FAILED', 'Configuration file validation failed', {
@@ -191,10 +191,10 @@ export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
           recoverable: true,
           severity: 'medium',
         })
-      );
+      )
     }
 
-    return ok(result.data);
+    return ok(result.data)
   } catch (error) {
     return err(
       createCoreError('CONFIG_FILE_VALIDATION_ERROR', 'Configuration file validation error', {
@@ -204,7 +204,7 @@ export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
         recoverable: false,
         severity: 'medium',
       })
-    );
+    )
   }
 }
 
@@ -213,12 +213,12 @@ export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
  */
 export function validatePresetConfig(preset: unknown): Result<PresetConfig, any> {
   try {
-    const result = presetConfigSchema.safeParse(preset);
+    const result = presetConfigSchema.safeParse(preset)
 
     if (!result.success) {
       const errors = result.error.errors
-        .map(err => `${err.path.join('.')}: ${err.message}`)
-        .join(', ');
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
 
       return err(
         createCoreError('PRESET_VALIDATION_FAILED', errors, {
@@ -228,10 +228,10 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
           recoverable: true,
           severity: 'medium',
         })
-      );
+      )
     }
 
-    return ok(result.data);
+    return ok(result.data)
   } catch (error) {
     return err(
       createCoreError('PRESET_VALIDATION_ERROR', 'Preset validation error', {
@@ -241,7 +241,7 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
         recoverable: false,
         severity: 'medium',
       })
-    );
+    )
   }
 }
 
@@ -264,7 +264,7 @@ export function createConfigFile(config: ModernProjectConfig): ConfigFile {
     includeDocs: config.includeDocs,
     initGit: config.initGit,
     installDependencies: config.installDependencies,
-  };
+  }
 }
 
 /**
@@ -289,7 +289,7 @@ export function mergePresetWithConfig(
       ...preset.features,
       ...userConfig.features, // User features override preset features
     },
-  };
+  }
 }
 
 /**
@@ -399,5 +399,5 @@ export function generateConfigJsonSchema() {
       'ide',
     ],
     additionalProperties: false,
-  };
+  }
 }

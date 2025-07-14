@@ -1,10 +1,10 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Alert, AlertActions, AlertDescription, AlertTitle } from '@/components/th/alert';
-import { Button } from '@/components/th/button';
-import { useState } from 'react';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Alert, AlertActions, AlertDescription, AlertTitle } from '@/components/th/alert'
+import { Button } from '@/components/th/button'
+import { useState } from 'react'
 export default function AlertPage(): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <DemoLayout>
       <List title="Alert">
@@ -28,5 +28,5 @@ export default function AlertPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

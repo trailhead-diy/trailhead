@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { createCLI } from '../src/cli.js';
-import { createCommand } from '../src/command/index.js';
-import { err } from '@esteban-url/core';
+import { describe, it, expect } from 'vitest'
+import { createCLI } from '../src/cli.js'
+import { createCommand } from '../src/command/index.js'
+import { err } from '@esteban-url/core'
 
 describe('CLI Error Handling', () => {
   it('should handle command action errors gracefully', async () => {
@@ -14,18 +14,18 @@ describe('CLI Error Handling', () => {
           message: 'Command failed',
           recoverable: false,
         }),
-    });
+    })
 
     const cli = createCLI({
       name: 'test-cli',
       version: '1.0.0',
       description: 'CLI with failing command',
       commands: [command],
-    });
+    })
 
-    expect(cli).toBeDefined();
-    expect(command.name).toBe('failing-command');
-  });
+    expect(cli).toBeDefined()
+    expect(command.name).toBe('failing-command')
+  })
 
   it('should handle validation errors during command creation', () => {
     // Command creation should throw for invalid configurations (this is correct behavior)
@@ -46,8 +46,8 @@ describe('CLI Error Handling', () => {
             recoverable: false,
           }),
       })
-    ).toThrow();
-  });
+    ).toThrow()
+  })
 
   it('should handle CLI creation with invalid configuration', () => {
     // CLI creation should not throw for basic config issues
@@ -57,8 +57,8 @@ describe('CLI Error Handling', () => {
         version: '1.0.0',
         description: 'Test CLI',
       })
-    ).not.toThrow();
-  });
+    ).not.toThrow()
+  })
 
   it('should handle missing command dependencies gracefully', async () => {
     const command = createCommand({
@@ -66,19 +66,19 @@ describe('CLI Error Handling', () => {
       description: 'Test command dependencies',
       action: async (options, context) => {
         // Test that context has expected structure even if deps fail
-        expect(context).toBeDefined();
-        expect(context.logger).toBeDefined();
-        expect(context.fs).toBeDefined();
+        expect(context).toBeDefined()
+        expect(context.logger).toBeDefined()
+        expect(context.fs).toBeDefined()
 
         return err({
           type: 'DEPENDENCY_ERROR',
           message: 'Required dependency not found',
           recoverable: true,
-        });
+        })
       },
-    });
+    })
 
-    expect(command).toBeDefined();
-    expect(command.name).toBe('dependency-test');
-  });
-});
+    expect(command).toBeDefined()
+    expect(command.name).toBe('dependency-test')
+  })
+})

@@ -1,5 +1,5 @@
-export { createTransformOperations } from './core.js';
-export { defaultTransformConfig } from './types.js';
+export { createTransformOperations } from './core.js'
+export { defaultTransformConfig } from './types.js'
 export type {
   CreateTransformOperations,
   TransformMapOp,
@@ -14,4 +14,4 @@ export type {
   DebounceState,
   TransformStreamInfo,
   TransformMetrics,
-} from './types.js';
+} from './types.js'

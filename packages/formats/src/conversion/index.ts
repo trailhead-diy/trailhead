@@ -1,5 +1,5 @@
-export { createConversionOperations } from './core.js';
-export { defaultConversionConfig, CONVERSION_CATEGORIES, QUALITY_DEFINITIONS } from './types.js';
+export { createConversionOperations } from './core.js'
+export { defaultConversionConfig, CONVERSION_CATEGORIES, QUALITY_DEFINITIONS } from './types.js'
 export type {
   ConversionRule,
   ConversionChain,
@@ -8,4 +8,4 @@ export type {
   FormatLister,
   ChainBuilder,
   QualityEstimator,
-} from './types.js';
+} from './types.js'

@@ -1,5 +1,5 @@
-export { createFilterOperations } from './core.js';
-export { defaultFilterConfig } from './types.js';
+export { createFilterOperations } from './core.js'
+export { defaultFilterConfig } from './types.js'
 export type {
   CreateFilterOperations,
   FilterChain,
@@ -10,4 +10,4 @@ export type {
   SizeRangeFilter,
   ExtensionFilter,
   DirectoryFilter,
-} from './types.js';
+} from './types.js'

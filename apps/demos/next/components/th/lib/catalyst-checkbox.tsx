@@ -1,12 +1,12 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import type React from 'react';
+import * as Headless from '@headlessui/react'
+import type React from 'react'
 import {
   SemanticColorToken,
   isSemanticToken,
   createSemanticCheckboxStyles,
-} from '../theme/semantic-tokens';
-import { cn } from '../utils/cn';
+} from '../theme/semantic-tokens'
+import { cn } from '../utils/cn'
 
 export function CatalystCheckboxGroup({
   className,
@@ -24,7 +24,7 @@ export function CatalystCheckboxGroup({
         className
       )}
     />
-  );
+  )
 }
 
 export function CatalystCheckboxField({
@@ -49,7 +49,7 @@ export function CatalystCheckboxField({
         className
       )}
     />
-  );
+  )
 }
 
 const base = [
@@ -78,7 +78,7 @@ const base = [
   // Forced colors mode
   'forced-colors:[--checkbox-check:HighlightText] forced-colors:[--checkbox-checked-bg:Highlight] forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
   'dark:forced-colors:[--checkbox-check:HighlightText] dark:forced-colors:[--checkbox-checked-bg:Highlight] dark:forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
-];
+]
 
 const colors = {
   'dark/zinc': [
@@ -128,25 +128,25 @@ const colors = {
     '[--checkbox-check:var(--accent-foreground)] [--checkbox-checked-bg:var(--accent)] [--checkbox-checked-border:var(--accent)]/90',
   destructive:
     '[--checkbox-check:var(--destructive-foreground)] [--checkbox-checked-bg:var(--destructive)] [--checkbox-checked-border:var(--destructive)]/90',
-};
+}
 
-type Color = keyof typeof colors;
+type Color = keyof typeof colors
 
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
-  className?: string;
+  color?: Color
+  className?: string
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticCheckboxStyles(color);
+      return createSemanticCheckboxStyles(color)
     }
 
-    return colors[color] || colors['dark/zinc'];
-  })();
+    return colors[color] || colors['dark/zinc']
+  })()
 
   return (
     <Headless.Checkbox
@@ -181,5 +181,5 @@ export function CatalystCheckbox({
         </svg>
       </span>
     </Headless.Checkbox>
-  );
+  )
 }

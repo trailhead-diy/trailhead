@@ -29,7 +29,7 @@ export type {
   DetectionOperations,
   MimeOperations,
   ConversionOperations,
-} from './types.js';
+} from './types.js'
 
 export {
   createFormatError,
@@ -42,13 +42,13 @@ export {
   mapFileError,
   mapLibraryError,
   mapDetectionError,
-} from './errors.js';
+} from './errors.js'
 
 // ========================================
 // Detection Operations
 // ========================================
 
-export { createDetectionOperations } from './detection/index.js';
+export { createDetectionOperations } from './detection/index.js'
 export type {
   MagicNumberPattern,
   ExtensionMapping,
@@ -57,13 +57,13 @@ export type {
   DetectionStrategy,
   MagicNumberDetector,
   ExtensionDetector,
-} from './detection/index.js';
+} from './detection/index.js'
 
 // ========================================
 // MIME Operations
 // ========================================
 
-export { createMimeOperations, COMMON_MIME_TYPES, MIME_TYPE_CATEGORIES } from './mime/index.js';
+export { createMimeOperations, COMMON_MIME_TYPES, MIME_TYPE_CATEGORIES } from './mime/index.js'
 export type {
   MimeTypeEntry,
   MimeDatabase,
@@ -71,7 +71,7 @@ export type {
   MimeTypeParser,
   ExtensionResolver,
   CategoryChecker,
-} from './mime/index.js';
+} from './mime/index.js'
 
 // ========================================
 // Conversion Operations
@@ -81,7 +81,7 @@ export {
   createConversionOperations,
   CONVERSION_CATEGORIES,
   QUALITY_DEFINITIONS,
-} from './conversion/index.js';
+} from './conversion/index.js'
 export type {
   ConversionRule,
   ConversionChain,
@@ -90,4 +90,4 @@ export type {
   FormatLister,
   ChainBuilder,
   QualityEstimator,
-} from './conversion/index.js';
+} from './conversion/index.js'

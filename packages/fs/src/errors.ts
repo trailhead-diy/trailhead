@@ -1,16 +1,16 @@
-import { createCoreError } from '@esteban-url/core';
-import type { FileSystemError } from './types.js';
+import { createCoreError } from '@esteban-url/core'
+import type { FileSystemError } from './types.js'
 
 export const createFileSystemError = (
   operation: string,
   message: string,
   options?: {
-    path?: string;
-    code?: string;
-    cause?: unknown;
-    suggestion?: string;
-    recoverable?: boolean;
-    context?: Record<string, unknown>;
+    path?: string
+    code?: string
+    cause?: unknown
+    suggestion?: string
+    recoverable?: boolean
+    context?: Record<string, unknown>
   }
 ): FileSystemError => ({
   ...createCoreError('FILESYSTEM_ERROR', message, {
@@ -26,54 +26,54 @@ export const createFileSystemError = (
   operation,
   path: options?.path,
   code: options?.code,
-});
+})
 
 export const mapNodeError = (operation: string, path: string, error: any): FileSystemError => {
-  const errorCode = error.code || 'FS_ERROR';
-  let message: string;
-  let recoverable: boolean;
-  let suggestion: string | undefined;
+  const errorCode = error.code || 'FS_ERROR'
+  let message: string
+  let recoverable: boolean
+  let suggestion: string | undefined
 
   switch (errorCode) {
     case 'ENOENT':
-      message = `File or directory '${path}' does not exist`;
-      recoverable = true;
-      suggestion = 'Check if the path is correct and the file exists';
-      break;
+      message = `File or directory '${path}' does not exist`
+      recoverable = true
+      suggestion = 'Check if the path is correct and the file exists'
+      break
     case 'EEXIST':
-      message = `File or directory '${path}' already exists`;
-      recoverable = true;
-      suggestion = 'Use a different path or enable overwrite option';
-      break;
+      message = `File or directory '${path}' already exists`
+      recoverable = true
+      suggestion = 'Use a different path or enable overwrite option'
+      break
     case 'EACCES':
-      message = `Permission denied for '${path}'`;
-      recoverable = false;
-      suggestion = 'Check file permissions and user access rights';
-      break;
+      message = `Permission denied for '${path}'`
+      recoverable = false
+      suggestion = 'Check file permissions and user access rights'
+      break
     case 'EISDIR':
-      message = `'${path}' is a directory`;
-      recoverable = true;
-      suggestion = 'Use a file path instead of directory path';
-      break;
+      message = `'${path}' is a directory`
+      recoverable = true
+      suggestion = 'Use a file path instead of directory path'
+      break
     case 'ENOTDIR':
-      message = `Part of path '${path}' is not a directory`;
-      recoverable = true;
-      suggestion = 'Check if parent directories exist and are valid';
-      break;
+      message = `Part of path '${path}' is not a directory`
+      recoverable = true
+      suggestion = 'Check if parent directories exist and are valid'
+      break
     case 'EMFILE':
-      message = 'Too many open files';
-      recoverable = true;
-      suggestion = 'Close unused files or increase system limits';
-      break;
+      message = 'Too many open files'
+      recoverable = true
+      suggestion = 'Close unused files or increase system limits'
+      break
     case 'ENOSPC':
-      message = 'No space left on device';
-      recoverable = false;
-      suggestion = 'Free up disk space';
-      break;
+      message = 'No space left on device'
+      recoverable = false
+      suggestion = 'Free up disk space'
+      break
     default:
-      message = error.message || String(error);
-      recoverable = false;
-      suggestion = 'Check the error details and retry the operation';
+      message = error.message || String(error)
+      recoverable = false
+      suggestion = 'Check the error details and retry the operation'
   }
 
   return createFileSystemError(operation, `${operation} failed: ${message}`, {
@@ -82,5 +82,5 @@ export const mapNodeError = (operation: string, path: string, error: any): FileS
     cause: error,
     suggestion,
     recoverable,
-  });
-};
+  })
+}

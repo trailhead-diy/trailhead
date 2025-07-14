@@ -2,19 +2,19 @@
 // Main Stream Operations Exports
 // ========================================
 
-export { createReadableOperations } from './readable/index.js';
-export { createWritableOperations } from './writable/index.js';
-export { createTransformOperations } from './transform/index.js';
-export { createDuplexOperations } from './duplex/index.js';
+export { createReadableOperations } from './readable/index.js'
+export { createWritableOperations } from './writable/index.js'
+export { createTransformOperations } from './transform/index.js'
+export { createDuplexOperations } from './duplex/index.js'
 
 // ========================================
 // Configuration Defaults
 // ========================================
 
-export { defaultReadableConfig } from './readable/index.js';
-export { defaultWritableConfig } from './writable/index.js';
-export { defaultTransformConfig } from './transform/index.js';
-export { defaultDuplexConfig } from './duplex/index.js';
+export { defaultReadableConfig } from './readable/index.js'
+export { defaultWritableConfig } from './writable/index.js'
+export { defaultTransformConfig } from './transform/index.js'
+export { defaultDuplexConfig } from './duplex/index.js'
 
 // ========================================
 // Error Utilities
@@ -29,7 +29,7 @@ export {
   createBackpressureError,
   mapStreamError,
   mapLibraryError,
-} from './errors.js';
+} from './errors.js'
 
 // ========================================
 // Type Exports
@@ -69,7 +69,7 @@ export type {
   TransformOperations,
   DuplexOperations,
   PipelineOperations,
-} from './types.js';
+} from './types.js'
 
 // ========================================
 // Readable Stream Types
@@ -94,7 +94,7 @@ export type {
   ReadableFilterOp,
   ReadableMapOp,
   ReadableReduceOp,
-} from './readable/index.js';
+} from './readable/index.js'
 
 // ========================================
 // Writable Stream Types
@@ -114,7 +114,7 @@ export type {
   WritableToCallbackOp,
   WritableWriteAllOp,
   WritableEndOp,
-} from './writable/index.js';
+} from './writable/index.js'
 
 // ========================================
 // Transform Stream Types
@@ -134,7 +134,7 @@ export type {
   DebounceState,
   TransformStreamInfo,
   TransformMetrics,
-} from './transform/index.js';
+} from './transform/index.js'
 
 // ========================================
 // Duplex Stream Types
@@ -147,4 +147,4 @@ export type {
   DuplexPassThroughOp,
   DuplexStreamInfo,
   DuplexMetrics,
-} from './duplex/index.js';
+} from './duplex/index.js'

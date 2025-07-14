@@ -20,27 +20,27 @@ npm install @trailhead/core
 ### Basic Result Operations
 
 ```typescript
-import { ok, err, type Result } from '@trailhead/core';
+import { ok, err, type Result } from '@trailhead/core'
 
 function divide(a: number, b: number): Result<number, Error> {
   if (b === 0) {
-    return err(new Error('Division by zero'));
+    return err(new Error('Division by zero'))
   }
-  return ok(a / b);
+  return ok(a / b)
 }
 
-const result = divide(10, 2);
+const result = divide(10, 2)
 if (result.isOk()) {
-  console.log('Result:', result.value); // 5
+  console.log('Result:', result.value) // 5
 } else {
-  console.error('Error:', result.error.message);
+  console.error('Error:', result.error.message)
 }
 ```
 
 ### Enhanced Error Creation
 
 ```typescript
-import { createCoreError } from '@trailhead/core';
+import { createCoreError } from '@trailhead/core'
 
 const error = createCoreError('VALIDATION_FAILED', 'Invalid input data', {
   component: 'UserService',
@@ -49,13 +49,13 @@ const error = createCoreError('VALIDATION_FAILED', 'Invalid input data', {
   suggestion: 'Check that all required fields are provided',
   recoverable: true,
   context: { userId: '123', field: 'email' },
-});
+})
 ```
 
 ### Performance-Optimized Type Guards
 
 ```typescript
-import { isDefined, isNonEmptyString, isObject } from '@trailhead/core';
+import { isDefined, isNonEmptyString, isObject } from '@trailhead/core'
 
 // Fast null/undefined checks
 if (isDefined(value)) {
@@ -76,15 +76,15 @@ if (isObject(data)) {
 ### Functional Composition
 
 ```typescript
-import { pipe, composeResult } from '@trailhead/core';
+import { pipe, composeResult } from '@trailhead/core'
 
 const processData = pipe(
   validateInput,
   composeResult(transformData, validateInput),
   composeResult(saveToDatabase, transformData)
-);
+)
 
-const result = await processData(inputData);
+const result = await processData(inputData)
 ```
 
 ## API Reference
@@ -127,24 +127,24 @@ const result = await processData(inputData);
 
 ```typescript
 // Before
-import { ok, err, type Result } from 'neverthrow';
+import { ok, err, type Result } from 'neverthrow'
 
 // After
-import { ok, err, type Result } from '@trailhead/core';
+import { ok, err, type Result } from '@trailhead/core'
 ```
 
 ### Enhanced error creation:
 
 ```typescript
 // Before
-const error = { type: 'ERROR', message: 'Failed' };
+const error = { type: 'ERROR', message: 'Failed' }
 
 // After
 const error = createCoreError('ERROR', 'Failed', {
   component: 'MyComponent',
   operation: 'myOperation',
   severity: 'medium',
-});
+})
 ```
 
 ## Performance Notes

@@ -1,7 +1,7 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Button } from '@/components/th/button';
-import { Heading } from '@/components/th/heading';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Button } from '@/components/th/button'
+import { Heading } from '@/components/th/heading'
 
 export default function HeadingPage(): React.JSX.Element {
   return (
@@ -18,5 +18,5 @@ export default function HeadingPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

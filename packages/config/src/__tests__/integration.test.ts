@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest'
 import {
   defineSchema,
   string,
@@ -11,13 +11,13 @@ import {
   formatValidationError,
   formatValidationErrors,
   createConfigOperations,
-} from '../index.js';
+} from '../index.js'
 import {
   createEnvironmentValidator,
   createPortValidator,
   createUrlValidator,
   createSecurityValidator,
-} from '../validators/operations.js';
+} from '../validators/operations.js'
 
 // ========================================
 // Complete Workflow Integration Tests
@@ -73,16 +73,16 @@ describe('Enhanced Configuration System - Integration Tests', () => {
     .description('Complete application configuration schema')
     .version('1.0.0')
     .strict()
-    .build();
+    .build()
 
   describe('Schema Definition and Validation', () => {
     it('should create a valid schema with builder pattern', () => {
-      expect(appConfigSchema.name).toBe('Application Configuration');
-      expect(appConfigSchema.description).toBe('Complete application configuration schema');
-      expect(appConfigSchema.version).toBe('1.0.0');
-      expect(appConfigSchema.strict).toBe(true);
-      expect(appConfigSchema.zodSchema).toBeDefined();
-    });
+      expect(appConfigSchema.name).toBe('Application Configuration')
+      expect(appConfigSchema.description).toBe('Complete application configuration schema')
+      expect(appConfigSchema.version).toBe('1.0.0')
+      expect(appConfigSchema.strict).toBe(true)
+      expect(appConfigSchema.zodSchema).toBeDefined()
+    })
 
     it('should validate a complete valid configuration', () => {
       const validConfig = {
@@ -106,11 +106,11 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           apiKey: 'abcdefghijklmnopqrstuvwxyz123456789012',
           jwtSecret: 'supersecretjwtkeythatisverylongandcomplex123',
         },
-      };
+      }
 
-      const result = validate(validConfig, appConfigSchema);
-      expect(result.isOk()).toBe(true);
-    });
+      const result = validate(validConfig, appConfigSchema)
+      expect(result.isOk()).toBe(true)
+    })
 
     it('should collect multiple validation errors', () => {
       const invalidConfig = {
@@ -135,17 +135,17 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           jwtSecret: '', // Too short
         },
         extraField: 'not allowed', // Additional property in strict mode
-      };
+      }
 
-      const result = validate(invalidConfig as any, appConfigSchema);
-      expect(result.isErr()).toBe(true);
+      const result = validate(invalidConfig as any, appConfigSchema)
+      expect(result.isErr()).toBe(true)
 
       if (result.isErr()) {
-        expect(result.error.type).toBe('SCHEMA_VALIDATION_FAILED');
-        expect(result.error.context?.errors).toBeDefined();
-        expect(result.error.context?.errors.length).toBeGreaterThan(5);
+        expect(result.error.type).toBe('SCHEMA_VALIDATION_FAILED')
+        expect(result.error.context?.errors).toBeDefined()
+        expect(result.error.context?.errors.length).toBeGreaterThan(5)
       }
-    });
+    })
 
     it('should format validation errors beautifully', () => {
       const invalidConfig = {
@@ -169,27 +169,27 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           apiKey: 'short',
           jwtSecret: 'supersecretjwtkeythatisverylongandcomplex123',
         },
-      };
+      }
 
-      const result = validate(invalidConfig as any, appConfigSchema);
-      expect(result.isErr()).toBe(true);
+      const result = validate(invalidConfig as any, appConfigSchema)
+      expect(result.isErr()).toBe(true)
 
       if (result.isErr()) {
-        const errors = result.error.context?.errors || [];
-        const formatted = formatValidationErrors(errors, { includeColors: false });
+        const errors = result.error.context?.errors || []
+        const formatted = formatValidationErrors(errors, { includeColors: false })
 
-        expect(formatted).toContain('name');
-        expect(formatted).toContain('port');
-        expect(formatted).toContain('apiKey');
-        expect(formatted).toContain('Suggestion:');
-        expect(formatted).toContain('Examples:');
+        expect(formatted).toContain('name')
+        expect(formatted).toContain('port')
+        expect(formatted).toContain('apiKey')
+        expect(formatted).toContain('Suggestion:')
+        expect(formatted).toContain('Examples:')
       }
-    });
-  });
+    })
+  })
 
   describe('Complete Configuration Operations', () => {
     it('should create and load configuration with validation', async () => {
-      const configOps = createConfigOperations();
+      const configOps = createConfigOperations()
 
       const definition = {
         name: 'test-config',
@@ -230,21 +230,21 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           createUrlValidator(),
           createSecurityValidator(),
         ],
-      };
+      }
 
-      const loadResult = await configOps.load(definition);
-      expect(loadResult.isOk()).toBe(true);
+      const loadResult = await configOps.load(definition)
+      expect(loadResult.isOk()).toBe(true)
 
       if (loadResult.isOk()) {
-        const state = loadResult.value;
-        expect(state.resolved.app.name).toBe('test-app');
-        expect(state.metadata.valid).toBe(true);
-        expect(state.metadata.validationErrors).toHaveLength(0);
+        const state = loadResult.value
+        expect(state.resolved.app.name).toBe('test-app')
+        expect(state.metadata.valid).toBe(true)
+        expect(state.metadata.validationErrors).toHaveLength(0)
       }
-    });
+    })
 
     it('should fail validation with built-in validators', async () => {
-      const configOps = createConfigOperations();
+      const configOps = createConfigOperations()
 
       const definition = {
         name: 'test-config',
@@ -283,19 +283,19 @@ describe('Enhanced Configuration System - Integration Tests', () => {
           createUrlValidator(),
           createSecurityValidator(),
         ],
-      };
+      }
 
-      const loadResult = await configOps.load(definition);
-      expect(loadResult.isOk()).toBe(true); // Should still load but with validation errors
+      const loadResult = await configOps.load(definition)
+      expect(loadResult.isOk()).toBe(true) // Should still load but with validation errors
 
       if (loadResult.isOk()) {
-        const state = loadResult.value;
-        expect(state.metadata.valid).toBe(false);
-        expect(state.metadata.validationErrors.length).toBeGreaterThan(0);
-        expect(state.metadata.transformationErrors.length).toBeGreaterThan(0);
+        const state = loadResult.value
+        expect(state.metadata.valid).toBe(false)
+        expect(state.metadata.validationErrors.length).toBeGreaterThan(0)
+        expect(state.metadata.transformationErrors.length).toBeGreaterThan(0)
       }
-    });
-  });
+    })
+  })
 
   describe('Documentation Generation', () => {
     it('should generate comprehensive documentation', () => {
@@ -304,35 +304,35 @@ describe('Enhanced Configuration System - Integration Tests', () => {
         includeExamples: true,
         includeConstraints: true,
         includeValidation: true,
-      });
+      })
 
-      expect(docsResult.isOk()).toBe(true);
+      expect(docsResult.isOk()).toBe(true)
 
       if (docsResult.isOk()) {
-        const docs = docsResult.value;
-        expect(docs.title).toBe('My App Configuration');
-        expect(docs.description).toBe('Complete application configuration schema');
-        expect(docs.version).toBe('1.0.0');
-        expect(docs.sections).toHaveLength(1);
-        expect(docs.sections[0].fields.length).toBeGreaterThan(0);
-        expect(docs.metadata.fieldCount).toBeGreaterThan(0);
+        const docs = docsResult.value
+        expect(docs.title).toBe('My App Configuration')
+        expect(docs.description).toBe('Complete application configuration schema')
+        expect(docs.version).toBe('1.0.0')
+        expect(docs.sections).toHaveLength(1)
+        expect(docs.sections[0].fields.length).toBeGreaterThan(0)
+        expect(docs.metadata.fieldCount).toBeGreaterThan(0)
       }
-    });
+    })
 
     it('should generate JSON Schema', () => {
       const jsonSchemaResult = generateJsonSchema(
         appConfigSchema,
         'Application Configuration',
         'Complete application configuration schema'
-      );
-      expect(jsonSchemaResult.$schema).toBe('https://json-schema.org/draft/2020-12/schema');
-      expect(jsonSchemaResult.type).toBe('object');
-      expect(jsonSchemaResult.title).toBe('Application Configuration');
-      expect(jsonSchemaResult.properties).toBeDefined();
-      expect(jsonSchemaResult.required).toBeDefined();
-      expect(jsonSchemaResult.additionalProperties).toBe(false); // strict mode
-    });
-  });
+      )
+      expect(jsonSchemaResult.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
+      expect(jsonSchemaResult.type).toBe('object')
+      expect(jsonSchemaResult.title).toBe('Application Configuration')
+      expect(jsonSchemaResult.properties).toBeDefined()
+      expect(jsonSchemaResult.required).toBeDefined()
+      expect(jsonSchemaResult.additionalProperties).toBe(false) // strict mode
+    })
+  })
 
   // Schema Introspection tests removed - legacy introspection not supported in Zod API
 
@@ -399,28 +399,28 @@ describe('Enhanced Configuration System - Integration Tests', () => {
             },
           },
         },
-      ];
+      ]
 
       commonMistakes.forEach(({ name: _, config }) => {
-        const result = validate(config as any, appConfigSchema);
-        expect(result.isErr()).toBe(true);
+        const result = validate(config as any, appConfigSchema)
+        expect(result.isErr()).toBe(true)
 
         if (result.isErr()) {
-          const errors = result.error.context?.errors || [];
-          expect(errors.length).toBeGreaterThan(0);
+          const errors = result.error.context?.errors || []
+          expect(errors.length).toBeGreaterThan(0)
 
-          const formatted = formatValidationError(errors[0], { includeColors: false });
-          expect(formatted).toContain('Suggestion:');
-          expect(formatted).toContain('Examples:');
+          const formatted = formatValidationError(errors[0], { includeColors: false })
+          expect(formatted).toContain('Suggestion:')
+          expect(formatted).toContain('Examples:')
 
           // Should contain helpful context
-          expect(formatted.length).toBeGreaterThan(50); // Substantial error message
+          expect(formatted.length).toBeGreaterThan(50) // Substantial error message
         }
-      });
-    });
+      })
+    })
 
     it('should handle partial configuration loading gracefully', async () => {
-      const configOps = createConfigOperations();
+      const configOps = createConfigOperations()
 
       const definition = {
         name: 'partial-config',
@@ -440,42 +440,42 @@ describe('Enhanced Configuration System - Integration Tests', () => {
             priority: 1,
           },
         ],
-      };
+      }
 
-      const loadResult = await configOps.load(definition);
-      expect(loadResult.isOk()).toBe(true); // Should load despite validation errors
+      const loadResult = await configOps.load(definition)
+      expect(loadResult.isOk()).toBe(true) // Should load despite validation errors
 
       if (loadResult.isOk()) {
-        const state = loadResult.value;
-        expect(state.metadata.valid).toBe(false);
-        expect(state.metadata.validationErrors.length).toBeGreaterThan(0);
-        expect(state.resolved.app.name).toBe('partial-app'); // Partial data should be available
+        const state = loadResult.value
+        expect(state.metadata.valid).toBe(false)
+        expect(state.metadata.validationErrors.length).toBeGreaterThan(0)
+        expect(state.resolved.app.name).toBe('partial-app') // Partial data should be available
       }
-    });
-  });
+    })
+  })
 
   describe('Performance and Scalability', () => {
     it('should handle large schemas efficiently', () => {
       // Create a schema with many fields
-      const fields: Record<string, any> = {};
+      const fields: Record<string, any> = {}
       for (let i = 0; i < 100; i++) {
-        fields[`field${i}`] = string().minLength(1).maxLength(100);
+        fields[`field${i}`] = string().minLength(1).maxLength(100)
       }
 
-      const largeSchema = defineSchema().object(fields).build();
+      const largeSchema = defineSchema().object(fields).build()
 
-      const config: any = {};
+      const config: any = {}
       for (let i = 0; i < 100; i++) {
-        config[`field${i}`] = `value${i}`;
+        config[`field${i}`] = `value${i}`
       }
 
-      const startTime = Date.now();
-      const result = validate(config, largeSchema);
-      const endTime = Date.now();
+      const startTime = Date.now()
+      const result = validate(config, largeSchema)
+      const endTime = Date.now()
 
-      expect(result.isOk()).toBe(true);
-      expect(endTime - startTime).toBeLessThan(100); // Should be fast (< 100ms)
-    });
+      expect(result.isOk()).toBe(true)
+      expect(endTime - startTime).toBeLessThan(100) // Should be fast (< 100ms)
+    })
 
     it('should handle deep nesting efficiently', () => {
       // Create deeply nested schema
@@ -493,7 +493,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
             }),
           }),
         })
-        .build();
+        .build()
 
       const deepConfig = {
         level1: {
@@ -507,14 +507,14 @@ describe('Enhanced Configuration System - Integration Tests', () => {
             },
           },
         },
-      };
+      }
 
-      const startTime = Date.now();
-      const result = validate(deepConfig, deepSchema);
-      const endTime = Date.now();
+      const startTime = Date.now()
+      const result = validate(deepConfig, deepSchema)
+      const endTime = Date.now()
 
-      expect(result.isOk()).toBe(true);
-      expect(endTime - startTime).toBeLessThan(50); // Should handle deep nesting efficiently
-    });
-  });
-});
+      expect(result.isOk()).toBe(true)
+      expect(endTime - startTime).toBeLessThan(50) // Should handle deep nesting efficiently
+    })
+  })
+})

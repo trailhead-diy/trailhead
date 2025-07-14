@@ -1,18 +1,18 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result, CoreError } from '@esteban-url/core';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 import {
   createConfigValidationError,
   createSchemaValidationError,
   type ConfigValidationError,
-} from '../validation/errors.js';
+} from '../validation/errors.js'
 import {
   validateWithZodSchema as validate,
   type ZodConfigSchema as ConfigSchema,
-} from './zod-schema.js';
-import { createConfigManager } from './manager.js';
-import { createLoaderOperations } from '../loaders/operations.js';
-import { createValidatorOperations } from '../validators/operations.js';
-import { createTransformerOperations } from '../transformers/operations.js';
+} from './zod-schema.js'
+import { createConfigManager } from './manager.js'
+import { createLoaderOperations } from '../loaders/operations.js'
+import { createValidatorOperations } from '../validators/operations.js'
+import { createTransformerOperations } from '../transformers/operations.js'
 import type {
   ConfigDefinition as BaseConfigDefinition,
   ConfigSource,
@@ -25,20 +25,20 @@ import type {
   ConfigWatcher,
   ConfigWatchCallback,
   ConfigManager,
-} from '../types.js';
+} from '../types.js'
 // ConfigValidator type imported via relative import in interface definitions
 
 // Enhanced ConfigDefinition with proper Zod schema typing
 export interface ConfigDefinition<T = Record<string, unknown>>
   extends Omit<BaseConfigDefinition<T>, 'schema'> {
-  readonly schema?: ConfigSchema<T>;
+  readonly schema?: ConfigSchema<T>
 }
 
 // ========================================
 // Enhanced Configuration Operations
 // ========================================
 
-export type ConfigResult<T> = Result<T, CoreError>;
+export type ConfigResult<T> = Result<T, CoreError>
 
 // All types are imported from ../types.js
 
@@ -47,52 +47,52 @@ export type ConfigResult<T> = Result<T, CoreError>;
 // ========================================
 
 export interface ConfigOperations {
-  readonly create: <T>(definition: ConfigDefinition<T>) => ConfigResult<ConfigManager<T>>;
-  readonly load: <T>(definition: ConfigDefinition<T>) => Promise<ConfigResult<ConfigState<T>>>;
+  readonly create: <T>(definition: ConfigDefinition<T>) => ConfigResult<ConfigManager<T>>
+  readonly load: <T>(definition: ConfigDefinition<T>) => Promise<ConfigResult<ConfigState<T>>>
   readonly watch: <T>(
     definition: ConfigDefinition<T>,
     callback: ConfigChangeCallback<T>
-  ) => Promise<ConfigResult<ConfigWatcher[]>>;
-  readonly validate: <T>(config: T, schema: ConfigSchema<T>) => ConfigResult<void>;
+  ) => Promise<ConfigResult<ConfigWatcher[]>>
+  readonly validate: <T>(config: T, schema: ConfigSchema<T>) => ConfigResult<void>
   readonly transform: <T>(
     config: Record<string, unknown>,
     transformers: readonly ConfigTransformer<T>[]
-  ) => ConfigResult<T>;
+  ) => ConfigResult<T>
 }
 
 export interface LoaderOperations {
-  readonly register: (loader: ConfigLoader) => void;
-  readonly unregister: (type: ConfigSourceType) => void;
-  readonly getLoader: (source: ConfigSource) => ConfigLoader | undefined;
-  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>;
+  readonly register: (loader: ConfigLoader) => void
+  readonly unregister: (type: ConfigSourceType) => void
+  readonly getLoader: (source: ConfigSource) => ConfigLoader | undefined
+  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
 }
 
 export interface ValidatorOperations {
-  readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void;
-  readonly unregister: (name: string) => void;
+  readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void
+  readonly unregister: (name: string) => void
   readonly validate: <T>(
     config: T,
     validators: readonly import('../types.js').ConfigValidator<T>[]
-  ) => ConfigResult<void>;
-  readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>;
+  ) => ConfigResult<void>
+  readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>
 }
 
 export interface TransformerOperations {
-  readonly register: <T>(transformer: ConfigTransformer<T>) => void;
-  readonly unregister: (name: string) => void;
+  readonly register: <T>(transformer: ConfigTransformer<T>) => void
+  readonly unregister: (name: string) => void
   readonly transform: <T>(
     config: Record<string, unknown>,
     transformers: readonly ConfigTransformer<T>[]
-  ) => ConfigResult<T>;
+  ) => ConfigResult<T>
 }
 
 export interface ConfigLoader {
-  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>;
+  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
   readonly watch?: (
     source: ConfigSource,
     callback: ConfigWatchCallback
-  ) => Promise<ConfigResult<ConfigWatcher>>;
-  readonly supports: (source: ConfigSource) => boolean;
+  ) => Promise<ConfigResult<ConfigWatcher>>
+  readonly supports: (source: ConfigSource) => boolean
 }
 
 // ========================================
@@ -100,15 +100,15 @@ export interface ConfigLoader {
 // ========================================
 
 export const createConfigOperations = (): ConfigOperations => {
-  const loaderOps = createLoaderOperations();
-  const validatorOps = createValidatorOperations();
-  const transformerOps = createTransformerOperations();
+  const loaderOps = createLoaderOperations()
+  const validatorOps = createValidatorOperations()
+  const transformerOps = createTransformerOperations()
 
   const create = <T>(definition: ConfigDefinition<T>): ConfigResult<ConfigManager<T>> => {
     // Enhanced validation of definition
-    const validationResult = validateDefinition(definition);
+    const validationResult = validateDefinition(definition)
     if (validationResult.isErr()) {
-      return err(validationResult.error);
+      return err(validationResult.error)
     }
 
     return ok(
@@ -117,28 +117,28 @@ export const createConfigOperations = (): ConfigOperations => {
         validatorOps,
         transformerOps,
       })
-    );
-  };
+    )
+  }
 
   const load = async <T>(
     definition: ConfigDefinition<T>
   ): Promise<ConfigResult<ConfigState<T>>> => {
-    const startTime = Date.now();
+    const startTime = Date.now()
 
     // Validate definition first
-    const definitionValidation = validateDefinition(definition);
+    const definitionValidation = validateDefinition(definition)
     if (definitionValidation.isErr()) {
-      return err(definitionValidation.error);
+      return err(definitionValidation.error)
     }
 
     try {
       // Load data from all sources
       const sourceResults = await Promise.all(
         definition.sources.map(async (source): Promise<ResolvedSource> => {
-          const sourceStartTime = Date.now();
+          const sourceStartTime = Date.now()
 
           try {
-            const dataResult = await loaderOps.load(source);
+            const dataResult = await loaderOps.load(source)
 
             if (dataResult.isErr()) {
               return {
@@ -146,14 +146,14 @@ export const createConfigOperations = (): ConfigOperations => {
                 data: {},
                 loadTime: Date.now() - sourceStartTime,
                 error: dataResult.error,
-              };
+              }
             }
 
             return {
               source,
               data: dataResult.value,
               loadTime: Date.now() - sourceStartTime,
-            };
+            }
           } catch (error) {
             return {
               source,
@@ -169,15 +169,15 @@ export const createConfigOperations = (): ConfigOperations => {
                   cause: error instanceof Error ? error : undefined,
                 }
               ),
-            };
+            }
           }
         })
-      );
+      )
 
       // Check for critical source failures
       const criticalErrors = sourceResults
-        .filter(result => result.error && !result.source.optional)
-        .map(result => result.error!);
+        .filter((result) => result.error && !result.source.optional)
+        .map((result) => result.error!)
 
       if (criticalErrors.length > 0) {
         return err(
@@ -190,51 +190,51 @@ export const createConfigOperations = (): ConfigOperations => {
               context: { errors: criticalErrors },
             }
           )
-        );
+        )
       }
 
       // Merge configuration from all sources
-      const mergedConfig = mergeSourceData(sourceResults, definition.defaults);
+      const mergedConfig = mergeSourceData(sourceResults, definition.defaults)
 
       // Transform configuration
-      let transformedConfig: T;
+      let transformedConfig: T
       if (definition.transformers && definition.transformers.length > 0) {
-        const transformResult = transformerOps.transform(mergedConfig, definition.transformers);
+        const transformResult = transformerOps.transform(mergedConfig, definition.transformers)
         if (transformResult.isErr()) {
-          return err(transformResult.error);
+          return err(transformResult.error)
         }
-        transformedConfig = transformResult.value;
+        transformedConfig = transformResult.value
       } else {
-        transformedConfig = mergedConfig as T;
+        transformedConfig = mergedConfig as T
       }
 
       // Validate against schema (if provided)
-      const validationErrors: ConfigValidationError[] = [];
-      let validatedConfig: T;
+      const validationErrors: ConfigValidationError[] = []
+      let validatedConfig: T
 
       if (definition.schema) {
-        const validationResult = validate(transformedConfig, definition.schema);
+        const validationResult = validate(transformedConfig, definition.schema)
 
         if (validationResult.isErr()) {
-          const errors = extractValidationErrors(validationResult.error);
-          validationErrors.push(...errors);
-          validatedConfig = transformedConfig; // Use transformed config even with validation errors
+          const errors = extractValidationErrors(validationResult.error)
+          validationErrors.push(...errors)
+          validatedConfig = transformedConfig // Use transformed config even with validation errors
         } else {
-          validatedConfig = validationResult.value;
+          validatedConfig = validationResult.value
         }
       } else {
-        validatedConfig = transformedConfig;
+        validatedConfig = transformedConfig
       }
 
       // Run additional validators
-      const additionalValidationErrors: CoreError[] = [];
+      const additionalValidationErrors: CoreError[] = []
       if (definition.validators && definition.validators.length > 0) {
         const additionalValidationResult = await validatorOps.validate(
           validatedConfig,
           definition.validators
-        );
+        )
         if (additionalValidationResult.isErr()) {
-          additionalValidationErrors.push(additionalValidationResult.error);
+          additionalValidationErrors.push(additionalValidationResult.error)
         }
       }
 
@@ -247,7 +247,7 @@ export const createConfigOperations = (): ConfigOperations => {
         transformationErrors: additionalValidationErrors,
         version: definition.version,
         checksum: generateChecksum(validatedConfig),
-      };
+      }
 
       // Create state
       const state: ConfigState<T> = {
@@ -256,9 +256,9 @@ export const createConfigOperations = (): ConfigOperations => {
         resolved: validatedConfig,
         sources: sourceResults,
         metadata,
-      };
+      }
 
-      return ok(state);
+      return ok(state)
     } catch (error) {
       return err(
         createCoreError('CONFIG_LOAD_FAILED', 'Configuration loading failed', {
@@ -267,41 +267,41 @@ export const createConfigOperations = (): ConfigOperations => {
           context: { definition: definition.name },
           cause: error instanceof Error ? error : undefined,
         })
-      );
+      )
     }
-  };
+  }
 
   const watch = async <T>(
     definition: ConfigDefinition<T>,
     callback: ConfigChangeCallback<T>
   ): Promise<ConfigResult<ConfigWatcher[]>> => {
-    const watchers: ConfigWatcher[] = [];
+    const watchers: ConfigWatcher[] = []
 
     try {
       for (const source of definition.sources) {
-        if (!source.watch) continue;
+        if (!source.watch) continue
 
-        const loader = loaderOps.getLoader(source);
-        if (!loader?.watch) continue;
+        const loader = loaderOps.getLoader(source)
+        if (!loader?.watch) continue
 
         const watchResult = await loader.watch(source, (data, error) => {
           // Handle configuration changes
-          handleConfigChange(definition, data, error, callback);
-        });
+          handleConfigChange(definition, data, error, callback)
+        })
 
         if (watchResult.isErr()) {
           // Clean up existing watchers on failure
-          await Promise.all(watchers.map(watcher => watcher.stop()));
-          return err(watchResult.error);
+          await Promise.all(watchers.map((watcher) => watcher.stop()))
+          return err(watchResult.error)
         }
 
-        watchers.push(watchResult.value);
+        watchers.push(watchResult.value)
       }
 
-      return ok(watchers);
+      return ok(watchers)
     } catch (error) {
       // Clean up on error
-      await Promise.all(watchers.map(watcher => watcher.stop()));
+      await Promise.all(watchers.map((watcher) => watcher.stop()))
 
       return err(
         createCoreError('WATCH_SETUP_FAILED', 'Failed to setup configuration watching', {
@@ -310,24 +310,24 @@ export const createConfigOperations = (): ConfigOperations => {
           context: { definition: definition.name },
           cause: error instanceof Error ? error : undefined,
         })
-      );
+      )
     }
-  };
+  }
 
   const validateConfig = <T>(config: T, schema: ConfigSchema<T>): ConfigResult<void> => {
-    const validationResult = validate(config, schema);
+    const validationResult = validate(config, schema)
     if (validationResult.isErr()) {
-      return err(validationResult.error);
+      return err(validationResult.error)
     }
-    return ok(undefined);
-  };
+    return ok(undefined)
+  }
 
   const transform = <T>(
     config: Record<string, unknown>,
     transformers: readonly ConfigTransformer<T>[]
   ): ConfigResult<T> => {
-    return transformerOps.transform(config, transformers);
-  };
+    return transformerOps.transform(config, transformers)
+  }
 
   return {
     create,
@@ -335,15 +335,15 @@ export const createConfigOperations = (): ConfigOperations => {
     watch,
     validate: validateConfig,
     transform,
-  };
-};
+  }
+}
 
 // ========================================
 // Enhanced Validation Functions
 // ========================================
 
 const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<void> => {
-  const errors: ConfigValidationError[] = [];
+  const errors: ConfigValidationError[] = []
 
   // Validate name
   if (!definition.name || typeof definition.name !== 'string') {
@@ -357,7 +357,7 @@ const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<vo
         path: [],
         rule: 'required',
       })
-    );
+    )
   }
 
   // Schema is optional - no validation needed
@@ -378,7 +378,7 @@ const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<vo
         path: [],
         rule: 'required',
       })
-    );
+    )
   } else {
     // Validate individual sources
     definition.sources.forEach((source, index) => {
@@ -393,7 +393,7 @@ const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<vo
             path: ['sources', index.toString()],
             rule: 'required',
           })
-        );
+        )
       }
 
       if (typeof source.priority !== 'number') {
@@ -407,17 +407,17 @@ const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<vo
             path: ['sources', index.toString()],
             rule: 'required',
           })
-        );
+        )
       }
-    });
+    })
   }
 
   if (errors.length > 0) {
-    return err(createSchemaValidationError(errors, 'ConfigDefinition'));
+    return err(createSchemaValidationError(errors, 'ConfigDefinition'))
   }
 
-  return ok(undefined);
-};
+  return ok(undefined)
+}
 
 // ========================================
 // Utility Functions
@@ -429,84 +429,84 @@ const mergeSourceData = (
 ): Record<string, unknown> => {
   // Sort sources by priority (higher priority overwrites lower)
   const sortedSources = [...sources]
-    .filter(source => !source.error)
-    .sort((a, b) => a.source.priority - b.source.priority);
+    .filter((source) => !source.error)
+    .sort((a, b) => a.source.priority - b.source.priority)
 
-  let merged = defaults ? { ...defaults } : {};
+  let merged = defaults ? { ...defaults } : {}
 
   for (const source of sortedSources) {
-    merged = deepMerge(merged, source.data);
+    merged = deepMerge(merged, source.data)
   }
 
-  return merged;
-};
+  return merged
+}
 
 const deepMerge = (
   target: Record<string, unknown>,
   source: Record<string, unknown>
 ): Record<string, unknown> => {
-  const result = { ...target };
+  const result = { ...target }
 
   for (const [key, value] of Object.entries(source)) {
     if (value === null || value === undefined) {
-      result[key] = value;
+      result[key] = value
     } else if (typeof value === 'object' && !Array.isArray(value)) {
       if (typeof result[key] === 'object' && !Array.isArray(result[key]) && result[key] !== null) {
         result[key] = deepMerge(
           result[key] as Record<string, unknown>,
           value as Record<string, unknown>
-        );
+        )
       } else {
-        result[key] = value;
+        result[key] = value
       }
     } else {
-      result[key] = value;
+      result[key] = value
     }
   }
 
-  return result;
-};
+  return result
+}
 
 const generateChecksum = (config: unknown): string => {
   try {
-    const json = JSON.stringify(config, Object.keys(config as any).sort());
+    const json = JSON.stringify(config, Object.keys(config as any).sort())
 
     // Simple hash function (for demo purposes - use crypto in production)
-    let hash = 0;
+    let hash = 0
     for (let i = 0; i < json.length; i++) {
-      const char = json.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      const char = json.charCodeAt(i)
+      hash = (hash << 5) - hash + char
+      hash = hash & hash // Convert to 32-bit integer
     }
 
-    return Math.abs(hash).toString(16);
+    return Math.abs(hash).toString(16)
   } catch {
-    return 'invalid';
+    return 'invalid'
   }
-};
+}
 
 const extractValidationErrors = (error: CoreError): ConfigValidationError[] => {
   // If it's already a validation error, return it
   if (error.type === 'VALIDATION_ERROR') {
     // Type guard to safely cast to ConfigValidationError
     if (isConfigValidationError(error)) {
-      return [error];
+      return [error]
     }
   }
 
   // If it's a schema validation error, extract nested errors
   if (error.type === 'SCHEMA_VALIDATION_FAILED' && error.context?.errors) {
-    const errors = error.context.errors;
+    const errors = error.context.errors
     if (Array.isArray(errors)) {
       return errors.filter(
         (e): e is ConfigValidationError =>
           typeof e === 'object' && e !== null && 'type' in e && e.type === 'VALIDATION_ERROR'
-      );
+      )
     }
   }
 
-  return [];
-};
+  return []
+}
 
 // Type guard for ConfigValidationError
 const isConfigValidationError = (error: unknown): error is ConfigValidationError => {
@@ -518,11 +518,11 @@ const isConfigValidationError = (error: unknown): error is ConfigValidationError
     'examples' in error &&
     'expectedType' in error &&
     'path' in error
-  );
-};
+  )
+}
 
 // Export missing functions that are used by manager
-export const mergeConfigs = deepMerge;
+export const mergeConfigs = deepMerge
 
 export const createConfigMetadata = (
   loadTime: number,
@@ -540,8 +540,8 @@ export const createConfigMetadata = (
     transformationErrors,
     version,
     checksum,
-  };
-};
+  }
+}
 
 const handleConfigChange = <T>(
   definition: ConfigDefinition<T>,
@@ -555,11 +555,11 @@ const handleConfigChange = <T>(
   if (error) {
     // TODO: Use proper logging instead of console.error
     // console.error('Configuration watch error:', error);
-    return;
+    return
   }
 
   // In a full implementation, this would:
   // 1. Reload the full configuration
   // 2. Detect changes
   // 3. Call the callback with old/new configs and changes
-};
+}

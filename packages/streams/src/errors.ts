@@ -1,5 +1,5 @@
-import { createCoreError } from '@esteban-url/core/errors';
-import type { CoreError } from '@esteban-url/core/errors';
+import { createCoreError } from '@esteban-url/core/errors'
+import type { CoreError } from '@esteban-url/core/errors'
 
 // ========================================
 // Stream Error Factories
@@ -16,7 +16,7 @@ export const createStreamError = (
     cause,
     recoverable: true,
     context: metadata,
-  });
+  })
 
 export const createStreamTimeoutError = (
   timeout: number,
@@ -27,7 +27,7 @@ export const createStreamTimeoutError = (
     details: `The ${operation} did not complete within the specified timeout period`,
     recoverable: false,
     context: { timeout, operation, ...metadata },
-  });
+  })
 
 export const createStreamClosedError = (
   streamType: string = 'stream',
@@ -37,7 +37,7 @@ export const createStreamClosedError = (
     details: `The ${streamType} has been closed or destroyed and cannot accept new operations`,
     recoverable: false,
     context: { streamType, ...metadata },
-  });
+  })
 
 export const createInvalidStreamError = (
   expected: string,
@@ -52,7 +52,7 @@ export const createInvalidStreamError = (
       recoverable: false,
       context: { expected, actual, ...metadata },
     }
-  );
+  )
 
 export const createPipelineError = (
   message: string,
@@ -68,7 +68,7 @@ export const createPipelineError = (
     cause,
     recoverable: false,
     context: { stageIndex, ...metadata },
-  });
+  })
 
 export const createBackpressureError = (
   streamType: string,
@@ -79,7 +79,7 @@ export const createBackpressureError = (
     details: `Stream buffer is full (${bufferSize} bytes), write operation would block`,
     recoverable: true,
     context: { streamType, bufferSize, ...metadata },
-  });
+  })
 
 // ========================================
 // Error Mapping Utilities
@@ -93,22 +93,22 @@ export const mapStreamError = (
   if (error instanceof Error) {
     // Map common Node.js stream errors
     if (error.message.includes('write after end')) {
-      return createStreamClosedError(streamType, { operation, originalError: error.message });
+      return createStreamClosedError(streamType, { operation, originalError: error.message })
     }
 
     if (error.message.includes('Cannot pipe')) {
       return createInvalidStreamError('pipeable stream', streamType, {
         operation,
         originalError: error.message,
-      });
+      })
     }
 
     if (error.message.includes('timeout') || error.message.includes('ETIMEDOUT')) {
-      return createStreamTimeoutError(0, operation, { streamType, originalError: error.message });
+      return createStreamTimeoutError(0, operation, { streamType, originalError: error.message })
     }
 
     if (error.message.includes('EPIPE') || error.message.includes('broken pipe')) {
-      return createStreamClosedError(streamType, { operation, originalError: error.message });
+      return createStreamClosedError(streamType, { operation, originalError: error.message })
     }
 
     // Generic stream error mapping
@@ -117,7 +117,7 @@ export const mapStreamError = (
       `Stream operation "${operation}" on ${streamType} encountered an error`,
       error,
       { operation, streamType }
-    );
+    )
   }
 
   return createStreamError(
@@ -125,16 +125,16 @@ export const mapStreamError = (
     `Stream operation "${operation}" on ${streamType} failed`,
     error,
     { operation, streamType }
-  );
-};
+  )
+}
 
 export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error)
 
   return createStreamError(
     `${library} operation failed`,
     `Library "${library}" failed during "${operation}": ${errorMessage}`,
     error,
     { library, operation }
-  );
-};
+  )
+}

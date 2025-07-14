@@ -1,4 +1,4 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   TestOperations,
   TestSuiteBuilder,
@@ -19,7 +19,7 @@ import type {
   TestStatus,
   TestRunContext,
   TestCleanupFn,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Test Operations
@@ -27,30 +27,30 @@ import type {
 
 export const createTestOperations = (): TestOperations => {
   const createSuite = (name: string, options: Partial<TestContext> = {}): TestSuiteBuilder => {
-    return createTestSuiteBuilder(name, options);
-  };
+    return createTestSuiteBuilder(name, options)
+  }
 
   const createRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner => {
-    return createTestRunner(options);
-  };
+    return createTestRunner(options)
+  }
 
   const createMock = <TArgs extends readonly unknown[], TReturn>(
     implementation?: MockImplementation<TArgs, TReturn>
   ): MockFunction<TArgs, TReturn> => {
-    return createMockFunction(implementation);
-  };
+    return createMockFunction(implementation)
+  }
 
   const expect = <T>(value: T): Assertion<T> => {
-    return createAssertion(value);
-  };
+    return createAssertion(value)
+  }
 
   return {
     createSuite,
     createRunner,
     createMock,
     expect,
-  };
-};
+  }
+}
 
 // ========================================
 // Test Suite Builder
@@ -68,10 +68,10 @@ const createTestSuiteBuilder = (
     hooks: {},
     cleanup: [],
     ...options,
-  };
+  }
 
-  const tests: TestCase[] = [];
-  const suites: TestSuite[] = [];
+  const tests: TestCase[] = []
+  const suites: TestSuite[] = []
 
   const test = (
     testName: string,
@@ -82,7 +82,7 @@ const createTestSuiteBuilder = (
       ...context,
       name: testName,
       ...testOptions,
-    };
+    }
 
     const testCase: TestCase = {
       name: testName,
@@ -90,42 +90,42 @@ const createTestSuiteBuilder = (
       context: testContext,
       status: 'pending',
       retries: 0,
-    };
+    }
 
-    tests.push(testCase);
-    return builder;
-  };
+    tests.push(testCase)
+    return builder
+  }
 
   const describe = (
     suiteName: string,
     fn: (suite: TestSuiteBuilder) => void,
     suiteOptions: Partial<TestContext> = {}
   ): TestSuiteBuilder => {
-    const childBuilder = createTestSuiteBuilder(suiteName, { ...context, ...suiteOptions });
-    fn(childBuilder);
-    suites.push(childBuilder.build());
-    return builder;
-  };
+    const childBuilder = createTestSuiteBuilder(suiteName, { ...context, ...suiteOptions })
+    fn(childBuilder)
+    suites.push(childBuilder.build())
+    return builder
+  }
 
   const beforeEach = (fn: TestHookFn): TestSuiteBuilder => {
-    context = { ...context, hooks: { ...context.hooks, beforeEach: fn } };
-    return builder;
-  };
+    context = { ...context, hooks: { ...context.hooks, beforeEach: fn } }
+    return builder
+  }
 
   const afterEach = (fn: TestHookFn): TestSuiteBuilder => {
-    context = { ...context, hooks: { ...context.hooks, afterEach: fn } };
-    return builder;
-  };
+    context = { ...context, hooks: { ...context.hooks, afterEach: fn } }
+    return builder
+  }
 
   const beforeAll = (fn: TestHookFn): TestSuiteBuilder => {
-    context = { ...context, hooks: { ...context.hooks, beforeAll: fn } };
-    return builder;
-  };
+    context = { ...context, hooks: { ...context.hooks, beforeAll: fn } }
+    return builder
+  }
 
   const afterAll = (fn: TestHookFn): TestSuiteBuilder => {
-    context = { ...context, hooks: { ...context.hooks, afterAll: fn } };
-    return builder;
-  };
+    context = { ...context, hooks: { ...context.hooks, afterAll: fn } }
+    return builder
+  }
 
   const build = (): TestSuite => {
     return {
@@ -140,8 +140,8 @@ const createTestSuiteBuilder = (
         skipped: 0,
         duration: 0,
       },
-    };
-  };
+    }
+  }
 
   const builder: TestSuiteBuilder = {
     name,
@@ -153,10 +153,10 @@ const createTestSuiteBuilder = (
     beforeAll,
     afterAll,
     build,
-  };
+  }
 
-  return builder;
-};
+  return builder
+}
 
 // ========================================
 // Test Runner
@@ -171,14 +171,14 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
     failFast: false,
     reporter: createConsoleReporter(),
     ...options,
-  };
+  }
 
   const run = async (suite: TestSuite): Promise<TestResult<TestReport>> => {
     try {
-      const startTime = Date.now();
+      const startTime = Date.now()
 
-      await config.reporter.onStart([suite]);
-      const suiteReport = await runSuite(suite);
+      await config.reporter.onStart([suite])
+      const suiteReport = await runSuite(suite)
 
       const report: TestReport = {
         suites: [suiteReport],
@@ -186,10 +186,10 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
         duration: Date.now() - startTime,
         timestamp: new Date(),
         success: suiteReport.stats.failed === 0,
-      };
+      }
 
-      await config.reporter.onEnd(report);
-      return ok(report);
+      await config.reporter.onEnd(report)
+      return ok(report)
     } catch (error) {
       return err({
         type: 'TestError',
@@ -198,27 +198,27 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
         suggestion: 'Check test configuration and implementation',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const runSuite = async (suite: TestSuite): Promise<TestSuiteReport> => {
-    await config.reporter.onSuiteStart(suite);
+    await config.reporter.onSuiteStart(suite)
 
-    const stats = { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 };
-    const testReports: TestCaseReport[] = [];
-    const suiteReports: TestSuiteReport[] = [];
+    const stats = { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 }
+    const testReports: TestCaseReport[] = []
+    const suiteReports: TestSuiteReport[] = []
 
     // Run hooks
     if (suite.context.hooks?.beforeAll) {
-      await suite.context.hooks.beforeAll();
+      await suite.context.hooks.beforeAll()
     }
 
     // Run tests
     for (const test of suite.tests) {
-      const testResult = await runTest(test, suite.name);
+      const testResult = await runTest(test, suite.name)
       if (testResult.isOk()) {
-        const updatedTest = testResult.value;
+        const updatedTest = testResult.value
         testReports.push({
           name: updatedTest.name,
           status: updatedTest.status,
@@ -233,35 +233,35 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
               }
             : undefined,
           retries: updatedTest.retries,
-        });
+        })
 
-        stats.total++;
-        if (updatedTest.status === 'passed') stats.passed++;
-        else if (updatedTest.status === 'failed') stats.failed++;
-        else if (updatedTest.status === 'skipped') stats.skipped++;
-        stats.duration += updatedTest.duration || 0;
+        stats.total++
+        if (updatedTest.status === 'passed') stats.passed++
+        else if (updatedTest.status === 'failed') stats.failed++
+        else if (updatedTest.status === 'skipped') stats.skipped++
+        stats.duration += updatedTest.duration || 0
 
         if (config.failFast && updatedTest.status === 'failed') {
-          break;
+          break
         }
       }
     }
 
     // Run child suites
     for (const childSuite of suite.suites) {
-      const childReport: TestSuiteReport = await runSuite(childSuite);
-      suiteReports.push(childReport);
+      const childReport: TestSuiteReport = await runSuite(childSuite)
+      suiteReports.push(childReport)
 
-      stats.total += childReport.stats.total;
-      stats.passed += childReport.stats.passed;
-      stats.failed += childReport.stats.failed;
-      stats.skipped += childReport.stats.skipped;
-      stats.duration += childReport.stats.duration;
+      stats.total += childReport.stats.total
+      stats.passed += childReport.stats.passed
+      stats.failed += childReport.stats.failed
+      stats.skipped += childReport.stats.skipped
+      stats.duration += childReport.stats.duration
     }
 
     // Run cleanup hooks
     if (suite.context.hooks?.afterAll) {
-      await suite.context.hooks.afterAll();
+      await suite.context.hooks.afterAll()
     }
 
     const suiteReport: TestSuiteReport = {
@@ -269,40 +269,40 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
       tests: testReports,
       suites: suiteReports,
       stats,
-    };
+    }
 
-    await config.reporter.onSuiteEnd(suite, suiteReport);
-    return suiteReport;
-  };
+    await config.reporter.onSuiteEnd(suite, suiteReport)
+    return suiteReport
+  }
 
   const runTest = async (test: TestCase, suiteName?: string): Promise<TestResult<TestCase>> => {
     try {
-      await config.reporter.onTestStart(test);
+      await config.reporter.onTestStart(test)
 
-      const startTime = Date.now();
-      let updatedTest = { ...test, status: 'running' as TestStatus };
+      const startTime = Date.now()
+      let updatedTest = { ...test, status: 'running' as TestStatus }
 
-      const cleanupFns: TestCleanupFn[] = [];
+      const cleanupFns: TestCleanupFn[] = []
       const runContext: TestRunContext = {
         suite: suiteName || test.context.name,
         test: test.name,
         timeout: test.context.timeout || config.timeout,
         cleanup: (fn: TestCleanupFn) => {
-          cleanupFns.push(fn);
+          cleanupFns.push(fn)
         },
         skip: (reason?: string) => {
-          throw new Error(`TEST_SKIP: ${reason || 'Test skipped'}`);
+          throw new Error(`TEST_SKIP: ${reason || 'Test skipped'}`)
         },
         fail: (message: string, cause?: Error) => {
-          throw new Error(`TEST_FAIL: ${message}`);
+          throw new Error(`TEST_FAIL: ${message}`)
         },
-      };
+      }
 
       // Run before hooks
       if (test.context.hooks?.beforeEach) {
-        const hookResult = await test.context.hooks.beforeEach();
+        const hookResult = await test.context.hooks.beforeEach()
         if (hookResult.isErr()) {
-          throw new Error(`beforeEach hook failed: ${hookResult.error.message}`);
+          throw new Error(`beforeEach hook failed: ${hookResult.error.message}`)
         }
       }
 
@@ -311,7 +311,7 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
         const testResult = await Promise.race([
           test.fn(runContext),
           createTimeout(test.context.timeout || config.timeout),
-        ]);
+        ])
 
         // Handle both Result types and direct results
         if (testResult && typeof testResult === 'object' && 'isErr' in testResult) {
@@ -322,13 +322,13 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
               status: 'failed',
               error: testResult.error,
               duration: Date.now() - startTime,
-            };
+            }
           } else {
             updatedTest = {
               ...updatedTest,
               status: 'passed',
               duration: Date.now() - startTime,
-            };
+            }
           }
         } else {
           // Direct result (non-Result type)
@@ -336,7 +336,7 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
             ...updatedTest,
             status: 'passed',
             duration: Date.now() - startTime,
-          };
+          }
         }
       } catch (error) {
         if (error instanceof Error && error.message === 'TEST_TIMEOUT') {
@@ -350,7 +350,7 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
               message: `Test timed out after ${test.context.timeout || config.timeout}ms`,
               recoverable: false,
             } as any,
-          };
+          }
         } else {
           updatedTest = {
             ...updatedTest,
@@ -363,18 +363,18 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
               cause: error,
               recoverable: false,
             } as any,
-          };
+          }
         }
       }
 
       // Run after hooks
       if (test.context.hooks?.afterEach) {
-        await test.context.hooks.afterEach();
+        await test.context.hooks.afterEach()
       }
 
       // Run cleanup
       for (const cleanup of test.context.cleanup || []) {
-        await cleanup();
+        await cleanup()
       }
 
       const testReport = {
@@ -389,10 +389,10 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
             }
           : undefined,
         retries: updatedTest.retries,
-      };
+      }
 
-      await config.reporter.onTestEnd(updatedTest, testReport);
-      return ok(updatedTest);
+      await config.reporter.onTestEnd(updatedTest, testReport)
+      return ok(updatedTest)
     } catch (error) {
       return err({
         type: 'TestError',
@@ -400,35 +400,35 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
         message: `Failed to execute test ${test.name}`,
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const createContext = (options: Partial<TestRunnerOptions> = {}): TestRunContext => {
-    const cleanupFns: TestCleanupFn[] = [];
+    const cleanupFns: TestCleanupFn[] = []
 
     return {
       suite: options.toString() || 'unknown',
       test: 'unknown',
       timeout: config.timeout,
       cleanup: (fn: TestCleanupFn) => {
-        cleanupFns.push(fn);
+        cleanupFns.push(fn)
       },
       skip: (reason?: string) => {
-        throw new Error(`TEST_SKIP: ${reason || 'Test skipped'}`);
+        throw new Error(`TEST_SKIP: ${reason || 'Test skipped'}`)
       },
       fail: (message: string, cause?: Error) => {
-        throw new Error(`TEST_FAIL: ${message}`, { cause });
+        throw new Error(`TEST_FAIL: ${message}`, { cause })
       },
-    };
-  };
+    }
+  }
 
   return {
     run,
     runTest,
     createContext,
-  };
-};
+  }
+}
 
 // ========================================
 // Mock Function
@@ -437,62 +437,62 @@ const createTestRunner = (options: Partial<TestRunnerOptions> = {}): TestRunner 
 const createMockFunction = <TArgs extends readonly unknown[], TReturn>(
   implementation?: MockImplementation<TArgs, TReturn>
 ): MockFunction<TArgs, TReturn> => {
-  const calls: TArgs[] = [];
-  const results: Array<{ type: 'return' | 'throw'; value?: TReturn; error?: Error }> = [];
-  const instances: unknown[] = [];
-  let callOrder = 0;
-  let currentImplementation = implementation;
+  const calls: TArgs[] = []
+  const results: Array<{ type: 'return' | 'throw'; value?: TReturn; error?: Error }> = []
+  const instances: unknown[] = []
+  let callOrder = 0
+  let currentImplementation = implementation
 
   const mockFn = ((...args: TArgs): TReturn => {
-    calls.push(args);
-    instances.push(undefined);
-    callOrder++;
+    calls.push(args)
+    instances.push(undefined)
+    callOrder++
 
     try {
       if (currentImplementation) {
-        const result = currentImplementation(...args);
-        results.push({ type: 'return', value: result });
-        return result;
+        const result = currentImplementation(...args)
+        results.push({ type: 'return', value: result })
+        return result
       } else {
-        const result = undefined as TReturn;
-        results.push({ type: 'return', value: result });
-        return result;
+        const result = undefined as TReturn
+        results.push({ type: 'return', value: result })
+        return result
       }
     } catch (error) {
-      results.push({ type: 'throw', error: error as Error });
-      throw error;
+      results.push({ type: 'throw', error: error as Error })
+      throw error
     }
-  }) as MockFunction<TArgs, TReturn>;
+  }) as MockFunction<TArgs, TReturn>
 
-  (mockFn as any).mock = {
+  ;(mockFn as any).mock = {
     calls,
     results,
     instances,
     invocationCallOrder: [],
     get lastCall() {
-      return calls[calls.length - 1];
+      return calls[calls.length - 1]
     },
     get lastResult() {
-      return results[results.length - 1];
+      return results[results.length - 1]
     },
     clear: () => {
-      calls.length = 0;
-      results.length = 0;
-      instances.length = 0;
+      calls.length = 0
+      results.length = 0
+      instances.length = 0
     },
     reset: () => {
-      calls.length = 0;
-      results.length = 0;
-      instances.length = 0;
-      currentImplementation = undefined;
+      calls.length = 0
+      results.length = 0
+      instances.length = 0
+      currentImplementation = undefined
     },
     restore: () => {
       // No-op for basic mock functions
     },
-  };
+  }
 
-  return mockFn;
-};
+  return mockFn
+}
 
 // ========================================
 // Assertion
@@ -502,64 +502,64 @@ const createAssertion = <T>(value: T): Assertion<T> => {
   const assertion: Assertion<T> = {
     value,
     get not() {
-      return createNegatedAssertion(value);
+      return createNegatedAssertion(value)
     },
     toBe: (expected: T) => {
       if (value !== expected) {
-        throw new Error(`Expected ${String(value)} to be ${String(expected)}`);
+        throw new Error(`Expected ${String(value)} to be ${String(expected)}`)
       }
     },
     toEqual: (expected: T) => {
       if (!deepEqual(value, expected)) {
-        throw new Error(`Expected ${JSON.stringify(value)} to equal ${JSON.stringify(expected)}`);
+        throw new Error(`Expected ${JSON.stringify(value)} to equal ${JSON.stringify(expected)}`)
       }
     },
     toBeNull: () => {
       if (value !== null) {
-        throw new Error(`Expected ${String(value)} to be null`);
+        throw new Error(`Expected ${String(value)} to be null`)
       }
     },
     toBeUndefined: () => {
       if (value !== undefined) {
-        throw new Error(`Expected ${String(value)} to be undefined`);
+        throw new Error(`Expected ${String(value)} to be undefined`)
       }
     },
     toBeDefined: () => {
       if (value === undefined) {
-        throw new Error('Expected value to be defined');
+        throw new Error('Expected value to be defined')
       }
     },
     toBeTruthy: () => {
       if (!value) {
-        throw new Error(`Expected ${String(value)} to be truthy`);
+        throw new Error(`Expected ${String(value)} to be truthy`)
       }
     },
     toBeFalsy: () => {
       if (value) {
-        throw new Error(`Expected ${String(value)} to be falsy`);
+        throw new Error(`Expected ${String(value)} to be falsy`)
       }
     },
     toThrow: ((expected?: string | RegExp | Error) => {
       if (typeof value !== 'function') {
-        throw new Error('Expected value to be a function');
+        throw new Error('Expected value to be a function')
       }
 
       try {
-        (value as any)();
-        throw new Error('Expected function to throw');
+        ;(value as any)()
+        throw new Error('Expected function to throw')
       } catch (error) {
         if (expected) {
           if (typeof expected === 'string') {
             if (!(error instanceof Error) || !error.message.includes(expected)) {
-              throw new Error(`Expected error message to contain "${expected}"`);
+              throw new Error(`Expected error message to contain "${expected}"`)
             }
           } else if (expected instanceof RegExp) {
             if (!(error instanceof Error) || !expected.test(error.message)) {
-              throw new Error(`Expected error message to match ${expected}`);
+              throw new Error(`Expected error message to match ${expected}`)
             }
           } else if (expected instanceof Error) {
             if (!(error instanceof Error) || error.message !== expected.message) {
-              throw new Error(`Expected error to match ${expected.message}`);
+              throw new Error(`Expected error to match ${expected.message}`)
             }
           }
         }
@@ -567,127 +567,127 @@ const createAssertion = <T>(value: T): Assertion<T> => {
     }) as any,
     toResolve: (async () => {
       if (!(value instanceof Promise)) {
-        throw new Error('Expected value to be a Promise');
+        throw new Error('Expected value to be a Promise')
       }
 
       try {
-        await value;
+        await value
       } catch (error) {
-        throw new Error(`Expected promise to resolve, but it rejected with: ${error}`);
+        throw new Error(`Expected promise to resolve, but it rejected with: ${error}`)
       }
     }) as any,
     toReject: (async (expected?: string | RegExp | Error) => {
       if (!(value instanceof Promise)) {
-        throw new Error('Expected value to be a Promise');
+        throw new Error('Expected value to be a Promise')
       }
 
       try {
-        await value;
-        throw new Error('Expected promise to reject');
+        await value
+        throw new Error('Expected promise to reject')
       } catch (error) {
         if (expected) {
           if (typeof expected === 'string') {
             if (!(error instanceof Error) || !error.message.includes(expected)) {
-              throw new Error(`Expected rejection message to contain "${expected}"`);
+              throw new Error(`Expected rejection message to contain "${expected}"`)
             }
           } else if (expected instanceof RegExp) {
             if (!(error instanceof Error) || !expected.test(error.message)) {
-              throw new Error(`Expected rejection message to match ${expected}`);
+              throw new Error(`Expected rejection message to match ${expected}`)
             }
           } else if (expected instanceof Error) {
             if (!(error instanceof Error) || error.message !== expected.message) {
-              throw new Error(`Expected rejection to match ${expected.message}`);
+              throw new Error(`Expected rejection to match ${expected.message}`)
             }
           }
         }
       }
     }) as any,
-  };
+  }
 
-  return assertion;
-};
+  return assertion
+}
 
 const createNegatedAssertion = <T>(value: T): Assertion<T> => {
   return {
     value,
     get not() {
-      return createAssertion(value);
+      return createAssertion(value)
     },
     toBe: (expected: T) => {
       if (value === expected) {
-        throw new Error(`Expected ${String(value)} not to be ${String(expected)}`);
+        throw new Error(`Expected ${String(value)} not to be ${String(expected)}`)
       }
     },
     toEqual: (expected: T) => {
       if (deepEqual(value, expected)) {
         throw new Error(
           `Expected ${JSON.stringify(value)} not to equal ${JSON.stringify(expected)}`
-        );
+        )
       }
     },
     toBeNull: () => {
       if (value === null) {
-        throw new Error(`Expected ${String(value)} not to be null`);
+        throw new Error(`Expected ${String(value)} not to be null`)
       }
     },
     toBeUndefined: () => {
       if (value === undefined) {
-        throw new Error(`Expected ${String(value)} not to be undefined`);
+        throw new Error(`Expected ${String(value)} not to be undefined`)
       }
     },
     toBeDefined: () => {
       if (value !== undefined) {
-        throw new Error('Expected value not to be defined');
+        throw new Error('Expected value not to be defined')
       }
     },
     toBeTruthy: () => {
       if (value) {
-        throw new Error(`Expected ${String(value)} not to be truthy`);
+        throw new Error(`Expected ${String(value)} not to be truthy`)
       }
     },
     toBeFalsy: () => {
       if (!value) {
-        throw new Error(`Expected ${String(value)} not to be falsy`);
+        throw new Error(`Expected ${String(value)} not to be falsy`)
       }
     },
     toThrow: ((expected?: string | RegExp | Error) => {
       if (typeof value !== 'function') {
-        throw new Error('Expected value to be a function');
+        throw new Error('Expected value to be a function')
       }
 
       try {
-        (value as any)();
+        ;(value as any)()
         // If no error is thrown, that's what we want for negation
       } catch (error) {
-        throw new Error('Expected function not to throw');
+        throw new Error('Expected function not to throw')
       }
     }) as any,
     toResolve: (async () => {
       if (!(value instanceof Promise)) {
-        throw new Error('Expected value to be a Promise');
+        throw new Error('Expected value to be a Promise')
       }
 
       try {
-        await value;
-        throw new Error('Expected promise not to resolve');
+        await value
+        throw new Error('Expected promise not to resolve')
       } catch (error) {
         // Promise rejected, which is what we want for negation
       }
     }) as any,
     toReject: (async (expected?: string | RegExp | Error) => {
       if (!(value instanceof Promise)) {
-        throw new Error('Expected value to be a Promise');
+        throw new Error('Expected value to be a Promise')
       }
 
       try {
-        await value;
+        await value
         // Promise resolved, which is what we want for negation
       } catch (error) {
-        throw new Error('Expected promise not to reject');
+        throw new Error('Expected promise not to reject')
       }
     }) as any,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
@@ -695,31 +695,31 @@ const createNegatedAssertion = <T>(value: T): Assertion<T> => {
 
 const createTimeout = (ms: number): Promise<never> => {
   return new Promise((_, reject) => {
-    setTimeout(() => reject(new Error('TEST_TIMEOUT')), ms);
-  });
-};
+    setTimeout(() => reject(new Error('TEST_TIMEOUT')), ms)
+  })
+}
 
 const deepEqual = (a: unknown, b: unknown): boolean => {
-  if (a === b) return true;
-  if (a == null || b == null) return false;
-  if (typeof a !== typeof b) return false;
+  if (a === b) return true
+  if (a == null || b == null) return false
+  if (typeof a !== typeof b) return false
 
   if (typeof a === 'object') {
-    const keysA = Object.keys(a as object);
-    const keysB = Object.keys(b as object);
+    const keysA = Object.keys(a as object)
+    const keysB = Object.keys(b as object)
 
-    if (keysA.length !== keysB.length) return false;
+    if (keysA.length !== keysB.length) return false
 
     for (const key of keysA) {
-      if (!keysB.includes(key)) return false;
-      if (!deepEqual((a as any)[key], (b as any)[key])) return false;
+      if (!keysB.includes(key)) return false
+      if (!deepEqual((a as any)[key], (b as any)[key])) return false
     }
 
-    return true;
+    return true
   }
 
-  return false;
-};
+  return false
+}
 
 const createConsoleReporter = () => ({
   onStart: async () => {},
@@ -728,4 +728,4 @@ const createConsoleReporter = () => ({
   onTestStart: async () => {},
   onTestEnd: async () => {},
   onEnd: async () => {},
-});
+})

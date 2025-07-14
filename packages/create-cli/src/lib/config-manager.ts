@@ -1,7 +1,7 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result } from '@esteban-url/core';
-import { readFile, writeFile, exists, defaultFSConfig } from '@esteban-url/fs';
-import { resolve } from 'path';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result } from '@esteban-url/core'
+import { readFile, writeFile, exists, defaultFSConfig } from '@esteban-url/fs'
+import { resolve } from 'path'
 import {
   validateConfigFile,
   validatePresetConfig,
@@ -11,8 +11,8 @@ import {
   type ConfigFile,
   type PresetConfig,
   // type ModernProjectConfigValidated,
-} from './config-schema.js';
-import type { ModernProjectConfig } from './interactive-prompts.js';
+} from './config-schema.js'
+import type { ModernProjectConfig } from './interactive-prompts.js'
 
 /**
  * Configuration manager for create-trailhead-cli
@@ -20,20 +20,20 @@ import type { ModernProjectConfig } from './interactive-prompts.js';
  */
 
 export interface ConfigManagerOptions {
-  configDir?: string;
-  presetDir?: string;
-  verbose?: boolean;
+  configDir?: string
+  presetDir?: string
+  verbose?: boolean
 }
 
 export class ConfigManager {
-  private configDir: string;
-  private presetDir: string;
-  private verbose: boolean;
+  private configDir: string
+  private presetDir: string
+  private verbose: boolean
 
   constructor(options: ConfigManagerOptions = {}) {
-    this.configDir = options.configDir || resolve(process.cwd(), '.trailhead');
-    this.presetDir = options.presetDir || resolve(this.configDir, 'presets');
-    this.verbose = options.verbose || false;
+    this.configDir = options.configDir || resolve(process.cwd(), '.trailhead')
+    this.presetDir = options.presetDir || resolve(this.configDir, 'presets')
+    this.verbose = options.verbose || false
   }
 
   /**
@@ -44,18 +44,18 @@ export class ConfigManager {
     filename = 'config.json'
   ): Promise<Result<string, any>> {
     try {
-      const configFile = createConfigFile(config);
-      const configPath = resolve(this.configDir, filename);
+      const configFile = createConfigFile(config)
+      const configPath = resolve(this.configDir, filename)
 
       // Ensure config directory exists
-      const ensureDirResult = await this.ensureConfigDirectory();
+      const ensureDirResult = await this.ensureConfigDirectory()
       if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error);
+        return err(ensureDirResult.error)
       }
 
       // Write config file
-      const content = JSON.stringify(configFile, null, 2);
-      const writeResult = await writeFile(defaultFSConfig)(configPath, content);
+      const content = JSON.stringify(configFile, null, 2)
+      const writeResult = await writeFile(defaultFSConfig)(configPath, content)
 
       if (writeResult.isErr()) {
         return err(
@@ -65,14 +65,14 @@ export class ConfigManager {
             cause: writeResult.error,
             details: `Could not write to ${configPath}`,
           })
-        );
+        )
       }
 
       if (this.verbose) {
-        console.log(`Configuration saved to ${configPath}`);
+        console.log(`Configuration saved to ${configPath}`)
       }
 
-      return ok(configPath);
+      return ok(configPath)
     } catch (error) {
       return err(
         createCoreError('CONFIG_SAVE_ERROR', 'Configuration save error', {
@@ -81,7 +81,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -90,10 +90,10 @@ export class ConfigManager {
    */
   async loadConfig(filename = 'config.json'): Promise<Result<ConfigFile, any>> {
     try {
-      const configPath = resolve(this.configDir, filename);
+      const configPath = resolve(this.configDir, filename)
 
       // Check if file exists
-      const fileExists = await exists(defaultFSConfig)(configPath);
+      const fileExists = await exists(defaultFSConfig)(configPath)
       if (fileExists.isErr() || !fileExists.value) {
         return err(
           createCoreError('CONFIG_NOT_FOUND', `Configuration file not found: ${filename}`, {
@@ -103,11 +103,11 @@ export class ConfigManager {
             recoverable: true,
             severity: 'medium',
           })
-        );
+        )
       }
 
       // Read file content
-      const readResult = await readFile(defaultFSConfig)(configPath);
+      const readResult = await readFile(defaultFSConfig)(configPath)
       if (readResult.isErr()) {
         return err(
           createCoreError('CONFIG_READ_FAILED', 'Failed to read configuration file', {
@@ -116,13 +116,13 @@ export class ConfigManager {
             cause: readResult.error,
             details: `Could not read ${configPath}`,
           })
-        );
+        )
       }
 
       // Parse JSON
-      let parsedConfig: unknown;
+      let parsedConfig: unknown
       try {
-        parsedConfig = JSON.parse(readResult.value);
+        parsedConfig = JSON.parse(readResult.value)
       } catch (parseError) {
         return err(
           createCoreError('CONFIG_PARSE_FAILED', 'Failed to parse configuration file', {
@@ -131,20 +131,20 @@ export class ConfigManager {
             cause: parseError,
             details: `Invalid JSON in ${configPath}`,
           })
-        );
+        )
       }
 
       // Validate configuration
-      const validationResult = validateConfigFile(parsedConfig);
+      const validationResult = validateConfigFile(parsedConfig)
       if (validationResult.isErr()) {
-        return validationResult;
+        return validationResult
       }
 
       if (this.verbose) {
-        console.log(`Configuration loaded from ${configPath}`);
+        console.log(`Configuration loaded from ${configPath}`)
       }
 
-      return ok(validationResult.value);
+      return ok(validationResult.value)
     } catch (error) {
       return err(
         createCoreError('CONFIG_LOAD_ERROR', 'Configuration load error', {
@@ -153,7 +153,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -162,24 +162,24 @@ export class ConfigManager {
    */
   async savePreset(preset: PresetConfig, filename?: string): Promise<Result<string, any>> {
     try {
-      const presetFilename = filename || `${preset.name}.json`;
-      const presetPath = resolve(this.presetDir, presetFilename);
+      const presetFilename = filename || `${preset.name}.json`
+      const presetPath = resolve(this.presetDir, presetFilename)
 
       // Ensure preset directory exists
-      const ensureDirResult = await this.ensurePresetDirectory();
+      const ensureDirResult = await this.ensurePresetDirectory()
       if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error);
+        return err(ensureDirResult.error)
       }
 
       // Validate preset
-      const validationResult = validatePresetConfig(preset);
+      const validationResult = validatePresetConfig(preset)
       if (validationResult.isErr()) {
-        return err(validationResult.error);
+        return err(validationResult.error)
       }
 
       // Write preset file
-      const content = JSON.stringify(validationResult.value, null, 2);
-      const writeResult = await writeFile(defaultFSConfig)(presetPath, content);
+      const content = JSON.stringify(validationResult.value, null, 2)
+      const writeResult = await writeFile(defaultFSConfig)(presetPath, content)
 
       if (writeResult.isErr()) {
         return err(
@@ -189,14 +189,14 @@ export class ConfigManager {
             cause: writeResult.error,
             details: `Could not write to ${presetPath}`,
           })
-        );
+        )
       }
 
       if (this.verbose) {
-        console.log(`Preset saved to ${presetPath}`);
+        console.log(`Preset saved to ${presetPath}`)
       }
 
-      return ok(presetPath);
+      return ok(presetPath)
     } catch (error) {
       return err(
         createCoreError('PRESET_SAVE_ERROR', 'Preset save error', {
@@ -205,7 +205,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -214,11 +214,11 @@ export class ConfigManager {
    */
   async loadPreset(name: string): Promise<Result<PresetConfig, any>> {
     try {
-      const presetFilename = name.endsWith('.json') ? name : `${name}.json`;
-      const presetPath = resolve(this.presetDir, presetFilename);
+      const presetFilename = name.endsWith('.json') ? name : `${name}.json`
+      const presetPath = resolve(this.presetDir, presetFilename)
 
       // Check if file exists
-      const fileExists = await exists(defaultFSConfig)(presetPath);
+      const fileExists = await exists(defaultFSConfig)(presetPath)
       if (fileExists.isErr() || !fileExists.value) {
         return err(
           createCoreError('PRESET_NOT_FOUND', `Preset not found: ${name}`, {
@@ -228,11 +228,11 @@ export class ConfigManager {
             recoverable: true,
             severity: 'medium',
           })
-        );
+        )
       }
 
       // Read file content
-      const readResult = await readFile(defaultFSConfig)(presetPath);
+      const readResult = await readFile(defaultFSConfig)(presetPath)
       if (readResult.isErr()) {
         return err(
           createCoreError('PRESET_READ_FAILED', 'Failed to read preset file', {
@@ -241,13 +241,13 @@ export class ConfigManager {
             cause: readResult.error,
             details: `Could not read ${presetPath}`,
           })
-        );
+        )
       }
 
       // Parse JSON
-      let parsedPreset: unknown;
+      let parsedPreset: unknown
       try {
-        parsedPreset = JSON.parse(readResult.value);
+        parsedPreset = JSON.parse(readResult.value)
       } catch (parseError) {
         return err(
           createCoreError('PRESET_PARSE_FAILED', 'Failed to parse preset file', {
@@ -256,20 +256,20 @@ export class ConfigManager {
             cause: parseError,
             details: `Invalid JSON in ${presetPath}`,
           })
-        );
+        )
       }
 
       // Validate preset
-      const validationResult = validatePresetConfig(parsedPreset);
+      const validationResult = validatePresetConfig(parsedPreset)
       if (validationResult.isErr()) {
-        return validationResult;
+        return validationResult
       }
 
       if (this.verbose) {
-        console.log(`Preset loaded from ${presetPath}`);
+        console.log(`Preset loaded from ${presetPath}`)
       }
 
-      return ok(validationResult.value);
+      return ok(validationResult.value)
     } catch (error) {
       return err(
         createCoreError('PRESET_LOAD_ERROR', 'Preset load error', {
@@ -278,7 +278,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -287,20 +287,20 @@ export class ConfigManager {
    */
   async listPresets(): Promise<Result<string[], any>> {
     try {
-      const { readdir } = await import('node:fs/promises');
+      const { readdir } = await import('node:fs/promises')
 
       // Check if preset directory exists
-      const dirExists = await exists(defaultFSConfig)(this.presetDir);
+      const dirExists = await exists(defaultFSConfig)(this.presetDir)
       if (dirExists.isErr() || !dirExists.value) {
-        return ok([]); // No presets directory means no presets
+        return ok([]) // No presets directory means no presets
       }
 
-      const files = await readdir(this.presetDir);
+      const files = await readdir(this.presetDir)
       const presetFiles = files
-        .filter(file => file.endsWith('.json'))
-        .map(file => file.replace('.json', ''));
+        .filter((file) => file.endsWith('.json'))
+        .map((file) => file.replace('.json', ''))
 
-      return ok(presetFiles);
+      return ok(presetFiles)
     } catch (error) {
       return err(
         createCoreError('PRESET_LIST_ERROR', 'Failed to list presets', {
@@ -309,7 +309,7 @@ export class ConfigManager {
           cause: error,
           recoverable: true,
         })
-      );
+      )
     }
   }
 
@@ -321,19 +321,19 @@ export class ConfigManager {
     userConfig: Partial<ModernProjectConfig>
   ): Promise<Result<Partial<ModernProjectConfig>, any>> {
     try {
-      const presetResult = await this.loadPreset(presetName);
+      const presetResult = await this.loadPreset(presetName)
       if (presetResult.isErr()) {
-        return err(presetResult.error);
+        return err(presetResult.error)
       }
 
-      const preset = presetResult.value;
-      const mergedConfig = mergePresetWithConfig(preset, userConfig);
+      const preset = presetResult.value
+      const mergedConfig = mergePresetWithConfig(preset, userConfig)
 
       if (this.verbose) {
-        console.log(`Applied preset: ${preset.name}`);
+        console.log(`Applied preset: ${preset.name}`)
       }
 
-      return ok(mergedConfig);
+      return ok(mergedConfig)
     } catch (error) {
       return err(
         createCoreError('PRESET_APPLY_ERROR', 'Failed to apply preset', {
@@ -342,7 +342,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -351,18 +351,18 @@ export class ConfigManager {
    */
   async generateSchemaFile(): Promise<Result<string, any>> {
     try {
-      const schema = generateConfigJsonSchema();
-      const schemaPath = resolve(this.configDir, 'config.schema.json');
+      const schema = generateConfigJsonSchema()
+      const schemaPath = resolve(this.configDir, 'config.schema.json')
 
       // Ensure config directory exists
-      const ensureDirResult = await this.ensureConfigDirectory();
+      const ensureDirResult = await this.ensureConfigDirectory()
       if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error);
+        return err(ensureDirResult.error)
       }
 
       // Write schema file
-      const content = JSON.stringify(schema, null, 2);
-      const writeResult = await writeFile(defaultFSConfig)(schemaPath, content);
+      const content = JSON.stringify(schema, null, 2)
+      const writeResult = await writeFile(defaultFSConfig)(schemaPath, content)
 
       if (writeResult.isErr()) {
         return err(
@@ -372,14 +372,14 @@ export class ConfigManager {
             cause: writeResult.error,
             details: `Could not write to ${schemaPath}`,
           })
-        );
+        )
       }
 
       if (this.verbose) {
-        console.log(`JSON schema saved to ${schemaPath}`);
+        console.log(`JSON schema saved to ${schemaPath}`)
       }
 
-      return ok(schemaPath);
+      return ok(schemaPath)
     } catch (error) {
       return err(
         createCoreError('SCHEMA_GENERATE_ERROR', 'Schema generation error', {
@@ -388,7 +388,7 @@ export class ConfigManager {
           cause: error,
           recoverable: false,
         })
-      );
+      )
     }
   }
 
@@ -397,39 +397,39 @@ export class ConfigManager {
    */
   async cleanup(maxAge = 30): Promise<Result<number, any>> {
     try {
-      const { readdir, stat, unlink } = await import('node:fs/promises');
+      const { readdir, stat, unlink } = await import('node:fs/promises')
 
       // Check if config directory exists
-      const dirExists = await exists(defaultFSConfig)(this.configDir);
+      const dirExists = await exists(defaultFSConfig)(this.configDir)
       if (dirExists.isErr() || !dirExists.value) {
-        return ok(0); // No directory means nothing to clean
+        return ok(0) // No directory means nothing to clean
       }
 
-      const files = await readdir(this.configDir);
-      const now = Date.now();
-      const maxAgeMs = maxAge * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+      const files = await readdir(this.configDir)
+      const now = Date.now()
+      const maxAgeMs = maxAge * 24 * 60 * 60 * 1000 // Convert days to milliseconds
 
-      let cleanedCount = 0;
+      let cleanedCount = 0
 
       for (const file of files) {
         if (!file.endsWith('.json') || file === 'config.json') {
-          continue; // Skip non-JSON files and main config
+          continue // Skip non-JSON files and main config
         }
 
-        const filePath = resolve(this.configDir, file);
-        const stats = await stat(filePath);
+        const filePath = resolve(this.configDir, file)
+        const stats = await stat(filePath)
 
         if (now - stats.mtime.getTime() > maxAgeMs) {
-          await unlink(filePath);
-          cleanedCount++;
+          await unlink(filePath)
+          cleanedCount++
 
           if (this.verbose) {
-            console.log(`Cleaned up old config: ${file}`);
+            console.log(`Cleaned up old config: ${file}`)
           }
         }
       }
 
-      return ok(cleanedCount);
+      return ok(cleanedCount)
     } catch (error) {
       return err(
         createCoreError('CONFIG_CLEANUP_ERROR', 'Configuration cleanup error', {
@@ -438,7 +438,7 @@ export class ConfigManager {
           cause: error,
           recoverable: true,
         })
-      );
+      )
     }
   }
 
@@ -446,14 +446,14 @@ export class ConfigManager {
    * Get configuration directory path
    */
   getConfigDir(): string {
-    return this.configDir;
+    return this.configDir
   }
 
   /**
    * Get preset directory path
    */
   getPresetDir(): string {
-    return this.presetDir;
+    return this.presetDir
   }
 
   /**
@@ -461,9 +461,9 @@ export class ConfigManager {
    */
   private async ensureConfigDirectory(): Promise<Result<void, any>> {
     try {
-      const { mkdir } = await import('node:fs/promises');
-      await mkdir(this.configDir, { recursive: true });
-      return ok(undefined);
+      const { mkdir } = await import('node:fs/promises')
+      await mkdir(this.configDir, { recursive: true })
+      return ok(undefined)
     } catch (error) {
       return err(
         createCoreError('CONFIG_DIR_CREATE_FAILED', 'Failed to create configuration directory', {
@@ -472,7 +472,7 @@ export class ConfigManager {
           cause: error,
           details: `Could not create directory ${this.configDir}`,
         })
-      );
+      )
     }
   }
 
@@ -481,9 +481,9 @@ export class ConfigManager {
    */
   private async ensurePresetDirectory(): Promise<Result<void, any>> {
     try {
-      const { mkdir } = await import('node:fs/promises');
-      await mkdir(this.presetDir, { recursive: true });
-      return ok(undefined);
+      const { mkdir } = await import('node:fs/promises')
+      await mkdir(this.presetDir, { recursive: true })
+      return ok(undefined)
     } catch (error) {
       return err(
         createCoreError('PRESET_DIR_CREATE_FAILED', 'Failed to create preset directory', {
@@ -492,7 +492,7 @@ export class ConfigManager {
           cause: error,
           details: `Could not create directory ${this.presetDir}`,
         })
-      );
+      )
     }
   }
 }
@@ -576,14 +576,14 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     initGit: false,
     installDependencies: false,
   },
-];
+]
 
 /**
  * Create a default config manager instance
  */
 export function createConfigManager(options?: ConfigManagerOptions): ConfigManager {
-  return new ConfigManager(options);
+  return new ConfigManager(options)
 }
 
 // Re-export types for convenience
-export type { PresetConfig } from './config-schema.js';
+export type { PresetConfig } from './config-schema.js'

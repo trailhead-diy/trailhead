@@ -1,4 +1,4 @@
-export { createQueryBuilder } from './builder.js';
+export { createQueryBuilder } from './builder.js'
 export type {
   QueryBuilder,
   SelectQuery,
@@ -11,4 +11,4 @@ export type {
   InsertResult,
   UpdateResult,
   DeleteResult,
-} from '../types.js';
+} from '../types.js'

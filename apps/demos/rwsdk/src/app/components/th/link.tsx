@@ -1,8 +1,8 @@
-import { forwardRef, type ComponentProps } from 'react';
-import { cn } from './utils/cn';
-import { CatalystLink } from './lib/catalyst-link';
+import { forwardRef, type ComponentProps } from 'react'
+import { cn } from './utils/cn'
+import { CatalystLink } from './lib/catalyst-link'
 
-export type LinkProps = ComponentProps<typeof CatalystLink>;
+export type LinkProps = ComponentProps<typeof CatalystLink>
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
   ({ className, children, ...props }, ref) => (
@@ -10,6 +10,6 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       {children}
     </CatalystLink>
   )
-);
+)
 
-Link.displayName = 'Link';
+Link.displayName = 'Link'

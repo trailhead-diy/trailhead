@@ -1,14 +1,14 @@
 // Core database operations
-export { createDatabaseOperations, registerAdapter, getAdapter } from './core/index.js';
+export { createDatabaseOperations, registerAdapter, getAdapter } from './core/index.js'
 
 // Database adapters
-export { createMemoryAdapter } from './adapters/index.js';
+export { createMemoryAdapter } from './adapters/index.js'
 
 // Query builder
-export { createQueryBuilder } from './query/index.js';
+export { createQueryBuilder } from './query/index.js'
 
 // Schema builder
-export { createSchemaBuilder } from './schema/index.js';
+export { createSchemaBuilder } from './schema/index.js'
 
 // Types
 export type {
@@ -58,4 +58,4 @@ export type {
   ConflictAction,
   JoinType,
   ConstraintType,
-} from './types.js';
+} from './types.js'

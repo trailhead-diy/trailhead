@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { existsSync } from 'fs';
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
+import { existsSync } from 'fs'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // Try to load the built version first, then fall back to src
-const distPath = resolve(__dirname, '../dist/index.js');
-const srcPath = resolve(__dirname, '../src/index.ts');
+const distPath = resolve(__dirname, '../dist/index.js')
+const srcPath = resolve(__dirname, '../src/index.ts')
 
 if (existsSync(distPath)) {
-  await import(distPath);
+  await import(distPath)
 } else if (existsSync(srcPath)) {
   // Development mode - use tsx to run TypeScript directly
-  console.warn('Running in development mode - ensure you have tsx installed');
-  await import(srcPath);
+  console.warn('Running in development mode - ensure you have tsx installed')
+  await import(srcPath)
 } else {
-  console.error('Error: Could not find the main entry point');
-  process.exit(1);
+  console.error('Error: Could not find the main entry point')
+  process.exit(1)
 }

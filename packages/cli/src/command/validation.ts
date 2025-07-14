@@ -1,7 +1,7 @@
-import type { Result, CoreError } from '@esteban-url/core';
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { CommandConfig, CommandOptions } from './base.js';
-import type { CommandOption } from './types.js';
+import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { CommandConfig, CommandOptions } from './base.js'
+import type { CommandOption } from './types.js'
 
 /**
  * Validates a command option configuration
@@ -43,7 +43,7 @@ export function validateCommandOption(
           context: { option, index },
         }
       )
-    );
+    )
   }
 
   // If using flags, validate the format
@@ -58,11 +58,11 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
 
     // Validate flags format (should match Commander.js patterns)
-    const flagPattern = /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/;
+    const flagPattern = /^(-[a-zA-Z](?:,\s*)?)?--[a-zA-Z][a-zA-Z0-9-]*(?:\s+[<[].*[>\]])?$/
     if (!flagPattern.test(option.flags)) {
       return err(
         createCoreError(
@@ -74,7 +74,7 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
   }
 
@@ -90,11 +90,11 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
 
     // Name should be kebab-case or camelCase
-    const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+    const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/
     if (!namePattern.test(option.name)) {
       return err(
         createCoreError(
@@ -106,7 +106,7 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
   }
 
@@ -127,13 +127,13 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
   }
 
   // Validate type if provided
   if (option.type !== undefined) {
-    const validTypes = ['string', 'boolean', 'number'];
+    const validTypes = ['string', 'boolean', 'number']
     if (!validTypes.includes(option.type)) {
       return err(
         createCoreError(
@@ -144,7 +144,7 @@ export function validateCommandOption(
             context: { option, index },
           }
         )
-      );
+      )
     }
   }
 
@@ -159,10 +159,10 @@ export function validateCommandOption(
           context: { option, index },
         }
       )
-    );
+    )
   }
 
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
@@ -209,10 +209,10 @@ export function validateCommandConfig<T extends CommandOptions>(
           context: { config },
         }
       )
-    );
+    )
   }
 
-  const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+  const namePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/
   if (!namePattern.test(config.name)) {
     return err(
       createCoreError(
@@ -224,7 +224,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           context: { config },
         }
       )
-    );
+    )
   }
 
   // Validate description
@@ -238,7 +238,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           context: { config },
         }
       )
-    );
+    )
   }
 
   // Validate options if provided
@@ -249,22 +249,22 @@ export function validateCommandConfig<T extends CommandOptions>(
           recoverable: true,
           context: { config },
         })
-      );
+      )
     }
 
     for (let i = 0; i < config.options.length; i++) {
-      const optionResult = validateCommandOption(config.options[i], i);
+      const optionResult = validateCommandOption(config.options[i], i)
       if (optionResult.isErr()) {
-        return optionResult;
+        return optionResult
       }
     }
 
     // Check for duplicate option names/flags
-    const names = new Set<string>();
-    const aliases = new Set<string>();
+    const names = new Set<string>()
+    const aliases = new Set<string>()
 
     for (let i = 0; i < config.options.length; i++) {
-      const option = config.options[i];
+      const option = config.options[i]
 
       if (option.name) {
         if (names.has(option.name)) {
@@ -277,9 +277,9 @@ export function validateCommandConfig<T extends CommandOptions>(
                 context: { config, index: i },
               }
             )
-          );
+          )
         }
-        names.add(option.name);
+        names.add(option.name)
       }
 
       if (option.alias) {
@@ -293,9 +293,9 @@ export function validateCommandConfig<T extends CommandOptions>(
                 context: { config, index: i },
               }
             )
-          );
+          )
         }
-        aliases.add(option.alias);
+        aliases.add(option.alias)
       }
     }
   }
@@ -308,7 +308,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           recoverable: true,
           context: { config },
         })
-      );
+      )
     }
 
     for (let i = 0; i < config.examples.length; i++) {
@@ -318,7 +318,7 @@ export function validateCommandConfig<T extends CommandOptions>(
             recoverable: true,
             context: { config, index: i },
           })
-        );
+        )
       }
     }
   }
@@ -334,7 +334,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           context: { config },
         }
       )
-    );
+    )
   }
 
   // Validate validation function if provided
@@ -344,16 +344,16 @@ export function validateCommandConfig<T extends CommandOptions>(
         recoverable: true,
         context: { config },
       })
-    );
+    )
   }
 
-  return ok(undefined);
+  return ok(undefined)
 }
 
 /**
  * Cache for validated option configurations to improve performance
  */
-const validationCache = new WeakMap<CommandConfig<any>, boolean>();
+const validationCache = new WeakMap<CommandConfig<any>, boolean>()
 
 /**
  * Validates command configuration with caching for performance
@@ -380,16 +380,16 @@ export function validateCommandConfigWithCache<T extends CommandOptions>(
 ): Result<void, CoreError> {
   // Check cache first
   if (validationCache.has(config)) {
-    return ok(undefined);
+    return ok(undefined)
   }
 
   // Perform validation
-  const result = validateCommandConfig(config);
+  const result = validateCommandConfig(config)
 
   // Cache successful validations
   if (result.isOk()) {
-    validationCache.set(config, true);
+    validationCache.set(config, true)
   }
 
-  return result;
+  return result
 }

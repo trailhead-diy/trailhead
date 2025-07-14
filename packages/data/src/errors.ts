@@ -1,5 +1,5 @@
-import { createCoreError } from '@esteban-url/core';
-import type { CoreError } from '@esteban-url/core';
+import { createCoreError } from '@esteban-url/core'
+import type { CoreError } from '@esteban-url/core'
 
 // ========================================
 // Error Factory Functions
@@ -17,7 +17,7 @@ export const createDataError = (
     context,
     recoverable: true,
     suggestion: 'Check data format and processing options',
-  });
+  })
 
 export const createCSVError = (
   message: string,
@@ -31,7 +31,7 @@ export const createCSVError = (
     context,
     recoverable: true,
     suggestion: 'Verify CSV format, delimiter, and encoding',
-  });
+  })
 
 export const createJSONError = (
   message: string,
@@ -45,7 +45,7 @@ export const createJSONError = (
     context,
     recoverable: true,
     suggestion: 'Check JSON syntax and structure',
-  });
+  })
 
 export const createExcelError = (
   message: string,
@@ -59,7 +59,7 @@ export const createExcelError = (
     context,
     recoverable: true,
     suggestion: 'Verify Excel file format and worksheet configuration',
-  });
+  })
 
 export const createParsingError = (
   message: string,
@@ -73,7 +73,7 @@ export const createParsingError = (
     context,
     recoverable: false,
     suggestion: 'Review data format and parsing configuration',
-  });
+  })
 
 export const createValidationError = (
   message: string,
@@ -87,7 +87,7 @@ export const createValidationError = (
     context,
     recoverable: true,
     suggestion: 'Check data integrity and validation rules',
-  });
+  })
 
 export const createFormatDetectionError = (
   message: string,
@@ -101,7 +101,7 @@ export const createFormatDetectionError = (
     context,
     recoverable: true,
     suggestion: 'Specify format explicitly or check file content',
-  });
+  })
 
 export const createConversionError = (
   message: string,
@@ -115,41 +115,41 @@ export const createConversionError = (
     context,
     recoverable: true,
     suggestion: 'Verify source and target format compatibility',
-  });
+  })
 
 // ========================================
 // Error Mapping Utilities
 // ========================================
 
 export const mapNodeError = (operation: string, path: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error)
 
   return createDataError(
     `${operation} failed`,
     `Operation: ${operation}, Path: ${path}, Error: ${errorMessage}`,
     error,
     { operation, path }
-  );
-};
+  )
+}
 
 export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error)
 
   return createDataError(
     `${library} operation failed`,
     `Library: ${library}, Operation: ${operation}, Error: ${errorMessage}`,
     error,
     { library, operation }
-  );
-};
+  )
+}
 
 export const mapValidationError = (field: string, value: unknown, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorMessage = error instanceof Error ? error.message : String(error)
 
   return createValidationError(
     `Validation failed for field: ${field}`,
     `Field: ${field}, Value: ${JSON.stringify(value)}, Error: ${errorMessage}`,
     error,
     { field, value }
-  );
-};
+  )
+}

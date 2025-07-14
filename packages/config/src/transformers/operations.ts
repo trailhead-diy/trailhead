@@ -1,40 +1,40 @@
-import { ok, err } from '@esteban-url/core';
-import type { TransformerOperations, ConfigTransformer, ConfigResult } from '../types.js';
+import { ok, err } from '@esteban-url/core'
+import type { TransformerOperations, ConfigTransformer, ConfigResult } from '../types.js'
 
 // ========================================
 // Transformer Operations
 // ========================================
 
 export const createTransformerOperations = (): TransformerOperations => {
-  const transformers = new Map<string, ConfigTransformer<any>>();
+  const transformers = new Map<string, ConfigTransformer<any>>()
 
   const register = <T>(transformer: ConfigTransformer<T>): void => {
-    transformers.set(transformer.name, transformer);
-  };
+    transformers.set(transformer.name, transformer)
+  }
 
   const unregister = (name: string): void => {
-    transformers.delete(name);
-  };
+    transformers.delete(name)
+  }
 
   const transform = <T>(
     config: Record<string, unknown>,
     configTransformers: readonly ConfigTransformer<T>[]
   ): ConfigResult<T> => {
     try {
-      let result: any = config;
+      let result: any = config
 
       // Sort by priority (lower numbers first)
-      const sorted = [...configTransformers].sort((a, b) => (a.priority || 0) - (b.priority || 0));
+      const sorted = [...configTransformers].sort((a, b) => (a.priority || 0) - (b.priority || 0))
 
       for (const transformer of sorted) {
-        const transformResult = transformer.transform(result);
+        const transformResult = transformer.transform(result)
         if (transformResult.isErr()) {
-          return transformResult;
+          return transformResult
         }
-        result = transformResult.value;
+        result = transformResult.value
       }
 
-      return ok(result as T);
+      return ok(result as T)
     } catch (error) {
       return err({
         type: 'ConfigTransformError',
@@ -43,13 +43,13 @@ export const createTransformerOperations = (): TransformerOperations => {
         suggestion: 'Check transformer implementations',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   return {
     register,
     unregister,
     transform,
-  };
-};
+  }
+}

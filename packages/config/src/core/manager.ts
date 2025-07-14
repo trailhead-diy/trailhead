@@ -1,4 +1,4 @@
-import { ok, err } from '@esteban-url/core';
+import { ok, err } from '@esteban-url/core'
 import type {
   ConfigManager,
   ConfigDefinition,
@@ -11,43 +11,43 @@ import type {
   LoaderOperations,
   ValidatorOperations,
   TransformerOperations,
-} from '../types.js';
-import { mergeConfigs, createConfigMetadata } from './operations.js';
+} from '../types.js'
+import { mergeConfigs, createConfigMetadata } from './operations.js'
 
 // ========================================
 // Configuration Manager
 // ========================================
 
 interface ManagerDependencies {
-  readonly loaderOps: LoaderOperations;
-  readonly validatorOps: ValidatorOperations;
-  readonly transformerOps: TransformerOperations;
+  readonly loaderOps: LoaderOperations
+  readonly validatorOps: ValidatorOperations
+  readonly transformerOps: TransformerOperations
 }
 
 export const createConfigManager = <T>(
   definition: ConfigDefinition<T>,
   deps: ManagerDependencies
 ): ConfigManager<T> => {
-  let currentState: ConfigState<T> | undefined;
-  const watchers: ConfigWatcher[] = [];
+  let currentState: ConfigState<T> | undefined
+  const watchers: ConfigWatcher[] = []
 
   const load = async (): Promise<ConfigResult<ConfigState<T>>> => {
-    const operationStartTime = Date.now();
+    const operationStartTime = Date.now()
 
     try {
       // Load from all sources
-      const resolvedSources: ResolvedSource[] = [];
+      const resolvedSources: ResolvedSource[] = []
 
       for (const source of definition.sources) {
-        const sourceStartTime = Date.now();
-        const loadResult = await deps.loaderOps.load(source);
+        const sourceStartTime = Date.now()
+        const loadResult = await deps.loaderOps.load(source)
 
         if (loadResult.isOk()) {
           resolvedSources.push({
             source,
             data: loadResult.value,
             loadTime: Date.now() - sourceStartTime,
-          });
+          })
         } else {
           if (!source.optional) {
             return err({
@@ -57,7 +57,7 @@ export const createConfigManager = <T>(
               suggestion: 'Check the source configuration and ensure it is accessible',
               cause: loadResult.error,
               recoverable: false,
-            } as any);
+            } as any)
           }
 
           resolvedSources.push({
@@ -65,40 +65,40 @@ export const createConfigManager = <T>(
             data: {},
             loadTime: Date.now() - sourceStartTime,
             error: loadResult.error,
-          });
+          })
         }
       }
 
       // Merge configurations from resolved sources
       const rawConfig = resolvedSources
-        .filter(source => !source.error)
+        .filter((source) => !source.error)
         .sort((a, b) => a.source.priority - b.source.priority)
         .reduce(
           (merged, source) => mergeConfigs(merged, source.data),
           {} as Record<string, unknown>
-        );
+        )
 
       // Apply defaults
       const configWithDefaults = {
         ...definition.defaults,
         ...rawConfig,
-      };
+      }
 
       // Transform configuration
-      let transformedConfig: T;
+      let transformedConfig: T
       if (definition.transformers && definition.transformers.length > 0) {
         const transformResult = deps.transformerOps.transform(
           configWithDefaults,
           definition.transformers
-        );
+        )
 
         if (transformResult.isErr()) {
-          return err(transformResult.error);
+          return err(transformResult.error)
         }
 
-        transformedConfig = transformResult.value;
+        transformedConfig = transformResult.value
       } else {
-        transformedConfig = configWithDefaults as T;
+        transformedConfig = configWithDefaults as T
       }
 
       // Validate configuration
@@ -106,10 +106,10 @@ export const createConfigManager = <T>(
         const validationResult = await deps.validatorOps.validate(
           transformedConfig,
           definition.validators
-        );
+        )
 
         if (validationResult.isErr()) {
-          return err(validationResult.error);
+          return err(validationResult.error)
         }
       }
 
@@ -126,10 +126,10 @@ export const createConfigManager = <T>(
           [],
           definition.version
         ),
-      };
+      }
 
-      currentState = state;
-      return ok(state);
+      currentState = state
+      return ok(state)
     } catch (error) {
       return err({
         type: 'ConfigError',
@@ -138,17 +138,17 @@ export const createConfigManager = <T>(
         suggestion: 'Check configuration sources and definition',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const reload = async (): Promise<ConfigResult<ConfigState<T>>> => {
-    return load();
-  };
+    return load()
+  }
 
   const get = <K extends keyof T>(key: K): T[K] | undefined => {
-    return currentState?.resolved[key];
-  };
+    return currentState?.resolved[key]
+  }
 
   const set = <K extends keyof T>(key: K, value: T[K]): ConfigResult<void> => {
     if (!currentState) {
@@ -158,21 +158,21 @@ export const createConfigManager = <T>(
         message: 'Configuration not loaded',
         suggestion: 'Load configuration before setting values',
         recoverable: true,
-      } as any);
+      } as any)
     }
 
     try {
       const newResolved = {
         ...currentState.resolved,
         [key]: value,
-      };
+      }
 
       currentState = {
         ...currentState,
         resolved: newResolved,
-      };
+      }
 
-      return ok(undefined);
+      return ok(undefined)
     } catch (error) {
       return err({
         type: 'ConfigError',
@@ -181,53 +181,53 @@ export const createConfigManager = <T>(
         suggestion: 'Check the value type and key validity',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const has = (key: keyof T): boolean => {
-    return currentState?.resolved[key] !== undefined;
-  };
+    return currentState?.resolved[key] !== undefined
+  }
 
   const watch = async (
     callback: ConfigChangeCallback<T>
   ): Promise<ConfigResult<ConfigWatcher[]>> => {
     try {
-      const newWatchers: ConfigWatcher[] = [];
+      const newWatchers: ConfigWatcher[] = []
 
       for (const source of definition.sources) {
         if (source.watch) {
-          const loader = deps.loaderOps.getLoader(source);
+          const loader = deps.loaderOps.getLoader(source)
 
           if (loader?.watch) {
             const watchResult = await loader.watch(source, async (data, error) => {
               if (error) {
-                return;
+                return
               }
 
               // Reload and notify of changes
-              const oldConfig = currentState?.resolved;
-              const reloadResult = await reload();
+              const oldConfig = currentState?.resolved
+              const reloadResult = await reload()
 
               if (reloadResult.isOk() && oldConfig) {
-                const newConfig = reloadResult.value.resolved;
-                const changes = detectChanges(oldConfig, newConfig);
+                const newConfig = reloadResult.value.resolved
+                const changes = detectChanges(oldConfig, newConfig)
 
                 if (changes.length > 0) {
-                  callback(newConfig, oldConfig, changes);
+                  callback(newConfig, oldConfig, changes)
                 }
               }
-            });
+            })
 
             if (watchResult.isOk()) {
-              newWatchers.push(watchResult.value);
-              watchers.push(watchResult.value);
+              newWatchers.push(watchResult.value)
+              watchers.push(watchResult.value)
             }
           }
         }
       }
 
-      return ok(newWatchers);
+      return ok(newWatchers)
     } catch (error) {
       return err({
         type: 'ConfigError',
@@ -236,9 +236,9 @@ export const createConfigManager = <T>(
         suggestion: 'Check if sources support watching',
         cause: error,
         recoverable: false,
-      } as any);
+      } as any)
     }
-  };
+  }
 
   const validate = async (): Promise<ConfigResult<void>> => {
     if (!currentState) {
@@ -248,23 +248,23 @@ export const createConfigManager = <T>(
         message: 'Configuration not loaded',
         suggestion: 'Load configuration before validating',
         recoverable: true,
-      } as any);
+      } as any)
     }
 
     if (definition.validators && definition.validators.length > 0) {
-      return await deps.validatorOps.validate(currentState.resolved, definition.validators);
+      return await deps.validatorOps.validate(currentState.resolved, definition.validators)
     }
 
-    return ok(undefined);
-  };
+    return ok(undefined)
+  }
 
   const getState = (): ConfigState<T> | undefined => {
-    return currentState;
-  };
+    return currentState
+  }
 
   const getMetadata = (): ConfigMetadata | undefined => {
-    return currentState?.metadata;
-  };
+    return currentState?.metadata
+  }
 
   return {
     definition,
@@ -277,15 +277,15 @@ export const createConfigManager = <T>(
     validate,
     getState,
     getMetadata,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
 // ========================================
 
 const detectChanges = <T>(oldConfig: T, newConfig: T): any[] => {
-  const changes: any[] = [];
+  const changes: any[] = []
 
   const compare = (old: any, current: any, path: string) => {
     if (old !== current) {
@@ -294,20 +294,20 @@ const detectChanges = <T>(oldConfig: T, newConfig: T): any[] => {
         oldValue: old,
         newValue: current,
         source: { type: 'unknown', priority: 0 }, // Simplified
-      });
+      })
     }
-  };
+  }
 
   // Simple change detection - could be more sophisticated
   if (typeof oldConfig === 'object' && typeof newConfig === 'object') {
-    const allKeys = new Set([...Object.keys(oldConfig as any), ...Object.keys(newConfig as any)]);
+    const allKeys = new Set([...Object.keys(oldConfig as any), ...Object.keys(newConfig as any)])
 
     for (const key of allKeys) {
-      compare((oldConfig as any)[key], (newConfig as any)[key], key);
+      compare((oldConfig as any)[key], (newConfig as any)[key], key)
     }
   } else {
-    compare(oldConfig, newConfig, 'root');
+    compare(oldConfig, newConfig, 'root')
   }
 
-  return changes;
-};
+  return changes
+}

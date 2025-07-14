@@ -5,7 +5,7 @@ import type {
   DetectionResult,
   FileFormatInfo,
   DetectionReliability,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Detection Configuration Defaults
@@ -19,54 +19,54 @@ export const defaultDetectionConfig: Required<DetectionConfig> = {
   bufferSize: 4096, // 4KB should be enough for most magic numbers
   useFileExtension: true,
   useMagicNumbers: true,
-} as const;
+} as const
 
 // ========================================
 // Magic Number Patterns
 // ========================================
 
 export interface MagicNumberPattern {
-  readonly signature: Uint8Array;
-  readonly offset: number;
-  readonly mask?: Uint8Array;
-  readonly format: FileFormatInfo;
+  readonly signature: Uint8Array
+  readonly offset: number
+  readonly mask?: Uint8Array
+  readonly format: FileFormatInfo
 }
 
 export interface ExtensionMapping {
-  readonly extension: string;
-  readonly format: FileFormatInfo;
-  readonly reliability: DetectionReliability;
+  readonly extension: string
+  readonly format: FileFormatInfo
+  readonly reliability: DetectionReliability
 }
 
 // ========================================
 // Detection Function Types
 // ========================================
 
-export type CreateDetectionOperations = (config?: DetectionConfig) => DetectionOperations;
+export type CreateDetectionOperations = (config?: DetectionConfig) => DetectionOperations
 
 export type DetectionStrategy = (
   input: Buffer | string,
   config: DetectionConfig
-) => FormatResult<DetectionResult>;
+) => FormatResult<DetectionResult>
 
 export type MagicNumberDetector = (
   buffer: Buffer,
   config: DetectionConfig
-) => FormatResult<DetectionResult>;
+) => FormatResult<DetectionResult>
 
 export type ExtensionDetector = (
   filename: string,
   config: DetectionConfig
-) => FormatResult<DetectionResult>;
+) => FormatResult<DetectionResult>
 
 // ========================================
 // Format Database Types
 // ========================================
 
 export interface FormatDatabase {
-  readonly magicNumbers: readonly MagicNumberPattern[];
-  readonly extensions: readonly ExtensionMapping[];
-  readonly mimeTypes: ReadonlyMap<string, FileFormatInfo>;
+  readonly magicNumbers: readonly MagicNumberPattern[]
+  readonly extensions: readonly ExtensionMapping[]
+  readonly mimeTypes: ReadonlyMap<string, FileFormatInfo>
 }
 
 // ========================================
@@ -84,11 +84,11 @@ export const IMAGE_FORMATS = [
   'ico',
   'tiff',
   'tif',
-] as const;
+] as const
 
-export const VIDEO_FORMATS = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', '3gp'] as const;
+export const VIDEO_FORMATS = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', '3gp'] as const
 
-export const AUDIO_FORMATS = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma'] as const;
+export const AUDIO_FORMATS = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma'] as const
 
 export const DOCUMENT_FORMATS = [
   'pdf',
@@ -100,9 +100,9 @@ export const DOCUMENT_FORMATS = [
   'pptx',
   'txt',
   'rtf',
-] as const;
+] as const
 
-export const ARCHIVE_FORMATS = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz'] as const;
+export const ARCHIVE_FORMATS = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz'] as const
 
 export const CODE_FORMATS = [
   'js',
@@ -117,6 +117,6 @@ export const CODE_FORMATS = [
   'php',
   'rb',
   'go',
-] as const;
+] as const
 
-export const DATA_FORMATS = ['json', 'xml', 'csv', 'yaml', 'yml', 'toml', 'ini'] as const;
+export const DATA_FORMATS = ['json', 'xml', 'csv', 'yaml', 'yml', 'toml', 'ini'] as const

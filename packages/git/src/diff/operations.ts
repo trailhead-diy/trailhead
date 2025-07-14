@@ -1,5 +1,5 @@
-import { ok, err, fromThrowable } from '@esteban-url/core';
-import { execSync } from 'node:child_process';
+import { ok, err, fromThrowable } from '@esteban-url/core'
+import { execSync } from 'node:child_process'
 import type {
   GitDiffOperations,
   GitRepository,
@@ -12,7 +12,7 @@ import type {
   DiffLine,
   DiffLineType,
   FileStatusType,
-} from '../types.js';
+} from '../types.js'
 
 // ========================================
 // Git Diff Operations
@@ -23,7 +23,7 @@ export const createGitDiffOperations = (): GitDiffOperations => {
     repo: GitRepository,
     options: GitDiffOptions = {}
   ): Promise<GitResult<GitDiff>> => {
-    const args = buildDiffArgs(options);
+    const args = buildDiffArgs(options)
     const safeDiff = fromThrowable(
       () =>
         execSync(`git diff ${args.join(' ')}`, {
@@ -31,9 +31,9 @@ export const createGitDiffOperations = (): GitDiffOperations => {
           encoding: 'utf-8',
           stdio: 'pipe',
         }) as string
-    );
+    )
 
-    const result = safeDiff();
+    const result = safeDiff()
     if (result.isErr()) {
       return err({
         type: 'GitError',
@@ -42,18 +42,18 @@ export const createGitDiffOperations = (): GitDiffOperations => {
         suggestion: 'Check if the repository is valid and the refs exist',
         cause: result.error,
         recoverable: true,
-      } as any);
+      } as any)
     }
 
-    const diff = parseDiffOutput(result.value);
-    return ok(diff);
-  };
+    const diff = parseDiffOutput(result.value)
+    return ok(diff)
+  }
 
   const getDiffSummary = async (
     repo: GitRepository,
     options: GitDiffOptions = {}
   ): Promise<GitResult<DiffSummary>> => {
-    const args = buildDiffArgs({ ...options, stat: true });
+    const args = buildDiffArgs({ ...options, stat: true })
     const safeDiffSummary = fromThrowable(
       () =>
         execSync(`git diff --stat ${args.join(' ')}`, {
@@ -61,9 +61,9 @@ export const createGitDiffOperations = (): GitDiffOperations => {
           encoding: 'utf-8',
           stdio: 'pipe',
         }) as string
-    );
+    )
 
-    const result = safeDiffSummary();
+    const result = safeDiffSummary()
     if (result.isErr()) {
       return err({
         type: 'GitError',
@@ -72,19 +72,19 @@ export const createGitDiffOperations = (): GitDiffOperations => {
         suggestion: 'Check if the repository is valid and the refs exist',
         cause: result.error,
         recoverable: true,
-      } as any);
+      } as any)
     }
 
-    const summary = parseDiffSummary(result.value);
-    return ok(summary);
-  };
+    const summary = parseDiffSummary(result.value)
+    return ok(summary)
+  }
 
   const getFileDiff = async (
     repo: GitRepository,
     path: string,
     options: GitDiffOptions = {}
   ): Promise<GitResult<DiffFile>> => {
-    const args = buildDiffArgs({ ...options, paths: [path] });
+    const args = buildDiffArgs({ ...options, paths: [path] })
     const safeFileDiff = fromThrowable(
       () =>
         execSync(`git diff ${args.join(' ')}`, {
@@ -92,9 +92,9 @@ export const createGitDiffOperations = (): GitDiffOperations => {
           encoding: 'utf-8',
           stdio: 'pipe',
         }) as string
-    );
+    )
 
-    const result = safeFileDiff();
+    const result = safeFileDiff()
     if (result.isErr()) {
       return err({
         type: 'GitError',
@@ -103,11 +103,11 @@ export const createGitDiffOperations = (): GitDiffOperations => {
         suggestion: 'Check if the file exists and the repository is valid',
         cause: result.error,
         recoverable: true,
-      } as any);
+      } as any)
     }
 
-    const diff = parseDiffOutput(result.value);
-    const fileDiff = diff.files.find(f => f.path === path);
+    const diff = parseDiffOutput(result.value)
+    const fileDiff = diff.files.find((f) => f.path === path)
 
     if (!fileDiff) {
       return err({
@@ -116,89 +116,89 @@ export const createGitDiffOperations = (): GitDiffOperations => {
         message: `No diff found for file ${path}`,
         suggestion: 'Check if the file exists and has changes',
         recoverable: true,
-      } as any);
+      } as any)
     }
 
-    return ok(fileDiff);
-  };
+    return ok(fileDiff)
+  }
 
   return {
     getDiff,
     getDiffSummary,
     getFileDiff,
-  };
-};
+  }
+}
 
 // ========================================
 // Helper Functions
 // ========================================
 
 const buildDiffArgs = (options: GitDiffOptions & { stat?: boolean } = {}): string[] => {
-  const args: string[] = [];
+  const args: string[] = []
 
   if (options.cached || options.staged) {
-    args.push('--cached');
+    args.push('--cached')
   }
 
   if (options.ref) {
-    args.push(options.ref);
+    args.push(options.ref)
   } else if (options.base) {
-    args.push(options.base);
+    args.push(options.base)
   }
 
   if (options.context !== undefined) {
-    args.push(`--unified=${options.context}`);
+    args.push(`--unified=${options.context}`)
   }
 
   if (options.ignoreWhitespace) {
-    args.push('--ignore-all-space');
+    args.push('--ignore-all-space')
   }
 
   if (options.stat) {
-    args.push('--stat');
+    args.push('--stat')
   }
 
   if (options.paths && options.paths.length > 0) {
-    args.push('--', ...options.paths);
+    args.push('--', ...options.paths)
   }
 
-  return args;
-};
+  return args
+}
 
 const parseDiffOutput = (output: string): GitDiff => {
-  const lines = output.split('\n');
-  const files: DiffFile[] = [];
+  const lines = output.split('\n')
+  const files: DiffFile[] = []
   let currentFile: {
-    path?: string;
-    oldPath?: string;
-    status?: FileStatusType;
-    hunks?: DiffHunk[];
-    binary?: boolean;
-    similarity?: number;
-  } | null = null;
+    path?: string
+    oldPath?: string
+    status?: FileStatusType
+    hunks?: DiffHunk[]
+    binary?: boolean
+    similarity?: number
+  } | null = null
   let currentHunk: {
-    oldStart?: number;
-    oldLines?: number;
-    newStart?: number;
-    newLines?: number;
-    header?: string;
-    lines?: DiffLine[];
-  } | null = null;
-  let totalInsertions = 0;
-  let totalDeletions = 0;
-  let binaryFiles = 0;
+    oldStart?: number
+    oldLines?: number
+    newStart?: number
+    newLines?: number
+    header?: string
+    lines?: DiffLine[]
+  } | null = null
+  let totalInsertions = 0
+  let totalDeletions = 0
+  let binaryFiles = 0
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i]
 
     if (line.startsWith('diff --git ')) {
       // Save previous file
       if (currentFile) {
-        files.push(currentFile as DiffFile);
+        files.push(currentFile as DiffFile)
       }
 
       // Start new file
-      const match = line.match(/diff --git a\/(.+) b\/(.+)/);
+      const match = line.match(/diff --git a\/(.+) b\/(.+)/)
       if (match) {
         currentFile = {
           path: match[2],
@@ -206,40 +206,40 @@ const parseDiffOutput = (output: string): GitDiff => {
           status: 'modified',
           hunks: [],
           binary: false,
-        };
+        }
       }
-      currentHunk = null;
+      currentHunk = null
     } else if (line.startsWith('new file mode ')) {
       if (currentFile) {
-        currentFile.status = 'added';
+        currentFile.status = 'added'
       }
     } else if (line.startsWith('deleted file mode ')) {
       if (currentFile) {
-        currentFile.status = 'deleted';
+        currentFile.status = 'deleted'
       }
     } else if (line.startsWith('rename from ')) {
       if (currentFile) {
-        currentFile.status = 'renamed';
+        currentFile.status = 'renamed'
       }
     } else if (line.startsWith('copy from ')) {
       if (currentFile) {
-        currentFile.status = 'copied';
+        currentFile.status = 'copied'
       }
     } else if (line.startsWith('Binary files ')) {
       if (currentFile) {
-        currentFile.binary = true;
-        binaryFiles++;
+        currentFile.binary = true
+        binaryFiles++
       }
     } else if (line.startsWith('similarity index ')) {
       if (currentFile) {
-        const match = line.match(/similarity index (\d+)%/);
+        const match = line.match(/similarity index (\d+)%/)
         if (match) {
-          currentFile.similarity = parseInt(match[1], 10);
+          currentFile.similarity = parseInt(match[1], 10)
         }
       }
     } else if (line.startsWith('@@ ')) {
       // Parse hunk header
-      const match = line.match(/@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(.*)$/);
+      const match = line.match(/@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(.*)$/)
       if (match && currentFile) {
         if (currentHunk) {
           currentFile.hunks!.push({
@@ -249,7 +249,7 @@ const parseDiffOutput = (output: string): GitDiff => {
             newLines: currentHunk.newLines!,
             header: currentHunk.header!,
             lines: currentHunk.lines!,
-          });
+          })
         }
 
         currentHunk = {
@@ -259,7 +259,7 @@ const parseDiffOutput = (output: string): GitDiff => {
           newLines: parseInt(match[4] || '1', 10),
           header: line,
           lines: [],
-        };
+        }
       }
     } else if (
       currentHunk &&
@@ -270,31 +270,31 @@ const parseDiffOutput = (output: string): GitDiff => {
         ? 'addition'
         : line.startsWith('-')
           ? 'deletion'
-          : 'context';
-      const content = line.substring(1);
+          : 'context'
+      const content = line.substring(1)
 
       if (!currentHunk.lines) {
-        currentHunk.lines = [];
+        currentHunk.lines = []
       }
       currentHunk.lines.push({
         type,
         content,
-      });
+      })
 
       if (type === 'addition') {
-        totalInsertions++;
+        totalInsertions++
       } else if (type === 'deletion') {
-        totalDeletions++;
+        totalDeletions++
       }
     } else if (line === '\\ No newline at end of file') {
       if (currentHunk) {
         if (!currentHunk.lines) {
-          currentHunk.lines = [];
+          currentHunk.lines = []
         }
         currentHunk.lines.push({
           type: 'no-newline',
           content: line,
-        });
+        })
       }
     }
   }
@@ -308,7 +308,7 @@ const parseDiffOutput = (output: string): GitDiff => {
       newLines: currentHunk.newLines!,
       header: currentHunk.header!,
       lines: currentHunk.lines!,
-    });
+    })
   }
   if (currentFile) {
     files.push({
@@ -318,7 +318,7 @@ const parseDiffOutput = (output: string): GitDiff => {
       hunks: currentFile.hunks!,
       binary: currentFile.binary!,
       similarity: currentFile.similarity,
-    });
+    })
   }
 
   const summary: DiffSummary = {
@@ -326,43 +326,43 @@ const parseDiffOutput = (output: string): GitDiff => {
     insertions: totalInsertions,
     deletions: totalDeletions,
     binary: binaryFiles,
-  };
+  }
 
   return {
     files,
     summary,
-  };
-};
+  }
+}
 
 const parseDiffSummary = (output: string): DiffSummary => {
-  const lines = output.split('\n');
-  const files: string[] = [];
-  let insertions = 0;
-  let deletions = 0;
-  let binary = 0;
+  const lines = output.split('\n')
+  const files: string[] = []
+  let insertions = 0
+  let deletions = 0
+  let binary = 0
 
   for (const line of lines) {
     if (line.includes('|')) {
-      const parts = line.split('|');
+      const parts = line.split('|')
       if (parts.length >= 2) {
-        const filename = parts[0].trim();
-        const stats = parts[1].trim();
+        const filename = parts[0].trim()
+        const stats = parts[1].trim()
 
         if (filename && !files.includes(filename)) {
-          files.push(filename);
+          files.push(filename)
         }
 
         if (stats.includes('Bin')) {
-          binary++;
+          binary++
         } else {
-          const match = stats.match(/(\d+) \+/);
+          const match = stats.match(/(\d+) \+/)
           if (match) {
-            insertions += parseInt(match[1], 10);
+            insertions += parseInt(match[1], 10)
           }
 
-          const deleteMatch = stats.match(/(\d+) -/);
+          const deleteMatch = stats.match(/(\d+) -/)
           if (deleteMatch) {
-            deletions += parseInt(deleteMatch[1], 10);
+            deletions += parseInt(deleteMatch[1], 10)
           }
         }
       }
@@ -374,5 +374,5 @@ const parseDiffSummary = (output: string): DiffSummary => {
     insertions,
     deletions,
     binary,
-  };
-};
+  }
+}

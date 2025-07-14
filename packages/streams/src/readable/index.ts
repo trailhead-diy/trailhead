@@ -1,5 +1,5 @@
-export { createReadableOperations } from './core.js';
-export { defaultReadableConfig } from './types.js';
+export { createReadableOperations } from './core.js'
+export { defaultReadableConfig } from './types.js'
 export type {
   CreateReadableOperations,
   ReadableStreamOptions,
@@ -19,4 +19,4 @@ export type {
   ReadableFilterOp,
   ReadableMapOp,
   ReadableReduceOp,
-} from './types.js';
+} from './types.js'

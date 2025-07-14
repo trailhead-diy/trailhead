@@ -1,5 +1,5 @@
-export { createWritableOperations } from './core.js';
-export { defaultWritableConfig } from './types.js';
+export { createWritableOperations } from './core.js'
+export { defaultWritableConfig } from './types.js'
 export type {
   CreateWritableOperations,
   WritableStreamOptions,
@@ -14,4 +14,4 @@ export type {
   WritableToCallbackOp,
   WritableWriteAllOp,
   WritableEndOp,
-} from './types.js';
+} from './types.js'

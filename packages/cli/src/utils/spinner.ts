@@ -2,7 +2,7 @@
  * Spinner utilities for CLI loading indicators
  * Built on yocto-spinner for minimal bundle size
  */
-import yoctoSpinner from 'yocto-spinner';
+import yoctoSpinner from 'yocto-spinner'
 
 /**
  * Create a spinner with standard configuration
@@ -19,7 +19,7 @@ import yoctoSpinner from 'yocto-spinner';
 export function createSpinner(text: string) {
   return yoctoSpinner({
     text,
-  });
+  })
 }
 
 /**
@@ -37,16 +37,16 @@ export function createSpinner(text: string) {
  * ```
  */
 export function withSpinner<T>(text: string, fn: () => Promise<T>): Promise<T> {
-  const spinner = createSpinner(text);
-  spinner.start();
+  const spinner = createSpinner(text)
+  spinner.start()
 
   return fn()
-    .then(result => {
-      spinner.success();
-      return result;
+    .then((result) => {
+      spinner.success()
+      return result
     })
-    .catch(error => {
-      spinner.error();
-      throw error;
-    });
+    .catch((error) => {
+      spinner.error()
+      throw error
+    })
 }

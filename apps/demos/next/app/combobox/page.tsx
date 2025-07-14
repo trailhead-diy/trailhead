@@ -1,10 +1,10 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/th/combobox';
-import { Field, Label } from '@/components/th/fieldset';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Combobox, ComboboxLabel, ComboboxOption } from '@/components/th/combobox'
+import { Field, Label } from '@/components/th/fieldset'
 export default function ComboboxPage(): React.JSX.Element {
-  const currentUser = { id: '1', name: 'Esteban' };
-  const users = [currentUser, { id: '2', name: 'John' }, { id: '3', name: 'Jane' }];
+  const currentUser = { id: '1', name: 'Esteban' }
+  const users = [currentUser, { id: '2', name: 'John' }, { id: '3', name: 'Jane' }]
   return (
     <DemoLayout>
       <List title="Combobox">
@@ -14,10 +14,10 @@ export default function ComboboxPage(): React.JSX.Element {
             <Combobox
               name="user"
               options={users}
-              displayValue={user => user?.name}
+              displayValue={(user) => user?.name}
               defaultValue={currentUser}
             >
-              {user => (
+              {(user) => (
                 <ComboboxOption value={user}>
                   <ComboboxLabel>{user.name}</ComboboxLabel>
                 </ComboboxOption>
@@ -27,5 +27,5 @@ export default function ComboboxPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

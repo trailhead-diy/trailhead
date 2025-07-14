@@ -20,18 +20,18 @@ The enhanced testing module provides powerful utilities that dramatically reduce
 ### Before (Traditional Pattern)
 
 ```typescript
-const result = await fs.readFile('/test.txt');
-expect(result.success).toBe(true);
+const result = await fs.readFile('/test.txt')
+expect(result.success).toBe(true)
 if (result.success) {
-  expect(result.value).toBe('content');
+  expect(result.value).toBe('content')
 }
 ```
 
 ### After (Enhanced Utilities)
 
 ```typescript
-const content = expectSuccess(await fs.readFile('/test.txt'));
-expect(content).toBe('content');
+const content = expectSuccess(await fs.readFile('/test.txt'))
+expect(content).toBe('content')
 ```
 
 ### Available Assertions
@@ -42,20 +42,20 @@ import {
   expectFailure,
   expectErrorCode,
   expectErrorMessage,
-} from '@esteban-url/trailhead-cli/testing';
+} from '@esteban-url/trailhead-cli/testing'
 
 // Extract value from successful Result
-const value = expectSuccess(result);
+const value = expectSuccess(result)
 
 // Extract error from failed Result
-const error = expectFailure(result);
+const error = expectFailure(result)
 
 // Assert specific error code
-const error = expectErrorCode(result, 'FILE_NOT_FOUND');
+const error = expectErrorCode(result, 'FILE_NOT_FOUND')
 
 // Assert error message contains text or matches regex
-const error = expectErrorMessage(result, 'File not found');
-const error = expectErrorMessage(result, /File .+ not found/);
+const error = expectErrorMessage(result, 'File not found')
+const error = expectErrorMessage(result, /File .+ not found/)
 ```
 
 ## Custom Vitest Matchers
@@ -63,18 +63,18 @@ const error = expectErrorMessage(result, /File .+ not found/);
 Enable fluent assertions with custom matchers:
 
 ```typescript
-import { setupResultMatchers } from '@esteban-url/trailhead-cli/testing';
+import { setupResultMatchers } from '@esteban-url/trailhead-cli/testing'
 
 // In test setup
-setupResultMatchers();
+setupResultMatchers()
 
 // Usage
-expect(result).toBeOk();
-expect(result).toBeErr();
-expect(result).toHaveValue('expected');
-expect(result).toHaveErrorCode('FILE_NOT_FOUND');
-expect(result).toHaveErrorMessage('File not found');
-expect(result).toHaveLength(3); // For array values
+expect(result).toBeOk()
+expect(result).toBeErr()
+expect(result).toHaveValue('expected')
+expect(result).toHaveErrorCode('FILE_NOT_FOUND')
+expect(result).toHaveErrorMessage('File not found')
+expect(result).toHaveLength(3) // For array values
 ```
 
 ## Test Suite Builders
@@ -84,14 +84,14 @@ expect(result).toHaveLength(3); // For array values
 Eliminates repetitive Result testing patterns:
 
 ```typescript
-import { createResultTestSuite } from '@esteban-url/trailhead-cli/testing';
+import { createResultTestSuite } from '@esteban-url/trailhead-cli/testing'
 
 createResultTestSuite('File Operations', [
   {
     name: 'should read existing file',
     operation: () => fs.readFile('/existing.txt'),
     shouldSucceed: true,
-    expectedValue: content => expect(content).toContain('data'),
+    expectedValue: (content) => expect(content).toContain('data'),
   },
   {
     name: 'should fail for missing file',
@@ -99,7 +99,7 @@ createResultTestSuite('File Operations', [
     shouldSucceed: false,
     expectedErrorCode: 'FILE_NOT_FOUND',
   },
-]);
+])
 ```
 
 ### FileSystem Test Suite Builder
@@ -107,21 +107,21 @@ createResultTestSuite('File Operations', [
 Standardizes filesystem testing with automatic setup/teardown:
 
 ```typescript
-import { createFileSystemTestSuite } from '@esteban-url/trailhead-cli/testing';
+import { createFileSystemTestSuite } from '@esteban-url/trailhead-cli/testing'
 
 createFileSystemTestSuite('Memory FileSystem', () => createMemoryFileSystem(), [
   {
     name: 'should write and read files',
     async operation(fs) {
-      await fs.writeFile('/test.txt', 'content');
-      return fs.readFile('/test.txt');
+      await fs.writeFile('/test.txt', 'content')
+      return fs.readFile('/test.txt')
     },
     expectations(result) {
-      const content = expectSuccess(result);
-      expect(content).toBe('content');
+      const content = expectSuccess(result)
+      expect(content).toBe('content')
     },
   },
-]);
+])
 ```
 
 ### Error Template Test Suite Builder
@@ -129,7 +129,7 @@ createFileSystemTestSuite('Memory FileSystem', () => createMemoryFileSystem(), [
 Validates error templates with comprehensive property checking:
 
 ```typescript
-import { createErrorTemplateTestSuite } from '@esteban-url/trailhead-cli/testing';
+import { createErrorTemplateTestSuite } from '@esteban-url/trailhead-cli/testing'
 
 createErrorTemplateTestSuite('fileNotFound', errorTemplates.fileNotFound, [
   {
@@ -142,7 +142,7 @@ createErrorTemplateTestSuite('fileNotFound', errorTemplates.fileNotFound, [
       recoverable: true,
     },
   },
-]);
+])
 ```
 
 ## CLI Testing
@@ -152,19 +152,19 @@ createErrorTemplateTestSuite('fileNotFound', errorTemplates.fileNotFound, [
 Capture and test CLI output with built-in snapshot support:
 
 ```typescript
-import { createCLITestRunner, expectCLISnapshot } from '@esteban-url/trailhead-cli/testing';
+import { createCLITestRunner, expectCLISnapshot } from '@esteban-url/trailhead-cli/testing'
 
 const runner = createCLITestRunner({
   stripAnsi: true, // Remove color codes
   trimWhitespace: true, // Clean output
-  normalizeOutput: output => output.toLowerCase(),
-});
+  normalizeOutput: (output) => output.toLowerCase(),
+})
 
-const result = await runner.run(command, ['--verbose']);
+const result = await runner.run(command, ['--verbose'])
 
-expect(result.success).toBe(true);
-expect(result.stdout).toContain('Operation completed');
-expectCLISnapshot(result, 'successful-operation');
+expect(result.success).toBe(true)
+expect(result.stdout).toContain('Operation completed')
+expectCLISnapshot(result, 'successful-operation')
 ```
 
 ### Workflow Testing
@@ -172,16 +172,16 @@ expectCLISnapshot(result, 'successful-operation');
 Test complete CLI workflows with multiple steps:
 
 ```typescript
-import { createWorkflowTest } from '@esteban-url/trailhead-cli/testing';
+import { createWorkflowTest } from '@esteban-url/trailhead-cli/testing'
 
 createWorkflowTest('Data Processing Workflow', [
   {
     name: 'Parse input file',
     command: parseCommand,
     args: ['data.csv'],
-    verify: result => {
-      expect(result.success).toBe(true);
-      expect(result.stdout).toContain('Parsed 100 rows');
+    verify: (result) => {
+      expect(result.success).toBe(true)
+      expect(result.stdout).toContain('Parsed 100 rows')
     },
   },
   {
@@ -190,11 +190,11 @@ createWorkflowTest('Data Processing Workflow', [
     setup: async () => {
       // Setup transformation config
     },
-    verify: result => {
-      expect(result.success).toBe(true);
+    verify: (result) => {
+      expect(result.success).toBe(true)
     },
   },
-]);
+])
 ```
 
 ### Command Test Suite Builder
@@ -202,7 +202,7 @@ createWorkflowTest('Data Processing Workflow', [
 Comprehensive command testing with multiple scenarios:
 
 ```typescript
-import { createCommandTestSuite } from '@esteban-url/trailhead-cli/testing';
+import { createCommandTestSuite } from '@esteban-url/trailhead-cli/testing'
 
 createCommandTestSuite('convert', convertCommand, [
   {
@@ -217,7 +217,7 @@ createCommandTestSuite('convert', convertCommand, [
     shouldSucceed: false,
     expectedError: 'Unsupported format',
   },
-]);
+])
 ```
 
 ## Fixture Management
@@ -225,29 +225,29 @@ createCommandTestSuite('convert', convertCommand, [
 ### Basic Fixture Management
 
 ```typescript
-import { fixtures, testData, createFixtureManager } from '@esteban-url/trailhead-cli/testing';
+import { fixtures, testData, createFixtureManager } from '@esteban-url/trailhead-cli/testing'
 
 // CSV fixtures
 const csvFixtures = fixtures.csv({
   'sample.csv': 'name,age\nJohn,25\nJane,30',
   'large.csv': testData.csv.largeCsv(1000),
-});
+})
 
 // JSON fixtures
 const jsonFixtures = fixtures.json({
   'config.json': { debug: true, verbose: false },
-});
+})
 
 // Package.json fixtures
 const packageFixtures = fixtures.packageJson({
   'package.json': { name: 'test-project', version: '1.0.0' },
-});
+})
 ```
 
 ### Advanced Fixture Building
 
 ```typescript
-import { FixtureBuilder } from '@esteban-url/trailhead-cli/testing';
+import { FixtureBuilder } from '@esteban-url/trailhead-cli/testing'
 
 const fixtures = new FixtureBuilder()
   .addFile('readme.txt', 'Project README')
@@ -265,13 +265,13 @@ const fixtures = new FixtureBuilder()
     'index.ts': 'export * from "./lib";',
     'lib.ts': 'export const VERSION = "1.0.0";',
   })
-  .build();
+  .build()
 ```
 
 ### Test Suite with Fixtures
 
 ```typescript
-import { createTestSuite } from '@esteban-url/trailhead-cli/testing';
+import { createTestSuite } from '@esteban-url/trailhead-cli/testing'
 
 const testSuite = createTestSuite({
   filesystem: 'memory',
@@ -279,15 +279,15 @@ const testSuite = createTestSuite({
     'input.csv': 'name,age\nJohn,25',
     'config.json': '{"format": "json"}',
   },
-});
+})
 
 testSuite('CSV Processing', ({ fs, fixtures }) => {
   it('should process CSV file', async () => {
-    const content = await fs.readFile('input.csv');
-    const data = expectSuccess(content);
-    expect(data).toContain('John,25');
-  });
-});
+    const content = await fs.readFile('input.csv')
+    const data = expectSuccess(content)
+    expect(data).toContain('John,25')
+  })
+})
 ```
 
 ## Test Debugging and Profiling
@@ -295,43 +295,43 @@ testSuite('CSV Processing', ({ fs, fixtures }) => {
 ### Performance Monitoring
 
 ```typescript
-import { testUtils, profileTest } from '@esteban-url/trailhead-cli/testing';
+import { testUtils, profileTest } from '@esteban-url/trailhead-cli/testing'
 
 // Measure operation performance
 await testUtils.performance.measure('file-processing', async () => {
-  return processLargeFile('data.csv');
-});
+  return processLargeFile('data.csv')
+})
 
 // Profile test functions
 const profiledTest = profileTest('heavy-operation', async () => {
-  return performComplexCalculation();
-});
+  return performComplexCalculation()
+})
 
 // Get performance statistics
-const stats = testUtils.performance.getStats('file-processing');
-console.log(`Average: ${stats.avg}ms, P95: ${stats.p95}ms`);
+const stats = testUtils.performance.getStats('file-processing')
+console.log(`Average: ${stats.avg}ms, P95: ${stats.p95}ms`)
 ```
 
 ### Test Debugging
 
 ```typescript
-import { testUtils } from '@esteban-url/trailhead-cli/testing';
+import { testUtils } from '@esteban-url/trailhead-cli/testing'
 
 // Enable debugging
-testUtils.debugger.enable();
+testUtils.debugger.enable()
 
 // Debug with context
-testUtils.debugger.debug('Processing file', { filename: 'data.csv' });
-testUtils.debugger.info('File loaded successfully');
-testUtils.debugger.warn('Large file detected');
-testUtils.debugger.error('Processing failed', error);
+testUtils.debugger.debug('Processing file', { filename: 'data.csv' })
+testUtils.debugger.info('File loaded successfully')
+testUtils.debugger.warn('Large file detected')
+testUtils.debugger.error('Processing failed', error)
 
 // Trace Result operations
-const result = await processFile('data.csv');
-testUtils.debugger.traceResult('process-file', result);
+const result = await processFile('data.csv')
+testUtils.debugger.traceResult('process-file', result)
 
 // Print debug report
-testUtils.debugger.printReport();
+testUtils.debugger.printReport()
 ```
 
 ### State Inspection
@@ -355,23 +355,23 @@ testUtils.inspector.printComparison('initial', 'after-processing');
 
 ```typescript
 // Test specific error scenarios
-const errorFixtures = fixtures.errors.malformedCsv;
-await errorFixtures.setup(fs);
+const errorFixtures = fixtures.errors.malformedCsv
+await errorFixtures.setup(fs)
 
-const result = await parseCSV(errorFixtures.get('malformed.csv'));
-const error = expectErrorCode(result, 'PARSE_ERROR');
-expect(error.message).toContain('malformed CSV');
+const result = await parseCSV(errorFixtures.get('malformed.csv'))
+const error = expectErrorCode(result, 'PARSE_ERROR')
+expect(error.message).toContain('malformed CSV')
 ```
 
 ### Error Template Testing
 
 ```typescript
 // Validate error properties comprehensively
-const error = errorTemplates.validationFailed('email', 'invalid-email');
-expect(error.category).toBe('validation');
-expect(error.code).toBe('VALIDATION_FAILED');
-expect(error.recoverable).toBe(true);
-expect(error.suggestion).toContain('valid email format');
+const error = errorTemplates.validationFailed('email', 'invalid-email')
+expect(error.category).toBe('validation')
+expect(error.code).toBe('VALIDATION_FAILED')
+expect(error.recoverable).toBe(true)
+expect(error.suggestion).toContain('valid email format')
 ```
 
 ## Integration with Existing Tests
@@ -382,21 +382,21 @@ expect(error.suggestion).toContain('valid email format');
 // Before: Traditional boilerplate
 describe('File Operations', () => {
   it('should read file successfully', async () => {
-    const result = await fs.readFile('/test.txt');
-    expect(result.success).toBe(true);
+    const result = await fs.readFile('/test.txt')
+    expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.value).toBe('content');
+      expect(result.value).toBe('content')
     }
-  });
+  })
 
   it('should handle file not found', async () => {
-    const result = await fs.readFile('/missing.txt');
-    expect(result.success).toBe(false);
+    const result = await fs.readFile('/missing.txt')
+    expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.code).toBe('FILE_NOT_FOUND');
+      expect(result.error.code).toBe('FILE_NOT_FOUND')
     }
-  });
-});
+  })
+})
 
 // After: Enhanced utilities
 createResultTestSuite('File Operations', [
@@ -404,7 +404,7 @@ createResultTestSuite('File Operations', [
     name: 'should read file successfully',
     operation: () => fs.readFile('/test.txt'),
     shouldSucceed: true,
-    expectedValue: content => expect(content).toBe('content'),
+    expectedValue: (content) => expect(content).toBe('content'),
   },
   {
     name: 'should handle file not found',
@@ -412,7 +412,7 @@ createResultTestSuite('File Operations', [
     shouldSucceed: false,
     expectedErrorCode: 'FILE_NOT_FOUND',
   },
-]);
+])
 ```
 
 ## Setup and Configuration
@@ -421,34 +421,34 @@ createResultTestSuite('File Operations', [
 
 ```typescript
 // test-setup.ts
-import { setupResultMatchers, testUtils } from '@esteban-url/trailhead-cli/testing';
+import { setupResultMatchers, testUtils } from '@esteban-url/trailhead-cli/testing'
 
 // Enable custom matchers
-setupResultMatchers();
+setupResultMatchers()
 
 // Enable debugging in test environment
 if (process.env.DEBUG_TESTS) {
-  testUtils.setupDebugging();
+  testUtils.setupDebugging()
 }
 
 // Global test cleanup
 afterEach(() => {
-  testUtils.clearAll();
-});
+  testUtils.clearAll()
+})
 
 // Performance reporting
 afterAll(() => {
   if (process.env.PERF_REPORT) {
-    testUtils.printTestReport();
+    testUtils.printTestReport()
   }
-});
+})
 ```
 
 ### Vitest Configuration
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -460,7 +460,7 @@ export default defineConfig({
       exclude: ['**/*.test.ts', '**/testing/**'],
     },
   },
-});
+})
 ```
 
 ## Best Practices
@@ -469,29 +469,29 @@ export default defineConfig({
 
 ```typescript
 // ✅ Good: Use builders for common patterns
-createResultTestSuite('Validation Operations', testCases);
+createResultTestSuite('Validation Operations', testCases)
 
 // ❌ Avoid: Repetitive individual tests
 describe('Validation Operations', () => {
   it('test1', async () => {
     /* repetitive code */
-  });
+  })
   it('test2', async () => {
     /* repetitive code */
-  });
-});
+  })
+})
 ```
 
 ### 2. Leverage Custom Matchers
 
 ```typescript
 // ✅ Good: Fluent assertions
-expect(result).toBeOk();
-expect(result).toHaveValue(expectedValue);
+expect(result).toBeOk()
+expect(result).toHaveValue(expectedValue)
 
 // ❌ Avoid: Verbose traditional assertions
-expect(result.success).toBe(true);
-if (result.success) expect(result.value).toBe(expectedValue);
+expect(result.success).toBe(true)
+if (result.success) expect(result.value).toBe(expectedValue)
 ```
 
 ### 3. Use Fixtures for Test Data
@@ -501,29 +501,29 @@ if (result.success) expect(result.value).toBe(expectedValue);
 const fixtures = new FixtureBuilder()
   .addCsv('valid.csv', headers, rows)
   .addCsv('invalid.csv', malformedData)
-  .build();
+  .build()
 
 // ❌ Avoid: Inline test data
-const csvData = 'name,age\nJohn,25\nJane,30';
+const csvData = 'name,age\nJohn,25\nJane,30'
 ```
 
 ### 4. Profile Performance-Critical Operations
 
 ```typescript
 // ✅ Good: Monitor performance
-const profiledOperation = profileTest('data-processing', processLargeDataset);
+const profiledOperation = profileTest('data-processing', processLargeDataset)
 
 // ✅ Good: Measure critical paths
-await testUtils.performance.measure('csv-parsing', () => parseCSV(data));
+await testUtils.performance.measure('csv-parsing', () => parseCSV(data))
 ```
 
 ### 5. Debug Complex Test Failures
 
 ```typescript
 // ✅ Good: Enable debugging for complex scenarios
-testUtils.debugger.enable();
-testUtils.debugger.traceResult('complex-operation', result);
-testUtils.inspector.capture('before', state);
+testUtils.debugger.enable()
+testUtils.debugger.traceResult('complex-operation', result)
+testUtils.inspector.capture('before', state)
 ```
 
 ## Migration Guide
@@ -535,8 +535,8 @@ The enhanced testing utilities are already included in the `/testing` module exp
 ### Step 2: Update Test Setup
 
 ```typescript
-import { setupResultMatchers } from '@esteban-url/trailhead-cli/testing';
-setupResultMatchers();
+import { setupResultMatchers } from '@esteban-url/trailhead-cli/testing'
+setupResultMatchers()
 ```
 
 ### Step 3: Replace Repetitive Patterns

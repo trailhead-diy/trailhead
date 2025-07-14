@@ -1,5 +1,5 @@
-import { resolve, join } from 'path';
-import type { TemplateLoaderConfig, TemplateVariant } from './types.js';
+import { resolve, join } from 'path'
+import type { TemplateLoaderConfig, TemplateVariant } from './types.js'
 
 /**
  * Template configuration utilities for creating and managing custom template paths
@@ -44,34 +44,34 @@ import type { TemplateLoaderConfig, TemplateVariant } from './types.js';
 export function createTemplateConfig(
   options: Partial<TemplateLoaderConfig> = {}
 ): TemplateLoaderConfig {
-  const config: TemplateLoaderConfig = {};
+  const config: TemplateLoaderConfig = {}
 
   // Resolve base templates directory
   if (options.templatesDir) {
-    config.templatesDir = resolve(options.templatesDir);
+    config.templatesDir = resolve(options.templatesDir)
   }
 
   // Resolve variant directories
   if (options.variantDirs) {
-    config.variantDirs = {};
+    config.variantDirs = {}
     for (const [variant, path] of Object.entries(options.variantDirs)) {
       if (path) {
-        config.variantDirs[variant as TemplateVariant] = resolve(path);
+        config.variantDirs[variant as TemplateVariant] = resolve(path)
       }
     }
   }
 
   // Resolve shared directory
   if (options.sharedDir) {
-    config.sharedDir = resolve(options.sharedDir);
+    config.sharedDir = resolve(options.sharedDir)
   }
 
   // Resolve additional directories
   if (options.additionalDirs) {
-    config.additionalDirs = options.additionalDirs.map(dir => resolve(dir));
+    config.additionalDirs = options.additionalDirs.map((dir) => resolve(dir))
   }
 
-  return config;
+  return config
 }
 
 /**
@@ -100,13 +100,13 @@ export function createTestTemplateConfig(
   testBaseDir: string,
   options: Partial<TemplateLoaderConfig> = {}
 ): TemplateLoaderConfig {
-  const baseDir = resolve(testBaseDir);
+  const baseDir = resolve(testBaseDir)
 
   return createTemplateConfig({
     templatesDir: baseDir,
     sharedDir: join(baseDir, 'shared'),
     ...options,
-  });
+  })
 }
 
 /**
@@ -133,17 +133,17 @@ export function createTestTemplateConfig(
 export function createDevTemplateConfig(
   overrides: Partial<Record<TemplateVariant, string>>
 ): TemplateLoaderConfig {
-  const variantDirs: Partial<Record<TemplateVariant, string>> = {};
+  const variantDirs: Partial<Record<TemplateVariant, string>> = {}
 
   for (const [variant, path] of Object.entries(overrides)) {
     if (path) {
-      variantDirs[variant as TemplateVariant] = resolve(path);
+      variantDirs[variant as TemplateVariant] = resolve(path)
     }
   }
 
   return createTemplateConfig({
     variantDirs,
-  });
+  })
 }
 
 /**
@@ -171,18 +171,18 @@ export function createDevTemplateConfig(
 export async function validateTemplateConfig(
   config: TemplateLoaderConfig
 ): Promise<{ valid: boolean; errors: string[] }> {
-  const errors: string[] = [];
+  const errors: string[] = []
 
   // Validate base templates directory
   if (config.templatesDir) {
     try {
-      const { stat } = await import('node:fs/promises');
-      const stats = await stat(config.templatesDir);
+      const { stat } = await import('node:fs/promises')
+      const stats = await stat(config.templatesDir)
       if (!stats.isDirectory()) {
-        errors.push(`templatesDir is not a directory: ${config.templatesDir}`);
+        errors.push(`templatesDir is not a directory: ${config.templatesDir}`)
       }
     } catch {
-      errors.push(`templatesDir does not exist: ${config.templatesDir}`);
+      errors.push(`templatesDir does not exist: ${config.templatesDir}`)
     }
   }
 
@@ -191,13 +191,13 @@ export async function validateTemplateConfig(
     for (const [variant, path] of Object.entries(config.variantDirs)) {
       if (path) {
         try {
-          const { stat } = await import('node:fs/promises');
-          const stats = await stat(path);
+          const { stat } = await import('node:fs/promises')
+          const stats = await stat(path)
           if (!stats.isDirectory()) {
-            errors.push(`variantDir for ${variant} is not a directory: ${path}`);
+            errors.push(`variantDir for ${variant} is not a directory: ${path}`)
           }
         } catch {
-          errors.push(`variantDir for ${variant} does not exist: ${path}`);
+          errors.push(`variantDir for ${variant} does not exist: ${path}`)
         }
       }
     }
@@ -206,13 +206,13 @@ export async function validateTemplateConfig(
   // Validate shared directory
   if (config.sharedDir) {
     try {
-      const { stat } = await import('node:fs/promises');
-      const stats = await stat(config.sharedDir);
+      const { stat } = await import('node:fs/promises')
+      const stats = await stat(config.sharedDir)
       if (!stats.isDirectory()) {
-        errors.push(`sharedDir is not a directory: ${config.sharedDir}`);
+        errors.push(`sharedDir is not a directory: ${config.sharedDir}`)
       }
     } catch {
-      errors.push(`sharedDir does not exist: ${config.sharedDir}`);
+      errors.push(`sharedDir does not exist: ${config.sharedDir}`)
     }
   }
 
@@ -220,13 +220,13 @@ export async function validateTemplateConfig(
   if (config.additionalDirs) {
     for (const [index, path] of config.additionalDirs.entries()) {
       try {
-        const { stat } = await import('node:fs/promises');
-        const stats = await stat(path);
+        const { stat } = await import('node:fs/promises')
+        const stats = await stat(path)
         if (!stats.isDirectory()) {
-          errors.push(`additionalDir[${index}] is not a directory: ${path}`);
+          errors.push(`additionalDir[${index}] is not a directory: ${path}`)
         }
       } catch {
-        errors.push(`additionalDir[${index}] does not exist: ${path}`);
+        errors.push(`additionalDir[${index}] does not exist: ${path}`)
       }
     }
   }
@@ -234,7 +234,7 @@ export async function validateTemplateConfig(
   return {
     valid: errors.length === 0,
     errors,
-  };
+  }
 }
 
 /**
@@ -262,35 +262,35 @@ export async function validateTemplateConfig(
  * ```
  */
 export function getTemplateConfigSummary(config: TemplateLoaderConfig): string {
-  const lines: string[] = ['Template Configuration:'];
+  const lines: string[] = ['Template Configuration:']
 
   if (config.templatesDir) {
-    lines.push(`  Base Directory: ${config.templatesDir}`);
+    lines.push(`  Base Directory: ${config.templatesDir}`)
   }
 
   if (config.variantDirs && Object.keys(config.variantDirs).length > 0) {
-    lines.push('  Variant Overrides:');
+    lines.push('  Variant Overrides:')
     for (const [variant, path] of Object.entries(config.variantDirs)) {
       if (path) {
-        lines.push(`    ${variant}: ${path}`);
+        lines.push(`    ${variant}: ${path}`)
       }
     }
   }
 
   if (config.sharedDir) {
-    lines.push(`  Shared Directory: ${config.sharedDir}`);
+    lines.push(`  Shared Directory: ${config.sharedDir}`)
   }
 
   if (config.additionalDirs && config.additionalDirs.length > 0) {
-    lines.push('  Additional Directories:');
+    lines.push('  Additional Directories:')
     config.additionalDirs.forEach((dir, index) => {
-      lines.push(`    [${index}]: ${dir}`);
-    });
+      lines.push(`    [${index}]: ${dir}`)
+    })
   }
 
   if (lines.length === 1) {
-    lines.push('  (using built-in templates)');
+    lines.push('  (using built-in templates)')
   }
 
-  return lines.join('\n');
+  return lines.join('\n')
 }

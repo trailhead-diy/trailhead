@@ -1,32 +1,32 @@
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result } from '@esteban-url/core';
-import { input, select, confirm, checkbox } from '@inquirer/prompts';
-import type { ProjectConfig, TemplateVariant, PackageManager } from './types.js';
-import { createConfigManager } from './config-manager.js';
-import { createPresetManager } from './preset-manager.js';
-import { validateModernProjectConfig } from './config-schema.js';
-import { resolve } from 'path';
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result } from '@esteban-url/core'
+import { input, select, confirm, checkbox } from '@inquirer/prompts'
+import type { ProjectConfig, TemplateVariant, PackageManager } from './types.js'
+import { createConfigManager } from './config-manager.js'
+import { createPresetManager } from './preset-manager.js'
+import { validateModernProjectConfig } from './config-schema.js'
+import { resolve } from 'path'
 
 export interface ModernProjectConfig extends ProjectConfig {
   // Enhanced configuration options
-  description: string;
+  description: string
   author: {
-    name: string;
-    email: string;
-  };
-  license: 'MIT' | 'Apache-2.0' | 'ISC' | 'custom';
+    name: string
+    email: string
+  }
+  license: 'MIT' | 'Apache-2.0' | 'ISC' | 'custom'
   features: {
-    core: true; // Always required
-    config?: boolean;
-    validation?: boolean;
-    testing?: boolean;
-    docs?: boolean;
-    cicd?: boolean;
-  };
-  projectType: 'standalone-cli' | 'library' | 'monorepo-package';
-  nodeVersion: string;
-  typescript: boolean;
-  ide: 'vscode' | 'none';
+    core: true // Always required
+    config?: boolean
+    validation?: boolean
+    testing?: boolean
+    docs?: boolean
+    cicd?: boolean
+  }
+  projectType: 'standalone-cli' | 'library' | 'monorepo-package'
+  nodeVersion: string
+  typescript: boolean
+  ide: 'vscode' | 'none'
 }
 
 /**
@@ -38,25 +38,25 @@ export async function gatherProjectConfig(
 ): Promise<Result<ModernProjectConfig, any>> {
   try {
     // Initialize configuration and preset managers
-    const configManager = createConfigManager({ verbose: flags.verbose });
-    const presetManager = createPresetManager(configManager);
+    const configManager = createConfigManager({ verbose: flags.verbose })
+    const presetManager = createPresetManager(configManager)
 
     // Step 1: Check for preset usage
-    const presetResult = await presetManager.selectPreset();
+    const presetResult = await presetManager.selectPreset()
     if (presetResult.isErr()) {
-      return err(presetResult.error);
+      return err(presetResult.error)
     }
 
-    const selectedPreset = presetResult.value;
-    let baseConfig: Partial<ModernProjectConfig> = { ...flags };
+    const selectedPreset = presetResult.value
+    let baseConfig: Partial<ModernProjectConfig> = { ...flags }
 
     // If a preset was selected, apply it
     if (selectedPreset) {
-      const applyResult = await presetManager.applyPresetInteractive(selectedPreset, baseConfig);
+      const applyResult = await presetManager.applyPresetInteractive(selectedPreset, baseConfig)
       if (applyResult.isErr()) {
-        return err(applyResult.error);
+        return err(applyResult.error)
       }
-      baseConfig = applyResult.value;
+      baseConfig = applyResult.value
     }
 
     // Step 2: Gather project basics
@@ -65,18 +65,18 @@ export async function gatherProjectConfig(
       (await input({
         message: 'Project name:',
         validate: (value: string) => {
-          if (!value.trim()) return 'Project name is required';
+          if (!value.trim()) return 'Project name is required'
           if (!/^[a-z0-9-]+$/.test(value)) {
-            return 'Project name must be lowercase alphanumeric with hyphens only';
+            return 'Project name must be lowercase alphanumeric with hyphens only'
           }
-          return true;
+          return true
         },
-      }));
+      }))
 
     const description = await input({
       message: 'Project description:',
       default: baseConfig.description || `A CLI application built with @esteban-url/trailhead-cli`,
-    });
+    })
 
     // Author information (skip if already provided by preset)
     const authorName =
@@ -84,19 +84,19 @@ export async function gatherProjectConfig(
       (await input({
         message: 'Author name:',
         default: process.env.USER || process.env.USERNAME || '',
-      }));
+      }))
 
     const authorEmail =
       baseConfig.author?.email ||
       (await input({
         message: 'Author email:',
         validate: (value: string) => {
-          if (!value.trim()) return 'Email is required';
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(value)) return 'Please enter a valid email address';
-          return true;
+          if (!value.trim()) return 'Email is required'
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          if (!emailRegex.test(value)) return 'Please enter a valid email address'
+          return true
         },
-      }));
+      }))
 
     // License selection (skip if provided by preset)
     const license =
@@ -110,7 +110,7 @@ export async function gatherProjectConfig(
           { name: 'Custom', value: 'custom' },
         ],
         default: 'MIT',
-      }));
+      }))
 
     // Project type (skip if provided by preset)
     const projectType =
@@ -135,7 +135,7 @@ export async function gatherProjectConfig(
           },
         ],
         default: 'standalone-cli',
-      }));
+      }))
 
     // Template selection (skip if provided by preset)
     const template: TemplateVariant =
@@ -155,24 +155,24 @@ export async function gatherProjectConfig(
           },
         ],
         default: flags.template || 'basic',
-      }));
+      }))
 
     // Feature selection (skip if provided by preset)
-    let selectedFeatures: string[];
+    let selectedFeatures: string[]
     if (baseConfig.features) {
       // Use preset features, but allow user to modify if they want
       const presetFeatures = Object.entries(baseConfig.features)
         .filter(([, enabled]) => enabled)
         .map(([name]) => name)
-        .filter(name => name !== 'core');
+        .filter((name) => name !== 'core')
 
       const keepPresetFeatures = await confirm({
         message: `Keep preset features (${presetFeatures.join(', ')})?`,
         default: true,
-      });
+      })
 
       if (keepPresetFeatures) {
-        selectedFeatures = presetFeatures;
+        selectedFeatures = presetFeatures
       } else {
         selectedFeatures = await checkbox({
           message: 'Select features to include:',
@@ -195,7 +195,7 @@ export async function gatherProjectConfig(
             { name: 'Documentation', value: 'docs', checked: presetFeatures.includes('docs') },
             { name: 'CI/CD workflows', value: 'cicd', checked: presetFeatures.includes('cicd') },
           ],
-        });
+        })
       }
     } else {
       selectedFeatures = await checkbox({
@@ -207,7 +207,7 @@ export async function gatherProjectConfig(
           { name: 'Documentation', value: 'docs', checked: flags.includeDocs || false },
           { name: 'CI/CD workflows', value: 'cicd', checked: projectType === 'standalone-cli' },
         ],
-      });
+      })
     }
 
     // Package manager
@@ -218,24 +218,24 @@ export async function gatherProjectConfig(
         { name: 'npm', value: 'npm' },
       ],
       default: flags.packageManager || 'pnpm',
-    });
+    })
 
     // Node version
     const nodeVersion = await input({
       message: 'Node.js version target:',
       default: '18',
       validate: (value: string) => {
-        const num = parseInt(value);
-        if (isNaN(num) || num < 14) return 'Node.js version must be 14 or higher';
-        return true;
+        const num = parseInt(value)
+        if (isNaN(num) || num < 14) return 'Node.js version must be 14 or higher'
+        return true
       },
-    });
+    })
 
     // Development preferences
     const setupVscode = await confirm({
       message: 'Configure VS Code settings?',
       default: true,
-    });
+    })
 
     const initGit =
       flags.initGit !== undefined
@@ -243,7 +243,7 @@ export async function gatherProjectConfig(
         : await confirm({
             message: 'Initialize Git repository?',
             default: true,
-          });
+          })
 
     const installDependencies =
       flags.installDependencies !== undefined
@@ -251,7 +251,7 @@ export async function gatherProjectConfig(
         : await confirm({
             message: 'Install dependencies after generation?',
             default: true,
-          });
+          })
 
     // Build configuration
     const features = {
@@ -261,7 +261,7 @@ export async function gatherProjectConfig(
       testing: selectedFeatures.includes('testing'),
       docs: selectedFeatures.includes('docs'),
       cicd: selectedFeatures.includes('cicd'),
-    };
+    }
 
     const config: ModernProjectConfig = {
       projectName: name,
@@ -287,12 +287,12 @@ export async function gatherProjectConfig(
       nodeVersion,
       typescript: true, // Always TypeScript for trailhead-cli projects
       ide: setupVscode ? 'vscode' : 'none',
-    };
+    }
 
     // Validate the final configuration
-    const validationResult = validateModernProjectConfig(config);
+    const validationResult = validateModernProjectConfig(config)
     if (validationResult.isErr()) {
-      return validationResult;
+      return validationResult
     }
 
     // Offer to save configuration as preset
@@ -301,17 +301,17 @@ export async function gatherProjectConfig(
       const saveAsPreset = await confirm({
         message: 'Save this configuration as a preset for future use?',
         default: false,
-      });
+      })
 
       if (saveAsPreset) {
-        const presetResult = await presetManager.createPreset(config);
+        const presetResult = await presetManager.createPreset(config)
         if (presetResult.isErr()) {
-          console.warn('Failed to save preset, but continuing with project generation');
+          console.warn('Failed to save preset, but continuing with project generation')
         }
       }
     }
 
-    return ok(validationResult.value);
+    return ok(validationResult.value)
   } catch (error) {
     return err(
       createCoreError('PROMPT_FAILED', 'Failed to gather project configuration', {
@@ -321,7 +321,7 @@ export async function gatherProjectConfig(
         recoverable: false,
         severity: 'high',
       })
-    );
+    )
   }
 }
 
@@ -330,45 +330,45 @@ export async function gatherProjectConfig(
  */
 export function parseArgumentsModern(args: string[]): Result<
   {
-    projectName?: string;
-    flags: Partial<ProjectConfig>;
-    interactive: boolean;
-    help: boolean;
-    version: boolean;
+    projectName?: string
+    flags: Partial<ProjectConfig>
+    interactive: boolean
+    help: boolean
+    version: boolean
   },
   any
 > {
   try {
-    const flags: Partial<ProjectConfig> = {};
-    let projectName: string | undefined;
-    let interactive = true;
-    let help = false;
-    let version = false;
+    const flags: Partial<ProjectConfig> = {}
+    let projectName: string | undefined
+    let interactive = true
+    let help = false
+    let version = false
 
-    let i = 0;
+    let i = 0
 
     // Parse project name (first positional argument)
     if (args.length > 0 && !args[0].startsWith('-')) {
-      projectName = args[0];
-      i = 1;
+      projectName = args[0]
+      i = 1
     }
 
     // Parse flags
     while (i < args.length) {
-      const arg = args[i];
+      const arg = args[i]
 
       switch (arg) {
         case '-h':
         case '--help':
-          help = true;
-          interactive = false;
-          break;
+          help = true
+          interactive = false
+          break
 
         case '-v':
         case '--version':
-          version = true;
-          interactive = false;
-          break;
+          version = true
+          interactive = false
+          break
 
         case '-t':
         case '--template':
@@ -378,21 +378,21 @@ export function parseArgumentsModern(args: string[]): Result<
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
-            );
+            )
           }
-          const template = args[i + 1];
+          const template = args[i + 1]
           if (template !== 'basic' && template !== 'advanced') {
             return err(
               createCoreError('INVALID_TEMPLATE', 'Template must be "basic" or "advanced"', {
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
-            );
+            )
           }
-          flags.template = template;
-          interactive = false; // Non-interactive if template specified
-          i++; // Skip the value
-          break;
+          flags.template = template
+          interactive = false // Non-interactive if template specified
+          i++ // Skip the value
+          break
 
         case '-p':
         case '--package-manager':
@@ -402,9 +402,9 @@ export function parseArgumentsModern(args: string[]): Result<
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
-            );
+            )
           }
-          const pm = args[i + 1];
+          const pm = args[i + 1]
           if (pm !== 'npm' && pm !== 'pnpm') {
             return err(
               createCoreError(
@@ -415,39 +415,39 @@ export function parseArgumentsModern(args: string[]): Result<
                   operation: 'parseArguments',
                 }
               )
-            );
+            )
           }
-          flags.packageManager = pm;
-          i++; // Skip the value
-          break;
+          flags.packageManager = pm
+          i++ // Skip the value
+          break
 
         case '--docs':
-          flags.includeDocs = true;
-          break;
+          flags.includeDocs = true
+          break
 
         case '--no-git':
-          flags.initGit = false;
-          break;
+          flags.initGit = false
+          break
 
         case '--no-install':
-          flags.installDependencies = false;
-          break;
+          flags.installDependencies = false
+          break
 
         case '--force':
-          flags.force = true;
-          break;
+          flags.force = true
+          break
 
         case '--dry-run':
-          flags.dryRun = true;
-          break;
+          flags.dryRun = true
+          break
 
         case '--verbose':
-          flags.verbose = true;
-          break;
+          flags.verbose = true
+          break
 
         case '--non-interactive':
-          interactive = false;
-          break;
+          interactive = false
+          break
 
         default:
           if (arg.startsWith('-')) {
@@ -456,17 +456,17 @@ export function parseArgumentsModern(args: string[]): Result<
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
-            );
+            )
           }
           return err(
             createCoreError('UNEXPECTED_ARG', `Unexpected argument: ${arg}`, {
               component: 'create-trailhead-cli',
               operation: 'parseArguments',
             })
-          );
+          )
       }
 
-      i++;
+      i++
     }
 
     return ok({
@@ -475,7 +475,7 @@ export function parseArgumentsModern(args: string[]): Result<
       interactive,
       help,
       version,
-    });
+    })
   } catch (error) {
     return err(
       createCoreError('PARSE_FAILED', 'Failed to parse command line arguments', {
@@ -484,6 +484,6 @@ export function parseArgumentsModern(args: string[]): Result<
         cause: error,
         recoverable: false,
       })
-    );
+    )
   }
 }

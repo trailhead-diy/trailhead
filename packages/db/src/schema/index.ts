@@ -1,4 +1,4 @@
-export { createSchemaBuilder } from './builder.js';
+export { createSchemaBuilder } from './builder.js'
 export type {
   SchemaBuilder,
   TableBuilder,
@@ -10,4 +10,4 @@ export type {
   ColumnOptions,
   ColumnType,
   ForeignKeyReference,
-} from '../types.js';
+} from '../types.js'

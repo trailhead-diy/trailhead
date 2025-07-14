@@ -1,14 +1,14 @@
 // Core Git operations
-export { createGitOperations } from './core/index.js';
+export { createGitOperations } from './core/index.js'
 
 // Status operations
-export { createGitStatusOperations } from './status/index.js';
+export { createGitStatusOperations } from './status/index.js'
 
 // Diff operations
-export { createGitDiffOperations } from './diff/index.js';
+export { createGitDiffOperations } from './diff/index.js'
 
 // Command operations
-export { createGitCommandOperations } from './commands/index.js';
+export { createGitCommandOperations } from './commands/index.js'
 
 // Types
 export type {
@@ -50,4 +50,4 @@ export type {
   GitCoreConfig,
   GitRemoteConfig,
   GitBranchConfig,
-} from './types.js';
+} from './types.js'

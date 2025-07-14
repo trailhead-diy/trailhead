@@ -1,5 +1,5 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/th/table';
+} from '@/components/th/table'
 
 export default function TablePage(): React.JSX.Element {
   const users = [
@@ -46,7 +46,7 @@ export default function TablePage(): React.JSX.Element {
       email: 'diana@example.com',
       role: 'User',
     },
-  ];
+  ]
   return (
     <DemoLayout>
       <List title="Table">
@@ -60,7 +60,7 @@ export default function TablePage(): React.JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map(user => (
+              {users.map((user) => (
                 <TableRow key={user.email}>
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -72,5 +72,5 @@ export default function TablePage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

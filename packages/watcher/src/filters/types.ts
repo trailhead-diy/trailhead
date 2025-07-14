@@ -1,4 +1,4 @@
-import type { FilterOperations, EventFilter } from '../types.js';
+import type { FilterOperations, EventFilter } from '../types.js'
 
 // ========================================
 // Filter Configuration Defaults
@@ -9,7 +9,7 @@ export const defaultFilterConfig = {
   cacheSize: 50,
   caseSensitive: true,
   invertResults: false,
-} as const;
+} as const
 
 // ========================================
 // Filter Creation Types
@@ -17,13 +17,13 @@ export const defaultFilterConfig = {
 
 export type CreateFilterOperations = (
   config?: Partial<typeof defaultFilterConfig>
-) => FilterOperations;
+) => FilterOperations
 
 export interface LocalFilterConfig {
-  readonly enableCaching?: boolean;
-  readonly cacheSize?: number;
-  readonly caseSensitive?: boolean;
-  readonly invertResults?: boolean;
+  readonly enableCaching?: boolean
+  readonly cacheSize?: number
+  readonly caseSensitive?: boolean
+  readonly invertResults?: boolean
 }
 
 // ========================================
@@ -31,14 +31,14 @@ export interface LocalFilterConfig {
 // ========================================
 
 export interface FilterChain {
-  readonly filters: readonly EventFilter[];
-  readonly operator: 'and' | 'or';
+  readonly filters: readonly EventFilter[]
+  readonly operator: 'and' | 'or'
 }
 
 export interface ConditionalFilter {
-  readonly condition: EventFilter;
-  readonly thenFilter: EventFilter;
-  readonly elseFilter?: EventFilter;
+  readonly condition: EventFilter
+  readonly thenFilter: EventFilter
+  readonly elseFilter?: EventFilter
 }
 
 // ========================================
@@ -46,19 +46,19 @@ export interface ConditionalFilter {
 // ========================================
 
 export interface FilterMetrics {
-  readonly executionTime: number;
-  readonly cacheHits: number;
-  readonly cacheMisses: number;
-  readonly totalExecutions: number;
-  readonly averageExecutionTime: number;
+  readonly executionTime: number
+  readonly cacheHits: number
+  readonly cacheMisses: number
+  readonly totalExecutions: number
+  readonly averageExecutionTime: number
 }
 
 export interface FilterCache {
-  readonly get: (key: string) => boolean | undefined;
-  readonly set: (key: string, result: boolean) => void;
-  readonly clear: () => void;
-  readonly size: number;
-  readonly metrics: FilterMetrics;
+  readonly get: (key: string) => boolean | undefined
+  readonly set: (key: string, result: boolean) => void
+  readonly clear: () => void
+  readonly size: number
+  readonly metrics: FilterMetrics
 }
 
 // ========================================
@@ -66,25 +66,25 @@ export interface FilterCache {
 // ========================================
 
 export interface TimeRangeFilter {
-  readonly start: Date;
-  readonly end: Date;
-  readonly inclusive?: boolean;
+  readonly start: Date
+  readonly end: Date
+  readonly inclusive?: boolean
 }
 
 export interface SizeRangeFilter {
-  readonly min?: number;
-  readonly max?: number;
-  readonly unit?: 'bytes' | 'kb' | 'mb' | 'gb';
+  readonly min?: number
+  readonly max?: number
+  readonly unit?: 'bytes' | 'kb' | 'mb' | 'gb'
 }
 
 export interface ExtensionFilter {
-  readonly extensions: readonly string[];
-  readonly caseSensitive?: boolean;
-  readonly allowEmpty?: boolean;
+  readonly extensions: readonly string[]
+  readonly caseSensitive?: boolean
+  readonly allowEmpty?: boolean
 }
 
 export interface DirectoryFilter {
-  readonly directories: readonly string[];
-  readonly recursive?: boolean;
-  readonly caseSensitive?: boolean;
+  readonly directories: readonly string[]
+  readonly recursive?: boolean
+  readonly caseSensitive?: boolean
 }

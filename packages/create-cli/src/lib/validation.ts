@@ -1,20 +1,20 @@
-import { resolve, normalize, isAbsolute, relative } from 'path';
-import { z } from 'zod';
-import { ok, err, createCoreError } from '@esteban-url/core';
-import type { Result, CoreError } from '@esteban-url/core';
+import { resolve, normalize, isAbsolute, relative } from 'path'
+import { z } from 'zod'
+import { ok, err, createCoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 
 /**
  * Validation utilities using Zod schemas for type-safe input validation
  */
 
 // Constants for validation limits
-const MAX_PROJECT_NAME_LENGTH = 100;
-const MAX_PATH_LENGTH = 260; // Windows MAX_PATH limit
-const MAX_TEXT_LENGTH = 1000;
+const MAX_PROJECT_NAME_LENGTH = 100
+const MAX_PATH_LENGTH = 260 // Windows MAX_PATH limit
+const MAX_TEXT_LENGTH = 1000
 
 // Allowed values
-const ALLOWED_PACKAGE_MANAGERS = ['npm', 'pnpm'] as const;
-const ALLOWED_TEMPLATES = ['basic', 'advanced'] as const;
+const ALLOWED_PACKAGE_MANAGERS = ['npm', 'pnpm'] as const
+const ALLOWED_TEMPLATES = ['basic', 'advanced'] as const
 
 // Zod schemas for validation
 const projectNameSchema = z
@@ -53,41 +53,41 @@ const projectNameSchema = z
         'lpt7',
         'lpt8',
         'lpt9',
-      ];
-      return !reservedNames.includes(name.toLowerCase());
+      ]
+      return !reservedNames.includes(name.toLowerCase())
     },
     (name: string) => ({
       message: `"${name}" is a reserved name and cannot be used`,
     })
-  );
+  )
 
-const packageManagerSchema = z.enum(ALLOWED_PACKAGE_MANAGERS);
+const packageManagerSchema = z.enum(ALLOWED_PACKAGE_MANAGERS)
 
-const templateSchema = z.enum(ALLOWED_TEMPLATES);
+const templateSchema = z.enum(ALLOWED_TEMPLATES)
 
 const pathSchema = z
   .string()
   .min(1, 'Path cannot be empty')
   .max(MAX_PATH_LENGTH, `Path must be ${MAX_PATH_LENGTH} characters or less`)
-  .refine((path: string) => !path.includes('\u0000'), 'Path contains null bytes');
+  .refine((path: string) => !path.includes('\u0000'), 'Path contains null bytes')
 
 const textSchema = z
   .string()
   .max(MAX_TEXT_LENGTH, `Text input must be ${MAX_TEXT_LENGTH} characters or less`)
   .transform((text: string) => {
     // Remove dangerous characters
-    let sanitized = text;
+    let sanitized = text
     // eslint-disable-next-line no-control-regex
-    sanitized = sanitized.replace(/\u0000/g, ''); // null bytes
+    sanitized = sanitized.replace(/\u0000/g, '') // null bytes
     // eslint-disable-next-line no-control-regex
-    sanitized = sanitized.replace(/[\u0001-\u0008]/g, ''); // control chars
+    sanitized = sanitized.replace(/[\u0001-\u0008]/g, '') // control chars
     // eslint-disable-next-line no-control-regex
-    sanitized = sanitized.replace(/[\u000B\u000C]/g, ''); // form feed, vertical tab
+    sanitized = sanitized.replace(/[\u000B\u000C]/g, '') // form feed, vertical tab
     // eslint-disable-next-line no-control-regex
-    sanitized = sanitized.replace(/[\u000E-\u001F]/g, ''); // other control chars
-    sanitized = sanitized.replace(/\u007F/g, ''); // delete char
-    return sanitized.trim();
-  });
+    sanitized = sanitized.replace(/[\u000E-\u001F]/g, '') // other control chars
+    sanitized = sanitized.replace(/\u007F/g, '') // delete char
+    return sanitized.trim()
+  })
 
 /**
  * Helper function to convert Zod validation results to Result type
@@ -98,23 +98,23 @@ function zodResultToResult<T>(
   operation: string
 ): Result<T, CoreError> {
   try {
-    const result = schema.parse(input);
-    return ok(result);
+    const result = schema.parse(input)
+    return ok(result)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const firstIssue = error.issues[0];
+      const firstIssue = error.issues[0]
       return err(
         createCoreError('VALIDATION_ERROR', firstIssue.message, {
           context: { operation, details: `${operation} validation failed: ${firstIssue.message}` },
         })
-      );
+      )
     }
     return err(
       createCoreError('VALIDATION_FAILED', `${operation} validation failed`, {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
-    );
+    )
   }
 }
 
@@ -122,7 +122,7 @@ function zodResultToResult<T>(
  * Validate and sanitize project name
  */
 export function validateProjectName(name: string): Result<string, CoreError> {
-  return zodResultToResult(projectNameSchema, name, 'Project name');
+  return zodResultToResult(projectNameSchema, name, 'Project name')
 }
 
 /**
@@ -130,23 +130,23 @@ export function validateProjectName(name: string): Result<string, CoreError> {
  */
 export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CoreError> {
   // First validate the basic path schema
-  const basicValidation = zodResultToResult(pathSchema, inputPath, 'Project path');
+  const basicValidation = zodResultToResult(pathSchema, inputPath, 'Project path')
   if (!basicValidation.isOk()) {
-    return basicValidation;
+    return basicValidation
   }
 
-  const trimmed = inputPath.trim();
+  const trimmed = inputPath.trim()
 
   try {
-    const resolvedPath = isAbsolute(trimmed) ? trimmed : resolve(baseDir, trimmed);
-    return ok(resolvedPath);
+    const resolvedPath = isAbsolute(trimmed) ? trimmed : resolve(baseDir, trimmed)
+    return ok(resolvedPath)
   } catch (error) {
     return err(
       createCoreError('INVALID_PROJECT_PATH', 'Invalid project path', {
         cause: error,
         context: { details: 'Unable to resolve project path' },
       })
-    );
+    )
   }
 }
 
@@ -154,14 +154,14 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
  * Validate package manager
  */
 export function validatePackageManager(packageManager: string): Result<string, CoreError> {
-  return zodResultToResult(packageManagerSchema, packageManager, 'Package manager');
+  return zodResultToResult(packageManagerSchema, packageManager, 'Package manager')
 }
 
 /**
  * Validate template variant
  */
 export function validateTemplate(template: string): Result<string, CoreError> {
-  return zodResultToResult(templateSchema, template, 'Template');
+  return zodResultToResult(templateSchema, template, 'Template')
 }
 
 /**
@@ -172,32 +172,32 @@ export function validateTemplatePath(
   baseTemplateDir: string
 ): Result<string, CoreError> {
   // First validate basic path
-  const basicValidation = zodResultToResult(pathSchema, filePath, 'Template file path');
+  const basicValidation = zodResultToResult(pathSchema, filePath, 'Template file path')
   if (!basicValidation.isOk()) {
-    return basicValidation;
+    return basicValidation
   }
 
   try {
-    const normalizedPath = normalize(filePath);
-    const resolvedPath = resolve(baseTemplateDir, normalizedPath);
-    const relativePath = relative(baseTemplateDir, resolvedPath);
+    const normalizedPath = normalize(filePath)
+    const resolvedPath = resolve(baseTemplateDir, normalizedPath)
+    const relativePath = relative(baseTemplateDir, resolvedPath)
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
         createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
           context: { details: 'Template path must be within the template directory' },
         })
-      );
+      )
     }
 
-    return ok(resolvedPath);
+    return ok(resolvedPath)
   } catch (error) {
     return err(
       createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
         cause: error,
         context: { details: 'Unable to resolve template path' },
       })
-    );
+    )
   }
 }
 
@@ -209,41 +209,41 @@ export function validateOutputPath(
   baseOutputDir: string
 ): Result<string, CoreError> {
   // First validate basic path
-  const basicValidation = zodResultToResult(pathSchema, filePath, 'Output file path');
+  const basicValidation = zodResultToResult(pathSchema, filePath, 'Output file path')
   if (!basicValidation.isOk()) {
-    return basicValidation;
+    return basicValidation
   }
 
   try {
-    const normalizedPath = normalize(filePath);
+    const normalizedPath = normalize(filePath)
 
     if (normalizedPath.includes('..') || isAbsolute(normalizedPath)) {
       return err(
         createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
           context: { details: 'Output path must be relative and within the project directory' },
         })
-      );
+      )
     }
 
-    const resolvedPath = resolve(baseOutputDir, normalizedPath);
-    const relativePath = relative(baseOutputDir, resolvedPath);
+    const resolvedPath = resolve(baseOutputDir, normalizedPath)
+    const relativePath = relative(baseOutputDir, resolvedPath)
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
         createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
           context: { details: 'Output path must be within the project directory' },
         })
-      );
+      )
     }
 
-    return ok(resolvedPath);
+    return ok(resolvedPath)
   } catch (error) {
     return err(
       createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
         cause: error,
         context: { details: 'Unable to resolve output path' },
       })
-    );
+    )
   }
 }
 
@@ -259,10 +259,10 @@ export function sanitizeText(
       createCoreError('TEXT_INPUT_REQUIRED', 'Text input is required', {
         context: { details: 'Text input must be a string' },
       })
-    );
+    )
   }
 
-  return zodResultToResult(textSchema, input, 'Text input');
+  return zodResultToResult(textSchema, input, 'Text input')
 }
 
 // Export schemas for external use if needed
@@ -272,7 +272,7 @@ export const schemas = {
   template: templateSchema,
   path: pathSchema,
   text: textSchema,
-} as const;
+} as const
 
 // Export constants for external use
 export const constants = {
@@ -281,4 +281,4 @@ export const constants = {
   MAX_TEXT_LENGTH,
   ALLOWED_PACKAGE_MANAGERS,
   ALLOWED_TEMPLATES,
-} as const;
+} as const

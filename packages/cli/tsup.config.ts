@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   // CLI-specific entry points only
@@ -40,4 +40,4 @@ export default defineConfig({
     'yocto-spinner',
     'chokidar',
   ],
-});
+})

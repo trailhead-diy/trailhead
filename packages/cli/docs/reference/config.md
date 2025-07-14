@@ -23,17 +23,17 @@ Type-safe configuration management with schema validation using Zod and flexible
 ## Import
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config';
-import type { ConfigSchema } from '@esteban-url/trailhead-cli/config';
-import { z } from 'zod';
+import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
+import type { ConfigSchema } from '@esteban-url/trailhead-cli/config'
+import { z } from 'zod'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config';
-import type { ConfigSchema } from '@esteban-url/trailhead-cli/config';
-import { z } from 'zod';
+import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
+import type { ConfigSchema } from '@esteban-url/trailhead-cli/config'
+import { z } from 'zod'
 ```
 
 ## Defining Configuration
@@ -43,8 +43,8 @@ import { z } from 'zod';
 Creates a type-safe configuration definition.
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config';
-import { z } from 'zod';
+import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { z } from 'zod'
 
 // Define schema
 const configSchema = z.object({
@@ -62,13 +62,13 @@ const configSchema = z.object({
       rateLimit: z.boolean().default(false),
     })
     .default({}),
-});
+})
 
 // Create config definition
-const config = defineConfig(configSchema);
+const config = defineConfig(configSchema)
 
 // TypeScript knows the exact shape
-type AppConfig = z.infer<typeof configSchema>;
+type AppConfig = z.infer<typeof configSchema>
 ```
 
 ## Loading Configuration
@@ -79,28 +79,28 @@ Loads configuration from various sources.
 
 ```typescript
 // Load with defaults
-const result = await config.load();
+const result = await config.load()
 
 if (result.success) {
-  const { server, database, features } = result.value;
-  console.log(`Server running on ${server.host}:${server.port}`);
+  const { server, database, features } = result.value
+  console.log(`Server running on ${server.host}:${server.port}`)
 }
 
 // Load with options
 const result = await config.load({
   searchFrom: './src',
   configName: 'myapp',
-});
+})
 ```
 
 ### Load Options
 
 ```typescript
 interface LoadOptions {
-  searchFrom?: string; // Directory to search from
-  configName?: string; // Config file name (without extension)
-  stopAt?: string; // Directory to stop searching
-  transform?: (config: any) => any; // Transform loaded config
+  searchFrom?: string // Directory to search from
+  configName?: string // Config file name (without extension)
+  stopAt?: string // Directory to stop searching
+  transform?: (config: any) => any // Transform loaded config
 }
 ```
 
@@ -153,7 +153,7 @@ const configSchema = z.object({
   logLevel: z
     .union([z.literal('debug'), z.literal('info'), z.literal('warn'), z.literal('error')])
     .default('info'),
-});
+})
 ```
 
 ### Custom Validation
@@ -165,17 +165,17 @@ const configSchema = z
     host: z.string(),
   })
   .refine(
-    data => {
+    (data) => {
       // Custom validation logic
       if (data.port === 80 && data.host !== 'localhost') {
-        return false;
+        return false
       }
-      return true;
+      return true
     },
     {
       message: 'Port 80 only allowed on localhost',
     }
-  );
+  )
 ```
 
 ## Environment Variables
@@ -187,7 +187,7 @@ const configSchema = z.object({
   port: z.number().default(parseInt(process.env.PORT || '3000', 10)),
   apiKey: z.string().default(process.env.API_KEY || ''),
   debug: z.boolean().default(process.env.NODE_ENV === 'development'),
-});
+})
 ```
 
 ## Error Handling
@@ -195,19 +195,19 @@ const configSchema = z.object({
 Configuration loading returns detailed errors:
 
 ```typescript
-const result = await config.load();
+const result = await config.load()
 
 if (!result.success) {
-  const error = result.error;
+  const error = result.error
 
   if (error.code === 'VALIDATION_ERROR') {
-    console.error('Invalid configuration:');
-    console.error(error.details);
+    console.error('Invalid configuration:')
+    console.error(error.details)
   } else if (error.code === 'FILE_NOT_FOUND') {
-    console.log('No config file found, using defaults');
+    console.log('No config file found, using defaults')
     // Use default configuration
   } else {
-    console.error(`Config error: ${error.message}`);
+    console.error(`Config error: ${error.message}`)
   }
 }
 ```
@@ -222,9 +222,9 @@ const appConfigSchema = z.object({
   name: z.string(),
   version: z.string(),
   port: z.number(),
-});
+})
 
-const appConfig = defineConfig(appConfigSchema);
+const appConfig = defineConfig(appConfigSchema)
 
 // Database config
 const dbConfigSchema = z.object({
@@ -233,15 +233,15 @@ const dbConfigSchema = z.object({
   database: z.string(),
   user: z.string(),
   password: z.string(),
-});
+})
 
-const dbConfig = defineConfig(dbConfigSchema);
+const dbConfig = defineConfig(dbConfigSchema)
 
 // Load both
 const [appResult, dbResult] = await Promise.all([
   appConfig.load({ configName: 'app' }),
   dbConfig.load({ configName: 'database' }),
-]);
+])
 ```
 
 ## Config File Examples
@@ -297,15 +297,15 @@ module.exports = {
     auth: true,
     rateLimit: process.env.NODE_ENV === 'production',
   },
-};
+}
 ```
 
 ## Testing Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config';
-import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem';
-import { z } from 'zod';
+import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { z } from 'zod'
 
 test('config loading', async () => {
   const fs = createMemoryFileSystem({
@@ -313,25 +313,25 @@ test('config loading', async () => {
       port: 4000,
       host: '127.0.0.1',
     }),
-  });
+  })
 
   const schema = z.object({
     port: z.number(),
     host: z.string(),
-  });
+  })
 
-  const config = defineConfig(schema);
+  const config = defineConfig(schema)
 
   // Mock filesystem for testing
   const result = await config.load({
     searchFrom: '/',
     // Use test filesystem
     fs,
-  });
+  })
 
-  expect(result.success).toBe(true);
-  expect(result.value.port).toBe(4000);
-});
+  expect(result.success).toBe(true)
+  expect(result.value.port).toBe(4000)
+})
 ```
 
 ## Type Safety
@@ -345,16 +345,16 @@ const configSchema = z.object({
     timeout: z.number(),
     retries: z.number().default(3),
   }),
-});
+})
 
-const config = defineConfig(configSchema);
-const result = await config.load();
+const config = defineConfig(configSchema)
+const result = await config.load()
 
 if (result.success) {
   // TypeScript knows all properties
-  result.value.api.endpoint; // string
-  result.value.api.timeout; // number
-  result.value.api.retries; // number (with default)
+  result.value.api.endpoint // string
+  result.value.api.timeout // number
+  result.value.api.retries // number (with default)
 
   // TypeScript prevents errors
   // result.value.api.invalid; // Error: Property 'invalid' does not exist
@@ -374,20 +374,20 @@ if (result.success) {
 ```typescript
 // Config definition
 interface ConfigDefinition<T> {
-  load(options?: LoadOptions): Promise<Result<T>>;
-  validate(data: unknown): Result<T>;
+  load(options?: LoadOptions): Promise<Result<T>>
+  validate(data: unknown): Result<T>
 }
 
 // Load options
 interface LoadOptions {
-  searchFrom?: string;
-  configName?: string;
-  stopAt?: string;
-  transform?: (config: any) => any;
+  searchFrom?: string
+  configName?: string
+  stopAt?: string
+  transform?: (config: any) => any
 }
 
 // Re-exported from Zod
-export { z } from 'zod';
+export { z } from 'zod'
 ```
 
 ## See Also

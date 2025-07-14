@@ -6,23 +6,23 @@
  * using templates and ensuring compliance with documentation standards.
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname, relative } from 'path';
-import { input, select, confirm, checkbox } from '@inquirer/prompts';
-import chalk from 'chalk';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
+import { join, dirname, relative } from 'path'
+import { input, select, confirm, checkbox } from '@inquirer/prompts'
+import chalk from 'chalk'
 
 interface DocMetadata {
-  type: 'tutorial' | 'how-to' | 'reference' | 'explanation';
-  title: string;
-  description: string;
-  prerequisites?: string[];
-  related?: string[];
-  filename: string;
-  directory: string;
+  type: 'tutorial' | 'how-to' | 'reference' | 'explanation'
+  title: string
+  description: string
+  prerequisites?: string[]
+  related?: string[]
+  filename: string
+  directory: string
 }
 
-const DOCS_ROOT = join(process.cwd(), 'docs');
-const TEMPLATES_DIR = join(DOCS_ROOT, 'templates');
+const DOCS_ROOT = join(process.cwd(), 'docs')
+const TEMPLATES_DIR = join(DOCS_ROOT, 'templates')
 
 const DOC_TYPES = [
   {
@@ -45,19 +45,19 @@ const DOC_TYPES = [
     value: 'explanation' as const,
     description: 'Conceptual understanding and design rationale',
   },
-];
+]
 
 const COMMON_DIRECTORIES = {
   tutorial: ['tutorials', 'tutorials/getting-started', 'tutorials/advanced'],
   'how-to': ['how-to', 'how-to/cli', 'how-to/ui', 'how-to/deployment'],
   reference: ['reference', 'reference/api', 'reference/config'],
   explanation: ['explanation', 'explanation/architecture', 'explanation/concepts'],
-};
+}
 
 function showWelcome(): void {
-  console.log(chalk.bold.blue('\n📝 Trailhead Documentation Creator\n'));
-  console.log('This tool helps you create documentation that follows Diátaxis principles.');
-  console.log('Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n');
+  console.log(chalk.bold.blue('\n📝 Trailhead Documentation Creator\n'))
+  console.log('This tool helps you create documentation that follows Diátaxis principles.')
+  console.log('Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n')
 }
 
 function showTypeGuidance(type: string): void {
@@ -93,9 +93,9 @@ ${chalk.bold.magenta('💡 Explanation Guidelines:')}
 - Explain design decisions and trade-offs
 - Connect ideas and provide context
 - No task instructions`,
-  };
+  }
 
-  console.log(guidance[type as keyof typeof guidance]);
+  console.log(guidance[type as keyof typeof guidance])
 }
 
 async function getDocumentType(): Promise<DocMetadata['type']> {
@@ -103,7 +103,7 @@ async function getDocumentType(): Promise<DocMetadata['type']> {
     message: 'What type of documentation are you creating?',
     choices: DOC_TYPES,
     pageSize: 4,
-  });
+  })
 }
 
 async function getBasicInfo(
@@ -111,97 +111,97 @@ async function getBasicInfo(
 ): Promise<Pick<DocMetadata, 'title' | 'description'>> {
   const title = await input({
     message: 'Document title:',
-    validate: value => {
-      if (!value.trim()) return 'Title is required';
-      if (value.length < 5) return 'Title should be at least 5 characters';
-      if (value.length > 80) return 'Title should be under 80 characters';
-      return true;
+    validate: (value) => {
+      if (!value.trim()) return 'Title is required'
+      if (value.length < 5) return 'Title should be at least 5 characters'
+      if (value.length > 80) return 'Title should be under 80 characters'
+      return true
     },
-  });
+  })
 
   const description = await input({
     message: 'One-line description:',
-    validate: value => {
-      if (!value.trim()) return 'Description is required';
-      if (value.length < 10) return 'Description should be at least 10 characters';
-      if (value.length > 120) return 'Description should be under 120 characters';
-      return true;
+    validate: (value) => {
+      if (!value.trim()) return 'Description is required'
+      if (value.length < 10) return 'Description should be at least 10 characters'
+      if (value.length > 120) return 'Description should be under 120 characters'
+      return true
     },
-  });
+  })
 
-  return { title, description };
+  return { title, description }
 }
 
 async function getPrerequisites(type: DocMetadata['type']): Promise<string[]> {
   if (type === 'reference' || type === 'explanation') {
-    return []; // These types typically don't have prerequisites
+    return [] // These types typically don't have prerequisites
   }
 
   const hasPrereqs = await confirm({
     message: 'Does this documentation have prerequisites?',
     default: type === 'tutorial', // Tutorials almost always have prerequisites
-  });
+  })
 
-  if (!hasPrereqs) return [];
+  if (!hasPrereqs) return []
 
-  const prerequisites: string[] = [];
-  let addMore = true;
+  const prerequisites: string[] = []
+  let addMore = true
 
   while (addMore) {
     const prereq = await input({
       message: `Prerequisite ${prerequisites.length + 1}:`,
-      validate: value => (value.trim() ? true : 'Prerequisite cannot be empty'),
-    });
+      validate: (value) => (value.trim() ? true : 'Prerequisite cannot be empty'),
+    })
 
-    prerequisites.push(prereq.trim());
+    prerequisites.push(prereq.trim())
 
     addMore = await confirm({
       message: 'Add another prerequisite?',
       default: false,
-    });
+    })
   }
 
-  return prerequisites;
+  return prerequisites
 }
 
 async function getRelatedDocs(): Promise<string[]> {
   const hasRelated = await confirm({
     message: 'Are there related documents to link to?',
     default: false,
-  });
+  })
 
-  if (!hasRelated) return [];
+  if (!hasRelated) return []
 
-  const related: string[] = [];
-  let addMore = true;
+  const related: string[] = []
+  let addMore = true
 
   while (addMore) {
     const doc = await input({
       message: `Related document path ${related.length + 1} (e.g., /docs/how-to/setup):`,
-      validate: value => {
-        if (!value.trim()) return 'Path cannot be empty';
-        if (!value.startsWith('/docs/')) return 'Path should start with /docs/';
-        return true;
+      validate: (value) => {
+        if (!value.trim()) return 'Path cannot be empty'
+        if (!value.startsWith('/docs/')) return 'Path should start with /docs/'
+        return true
       },
-    });
+    })
 
-    related.push(doc.trim());
+    related.push(doc.trim())
 
     addMore = await confirm({
       message: 'Add another related document?',
       default: false,
-    });
+    })
   }
 
-  return related;
+  return related
 }
 
 async function getLocation(
   type: DocMetadata['type']
 ): Promise<{ directory: string; filename: string }> {
-  const commonDirs = COMMON_DIRECTORIES[type];
+  const commonDirs = COMMON_DIRECTORIES[type]
   const choices = [
-    ...commonDirs.map(dir => ({
+    ...commonDirs.map((dir) => ({
       name: `${dir}/ (${type} directory)`,
       value: dir,
     })),
@@ -209,35 +209,35 @@ async function getLocation(
       name: 'Custom directory',
       value: 'custom',
     },
-  ];
+  ]
 
   let directory = await select({
     message: 'Where should this documentation be saved?',
     choices,
-  });
+  })
 
   if (directory === 'custom') {
     directory = await input({
       message: 'Custom directory path (relative to docs/):',
-      validate: value => {
-        if (!value.trim()) return 'Directory is required';
-        if (value.startsWith('/')) return 'Use relative path (no leading slash)';
-        return true;
+      validate: (value) => {
+        if (!value.trim()) return 'Directory is required'
+        if (value.startsWith('/')) return 'Use relative path (no leading slash)'
+        return true
       },
-    });
+    })
   }
 
   const filename = await input({
     message: 'Filename (without .md extension):',
-    validate: value => {
-      if (!value.trim()) return 'Filename is required';
-      if (!/^[a-z0-9-]+$/.test(value)) return 'Use lowercase letters, numbers, and hyphens only';
-      if (value.length < 3) return 'Filename should be at least 3 characters';
-      return true;
+    validate: (value) => {
+      if (!value.trim()) return 'Filename is required'
+      if (!/^[a-z0-9-]+$/.test(value)) return 'Use lowercase letters, numbers, and hyphens only'
+      if (value.length < 3) return 'Filename should be at least 3 characters'
+      return true
     },
-  });
+  })
 
-  return { directory, filename: `${filename}.md` };
+  return { directory, filename: `${filename}.md` }
 }
 
 function generateFrontmatter(metadata: DocMetadata): string {
@@ -246,104 +246,104 @@ function generateFrontmatter(metadata: DocMetadata): string {
     `type: ${metadata.type}`,
     `title: "${metadata.title}"`,
     `description: "${metadata.description}"`,
-  ];
+  ]
 
   if (metadata.prerequisites && metadata.prerequisites.length > 0) {
-    frontmatter.push('prerequisites:');
-    metadata.prerequisites.forEach(prereq => {
-      frontmatter.push(`  - ${prereq}`);
-    });
+    frontmatter.push('prerequisites:')
+    metadata.prerequisites.forEach((prereq) => {
+      frontmatter.push(`  - ${prereq}`)
+    })
   }
 
   if (metadata.related && metadata.related.length > 0) {
-    frontmatter.push('related:');
-    metadata.related.forEach(doc => {
-      frontmatter.push(`  - ${doc}`);
-    });
+    frontmatter.push('related:')
+    metadata.related.forEach((doc) => {
+      frontmatter.push(`  - ${doc}`)
+    })
   }
 
-  frontmatter.push('---');
-  return frontmatter.join('\n');
+  frontmatter.push('---')
+  return frontmatter.join('\n')
 }
 
 function loadTemplate(type: DocMetadata['type']): string {
-  const templatePath = join(TEMPLATES_DIR, `${type}-template.md`);
+  const templatePath = join(TEMPLATES_DIR, `${type}-template.md`)
 
   if (!existsSync(templatePath)) {
-    throw new Error(`Template not found: ${templatePath}`);
+    throw new Error(`Template not found: ${templatePath}`)
   }
 
-  return readFileSync(templatePath, 'utf-8');
+  return readFileSync(templatePath, 'utf-8')
 }
 
 function processTemplate(template: string, metadata: DocMetadata): string {
   // Replace template frontmatter with actual metadata
-  const frontmatter = generateFrontmatter(metadata);
+  const frontmatter = generateFrontmatter(metadata)
 
   // Find the end of template frontmatter
-  const frontmatterEnd = template.indexOf('---', 3) + 3;
-  const templateContent = template.substring(frontmatterEnd).trim();
+  const frontmatterEnd = template.indexOf('---', 3) + 3
+  const templateContent = template.substring(frontmatterEnd).trim()
 
-  return `${frontmatter}\n\n${templateContent}`;
+  return `${frontmatter}\n\n${templateContent}`
 }
 
 async function createDocument(metadata: DocMetadata): Promise<void> {
-  const fullDir = join(DOCS_ROOT, metadata.directory);
-  const fullPath = join(fullDir, metadata.filename);
+  const fullDir = join(DOCS_ROOT, metadata.directory)
+  const fullPath = join(fullDir, metadata.filename)
 
   // Check if file already exists
   if (existsSync(fullPath)) {
     const overwrite = await confirm({
       message: `File ${relative(process.cwd(), fullPath)} already exists. Overwrite?`,
       default: false,
-    });
+    })
 
     if (!overwrite) {
-      console.log(chalk.yellow('Operation cancelled.'));
-      return;
+      console.log(chalk.yellow('Operation cancelled.'))
+      return
     }
   }
 
   // Create directory if it doesn't exist
   if (!existsSync(fullDir)) {
-    mkdirSync(fullDir, { recursive: true });
-    console.log(chalk.green(`Created directory: ${relative(process.cwd(), fullDir)}`));
+    mkdirSync(fullDir, { recursive: true })
+    console.log(chalk.green(`Created directory: ${relative(process.cwd(), fullDir)}`))
   }
 
   // Load and process template
-  const template = loadTemplate(metadata.type);
-  const content = processTemplate(template, metadata);
+  const template = loadTemplate(metadata.type)
+  const content = processTemplate(template, metadata)
 
   // Write file
-  writeFileSync(fullPath, content, 'utf-8');
+  writeFileSync(fullPath, content, 'utf-8')
 
-  console.log(chalk.green(`\n✅ Created: ${relative(process.cwd(), fullPath)}`));
-  console.log(chalk.blue(`\n📝 Next steps:`));
-  console.log(`1. Edit the file to add your content`);
-  console.log(`2. Run: pnpm docs:validate`);
-  console.log(`3. Run: pnpm docs:lint`);
+  console.log(chalk.green(`\n✅ Created: ${relative(process.cwd(), fullPath)}`))
+  console.log(chalk.blue(`\n📝 Next steps:`))
+  console.log(`1. Edit the file to add your content`)
+  console.log(`2. Run: pnpm docs:validate`)
+  console.log(`3. Run: pnpm docs:lint`)
 
   const openEditor = await confirm({
     message: 'Would you like guidance on what to write?',
     default: true,
-  });
+  })
 
   if (openEditor) {
-    showTypeGuidance(metadata.type);
+    showTypeGuidance(metadata.type)
   }
 }
 
 async function main(): Promise<void> {
   try {
-    showWelcome();
+    showWelcome()
 
-    const type = await getDocumentType();
-    showTypeGuidance(type);
+    const type = await getDocumentType()
+    showTypeGuidance(type)
 
-    const { title, description } = await getBasicInfo(type);
-    const prerequisites = await getPrerequisites(type);
-    const related = await getRelatedDocs();
-    const { directory, filename } = await getLocation(type);
+    const { title, description } = await getBasicInfo(type)
+    const prerequisites = await getPrerequisites(type)
+    const related = await getRelatedDocs()
+    const { directory, filename } = await getLocation(type)
 
     const metadata: DocMetadata = {
       type,
@@ -353,41 +353,41 @@ async function main(): Promise<void> {
       related,
       directory,
       filename,
-    };
+    }
 
-    console.log(chalk.bold('\n📋 Summary:'));
-    console.log(`Type: ${chalk.blue(metadata.type)}`);
-    console.log(`Title: ${chalk.blue(metadata.title)}`);
-    console.log(`Description: ${chalk.blue(metadata.description)}`);
-    console.log(`Location: ${chalk.blue(`docs/${metadata.directory}/${metadata.filename}`)}`);
+    console.log(chalk.bold('\n📋 Summary:'))
+    console.log(`Type: ${chalk.blue(metadata.type)}`)
+    console.log(`Title: ${chalk.blue(metadata.title)}`)
+    console.log(`Description: ${chalk.blue(metadata.description)}`)
+    console.log(`Location: ${chalk.blue(`docs/${metadata.directory}/${metadata.filename}`)}`)
     if (metadata.prerequisites?.length) {
-      console.log(`Prerequisites: ${chalk.blue(metadata.prerequisites.join(', '))}`);
+      console.log(`Prerequisites: ${chalk.blue(metadata.prerequisites.join(', '))}`)
     }
     if (metadata.related?.length) {
-      console.log(`Related: ${chalk.blue(metadata.related.join(', '))}`);
+      console.log(`Related: ${chalk.blue(metadata.related.join(', '))}`)
     }
 
     const confirm_create = await confirm({
       message: 'Create this documentation?',
       default: true,
-    });
+    })
 
     if (confirm_create) {
-      await createDocument(metadata);
+      await createDocument(metadata)
     } else {
-      console.log(chalk.yellow('Operation cancelled.'));
+      console.log(chalk.yellow('Operation cancelled.'))
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('User force closed')) {
-      console.log(chalk.yellow('\nOperation cancelled by user.'));
-      process.exit(0);
+      console.log(chalk.yellow('\nOperation cancelled by user.'))
+      process.exit(0)
     }
-    console.error(chalk.red('Error creating documentation:'), error);
-    process.exit(1);
+    console.error(chalk.red('Error creating documentation:'), error)
+    process.exit(1)
   }
 }
 
 // Only run main if this is the main module
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
+  main()
 }

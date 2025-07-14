@@ -1,4 +1,4 @@
-import type { MimeConfig, MimeOperations, FormatResult, FileCategory } from '../types.js';
+import type { MimeConfig, MimeOperations, FormatResult, FileCategory } from '../types.js'
 
 // ========================================
 // MIME Configuration Defaults
@@ -11,43 +11,43 @@ export const defaultMimeConfig: Required<MimeConfig> = {
   enableExtensionFallback: true,
   charset: 'utf-8',
   defaultMimeType: 'application/octet-stream',
-} as const;
+} as const
 
 // ========================================
 // MIME Type Database Types
 // ========================================
 
 export interface MimeTypeEntry {
-  readonly type: string;
-  readonly subtype: string;
-  readonly extensions: readonly string[];
-  readonly compressible: boolean;
-  readonly charset?: string;
-  readonly category: FileCategory;
-  readonly description: string;
+  readonly type: string
+  readonly subtype: string
+  readonly extensions: readonly string[]
+  readonly compressible: boolean
+  readonly charset?: string
+  readonly category: FileCategory
+  readonly description: string
 }
 
 export interface MimeDatabase {
-  readonly types: ReadonlyMap<string, MimeTypeEntry>;
-  readonly extensions: ReadonlyMap<string, readonly string[]>;
-  readonly categories: ReadonlyMap<FileCategory, readonly string[]>;
+  readonly types: ReadonlyMap<string, MimeTypeEntry>
+  readonly extensions: ReadonlyMap<string, readonly string[]>
+  readonly categories: ReadonlyMap<FileCategory, readonly string[]>
 }
 
 // ========================================
 // MIME Function Types
 // ========================================
 
-export type CreateMimeOperations = (config?: MimeConfig) => MimeOperations;
+export type CreateMimeOperations = (config?: MimeConfig) => MimeOperations
 
 export type MimeTypeParser = (mimeType: string) => FormatResult<{
-  type: string;
-  subtype: string;
-  parameters: Record<string, string>;
-}>;
+  type: string
+  subtype: string
+  parameters: Record<string, string>
+}>
 
-export type ExtensionResolver = (extension: string) => FormatResult<readonly string[]>;
+export type ExtensionResolver = (extension: string) => FormatResult<readonly string[]>
 
-export type CategoryChecker = (mimeType: string, category: FileCategory) => FormatResult<boolean>;
+export type CategoryChecker = (mimeType: string, category: FileCategory) => FormatResult<boolean>
 
 // ========================================
 // Common MIME Type Constants
@@ -108,7 +108,7 @@ export const COMMON_MIME_TYPES = {
   BINARY: 'application/octet-stream',
   FORM: 'application/x-www-form-urlencoded',
   MULTIPART: 'multipart/form-data',
-} as const;
+} as const
 
 export const MIME_TYPE_CATEGORIES: Record<FileCategory, readonly string[]> = {
   image: [
@@ -186,4 +186,4 @@ export const MIME_TYPE_CATEGORIES: Record<FileCategory, readonly string[]> = {
     'application/x-dosexec',
   ],
   unknown: ['application/octet-stream'],
-};
+}

@@ -1,5 +1,5 @@
-export { createExcelOperations } from './core.js';
-export { defaultExcelConfig } from './types.js';
+export { createExcelOperations } from './core.js'
+export { defaultExcelConfig } from './types.js'
 export type {
   ExcelConfigProvider,
   ExcelParseBufferFunction,
@@ -15,4 +15,4 @@ export type {
   ExcelCellInfo,
   ExcelParseOptions,
   ExcelWriteOptions,
-} from './types.js';
+} from './types.js'

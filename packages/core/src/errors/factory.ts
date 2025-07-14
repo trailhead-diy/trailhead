@@ -1,4 +1,4 @@
-import type { CoreError, ErrorContext } from './types.js';
+import type { CoreError, ErrorContext } from './types.js'
 
 /**
  * Foundation error factory - enhanced with better context
@@ -7,14 +7,14 @@ export const createCoreError = (
   type: string,
   message: string,
   options?: {
-    details?: string;
-    cause?: unknown;
-    suggestion?: string;
-    recoverable?: boolean;
-    context?: Record<string, unknown>;
-    component?: string;
-    operation?: string;
-    severity?: 'low' | 'medium' | 'high' | 'critical';
+    details?: string
+    cause?: unknown
+    suggestion?: string
+    recoverable?: boolean
+    context?: Record<string, unknown>
+    component?: string
+    operation?: string
+    severity?: 'low' | 'medium' | 'high' | 'critical'
   }
 ): CoreError => ({
   type,
@@ -28,7 +28,7 @@ export const createCoreError = (
   operation: options?.operation,
   timestamp: new Date(),
   severity: options?.severity ?? 'medium',
-});
+})
 
 /**
  * Add context to any error
@@ -49,7 +49,7 @@ export const withContext = <E extends CoreError>(error: E, context: Partial<Erro
     ...error.context,
     ...context,
   },
-});
+})
 
 /**
  * Chain errors together for error propagation
@@ -60,4 +60,4 @@ export const chainError = <E extends CoreError>(
 ): E => ({
   ...error,
   cause,
-});
+})

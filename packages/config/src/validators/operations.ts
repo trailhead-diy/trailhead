@@ -1,52 +1,52 @@
-import { ok, err } from '@esteban-url/core';
-import type { Result, CoreError } from '@esteban-url/core';
-import { z } from '@esteban-url/validation';
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { z } from '@esteban-url/validation'
 import {
   createValidationError,
   createSchemaValidationError,
   type ValidationError,
-} from '../validation/index.js';
-import { validate as validateWithZodSchema } from '../core/zod-schema.js';
-import type { ConfigValidator, ZodConfigSchema } from '../core/zod-schema.js';
+} from '../validation/index.js'
+import { validate as validateWithZodSchema } from '../core/zod-schema.js'
+import type { ConfigValidator, ZodConfigSchema } from '../core/zod-schema.js'
 
 // ========================================
 // Enhanced Validator Operations
 // ========================================
 
 export interface ValidatorOperations {
-  readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void;
-  readonly unregister: (name: string) => void;
+  readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void
+  readonly unregister: (name: string) => void
   readonly validate: <T>(
     config: T,
     validators: readonly import('../types.js').ConfigValidator<T>[]
-  ) => Promise<Result<void, CoreError>>;
-  readonly validateSchema: <T>(config: T, schema: unknown) => Result<void, CoreError>;
-  readonly getRegisteredValidators: () => readonly string[];
-  readonly hasValidator: (name: string) => boolean;
+  ) => Promise<Result<void, CoreError>>
+  readonly validateSchema: <T>(config: T, schema: unknown) => Result<void, CoreError>
+  readonly getRegisteredValidators: () => readonly string[]
+  readonly hasValidator: (name: string) => boolean
 }
 
 export const createValidatorOperations = (): ValidatorOperations => {
-  const validators = new Map<string, import('../types.js').ConfigValidator<any>>();
+  const validators = new Map<string, import('../types.js').ConfigValidator<any>>()
 
   const register = <T>(validator: import('../types.js').ConfigValidator<T>): void => {
-    validators.set(validator.name, validator);
-  };
+    validators.set(validator.name, validator)
+  }
 
   const unregister = (name: string): void => {
-    validators.delete(name);
-  };
+    validators.delete(name)
+  }
 
   const validate = async <T>(
     config: T,
     configValidators: readonly import('../types.js').ConfigValidator<T>[]
   ): Promise<Result<void, CoreError>> => {
-    const errors: CoreError[] = [];
+    const errors: CoreError[] = []
 
     for (const validator of configValidators) {
       try {
-        const result = await validator.validate(config);
+        const result = await validator.validate(config)
         if (result.isErr()) {
-          errors.push(result.error);
+          errors.push(result.error)
         }
       } catch {
         errors.push(
@@ -58,34 +58,34 @@ export const createValidatorOperations = (): ValidatorOperations => {
             examples: [],
             rule: 'validator-error',
           })
-        );
+        )
       }
     }
 
     if (errors.length > 0) {
-      return err(createSchemaValidationError(errors as any, 'validators'));
+      return err(createSchemaValidationError(errors as any, 'validators'))
     }
 
-    return ok(undefined);
-  };
+    return ok(undefined)
+  }
 
   const validateSchema = <T>(config: T, schema: unknown): Result<void, CoreError> => {
     // Check if schema is a ZodConfigSchema and validate accordingly
     if (schema && typeof schema === 'object' && 'zodSchema' in schema) {
-      const validationResult = validateWithZodSchema(config, schema as ZodConfigSchema<T>);
-      return validationResult.map(() => undefined);
+      const validationResult = validateWithZodSchema(config, schema as ZodConfigSchema<T>)
+      return validationResult.map(() => undefined)
     }
     // For now, return ok for other schema types
-    return ok(undefined);
-  };
+    return ok(undefined)
+  }
 
   const getRegisteredValidators = (): readonly string[] => {
-    return Array.from(validators.keys());
-  };
+    return Array.from(validators.keys())
+  }
 
   const hasValidator = (name: string): boolean => {
-    return validators.has(name);
-  };
+    return validators.has(name)
+  }
 
   return {
     register,
@@ -94,8 +94,8 @@ export const createValidatorOperations = (): ValidatorOperations => {
     validateSchema,
     getRegisteredValidators,
     hasValidator,
-  };
-};
+  }
+}
 
 // ========================================
 // Built-in Validators
@@ -109,9 +109,9 @@ export const createEnvironmentValidator = (): ConfigValidator<any> => ({
   },
   validate: async (config: any) => {
     // Check app.environment (nested structure)
-    const environment = config.app?.environment;
+    const environment = config.app?.environment
     if (environment && typeof environment === 'string') {
-      const validEnvironments = ['development', 'staging', 'production', 'test'];
+      const validEnvironments = ['development', 'staging', 'production', 'test']
 
       if (!validEnvironments.includes(environment)) {
         return err(
@@ -123,13 +123,13 @@ export const createEnvironmentValidator = (): ConfigValidator<any> => ({
             examples: validEnvironments,
             rule: 'environment',
           })
-        );
+        )
       }
     }
 
-    return ok(config);
+    return ok(config)
   },
-});
+})
 
 export const createPortValidator = (): ConfigValidator<any> => ({
   name: 'port',
@@ -139,7 +139,7 @@ export const createPortValidator = (): ConfigValidator<any> => ({
   },
   validate: async (config: any) => {
     // Check server.port (nested structure)
-    const port = config.server?.port;
+    const port = config.server?.port
     if (port !== undefined) {
       if (typeof port !== 'number') {
         return err(
@@ -151,7 +151,7 @@ export const createPortValidator = (): ConfigValidator<any> => ({
             examples: [3000, 8080, 9000],
             rule: 'port-type',
           })
-        );
+        )
       }
 
       if (port < 1 || port > 65535) {
@@ -165,13 +165,13 @@ export const createPortValidator = (): ConfigValidator<any> => ({
             rule: 'port-range',
             constraints: { min: 1, max: 65535 },
           })
-        );
+        )
       }
     }
 
-    return ok(config);
+    return ok(config)
   },
-});
+})
 
 export const createUrlValidator = (): ConfigValidator<any> => ({
   name: 'url',
@@ -184,7 +184,7 @@ export const createUrlValidator = (): ConfigValidator<any> => ({
     const urlChecks = [
       { path: config.server?.baseUrl, field: 'server.baseUrl' },
       { path: config.database?.url, field: 'database.url' },
-    ];
+    ]
 
     for (const { path: urlValue, field } of urlChecks) {
       if (urlValue !== undefined) {
@@ -198,11 +198,11 @@ export const createUrlValidator = (): ConfigValidator<any> => ({
               examples: ['https://example.com', 'http://localhost:3000'],
               rule: 'url-type',
             })
-          );
+          )
         }
 
         try {
-          void new URL(urlValue);
+          void new URL(urlValue)
         } catch {
           return err(
             createValidationError({
@@ -217,14 +217,14 @@ export const createUrlValidator = (): ConfigValidator<any> => ({
               ],
               rule: 'url-format',
             })
-          );
+          )
         }
       }
     }
 
-    return ok(config);
+    return ok(config)
   },
-});
+})
 
 export const createSecurityValidator = (): ConfigValidator<any> => ({
   name: 'security',
@@ -233,11 +233,11 @@ export const createSecurityValidator = (): ConfigValidator<any> => ({
     zodSchema: z.any(),
   },
   validate: async (config: any) => {
-    const errors: ValidationError[] = [];
+    const errors: ValidationError[] = []
 
     // Check for potential security issues (nested structure)
-    const debug = config.app?.debug;
-    const environment = config.app?.environment;
+    const debug = config.app?.debug
+    const environment = config.app?.environment
     if (debug === true && environment === 'production') {
       errors.push(
         createValidationError({
@@ -248,15 +248,15 @@ export const createSecurityValidator = (): ConfigValidator<any> => ({
           examples: [false],
           rule: 'security-debug',
         })
-      );
+      )
     }
 
     // Check for exposed secrets in nested security config
-    const securityConfig = config.security;
+    const securityConfig = config.security
     if (securityConfig && typeof securityConfig === 'object') {
-      const secretFields = ['apiKey', 'jwtSecret'];
+      const secretFields = ['apiKey', 'jwtSecret']
       for (const field of secretFields) {
-        const value = securityConfig[field];
+        const value = securityConfig[field]
         if (value && typeof value === 'string') {
           // Very basic check - in practice would be more sophisticated
           if (value.length < 8) {
@@ -269,16 +269,16 @@ export const createSecurityValidator = (): ConfigValidator<any> => ({
                 rule: 'security-length',
                 constraints: { minLength: 8 },
               })
-            );
+            )
           }
         }
       }
     }
 
     if (errors.length > 0) {
-      return err(createSchemaValidationError(errors, 'SecurityValidation'));
+      return err(createSchemaValidationError(errors, 'SecurityValidation'))
     }
 
-    return ok(config);
+    return ok(config)
   },
-});
+})

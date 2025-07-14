@@ -1,5 +1,5 @@
-export { createJSONOperations } from './core.js';
-export { defaultJSONConfig } from './types.js';
+export { createJSONOperations } from './core.js'
+export { defaultJSONConfig } from './types.js'
 export type {
   JSONConfigProvider,
   JSONParseFunction,
@@ -13,4 +13,4 @@ export type {
   JSONStringifyOptions,
   JSONFormatOptions,
   JSONMinifyOptions,
-} from './types.js';
+} from './types.js'

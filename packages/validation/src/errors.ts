@@ -1,16 +1,16 @@
-import { createCoreError } from '@esteban-url/core';
-import type { ValidationError } from './types.js';
-import type { z } from 'zod';
+import { createCoreError } from '@esteban-url/core'
+import type { ValidationError } from './types.js'
+import type { z } from 'zod'
 
 export const createValidationError = (
   message: string,
   options?: {
-    field?: string;
-    value?: unknown;
-    constraints?: Record<string, unknown>;
-    cause?: unknown;
-    suggestion?: string;
-    context?: Record<string, unknown>;
+    field?: string
+    value?: unknown
+    constraints?: Record<string, unknown>
+    cause?: unknown
+    suggestion?: string
+    context?: Record<string, unknown>
   }
 ): ValidationError => ({
   ...createCoreError('VALIDATION_ERROR', message, {
@@ -27,20 +27,20 @@ export const createValidationError = (
   field: options?.field,
   value: options?.value,
   constraints: options?.constraints,
-});
+})
 
 export const createRequiredFieldError = (field: string): ValidationError =>
   createValidationError(`Required field '${field}' is missing`, {
     field,
     suggestion: `Provide a value for '${field}'`,
-  });
+  })
 
 export const createInvalidTypeError = (
   field: string,
   expectedType: string,
   actualValue: unknown
 ): ValidationError => {
-  const actualType = Array.isArray(actualValue) ? 'array' : typeof actualValue;
+  const actualType = Array.isArray(actualValue) ? 'array' : typeof actualValue
   return createValidationError(
     `Field '${field}' must be of type '${expectedType}', got '${actualType}'`,
     {
@@ -49,16 +49,16 @@ export const createInvalidTypeError = (
       constraints: { expectedType, actualType },
       suggestion: `Ensure '${field}' is a ${expectedType}`,
     }
-  );
-};
+  )
+}
 
 export const zodErrorToValidationError = (
   error: z.ZodError,
   options?: { field?: string }
 ): ValidationError => {
-  const firstError = error.errors[0];
-  const path = firstError.path.join('.');
-  const field = options?.field || (path !== '' ? path : undefined);
+  const firstError = error.errors[0]
+  const path = firstError.path.join('.')
+  const field = options?.field || (path !== '' ? path : undefined)
 
   return createValidationError(firstError.message, {
     field,
@@ -69,5 +69,5 @@ export const zodErrorToValidationError = (
       path: firstError.path,
     },
     suggestion: 'Check the value and ensure it meets the validation requirements',
-  });
-};
+  })
+}

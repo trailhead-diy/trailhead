@@ -1,4 +1,4 @@
-export { createGitDiffOperations } from './operations.js';
+export { createGitDiffOperations } from './operations.js'
 export type {
   GitDiffOperations,
   GitDiff,
@@ -8,4 +8,4 @@ export type {
   DiffHunk,
   DiffLine,
   DiffLineType,
-} from '../types.js';
+} from '../types.js'

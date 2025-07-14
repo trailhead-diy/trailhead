@@ -1,5 +1,5 @@
-import { createCoreError } from '@esteban-url/core/errors';
-import type { CoreError } from '@esteban-url/core/errors';
+import { createCoreError } from '@esteban-url/core/errors'
+import type { CoreError } from '@esteban-url/core/errors'
 
 // ========================================
 // Workflow Error Creators
@@ -16,8 +16,8 @@ export const createWorkflowError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createWorkflowValidationError = (
   message: string,
@@ -30,8 +30,8 @@ export const createWorkflowValidationError = (
     cause,
     recoverable: true,
     context: details,
-  });
-};
+  })
+}
 
 export const createWorkflowExecutionError = (
   message: string,
@@ -44,8 +44,8 @@ export const createWorkflowExecutionError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createWorkflowTimeoutError = (
   message: string,
@@ -58,8 +58,8 @@ export const createWorkflowTimeoutError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createStepError = (
   message: string,
@@ -72,8 +72,8 @@ export const createStepError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createStepValidationError = (
   message: string,
@@ -86,8 +86,8 @@ export const createStepValidationError = (
     cause,
     recoverable: true,
     context: details,
-  });
-};
+  })
+}
 
 export const createStepExecutionError = (
   message: string,
@@ -100,8 +100,8 @@ export const createStepExecutionError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createStepTimeoutError = (
   message: string,
@@ -114,8 +114,8 @@ export const createStepTimeoutError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createDependencyError = (
   message: string,
@@ -128,8 +128,8 @@ export const createDependencyError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 export const createConcurrencyError = (
   message: string,
@@ -142,16 +142,16 @@ export const createConcurrencyError = (
     cause,
     recoverable: false,
     context: details,
-  });
-};
+  })
+}
 
 // ========================================
 // Error Mapping Functions
 // ========================================
 
 export const mapLibraryError = (operation: string, target: string, cause: unknown): CoreError => {
-  const message = `Failed to ${operation} ${target}`;
-  const suggestion = 'Check the operation parameters and try again';
+  const message = `Failed to ${operation} ${target}`
+  const suggestion = 'Check the operation parameters and try again'
 
   if (cause instanceof Error) {
     if (cause.name === 'TimeoutError') {
@@ -160,7 +160,7 @@ export const mapLibraryError = (operation: string, target: string, cause: unknow
         'Increase timeout or optimize the operation',
         cause,
         { operation, target }
-      );
+      )
     }
 
     if (cause.name === 'ValidationError') {
@@ -169,16 +169,16 @@ export const mapLibraryError = (operation: string, target: string, cause: unknow
         'Check input parameters and workflow definition',
         cause,
         { operation, target }
-      );
+      )
     }
   }
 
-  return createWorkflowError(message, suggestion, cause, { operation, target });
-};
+  return createWorkflowError(message, suggestion, cause, { operation, target })
+}
 
 export const mapStepError = (operation: string, stepId: string, cause: unknown): CoreError => {
-  const message = `Step '${stepId}' failed during ${operation}`;
-  const suggestion = 'Check step configuration and dependencies';
+  const message = `Step '${stepId}' failed during ${operation}`
+  const suggestion = 'Check step configuration and dependencies'
 
   if (cause instanceof Error) {
     if (cause.name === 'TimeoutError') {
@@ -187,9 +187,9 @@ export const mapStepError = (operation: string, stepId: string, cause: unknown):
         'Increase step timeout or optimize execution',
         cause,
         { operation, stepId }
-      );
+      )
     }
   }
 
-  return createStepError(message, suggestion, cause, { operation, stepId });
-};
+  return createStepError(message, suggestion, cause, { operation, stepId })
+}

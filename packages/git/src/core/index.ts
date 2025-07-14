@@ -1,4 +1,4 @@
-export { createGitOperations } from './operations.js';
+export { createGitOperations } from './operations.js'
 export type {
   GitOperations,
   GitRepository,
@@ -6,4 +6,4 @@ export type {
   GitRefType,
   GitInitOptions,
   GitCloneOptions,
-} from '../types.js';
+} from '../types.js'
