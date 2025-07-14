@@ -23,6 +23,10 @@
     "./functional": {
       "types": "./dist/functional/index.d.ts",
       "default": "./dist/functional/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
     }
   },
   "scripts": {
