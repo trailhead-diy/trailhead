@@ -3,7 +3,7 @@
  * Eliminates duplication across transform files
  */
 
-import { ok, err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, type Result, type CLIError } from '@esteban-url/cli/core';
 
 /**
  * Transform result type

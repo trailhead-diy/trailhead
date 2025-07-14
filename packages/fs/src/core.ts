@@ -1,6 +1,6 @@
 import { promises as fs, constants } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import { glob } from 'glob';
 import { mapNodeError, createFileSystemError } from './errors.js';
 import type {

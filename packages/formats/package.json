@@ -1,12 +1,12 @@
 {
-  "name": "@trailhead/formats",
+  "name": "@esteban-url/formats",
   "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Functional file format detection and MIME type utilities with Result types for Trailhead System",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -43,8 +43,8 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*",
     "file-type": "^19.5.0",
     "mime-types": "^2.1.35"
   },

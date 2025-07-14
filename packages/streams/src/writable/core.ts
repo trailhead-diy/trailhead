@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import { Writable } from 'node:stream';
 import type { WritableConfig, StreamResult } from '../types.js';
 import type { CreateWritableOperations } from './types.js';

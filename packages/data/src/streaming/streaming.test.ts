@@ -13,7 +13,7 @@ vi.mock('./utils.js', async () => {
   };
 });
 
-// Mock @trailhead/streams module
+// Mock @esteban-url/streams module
 const mockStreamOperations: StreamOperations = {
   createReadableFromArray: vi.fn().mockImplementation((data: any[]) => ({
     isOk: () => true,

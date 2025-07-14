@@ -9,7 +9,7 @@ import {
   checkbox,
   createDirectoryPrompt,
   createConfirmationPrompt,
-} from '@esteban-url/trailhead-cli/prompts';
+} from '@esteban-url/cli/prompts';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import type { InstallOptions, FrameworkChoice, PromptChoice } from '../utils/types.js';

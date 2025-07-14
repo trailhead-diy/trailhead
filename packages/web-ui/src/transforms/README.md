@@ -1,6 +1,6 @@
 # Transform System
 
-A functional transform system for code modifications built on @esteban-url/trailhead-cli framework.
+A functional transform system for code modifications built on @esteban-url/cli framework.
 
 ## Overview
 
@@ -124,7 +124,7 @@ All transforms include comprehensive tests:
 
 ```typescript
 import { transformSemanticColors } from '../transforms/semantic-colors.js';
-import { expectResult } from '@esteban-url/trailhead-cli/testing';
+import { expectResult } from '@esteban-url/cli/testing';
 
 const result = transformSemanticColors(input);
 expectResult(result);

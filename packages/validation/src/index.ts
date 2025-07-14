@@ -102,5 +102,5 @@ export type { SchemaRegistryKey } from './schemas.js';
 export { z } from 'zod';
 
 // Re-export Result types for convenience
-export { ok, err } from '@trailhead/core';
-export type { Result } from '@trailhead/core';
+export { ok, err } from '@esteban-url/core';
+export type { Result } from '@esteban-url/core';

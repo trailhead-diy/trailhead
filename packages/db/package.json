@@ -1,5 +1,5 @@
 {
-  "name": "@trailhead/db",
+  "name": "@esteban-url/db",
   "version": "1.0.0",
   "description": "Functional database operations for CLI applications",
   "type": "module",
@@ -37,9 +37,9 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "@trailhead/validation": "workspace:*",
-    "@trailhead/fs": "workspace:*"
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/validation": "workspace:*",
+    "@esteban-url/fs": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

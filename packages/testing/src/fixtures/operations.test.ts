@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ok } from '@trailhead/core';
+import { ok } from '@esteban-url/core';
 import { createFixtureOperations } from './operations.js';
 
 describe('Fixture Operations', () => {

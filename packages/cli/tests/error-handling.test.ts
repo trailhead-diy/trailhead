@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createCLI } from '../src/cli.js';
 import { createCommand } from '../src/command/index.js';
-import { err } from '@trailhead/core';
+import { err } from '@esteban-url/core';
 
 describe('CLI Error Handling', () => {
   it('should handle command action errors gracefully', async () => {

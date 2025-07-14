@@ -1,6 +1,6 @@
 import type { CommandContext, CommandPhase } from './types.js';
-import type { Result, CoreError } from '@trailhead/core';
-import { ok, err, createCoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@esteban-url/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
 
 export interface InteractiveCommandOptions {
   readonly interactive?: boolean;

@@ -4,11 +4,11 @@
 
 import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import { ok } from '@esteban-url/trailhead-cli/core';
-import type { Logger } from '@esteban-url/trailhead-cli/core';
+import { ok } from '@esteban-url/cli/core';
+import type { Logger } from '@esteban-url/cli/core';
 import { isNotTestRelated } from '../cli/core/shared/file-filters.js';
 // Import FileSystem from CLI framework
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import type { FileSystem } from '@esteban-url/cli/filesystem';
 
 // Import functional transforms
 import { transformClsxToCn, clsxToCnTransform } from './imports/clsx-to-cn.js';

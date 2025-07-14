@@ -4,7 +4,7 @@
 
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { createNodeFileSystem } from '@esteban-url/cli/filesystem';
 import type { CLIContext } from './types.js';
 
 // Import new CLI package-based configuration

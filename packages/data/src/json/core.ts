@@ -1,5 +1,5 @@
-import { ok, err } from '@trailhead/core';
-import { readFile, writeFile } from '@trailhead/fs';
+import { ok, err } from '@esteban-url/core';
+import { readFile, writeFile } from '@esteban-url/fs';
 import type { JSONProcessingOptions, DataResult } from '../types.js';
 import type { CreateJSONOperations, JSONFormatOptions } from './types.js';
 import { defaultJSONConfig } from './types.js';

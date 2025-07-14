@@ -1,5 +1,5 @@
 {
-  "name": "@esteban-url/trailhead-web-ui",
+  "name": "@esteban-url/web-ui",
   "version": "1.0.1",
   "private": false,
   "description": "Enhanced Catalyst UI components with advanced theming system, semantic tokens, and professional CLI",
@@ -13,8 +13,8 @@
   "type": "module",
   "bin": {
     "trailhead-ui": "./dist/cli.js",
-    "trailhead-web-ui": "./dist/cli.js",
-    "thui": "./dist/cli.js"
+    "esteban-ui": "./dist/cli.js",
+    "eu-ui": "./dist/cli.js"
   },
   "exports": {
     ".": {
@@ -86,7 +86,7 @@
     "validate": "pnpm types && pnpm lint && pnpm test"
   },
   "dependencies": {
-    "@esteban-url/trailhead-cli": "workspace:*",
+    "@esteban-url/cli": "workspace:*",
     "@headlessui/react": "^2.2.4",
     "@inquirer/prompts": "^7.6.0",
     "@npmcli/package-json": "^6.2.0",

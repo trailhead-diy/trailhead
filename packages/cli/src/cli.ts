@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import type { Command as CommandInterface, CommandContext } from './command/index.js';
 import { createDefaultLogger } from './utils/logger.js';
-import { fs } from '@trailhead/fs';
+import { fs } from '@esteban-url/fs';
 import { validateCommandOption } from './command/validation.js';
 import { processCommandOptionsWithCache } from './command/performance.js';
 

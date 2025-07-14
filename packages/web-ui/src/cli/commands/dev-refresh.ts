@@ -2,23 +2,23 @@
  * Dev Refresh Command - Copy fresh Catalyst components for development
  */
 
-import { ok, err } from '@esteban-url/trailhead-cli';
+import { ok, err } from '@esteban-url/cli';
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command';
+} from '@esteban-url/cli/command';
 import { join } from 'path';
 
 // Import framework utilities
-import { ensureDirectory, pathExists } from '@esteban-url/trailhead-cli/filesystem';
+import { ensureDirectory, pathExists } from '@esteban-url/cli/filesystem';
 
 // Import local utilities
 import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { createError } from '@esteban-url/cli/core';
 import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
 import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
 import chalk from 'chalk';

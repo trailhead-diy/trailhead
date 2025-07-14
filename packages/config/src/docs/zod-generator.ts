@@ -1,7 +1,7 @@
-import { z } from '@trailhead/validation';
-import type { Result } from '@trailhead/core';
-import type { CoreError } from '@trailhead/core';
-import { ok, err, createCoreError } from '@trailhead/core';
+import { z } from '@esteban-url/validation';
+import type { Result } from '@esteban-url/core';
+import type { CoreError } from '@esteban-url/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
 import type { ZodConfigSchema } from '../core/zod-schema.js';
 
 // ========================================
@@ -203,7 +203,7 @@ export const generateZodConfigDocs = <T>(
       arrayFieldCount: fields.filter(f => f.type === 'array').length,
       enumFieldCount: fields.filter(f => f.constraints?.enum).length,
       schemaVersion: schema.version,
-      generator: '@trailhead/config/zod',
+      generator: '@esteban-url/config/zod',
       generatorVersion: '2.0.0',
       zodVersion: 'unknown', // z.version is not available
     };
@@ -225,7 +225,7 @@ export const generateZodConfigDocs = <T>(
         'ZOD_DOCS_GENERATION_FAILED',
         'Failed to generate Zod configuration documentation',
         {
-          component: '@trailhead/config',
+          component: '@esteban-url/config',
           operation: 'generate-zod-docs',
           context: { schema: schema.name },
           cause: error instanceof Error ? error : undefined,
@@ -293,7 +293,7 @@ const generateZodFieldsDocumentation = (
         'ZOD_FIELD_DOCS_GENERATION_FAILED',
         'Failed to generate Zod field documentation',
         {
-          component: '@trailhead/config',
+          component: '@esteban-url/config',
           operation: 'generate-zod-field-docs',
           cause: error instanceof Error ? error : undefined,
         }
@@ -523,7 +523,7 @@ const generateZodExamples = <T>(
   } catch (error) {
     return err(
       createCoreError('ZOD_EXAMPLES_GENERATION_FAILED', 'Failed to generate Zod examples', {
-        component: '@trailhead/config',
+        component: '@esteban-url/config',
         operation: 'generate-zod-examples',
         cause: error instanceof Error ? error : undefined,
       })

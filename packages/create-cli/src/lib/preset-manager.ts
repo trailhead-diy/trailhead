@@ -1,5 +1,5 @@
-import { ok, err, createCoreError } from '@trailhead/core';
-import type { Result } from '@trailhead/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
+import type { Result } from '@esteban-url/core';
 import { select, confirm, input } from '@inquirer/prompts';
 import { ConfigManager, BUILT_IN_PRESETS, type PresetConfig } from './config-manager.js';
 import type { ModernProjectConfig } from './interactive-prompts.js';

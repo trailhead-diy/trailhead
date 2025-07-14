@@ -1,5 +1,5 @@
 import type { Command, CommandContext } from '../command/index.js';
-import type { Result, CoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import { createTestContext } from './context.js';
 
 /**

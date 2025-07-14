@@ -1,4 +1,4 @@
-import { fs } from '@trailhead/fs';
+import { fs } from '@esteban-url/fs';
 import { createHash } from 'crypto';
 import Handlebars from 'handlebars';
 import { sanitizeText } from './validation.js';

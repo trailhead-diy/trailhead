@@ -1,5 +1,5 @@
-import { ok, err } from '@trailhead/core';
-import { readFile, writeFile } from '@trailhead/fs';
+import { ok, err } from '@esteban-url/core';
+import { readFile, writeFile } from '@esteban-url/fs';
 import * as Papa from 'papaparse';
 import type { CSVProcessingOptions, DataResult, CSVFormatInfo } from '../types.js';
 import type { CreateCSVOperations } from './types.js';

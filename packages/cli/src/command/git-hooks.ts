@@ -5,8 +5,8 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core';
-import { fs } from '@trailhead/fs';
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core';
+import { fs } from '@esteban-url/fs';
 import chalk from 'chalk';
 
 // Types

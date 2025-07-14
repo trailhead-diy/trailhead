@@ -1,11 +1,11 @@
-import { ok, err } from '@esteban-url/trailhead-cli';
+import { ok, err } from '@esteban-url/cli';
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command';
+} from '@esteban-url/cli/command';
 import {
   executeTransforms as coreExecuteTransforms,
   validateTransformConfig,
@@ -13,7 +13,7 @@ import {
 } from '../core/shared/transform-core.js';
 import { runTransformPrompts } from '../prompts/transforms.js';
 import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { createError } from '@esteban-url/cli/core';
 import { type StrictTransformsOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety
@@ -203,7 +203,7 @@ const createExecutionPhases = (cmdContext: CommandContext): CommandPhase<Transfo
             cmdContext.logger.info('');
             cmdContext.logger.info('Modified files:');
             // List files in the source directory
-            const fs = await import('@esteban-url/trailhead-cli/filesystem');
+            const fs = await import('@esteban-url/cli/filesystem');
             const fileSystem = fs.createFileSystem();
             const readResult = await fileSystem.readdir(config.transformConfig.srcDir);
             if (readResult.isOk()) {

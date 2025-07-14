@@ -1,5 +1,5 @@
 {
-  "name": "@trailhead/workflows",
+  "name": "@esteban-url/workflows",
   "version": "1.0.0",
   "description": "Functional workflow orchestration for CLI applications",
   "type": "module",
@@ -37,7 +37,7 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*"
+    "@esteban-url/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

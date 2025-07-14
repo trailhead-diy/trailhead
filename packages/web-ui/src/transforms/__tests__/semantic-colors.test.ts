@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { expectSuccess } from '@esteban-url/trailhead-cli/testing';
+import { expectSuccess } from '@esteban-url/cli/testing';
 import { transformSemanticColors } from '../semantic/color-tokens/index.js';
 
 describe('SemanticColorsTransform', () => {

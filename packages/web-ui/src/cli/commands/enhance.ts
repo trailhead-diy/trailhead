@@ -3,14 +3,14 @@
  * Simplified alternative to the complex transforms command
  */
 
-import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/cli/core';
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command';
+} from '@esteban-url/cli/command';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';

@@ -1,5 +1,5 @@
-import { ok, err } from '@trailhead/core';
-import type { Result } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
+import type { Result } from '@esteban-url/core';
 import type { ProjectConfig } from './types.js';
 
 export interface ParsedArgs extends ProjectConfig {

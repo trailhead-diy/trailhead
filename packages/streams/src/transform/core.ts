@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import { Transform } from 'node:stream';
 import { createGzip, createGunzip } from 'node:zlib';
 import type {

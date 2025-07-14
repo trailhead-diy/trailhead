@@ -1,7 +1,7 @@
-import type { Result } from '@trailhead/core';
+import type { Result } from '@esteban-url/core';
 // @ts-expect-error - Domain package types will be available after build
-import type { FileSystem } from '@trailhead/fs';
-import type { CoreError } from '@trailhead/core';
+import type { FileSystem } from '@esteban-url/fs';
+import type { CoreError } from '@esteban-url/core';
 // Import statements for documentation - functions are placeholders for test framework usage
 
 /**

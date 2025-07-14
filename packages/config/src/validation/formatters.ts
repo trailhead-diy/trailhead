@@ -1,6 +1,6 @@
 import type { ConfigValidationError } from './errors.js';
 import { isConfigValidationError } from './errors.js';
-// Stub color functions - would normally come from @trailhead/cli/utils
+// Stub color functions - would normally come from @esteban-url/cli/utils
 const redColor = (text: string): string => `\x1b[31m${text}\x1b[0m`;
 const _success = (text: string): string => `\x1b[32m${text}\x1b[0m`;
 const warning = (text: string): string => `\x1b[33m${text}\x1b[0m`;

@@ -1,5 +1,5 @@
-import { ok, err, createCoreError } from '@trailhead/core';
-import type { Result, CoreError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import {
   createConfigValidationError,
   createSchemaValidationError,
@@ -163,7 +163,7 @@ export const createConfigOperations = (): ConfigOperations => {
                 'SOURCE_LOAD_FAILED',
                 `Failed to load source: ${source.type}`,
                 {
-                  component: '@trailhead/config',
+                  component: '@esteban-url/config',
                   operation: 'load-source',
                   context: { source },
                   cause: error instanceof Error ? error : undefined,
@@ -185,7 +185,7 @@ export const createConfigOperations = (): ConfigOperations => {
             'CRITICAL_SOURCES_FAILED',
             'Required configuration sources failed to load',
             {
-              component: '@trailhead/config',
+              component: '@esteban-url/config',
               operation: 'load-config',
               context: { errors: criticalErrors },
             }
@@ -262,7 +262,7 @@ export const createConfigOperations = (): ConfigOperations => {
     } catch (error) {
       return err(
         createCoreError('CONFIG_LOAD_FAILED', 'Configuration loading failed', {
-          component: '@trailhead/config',
+          component: '@esteban-url/config',
           operation: 'load-config',
           context: { definition: definition.name },
           cause: error instanceof Error ? error : undefined,
@@ -305,7 +305,7 @@ export const createConfigOperations = (): ConfigOperations => {
 
       return err(
         createCoreError('WATCH_SETUP_FAILED', 'Failed to setup configuration watching', {
-          component: '@trailhead/config',
+          component: '@esteban-url/config',
           operation: 'watch-config',
           context: { definition: definition.name },
           cause: error instanceof Error ? error : undefined,

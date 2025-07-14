@@ -1,7 +1,7 @@
-import { ok, err, createCoreError } from '@trailhead/core';
-import type { Result, CoreError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import { resolve, dirname } from 'path';
-import { fs } from '@trailhead/fs';
+import { fs } from '@esteban-url/fs';
 import { fileURLToPath } from 'url';
 import { execa } from 'execa';
 import chalk from 'chalk';

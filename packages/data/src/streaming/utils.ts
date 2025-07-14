@@ -1,4 +1,4 @@
-import type { CoreError } from '@trailhead/core';
+import type { CoreError } from '@esteban-url/core';
 import type { StreamOperations, StreamingConfig } from './types.js';
 import { createDataError } from '../errors.js';
 
@@ -16,8 +16,8 @@ export const checkStreamAvailability = (): boolean => {
   }
 
   try {
-    // Try to require @trailhead/streams (synchronous check)
-    const streamModule = require('@trailhead/streams');
+    // Try to require @esteban-url/streams (synchronous check)
+    const streamModule = require('@esteban-url/streams');
     isStreamAvailable = Boolean(
       streamModule?.createReadableOperations &&
         streamModule?.createWritableOperations &&
@@ -45,7 +45,7 @@ export const getStreamOperations = async (): Promise<StreamOperations | null> =>
     let streamModule: any = null;
     try {
       // @ts-ignore - Optional dependency may not exist
-      streamModule = await import('@trailhead/streams');
+      streamModule = await import('@esteban-url/streams');
     } catch {
       return null;
     }
@@ -212,8 +212,8 @@ export const createStreamingNotAvailableError = (
 ): CoreError => {
   return createDataError(
     'STREAMING_NOT_AVAILABLE',
-    'Streaming operations are not available. Install @trailhead/streams or enable streaming.',
-    'Streaming functionality requires @trailhead/streams package',
+    'Streaming operations are not available. Install @esteban-url/streams or enable streaming.',
+    'Streaming functionality requires @esteban-url/streams package',
     context
   );
 };
@@ -223,7 +223,7 @@ export const createStreamOpsUnavailableError = (
 ): CoreError => {
   return createDataError(
     'STREAM_OPS_UNAVAILABLE',
-    'Unable to create stream operations. Ensure @trailhead/streams is properly installed.',
+    'Unable to create stream operations. Ensure @esteban-url/streams is properly installed.',
     'Stream operations could not be initialized',
     context
   );

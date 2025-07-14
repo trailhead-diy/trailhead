@@ -1,6 +1,6 @@
-import { createValidationError as baseCreateValidationError, z } from '@trailhead/validation';
-import type { ValidationError as BaseValidationError } from '@trailhead/validation';
-import { createCoreError, type CoreError } from '@trailhead/core';
+import { createValidationError as baseCreateValidationError, z } from '@esteban-url/validation';
+import type { ValidationError as BaseValidationError } from '@esteban-url/validation';
+import { createCoreError, type CoreError } from '@esteban-url/core';
 
 // ========================================
 // Enhanced Configuration Validation Errors
@@ -84,7 +84,7 @@ export const createSchemaValidationError = (
     : `Schema validation failed with ${errors.length} error(s)`;
 
   return createCoreError('SCHEMA_VALIDATION_FAILED', message, {
-    component: '@trailhead/config',
+    component: '@esteban-url/config',
     operation: 'schema-validation',
     context: {
       errorCount: errors.length,

@@ -1,6 +1,6 @@
-import { z } from '@trailhead/validation';
-import { ok, err, createCoreError, type Result } from '@trailhead/core';
-import type { CoreError } from '@trailhead/core';
+import { z } from '@esteban-url/validation';
+import { ok, err, createCoreError, type Result } from '@esteban-url/core';
+import type { CoreError } from '@esteban-url/core';
 import { enhanceZodError } from '../validation/errors.js';
 
 // ========================================
@@ -585,7 +585,7 @@ export const validateWithZodSchema = <T>(
     // Handle unexpected errors
     return err(
       createCoreError('VALIDATION_FAILED', 'Validation failed due to unexpected error', {
-        component: '@trailhead/config',
+        component: '@esteban-url/config',
         operation: 'schema-validation',
         cause: error instanceof Error ? error : undefined,
       })
@@ -608,7 +608,7 @@ export const validateWithZodSchemaAsync = async <T>(
 
     return err(
       createCoreError('VALIDATION_FAILED', 'Async validation failed due to unexpected error', {
-        component: '@trailhead/config',
+        component: '@esteban-url/config',
         operation: 'async-schema-validation',
         cause: error instanceof Error ? error : undefined,
       })

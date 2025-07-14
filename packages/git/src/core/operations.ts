@@ -1,4 +1,4 @@
-import { ok, err, fromThrowable } from '@trailhead/core';
+import { ok, err, fromThrowable } from '@esteban-url/core';
 import { join, resolve } from 'node:path';
 import { access, constants } from 'node:fs/promises';
 import { execSync } from 'node:child_process';

@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import type { FormatResult, ConversionInfo, ConversionQuality, FileCategory } from '../types.js';
 import type { CreateConversionOperations } from './types.js';
 import { CONVERSION_CATEGORIES } from './types.js';

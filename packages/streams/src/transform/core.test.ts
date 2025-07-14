@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createTransformOperations } from './core.js';
 import { createReadableOperations } from '../readable/core.js';
 import { createWritableOperations } from '../writable/core.js';
-import { ok } from '@trailhead/core';
+import { ok } from '@esteban-url/core';
 
 describe('Transform Stream Operations', () => {
   const transformOps = createTransformOperations();

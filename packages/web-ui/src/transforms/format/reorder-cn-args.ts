@@ -47,7 +47,7 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+import type { Result, CLIError } from '@esteban-url/cli/core';
 import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
 import ts from 'typescript';
 

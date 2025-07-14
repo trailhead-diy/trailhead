@@ -1,6 +1,6 @@
-import { ok, err } from '@trailhead/core';
-import type { Result, CoreError } from '@trailhead/core';
-import { z } from '@trailhead/validation';
+import { ok, err } from '@esteban-url/core';
+import type { Result, CoreError } from '@esteban-url/core';
+import { z } from '@esteban-url/validation';
 import {
   createValidationError,
   createSchemaValidationError,

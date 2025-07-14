@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import type {
   SchemaBuilder,
   TableBuilder,

@@ -2,8 +2,8 @@
  * Init Command - Initialize a new Trailhead UI project
  */
 
-import { ok } from '@esteban-url/trailhead-cli';
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
+import { ok } from '@esteban-url/cli';
+import { createCommand, type CommandContext } from '@esteban-url/cli/command';
 import { type StrictInitOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety

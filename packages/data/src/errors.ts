@@ -1,5 +1,5 @@
-import { createCoreError } from '@trailhead/core';
-import type { CoreError } from '@trailhead/core';
+import { createCoreError } from '@esteban-url/core';
+import type { CoreError } from '@esteban-url/core';
 
 // ========================================
 // Error Factory Functions

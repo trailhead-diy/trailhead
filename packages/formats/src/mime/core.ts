@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import * as mimeTypes from 'mime-types';
 import type { MimeConfig, FormatResult, MimeTypeInfo, FileCategory } from '../types.js';
 import type { CreateMimeOperations } from './types.js';

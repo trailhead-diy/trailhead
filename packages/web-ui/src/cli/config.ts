@@ -1,8 +1,8 @@
 /**
- * Web-UI CLI configuration using simplified @esteban-url/trailhead-cli config system
+ * Web-UI CLI configuration using simplified @esteban-url/cli config system
  */
 
-import { createConfig, z, type ConfigLoadResult } from '@esteban-url/trailhead-cli/config';
+import { createConfig, z, type ConfigLoadResult } from '@esteban-url/cli/config';
 
 // Schema definitions
 export const transformConfigSchema = z.object({

@@ -1,12 +1,12 @@
 {
-  "name": "@trailhead/cli",
+  "name": "@esteban-url/cli",
   "version": "0.1.0",
   "type": "module",
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -58,8 +58,8 @@
     "validate": "pnpm types && pnpm lint && pnpm test:all"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*",
     "@inquirer/prompts": "^7.6.0",
     "@types/cli-progress": "^3.11.6",
     "chalk": "^5.4.1",

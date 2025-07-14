@@ -4,7 +4,7 @@
  */
 
 // Re-export StatsTracker from CLI framework for other uses
-export type { StatsTracker } from '@esteban-url/trailhead-cli/utils';
+export type { StatsTracker } from '@esteban-url/cli/utils';
 
 // UI-specific conversion stats interface
 export interface ConversionStats {
@@ -66,7 +66,7 @@ export interface ConverterDefinition {
 }
 
 // Import Result and CLIError types from framework
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
+import type { Result, CLIError } from '@esteban-url/cli/core';
 
 // Re-export Result for backward compatibility with shared modules
 export type { Result };
@@ -84,7 +84,7 @@ export interface EnvironmentConfig {
 }
 
 // File comparison result - re-export from CLI framework
-export type { FileComparison } from '@esteban-url/trailhead-cli/filesystem';
+export type { FileComparison } from '@esteban-url/cli/filesystem';
 
 // Processing configuration
 export interface ProcessingConfig {

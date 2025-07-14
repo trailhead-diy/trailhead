@@ -1,5 +1,5 @@
 {
-  "name": "@trailhead/streams",
+  "name": "@esteban-url/streams",
   "version": "1.0.0",
   "description": "Functional stream processing utilities for Node.js with Result types",
   "type": "module",
@@ -37,7 +37,7 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*"
+    "@esteban-url/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

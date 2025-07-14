@@ -8,7 +8,7 @@
 
 import type { Result } from './types.js';
 import { join } from 'path';
-import { ok, err } from '@esteban-url/trailhead-cli/core';
+import { ok, err } from '@esteban-url/cli/core';
 
 // ============================================================================
 // CORE TYPES - Immutable data structures

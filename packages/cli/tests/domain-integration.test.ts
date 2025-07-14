@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { createCLI } from '../src/cli.js';
 import { createCommand } from '../src/command/index.js';
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 
 describe('Domain Package Integration', () => {
-  it('should import and use @trailhead/core types', () => {
+  it('should import and use @esteban-url/core types', () => {
     // Test that Result types work correctly
     const successResult = ok('test');
     const errorResult = err({
@@ -17,7 +17,7 @@ describe('Domain Package Integration', () => {
     expect(errorResult.isErr()).toBe(true);
   });
 
-  it('should integrate @trailhead/fs in command context', async () => {
+  it('should integrate @esteban-url/fs in command context', async () => {
     const command = createCommand({
       name: 'fs-test',
       description: 'Test filesystem integration',

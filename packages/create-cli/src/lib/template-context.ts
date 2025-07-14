@@ -12,7 +12,7 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
-    description: `CLI application built with @trailhead/* domain packages`,
+    description: `CLI application built with @esteban-url/* domain packages`,
     author: await getGitUser(),
     email: await getGitEmail(),
     license: 'MIT',

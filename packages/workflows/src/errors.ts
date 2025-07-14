@@ -1,5 +1,5 @@
-import { createCoreError } from '@trailhead/core/errors';
-import type { CoreError } from '@trailhead/core/errors';
+import { createCoreError } from '@esteban-url/core/errors';
+import type { CoreError } from '@esteban-url/core/errors';
 
 // ========================================
 // Workflow Error Creators

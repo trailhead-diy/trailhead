@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import { Duplex, PassThrough } from 'node:stream';
 import type { DuplexConfig, StreamResult } from '../types.js';
 import type { CreateDuplexOperations } from './types.js';

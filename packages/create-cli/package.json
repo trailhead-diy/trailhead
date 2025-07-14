@@ -1,16 +1,15 @@
 {
-  "name": "create-trailhead-cli",
+  "name": "@esteban-url/create-cli",
   "version": "0.1.0",
   "type": "module",
   "private": false,
-  "description": "CLI generator for creating projects with @esteban-url/trailhead-cli",
+  "description": "CLI generator for creating projects with @esteban-url/cli",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "bin": {
-    "create-trailhead-cli": "./bin/cli.js",
-    "create-th-cli": "./bin/cli.js"
+    "create-cli": "./bin/cli.js"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -36,15 +35,15 @@
     "format": "prettier --write . --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-path .prettierignore",
     "clean": "rm -rf dist",
-    "pretest": "pnpm --filter='@trailhead/*' build && pnpm build",
+    "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test"
   },
   "dependencies": {
-    "@trailhead/cli": "workspace:*",
-    "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/validation": "workspace:*",
+    "@esteban-url/cli": "workspace:*",
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*",
+    "@esteban-url/validation": "workspace:*",
     "@inquirer/prompts": "^7.6.0",
     "chalk": "^5.4.1",
     "execa": "^9.6.0",
@@ -87,7 +86,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/esteban-url/trailhead.git",
-    "directory": "packages/create-trailhead-cli"
+    "directory": "packages/create-cli"
   },
   "license": "MIT"
 }

@@ -1,5 +1,5 @@
-import type { Result } from '@trailhead/core';
-import type { CoreError } from '@trailhead/core';
+import type { Result } from '@esteban-url/core';
+import type { CoreError } from '@esteban-url/core';
 
 export interface FileStats {
   readonly size: number;

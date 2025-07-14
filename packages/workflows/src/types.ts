@@ -1,5 +1,5 @@
-import type { Result } from '@trailhead/core';
-import type { CoreError } from '@trailhead/core/errors';
+import type { Result } from '@esteban-url/core';
+import type { CoreError } from '@esteban-url/core/errors';
 
 // ========================================
 // Result Type Alias

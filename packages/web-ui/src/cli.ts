@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/trailhead-cli';
-import { chalk } from '@esteban-url/trailhead-cli/utils';
+import { createCLI } from '@esteban-url/cli';
+import { chalk } from '@esteban-url/cli/utils';
 import { createCLIContext, getScriptDir } from './cli/utils/context.js';
 import { createEnhanceCommand } from './cli/commands/enhance.js';
 import { createTransformsCommand } from './cli/commands/transforms.js';

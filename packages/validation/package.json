@@ -1,12 +1,12 @@
 {
-  "name": "@trailhead/validation",
+  "name": "@esteban-url/validation",
   "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Functional validation with Zod integration and Result types for Trailhead System",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "@trailhead:registry": "https://npm.pkg.github.com"
+    "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -31,7 +31,7 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
+    "@esteban-url/core": "workspace:*",
     "zod": "^3.25.0"
   },
   "devDependencies": {

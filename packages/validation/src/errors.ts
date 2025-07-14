@@ -1,4 +1,4 @@
-import { createCoreError } from '@trailhead/core';
+import { createCoreError } from '@esteban-url/core';
 import type { ValidationError } from './types.js';
 import type { z } from 'zod';
 

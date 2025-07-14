@@ -1,4 +1,4 @@
-import type { Result } from '@trailhead/core';
+import type { Result } from '@esteban-url/core';
 
 /**
  * Custom Vitest matchers for Result types

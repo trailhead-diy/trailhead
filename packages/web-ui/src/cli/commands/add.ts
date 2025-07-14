@@ -2,8 +2,8 @@
  * Add Command - Add individual components
  */
 
-import { ok } from '@esteban-url/trailhead-cli';
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
+import { ok } from '@esteban-url/cli';
+import { createCommand, type CommandContext } from '@esteban-url/cli/command';
 import { type StrictAddOptions } from '../core/types/command-options.js';
 
 // Use strict typing for better type safety

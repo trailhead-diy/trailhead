@@ -15,5 +15,5 @@ export default defineConfig({
   clean: true,
   minify: false,
   target: 'node18',
-  external: ['@trailhead/core', '@trailhead/validation', '@trailhead/fs'],
+  external: ['@esteban-url/core', '@esteban-url/validation', '@esteban-url/fs'],
 });

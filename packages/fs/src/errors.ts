@@ -1,4 +1,4 @@
-import { createCoreError } from '@trailhead/core';
+import { createCoreError } from '@esteban-url/core';
 import type { FileSystemError } from './types.js';
 
 export const createFileSystemError = (

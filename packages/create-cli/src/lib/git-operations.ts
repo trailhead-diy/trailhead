@@ -1,10 +1,10 @@
-import { ok, err, createCoreError } from '@trailhead/core';
-import type { Result, CoreError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import { execa } from 'execa';
 
-// TODO: Replace with @trailhead/git when workspace dependencies are resolved
-// import { createGitOperations, createGitCommandOperations } from '@trailhead/git';
-// import type { GitRepository } from '@trailhead/git';
+// TODO: Replace with @esteban-url/git when workspace dependencies are resolved
+// import { createGitOperations, createGitCommandOperations } from '@esteban-url/git';
+// import type { GitRepository } from '@esteban-url/git';
 
 interface GitRepository {
   path: string;
@@ -17,7 +17,7 @@ interface GitRepository {
  * Git operations specifically for project generation
  *
  * This module provides a unified interface for git operations needed during
- * project generation, handling the API inconsistencies in @trailhead/git
+ * project generation, handling the API inconsistencies in @esteban-url/git
  * and providing fallbacks for missing functionality.
  */
 
@@ -33,7 +33,7 @@ interface GitOperationsForGenerator {
 /**
  * Create git operations instance for project generation
  *
- * Using execa fallbacks until @trailhead/git workspace dependencies are resolved
+ * Using execa fallbacks until @esteban-url/git workspace dependencies are resolved
  */
 export function createGeneratorGitOperations(): GitOperationsForGenerator {
   const initRepository = async (projectPath: string): Promise<Result<GitRepository, CoreError>> => {
@@ -110,7 +110,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   };
 
-  // FIXME: @trailhead/git missing config operations - using execa fallback
+  // FIXME: @esteban-url/git missing config operations - using execa fallback
   const configureUser = async (
     projectPath: string,
     name: string,
@@ -142,7 +142,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   };
 
-  // FIXME: @trailhead/git missing config operations - using execa fallback
+  // FIXME: @esteban-url/git missing config operations - using execa fallback
   const getConfig = async (
     projectPath: string,
     key: string
@@ -166,7 +166,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   };
 
-  // FIXME: @trailhead/git missing status operations - using execa fallback
+  // FIXME: @esteban-url/git missing status operations - using execa fallback
   const verifyStatus = async (projectPath: string): Promise<Result<void, CoreError>> => {
     try {
       await execa('git', ['status', '--porcelain'], {
@@ -200,7 +200,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
 /**
  * Current Status: Using execa fallbacks due to workspace dependency resolution issues
  *
- * Documentation of improvements needed in @trailhead/git module:
+ * Documentation of improvements needed in @esteban-url/git module:
  *
  * 1. API Consistency Issues:
  *    - GitOperations.init() takes a path string

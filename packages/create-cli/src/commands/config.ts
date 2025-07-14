@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Temporary simple command interface until @trailhead/cli is available
+// Temporary simple command interface until @esteban-url/cli is available
 interface Command {
   name: string;
   description: string;
@@ -10,7 +10,7 @@ interface Command {
 function createCommand(config: Command): Command {
   return config;
 }
-import { ok, err, createCoreError } from '@trailhead/core';
+import { ok, err, createCoreError } from '@esteban-url/core';
 import { createConfigManager } from '../lib/config-manager.js';
 import { createPresetManager } from '../lib/preset-manager.js';
 // import { generateConfigJsonSchema } from '../lib/config-schema.js';

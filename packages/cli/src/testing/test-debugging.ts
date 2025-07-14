@@ -1,4 +1,4 @@
-import type { Result } from '@trailhead/core';
+import type { Result } from '@esteban-url/core';
 
 /**
  * Test debugging and profiling utilities

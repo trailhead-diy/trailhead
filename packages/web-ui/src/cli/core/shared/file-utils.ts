@@ -12,7 +12,7 @@ import {
   writeFile as frameworkWriteFile,
   compareFiles as frameworkCompareFiles,
   type FileComparison,
-} from '@esteban-url/trailhead-cli/filesystem';
+} from '@esteban-url/cli/filesystem';
 import type {
   ConversionStats,
   FileProcessingResult,
@@ -20,7 +20,7 @@ import type {
   Result,
   AsyncResult,
 } from './types.js';
-import { createError, ok, err, type CLIError } from '@esteban-url/trailhead-cli/core';
+import { createError, ok, err, type CLIError } from '@esteban-url/cli/core';
 import { isNotTestRelated } from './file-filters.js';
 
 // ============================================================================

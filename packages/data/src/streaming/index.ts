@@ -1,4 +1,4 @@
-import { ok, err } from '@trailhead/core';
+import { ok, err } from '@esteban-url/core';
 import type {
   StreamResult,
   StreamOperations,
@@ -119,7 +119,7 @@ export const createCSVStreaming = async (
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
-        message: 'CSV streaming requires @trailhead/streams to be installed',
+        message: 'CSV streaming requires @esteban-url/streams to be installed',
       })
     );
   }
@@ -133,7 +133,7 @@ export const createJSONStreaming = async (
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
-        message: 'JSON streaming requires @trailhead/streams to be installed',
+        message: 'JSON streaming requires @esteban-url/streams to be installed',
       })
     );
   }
@@ -147,7 +147,7 @@ export const createExcelStreaming = async (
   if (!streamOps) {
     return err(
       createStreamOpsUnavailableError({
-        message: 'Excel streaming requires @trailhead/streams to be installed',
+        message: 'Excel streaming requires @esteban-url/streams to be installed',
       })
     );
   }

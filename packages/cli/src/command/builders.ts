@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import type { CommandContext, CommandOption } from './types.js';
 
 // Simple FileSystem interface for file processing
@@ -10,7 +10,7 @@ interface FileSystem {
 }
 import type { CommandConfig, CommandOptions } from './base.js';
 import { createCommand } from './base.js';
-import { err, createCoreError } from '@trailhead/core';
+import { err, createCoreError } from '@esteban-url/core';
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112

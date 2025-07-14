@@ -1,5 +1,5 @@
-import { ok, err } from '@trailhead/core';
-import { readFile } from '@trailhead/fs';
+import { ok, err } from '@esteban-url/core';
+import { readFile } from '@esteban-url/fs';
 import { Readable, Transform, Writable } from 'node:stream';
 import * as Papa from 'papaparse';
 import type {

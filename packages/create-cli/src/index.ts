@@ -29,7 +29,7 @@ export type { ModernProjectConfig } from './lib/interactive-prompts.js';
 /**
  * Create Trailhead CLI Generator
  *
- * A CLI generator that creates new projects using the new @trailhead/* architecture
+ * A CLI generator that creates new projects using the new @esteban-url/* architecture
  * Built with functional programming principles and explicit error handling
  */
 async function main() {

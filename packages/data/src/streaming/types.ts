@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@trailhead/core';
+import type { Result, CoreError } from '@esteban-url/core';
 import type { Readable, Writable, Transform } from 'node:stream';
 import type {
   CSVProcessingOptions,

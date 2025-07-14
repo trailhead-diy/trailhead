@@ -1,5 +1,5 @@
 {
-  "name": "@trailhead/testing",
+  "name": "@esteban-url/testing",
   "version": "1.0.0",
   "description": "Functional testing utilities for CLI applications",
   "type": "module",
@@ -37,8 +37,8 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*"
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

@@ -1,4 +1,4 @@
-import { ok, err, fromThrowable } from '@trailhead/core';
+import { ok, err, fromThrowable } from '@esteban-url/core';
 import { execSync } from 'node:child_process';
 import type {
   GitCommandOperations,
