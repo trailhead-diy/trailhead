@@ -4,6 +4,7 @@ import type {
   CSVOperations,
   DataResult,
   CSVFormatInfo,
+  ParsedData,
 } from '../types.js'
 
 // ========================================
@@ -58,17 +59,20 @@ export interface CSVStringifyOptions {
 // ========================================
 
 export type CSVConfigProvider = () => CSVConfig
-export type CSVParseFunction = (data: string, options?: CSVProcessingOptions) => DataResult<any[]>
-export type CSVParseFileFunction = (
+export type CSVParseFunction = <T = Record<string, unknown>>(
+  data: string,
+  options?: CSVProcessingOptions
+) => DataResult<ParsedData<T>>
+export type CSVParseFileFunction = <T = Record<string, unknown>>(
   filePath: string,
   options?: CSVProcessingOptions
-) => Promise<DataResult<any[]>>
-export type CSVStringifyFunction = (
-  data: any[],
+) => Promise<DataResult<ParsedData<T>>>
+export type CSVStringifyFunction = <T = Record<string, unknown>>(
+  data: readonly T[],
   options?: CSVProcessingOptions
 ) => DataResult<string>
-export type CSVWriteFileFunction = (
-  data: any[],
+export type CSVWriteFileFunction = <T = Record<string, unknown>>(
+  data: readonly T[],
   filePath: string,
   options?: CSVProcessingOptions
 ) => Promise<DataResult<void>>

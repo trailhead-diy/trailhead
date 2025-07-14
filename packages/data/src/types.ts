@@ -103,6 +103,30 @@ export interface ExcelProcessingOptions extends ProcessingOptions {
 
 export type DataResult<T> = Result<T, CoreError>
 
+// Enhanced parsed data structure with metadata
+export interface ParsedData<T = Record<string, unknown>> {
+  readonly data: readonly T[]
+  readonly metadata: ParseMetadata
+  readonly errors: readonly ParseError[]
+}
+
+export interface ParseMetadata {
+  readonly totalRows: number
+  readonly format: string
+  readonly hasHeaders: boolean
+  readonly encoding?: string
+  readonly processingTime?: number
+}
+
+export interface ParseError {
+  readonly type: string
+  readonly code: string
+  readonly message: string
+  readonly row?: number
+  readonly column?: number
+  readonly field?: string
+}
+
 export interface FormatDetectionResult {
   readonly format: 'csv' | 'json' | 'excel' | 'unknown'
   readonly confidence: number
@@ -156,16 +180,41 @@ export type ValidateBufferOperation = (data: Buffer) => DataResult<boolean>
 // ========================================
 
 export interface CSVOperations {
-  readonly parseString: ParseOperation<any[], CSVProcessingOptions>
-  readonly parseFile: ParseFileOperation<any[], CSVProcessingOptions>
-  readonly stringify: StringifyOperation<any[], CSVProcessingOptions>
-  readonly writeFile: WriteFileOperation<any[], CSVProcessingOptions>
+  readonly parseString: <T = Record<string, unknown>>(
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<T>>
+  readonly parseFile: <T = Record<string, unknown>>(
+    filePath: string,
+    options?: CSVProcessingOptions
+  ) => Promise<DataResult<ParsedData<T>>>
+  readonly stringify: <T = Record<string, unknown>>(
+    data: readonly T[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
+  readonly writeFile: <T = Record<string, unknown>>(
+    data: readonly T[],
+    filePath: string,
+    options?: CSVProcessingOptions
+  ) => Promise<DataResult<void>>
   readonly validate: ValidateStringOperation
   readonly detectFormat: (data: string) => DataResult<CSVFormatInfo>
-  readonly parseToObjects: ParseOperation<Record<string, any>[], CSVProcessingOptions>
-  readonly parseToArrays: ParseOperation<string[][], CSVProcessingOptions>
-  readonly fromObjects: StringifyOperation<Record<string, any>[], CSVProcessingOptions>
-  readonly fromArrays: StringifyOperation<string[][], CSVProcessingOptions>
+  readonly parseToObjects: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<Record<string, unknown>>>
+  readonly parseToArrays: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<readonly string[]>>
+  readonly fromObjects: (
+    data: readonly Record<string, unknown>[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
+  readonly fromArrays: (
+    data: readonly (readonly string[])[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
 }
 
 export interface JSONOperations {

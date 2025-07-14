@@ -1,5 +1,6 @@
 import { createCoreError } from '@esteban-url/core'
 import type { CoreError } from '@esteban-url/core'
+import type { FileSystemError } from '@esteban-url/fs'
 
 // ========================================
 // Error Factory Functions
@@ -11,7 +12,10 @@ export const createDataError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('DataError', message, {
+  createCoreError('DataError', 'DATA_ERROR', message, {
+    component: 'data',
+    operation: 'process',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -25,7 +29,10 @@ export const createCSVError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('CSVError', message, {
+  createCoreError('CSVError', 'CSV_ERROR', message, {
+    component: 'data',
+    operation: 'csv',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -39,7 +46,10 @@ export const createJSONError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('JSONError', message, {
+  createCoreError('JSONError', 'JSON_ERROR', message, {
+    component: 'data',
+    operation: 'json',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -53,7 +63,10 @@ export const createExcelError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('ExcelError', message, {
+  createCoreError('ExcelError', 'EXCEL_ERROR', message, {
+    component: 'data',
+    operation: 'excel',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -67,7 +80,10 @@ export const createParsingError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('ParsingError', message, {
+  createCoreError('ParsingError', 'PARSING_ERROR', message, {
+    component: 'data',
+    operation: 'parse',
+    severity: 'high',
     details,
     cause,
     context,
@@ -81,7 +97,10 @@ export const createValidationError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('ValidationError', message, {
+  createCoreError('ValidationError', 'VALIDATION_ERROR', message, {
+    component: 'data',
+    operation: 'validate',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -95,7 +114,10 @@ export const createFormatDetectionError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('FormatDetectionError', message, {
+  createCoreError('FormatDetectionError', 'FORMAT_DETECTION_ERROR', message, {
+    component: 'data',
+    operation: 'detect',
+    severity: 'low',
     details,
     cause,
     context,
@@ -109,7 +131,10 @@ export const createConversionError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('ConversionError', message, {
+  createCoreError('ConversionError', 'CONVERSION_ERROR', message, {
+    component: 'data',
+    operation: 'convert',
+    severity: 'medium',
     details,
     cause,
     context,
@@ -152,4 +177,17 @@ export const mapValidationError = (field: string, value: unknown, error: unknown
     error,
     { field, value }
   )
+}
+
+export const mapFileSystemError = (fsError: FileSystemError, operation: string): CoreError => {
+  return createCoreError('FileSystemError', 'FS_ERROR', fsError.message, {
+    component: 'data',
+    operation,
+    severity: 'high',
+    details: fsError.details,
+    cause: fsError.cause,
+    context: { ...fsError.context, operation },
+    recoverable: fsError.recoverable,
+    suggestion: fsError.suggestion || 'Check file path and permissions',
+  })
 }

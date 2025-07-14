@@ -33,7 +33,6 @@ describe('Filesystem Errors', () => {
       expect(error.context).toEqual({
         operation: 'Write file',
         path: '/test/file.txt',
-        code: 'ENOENT',
         customField: 'value',
       })
     })

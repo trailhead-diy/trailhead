@@ -11,7 +11,7 @@ export const createStreamError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('StreamError', message, {
+  createCoreError('StreamError', 'STREAM_ERROR', message, {
     details,
     cause,
     recoverable: true,
@@ -23,21 +23,31 @@ export const createStreamTimeoutError = (
   operation: string = 'stream operation',
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('StreamTimeoutError', `Stream operation timed out after ${timeout}ms`, {
-    details: `The ${operation} did not complete within the specified timeout period`,
-    recoverable: false,
-    context: { timeout, operation, ...metadata },
-  })
+  createCoreError(
+    'StreamTimeoutError',
+    'STREAM_TIMEOUT_ERROR',
+    `Stream operation timed out after ${timeout}ms`,
+    {
+      details: `The ${operation} did not complete within the specified timeout period`,
+      recoverable: false,
+      context: { timeout, operation, ...metadata },
+    }
+  )
 
 export const createStreamClosedError = (
   streamType: string = 'stream',
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('StreamClosedError', `Cannot operate on closed ${streamType}`, {
-    details: `The ${streamType} has been closed or destroyed and cannot accept new operations`,
-    recoverable: false,
-    context: { streamType, ...metadata },
-  })
+  createCoreError(
+    'StreamClosedError',
+    'STREAM_CLOSED_ERROR',
+    `Cannot operate on closed ${streamType}`,
+    {
+      details: `The ${streamType} has been closed or destroyed and cannot accept new operations`,
+      recoverable: false,
+      context: { streamType, ...metadata },
+    }
+  )
 
 export const createInvalidStreamError = (
   expected: string,
@@ -46,6 +56,7 @@ export const createInvalidStreamError = (
 ): CoreError =>
   createCoreError(
     'InvalidStreamError',
+    'INVALID_STREAM_ERROR',
     `Invalid stream type: expected ${expected}, got ${actual}`,
     {
       details: `The provided stream does not meet the requirements for this operation`,
@@ -60,7 +71,7 @@ export const createPipelineError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('PipelineError', message, {
+  createCoreError('PipelineError', 'PIPELINE_ERROR', message, {
     details:
       stageIndex !== undefined
         ? `Pipeline failed at stage ${stageIndex}`
@@ -75,11 +86,16 @@ export const createBackpressureError = (
   bufferSize: number,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('BackpressureError', `Backpressure detected in ${streamType}`, {
-    details: `Stream buffer is full (${bufferSize} bytes), write operation would block`,
-    recoverable: true,
-    context: { streamType, bufferSize, ...metadata },
-  })
+  createCoreError(
+    'BackpressureError',
+    'BACKPRESSURE_ERROR',
+    `Backpressure detected in ${streamType}`,
+    {
+      details: `Stream buffer is full (${bufferSize} bytes), write operation would block`,
+      recoverable: true,
+      context: { streamType, bufferSize, ...metadata },
+    }
+  )
 
 // ========================================
 // Error Mapping Utilities

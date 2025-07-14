@@ -114,7 +114,12 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CoreError>> 
     })
   } catch (error) {
     return err(
-      createCoreError('GIT_HOOKS_ERROR', `Failed to detect project configuration: ${error}`, {})
+      createCoreError(
+        'GIT_HOOKS_ERROR',
+        'CLI_ERROR',
+        `Failed to detect project configuration: ${error}`,
+        {}
+      )
     )
   }
 }
@@ -326,6 +331,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to read smart-test-runner.sh template: ${runnerTemplateResult.error.message}`,
           {}
         )
@@ -340,6 +346,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to write smart-test-runner.sh: ${writeRunnerResult.error.message}`,
           {}
         )
@@ -352,6 +359,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to set executable permissions: ${outputResult.error.message}`,
           {}
         )
@@ -366,6 +374,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to read lefthook.yml.template: ${lefthookTemplateResult.error.message}`,
           {}
         )
@@ -384,6 +393,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
         return err(
           createCoreError(
             'GIT_HOOKS_ERROR',
+            'CLI_ERROR',
             `Failed to write lefthook.yml: ${writeLefthookResult.error.message}`,
             {}
           )
@@ -399,6 +409,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to read smart-test-config.json.template: ${configTemplateResult.error.message}`,
           {}
         )
@@ -417,6 +428,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
         return err(
           createCoreError(
             'GIT_HOOKS_ERROR',
+            'CLI_ERROR',
             `Failed to write .smart-test-config.json: ${writeConfigResult.error.message}`,
             {}
           )
@@ -430,6 +442,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       return err(
         createCoreError(
           'GIT_HOOKS_ERROR',
+          'CLI_ERROR',
           `Failed to read README.md template: ${readmeTemplateResult.error.message}`,
           {}
         )
@@ -444,6 +457,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
         return err(
           createCoreError(
             'GIT_HOOKS_ERROR',
+            'CLI_ERROR',
             `Failed to write README.md: ${writeReadmeResult.error.message}`,
             {}
           )
@@ -461,7 +475,9 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 
     return ok(undefined)
   } catch (error) {
-    return err(createCoreError('GIT_HOOKS_ERROR', `Failed to install git hooks: ${error}`, {}))
+    return err(
+      createCoreError('GIT_HOOKS_ERROR', 'CLI_ERROR', `Failed to install git hooks: ${error}`, {})
+    )
   }
 }
 
@@ -541,7 +557,9 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
 
     return ok(undefined)
   } catch (error) {
-    return err(createCoreError('GIT_HOOKS_ERROR', `Failed to remove git hooks: ${error}`, {}))
+    return err(
+      createCoreError('GIT_HOOKS_ERROR', 'CLI_ERROR', `Failed to remove git hooks: ${error}`, {})
+    )
   }
 }
 
@@ -587,7 +605,9 @@ async function configureGitHooks(): Promise<Result<void, CoreError>> {
 
     return ok(undefined)
   } catch (error) {
-    return err(createCoreError('GIT_HOOKS_ERROR', `Configuration wizard failed: ${error}`, {}))
+    return err(
+      createCoreError('GIT_HOOKS_ERROR', 'CLI_ERROR', `Configuration wizard failed: ${error}`, {})
+    )
   }
 }
 

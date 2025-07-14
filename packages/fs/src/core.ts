@@ -77,6 +77,7 @@ export const stat =
         size: stats.size,
         isFile: stats.isFile(),
         isDirectory: stats.isDirectory(),
+        isSymbolicLink: stats.isSymbolicLink(),
         mtime: stats.mtime,
       }
       return ok(fileStats)

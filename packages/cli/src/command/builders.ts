@@ -181,7 +181,9 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
 
       if (config.inputFile.required !== false && !inputFile) {
         return err(
-          createCoreError('VALIDATION_ERROR', 'input file is required', { recoverable: true })
+          createCoreError('VALIDATION_ERROR', 'CLI_ERROR', 'input file is required', {
+            recoverable: true,
+          })
         )
       }
 
@@ -190,14 +192,14 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
         const fileCheck = await context.fs.exists(inputFile)
         if (fileCheck.isErr()) {
           return err(
-            createCoreError('FILESYSTEM_ERROR', `file not found: ${inputFile}`, {
+            createCoreError('FILESYSTEM_ERROR', 'CLI_ERROR', `file not found: ${inputFile}`, {
               recoverable: false,
             })
           )
         }
         if (fileCheck.isOk() && !fileCheck.value) {
           return err(
-            createCoreError('FILESYSTEM_ERROR', `file not found: ${inputFile}`, {
+            createCoreError('FILESYSTEM_ERROR', 'CLI_ERROR', `file not found: ${inputFile}`, {
               recoverable: false,
             })
           )

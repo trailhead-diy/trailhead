@@ -11,7 +11,7 @@ export const createFormatError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('FormatError', message, {
+  createCoreError('FormatError', 'FORMAT_ERROR', message, {
     details,
     cause,
     context,
@@ -25,7 +25,7 @@ export const createDetectionError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('DetectionError', message, {
+  createCoreError('DetectionError', 'DETECTION_ERROR', message, {
     details,
     cause,
     context,
@@ -39,7 +39,7 @@ export const createMimeError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('MimeError', message, {
+  createCoreError('MimeError', 'MIME_ERROR', message, {
     details,
     cause,
     context,
@@ -53,7 +53,7 @@ export const createConversionError = (
   cause?: unknown,
   context?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('ConversionError', message, {
+  createCoreError('ConversionError', 'CONVERSION_ERROR', message, {
     details,
     cause,
     context,

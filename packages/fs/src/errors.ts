@@ -1,4 +1,3 @@
-import { createCoreError } from '@esteban-url/core'
 import type { FileSystemError } from './types.js'
 
 export const createFileSystemError = (
@@ -10,23 +9,30 @@ export const createFileSystemError = (
     cause?: unknown
     suggestion?: string
     recoverable?: boolean
+    severity?: 'low' | 'medium' | 'high' | 'critical'
     context?: Record<string, unknown>
   }
-): FileSystemError => ({
-  ...createCoreError('FILESYSTEM_ERROR', message, {
-    ...options,
+): FileSystemError => {
+  return {
+    type: 'FILESYSTEM_ERROR',
+    code: options?.code || 'FS_ERROR',
+    message,
+    details: options?.path ? `Path: ${options.path}` : undefined,
+    cause: options?.cause,
+    suggestion: options?.suggestion,
+    recoverable: options?.recoverable ?? false,
     context: {
       operation,
       path: options?.path,
-      code: options?.code,
       ...options?.context,
     },
-  }),
-  type: 'FILESYSTEM_ERROR',
-  operation,
-  path: options?.path,
-  code: options?.code,
-})
+    component: 'filesystem',
+    operation,
+    timestamp: new Date(),
+    severity: options?.severity || 'high',
+    path: options?.path,
+  }
+}
 
 export const mapNodeError = (operation: string, path: string, error: any): FileSystemError => {
   const errorCode = error.code || 'FS_ERROR'

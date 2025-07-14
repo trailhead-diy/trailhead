@@ -26,7 +26,7 @@ export async function executeInteractiveCommand<T extends InteractiveCommandOpti
       finalOptions = { ...promptResults, ...options } as T
     } catch (error) {
       return err(
-        createCoreError('PROMPT_ERROR', 'Interactive prompts failed', {
+        createCoreError('PROMPT_ERROR', 'CLI_ERROR', 'Interactive prompts failed', {
           recoverable: true,
           cause: error,
           suggestion: 'Check the prompt configuration and try again',
@@ -111,7 +111,7 @@ export async function executeFileSystemOperations<T>(
       completedOps.push(op)
     } catch (error) {
       return err(
-        createCoreError('OPERATION_ERROR', `Operation failed: ${op.name}`, {
+        createCoreError('OPERATION_ERROR', 'CLI_ERROR', `Operation failed: ${op.name}`, {
           recoverable: false,
           cause: error,
         })
@@ -160,7 +160,7 @@ export async function executeSubprocess(
     child.on('error', (error) => {
       resolve(
         err(
-          createCoreError('SUBPROCESS_ERROR', `Failed to spawn ${command}`, {
+          createCoreError('SUBPROCESS_ERROR', 'CLI_ERROR', `Failed to spawn ${command}`, {
             recoverable: false,
             cause: error,
           })
@@ -174,10 +174,15 @@ export async function executeSubprocess(
       } else {
         resolve(
           err(
-            createCoreError('SUBPROCESS_EXIT_ERROR', `${command} exited with code ${code}`, {
-              recoverable: false,
-              context: { stderr: stderr || undefined },
-            })
+            createCoreError(
+              'SUBPROCESS_EXIT_ERROR',
+              'CLI_ERROR',
+              `${command} exited with code ${code}`,
+              {
+                recoverable: false,
+                context: { stderr: stderr || undefined },
+              }
+            )
           )
         )
       }
@@ -304,7 +309,7 @@ export async function executeWithPhases<T>(
       }
     } catch (error) {
       return err(
-        createCoreError('PHASE_ERROR', `Phase execution failed: ${phase.name}`, {
+        createCoreError('PHASE_ERROR', 'CLI_ERROR', `Phase execution failed: ${phase.name}`, {
           recoverable: false,
           cause: error,
         })
@@ -369,12 +374,14 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
       if (!shouldProceed) {
         context.logger.info('Operation cancelled by user')
         return err(
-          createCoreError('USER_CANCELLED', 'Operation cancelled by user', { recoverable: true })
+          createCoreError('USER_CANCELLED', 'CLI_ERROR', 'Operation cancelled by user', {
+            recoverable: true,
+          })
         )
       }
     } catch (error) {
       return err(
-        createCoreError('CONFIRMATION_ERROR', 'Failed to get user confirmation', {
+        createCoreError('CONFIRMATION_ERROR', 'CLI_ERROR', 'Failed to get user confirmation', {
           recoverable: true,
           cause: error,
         })

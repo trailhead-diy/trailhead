@@ -13,7 +13,6 @@ export interface ConfigValidationError extends BaseValidationError {
   readonly learnMoreUrl?: string
   readonly expectedType: string
   readonly path: readonly string[]
-  readonly code?: string
   readonly data?: Record<string, unknown>
 }
 
@@ -64,11 +63,11 @@ export const createConfigValidationError = (
   // Enhance with config-specific features
   return {
     ...baseError,
+    code: rule || baseError.code, // Use rule as code if available, otherwise keep base code
     suggestion,
     examples,
     expectedType,
     path,
-    code: rule,
     data: constraints,
     fixCommand: fixCommand || generateFixCommand(field, rule, examples),
     learnMoreUrl: learnMoreUrl || generateLearnMoreUrl(rule),
@@ -83,16 +82,16 @@ export const createSchemaValidationError = (
     ? `Schema validation failed for "${schemaName}" with ${errors.length} error(s)`
     : `Schema validation failed with ${errors.length} error(s)`
 
-  return createCoreError('SCHEMA_VALIDATION_FAILED', message, {
-    component: '@esteban-url/config',
+  return createCoreError('SCHEMA_VALIDATION_FAILED', 'SCHEMA_ERROR', message, {
+    component: 'config',
     operation: 'schema-validation',
+    severity: 'high',
     context: {
       errorCount: errors.length,
       errors: errors, // Store original errors, not serialized
       schemaName,
     },
     recoverable: true,
-    severity: 'high',
   })
 }
 

@@ -11,9 +11,9 @@ describe('CSV Core Operations', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value).toHaveLength(2)
-        expect(result.value[0]).toEqual({ name: 'John', age: '30' })
-        expect(result.value[1]).toEqual({ name: 'Jane', age: '25' })
+        expect(result.value.data).toHaveLength(2)
+        expect(result.value.data[0]).toEqual({ name: 'John', age: '30' })
+        expect(result.value.data[1]).toEqual({ name: 'Jane', age: '25' })
       }
     })
 
@@ -32,9 +32,9 @@ describe('CSV Core Operations', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value).toHaveLength(2)
-        expect(result.value[0]).toEqual(['John', '30'])
-        expect(result.value[1]).toEqual(['Jane', '25'])
+        expect(result.value.data).toHaveLength(2)
+        expect(result.value.data[0]).toEqual(['John', '30'])
+        expect(result.value.data[1]).toEqual(['Jane', '25'])
       }
     })
   })

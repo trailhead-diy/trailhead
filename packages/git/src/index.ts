@@ -10,8 +10,12 @@ export { createGitDiffOperations } from './diff/index.js'
 // Command operations
 export { createGitCommandOperations } from './commands/index.js'
 
+// Error factories
+export { createGitError, createGitErrors } from './errors.js'
+
 // Types
 export type {
+  GitError,
   GitResult,
   GitRepository,
   GitRef,

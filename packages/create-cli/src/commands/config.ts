@@ -80,7 +80,7 @@ Configuration Files:
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_COMMAND_ERROR', 'Configuration command failed', {
+        createCoreError('CONFIG_COMMAND_ERROR', 'CLI_ERROR', 'Configuration command failed', {
           component: 'create-trailhead-cli',
           operation: 'configCommand',
           cause: error,

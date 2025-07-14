@@ -584,11 +584,17 @@ export const validateWithZodSchema = <T>(
 
     // Handle unexpected errors
     return err(
-      createCoreError('VALIDATION_FAILED', 'Validation failed due to unexpected error', {
-        component: '@esteban-url/config',
-        operation: 'schema-validation',
-        cause: error instanceof Error ? error : undefined,
-      })
+      createCoreError(
+        'VALIDATION_FAILED',
+        'VALIDATION_ERROR',
+        'Validation failed due to unexpected error',
+        {
+          component: 'config',
+          operation: 'schema-validation',
+          severity: 'high',
+          cause: error instanceof Error ? error : undefined,
+        }
+      )
     )
   }
 }
@@ -607,11 +613,17 @@ export const validateWithZodSchemaAsync = async <T>(
     }
 
     return err(
-      createCoreError('VALIDATION_FAILED', 'Async validation failed due to unexpected error', {
-        component: '@esteban-url/config',
-        operation: 'async-schema-validation',
-        cause: error instanceof Error ? error : undefined,
-      })
+      createCoreError(
+        'VALIDATION_FAILED',
+        'ASYNC_VALIDATION_ERROR',
+        'Async validation failed due to unexpected error',
+        {
+          component: 'config',
+          operation: 'async-schema-validation',
+          severity: 'high',
+          cause: error instanceof Error ? error : undefined,
+        }
+      )
     )
   }
 }
@@ -647,7 +659,10 @@ export const validate = <T>(config: unknown, schema: ZodConfigSchema<T>): Result
     }
   } catch (error) {
     return err(
-      createCoreError('VALIDATION_ERROR', 'Validation failed', {
+      createCoreError('VALIDATION_ERROR', 'SCHEMA_ERROR', 'Validation failed', {
+        component: 'config',
+        operation: 'validation',
+        severity: 'medium',
         cause: error instanceof Error ? error : undefined,
       })
     )

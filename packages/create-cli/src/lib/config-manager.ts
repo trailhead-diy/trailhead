@@ -59,7 +59,7 @@ export class ConfigManager {
 
       if (writeResult.isErr()) {
         return err(
-          createCoreError('CONFIG_SAVE_FAILED', 'Failed to save configuration file', {
+          createCoreError('CONFIG_SAVE_FAILED', 'CLI_ERROR', 'Failed to save configuration file', {
             component: 'create-trailhead-cli',
             operation: 'saveConfig',
             cause: writeResult.error,
@@ -75,7 +75,7 @@ export class ConfigManager {
       return ok(configPath)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_SAVE_ERROR', 'Configuration save error', {
+        createCoreError('CONFIG_SAVE_ERROR', 'CLI_ERROR', 'Configuration save error', {
           component: 'create-trailhead-cli',
           operation: 'saveConfig',
           cause: error,
@@ -96,13 +96,18 @@ export class ConfigManager {
       const fileExists = await exists(defaultFSConfig)(configPath)
       if (fileExists.isErr() || !fileExists.value) {
         return err(
-          createCoreError('CONFIG_NOT_FOUND', `Configuration file not found: ${filename}`, {
-            component: 'create-trailhead-cli',
-            operation: 'loadConfig',
-            details: `Looked for config at ${configPath}`,
-            recoverable: true,
-            severity: 'medium',
-          })
+          createCoreError(
+            'CONFIG_NOT_FOUND',
+            'CLI_ERROR',
+            `Configuration file not found: ${filename}`,
+            {
+              component: 'create-trailhead-cli',
+              operation: 'loadConfig',
+              details: `Looked for config at ${configPath}`,
+              recoverable: true,
+              severity: 'medium',
+            }
+          )
         )
       }
 
@@ -110,7 +115,7 @@ export class ConfigManager {
       const readResult = await readFile(defaultFSConfig)(configPath)
       if (readResult.isErr()) {
         return err(
-          createCoreError('CONFIG_READ_FAILED', 'Failed to read configuration file', {
+          createCoreError('CONFIG_READ_FAILED', 'CLI_ERROR', 'Failed to read configuration file', {
             component: 'create-trailhead-cli',
             operation: 'loadConfig',
             cause: readResult.error,
@@ -125,12 +130,17 @@ export class ConfigManager {
         parsedConfig = JSON.parse(readResult.value)
       } catch (parseError) {
         return err(
-          createCoreError('CONFIG_PARSE_FAILED', 'Failed to parse configuration file', {
-            component: 'create-trailhead-cli',
-            operation: 'loadConfig',
-            cause: parseError,
-            details: `Invalid JSON in ${configPath}`,
-          })
+          createCoreError(
+            'CONFIG_PARSE_FAILED',
+            'CLI_ERROR',
+            'Failed to parse configuration file',
+            {
+              component: 'create-trailhead-cli',
+              operation: 'loadConfig',
+              cause: parseError,
+              details: `Invalid JSON in ${configPath}`,
+            }
+          )
         )
       }
 
@@ -147,7 +157,7 @@ export class ConfigManager {
       return ok(validationResult.value)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_LOAD_ERROR', 'Configuration load error', {
+        createCoreError('CONFIG_LOAD_ERROR', 'CLI_ERROR', 'Configuration load error', {
           component: 'create-trailhead-cli',
           operation: 'loadConfig',
           cause: error,
@@ -183,7 +193,7 @@ export class ConfigManager {
 
       if (writeResult.isErr()) {
         return err(
-          createCoreError('PRESET_SAVE_FAILED', 'Failed to save preset', {
+          createCoreError('PRESET_SAVE_FAILED', 'CLI_ERROR', 'Failed to save preset', {
             component: 'create-trailhead-cli',
             operation: 'savePreset',
             cause: writeResult.error,
@@ -199,7 +209,7 @@ export class ConfigManager {
       return ok(presetPath)
     } catch (error) {
       return err(
-        createCoreError('PRESET_SAVE_ERROR', 'Preset save error', {
+        createCoreError('PRESET_SAVE_ERROR', 'CLI_ERROR', 'Preset save error', {
           component: 'create-trailhead-cli',
           operation: 'savePreset',
           cause: error,
@@ -221,7 +231,7 @@ export class ConfigManager {
       const fileExists = await exists(defaultFSConfig)(presetPath)
       if (fileExists.isErr() || !fileExists.value) {
         return err(
-          createCoreError('PRESET_NOT_FOUND', `Preset not found: ${name}`, {
+          createCoreError('PRESET_NOT_FOUND', 'CLI_ERROR', `Preset not found: ${name}`, {
             component: 'create-trailhead-cli',
             operation: 'loadPreset',
             details: `Looked for preset at ${presetPath}`,
@@ -235,7 +245,7 @@ export class ConfigManager {
       const readResult = await readFile(defaultFSConfig)(presetPath)
       if (readResult.isErr()) {
         return err(
-          createCoreError('PRESET_READ_FAILED', 'Failed to read preset file', {
+          createCoreError('PRESET_READ_FAILED', 'CLI_ERROR', 'Failed to read preset file', {
             component: 'create-trailhead-cli',
             operation: 'loadPreset',
             cause: readResult.error,
@@ -250,7 +260,7 @@ export class ConfigManager {
         parsedPreset = JSON.parse(readResult.value)
       } catch (parseError) {
         return err(
-          createCoreError('PRESET_PARSE_FAILED', 'Failed to parse preset file', {
+          createCoreError('PRESET_PARSE_FAILED', 'CLI_ERROR', 'Failed to parse preset file', {
             component: 'create-trailhead-cli',
             operation: 'loadPreset',
             cause: parseError,
@@ -272,7 +282,7 @@ export class ConfigManager {
       return ok(validationResult.value)
     } catch (error) {
       return err(
-        createCoreError('PRESET_LOAD_ERROR', 'Preset load error', {
+        createCoreError('PRESET_LOAD_ERROR', 'CLI_ERROR', 'Preset load error', {
           component: 'create-trailhead-cli',
           operation: 'loadPreset',
           cause: error,
@@ -303,7 +313,7 @@ export class ConfigManager {
       return ok(presetFiles)
     } catch (error) {
       return err(
-        createCoreError('PRESET_LIST_ERROR', 'Failed to list presets', {
+        createCoreError('PRESET_LIST_ERROR', 'CLI_ERROR', 'Failed to list presets', {
           component: 'create-trailhead-cli',
           operation: 'listPresets',
           cause: error,
@@ -336,7 +346,7 @@ export class ConfigManager {
       return ok(mergedConfig)
     } catch (error) {
       return err(
-        createCoreError('PRESET_APPLY_ERROR', 'Failed to apply preset', {
+        createCoreError('PRESET_APPLY_ERROR', 'CLI_ERROR', 'Failed to apply preset', {
           component: 'create-trailhead-cli',
           operation: 'applyPreset',
           cause: error,
@@ -366,7 +376,7 @@ export class ConfigManager {
 
       if (writeResult.isErr()) {
         return err(
-          createCoreError('SCHEMA_SAVE_FAILED', 'Failed to save JSON schema', {
+          createCoreError('SCHEMA_SAVE_FAILED', 'CLI_ERROR', 'Failed to save JSON schema', {
             component: 'create-trailhead-cli',
             operation: 'generateSchemaFile',
             cause: writeResult.error,
@@ -382,7 +392,7 @@ export class ConfigManager {
       return ok(schemaPath)
     } catch (error) {
       return err(
-        createCoreError('SCHEMA_GENERATE_ERROR', 'Schema generation error', {
+        createCoreError('SCHEMA_GENERATE_ERROR', 'CLI_ERROR', 'Schema generation error', {
           component: 'create-trailhead-cli',
           operation: 'generateSchemaFile',
           cause: error,
@@ -432,7 +442,7 @@ export class ConfigManager {
       return ok(cleanedCount)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_CLEANUP_ERROR', 'Configuration cleanup error', {
+        createCoreError('CONFIG_CLEANUP_ERROR', 'CLI_ERROR', 'Configuration cleanup error', {
           component: 'create-trailhead-cli',
           operation: 'cleanup',
           cause: error,
@@ -466,12 +476,17 @@ export class ConfigManager {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_DIR_CREATE_FAILED', 'Failed to create configuration directory', {
-          component: 'create-trailhead-cli',
-          operation: 'ensureConfigDirectory',
-          cause: error,
-          details: `Could not create directory ${this.configDir}`,
-        })
+        createCoreError(
+          'CONFIG_DIR_CREATE_FAILED',
+          'CLI_ERROR',
+          'Failed to create configuration directory',
+          {
+            component: 'create-trailhead-cli',
+            operation: 'ensureConfigDirectory',
+            cause: error,
+            details: `Could not create directory ${this.configDir}`,
+          }
+        )
       )
     }
   }
@@ -486,12 +501,17 @@ export class ConfigManager {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('PRESET_DIR_CREATE_FAILED', 'Failed to create preset directory', {
-          component: 'create-trailhead-cli',
-          operation: 'ensurePresetDirectory',
-          cause: error,
-          details: `Could not create directory ${this.presetDir}`,
-        })
+        createCoreError(
+          'PRESET_DIR_CREATE_FAILED',
+          'CLI_ERROR',
+          'Failed to create preset directory',
+          {
+            component: 'create-trailhead-cli',
+            operation: 'ensurePresetDirectory',
+            cause: error,
+            details: `Could not create directory ${this.presetDir}`,
+          }
+        )
       )
     }
   }

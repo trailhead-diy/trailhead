@@ -229,7 +229,7 @@ export async function generateProject(
   } catch (error) {
     logger.error('Generator failed:', error)
     return err(
-      createCoreError('PROJECT_GENERATION_FAILED', 'Project generation failed', {
+      createCoreError('PROJECT_GENERATION_FAILED', 'CLI_ERROR', 'Project generation failed', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -299,9 +299,14 @@ async function createProjectDirectory(projectPath: string): Promise<Result<void,
   const result = await fs.ensureDir(projectPath)
   if (result.isErr()) {
     return err(
-      createCoreError('DIRECTORY_CREATION_FAILED', 'Failed to create project directory', {
-        cause: result.error,
-      })
+      createCoreError(
+        'DIRECTORY_CREATION_FAILED',
+        'CLI_ERROR',
+        'Failed to create project directory',
+        {
+          cause: result.error,
+        }
+      )
     )
   }
   return ok(undefined)
@@ -379,6 +384,7 @@ async function processTemplateFile(
       return err(
         createCoreError(
           'OUTPUT_DIRECTORY_CREATION_FAILED',
+          'CLI_ERROR',
           `Failed to create output directory ${dirname(outputPath)}`,
           {
             cause: ensureDirResult.error,
@@ -394,9 +400,14 @@ async function processTemplateFile(
       const writeResult = await fs.writeFile(outputPath, processedContent)
       if (writeResult.isErr()) {
         return err(
-          createCoreError('TEMPLATE_WRITE_FAILED', `Failed to write template file ${outputPath}`, {
-            cause: writeResult.error,
-          })
+          createCoreError(
+            'TEMPLATE_WRITE_FAILED',
+            'CLI_ERROR',
+            `Failed to write template file ${outputPath}`,
+            {
+              cause: writeResult.error,
+            }
+          )
         )
       }
 
@@ -410,6 +421,7 @@ async function processTemplateFile(
         return err(
           createCoreError(
             'FILE_COPY_FAILED',
+            'CLI_ERROR',
             `Failed to copy file ${templatePath} to ${outputPath}`,
             {
               cause: copyResult.error,
@@ -442,6 +454,7 @@ async function processTemplateFile(
     return err(
       createCoreError(
         'TEMPLATE_PROCESSING_FAILED',
+        'CLI_ERROR',
         `Failed to process template file ${templateFile.source}`,
         {
           cause: error,
@@ -557,11 +570,16 @@ async function installDependencies(
     const packageManagerResult = detectPackageManager()
     if (!packageManagerResult.isOk()) {
       return err(
-        createCoreError('PACKAGE_MANAGER_NOT_FOUND', 'No suitable package manager found', {
-          cause: packageManagerResult.error,
-          context: { details: 'Package manager detection failed' },
-          suggestion: 'Install pnpm or npm and ensure it is available in PATH',
-        })
+        createCoreError(
+          'PACKAGE_MANAGER_NOT_FOUND',
+          'CLI_ERROR',
+          'No suitable package manager found',
+          {
+            cause: packageManagerResult.error,
+            context: { details: 'Package manager detection failed' },
+            suggestion: 'Install pnpm or npm and ensure it is available in PATH',
+          }
+        )
       )
     }
 
@@ -582,7 +600,7 @@ async function installDependencies(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('DEPENDENCY_INSTALL_FAILED', 'Failed to install dependencies', {
+      createCoreError('DEPENDENCY_INSTALL_FAILED', 'CLI_ERROR', 'Failed to install dependencies', {
         cause: error,
         context: {
           details:
@@ -640,10 +658,15 @@ async function setupDevelopmentEnvironment(
   } catch (error) {
     spinner.fail('Failed to setup development environment')
     return err(
-      createCoreError('DEV_ENVIRONMENT_SETUP_FAILED', 'Failed to setup development environment', {
-        cause: error,
-        context: { details: error instanceof Error ? error.message : String(error) },
-      })
+      createCoreError(
+        'DEV_ENVIRONMENT_SETUP_FAILED',
+        'CLI_ERROR',
+        'Failed to setup development environment',
+        {
+          cause: error,
+          context: { details: error instanceof Error ? error.message : String(error) },
+        }
+      )
     )
   }
 }
@@ -690,7 +713,7 @@ async function setupGitConfiguration(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('GIT_CONFIG_FAILED', 'Failed to setup git configuration', {
+      createCoreError('GIT_CONFIG_FAILED', 'CLI_ERROR', 'Failed to setup git configuration', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -722,10 +745,15 @@ async function setupDevelopmentScripts(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('DEV_SCRIPTS_SETUP_FAILED', 'Failed to setup development scripts', {
-        cause: error,
-        context: { details: error instanceof Error ? error.message : String(error) },
-      })
+      createCoreError(
+        'DEV_SCRIPTS_SETUP_FAILED',
+        'CLI_ERROR',
+        'Failed to setup development scripts',
+        {
+          cause: error,
+          context: { details: error instanceof Error ? error.message : String(error) },
+        }
+      )
     )
   }
 }
@@ -802,7 +830,7 @@ async function verifyProjectReadiness(
   } catch (error) {
     spinner.fail('Project verification failed')
     return err(
-      createCoreError('PROJECT_VERIFICATION_FAILED', 'Project verification failed', {
+      createCoreError('PROJECT_VERIFICATION_FAILED', 'CLI_ERROR', 'Project verification failed', {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -820,7 +848,7 @@ async function verifyPackageJson(projectPath: string): Promise<Result<void, Core
 
     if (readResult.isErr()) {
       return err(
-        createCoreError('PACKAGE_JSON_MISSING', 'package.json not found', {
+        createCoreError('PACKAGE_JSON_MISSING', 'CLI_ERROR', 'package.json not found', {
           context: { details: 'package.json is required for the project' },
         })
       )
@@ -833,14 +861,19 @@ async function verifyPackageJson(projectPath: string): Promise<Result<void, Core
       // Check required fields
       if (!packageJson.name || !packageJson.version || !packageJson.scripts) {
         return err(
-          createCoreError('PACKAGE_JSON_INVALID', 'package.json is missing required fields', {
-            context: { details: 'name, version, and scripts are required' },
-          })
+          createCoreError(
+            'PACKAGE_JSON_INVALID',
+            'CLI_ERROR',
+            'package.json is missing required fields',
+            {
+              context: { details: 'name, version, and scripts are required' },
+            }
+          )
         )
       }
     } catch (parseError) {
       return err(
-        createCoreError('PACKAGE_JSON_INVALID', 'package.json is not valid JSON', {
+        createCoreError('PACKAGE_JSON_INVALID', 'CLI_ERROR', 'package.json is not valid JSON', {
           cause: parseError,
         })
       )
@@ -849,9 +882,14 @@ async function verifyPackageJson(projectPath: string): Promise<Result<void, Core
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('PACKAGE_JSON_VERIFICATION_FAILED', 'Failed to verify package.json', {
-        cause: error,
-      })
+      createCoreError(
+        'PACKAGE_JSON_VERIFICATION_FAILED',
+        'CLI_ERROR',
+        'Failed to verify package.json',
+        {
+          cause: error,
+        }
+      )
     )
   }
 }
@@ -866,7 +904,7 @@ async function verifyTypeScriptConfig(projectPath: string): Promise<Result<void,
 
     if (readResult.isErr()) {
       return err(
-        createCoreError('TSCONFIG_MISSING', 'tsconfig.json not found', {
+        createCoreError('TSCONFIG_MISSING', 'CLI_ERROR', 'tsconfig.json not found', {
           context: { details: 'TypeScript configuration is required' },
         })
       )
@@ -877,7 +915,7 @@ async function verifyTypeScriptConfig(projectPath: string): Promise<Result<void,
       JSON.parse(readResult.value)
     } catch (parseError) {
       return err(
-        createCoreError('TSCONFIG_INVALID', 'tsconfig.json is not valid JSON', {
+        createCoreError('TSCONFIG_INVALID', 'CLI_ERROR', 'tsconfig.json is not valid JSON', {
           cause: parseError,
         })
       )
@@ -886,9 +924,14 @@ async function verifyTypeScriptConfig(projectPath: string): Promise<Result<void,
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('TSCONFIG_VERIFICATION_FAILED', 'Failed to verify TypeScript configuration', {
-        cause: error,
-      })
+      createCoreError(
+        'TSCONFIG_VERIFICATION_FAILED',
+        'CLI_ERROR',
+        'Failed to verify TypeScript configuration',
+        {
+          cause: error,
+        }
+      )
     )
   }
 }
@@ -904,7 +947,7 @@ async function verifyGitRepository(projectPath: string): Promise<Result<void, Co
 
     if (gitDirResult.isErr() || !gitDirResult.value) {
       return err(
-        createCoreError('GIT_REPO_MISSING', 'Git repository not found', {
+        createCoreError('GIT_REPO_MISSING', 'CLI_ERROR', 'Git repository not found', {
           context: { details: '.git directory is missing' },
         })
       )
@@ -920,7 +963,7 @@ async function verifyGitRepository(projectPath: string): Promise<Result<void, Co
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('GIT_VERIFICATION_FAILED', 'Failed to verify Git repository', {
+      createCoreError('GIT_VERIFICATION_FAILED', 'CLI_ERROR', 'Failed to verify Git repository', {
         cause: error,
       })
     )
@@ -942,9 +985,14 @@ async function verifyProjectStructure(
 
       if (existsResult.isErr() || !existsResult.value) {
         return err(
-          createCoreError('PROJECT_STRUCTURE_INVALID', `Required file missing: ${file}`, {
-            context: { details: `File ${file} is required for the project` },
-          })
+          createCoreError(
+            'PROJECT_STRUCTURE_INVALID',
+            'CLI_ERROR',
+            `Required file missing: ${file}`,
+            {
+              context: { details: `File ${file} is required for the project` },
+            }
+          )
         )
       }
     }
@@ -954,6 +1002,7 @@ async function verifyProjectStructure(
     return err(
       createCoreError(
         'PROJECT_STRUCTURE_VERIFICATION_FAILED',
+        'CLI_ERROR',
         'Failed to verify project structure',
         {
           cause: error,
@@ -984,9 +1033,14 @@ async function verifyBuildAndTest(
     const packageManagerResult = detectPackageManager()
     if (!packageManagerResult.isOk()) {
       return err(
-        createCoreError('PACKAGE_MANAGER_DETECTION_FAILED', 'Failed to detect package manager', {
-          cause: packageManagerResult.error,
-        })
+        createCoreError(
+          'PACKAGE_MANAGER_DETECTION_FAILED',
+          'CLI_ERROR',
+          'Failed to detect package manager',
+          {
+            cause: packageManagerResult.error,
+          }
+        )
       )
     }
 
@@ -1018,6 +1072,7 @@ async function verifyBuildAndTest(
     return err(
       createCoreError(
         'BUILD_TEST_VERIFICATION_FAILED',
+        'CLI_ERROR',
         'Failed to verify build and test execution',
         {
           cause: error,
@@ -1056,7 +1111,7 @@ async function runTypeCheck(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('TYPE_CHECK_FAILED', 'TypeScript type check failed', {
+      createCoreError('TYPE_CHECK_FAILED', 'CLI_ERROR', 'TypeScript type check failed', {
         cause: error,
         context: { details: 'Generated project has TypeScript compilation errors' },
       })
@@ -1093,7 +1148,7 @@ async function runBuild(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('BUILD_FAILED', 'Project build failed', {
+      createCoreError('BUILD_FAILED', 'CLI_ERROR', 'Project build failed', {
         cause: error,
         context: { details: 'Generated project build script failed' },
       })
@@ -1130,7 +1185,7 @@ async function runTests(
     return ok(undefined)
   } catch (error) {
     return err(
-      createCoreError('TESTS_FAILED', 'Project tests failed', {
+      createCoreError('TESTS_FAILED', 'CLI_ERROR', 'Project tests failed', {
         cause: error,
         context: { details: 'Generated project tests are failing' },
       })

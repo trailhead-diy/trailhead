@@ -14,6 +14,7 @@ import type {
   GitRevertOptions,
   GitMergeOptions,
 } from '../types.js'
+import { createGitError } from '../errors.js'
 
 // ========================================
 // Git Command Operations
@@ -30,25 +31,26 @@ const safeGitExec = (
   errorMessage: string,
   suggestion: string
 ) => {
-  const safeExec = fromThrowable(
-    () =>
-      execSync(command, {
-        cwd: workingDirectory,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-      }) as string
+  const safeExec = fromThrowable((): string =>
+    execSync(command, {
+      cwd: workingDirectory,
+      encoding: 'utf-8',
+      stdio: 'pipe',
+    }).toString()
   )
 
   const result = safeExec()
   if (result.isErr()) {
-    return err({
-      type: 'GitError',
-      code: errorCode,
-      message: errorMessage,
-      suggestion,
-      cause: result.error,
-      recoverable: true,
-    } as any)
+    return err(
+      createGitError(errorCode, errorMessage, 'command', {
+        cause: result.error,
+        suggestion,
+        recoverable: true,
+        workingDirectory,
+        context: { command },
+        severity: 'medium',
+      })
+    )
   }
 
   return ok(result.value)
@@ -127,14 +129,14 @@ export const createGitCommandOperations = (): GitCommandOperations => {
 
     const result = safeExec()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'PUSH_FAILED',
-        message: 'Failed to push changes',
-        suggestion: 'Check network connection and remote repository permissions',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(
+        createGitError('PUSH_FAILED', 'Failed to push changes', 'push', {
+          cause: result.error,
+          suggestion: 'Check network connection and remote repository permissions',
+          recoverable: true,
+          workingDirectory: repo.workingDirectory,
+        })
+      )
     }
 
     return ok(undefined)
@@ -167,14 +169,14 @@ export const createGitCommandOperations = (): GitCommandOperations => {
 
     const result = safeExec()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'PULL_FAILED',
-        message: 'Failed to pull changes',
-        suggestion: 'Check network connection and resolve any conflicts',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(
+        createGitError('PULL_FAILED', 'Failed to pull changes', 'pull', {
+          cause: result.error,
+          suggestion: 'Check network connection and resolve any conflicts',
+          recoverable: true,
+          workingDirectory: repo.workingDirectory,
+        })
+      )
     }
 
     return ok(undefined)

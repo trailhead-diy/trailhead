@@ -104,13 +104,13 @@ function zodResultToResult<T>(
     if (error instanceof z.ZodError) {
       const firstIssue = error.issues[0]
       return err(
-        createCoreError('VALIDATION_ERROR', firstIssue.message, {
+        createCoreError('VALIDATION_ERROR', 'CLI_ERROR', firstIssue.message, {
           context: { operation, details: `${operation} validation failed: ${firstIssue.message}` },
         })
       )
     }
     return err(
-      createCoreError('VALIDATION_FAILED', `${operation} validation failed`, {
+      createCoreError('VALIDATION_FAILED', 'CLI_ERROR', `${operation} validation failed`, {
         cause: error,
         context: { details: error instanceof Error ? error.message : String(error) },
       })
@@ -142,7 +142,7 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
     return ok(resolvedPath)
   } catch (error) {
     return err(
-      createCoreError('INVALID_PROJECT_PATH', 'Invalid project path', {
+      createCoreError('INVALID_PROJECT_PATH', 'CLI_ERROR', 'Invalid project path', {
         cause: error,
         context: { details: 'Unable to resolve project path' },
       })
@@ -184,7 +184,7 @@ export function validateTemplatePath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
+        createCoreError('INVALID_TEMPLATE_PATH', 'CLI_ERROR', 'Invalid template path', {
           context: { details: 'Template path must be within the template directory' },
         })
       )
@@ -193,7 +193,7 @@ export function validateTemplatePath(
     return ok(resolvedPath)
   } catch (error) {
     return err(
-      createCoreError('INVALID_TEMPLATE_PATH', 'Invalid template path', {
+      createCoreError('INVALID_TEMPLATE_PATH', 'CLI_ERROR', 'Invalid template path', {
         cause: error,
         context: { details: 'Unable to resolve template path' },
       })
@@ -219,7 +219,7 @@ export function validateOutputPath(
 
     if (normalizedPath.includes('..') || isAbsolute(normalizedPath)) {
       return err(
-        createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
+        createCoreError('INVALID_OUTPUT_PATH', 'CLI_ERROR', 'Invalid output path', {
           context: { details: 'Output path must be relative and within the project directory' },
         })
       )
@@ -230,7 +230,7 @@ export function validateOutputPath(
 
     if (relativePath.startsWith('..') || isAbsolute(relativePath)) {
       return err(
-        createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
+        createCoreError('INVALID_OUTPUT_PATH', 'CLI_ERROR', 'Invalid output path', {
           context: { details: 'Output path must be within the project directory' },
         })
       )
@@ -239,7 +239,7 @@ export function validateOutputPath(
     return ok(resolvedPath)
   } catch (error) {
     return err(
-      createCoreError('INVALID_OUTPUT_PATH', 'Invalid output path', {
+      createCoreError('INVALID_OUTPUT_PATH', 'CLI_ERROR', 'Invalid output path', {
         cause: error,
         context: { details: 'Unable to resolve output path' },
       })
@@ -256,7 +256,7 @@ export function sanitizeText(
 ): Result<string, CoreError> {
   if (!input || typeof input !== 'string') {
     return err(
-      createCoreError('TEXT_INPUT_REQUIRED', 'Text input is required', {
+      createCoreError('TEXT_INPUT_REQUIRED', 'CLI_ERROR', 'Text input is required', {
         context: { details: 'Text input must be a string' },
       })
     )

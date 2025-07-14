@@ -260,7 +260,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
         const module = FEATURE_MODULES[featureName]
         if (!module) {
           return err(
-            createCoreError('UNKNOWN_FEATURE', `Unknown feature: ${featureName}`, {
+            createCoreError('UNKNOWN_FEATURE', 'CLI_ERROR', `Unknown feature: ${featureName}`, {
               component: 'create-trailhead-cli',
               operation: 'composeTemplate',
             })
@@ -375,7 +375,7 @@ export function composeTemplate(config: ModernProjectConfig): Result<ComposedTem
     })
   } catch (error) {
     return err(
-      createCoreError('TEMPLATE_COMPOSITION_FAILED', 'Failed to compose template', {
+      createCoreError('TEMPLATE_COMPOSITION_FAILED', 'CLI_ERROR', 'Failed to compose template', {
         component: 'create-trailhead-cli',
         operation: 'composeTemplate',
         cause: error,
@@ -397,6 +397,7 @@ function validateDependencies(modules: FeatureModule[]): Result<void, any> {
         return err(
           createCoreError(
             'MISSING_DEPENDENCY',
+            'CLI_ERROR',
             `Module '${module.name}' requires '${dependency}'`,
             {
               component: 'create-trailhead-cli',
@@ -424,6 +425,7 @@ function checkConflicts(modules: FeatureModule[]): Result<void, any> {
         return err(
           createCoreError(
             'MODULE_CONFLICT',
+            'CLI_ERROR',
             `Module '${module.name}' conflicts with '${conflict}'`,
             {
               component: 'create-trailhead-cli',

@@ -9,6 +9,7 @@ import type {
   GitInitOptions,
   GitCloneOptions,
 } from '../types.js'
+import { createGitErrors } from '../errors.js'
 
 // ========================================
 // Git Operations
@@ -34,14 +35,7 @@ export const createGitOperations = (): GitOperations => {
     const result = safeExec()
 
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'INIT_FAILED',
-        message: `Failed to initialize Git repository at ${path}`,
-        suggestion: 'Check if the path is valid and you have write permissions',
-        cause: result.error,
-        recoverable: false,
-      } as any)
+      return err(createGitErrors.initFailed(resolvedPath, result.error))
     }
 
     // Return repository info
@@ -72,14 +66,7 @@ export const createGitOperations = (): GitOperations => {
     const result = safeExec()
 
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'CLONE_FAILED',
-        message: `Failed to clone repository from ${url}`,
-        suggestion: 'Check if the URL is valid and you have network access',
-        cause: result.error,
-        recoverable: false,
-      } as any)
+      return err(createGitErrors.cloneFailed(url, resolvedPath, result.error))
     }
 
     // Return repository info
@@ -93,24 +80,11 @@ export const createGitOperations = (): GitOperations => {
       const isRepo = await isRepository(resolvedPath)
 
       if (isRepo.isErr()) {
-        return err({
-          type: 'GitError',
-          code: 'REPOSITORY_CHECK_FAILED',
-          message: `Failed to check if ${path} is a repository`,
-          suggestion: 'Check if the path exists and is accessible',
-          cause: isRepo.error,
-          recoverable: true,
-        } as any)
+        return err(createGitErrors.repositoryCheckFailed(resolvedPath, isRepo.error))
       }
 
       if (!isRepo.value) {
-        return err({
-          type: 'GitError',
-          code: 'NOT_A_REPOSITORY',
-          message: `Path ${path} is not a Git repository`,
-          suggestion: 'Initialize a repository or navigate to an existing one',
-          recoverable: true,
-        } as any)
+        return err(createGitErrors.notARepository(resolvedPath))
       }
 
       const repo = await createRepository(resolvedPath)
@@ -119,14 +93,7 @@ export const createGitOperations = (): GitOperations => {
 
     const result = await safeOpen()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'OPEN_FAILED',
-        message: `Failed to open Git repository at ${path}`,
-        suggestion: 'Check if the path exists and is a valid Git repository',
-        cause: result.error,
-        recoverable: false,
-      } as any)
+      return err(createGitErrors.openFailed(path, result.error))
     }
 
     return result.value

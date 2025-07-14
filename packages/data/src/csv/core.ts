@@ -1,10 +1,22 @@
 import { ok, err } from '@esteban-url/core'
 import { readFile, writeFile } from '@esteban-url/fs'
 import * as Papa from 'papaparse'
-import type { CSVProcessingOptions, DataResult, CSVFormatInfo } from '../types.js'
+import type {
+  CSVProcessingOptions,
+  DataResult,
+  CSVFormatInfo,
+  ParsedData,
+  ParseMetadata,
+  ParseError,
+} from '../types.js'
 import type { CreateCSVOperations } from './types.js'
 import { defaultCSVConfig } from './types.js'
-import { createCSVError, createParsingError, mapLibraryError } from '../errors.js'
+import {
+  createCSVError,
+  createParsingError,
+  mapLibraryError,
+  mapFileSystemError,
+} from '../errors.js'
 
 // ========================================
 // CSV Core Operations
@@ -13,10 +25,10 @@ import { createCSVError, createParsingError, mapLibraryError } from '../errors.j
 export const createCSVOperations: CreateCSVOperations = (config = {}) => {
   const csvConfig = { ...defaultCSVConfig, ...config }
 
-  const parseString = (
+  const parseString = <T = Record<string, unknown>>(
     inputData: string,
     options: CSVProcessingOptions = {}
-  ): DataResult<any[]> => {
+  ): DataResult<ParsedData<T>> => {
     try {
       const mergedOptions = { ...csvConfig, ...options }
 
@@ -46,17 +58,60 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
         )
       }
 
-      const parsedData = parseResult.data as any[]
+      // Type-safe data extraction from Papa Parse result
+      // Papa Parse returns unknown[], we validate and cast safely
+      const rawData = parseResult.data as unknown[]
 
-      if (mergedOptions.maxRows && parsedData.length > mergedOptions.maxRows) {
+      // Runtime validation of data structure
+      if (!Array.isArray(rawData)) {
+        return err(
+          createParsingError('Invalid parse result', 'Papa Parse returned non-array data', [], {
+            receivedType: typeof rawData,
+          })
+        )
+      }
+
+      if (mergedOptions.maxRows && rawData.length > mergedOptions.maxRows) {
         return err(
           createCSVError(
             'Row limit exceeded',
-            `Found ${parsedData.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
+            `Found ${rawData.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
             undefined,
-            { rowCount: parsedData.length, maxRows: mergedOptions.maxRows }
+            { rowCount: rawData.length, maxRows: mergedOptions.maxRows }
           )
         )
+      }
+
+      // Convert Papa Parse data to type-safe format
+      const typedData: T[] = rawData.map((row, index) => {
+        // Basic validation that row is an object-like structure
+        if (row === null || row === undefined) {
+          throw new Error(`Invalid row at index ${index}: null/undefined`)
+        }
+        return row as T
+      })
+
+      // Create metadata from parse result
+      const metadata: ParseMetadata = {
+        totalRows: typedData.length,
+        format: 'csv',
+        hasHeaders: mergedOptions.hasHeader ?? false,
+        encoding: mergedOptions.encoding,
+      }
+
+      // Convert Papa Parse errors to our ParseError format
+      const parseErrors: ParseError[] = parseResult.errors.map((error: any) => ({
+        type: 'CSVParseError',
+        code: error.code || 'UNKNOWN',
+        message: error.message || 'Unknown parsing error',
+        row: error.row,
+        column: error.col, // Papa Parse uses 'col' not 'column'
+      }))
+
+      const parsedData: ParsedData<T> = {
+        data: typedData,
+        metadata,
+        errors: parseErrors,
       }
 
       return ok(parsedData)
@@ -65,19 +120,22 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
     }
   }
 
-  const parseFile = async (
+  const parseFile = async <T = Record<string, unknown>>(
     filePath: string,
     options: CSVProcessingOptions = {}
-  ): Promise<DataResult<any[]>> => {
+  ): Promise<DataResult<ParsedData<T>>> => {
     const fileResult = await readFile()(filePath)
     if (fileResult.isErr()) {
-      return err(fileResult.error)
+      return err(mapFileSystemError(fileResult.error, 'parseFile'))
     }
 
-    return parseString(fileResult.value, options)
+    return parseString<T>(fileResult.value, options)
   }
 
-  const stringify = (data: any[], options: CSVProcessingOptions = {}): DataResult<string> => {
+  const stringify = <T = Record<string, unknown>>(
+    data: readonly T[],
+    options: CSVProcessingOptions = {}
+  ): DataResult<string> => {
     try {
       const mergedOptions = { ...csvConfig, ...options }
 
@@ -89,7 +147,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
         return ok('')
       }
 
-      const csvString = Papa.unparse(data, {
+      const csvString = Papa.unparse(data as unknown[], {
         delimiter: mergedOptions.delimiter,
         quotes: true,
         quoteChar: mergedOptions.quoteChar,
@@ -104,8 +162,8 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
     }
   }
 
-  const writeFileOperation = async (
-    data: any[],
+  const writeFileOperation = async <T = Record<string, unknown>>(
+    data: readonly T[],
     filePath: string,
     options: CSVProcessingOptions = {}
   ): Promise<DataResult<void>> => {
@@ -114,7 +172,11 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    return await writeFile()(stringifyResult.value, filePath)
+    const writeResult = await writeFile()(stringifyResult.value, filePath)
+    if (writeResult.isErr()) {
+      return err(mapFileSystemError(writeResult.error, 'writeFile'))
+    }
+    return writeResult
   }
 
   const validate = (data: string): DataResult<boolean> => {
@@ -155,8 +217,8 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
         })
 
         if (parseResult.data.length > 0) {
-          const row = parseResult.data[0] as any[]
-          if (row.length > maxColumns) {
+          const row = parseResult.data[0] as unknown
+          if (Array.isArray(row) && row.length > maxColumns) {
             maxColumns = row.length
             bestDelimiter = delimiter
           }
@@ -172,14 +234,16 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
 
       let hasHeader = false
       if (headerCheckResult.data.length >= 2) {
-        const firstRow = headerCheckResult.data[0] as any[]
-        const secondRow = headerCheckResult.data[1] as any[]
+        const firstRow = headerCheckResult.data[0] as unknown
+        const secondRow = headerCheckResult.data[1] as unknown
 
-        hasHeader = firstRow.some((value, index) => {
-          const firstValue = String(value)
-          const secondValue = String(secondRow[index] || '')
-          return isNaN(Number(firstValue)) && !isNaN(Number(secondValue))
-        })
+        if (Array.isArray(firstRow) && Array.isArray(secondRow)) {
+          hasHeader = firstRow.some((value, index) => {
+            const firstValue = String(value)
+            const secondValue = String(secondRow[index] || '')
+            return isNaN(Number(firstValue)) && !isNaN(Number(secondValue))
+          })
+        }
       }
 
       // Count total rows and columns
@@ -189,7 +253,10 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       })
 
       const rowCount = fullParseResult.data.length
-      const columnCount = rowCount > 0 ? (fullParseResult.data[0] as any[]).length : 0
+      const columnCount =
+        rowCount > 0 && Array.isArray(fullParseResult.data[0])
+          ? (fullParseResult.data[0] as unknown[]).length
+          : 0
 
       return ok({
         delimiter: bestDelimiter,
@@ -206,21 +273,21 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
   const parseToObjects = (
     data: string,
     options: CSVProcessingOptions = {}
-  ): DataResult<Record<string, any>[]> => {
+  ): DataResult<ParsedData<Record<string, unknown>>> => {
     const mergedOptions = { ...options, hasHeader: true }
-    return parseString(data, mergedOptions) as DataResult<Record<string, any>[]>
+    return parseString<Record<string, unknown>>(data, mergedOptions)
   }
 
   const parseToArrays = (
     data: string,
     options: CSVProcessingOptions = {}
-  ): DataResult<string[][]> => {
+  ): DataResult<ParsedData<readonly string[]>> => {
     const mergedOptions = { ...options, hasHeader: false }
-    return parseString(data, mergedOptions) as DataResult<string[][]>
+    return parseString<readonly string[]>(data, mergedOptions)
   }
 
   const fromObjects = (
-    objects: Record<string, any>[],
+    objects: readonly Record<string, unknown>[],
     options: CSVProcessingOptions = {}
   ): DataResult<string> => {
     const mergedOptions = { ...options, hasHeader: true }
@@ -228,7 +295,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
   }
 
   const fromArrays = (
-    arrays: string[][],
+    arrays: readonly (readonly string[])[],
     options: CSVProcessingOptions = {}
   ): DataResult<string> => {
     const mergedOptions = { ...options, hasHeader: false }

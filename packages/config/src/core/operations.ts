@@ -161,10 +161,12 @@ export const createConfigOperations = (): ConfigOperations => {
               loadTime: Date.now() - sourceStartTime,
               error: createCoreError(
                 'SOURCE_LOAD_FAILED',
+                'SOURCE_ERROR',
                 `Failed to load source: ${source.type}`,
                 {
-                  component: '@esteban-url/config',
+                  component: 'config',
                   operation: 'load-source',
+                  severity: 'high',
                   context: { source },
                   cause: error instanceof Error ? error : undefined,
                 }
@@ -183,10 +185,12 @@ export const createConfigOperations = (): ConfigOperations => {
         return err(
           createCoreError(
             'CRITICAL_SOURCES_FAILED',
+            'CRITICAL_ERROR',
             'Required configuration sources failed to load',
             {
-              component: '@esteban-url/config',
+              component: 'config',
               operation: 'load-config',
+              severity: 'critical',
               context: { errors: criticalErrors },
             }
           )
@@ -261,9 +265,10 @@ export const createConfigOperations = (): ConfigOperations => {
       return ok(state)
     } catch (error) {
       return err(
-        createCoreError('CONFIG_LOAD_FAILED', 'Configuration loading failed', {
-          component: '@esteban-url/config',
+        createCoreError('CONFIG_LOAD_FAILED', 'LOAD_ERROR', 'Configuration loading failed', {
+          component: 'config',
           operation: 'load-config',
+          severity: 'high',
           context: { definition: definition.name },
           cause: error instanceof Error ? error : undefined,
         })
@@ -304,12 +309,18 @@ export const createConfigOperations = (): ConfigOperations => {
       await Promise.all(watchers.map((watcher) => watcher.stop()))
 
       return err(
-        createCoreError('WATCH_SETUP_FAILED', 'Failed to setup configuration watching', {
-          component: '@esteban-url/config',
-          operation: 'watch-config',
-          context: { definition: definition.name },
-          cause: error instanceof Error ? error : undefined,
-        })
+        createCoreError(
+          'WATCH_SETUP_FAILED',
+          'WATCH_ERROR',
+          'Failed to setup configuration watching',
+          {
+            component: 'config',
+            operation: 'watch-config',
+            severity: 'medium',
+            context: { definition: definition.name },
+            cause: error instanceof Error ? error : undefined,
+          }
+        )
       )
     }
   }

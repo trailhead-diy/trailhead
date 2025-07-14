@@ -1,6 +1,23 @@
 import { describe, it, expect } from 'vitest'
 import { createReadableOperations } from './core.js'
 
+function* numberGenerator() {
+  yield 1
+  yield 2
+  yield 3
+}
+
+async function* asyncNumberGenerator() {
+  yield 1
+  yield 2
+  yield 3
+}
+
+async function* errorGenerator() {
+  yield 1
+  throw new Error('Async iterator error')
+}
+
 describe('Readable Stream Operations', () => {
   const readableOps = createReadableOperations()
 
@@ -63,12 +80,6 @@ describe('Readable Stream Operations', () => {
     })
 
     it('should create stream from generator', async () => {
-      function* numberGenerator() {
-        yield 1
-        yield 2
-        yield 3
-      }
-
       const streamResult = readableOps.createFromIterator(numberGenerator())
 
       expect(streamResult.isOk()).toBe(true)
@@ -84,12 +95,6 @@ describe('Readable Stream Operations', () => {
 
   describe('createFromAsyncIterator', () => {
     it('should create stream from async iterable', async () => {
-      async function* asyncNumberGenerator() {
-        yield 1
-        yield 2
-        yield 3
-      }
-
       const streamResult = readableOps.createFromAsyncIterator(asyncNumberGenerator())
 
       expect(streamResult.isOk()).toBe(true)
@@ -103,11 +108,6 @@ describe('Readable Stream Operations', () => {
     })
 
     it('should handle async iterator errors', async () => {
-      async function* errorGenerator() {
-        yield 1
-        throw new Error('Async iterator error')
-      }
-
       const streamResult = readableOps.createFromAsyncIterator(errorGenerator())
 
       expect(streamResult.isOk()).toBe(true)

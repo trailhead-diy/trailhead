@@ -6,6 +6,10 @@ import type { Result, CoreError } from '@esteban-url/core'
 
 export type ConfigResult<T> = Result<T, CoreError>
 
+// Type aliases for testing compatibility
+export type ConfigValue = unknown
+export type ConfigError = CoreError
+
 // ========================================
 // Configuration Types
 // ========================================

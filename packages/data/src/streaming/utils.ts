@@ -1,4 +1,5 @@
-import type { CoreError } from '@esteban-url/core'
+import { ok, err, type CoreError } from '@esteban-url/core'
+import type { Readable, Writable, Transform } from 'node:stream'
 import type { StreamOperations, StreamingConfig } from './types.js'
 import { createDataError } from '../errors.js'
 
@@ -100,18 +101,14 @@ export const getStreamOperations = async (): Promise<StreamOperations | null> =>
           }
         }
       },
-      pipeline: async (...streams: any[]) => {
+      pipeline: async (...streams: (Readable | Writable | Transform)[]) => {
         try {
           const { pipeline } = await import('node:stream/promises')
-          // Use apply to properly spread the streams array
-          await pipeline.apply(null, streams as any)
-          return { isOk: () => true, isErr: () => false, value: undefined } as any
+          // Type assertion for Node.js pipeline API which accepts various stream types
+          await (pipeline as any)(...streams)
+          return ok(undefined)
         } catch (error) {
-          return {
-            isOk: () => false,
-            isErr: () => true,
-            error: wrapStreamError('pipeline', error),
-          } as any
+          return err(wrapStreamError('pipeline', error))
         }
       },
     }
@@ -195,7 +192,7 @@ export const wrapStreamError = (operation: string, error: unknown): CoreError =>
 
 export const convertCoreErrorToError = (coreError: CoreError): Error => {
   const error = new Error(coreError.message)
-  error.name = (coreError as any).code || 'UNKNOWN_ERROR'
+  error.name = coreError.code || 'UNKNOWN_ERROR'
   return error
 }
 

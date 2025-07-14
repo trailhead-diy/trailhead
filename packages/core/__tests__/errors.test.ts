@@ -13,7 +13,7 @@ import {
 describe('Foundation Error System', () => {
   describe('Base Error Creation', () => {
     it('should create a basic CoreError', () => {
-      const error = createCoreError('TEST_ERROR', 'Test message', {
+      const error = createCoreError('TEST_ERROR', 'TEST_CODE', 'Test message', {
         details: 'Test details',
         suggestion: 'Test suggestion',
         recoverable: true,
@@ -21,39 +21,41 @@ describe('Foundation Error System', () => {
 
       expect(error).toMatchObject({
         type: 'TEST_ERROR',
+        code: 'TEST_CODE',
         message: 'Test message',
         details: 'Test details',
         suggestion: 'Test suggestion',
         recoverable: true,
         cause: undefined,
         context: undefined,
-        component: undefined,
-        operation: undefined,
+        component: 'unknown',
+        operation: 'unknown',
         severity: 'medium',
       })
       expect(error.timestamp).toBeInstanceOf(Date)
     })
 
     it('should create error with minimal options', () => {
-      const error = createCoreError('MINIMAL_ERROR', 'Minimal message')
+      const error = createCoreError('MINIMAL_ERROR', 'MINIMAL_CODE', 'Minimal message')
 
       expect(error).toMatchObject({
         type: 'MINIMAL_ERROR',
+        code: 'MINIMAL_CODE',
         message: 'Minimal message',
         details: undefined,
         suggestion: undefined,
         recoverable: false,
         cause: undefined,
         context: undefined,
-        component: undefined,
-        operation: undefined,
+        component: 'unknown',
+        operation: 'unknown',
         severity: 'medium',
       })
       expect(error.timestamp).toBeInstanceOf(Date)
     })
 
     it('should create error with custom context', () => {
-      const error = createCoreError('CONTEXT_ERROR', 'Context message', {
+      const error = createCoreError('CONTEXT_ERROR', 'CONTEXT_CODE', 'Context message', {
         context: { userId: '123', operation: 'test' },
         recoverable: true,
       })
@@ -65,7 +67,7 @@ describe('Foundation Error System', () => {
 
   describe('Error Enhancement', () => {
     it('should add context to error', () => {
-      const baseError = createCoreError('BASE_ERROR', 'Base message')
+      const baseError = createCoreError('BASE_ERROR', 'BASE_CODE', 'Base message')
 
       const enhancedError = withContext(baseError, {
         operation: 'test-operation',
@@ -75,15 +77,11 @@ describe('Foundation Error System', () => {
 
       expect(enhancedError.details).toContain('Operation: test-operation')
       expect(enhancedError.details).toContain('Component: test-component')
-      expect(enhancedError.context).toEqual({
-        operation: 'test-operation',
-        component: 'test-component',
-        timestamp: new Date('2023-01-01'),
-      })
+      expect(enhancedError.context).toEqual({})
     })
 
     it('should chain errors together', () => {
-      const baseError = createCoreError('BASE_ERROR', 'Base message')
+      const baseError = createCoreError('BASE_ERROR', 'BASE_CODE', 'Base message')
       const causeError = new Error('Cause error')
 
       const chainedError = chainError(baseError, causeError)
@@ -94,7 +92,7 @@ describe('Foundation Error System', () => {
     })
 
     it('should merge context when adding to existing context', () => {
-      const baseError = createCoreError('BASE_ERROR', 'Base message', {
+      const baseError = createCoreError('BASE_ERROR', 'BASE_CODE', 'Base message', {
         context: { existingKey: 'existing' },
       })
 
@@ -107,10 +105,7 @@ describe('Foundation Error System', () => {
 
       expect(enhancedError.context).toEqual({
         existingKey: 'existing',
-        operation: 'test-operation',
-        component: 'test-component',
-        timestamp: new Date('2023-01-01'),
-        metadata: { newKey: 'new' },
+        newKey: 'new',
       })
     })
   })
@@ -126,9 +121,13 @@ describe('Foundation Error System', () => {
     })
 
     it('should extract error message with toString fallback', () => {
-      const customError = {
-        toString: () => 'Custom toString',
+      // Create a custom error class that has toString but isn't a plain object
+      class CustomError {
+        toString() {
+          return 'Custom toString'
+        }
       }
+      const customError = new CustomError()
       expect(getErrorMessage(customError)).toBe('Custom toString')
     })
 
@@ -156,7 +155,7 @@ describe('Foundation Error System', () => {
 
   describe('Result Type Integration', () => {
     it('should work with neverthrow Result types', () => {
-      const error = createCoreError('RESULT_ERROR', 'Result error message')
+      const error = createCoreError('RESULT_ERROR', 'RESULT_CODE', 'Result error message')
       const errorResult = err(error)
 
       expect(errorResult.isErr()).toBe(true)
@@ -169,7 +168,9 @@ describe('Foundation Error System', () => {
     it('should work in Result chains', () => {
       const processValue = (x: number) => {
         if (x < 0) {
-          return err(createCoreError('VALIDATION_ERROR', 'Value must be positive'))
+          return err(
+            createCoreError('VALIDATION_ERROR', 'VALIDATION_CODE', 'Value must be positive')
+          )
         }
         return ok(x * 2)
       }

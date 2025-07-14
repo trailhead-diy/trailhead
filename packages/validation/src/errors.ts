@@ -13,9 +13,13 @@ export const createValidationError = (
     context?: Record<string, unknown>
   }
 ): ValidationError => ({
-  ...createCoreError('VALIDATION_ERROR', message, {
-    ...options,
+  ...createCoreError('VALIDATION_ERROR', 'VALIDATION_ERROR', message, {
+    component: 'validation',
+    operation: 'validate',
+    severity: 'medium',
     recoverable: true,
+    cause: options?.cause,
+    suggestion: options?.suggestion,
     context: {
       field: options?.field,
       value: options?.value,

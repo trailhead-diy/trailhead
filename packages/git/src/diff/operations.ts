@@ -1,4 +1,5 @@
 import { ok, err, fromThrowable } from '@esteban-url/core'
+import { createGitErrors } from '../errors.js'
 import { execSync } from 'node:child_process'
 import type {
   GitDiffOperations,
@@ -35,14 +36,7 @@ export const createGitDiffOperations = (): GitDiffOperations => {
 
     const result = safeDiff()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'DIFF_FAILED',
-        message: 'Failed to get diff',
-        suggestion: 'Check if the repository is valid and the refs exist',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
     }
 
     const diff = parseDiffOutput(result.value)
@@ -65,14 +59,7 @@ export const createGitDiffOperations = (): GitDiffOperations => {
 
     const result = safeDiffSummary()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'DIFF_SUMMARY_FAILED',
-        message: 'Failed to get diff summary',
-        suggestion: 'Check if the repository is valid and the refs exist',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
     }
 
     const summary = parseDiffSummary(result.value)
@@ -96,27 +83,19 @@ export const createGitDiffOperations = (): GitDiffOperations => {
 
     const result = safeFileDiff()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'FILE_DIFF_FAILED',
-        message: `Failed to get diff for file ${path}`,
-        suggestion: 'Check if the file exists and the repository is valid',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
     }
 
     const diff = parseDiffOutput(result.value)
     const fileDiff = diff.files.find((f) => f.path === path)
 
     if (!fileDiff) {
-      return err({
-        type: 'GitError',
-        code: 'FILE_NOT_FOUND',
-        message: `No diff found for file ${path}`,
-        suggestion: 'Check if the file exists and has changes',
-        recoverable: true,
-      } as any)
+      return err(
+        createGitErrors.diffFailed(
+          repo.workingDirectory,
+          new Error(`No diff found for file ${path}`)
+        )
+      )
     }
 
     return ok(fileDiff)

@@ -56,7 +56,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(repo)
     } catch (error) {
       return err(
-        createCoreError('GIT_INIT_FAILED', 'Failed to initialize git repository', {
+        createCoreError('GIT_INIT_FAILED', 'CLI_ERROR', 'Failed to initialize git repository', {
           cause: error,
           context: { projectPath },
         })
@@ -79,7 +79,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('GIT_ADD_FAILED', 'Failed to stage files', {
+        createCoreError('GIT_ADD_FAILED', 'CLI_ERROR', 'Failed to stage files', {
           cause: error,
           context: { projectPath, files },
         })
@@ -102,7 +102,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(result.stdout || 'commit created')
     } catch (error) {
       return err(
-        createCoreError('GIT_COMMIT_FAILED', 'Failed to create commit', {
+        createCoreError('GIT_COMMIT_FAILED', 'CLI_ERROR', 'Failed to create commit', {
           cause: error,
           context: { projectPath, message },
         })
@@ -134,7 +134,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('GIT_CONFIG_FAILED', 'Failed to configure git user', {
+        createCoreError('GIT_CONFIG_FAILED', 'CLI_ERROR', 'Failed to configure git user', {
           cause: error,
           context: { projectPath, name, email },
         })
@@ -158,7 +158,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(result.stdout.trim())
     } catch (error) {
       return err(
-        createCoreError('GIT_CONFIG_GET_FAILED', `Failed to get git config ${key}`, {
+        createCoreError('GIT_CONFIG_GET_FAILED', 'CLI_ERROR', `Failed to get git config ${key}`, {
           cause: error,
           context: { projectPath, key },
         })
@@ -179,7 +179,7 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('GIT_STATUS_FAILED', 'Failed to get git status', {
+        createCoreError('GIT_STATUS_FAILED', 'CLI_ERROR', 'Failed to get git status', {
           cause: error,
           context: { projectPath },
         })

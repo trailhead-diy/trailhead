@@ -11,7 +11,10 @@ export const createWatcherError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherError', message, {
+  createCoreError('WatcherError', 'WATCHER_ERROR', message, {
+    component: 'watcher',
+    operation: 'watch',
+    severity: 'medium',
     details,
     cause,
     recoverable: true,
@@ -23,30 +26,49 @@ export const createWatcherInitError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherInitError', `Failed to initialize watcher for path: ${path}`, {
-    details: `The file system watcher could not be started for the specified path`,
-    cause,
-    recoverable: false,
-    context: { path, ...metadata },
-  })
+  createCoreError(
+    'WatcherInitError',
+    'INIT_ERROR',
+    `Failed to initialize watcher for path: ${path}`,
+    {
+      component: 'watcher',
+      operation: 'init',
+      severity: 'high',
+      details: `The file system watcher could not be started for the specified path`,
+      cause,
+      recoverable: false,
+      context: { path, ...metadata },
+    }
+  )
 
 export const createWatcherPermissionError = (
   path: string,
   operation: string = 'watch',
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherPermissionError', `Permission denied: cannot ${operation} ${path}`, {
-    details: `Insufficient permissions to perform ${operation} operation on the specified path`,
-    recoverable: false,
-    context: { path, operation, ...metadata },
-  })
+  createCoreError(
+    'WatcherPermissionError',
+    'PERMISSION_ERROR',
+    `Permission denied: cannot ${operation} ${path}`,
+    {
+      component: 'watcher',
+      operation,
+      severity: 'high',
+      details: `Insufficient permissions to perform ${operation} operation on the specified path`,
+      recoverable: false,
+      context: { path, operation, ...metadata },
+    }
+  )
 
 export const createWatcherPathError = (
   path: string,
   reason: string = 'path does not exist',
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherPathError', `Invalid watch path: ${path}`, {
+  createCoreError('WatcherPathError', 'PATH_ERROR', `Invalid watch path: ${path}`, {
+    component: 'watcher',
+    operation: 'validate-path',
+    severity: 'medium',
     details: `Cannot watch path because ${reason}`,
     recoverable: false,
     context: { path, reason, ...metadata },
@@ -58,24 +80,40 @@ export const createWatcherEventError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherEventError', `Error processing ${eventType} event for ${path}`, {
-    details: `An error occurred while handling the file system event`,
-    cause,
-    recoverable: true,
-    context: { eventType, path, ...metadata },
-  })
+  createCoreError(
+    'WatcherEventError',
+    'EVENT_ERROR',
+    `Error processing ${eventType} event for ${path}`,
+    {
+      component: 'watcher',
+      operation: 'process-event',
+      severity: 'medium',
+      details: `An error occurred while handling the file system event`,
+      cause,
+      recoverable: true,
+      context: { eventType, path, ...metadata },
+    }
+  )
 
 export const createWatcherFilterError = (
   filterType: string,
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('WatcherFilterError', `Filter error: ${filterType} filter failed`, {
-    details: `An error occurred while applying the event filter`,
-    cause,
-    recoverable: true,
-    context: { filterType, ...metadata },
-  })
+  createCoreError(
+    'WatcherFilterError',
+    'FILTER_ERROR',
+    `Filter error: ${filterType} filter failed`,
+    {
+      component: 'watcher',
+      operation: 'filter-event',
+      severity: 'low',
+      details: `An error occurred while applying the event filter`,
+      cause,
+      recoverable: true,
+      context: { filterType, ...metadata },
+    }
+  )
 
 export const createPatternError = (
   pattern: string,
@@ -83,7 +121,10 @@ export const createPatternError = (
   cause?: unknown,
   metadata?: Record<string, unknown>
 ): CoreError =>
-  createCoreError('PatternError', `Pattern ${operation} failed: ${pattern}`, {
+  createCoreError('PatternError', 'PATTERN_ERROR', `Pattern ${operation} failed: ${pattern}`, {
+    component: 'watcher',
+    operation,
+    severity: 'low',
     details: `The pattern could not be processed for the ${operation} operation`,
     cause,
     recoverable: true,

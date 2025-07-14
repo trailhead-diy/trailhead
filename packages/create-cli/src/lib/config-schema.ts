@@ -147,7 +147,7 @@ export function validateModernProjectConfig(
         .join(', ')
 
       return err(
-        createCoreError('CONFIG_VALIDATION_FAILED', errors, {
+        createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', errors, {
           component: 'create-trailhead-cli',
           operation: 'validateModernProjectConfig',
           details: errors,
@@ -160,7 +160,7 @@ export function validateModernProjectConfig(
     return ok(result.data)
   } catch (error) {
     return err(
-      createCoreError('CONFIG_VALIDATION_ERROR', 'Configuration validation error', {
+      createCoreError('CONFIG_VALIDATION_ERROR', 'CLI_ERROR', 'Configuration validation error', {
         component: 'create-trailhead-cli',
         operation: 'validateModernProjectConfig',
         cause: error,
@@ -184,26 +184,36 @@ export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
         .join(', ')
 
       return err(
-        createCoreError('CONFIG_FILE_VALIDATION_FAILED', 'Configuration file validation failed', {
-          component: 'create-trailhead-cli',
-          operation: 'validateConfigFile',
-          details: errors,
-          recoverable: true,
-          severity: 'medium',
-        })
+        createCoreError(
+          'CONFIG_FILE_VALIDATION_FAILED',
+          'CLI_ERROR',
+          'Configuration file validation failed',
+          {
+            component: 'create-trailhead-cli',
+            operation: 'validateConfigFile',
+            details: errors,
+            recoverable: true,
+            severity: 'medium',
+          }
+        )
       )
     }
 
     return ok(result.data)
   } catch (error) {
     return err(
-      createCoreError('CONFIG_FILE_VALIDATION_ERROR', 'Configuration file validation error', {
-        component: 'create-trailhead-cli',
-        operation: 'validateConfigFile',
-        cause: error,
-        recoverable: false,
-        severity: 'medium',
-      })
+      createCoreError(
+        'CONFIG_FILE_VALIDATION_ERROR',
+        'CLI_ERROR',
+        'Configuration file validation error',
+        {
+          component: 'create-trailhead-cli',
+          operation: 'validateConfigFile',
+          cause: error,
+          recoverable: false,
+          severity: 'medium',
+        }
+      )
     )
   }
 }
@@ -221,7 +231,7 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
         .join(', ')
 
       return err(
-        createCoreError('PRESET_VALIDATION_FAILED', errors, {
+        createCoreError('PRESET_VALIDATION_FAILED', 'CLI_ERROR', errors, {
           component: 'create-trailhead-cli',
           operation: 'validatePresetConfig',
           details: errors,
@@ -234,7 +244,7 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
     return ok(result.data)
   } catch (error) {
     return err(
-      createCoreError('PRESET_VALIDATION_ERROR', 'Preset validation error', {
+      createCoreError('PRESET_VALIDATION_ERROR', 'CLI_ERROR', 'Preset validation error', {
         component: 'create-trailhead-cli',
         operation: 'validatePresetConfig',
         cause: error,

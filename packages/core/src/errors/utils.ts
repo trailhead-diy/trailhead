@@ -24,20 +24,32 @@ export const combineWithAllErrors = Result.combineWithAllErrors
 
 /**
  * Extract a human-readable error message from any error type
+ * Enhanced with proper type safety - no more 'as any'
  */
-export function getErrorMessage<E = any>(error: E, defaultMessage = 'Unknown error'): string {
-  const e = error as any
-  if (e?.message) return e.message
-  if (typeof e === 'string') return e
-  if (
-    e?.toString &&
-    typeof e.toString === 'function' &&
-    e.toString() !== '[object Object]' &&
-    typeof e !== 'number' &&
-    typeof e !== 'boolean'
-  ) {
-    return e.toString()
+export function getErrorMessage(error: unknown, defaultMessage = 'Unknown error'): string {
+  // Handle string errors directly
+  if (typeof error === 'string') return error
+
+  // Handle objects that might have a message property
+  if (isObject(error)) {
+    const errorObj = error as Record<string, unknown>
+    if (typeof errorObj.message === 'string') return errorObj.message
   }
+
+  // Handle Error instances
+  if (error instanceof Error) return error.message
+
+  // Handle objects with toString method (excluding plain objects)
+  if (
+    isObject(error) &&
+    'toString' in error &&
+    typeof error.toString === 'function' &&
+    error.constructor !== Object
+  ) {
+    const stringified = String(error)
+    if (stringified !== '[object Object]') return stringified
+  }
+
   return defaultMessage
 }
 

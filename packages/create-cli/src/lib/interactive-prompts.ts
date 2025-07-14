@@ -314,7 +314,7 @@ export async function gatherProjectConfig(
     return ok(validationResult.value)
   } catch (error) {
     return err(
-      createCoreError('PROMPT_FAILED', 'Failed to gather project configuration', {
+      createCoreError('PROMPT_FAILED', 'CLI_ERROR', 'Failed to gather project configuration', {
         component: 'create-trailhead-cli',
         operation: 'gatherProjectConfig',
         cause: error,
@@ -374,7 +374,7 @@ export function parseArgumentsModern(args: string[]): Result<
         case '--template':
           if (i + 1 >= args.length) {
             return err(
-              createCoreError('INVALID_ARGS', '--template requires a value', {
+              createCoreError('INVALID_ARGS', 'CLI_ERROR', '--template requires a value', {
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
@@ -383,10 +383,15 @@ export function parseArgumentsModern(args: string[]): Result<
           const template = args[i + 1]
           if (template !== 'basic' && template !== 'advanced') {
             return err(
-              createCoreError('INVALID_TEMPLATE', 'Template must be "basic" or "advanced"', {
-                component: 'create-trailhead-cli',
-                operation: 'parseArguments',
-              })
+              createCoreError(
+                'INVALID_TEMPLATE',
+                'CLI_ERROR',
+                'Template must be "basic" or "advanced"',
+                {
+                  component: 'create-trailhead-cli',
+                  operation: 'parseArguments',
+                }
+              )
             )
           }
           flags.template = template
@@ -398,7 +403,7 @@ export function parseArgumentsModern(args: string[]): Result<
         case '--package-manager':
           if (i + 1 >= args.length) {
             return err(
-              createCoreError('INVALID_ARGS', '--package-manager requires a value', {
+              createCoreError('INVALID_ARGS', 'CLI_ERROR', '--package-manager requires a value', {
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
@@ -409,6 +414,7 @@ export function parseArgumentsModern(args: string[]): Result<
             return err(
               createCoreError(
                 'INVALID_PACKAGE_MANAGER',
+                'CLI_ERROR',
                 'Package manager must be "npm" or "pnpm"',
                 {
                   component: 'create-trailhead-cli',
@@ -452,14 +458,14 @@ export function parseArgumentsModern(args: string[]): Result<
         default:
           if (arg.startsWith('-')) {
             return err(
-              createCoreError('UNKNOWN_OPTION', `Unknown option: ${arg}`, {
+              createCoreError('UNKNOWN_OPTION', 'CLI_ERROR', `Unknown option: ${arg}`, {
                 component: 'create-trailhead-cli',
                 operation: 'parseArguments',
               })
             )
           }
           return err(
-            createCoreError('UNEXPECTED_ARG', `Unexpected argument: ${arg}`, {
+            createCoreError('UNEXPECTED_ARG', 'CLI_ERROR', `Unexpected argument: ${arg}`, {
               component: 'create-trailhead-cli',
               operation: 'parseArguments',
             })
@@ -478,7 +484,7 @@ export function parseArgumentsModern(args: string[]): Result<
     })
   } catch (error) {
     return err(
-      createCoreError('PARSE_FAILED', 'Failed to parse command line arguments', {
+      createCoreError('PARSE_FAILED', 'CLI_ERROR', 'Failed to parse command line arguments', {
         component: 'create-trailhead-cli',
         operation: 'parseArguments',
         cause: error,

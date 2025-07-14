@@ -1,4 +1,5 @@
 import { ok, err, fromThrowable } from '@esteban-url/core'
+import { createGitErrors } from '../errors.js'
 import { execSync } from 'node:child_process'
 import type {
   GitStatusOperations,
@@ -26,14 +27,7 @@ export const createGitStatusOperations = (): GitStatusOperations => {
 
     const result = safeStatus()
     if (result.isErr()) {
-      return err({
-        type: 'GitError',
-        code: 'STATUS_FAILED',
-        message: 'Failed to get repository status',
-        suggestion: 'Check if the repository is valid and accessible',
-        cause: result.error,
-        recoverable: true,
-      } as any)
+      return err(createGitErrors.statusFailed(repo.workingDirectory, result.error))
     }
 
     const status = parseStatusOutput(result.value)

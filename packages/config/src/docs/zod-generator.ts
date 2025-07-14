@@ -223,10 +223,12 @@ export const generateZodConfigDocs = <T>(
     return err(
       createCoreError(
         'ZOD_DOCS_GENERATION_FAILED',
+        'DOCS_ERROR',
         'Failed to generate Zod configuration documentation',
         {
-          component: '@esteban-url/config',
+          component: 'config',
           operation: 'generate-zod-docs',
+          severity: 'medium',
           context: { schema: schema.name },
           cause: error instanceof Error ? error : undefined,
         }
@@ -291,10 +293,12 @@ const generateZodFieldsDocumentation = (
     return err(
       createCoreError(
         'ZOD_FIELD_DOCS_GENERATION_FAILED',
+        'FIELD_DOCS_ERROR',
         'Failed to generate Zod field documentation',
         {
-          component: '@esteban-url/config',
+          component: 'config',
           operation: 'generate-zod-field-docs',
+          severity: 'medium',
           cause: error instanceof Error ? error : undefined,
         }
       )
@@ -522,11 +526,17 @@ const generateZodExamples = <T>(
     return ok(examples)
   } catch (error) {
     return err(
-      createCoreError('ZOD_EXAMPLES_GENERATION_FAILED', 'Failed to generate Zod examples', {
-        component: '@esteban-url/config',
-        operation: 'generate-zod-examples',
-        cause: error instanceof Error ? error : undefined,
-      })
+      createCoreError(
+        'ZOD_EXAMPLES_GENERATION_FAILED',
+        'EXAMPLES_ERROR',
+        'Failed to generate Zod examples',
+        {
+          component: 'config',
+          operation: 'generate-zod-examples',
+          severity: 'medium',
+          cause: error instanceof Error ? error : undefined,
+        }
+      )
     )
   }
 }

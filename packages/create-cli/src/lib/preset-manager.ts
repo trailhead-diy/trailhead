@@ -71,17 +71,22 @@ export class PresetManager {
       const selectedPreset = presets.find((p: PresetConfig) => p.name === selectedPresetName)
       if (!selectedPreset) {
         return err(
-          createCoreError('PRESET_NOT_FOUND', `Preset not found: ${selectedPresetName}`, {
-            component: 'create-trailhead-cli',
-            operation: 'selectPreset',
-          })
+          createCoreError(
+            'PRESET_NOT_FOUND',
+            'CLI_ERROR',
+            `Preset not found: ${selectedPresetName}`,
+            {
+              component: 'create-trailhead-cli',
+              operation: 'selectPreset',
+            }
+          )
         )
       }
 
       return ok(selectedPreset)
     } catch (error) {
       return err(
-        createCoreError('PRESET_SELECTION_ERROR', 'Failed to select preset', {
+        createCoreError('PRESET_SELECTION_ERROR', 'CLI_ERROR', 'Failed to select preset', {
           component: 'create-trailhead-cli',
           operation: 'selectPreset',
           cause: error,
@@ -158,7 +163,7 @@ export class PresetManager {
       return ok(preset)
     } catch (error) {
       return err(
-        createCoreError('PRESET_CREATE_ERROR', 'Failed to create preset', {
+        createCoreError('PRESET_CREATE_ERROR', 'CLI_ERROR', 'Failed to create preset', {
           component: 'create-trailhead-cli',
           operation: 'createPreset',
           cause: error,
@@ -218,7 +223,7 @@ export class PresetManager {
       return ok(undefined)
     } catch (error) {
       return err(
-        createCoreError('PRESET_LIST_ERROR', 'Failed to list presets', {
+        createCoreError('PRESET_LIST_ERROR', 'CLI_ERROR', 'Failed to list presets', {
           component: 'create-trailhead-cli',
           operation: 'listPresetsDetailed',
           cause: error,
@@ -345,12 +350,17 @@ export class PresetManager {
       return this.configManager.applyPreset(preset.name, finalConfig)
     } catch (error) {
       return err(
-        createCoreError('PRESET_APPLY_INTERACTIVE_ERROR', 'Failed to apply preset interactively', {
-          component: 'create-trailhead-cli',
-          operation: 'applyPresetInteractive',
-          cause: error,
-          recoverable: false,
-        })
+        createCoreError(
+          'PRESET_APPLY_INTERACTIVE_ERROR',
+          'CLI_ERROR',
+          'Failed to apply preset interactively',
+          {
+            component: 'create-trailhead-cli',
+            operation: 'applyPresetInteractive',
+            cause: error,
+            recoverable: false,
+          }
+        )
       )
     }
   }
@@ -376,7 +386,7 @@ export class PresetManager {
       return ok(presets)
     } catch (error) {
       return err(
-        createCoreError('GET_PRESETS_ERROR', 'Failed to get available presets', {
+        createCoreError('GET_PRESETS_ERROR', 'CLI_ERROR', 'Failed to get available presets', {
           component: 'create-trailhead-cli',
           operation: 'getAvailablePresets',
           cause: error,

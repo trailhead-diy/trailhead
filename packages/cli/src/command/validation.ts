@@ -36,6 +36,7 @@ export function validateCommandOption(
     return err(
       createCoreError(
         'INVALID_OPTION_NAME_FORMAT',
+        'CLI_ERROR',
         `Option at index ${index} must have either 'name' or 'flags' property`,
         {
           suggestion: 'Add either a "name" property or a "flags" property to the option',
@@ -52,6 +53,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_TYPE',
+          'CLI_ERROR',
           `Option at index ${index}: 'flags' must be a string`,
           {
             recoverable: true,
@@ -67,6 +69,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_TYPE',
+          'CLI_ERROR',
           `Option at index ${index}: Invalid flags format '${option.flags}'. Expected format: '--long' or '-s, --long' with optional value placeholder`,
           {
             suggestion: 'Use formats like "--output", "-o, --output", or "--output <value>"',
@@ -84,6 +87,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_NAME_FORMAT',
+          'CLI_ERROR',
           `Option at index ${index}: 'name' must be a non-empty string`,
           {
             recoverable: true,
@@ -99,6 +103,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_NAME_FORMAT',
+          'CLI_ERROR',
           `Option at index ${index}: Invalid name format '${option.name}'. Use alphanumeric characters and hyphens only`,
           {
             suggestion: 'Use kebab-case (e.g., "output-dir") or camelCase (e.g., "outputDir")',
@@ -120,6 +125,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_ALIAS',
+          'CLI_ERROR',
           `Option at index ${index}: 'alias' must be a single letter`,
           {
             suggestion: 'Use a single letter like "o" for output or "v" for verbose',
@@ -138,6 +144,7 @@ export function validateCommandOption(
       return err(
         createCoreError(
           'INVALID_OPTION_TYPE',
+          'CLI_ERROR',
           `Option at index ${index}: Invalid type '${option.type}'. Must be one of: ${validTypes.join(', ')}`,
           {
             recoverable: true,
@@ -153,6 +160,7 @@ export function validateCommandOption(
     return err(
       createCoreError(
         'MISSING_OPTION_DESCRIPTION',
+        'CLI_ERROR',
         `Option at index ${index}: 'description' is required and must be a string`,
         {
           recoverable: true,
@@ -203,6 +211,7 @@ export function validateCommandConfig<T extends CommandOptions>(
     return err(
       createCoreError(
         'INVALID_COMMAND_NAME_FORMAT',
+        'CLI_ERROR',
         'Command name is required and must be a non-empty string',
         {
           recoverable: true,
@@ -217,6 +226,7 @@ export function validateCommandConfig<T extends CommandOptions>(
     return err(
       createCoreError(
         'INVALID_COMMAND_NAME_FORMAT',
+        'CLI_ERROR',
         `Invalid command name format '${config.name}'. Use alphanumeric characters and hyphens only`,
         {
           suggestion: 'Use kebab-case like "build-app" or single words like "build"',
@@ -232,6 +242,7 @@ export function validateCommandConfig<T extends CommandOptions>(
     return err(
       createCoreError(
         'INVALID_COMMAND_DESCRIPTION',
+        'CLI_ERROR',
         'Command description is required and must be a non-empty string',
         {
           recoverable: true,
@@ -245,10 +256,15 @@ export function validateCommandConfig<T extends CommandOptions>(
   if (config.options) {
     if (!Array.isArray(config.options)) {
       return err(
-        createCoreError('INVALID_COMMAND_OPTIONS', 'Command options must be an array', {
-          recoverable: true,
-          context: { config },
-        })
+        createCoreError(
+          'INVALID_COMMAND_OPTIONS',
+          'CLI_ERROR',
+          'Command options must be an array',
+          {
+            recoverable: true,
+            context: { config },
+          }
+        )
       )
     }
 
@@ -271,6 +287,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           return err(
             createCoreError(
               'DUPLICATE_OPTION_NAME',
+              'CLI_ERROR',
               `Duplicate option name '${option.name}' at index ${i}`,
               {
                 recoverable: true,
@@ -287,6 +304,7 @@ export function validateCommandConfig<T extends CommandOptions>(
           return err(
             createCoreError(
               'DUPLICATE_OPTION_ALIAS',
+              'CLI_ERROR',
               `Duplicate option alias '${option.alias}' at index ${i}`,
               {
                 recoverable: true,
@@ -304,20 +322,30 @@ export function validateCommandConfig<T extends CommandOptions>(
   if (config.examples) {
     if (!Array.isArray(config.examples)) {
       return err(
-        createCoreError('INVALID_EXAMPLE_FORMAT', 'Command examples must be an array of strings', {
-          recoverable: true,
-          context: { config },
-        })
+        createCoreError(
+          'INVALID_EXAMPLE_FORMAT',
+          'CLI_ERROR',
+          'Command examples must be an array of strings',
+          {
+            recoverable: true,
+            context: { config },
+          }
+        )
       )
     }
 
     for (let i = 0; i < config.examples.length; i++) {
       if (typeof config.examples[i] !== 'string') {
         return err(
-          createCoreError('INVALID_EXAMPLE_FORMAT', `Example at index ${i} must be a string`, {
-            recoverable: true,
-            context: { config, index: i },
-          })
+          createCoreError(
+            'INVALID_EXAMPLE_FORMAT',
+            'CLI_ERROR',
+            `Example at index ${i} must be a string`,
+            {
+              recoverable: true,
+              context: { config, index: i },
+            }
+          )
         )
       }
     }
@@ -328,6 +356,7 @@ export function validateCommandConfig<T extends CommandOptions>(
     return err(
       createCoreError(
         'INVALID_COMMAND_ACTION',
+        'CLI_ERROR',
         'Command action is required and must be a function',
         {
           recoverable: true,
@@ -340,10 +369,15 @@ export function validateCommandConfig<T extends CommandOptions>(
   // Validate validation function if provided
   if (config.validation && typeof config.validation !== 'function') {
     return err(
-      createCoreError('INVALID_COMMAND_VALIDATION', 'Command validation must be a function', {
-        recoverable: true,
-        context: { config },
-      })
+      createCoreError(
+        'INVALID_COMMAND_VALIDATION',
+        'CLI_ERROR',
+        'Command validation must be a function',
+        {
+          recoverable: true,
+          context: { config },
+        }
+      )
     )
   }
 

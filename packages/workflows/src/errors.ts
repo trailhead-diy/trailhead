@@ -11,7 +11,7 @@ export const createWorkflowError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('WorkflowError', message, {
+  return createCoreError('WorkflowError', 'WORKFLOW_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -25,7 +25,7 @@ export const createWorkflowValidationError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('WorkflowValidationError', message, {
+  return createCoreError('WorkflowValidationError', 'WORKFLOW_VALIDATION_ERROR', message, {
     suggestion,
     cause,
     recoverable: true,
@@ -39,7 +39,7 @@ export const createWorkflowExecutionError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('WorkflowExecutionError', message, {
+  return createCoreError('WorkflowExecutionError', 'WORKFLOW_EXECUTION_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -53,7 +53,7 @@ export const createWorkflowTimeoutError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('WorkflowTimeoutError', message, {
+  return createCoreError('WorkflowTimeoutError', 'WORKFLOW_TIMEOUT_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -67,7 +67,7 @@ export const createStepError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('StepError', message, {
+  return createCoreError('StepError', 'STEP_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -81,7 +81,7 @@ export const createStepValidationError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('StepValidationError', message, {
+  return createCoreError('StepValidationError', 'STEP_VALIDATION_ERROR', message, {
     suggestion,
     cause,
     recoverable: true,
@@ -95,7 +95,7 @@ export const createStepExecutionError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('StepExecutionError', message, {
+  return createCoreError('StepExecutionError', 'STEP_EXECUTION_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -109,7 +109,7 @@ export const createStepTimeoutError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('StepTimeoutError', message, {
+  return createCoreError('StepTimeoutError', 'STEP_TIMEOUT_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -123,7 +123,7 @@ export const createDependencyError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('DependencyError', message, {
+  return createCoreError('DependencyError', 'DEPENDENCY_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,
@@ -137,7 +137,7 @@ export const createConcurrencyError = (
   cause?: unknown,
   details?: Record<string, unknown>
 ): CoreError => {
-  return createCoreError('ConcurrencyError', message, {
+  return createCoreError('ConcurrencyError', 'CONCURRENCY_ERROR', message, {
     suggestion,
     cause,
     recoverable: false,

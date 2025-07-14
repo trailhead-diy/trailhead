@@ -1,10 +1,21 @@
 import type { Result, CoreError } from '@esteban-url/core'
 
 // ========================================
+// Git Error Types
+// ========================================
+
+export interface GitError extends CoreError {
+  readonly type: 'GitError'
+  readonly gitCode?: string
+  readonly gitOutput?: string
+  readonly workingDirectory?: string
+}
+
+// ========================================
 // Result Type Alias
 // ========================================
 
-export type GitResult<T> = Result<T, CoreError>
+export type GitResult<T> = Result<T, GitError>
 
 // ========================================
 // Git Repository Types

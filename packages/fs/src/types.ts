@@ -5,14 +5,19 @@ export interface FileStats {
   readonly size: number
   readonly isFile: boolean
   readonly isDirectory: boolean
+  readonly isSymbolicLink: boolean
   readonly mtime: Date
 }
 
 export interface FileSystemError extends CoreError {
   readonly type: 'FILESYSTEM_ERROR'
-  readonly operation: string
+  readonly code: string
   readonly path?: string
-  readonly code?: string
+  readonly component: 'filesystem'
+  readonly operation: string
+  readonly severity: 'low' | 'medium' | 'high' | 'critical'
+  readonly recoverable: boolean
+  readonly timestamp: Date
 }
 
 export interface CopyOptions {

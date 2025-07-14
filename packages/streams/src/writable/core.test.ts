@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { createWritableOperations } from './core.js'
 
+const callback = (data: number) => {
+  if (data === 2) {
+    throw new Error('Callback error')
+  }
+}
+
 describe('Writable Stream Operations', () => {
   const writableOps = createWritableOperations()
 
@@ -100,12 +106,6 @@ describe('Writable Stream Operations', () => {
     })
 
     it('should handle callback errors', async () => {
-      const callback = (data: number) => {
-        if (data === 2) {
-          throw new Error('Callback error')
-        }
-      }
-
       const streamResult = writableOps.createToCallback(callback)
 
       expect(streamResult.isOk()).toBe(true)
