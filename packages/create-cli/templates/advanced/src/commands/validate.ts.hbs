@@ -1,11 +1,10 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
-import { createValidationPipeline } from '@esteban-url/trailhead-cli/core'
-import { glob } from 'glob'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { glob } from '@esteban-url/cli/utils'
 import { readFile } from 'fs/promises'
 import { z } from 'zod'
-import type { Result } from '@esteban-url/trailhead-cli/core'
-import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Validate Command
@@ -130,21 +129,31 @@ export const validateCommand = createCommand<ValidateOptions>({
       }
       
       if (errors.length > 0) {
-        return err(createCoreError('VALIDATION_FAILED', `Validation failed with ${errors.length} errors`, {
-          details: `Found ${errors.length} validation errors that need to be fixed`
-        }))
+        return err({
+          code: 'VALIDATION_FAILED',
+          message: `Validation failed with ${errors.length} errors`,
+          details: {
+            errorCount: errors.length,
+            errors: errors.map(e => ({ file: e.file, message: e.message }))
+          },
+          suggestion: options.fix ? 'Some issues could not be auto-fixed' : 'Run with --fix to attempt automatic fixes'
+        } satisfies CoreError)
       }
       
-      .success('Validation completed successfully!')
+      logger.success('Validation completed successfully!')
       return ok(undefined)
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Validation failed: ${errorMessage}`)
-      return err(createCoreError('VALIDATION_ERROR', `Validation failed: ${errorMessage}`, {
-        cause: error,
-        details: 'An unexpected error occurred during validation'
-      }))
+      return err({
+        code: 'VALIDATION_ERROR',
+        message: `Validation failed: ${errorMessage}`,
+        details: {
+          operation: 'validate'
+        },
+        cause: error instanceof Error ? error : undefined
+      } satisfies CoreError)
     }
   }
 })

@@ -1,10 +1,9 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
-import { input, select, confirm } from '@esteban-url/trailhead-cli/prompts'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { input, select, confirm } from '@esteban-url/cli/prompts'
 import { join } from 'path'
-import { ensureDir } from 'fs-extra'
-import type { Result } from '@esteban-url/trailhead-cli/core'
-import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Init Command
@@ -116,20 +115,25 @@ export const initCommand = createCommand<InitOptions>({
         await writeFile(configPath, configContent)
       } catch (error) {
         logger.error(`Failed to write configuration: ${error instanceof Error ? error.message : String(error)}`)
-        return err(createCoreError('CONFIG_WRITE_FAILED', 'Failed to write configuration file', {
-          cause: error,
-          recoverable: true
-        }))
+        return err({
+          code: 'CONFIG_WRITE_FAILED',
+          message: 'Failed to write configuration file',
+          details: {
+            path: configPath
+          },
+          cause: error instanceof Error ? error : undefined,
+          suggestion: 'Check file permissions and try again'
+        } satisfies CoreError)
       }
       
-      .success(`Configuration created: ${configPath}`)
+      logger.success(`Configuration created: ${configPath}`)
       
       // Create basic project structure
       // Tests use colocation pattern (src/**/__tests__/) instead of separate tests/ directory
       const directories = ['src', 'docs']
       for (const dir of directories) {
         try {
-          await ensureDir(dir)
+          await context.fs.ensureDir(dir)
           if (verbose) {
             logger.debug(`Created directory: ${dir}`)
           }
@@ -151,7 +155,7 @@ console.log('Hello from ${projectName}!')
         logger.info('Created CLI entry point: src/index.ts')
       }
       
-      .success('Project initialization completed!')
+      logger.success('Project initialization completed!')
       logger.info('')
       logger.info('Next steps:')
       logger.info('  1. Review the generated configuration')
@@ -163,10 +167,14 @@ console.log('Hello from ${projectName}!')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Initialization failed: ${errorMessage}`)
-      return err(createCoreError('INIT_FAILED', `Init failed: ${errorMessage}`, {
-        cause: error,
-        details: 'Project initialization failed due to an unexpected error'
-      }))
+      return err({
+        code: 'INIT_FAILED',
+        message: `Init failed: ${errorMessage}`,
+        details: {
+          operation: 'init'
+        },
+        cause: error instanceof Error ? error : undefined
+      } satisfies CoreError)
     }
   }
 })

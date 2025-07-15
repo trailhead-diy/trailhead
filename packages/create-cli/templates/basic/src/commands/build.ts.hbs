@@ -1,7 +1,7 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
-import type { Result } from '@esteban-url/trailhead-cli/core'
-import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 
 interface BuildOptions extends CommandOptions {
   output?: string;
@@ -76,13 +76,16 @@ export const buildCommand = createCommand<BuildOptions>({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Build failed: ${errorMessage}`)
-      return err(createCoreError('BUILD_FAILED', `Build failed: ${errorMessage}`, {
-        component: '{{packageName}}',
-        operation: 'build',
-        cause: error,
-        recoverable: true,
-        severity: 'high'
-      }))
+      return err({
+        code: 'BUILD_FAILED',
+        message: `Build failed: ${errorMessage}`,
+        details: {
+          component: '{{packageName}}',
+          operation: 'build'
+        },
+        cause: error instanceof Error ? error : undefined,
+        suggestion: 'Check the build configuration and try again'
+      } satisfies CoreError)
     }
   }
 })

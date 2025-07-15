@@ -32,8 +32,17 @@
     "validate": "{{packageManager}} run types && {{packageManager}} run lint && {{packageManager}} run test"
   },
   "dependencies": {
-    "@esteban-url/trailhead-cli": "^0.1.0"{{#if isAdvanced}},
+{{#if IS_MONOREPO}}
+    "@esteban-url/cli": "workspace:*",
+    "@esteban-url/core": "workspace:*"{{#if isAdvanced}},
+    "@esteban-url/validation": "workspace:*",
     "zod": "^3.22.4"{{/if}}
+{{else}}
+    "@esteban-url/cli": "^0.1.0",
+    "@esteban-url/core": "^0.1.0"{{#if isAdvanced}},
+    "@esteban-url/validation": "^0.1.0",
+    "zod": "^3.22.4"{{/if}}
+{{/if}}
   },
   "devDependencies": {
 {{#unless IS_MONOREPO}}

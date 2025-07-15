@@ -1,9 +1,9 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
-import { loadConfig, defineConfig } from '@esteban-url/trailhead-cli/config'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { loadConfig, defineConfig } from '@esteban-url/config'
 import { z } from 'zod'
-import type { Result } from '@esteban-url/trailhead-cli/core'
-import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
 
 /**
  * Configuration schema for {{projectName}}
@@ -104,9 +104,14 @@ export const configCommand = createCommand<ConfigOptions>({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${options.get}`)
-          return err(createCoreError('CONFIG_KEY_NOT_FOUND', `Key not found: ${options.get}`, {
-            details: `Configuration key '${options.get}' does not exist`
-          }))
+          return err({
+            code: 'CONFIG_KEY_NOT_FOUND',
+            message: `Key not found: ${options.get}`,
+            details: {
+              key: options.get
+            },
+            suggestion: 'Use --list to see available configuration keys'
+          } satisfies CoreError)
         }
         return ok(undefined)
       }
@@ -115,9 +120,14 @@ export const configCommand = createCommand<ConfigOptions>({
         const [key, value] = options.set.split('=', 2)
         if (!key || value === undefined) {
           logger.error('Invalid format. Use: --set key=value')
-          return err(createCoreError('INVALID_CONFIG_FORMAT', 'Invalid set format', {
-            details: 'Use format: --set key=value'
-          }))
+          return err({
+            code: 'INVALID_CONFIG_FORMAT',
+            message: 'Invalid set format',
+            details: {
+              format: 'key=value'
+            },
+            suggestion: 'Use format: --set key=value'
+          } satisfies CoreError)
         }
         
         logger.info(`Setting ${key} = ${value}`)
@@ -135,9 +145,14 @@ export const configCommand = createCommand<ConfigOptions>({
           console.log(value)
         } else {
           logger.error(`Configuration key not found: ${key}`)
-          return err(createCoreError('CONFIG_KEY_NOT_FOUND', `Key not found: ${key}`, {
-            details: `Configuration key '${key}' does not exist`
-          }))
+          return err({
+            code: 'CONFIG_KEY_NOT_FOUND',
+            message: `Key not found: ${key}`,
+            details: {
+              key
+            },
+            suggestion: 'Use --list to see available configuration keys'
+          } satisfies CoreError)
         }
         
         return ok(undefined)
@@ -158,10 +173,14 @@ export const configCommand = createCommand<ConfigOptions>({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       logger.error(`Config operation failed: ${errorMessage}`)
-      return err(createCoreError('CONFIG_OPERATION_FAILED', `Config failed: ${errorMessage}`, {
-        cause: error,
-        recoverable: true
-      }))
+      return err({
+        code: 'CONFIG_OPERATION_FAILED',
+        message: `Config failed: ${errorMessage}`,
+        details: {
+          operation: 'config'
+        },
+        cause: error instanceof Error ? error : undefined
+      } satisfies CoreError)
     }
   }
 })

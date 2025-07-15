@@ -1,23 +1,90 @@
-import { describe, it, expect, beforeEach } from 'vitest' import { createTestContext, mockFileSystem
-} from '@esteban-url/trailhead-cli/testing' import { buildCommand } from '../build.js'
-describe('build command', () => { let testContext: any beforeEach(async () => { testContext =
-createTestContext({ verbose: false, fs: mockFileSystem({ '/project/src/index.ts': 'export const
-hello = "world"', '/project/package.json': '{"name": "test-project"}' }) }) }) it('should create
-output directory', async () => { const result = await buildCommand.execute({ output: 'dist' },
-testContext) expect(result.isOk()).toBe(true)
-expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist') }) it('should handle custom
-output directory', async () => { const result = await buildCommand.execute({ output: 'build' },
-testContext) expect(result.isOk()).toBe(true)
-expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('build') }) it('should handle filesystem
-errors', async () => { // Mock filesystem error testContext.fs.ensureDirectory.mockImplementation(()
-=> Promise.resolve({ success: false, error: new Error('Permission denied') }) ) const result = await
-buildCommand.execute({ output: 'dist' }, testContext) expect(result.isOk()).toBe(false)
-expect(result.error.message).toContain('Permission denied') }) it('should enable watch mode when
-requested', async () => { const result = await buildCommand.execute({ output: 'dist', watch: true },
-testContext) expect(result.isOk()).toBe(true) // In a real implementation, you'd verify watch mode
-is enabled }) it('should enable minification when requested', async () => { const result = await
-buildCommand.execute({ output: 'dist', minify: true }, testContext) expect(result.isOk()).toBe(true)
-// In a real implementation, you'd verify minification is enabled }) it('should use default output
-directory', async () => { const result = await buildCommand.execute({}, testContext)
-expect(result.isOk()).toBe(true) expect(testContext.fs.ensureDirectory).toHaveBeenCalledWith('dist')
-}) })
+import { describe, it, expect, beforeEach } from 'vitest'
+import { createTestContext } from '@esteban-url/cli/testing'
+import { err } from '@esteban-url/core'
+import { buildCommand } from '../build.js'
+
+describe('build command', () => {
+  let testContext: ReturnType<typeof createTestContext>
+
+  beforeEach(() => {
+    testContext = createTestContext()
+  })
+
+  it('should create output directory successfully', async () => {
+    const result = await buildCommand.action(
+      { output: 'dist' },
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.logs).toContain('Build completed successfully!')
+  })
+
+  it('should handle custom output directory', async () => {
+    const result = await buildCommand.action(
+      { output: 'build' },
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.logs.some(log => log.includes('Building to build'))).toBe(true)
+  })
+
+  it('should handle filesystem errors gracefully', async () => {
+    // Mock filesystem error
+    testContext.fs.ensureDir = async () => err({
+      code: 'PERMISSION_DENIED',
+      message: 'Permission denied',
+      details: { path: 'dist' }
+    })
+
+    const result = await buildCommand.action(
+      { output: 'dist' },
+      testContext
+    )
+
+    expect(result.isErr()).toBe(true)
+    expect(result.error.message).toBe('Permission denied')
+  })
+
+  it('should enable watch mode when requested', async () => {
+    const result = await buildCommand.action(
+      { output: 'dist', watch: true },
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.logs).toContain('Watching for changes... (Press Ctrl+C to stop)')
+  })
+
+  it('should enable minification when requested', async () => {
+    const result = await buildCommand.action(
+      { output: 'dist', minify: true },
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.logs).toContain('Minifying output...')
+  })
+
+  it('should use default output directory when none specified', async () => {
+    const result = await buildCommand.action(
+      {},
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.logs.some(log => log.includes('Building to dist'))).toBe(true)
+  })
+
+  it('should log verbose output when requested', async () => {
+    const result = await buildCommand.action(
+      { verbose: true },
+      testContext
+    )
+
+    expect(result.isOk()).toBe(true)
+    expect(testContext.verbose).toBe(true)
+    expect(testContext.logs.some(log => log.includes('Build options:'))).toBe(true)
+  })
+})

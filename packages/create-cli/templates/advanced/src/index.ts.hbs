@@ -1,13 +1,43 @@
-#!/usr/bin/env node import { createCLI } from '@esteban-url/trailhead-cli' import { buildCommand }
-from './commands/build.js' import { devCommand } from './commands/dev.js' import { initCommand }
-from './commands/init.js' import { configCommand } from './commands/config.js' import {
-validateCommand } from './commands/validate.js' /** *
-{{projectName}}
-CLI * *
-{{description}}
-* Built with @esteban-url/trailhead-cli * * Advanced template includes: * - Multiple command
-examples * - Configuration management * - Validation utilities * - Performance optimizations * -
-Comprehensive testing */ async function main() { const cli = createCLI({ name: '{{packageName}}',
-version: '{{version}}', description: '{{description}}', commands: [ buildCommand, devCommand,
-initCommand, configCommand, validateCommand ] }) await cli.run() } // Run the CLI
-main().catch((error) => { console.error('Fatal error:', error) process.exit(1) })
+#!/usr/bin/env node
+import { createCLI } from '@esteban-url/cli'
+import { buildCommand } from './commands/build.js'
+import { devCommand } from './commands/dev.js'
+import { initCommand } from './commands/init.js'
+import { configCommand } from './commands/config.js'
+import { validateCommand } from './commands/validate.js'
+
+/**
+ * {{projectName}} CLI
+ * 
+ * {{description}}
+ * Built with @esteban-url/cli
+ * 
+ * Advanced template includes:
+ * - Multiple command examples
+ * - Configuration management
+ * - Validation utilities
+ * - Performance optimizations
+ * - Comprehensive testing
+ */
+async function main() {
+  const cli = createCLI({
+    name: '{{packageName}}',
+    version: '{{version}}',
+    description: '{{description}}',
+    commands: [
+      buildCommand,
+      devCommand,
+      initCommand,
+      configCommand,
+      validateCommand
+    ]
+  })
+
+  await cli.run()
+}
+
+// Run the CLI
+main().catch((error) => {
+  console.error('Fatal error:', error)
+  process.exit(1)
+})
