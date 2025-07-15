@@ -27,8 +27,8 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
+import type { Result, CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js'
 
 /**
  * Transform metadata
@@ -37,7 +37,7 @@ export const removeDuplicatePropsTransform = createTransformMetadata(
   'remove-duplicate-props',
   'Remove duplicate prop spreads from JSX elements',
   'quality'
-);
+)
 
 /**
  * Remove duplicate prop spreads from JSX elements
@@ -54,9 +54,9 @@ export const removeDuplicatePropsTransform = createTransformMetadata(
  */
 export function transformRemoveDuplicateProps(input: string): Result<TransformResult, CLIError> {
   return executeTransform(() => {
-    let content = input;
-    const warnings: string[] = [];
-    let changed = false;
+    let content = input
+    const warnings: string[] = []
+    let changed = false
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Find JSX elements with duplicate prop spreads
@@ -68,7 +68,7 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
     /////////////////////////////////////////////////////////////////////////////////
 
     // Pattern to match JSX opening tags across multiple lines
-    const jsxOpeningTagRegex = /<(\w+)([^>]*?)>/gms;
+    const jsxOpeningTagRegex = /<(\w+)([^>]*?)>/gms
 
     content = content.replace(jsxOpeningTagRegex, (fullMatch, tagName, attributes) => {
       /////////////////////////////////////////////////////////////////////////////////
@@ -79,13 +79,13 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
       //
       /////////////////////////////////////////////////////////////////////////////////
       const spreadMatches: Array<{
-        match: string;
-        identifier: string;
-        start: number;
-        end: number;
-      }> = [];
-      const spreadRegex = /\{\s*\.\.\.(\w+)\s*\}/g;
-      let spreadMatch;
+        match: string
+        identifier: string
+        start: number
+        end: number
+      }> = []
+      const spreadRegex = /\{\s*\.\.\.(\w+)\s*\}/g
+      let spreadMatch
 
       while ((spreadMatch = spreadRegex.exec(attributes)) !== null) {
         spreadMatches.push({
@@ -93,11 +93,11 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
           identifier: spreadMatch[1],
           start: spreadMatch.index,
           end: spreadMatch.index + spreadMatch[0].length,
-        });
+        })
       }
 
       if (spreadMatches.length === 0) {
-        return fullMatch; // No spreads found
+        return fullMatch // No spreads found
       }
 
       /////////////////////////////////////////////////////////////////////////////////
@@ -107,20 +107,20 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
       //        e.g., props: [position1, position2], otherProps: [position1]
       //
       /////////////////////////////////////////////////////////////////////////////////
-      const spreadsByIdentifier: Record<string, typeof spreadMatches> = {};
+      const spreadsByIdentifier: Record<string, typeof spreadMatches> = {}
 
       for (const spread of spreadMatches) {
         if (!spreadsByIdentifier[spread.identifier]) {
-          spreadsByIdentifier[spread.identifier] = [];
+          spreadsByIdentifier[spread.identifier] = []
         }
-        spreadsByIdentifier[spread.identifier].push(spread);
+        spreadsByIdentifier[spread.identifier].push(spread)
       }
 
       // Check if we have any duplicates
-      const hasDuplicates = Object.values(spreadsByIdentifier).some(group => group.length > 1);
+      const hasDuplicates = Object.values(spreadsByIdentifier).some((group) => group.length > 1)
 
       if (!hasDuplicates) {
-        return fullMatch; // No duplicates found
+        return fullMatch // No duplicates found
       }
 
       /////////////////////////////////////////////////////////////////////////////////
@@ -130,60 +130,60 @@ export function transformRemoveDuplicateProps(input: string): Result<TransformRe
       // To:    <div data-slot="label" {...props} />
       //
       /////////////////////////////////////////////////////////////////////////////////
-      let modifiedAttributes = attributes;
-      const spreadsToRemove: Array<{ start: number; end: number; identifier: string }> = [];
+      let modifiedAttributes = attributes
+      const spreadsToRemove: Array<{ start: number; end: number; identifier: string }> = []
 
       for (const [identifier, spreads] of Object.entries(spreadsByIdentifier)) {
         if (spreads.length > 1) {
           // Remove all but the last occurrence
-          const toRemove = spreads.slice(0, -1);
-          spreadsToRemove.push(...toRemove.map(s => ({ ...s, identifier })));
+          const toRemove = spreads.slice(0, -1)
+          spreadsToRemove.push(...toRemove.map((s) => ({ ...s, identifier })))
         }
       }
 
       // Sort by start position in descending order to avoid index shifting
-      spreadsToRemove.sort((a, b) => b.start - a.start);
+      spreadsToRemove.sort((a, b) => b.start - a.start)
 
       for (const spreadToRemove of spreadsToRemove) {
         // Remove the spread and surrounding whitespace
-        const beforeSpread = modifiedAttributes.substring(0, spreadToRemove.start);
-        const afterSpread = modifiedAttributes.substring(spreadToRemove.end);
+        const beforeSpread = modifiedAttributes.substring(0, spreadToRemove.start)
+        const afterSpread = modifiedAttributes.substring(spreadToRemove.end)
 
         // Find leading whitespace (newlines and spaces before the spread)
-        const leadingWhitespaceMatch = beforeSpread.match(/\s*$/);
-        const leadingWhitespace = leadingWhitespaceMatch ? leadingWhitespaceMatch[0] : '';
+        const leadingWhitespaceMatch = beforeSpread.match(/\s*$/)
+        const leadingWhitespace = leadingWhitespaceMatch ? leadingWhitespaceMatch[0] : ''
 
         // Find trailing whitespace (spaces/newlines after the spread)
-        const trailingWhitespaceMatch = afterSpread.match(/^\s*/);
-        const trailingWhitespace = trailingWhitespaceMatch ? trailingWhitespaceMatch[0] : '';
+        const trailingWhitespaceMatch = afterSpread.match(/^\s*/)
+        const trailingWhitespace = trailingWhitespaceMatch ? trailingWhitespaceMatch[0] : ''
 
         // Remove spread with its whitespace, but preserve one newline if there was one
         const preserveNewline =
-          leadingWhitespace.includes('\n') || trailingWhitespace.includes('\n');
-        const replacement = preserveNewline && !afterSpread.startsWith('\n') ? '\n' : '';
+          leadingWhitespace.includes('\n') || trailingWhitespace.includes('\n')
+        const replacement = preserveNewline && !afterSpread.startsWith('\n') ? '\n' : ''
 
         modifiedAttributes =
           beforeSpread.substring(0, beforeSpread.length - leadingWhitespace.length) +
           replacement +
-          afterSpread.substring(trailingWhitespace.length);
+          afterSpread.substring(trailingWhitespace.length)
 
-        changed = true;
+        changed = true
         warnings.push(
           `Removed duplicate {...${spreadToRemove.identifier}} spread in ${tagName} element`
-        );
+        )
       }
 
       // Ensure proper spacing - if we have attributes, there should be a space after tag name
       if (modifiedAttributes.trim()) {
         // If the modified attributes don't start with whitespace, add a space
-        const needsSpace = !modifiedAttributes.match(/^\s/);
-        const finalAttributes = needsSpace ? ' ' + modifiedAttributes : modifiedAttributes;
-        return `<${tagName}${finalAttributes}>`;
+        const needsSpace = !modifiedAttributes.match(/^\s/)
+        const finalAttributes = needsSpace ? ' ' + modifiedAttributes : modifiedAttributes
+        return `<${tagName}${finalAttributes}>`
       } else {
-        return `<${tagName}>`;
+        return `<${tagName}>`
       }
-    });
+    })
 
-    return { content, changed, warnings };
-  });
+    return { content, changed, warnings }
+  })
 }

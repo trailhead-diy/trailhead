@@ -12,11 +12,11 @@
  *   assertConfigValid,
  *   createConfigTestScenario,
  * } from '@esteban-url/config/testing'
- * 
+ *
  * // Create mock configuration
  * const mockConfig = createMockConfig()
  * mockConfig.mockConfigFile('app.json', configFixtures.valid.basic)
- * 
+ *
  * // Test configuration loading
  * const result = await configLoader.load('app.json')
  * assertConfigValid(result, 'app')
@@ -61,7 +61,10 @@ export interface MockConfigLoader {
   mockEnvironmentVariable(key: string, value: string): void
   mockCommandLineArgs(args: Record<string, any>): void
   loadConfig(configPath?: string): Promise<Result<Record<string, any>, CoreError>>
-  validateConfig(config: Record<string, any>, rules?: ConfigValidationRule[]): Result<Record<string, any>, CoreError>
+  validateConfig(
+    config: Record<string, any>,
+    rules?: ConfigValidationRule[]
+  ): Result<Record<string, any>, CoreError>
   mergeConfigs(configs: ConfigSource[]): Record<string, any>
   getLoadHistory(): Array<{ path: string; timestamp: number; success: boolean }>
   clearMocks(): void
@@ -87,31 +90,41 @@ function setValueByPath(obj: Record<string, any>, path: string, value: any): voi
 
 function validateType(value: any, expectedType: ConfigValidationRule['type']): boolean {
   switch (expectedType) {
-    case 'string': return typeof value === 'string'
-    case 'number': return typeof value === 'number' && !isNaN(value)
-    case 'boolean': return typeof value === 'boolean'
-    case 'object': return typeof value === 'object' && value !== null && !Array.isArray(value)
-    case 'array': return Array.isArray(value)
-    default: return false
+    case 'string':
+      return typeof value === 'string'
+    case 'number':
+      return typeof value === 'number' && !isNaN(value)
+    case 'boolean':
+      return typeof value === 'boolean'
+    case 'object':
+      return typeof value === 'object' && value !== null && !Array.isArray(value)
+    case 'array':
+      return Array.isArray(value)
+    default:
+      return false
   }
 }
 
 function deepMerge(target: any, source: any, strategy: ConfigMergeStrategy): any {
   if (source === null || source === undefined) return target
   if (target === null || target === undefined) return source
-  
+
   if (Array.isArray(source)) {
     switch (strategy.arrays) {
-      case 'replace': return source
-      case 'append': return Array.isArray(target) ? [...target, ...source] : source
-      case 'merge': return Array.isArray(target) ? [...target, ...source] : source
-      default: return source
+      case 'replace':
+        return source
+      case 'append':
+        return Array.isArray(target) ? [...target, ...source] : source
+      case 'merge':
+        return Array.isArray(target) ? [...target, ...source] : source
+      default:
+        return source
     }
   }
-  
+
   if (typeof source === 'object' && !Array.isArray(source)) {
     const result = strategy.objects === 'replace' ? {} : { ...target }
-    
+
     for (const [key, value] of Object.entries(source)) {
       if (strategy.objects === 'deep' && typeof value === 'object' && value !== null) {
         result[key] = deepMerge(result[key], value, strategy)
@@ -119,10 +132,10 @@ function deepMerge(target: any, source: any, strategy: ConfigMergeStrategy): any
         result[key] = value
       }
     }
-    
+
     return result
   }
-  
+
   // Primitive values
   return strategy.primitives === 'replace' ? source : target
 }
@@ -142,19 +155,19 @@ export function createMockConfig(
   const loadHistory: Array<{ path: string; timestamp: number; success: boolean }> = []
   const environmentMocks = new Map<string, string>()
   const argsMocks: Record<string, any> = {}
-  
+
   const finalMergeStrategy: ConfigMergeStrategy = {
     arrays: 'replace',
     objects: 'deep',
     primitives: 'replace',
     ...mergeStrategy,
   }
-  
+
   return {
     sources,
     validationRules,
     mergeStrategy: finalMergeStrategy,
-    
+
     mockConfigFile(
       path: string,
       data: Record<string, any>,
@@ -168,38 +181,38 @@ export function createMockConfig(
         priority: 100,
       })
     },
-    
+
     mockEnvironmentVariable(key: string, value: string): void {
       environmentMocks.set(key, value)
-      
+
       // Create or update env source
       const envSource = sources.get('__env__') || {
         type: 'env' as const,
         data: {},
         priority: 200,
       }
-      
+
       envSource.data[key] = value
       sources.set('__env__', envSource)
     },
-    
+
     mockCommandLineArgs(args: Record<string, any>): void {
       Object.assign(argsMocks, args)
-      
+
       sources.set('__args__', {
         type: 'args',
         data: argsMocks,
         priority: 300,
       })
     },
-    
+
     async loadConfig(configPath?: string): Promise<Result<Record<string, any>, CoreError>> {
       const timestamp = Date.now()
-      
+
       try {
         // Determine which sources to load
         const sourcesToLoad: ConfigSource[] = []
-        
+
         if (configPath) {
           const fileSource = sources.get(configPath)
           if (!fileSource) {
@@ -217,24 +230,24 @@ export function createMockConfig(
           }
           sourcesToLoad.push(fileSource)
         }
-        
+
         // Add environment and args sources
         const envSource = sources.get('__env__')
         if (envSource) sourcesToLoad.push(envSource)
-        
+
         const argsSource = sources.get('__args__')
         if (argsSource) sourcesToLoad.push(argsSource)
-        
+
         // Merge configurations
         const mergedConfig = this.mergeConfigs(sourcesToLoad)
-        
+
         // Validate merged configuration
         const validationResult = this.validateConfig(mergedConfig, validationRules)
         if (validationResult.isErr()) {
           loadHistory.push({ path: configPath || 'merged', timestamp, success: false })
           return err(validationResult.error)
         }
-        
+
         loadHistory.push({ path: configPath || 'merged', timestamp, success: true })
         return ok(validationResult.value)
       } catch (error) {
@@ -252,17 +265,17 @@ export function createMockConfig(
         } as CoreError)
       }
     },
-    
+
     validateConfig(
       config: Record<string, any>,
       rules: ConfigValidationRule[] = validationRules
     ): Result<Record<string, any>, CoreError> {
       const validatedConfig = { ...config }
       const errors: string[] = []
-      
+
       for (const rule of rules) {
         const value = getValueByPath(config, rule.path)
-        
+
         // Check required fields
         if (rule.required && (value === undefined || value === null)) {
           if (rule.default !== undefined) {
@@ -272,30 +285,33 @@ export function createMockConfig(
           }
           continue
         }
-        
+
         // Skip validation if value is undefined and not required
         if (value === undefined || value === null) {
           continue
         }
-        
+
         // Type validation
         if (!validateType(value, rule.type)) {
-          errors.push(`Configuration '${rule.path}' must be of type ${rule.type}, got ${typeof value}`)
+          errors.push(
+            `Configuration '${rule.path}' must be of type ${rule.type}, got ${typeof value}`
+          )
           continue
         }
-        
+
         // Custom validation
         if (rule.validator) {
           const validationResult = rule.validator(value)
           if (validationResult !== true) {
-            const message = typeof validationResult === 'string' 
-              ? validationResult 
-              : `Configuration '${rule.path}' failed validation`
+            const message =
+              typeof validationResult === 'string'
+                ? validationResult
+                : `Configuration '${rule.path}' failed validation`
             errors.push(message)
           }
         }
       }
-      
+
       if (errors.length > 0) {
         return err({
           type: 'ConfigError',
@@ -309,33 +325,33 @@ export function createMockConfig(
           severity: 'medium',
         } as CoreError)
       }
-      
+
       return ok(validatedConfig)
     },
-    
+
     mergeConfigs(configs: ConfigSource[]): Record<string, any> {
       // Sort by priority (lower priority first, higher priority overwrites)
       const sortedConfigs = [...configs].sort((a, b) => a.priority - b.priority)
-      
+
       let merged: Record<string, any> = {}
-      
+
       for (const config of sortedConfigs) {
         merged = deepMerge(merged, config.data, finalMergeStrategy)
       }
-      
+
       return merged
     },
-    
+
     getLoadHistory(): Array<{ path: string; timestamp: number; success: boolean }> {
       return [...loadHistory]
     },
-    
+
     clearMocks(): void {
       sources.clear()
       validationRules.length = 0
       loadHistory.length = 0
       environmentMocks.clear()
-      Object.keys(argsMocks).forEach(key => delete argsMocks[key])
+      Object.keys(argsMocks).forEach((key) => delete argsMocks[key])
     },
   }
 }
@@ -365,7 +381,7 @@ export const configFixtures = {
         host: '0.0.0.0',
       },
     },
-    
+
     complex: {
       app: {
         name: 'complex-app',
@@ -398,7 +414,7 @@ export const configFixtures = {
       },
     },
   },
-  
+
   /**
    * Invalid configuration examples
    */
@@ -409,7 +425,7 @@ export const configFixtures = {
         // missing version
       },
     },
-    
+
     wrongTypes: {
       app: {
         name: 123, // should be string
@@ -420,7 +436,7 @@ export const configFixtures = {
         port: '5432', // should be number
       },
     },
-    
+
     invalidValues: {
       app: {
         name: '',
@@ -431,7 +447,7 @@ export const configFixtures = {
       },
     },
   },
-  
+
   /**
    * Environment variable mappings
    */
@@ -442,7 +458,7 @@ export const configFixtures = {
       DATABASE_URL: 'postgres://localhost:5432/dev',
       LOG_LEVEL: 'debug',
     },
-    
+
     production: {
       NODE_ENV: 'production',
       DEBUG: 'false',
@@ -450,7 +466,7 @@ export const configFixtures = {
       LOG_LEVEL: 'info',
     },
   },
-  
+
   /**
    * Command line argument examples
    */
@@ -460,14 +476,14 @@ export const configFixtures = {
       verbose: true,
       config: '/path/to/config.json',
     },
-    
+
     override: {
       'app.debug': true,
       'database.host': 'override-host',
       'server.port': 9000,
     },
   },
-  
+
   /**
    * Validation rules for testing
    */
@@ -476,8 +492,18 @@ export const configFixtures = {
     { path: 'app.version', type: 'string' as const, required: true },
     { path: 'app.debug', type: 'boolean' as const, default: false },
     { path: 'database.host', type: 'string' as const, required: true },
-    { path: 'database.port', type: 'number' as const, default: 5432, validator: (port: number) => port > 0 && port < 65536 },
-    { path: 'server.port', type: 'number' as const, default: 3000, validator: (port: number) => port > 1024 && port < 65536 },
+    {
+      path: 'database.port',
+      type: 'number' as const,
+      default: 5432,
+      validator: (port: number) => port > 0 && port < 65536,
+    },
+    {
+      path: 'server.port',
+      type: 'number' as const,
+      default: 3000,
+      validator: (port: number) => port > 1024 && port < 65536,
+    },
   ],
 }
 
@@ -495,9 +521,9 @@ export function assertConfigValid(
   if (result.isErr()) {
     throw new Error(`Expected config loading to succeed, but got error: ${result.error.message}`)
   }
-  
+
   const config = result.value
-  
+
   if (expectedKeys) {
     for (const key of expectedKeys) {
       if (!(key in config)) {
@@ -517,11 +543,9 @@ export function assertConfigInvalid(
   if (result.isOk()) {
     throw new Error(`Expected config validation to fail, but it succeeded`)
   }
-  
+
   if (expectedErrorCode && result.error.code !== expectedErrorCode) {
-    throw new Error(
-      `Expected error code '${expectedErrorCode}', but got '${result.error.code}'`
-    )
+    throw new Error(`Expected error code '${expectedErrorCode}', but got '${result.error.code}'`)
   }
 }
 
@@ -534,7 +558,7 @@ export function assertConfigValues(
 ): void {
   for (const [path, expectedValue] of Object.entries(expectedValues)) {
     const actualValue = getValueByPath(config, path)
-    
+
     if (actualValue !== expectedValue) {
       throw new Error(
         `Expected config '${path}' to be ${JSON.stringify(expectedValue)}, but got ${JSON.stringify(actualValue)}`
@@ -553,7 +577,7 @@ export function assertConfigMerge(
 ): void {
   for (const [path, expectedValue] of Object.entries(expectedOverrides)) {
     const actualValue = getValueByPath(mergedConfig, path)
-    
+
     if (actualValue !== expectedValue) {
       throw new Error(
         `Expected merged config '${path}' to be ${JSON.stringify(expectedValue)}, but got ${JSON.stringify(actualValue)}`
@@ -569,55 +593,57 @@ export function assertConfigMerge(
 /**
  * Creates a configuration test scenario
  */
-export function createConfigTestScenario(options: {
-  configFiles?: Array<{ path: string; data: Record<string, any> }>
-  environment?: Record<string, string>
-  args?: Record<string, any>
-  validationRules?: ConfigValidationRule[]
-  mergeStrategy?: Partial<ConfigMergeStrategy>
-} = {}): {
+export function createConfigTestScenario(
+  options: {
+    configFiles?: Array<{ path: string; data: Record<string, any> }>
+    environment?: Record<string, string>
+    args?: Record<string, any>
+    validationRules?: ConfigValidationRule[]
+    mergeStrategy?: Partial<ConfigMergeStrategy>
+  } = {}
+): {
   loader: MockConfigLoader
   loadConfig: (path?: string) => Promise<Result<Record<string, any>, CoreError>>
   validateConfig: (config: Record<string, any>) => Result<Record<string, any>, CoreError>
   cleanup: () => void
 } {
   const loader = createMockConfig(options.mergeStrategy)
-  
+
   // Setup config files
   if (options.configFiles) {
     for (const file of options.configFiles) {
       loader.mockConfigFile(file.path, file.data)
     }
   }
-  
+
   // Setup environment variables
   if (options.environment) {
     for (const [key, value] of Object.entries(options.environment)) {
       loader.mockEnvironmentVariable(key, value)
     }
   }
-  
+
   // Setup command line args
   if (options.args) {
     loader.mockCommandLineArgs(options.args)
   }
-  
+
   // Setup validation rules
   if (options.validationRules) {
     loader.validationRules.push(...options.validationRules)
   }
-  
+
   return {
     loader,
-    
+
     async loadConfig(path?: string): Promise<Result<Record<string, any>, CoreError>> {
       return loader.loadConfig(path)
     },
-    
+
     validateConfig(config: Record<string, any>): Result<Record<string, any>, CoreError> {
       return loader.validateConfig(config)
     },
-    
+
     cleanup(): void {
       loader.clearMocks()
     },
@@ -635,10 +661,10 @@ export const configTesting = {
   // Mock creation
   createMockConfig,
   createConfigTestScenario,
-  
+
   // Fixtures and test data
   fixtures: configFixtures,
-  
+
   // Assertions
   assertConfigValid,
   assertConfigInvalid,

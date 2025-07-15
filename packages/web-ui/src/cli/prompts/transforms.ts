@@ -3,11 +3,11 @@
  */
 
 export interface TransformPromptOptions {
-  currentSrcDir?: string;
+  currentSrcDir?: string
 }
 
 export interface TransformPromptResults {
-  src?: string;
+  src?: string
 }
 
 /**
@@ -16,14 +16,14 @@ export interface TransformPromptResults {
 export async function runTransformPrompts(
   options: TransformPromptOptions
 ): Promise<TransformPromptResults> {
-  const inquirer = await import('@inquirer/prompts');
+  const inquirer = await import('@inquirer/prompts')
 
   const src = await inquirer.input({
     message: 'Source directory containing components:',
     default: options.currentSrcDir || 'src/components/lib',
-  });
+  })
 
   return {
     src,
-  };
+  }
 }

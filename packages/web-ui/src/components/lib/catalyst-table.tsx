@@ -1,22 +1,22 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-'use client';
-import { cn } from '../utils/cn';
-import type React from 'react';
-import { createContext, useContext, useState } from 'react';
-import { CatalystLink } from './catalyst-link';
+'use client'
+import { cn } from '../utils/cn'
+import type React from 'react'
+import { createContext, useContext, useState } from 'react'
+import { CatalystLink } from './catalyst-link'
 const TableContext = createContext<{
-  bleed: boolean;
-  dense: boolean;
-  grid: boolean;
-  striped: boolean;
+  bleed: boolean
+  dense: boolean
+  grid: boolean
+  striped: boolean
 }>({
   bleed: false,
   dense: false,
   grid: false,
   striped: false,
-});
+})
 export function CatalystTable({
   bleed = false,
   dense = false,
@@ -26,10 +26,10 @@ export function CatalystTable({
   children,
   ...props
 }: {
-  bleed?: boolean;
-  dense?: boolean;
-  grid?: boolean;
-  striped?: boolean;
+  bleed?: boolean
+  dense?: boolean
+  grid?: boolean
+  striped?: boolean
 } & React.ComponentPropsWithoutRef<'div'>) {
   return (
     <TableContext.Provider
@@ -48,26 +48,26 @@ export function CatalystTable({
         </div>
       </div>
     </TableContext.Provider>
-  );
+  )
 }
 export function CatalystTableHead({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'thead'>) {
-  return <thead {...props} className={cn('text-zinc-500 dark:text-zinc-400', className)} />;
+  return <thead {...props} className={cn('text-zinc-500 dark:text-zinc-400', className)} />
 }
 export function CatalystTableBody(props: React.ComponentPropsWithoutRef<'tbody'>) {
-  return <tbody {...props} />;
+  return <tbody {...props} />
 }
 const TableRowContext = createContext<{
-  href?: string;
-  target?: string;
-  title?: string;
+  href?: string
+  target?: string
+  title?: string
 }>({
   href: undefined,
   target: undefined,
   title: undefined,
-});
+})
 export function CatalystTableRow({
   href,
   target,
@@ -75,11 +75,11 @@ export function CatalystTableRow({
   className,
   ...props
 }: {
-  href?: string;
-  target?: string;
-  title?: string;
+  href?: string
+  target?: string
+  title?: string
 } & React.ComponentPropsWithoutRef<'tr'>) {
-  let { striped } = useContext(TableContext);
+  let { striped } = useContext(TableContext)
   return (
     <TableRowContext.Provider
       value={{ href, target, title } as React.ContextType<typeof TableRowContext>}
@@ -96,10 +96,10 @@ export function CatalystTableRow({
         )}
       />
     </TableRowContext.Provider>
-  );
+  )
 }
 export function CatalystTableHeader({ className, ...props }: React.ComponentPropsWithoutRef<'th'>) {
-  let { bleed, grid } = useContext(TableContext);
+  let { bleed, grid } = useContext(TableContext)
   return (
     <th
       {...props}
@@ -110,16 +110,16 @@ export function CatalystTableHeader({ className, ...props }: React.ComponentProp
         className
       )}
     />
-  );
+  )
 }
 export function CatalystTableCell({
   className,
   children,
   ...props
 }: React.ComponentPropsWithoutRef<'td'>) {
-  let { bleed, dense, grid, striped } = useContext(TableContext);
-  let { href, target, title } = useContext(TableRowContext);
-  let [cellRef, setCellRef] = useState<HTMLElement | null>(null);
+  let { bleed, dense, grid, striped } = useContext(TableContext)
+  let { href, target, title } = useContext(TableRowContext)
+  let [cellRef, setCellRef] = useState<HTMLElement | null>(null)
   return (
     <td
       ref={href ? setCellRef : undefined}
@@ -145,5 +145,5 @@ export function CatalystTableCell({
       )}
       {children}
     </td>
-  );
+  )
 }

@@ -1,7 +1,7 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import type React from 'react';
+import type React from 'react'
 export function CatalystAuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-dvh flex-col p-2">
@@ -9,5 +9,5 @@ export function CatalystAuthLayout({ children }: { children: React.ReactNode }) 
         {children}
       </div>
     </main>
-  );
+  )
 }

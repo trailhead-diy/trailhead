@@ -61,17 +61,17 @@ export const testPatterns = {
    * Create a timeout configuration for tests
    */
   timeout: (ms: number) => ({ timeout: ms }),
-  
+
   /**
    * Create a retry configuration for tests
    */
   retry: (count: number) => ({ retry: count }),
-  
+
   /**
    * Conditional skip utility
    */
   skip: (condition: boolean) => condition,
-  
+
   /**
    * Create a test description with consistent formatting
    */

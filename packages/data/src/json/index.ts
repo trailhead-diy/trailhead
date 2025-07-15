@@ -14,3 +14,6 @@ export type {
   JSONFormatOptions,
   JSONMinifyOptions,
 } from './types.js'
+
+// Re-export main types from data types
+export type { JSONOperations } from '../types.js'

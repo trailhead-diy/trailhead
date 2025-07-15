@@ -12,3 +12,6 @@ export type {
   CSVParseResult,
   CSVStringifyOptions,
 } from './types.js'
+
+// Re-export main types from data types
+export type { CSVOperations } from '../types.js'

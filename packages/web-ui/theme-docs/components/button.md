@@ -61,7 +61,7 @@ const colors = {
     'text-foreground border',
     'hover:bg-accent hover:text-accent-foreground',
   ],
-};
+}
 ```
 
 ## Button Style Variants

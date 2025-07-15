@@ -1,9 +1,9 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import React, { forwardRef } from 'react';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import React, { forwardRef } from 'react'
 export function CatalystInputGroup({ children }: React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
@@ -18,17 +18,17 @@ export function CatalystInputGroup({ children }: React.ComponentPropsWithoutRef<
     >
       {children}
     </span>
-  );
+  )
 }
-const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week'];
-type DateType = (typeof dateTypes)[number];
+const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week']
+type DateType = (typeof dateTypes)[number]
 export const CatalystInput = forwardRef(function CatalystInput(
   {
     className,
     ...props
   }: {
-    className?: string;
-    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | DateType;
+    className?: string
+    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | DateType
   } & Omit<Headless.InputProps, 'as' | 'className'>,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
@@ -90,5 +90,5 @@ export const CatalystInput = forwardRef(function CatalystInput(
         ])}
       />
     </span>
-  );
-});
+  )
+})

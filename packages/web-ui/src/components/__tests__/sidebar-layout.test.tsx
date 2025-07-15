@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { SidebarLayout } from '../sidebar-layout';
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { SidebarLayout } from '../sidebar-layout'
 
 describe('SidebarLayout Component', () => {
   it('should compose application layout with navbar, sidebar, and main content', () => {
@@ -14,11 +14,11 @@ describe('SidebarLayout Component', () => {
           <p>Main application content</p>
         </main>
       </SidebarLayout>
-    );
+    )
 
-    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument();
-    expect(screen.getByLabelText('Secondary navigation')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
-    expect(screen.getByText('Main application content')).toBeInTheDocument();
-  });
-});
+    expect(screen.getByLabelText('Main navigation')).toBeInTheDocument()
+    expect(screen.getByLabelText('Secondary navigation')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
+    expect(screen.getByText('Main application content')).toBeInTheDocument()
+  })
+})

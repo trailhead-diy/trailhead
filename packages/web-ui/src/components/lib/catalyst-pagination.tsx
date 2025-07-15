@@ -1,23 +1,23 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import { cn } from '../utils/cn';
-import type React from 'react';
-import { CatalystButton } from './catalyst-button';
+import { cn } from '../utils/cn'
+import type React from 'react'
+import { CatalystButton } from './catalyst-button'
 export function CatalystPagination({
   'aria-label': ariaLabel = 'Page navigation',
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'>) {
-  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />;
+  return <nav aria-label={ariaLabel} {...props} className={cn('flex gap-x-2', className)} />
 }
 export function CatalystPaginationPrevious({
   href = null,
   className,
   children = 'Previous',
 }: React.PropsWithChildren<{
-  href?: string | null;
-  className?: string;
+  href?: string | null
+  className?: string
 }>) {
   return (
     <span className={cn('grow basis-0', className)}>
@@ -43,15 +43,15 @@ export function CatalystPaginationPrevious({
         {children}
       </CatalystButton>
     </span>
-  );
+  )
 }
 export function CatalystPaginationNext({
   href = null,
   className,
   children = 'Next',
 }: React.PropsWithChildren<{
-  href?: string | null;
-  className?: string;
+  href?: string | null
+  className?: string
 }>) {
   return (
     <span className={cn('flex grow basis-0 justify-end', className)}>
@@ -77,13 +77,13 @@ export function CatalystPaginationNext({
         </svg>
       </CatalystButton>
     </span>
-  );
+  )
 }
 export function CatalystPaginationList({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />;
+  return <span {...props} className={cn('hidden items-baseline gap-x-2 sm:flex', className)} />
 }
 export function CatalystPaginationPage({
   href,
@@ -91,9 +91,9 @@ export function CatalystPaginationPage({
   current = false,
   children,
 }: React.PropsWithChildren<{
-  href: string;
-  className?: string;
-  current?: boolean;
+  href: string
+  className?: string
+  current?: boolean
 }>) {
   return (
     <CatalystButton
@@ -109,7 +109,7 @@ export function CatalystPaginationPage({
     >
       <span className="-mx-0.5">{children}</span>
     </CatalystButton>
-  );
+  )
 }
 export function CatalystPaginationGap({
   className,
@@ -127,5 +127,5 @@ export function CatalystPaginationGap({
     >
       {children}
     </span>
-  );
+  )
 }

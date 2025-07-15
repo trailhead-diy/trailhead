@@ -69,9 +69,9 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js';
-import { executeSemanticColorsTransform } from './transform.js';
+import type { Result, CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js'
+import { executeSemanticColorsTransform } from './transform.js'
 
 /**
  * Transform metadata
@@ -80,7 +80,7 @@ export const semanticColorsTransform = createTransformMetadata(
   'semantic-colors',
   'Add semantic color tokens to color objects',
   'semantic'
-);
+)
 
 /**
  * Add semantic color tokens (primary, secondary, destructive, accent, muted) to component color objects
@@ -98,7 +98,7 @@ export const semanticColorsTransform = createTransformMetadata(
  */
 export function transformSemanticColors(input: string): Result<TransformResult, CLIError> {
   return executeTransform(() => {
-    const result = executeSemanticColorsTransform(input);
-    return result;
-  });
+    const result = executeSemanticColorsTransform(input)
+    return result
+  })
 }

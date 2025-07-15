@@ -15,17 +15,20 @@ Transform the Trailhead monorepo from centralized testing utilities to a domain-
 ## **Current State Analysis**
 
 ### **Packages with Substantial Testing Utilities**
+
 - `@esteban-url/cli` - 121 utilities (50% general-purpose, should be domain-specific)
 - `@esteban-url/fs` - 8 utilities (correctly domain-focused)
 - `@esteban-url/core` - 6 utilities (correctly domain-focused)
 
 ### **Packages with Placeholder/Minimal Testing**
+
 - `@esteban-url/config` - 11 lines placeholder
 - `@esteban-url/data` - 100 lines, appears unused
 - `@esteban-url/streams` - 186 lines, appears unused
 - `@esteban-url/validation` - 196 lines, appears unused
 
 ### **Packages Missing Testing Directories**
+
 - `@esteban-url/git`
 - `@esteban-url/watcher`
 - `@esteban-url/formats`
@@ -36,6 +39,7 @@ Transform the Trailhead monorepo from centralized testing utilities to a domain-
 ## **Target Architecture**
 
 ### **@repo/vitest-config (Cross-cutting Only)**
+
 ```typescript
 // tooling/vitest-config/src/index.ts
 export { createVitestConfig } from './vitest.shared.js'
@@ -50,6 +54,7 @@ export const testPatterns = {
 ```
 
 ### **@esteban-url/core/testing (Result-focused)**
+
 ```typescript
 // packages/core/src/testing/index.ts
 export const resultMatchers = {
@@ -75,6 +80,7 @@ export const resultFixtures = {
 ```
 
 ### **@esteban-url/fs/testing (Filesystem-focused)**
+
 ```typescript
 // packages/fs/src/testing/index.ts
 export const fsMocks = {
@@ -100,6 +106,7 @@ export const fsHelpers = {
 ```
 
 ### **@esteban-url/cli/testing (CLI-focused Only)**
+
 ```typescript
 // packages/cli/src/testing/index.ts
 export const cliRunners = {
@@ -129,6 +136,7 @@ export const cliFixtures = {
 ```
 
 ### **@esteban-url/data/testing (Data Processing-focused)**
+
 ```typescript
 // packages/data/src/testing/index.ts
 export const dataFixtures = {
@@ -152,6 +160,7 @@ export const dataHelpers = {
 ```
 
 ### **@esteban-url/validation/testing (Validation-focused)**
+
 ```typescript
 // packages/validation/src/testing/index.ts
 export const validationFixtures = {
@@ -174,6 +183,7 @@ export const validationHelpers = {
 ```
 
 ### **@esteban-url/config/testing (Configuration-focused)**
+
 ```typescript
 // packages/config/src/testing/index.ts
 export const configFixtures = {
@@ -209,6 +219,7 @@ Each of the following packages will receive new testing directories with domain-
 ## **Composition Pattern Examples**
 
 ### **CLI + Filesystem Integration Testing**
+
 ```typescript
 // In CLI tests that need filesystem operations
 import { createTestTempDir, fsFixtures } from '@esteban-url/fs/testing'
@@ -217,13 +228,14 @@ import { cliRunners, cliAssertions } from '@esteban-url/cli/testing'
 export const testCLIWithFiles = async (command: string, files: FileStructure) => {
   const tempDir = createTestTempDir()
   await fsFixtures.createFileStructure(tempDir, files)
-  
+
   const result = await cliRunners.runCommand(command, { cwd: tempDir })
   cliAssertions.assertCommandSuccess(result)
 }
 ```
 
 ### **Data + Validation Integration Testing**
+
 ```typescript
 // In data processing tests that need validation
 import { validationFixtures, validationHelpers } from '@esteban-url/validation/testing'
@@ -232,7 +244,7 @@ import { dataFixtures, dataHelpers } from '@esteban-url/data/testing'
 export const testDataValidation = (csvData: string) => {
   const schema = validationFixtures.validSchemas.csvSchema
   const parsed = dataHelpers.parseCSV(csvData)
-  
+
   const result = validationHelpers.validateWithSchema(schema, parsed)
   validationHelpers.assertValidationSuccess(result)
 }
@@ -241,6 +253,7 @@ export const testDataValidation = (csvData: string) => {
 ## **Export Standardization**
 
 ### **Standard Export Pattern Template**
+
 ```typescript
 // Standard index.ts pattern for every package
 // ========================================
@@ -257,8 +270,8 @@ export type {
   DomainConfig,
   DomainOptions,
   DomainResult,
-  
-  // Error types  
+
+  // Error types
   DomainError,
   DomainErrorCode,
 } from './types.js'
@@ -266,20 +279,12 @@ export type {
 // ========================================
 // Core Function Exports (Main API)
 // ========================================
-export {
-  createDomain,
-  executeDomain,
-  validateDomain,
-} from './core.js'
+export { createDomain, executeDomain, validateDomain } from './core.js'
 
 // ========================================
 // Utility Exports (Supporting Functions)
 // ========================================
-export {
-  createDomainError,
-  mapDomainError,
-  isDomainValid,
-} from './utils.js'
+export { createDomainError, mapDomainError, isDomainValid } from './utils.js'
 
 // ========================================
 // Testing Exports (Domain Testing)
@@ -297,6 +302,7 @@ export const domain = {
 ```
 
 ### **Standard package.json Exports**
+
 ```json
 {
   "type": "module",
@@ -322,38 +328,45 @@ export const domain = {
 ### **Phase 1: Foundation & Core Changes**
 
 **@repo/vitest-config**
+
 - Simplify to cross-cutting utilities only
 - Remove Result matchers (move to core)
 - Keep only configuration factory and test patterns
 
 **@esteban-url/core/testing**
+
 - Move comprehensive Result matchers from CLI
 - Enhance with better error matching
 - Add Result helpers and fixtures
 
 **Update Dependencies**
+
 - Update all packages to use core/testing for Result matchers
 - Remove vitest-config Result matcher dependencies
 
 ### **Phase 2: CLI Cleanup & Domain Implementations**
 
 **@esteban-url/cli/testing Cleanup**
+
 - Remove general-purpose utilities (path utils, fixtures, performance monitoring)
 - Keep only CLI-specific: command runners, interactive testing, CLI context mocking
 - Reduce from 121 to ~15 CLI-focused utilities
 
 **Implement Missing Testing Directories**
+
 - Create testing directories for: git, watcher, formats, workflows, db, create-cli
 - Implement shallow but functional utilities for each domain
 
 ### **Phase 3: Complete Remaining Packages**
 
 **Enhance Existing Packages**
+
 - Improve data/testing with actual utilities (not placeholders)
 - Improve validation/testing with Zod-specific helpers
 - Improve config/testing with configuration testing patterns
 
 **Final Integration & Testing**
+
 - Update all package dependencies for new testing imports
 - Test composition patterns (CLI + fs, data + validation, etc.)
 - Ensure all packages have complete testing capabilities
@@ -361,6 +374,7 @@ export const domain = {
 ### **Phase 4: Export Standardization**
 
 **Standardize All Package Exports**
+
 - Apply consistent export pattern to all packages
 - Update all package.json subpath exports
 - Ensure predictable import patterns across the monorepo
@@ -368,17 +382,20 @@ export const domain = {
 ## **File-by-File Implementation Priority**
 
 ### **High Priority**
+
 1. `tooling/vitest-config/` - Simplify to cross-cutting only
 2. `packages/core/src/testing/` - Move Result matchers from CLI
 3. `packages/cli/src/testing/` - Remove non-CLI utilities
 
 ### **Medium Priority**
+
 4. `packages/fs/src/testing/` - Already good, minor enhancements
 5. `packages/data/src/testing/` - Replace placeholders with actual utilities
 6. `packages/validation/src/testing/` - Implement Zod-specific helpers
 7. `packages/config/src/testing/` - Implement configuration testing
 
 ### **Low Priority**
+
 8. `packages/git/src/testing/` - Create new directory
 9. `packages/watcher/src/testing/` - Create new directory
 10. `packages/formats/src/testing/` - Create new directory
@@ -387,6 +404,7 @@ export const domain = {
 13. `packages/create-cli/src/testing/` - Create new directory
 
 ### **All Packages**
+
 14. Standardize all `index.ts` export patterns
 15. Update all `package.json` subpath exports
 16. Update all package dependencies for new testing imports
@@ -394,6 +412,7 @@ export const domain = {
 ## **Expected Outcomes**
 
 ### **Utility Distribution**
+
 - **Before**: 121 utilities in CLI + scattered utilities across packages
 - **After**: ~15 CLI utilities + ~8 per domain package = ~95 total utilities
 - **Distribution**: Logical domain-focused distribution instead of centralized accumulation
@@ -409,6 +428,7 @@ export const domain = {
 7. **Reduced Cognitive Load**: No more searching through 121 utilities to find the right one
 
 ### **Breaking Changes**
+
 - CLI testing utilities significantly reduced and refocused
 - Result matchers moved from vitest-config to core/testing
 - Import paths change for all testing utilities

@@ -63,7 +63,7 @@ const colors = {
     '[--radio-checked-bg:var(--accent)] [--radio-checked-border:var(--accent)]/90 [--radio-checked-indicator:var(--accent-foreground)]',
   destructive:
     '[--radio-checked-bg:var(--destructive)] [--radio-checked-border:var(--destructive)]/90 [--radio-checked-indicator:var(--destructive-foreground)]',
-};
+}
 ```
 
 ## Complete Color Mappings

@@ -23,7 +23,7 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "destructive: 'bg-destructive-500/15 text-destructive-700 group-data-hover:bg-destructive-500/25 dark:bg-destructive-500/10 dark:text-destructive-400 dark:group-data-hover:bg-destructive-500/20',",
       "accent: 'bg-accent-500/15 text-accent-700 group-data-hover:bg-accent-500/25 dark:bg-accent-500/10 dark:text-accent-400 dark:group-data-hover:bg-accent-500/20',",
       "muted: 'bg-muted-500/15 text-muted-700 group-data-hover:bg-muted-500/25 dark:bg-muted-500/10 dark:text-muted-400 dark:group-data-hover:bg-muted-500/20',",
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "  'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-gray-600)] [--btn-border:var(--color-gray-700)]/90',",
       "  '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',",
       '],',
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "  '[--switch-bg-ring:var(--color-gray-700)]/90 [--switch-bg:var(--color-gray-600)] dark:[--switch-bg-ring:transparent]',",
       "  '[--switch:white] [--switch-ring:var(--color-gray-700)]/90 [--switch-shadow:var(--color-gray-900)]/20',",
       '],',
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "destructive: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-red-600)] [--radio-checked-border:var(--color-red-700)]/90',",
       "accent: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-600)] [--radio-checked-border:var(--color-purple-700)]/90',",
       "muted: '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',",
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "destructive: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-red-600)] [--checkbox-checked-border:var(--color-red-700)]/90',",
       "accent: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-purple-600)] [--checkbox-checked-border:var(--color-purple-700)]/90',",
       "muted: '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-gray-600)] [--checkbox-checked-border:var(--color-gray-700)]/90',",
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -137,12 +137,12 @@ export function getSemanticColorsForComponent(content: string): string[] {
       "destructive: 'bg-destructive-50 border-destructive-200 text-destructive-800 dark:bg-destructive-900/50 dark:border-destructive-800 dark:text-destructive-200',",
       "accent: 'bg-accent-50 border-accent-200 text-accent-800 dark:bg-accent-900/50 dark:border-accent-800 dark:text-accent-200',",
       "muted: 'bg-muted-50 border-muted-200 text-muted-800 dark:bg-muted-900/50 dark:border-muted-800 dark:text-muted-200',",
-    ];
+    ]
   }
 
   /////////////////////////////////////////////////////////////////////////////////
   // Default Fallback - No component matched
   //
   /////////////////////////////////////////////////////////////////////////////////
-  return [];
+  return []
 }

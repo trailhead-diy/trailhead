@@ -12,12 +12,12 @@ The Divider component is **mostly correctly implemented** with semantic tokens.
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'border-zinc-950/5 dark:border-border';
-'border-zinc-950/10 dark:border-border';
+'border-zinc-950/5 dark:border-border'
+'border-zinc-950/10 dark:border-border'
 
 // Recommended Fix
-'border-border dark:border-border';
-'border-border dark:border-border';
+'border-border dark:border-border'
+'border-border dark:border-border'
 ```
 
 **Impact**: Inconsistent border opacity values between light and dark modes, affecting visual consistency across themes.

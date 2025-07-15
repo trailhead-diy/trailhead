@@ -12,12 +12,12 @@
  *   assertCommitExists,
  *   createMockGit,
  * } from '@esteban-url/git/testing'
- * 
+ *
  * // Create test repository
  * const repo = await createTestRepository()
  * await repo.addFile('README.md', '# Test Project')
  * await repo.commit('Initial commit')
- * 
+ *
  * // Test git operations
  * const result = await gitOperations.getCommitHistory(repo.path)
  * assertCommitExists(result, 'Initial commit')
@@ -51,50 +51,52 @@ export interface GitAuthor {
 /**
  * Creates a temporary test Git repository
  */
-export async function createTestRepository(options: {
-  name?: string
-  author?: GitAuthor
-} = {}): Promise<TestRepository> {
+export async function createTestRepository(
+  options: {
+    name?: string
+    author?: GitAuthor
+  } = {}
+): Promise<TestRepository> {
   const { name = 'test-repo', author = { name: 'Test User', email: 'test@example.com' } } = options
-  
+
   // Implementation would create actual git repo
   const tempPath = `/tmp/git-test-${Date.now()}-${name}`
   const gitDir = `${tempPath}/.git`
-  
+
   const commits: Array<{ hash: string; message: string }> = []
-  
+
   return {
     path: tempPath,
     gitDir,
-    
+
     async addFile(filePath: string, content: string): Promise<void> {
       // Mock implementation - would use fs to create file
       // await fs.writeFile(path.join(tempPath, filePath), content)
     },
-    
+
     async commit(message: string, commitAuthor?: GitAuthor): Promise<string> {
       const hash = `commit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       commits.push({ hash, message })
       return hash
     },
-    
+
     async createBranch(branchName: string): Promise<void> {
       // Mock implementation - would create git branch
     },
-    
+
     async checkoutBranch(branchName: string): Promise<void> {
       // Mock implementation - would checkout branch
     },
-    
+
     async addTag(tagName: string, tagMessage?: string): Promise<void> {
       // Mock implementation - would create git tag
     },
-    
+
     async getCommitHash(message: string): Promise<string | null> {
-      const commit = commits.find(c => c.message === message)
+      const commit = commits.find((c) => c.message === message)
       return commit?.hash || null
     },
-    
+
     async cleanup(): Promise<void> {
       // Mock implementation - would remove temp directory
     },
@@ -116,7 +118,7 @@ export const gitFixtures = {
     docs: 'docs: update README',
     refactor: 'refactor: improve code structure',
   },
-  
+
   /**
    * Sample file structures for repositories
    */
@@ -125,20 +127,24 @@ export const gitFixtures = {
       'README.md': '# Simple Project\n\nA simple test project.',
       'package.json': JSON.stringify({ name: 'simple-project', version: '1.0.0' }, null, 2),
     },
-    
+
     complex: {
       'README.md': '# Complex Project\n\nA complex test project.',
       'src/index.ts': 'export { main } from "./main.js"',
       'src/main.ts': 'export function main() { console.log("Hello!") }',
       'tests/main.test.ts': 'import { main } from "../src/main.js"',
-      'package.json': JSON.stringify({
-        name: 'complex-project',
-        version: '1.0.0',
-        scripts: { test: 'vitest' },
-      }, null, 2),
+      'package.json': JSON.stringify(
+        {
+          name: 'complex-project',
+          version: '1.0.0',
+          scripts: { test: 'vitest' },
+        },
+        null,
+        2
+      ),
     },
   },
-  
+
   /**
    * Sample authors for commits
    */
@@ -171,7 +177,7 @@ export interface MockGitOperations {
 export function createMockGit(): MockGitOperations {
   // Simple mock functions that return Result types
   const mockFn = (returnValue: any) => () => Promise.resolve(returnValue)
-  
+
   return {
     init: mockFn(ok(undefined)),
     add: mockFn(ok(undefined)),
@@ -199,27 +205,26 @@ export function assertCommitExists(
   if (result.isErr()) {
     throw new Error(`Expected commit history but got error: ${result.error.message}`)
   }
-  
+
   const commits = result.value
-  const commit = commits.find(c => c.message === expectedMessage)
-  
+  const commit = commits.find((c) => c.message === expectedMessage)
+
   if (!commit) {
-    const messages = commits.map(c => c.message).join(', ')
-    throw new Error(`Expected commit with message "${expectedMessage}" not found. Found: ${messages}`)
+    const messages = commits.map((c) => c.message).join(', ')
+    throw new Error(
+      `Expected commit with message "${expectedMessage}" not found. Found: ${messages}`
+    )
   }
 }
 
 /**
  * Asserts that a branch exists
  */
-export function assertBranchExists(
-  result: Result<string[], CoreError>,
-  branchName: string
-): void {
+export function assertBranchExists(result: Result<string[], CoreError>, branchName: string): void {
   if (result.isErr()) {
     throw new Error(`Expected branch list but got error: ${result.error.message}`)
   }
-  
+
   if (!result.value.includes(branchName)) {
     throw new Error(`Expected branch "${branchName}" not found. Found: ${result.value.join(', ')}`)
   }
@@ -228,14 +233,11 @@ export function assertBranchExists(
 /**
  * Asserts that a tag exists
  */
-export function assertTagExists(
-  result: Result<string[], CoreError>,
-  tagName: string
-): void {
+export function assertTagExists(result: Result<string[], CoreError>, tagName: string): void {
   if (result.isErr()) {
     throw new Error(`Expected tag list but got error: ${result.error.message}`)
   }
-  
+
   if (!result.value.includes(tagName)) {
     throw new Error(`Expected tag "${tagName}" not found. Found: ${result.value.join(', ')}`)
   }
@@ -250,9 +252,11 @@ export function assertRepositoryClean(
   if (result.isErr()) {
     throw new Error(`Expected repository status but got error: ${result.error.message}`)
   }
-  
+
   if (!result.value.clean) {
-    throw new Error(`Expected clean repository but found uncommitted files: ${result.value.files.join(', ')}`)
+    throw new Error(
+      `Expected clean repository but found uncommitted files: ${result.value.files.join(', ')}`
+    )
   }
 }
 
@@ -263,11 +267,13 @@ export function assertRepositoryClean(
 /**
  * Creates a complete workflow for testing Git operations
  */
-export async function createGitWorkflow(options: {
-  repositoryName?: string
-  initialFiles?: Record<string, string>
-  author?: GitAuthor
-} = {}): Promise<{
+export async function createGitWorkflow(
+  options: {
+    repositoryName?: string
+    initialFiles?: Record<string, string>
+    author?: GitAuthor
+  } = {}
+): Promise<{
   repository: TestRepository
   addAndCommit: (files: Record<string, string>, message: string) => Promise<string>
   createFeatureBranch: (branchName: string, files: Record<string, string>) => Promise<void>
@@ -278,7 +284,7 @@ export async function createGitWorkflow(options: {
     name: options.repositoryName,
     author: options.author,
   })
-  
+
   // Add initial files if provided
   if (options.initialFiles) {
     for (const [filePath, content] of Object.entries(options.initialFiles)) {
@@ -286,32 +292,32 @@ export async function createGitWorkflow(options: {
     }
     await repository.commit('Initial commit')
   }
-  
+
   return {
     repository,
-    
+
     async addAndCommit(files: Record<string, string>, message: string): Promise<string> {
       for (const [filePath, content] of Object.entries(files)) {
         await repository.addFile(filePath, content)
       }
       return repository.commit(message)
     },
-    
+
     async createFeatureBranch(branchName: string, files: Record<string, string>): Promise<void> {
       await repository.createBranch(branchName)
       await repository.checkoutBranch(branchName)
-      
+
       for (const [filePath, content] of Object.entries(files)) {
         await repository.addFile(filePath, content)
       }
       await repository.commit(`feat: add ${branchName} feature`)
     },
-    
+
     async mergeToMain(branchName: string): Promise<void> {
       await repository.checkoutBranch('main')
       // Mock merge operation
     },
-    
+
     async cleanup(): Promise<void> {
       await repository.cleanup()
     },
@@ -329,13 +335,13 @@ export const gitTesting = {
   // Repository management
   createTestRepository,
   createGitWorkflow,
-  
+
   // Fixtures and test data
   fixtures: gitFixtures,
-  
+
   // Mocking
   createMockGit,
-  
+
   // Assertions
   assertCommitExists,
   assertBranchExists,

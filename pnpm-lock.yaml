@@ -252,9 +252,12 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
-      '@esteban-url/streams':
-        specifier: workspace:*
-        version: link:../streams
+      file-type:
+        specifier: ^19.5.0
+        version: 19.6.0
+      mime-types:
+        specifier: ^2.1.35
+        version: 2.1.35
       papaparse:
         specifier: ^5.4.1
         version: 5.5.3
@@ -271,86 +274,15 @@ importers:
       '@repo/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest-config
-      '@types/node':
-        specifier: ^24.0.10
-        version: 24.0.10
-      '@types/papaparse':
-        specifier: ^5.3.14
-        version: 5.3.16
-      '@vitest/coverage-v8':
-        specifier: ^3.2.4
-        version: 3.2.4(vitest@3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0))
-      oxlint:
-        specifier: ^1.6.0
-        version: 1.6.0
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
-  packages/db:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-      '@esteban-url/fs':
-        specifier: workspace:*
-        version: link:../fs
-      '@esteban-url/validation':
-        specifier: workspace:*
-        version: link:../validation
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.7.3
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
-  packages/formats:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-      '@esteban-url/fs':
-        specifier: workspace:*
-        version: link:../fs
-      file-type:
-        specifier: ^19.5.0
-        version: 19.6.0
-      mime-types:
-        specifier: ^2.1.35
-        version: 2.1.35
-    devDependencies:
-      '@repo/oxlint-config':
-        specifier: workspace:*
-        version: link:../../tooling/oxlint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
       '@types/mime-types':
         specifier: ^2.1.4
         version: 2.1.4
       '@types/node':
         specifier: ^24.0.10
         version: 24.0.10
+      '@types/papaparse':
+        specifier: ^5.3.14
+        version: 5.3.16
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0))
@@ -435,56 +367,6 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
 
-  packages/streams:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      '@types/node':
-        specifier: ^22.10.2
-        version: 22.16.0
-      tsup:
-        specifier: ^8.3.5
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.7.2
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.16.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
-  packages/testing:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-      '@esteban-url/fs':
-        specifier: workspace:*
-        version: link:../fs
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.7.3
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
   packages/validation:
     dependencies:
       '@esteban-url/core':
@@ -521,37 +403,6 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
-  packages/watcher:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-      '@esteban-url/fs':
-        specifier: workspace:*
-        version: link:../fs
-      chokidar:
-        specifier: ^4.0.1
-        version: 4.0.3
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      '@types/node':
-        specifier: ^22.10.2
-        version: 22.16.0
-      tsup:
-        specifier: ^8.3.5
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.7.2
-        version: 5.8.3
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.16.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
 
   packages/web-ui:
     dependencies:
@@ -712,28 +563,6 @@ importers:
       vite:
         specifier: npm:rolldown-vite@^7.0.6
         version: rolldown-vite@7.0.6(@types/node@24.0.10)(esbuild@0.25.6)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)
-
-  packages/workflows:
-    dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.7.3
-        version: 5.8.3
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.10)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0)

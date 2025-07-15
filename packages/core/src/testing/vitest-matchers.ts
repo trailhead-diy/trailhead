@@ -1,16 +1,16 @@
 /**
  * Comprehensive Vitest matchers for Result types
- * 
+ *
  * These matchers provide fluent assertions for Result types in tests,
  * offering better error messages and type-safe testing patterns.
- * 
+ *
  * @example
  * ```typescript
  * import { setupResultMatchers } from '@esteban-url/core/testing'
- * 
+ *
  * // Setup in test files or global setup
  * setupResultMatchers()
- * 
+ *
  * // Use in tests
  * const result = someOperation()
  * expect(result).toBeOk()
@@ -36,10 +36,12 @@ interface TypedError {
 // Strict typing for Result matchers - simplified for compatibility
 interface ResultMatchers<R> {
   toBeOk(): any
-  toBeErr(): any  
+  toBeErr(): any
   toHaveValue<T extends InferOkType<R>>(expected: T): any
-  toHaveErrorCode<E extends InferErrType<R>>(expected: E extends TypedError ? E['code'] : string): any
-  toHaveErrorMessage<E extends InferErrType<R>>(expected: string | RegExp): any
+  toHaveErrorCode<E extends InferErrType<R>>(
+    expected: E extends TypedError ? E['code'] : string
+  ): any
+  toHaveErrorMessage<_E extends InferErrType<R>>(expected: string | RegExp): any
   toHaveLength<T extends InferOkType<R>>(expected: T extends readonly any[] ? number : never): any
 }
 
@@ -57,7 +59,8 @@ const toBeOk = function (this: any, received: Result<any, any>) {
   } else {
     return {
       pass: false,
-      message: () => `Expected Result to be successful, but got error: ${received.error.message || JSON.stringify(received.error)}`,
+      message: () =>
+        `Expected Result to be successful, but got error: ${received.error.message || JSON.stringify(received.error)}`,
     }
   }
 }
@@ -268,18 +271,18 @@ export const resultMatchers = {
 
 /**
  * Setup function to register matchers with Vitest
- * 
+ *
  * Call this in your test setup files or individual test files to register
  * the Result matchers with the global expect function.
- * 
+ *
  * @example
  * ```typescript
  * // In vitest.setup.ts or individual test files
  * import { setupResultMatchers } from '@esteban-url/core/testing'
- * 
+ *
  * setupResultMatchers()
  * ```
- * 
+ *
  * @throws Error if expect.extend is not available
  */
 export function setupResultMatchers(): void {
@@ -310,7 +313,7 @@ declare global {
       toHaveErrorMessage(expected: string | RegExp): any
       toHaveLength(expected: number): any
     }
-    
+
     interface Assertion<T = any> {
       // Result-specific matchers with type constraints
       toBeOk(): Assertion<T>

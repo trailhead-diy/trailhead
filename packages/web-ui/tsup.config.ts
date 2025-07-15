@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   // Entry points
@@ -52,4 +52,4 @@ export default defineConfig({
   cjsInterop: true,
   // Shims for Node.js compatibility
   shims: true,
-});
+})

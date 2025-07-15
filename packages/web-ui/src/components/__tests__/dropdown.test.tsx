@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
 import {
   Dropdown,
   DropdownButton,
@@ -8,13 +8,13 @@ import {
   DropdownItem,
   DropdownSection,
   DropdownDivider,
-} from '../dropdown';
+} from '../dropdown'
 
 describe('Dropdown Components', () => {
   describe('Selection and User Interactions', () => {
     it('should handle item selection and close menu', async () => {
-      const handleSelect = vi.fn();
-      const user = userEvent.setup();
+      const handleSelect = vi.fn()
+      const user = userEvent.setup()
 
       render(
         <Dropdown>
@@ -23,20 +23,20 @@ describe('Dropdown Components', () => {
             <DropdownItem onClick={handleSelect}>Click Me</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-      );
+      )
 
-      await user.click(screen.getByRole('button'));
-      const item = await screen.findByText('Click Me');
-      await user.click(item);
+      await user.click(screen.getByRole('button'))
+      const item = await screen.findByText('Click Me')
+      await user.click(item)
 
-      expect(handleSelect).toHaveBeenCalledTimes(1);
+      expect(handleSelect).toHaveBeenCalledTimes(1)
       await waitFor(() => {
-        expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-      });
-    });
+        expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      })
+    })
 
     it('should close dropdown when clicking outside', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
       render(
         <div>
           <div>Outside Element</div>
@@ -47,21 +47,21 @@ describe('Dropdown Components', () => {
             </DropdownMenu>
           </Dropdown>
         </div>
-      );
+      )
 
-      await user.click(screen.getByRole('button'));
-      expect(screen.getByRole('menu')).toBeInTheDocument();
+      await user.click(screen.getByRole('button'))
+      expect(screen.getByRole('menu')).toBeInTheDocument()
 
-      await user.click(screen.getByText('Outside Element'));
+      await user.click(screen.getByText('Outside Element'))
       await waitFor(() => {
-        expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-      });
-    });
-  });
+        expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      })
+    })
+  })
 
   describe('Keyboard Navigation', () => {
     it('should navigate through items with arrow keys and close with Escape', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
       render(
         <Dropdown>
           <DropdownButton>Navigate</DropdownButton>
@@ -72,36 +72,36 @@ describe('Dropdown Components', () => {
             <DropdownItem>Item 4</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-      );
+      )
 
-      await user.click(screen.getByRole('button'));
+      await user.click(screen.getByRole('button'))
       await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument();
-      });
+        expect(screen.getByRole('menu')).toBeInTheDocument()
+      })
 
-      await user.keyboard('{ArrowDown}');
-      expect(screen.getByText('Item 1')).toHaveAttribute('data-active');
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByText('Item 1')).toHaveAttribute('data-active')
 
-      await user.keyboard('{ArrowDown}');
-      expect(screen.getByText('Item 2')).toHaveAttribute('data-active');
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByText('Item 2')).toHaveAttribute('data-active')
 
-      await user.keyboard('{ArrowDown}');
-      expect(screen.getByText('Item 4')).toHaveAttribute('data-active');
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByText('Item 4')).toHaveAttribute('data-active')
 
-      await user.keyboard('{ArrowUp}');
-      expect(screen.getByText('Item 2')).toHaveAttribute('data-active');
+      await user.keyboard('{ArrowUp}')
+      expect(screen.getByText('Item 2')).toHaveAttribute('data-active')
 
-      await user.keyboard('{Escape}');
+      await user.keyboard('{Escape}')
       await waitFor(() => {
-        expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-      });
-    });
-  });
+        expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      })
+    })
+  })
 
   describe('Accessibility Features', () => {
     it('should handle ARIA attributes and disabled items correctly', async () => {
-      const handleClick = vi.fn();
-      const user = userEvent.setup();
+      const handleClick = vi.fn()
+      const user = userEvent.setup()
 
       render(
         <Dropdown>
@@ -113,29 +113,29 @@ describe('Dropdown Components', () => {
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
-      );
+      )
 
-      const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-haspopup', 'menu');
-      expect(button).toHaveAttribute('aria-expanded', 'false');
+      const button = screen.getByRole('button')
+      expect(button).toHaveAttribute('aria-haspopup', 'menu')
+      expect(button).toHaveAttribute('aria-expanded', 'false')
 
-      await user.click(button);
-      expect(button).toHaveAttribute('aria-expanded', 'true');
+      await user.click(button)
+      expect(button).toHaveAttribute('aria-expanded', 'true')
 
-      const disabledItem = screen.getByText('Disabled Item');
-      expect(disabledItem).toHaveAttribute('aria-disabled', 'true');
+      const disabledItem = screen.getByText('Disabled Item')
+      expect(disabledItem).toHaveAttribute('aria-disabled', 'true')
 
-      await user.click(disabledItem);
-      expect(handleClick).not.toHaveBeenCalled();
+      await user.click(disabledItem)
+      expect(handleClick).not.toHaveBeenCalled()
 
-      await user.click(screen.getByText('Active Item'));
-      expect(handleClick).toHaveBeenCalledTimes(1);
-    });
-  });
+      await user.click(screen.getByText('Active Item'))
+      expect(handleClick).toHaveBeenCalledTimes(1)
+    })
+  })
 
   describe('Component Composition', () => {
     it('should support sections and dividers', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
       render(
         <Dropdown>
           <DropdownButton>Complex Menu</DropdownButton>
@@ -151,16 +151,16 @@ describe('Dropdown Components', () => {
             </DropdownSection>
           </DropdownMenu>
         </Dropdown>
-      );
+      )
 
-      await user.click(screen.getByRole('button'));
+      await user.click(screen.getByRole('button'))
       await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument();
-      });
+        expect(screen.getByRole('menu')).toBeInTheDocument()
+      })
 
-      expect(screen.getByText('View Profile')).toBeInTheDocument();
-      expect(screen.getByText('Sign Out')).toBeInTheDocument();
-      expect(screen.getByRole('menu').querySelectorAll('[role="group"]')).toHaveLength(2);
-    });
-  });
-});
+      expect(screen.getByText('View Profile')).toBeInTheDocument()
+      expect(screen.getByText('Sign Out')).toBeInTheDocument()
+      expect(screen.getByRole('menu').querySelectorAll('[role="group"]')).toHaveLength(2)
+    })
+  })
+})

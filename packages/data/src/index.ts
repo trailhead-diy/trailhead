@@ -100,40 +100,39 @@ export type {
 } from './excel/index.js'
 
 // ========================================
-// Streaming Operations
+// Unified Data Operations (Main API)
+// ========================================
+
+export { createUnifiedDataOperations, data } from './operations.js'
+export type { UnifiedDataConfig, UnifiedDataOperations } from './operations.js'
+
+// ========================================
+// Format Detection and Processing
 // ========================================
 
 export {
-  createDataStreamingOperations,
-  createCSVStreaming,
-  createJSONStreaming,
-  createExcelStreaming,
-  checkStreamAvailability,
-  getStreamOperations,
-  isStreamingEnabled,
-  defaultStreamingConfig,
-  createProgressTracker,
-  createCSVStreamingOperations,
-  createJSONStreamingOperations,
-  createExcelStreamingOperations,
-} from './streaming/index.js'
+  createDetectionOperations,
+  createMimeOperations,
+  createConversionOperations,
+  COMMON_MIME_TYPES,
+  MIME_TYPE_CATEGORIES,
+  CONVERSION_CATEGORIES,
+  QUALITY_DEFINITIONS,
+} from './formats/index.js'
 
 export type {
-  StreamResult,
-  StreamingConfig,
-  StreamingCSVConfig,
-  StreamingJSONConfig,
-  StreamingExcelConfig,
-  StreamOperations,
-  CSVStreamingOperations,
-  JSONStreamingOperations,
-  ExcelStreamingOperations,
-  DataStreamingOperations,
-  CreateCSVStreamingOperations,
-  CreateJSONStreamingOperations,
-  CreateExcelStreamingOperations,
-  CreateDataStreamingOperations,
-  StreamProgress,
-  StreamMetrics,
-  StreamEventHandlers,
-} from './streaming/index.js'
+  FormatConfig,
+  DetectionConfig,
+  MimeConfig,
+  ConversionConfig,
+  DetectionOperations,
+  MimeOperations,
+  ConversionOperations,
+  FormatResult,
+  DetectionResult,
+  MimeTypeInfo,
+  ConversionInfo,
+  CreateDetectionOperations,
+  CreateMimeOperations,
+  CreateConversionOperations,
+} from './formats/index.js'

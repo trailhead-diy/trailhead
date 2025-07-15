@@ -22,60 +22,60 @@ Found in `catalyst-table.tsx`:
 
 ```tsx
 // Current - HARDCODED
-striped && 'even:bg-zinc-950/2.5 dark:even:bg-white/2.5';
+striped && 'even:bg-zinc-950/2.5 dark:even:bg-white/2.5'
 
 // Recommended Fix
-striped && 'even:bg-muted/50 dark:even:bg-muted/25';
+striped && 'even:bg-muted/50 dark:even:bg-muted/25'
 ```
 
 #### 2. Hover States on Striped Rows (Line 118)
 
 ```tsx
 // Current - HARDCODED
-href && striped && 'hover:bg-zinc-950/5 dark:hover:bg-white/5';
+href && striped && 'hover:bg-zinc-950/5 dark:hover:bg-white/5'
 
 // Recommended Fix
-href && striped && 'hover:bg-muted/75 dark:hover:bg-muted/50';
+href && striped && 'hover:bg-muted/75 dark:hover:bg-muted/50'
 ```
 
 #### 3. Hover States on Non-Striped Rows (Line 119)
 
 ```tsx
 // Current - HARDCODED
-href && !striped && 'hover:bg-zinc-950/2.5 dark:hover:bg-white/2.5';
+href && !striped && 'hover:bg-zinc-950/2.5 dark:hover:bg-white/2.5'
 
 // Recommended Fix
-href && !striped && 'hover:bg-muted/50 dark:hover:bg-muted/25';
+href && !striped && 'hover:bg-muted/50 dark:hover:bg-muted/25'
 ```
 
 #### 4. Grid Border Colors - TableCell (Line 135)
 
 ```tsx
 // Current - HARDCODED
-grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5';
+grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5'
 
 // Recommended Fix
-grid && 'border-l border-l-border first:border-l-0';
+grid && 'border-l border-l-border first:border-l-0'
 ```
 
 #### 5. Border Colors - TableRow (Line 154)
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-!striped && 'border-b border-zinc-950/5 dark:border-border';
+!striped && 'border-b border-zinc-950/5 dark:border-border'
 
 // Recommended Fix
-!striped && 'border-b border-border';
+!striped && 'border-b border-border'
 ```
 
 #### 6. Grid Border Colors - TableRow (Line 155)
 
 ```tsx
 // Current - HARDCODED
-grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5';
+grid && 'border-l border-l-zinc-950/5 first:border-l-0 dark:border-l-white/5'
 
 // Recommended Fix
-grid && 'border-l border-l-border first:border-l-0';
+grid && 'border-l border-l-border first:border-l-0'
 ```
 
 ### Impact Assessment

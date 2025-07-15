@@ -57,8 +57,8 @@
  * Pure functional interface with no classes.
  */
 
-import type { ASTContext } from './core.js';
-import ts from 'typescript';
+import type { ASTContext } from './core.js'
+import ts from 'typescript'
 
 /**
  * Update function parameter types in component definitions using TypeScript AST
@@ -76,7 +76,7 @@ import ts from 'typescript';
  * - Preserves Headless UI prop types from any modifications
  */
 export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, headlessPropsTypes, changes } = context;
+  const { sourceFile, oldToNewMap, headlessPropsTypes, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Function Parameter Type Updates with TypeScript AST
@@ -85,19 +85,19 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
   // To:    function CatalystButton({ color }: CatalystButtonProps) { }
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process variable declarations with Catalyst-prefixed names
         if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
-          const varName = node.name.text;
+          const varName = node.name.text
 
           if (varName.startsWith('Catalyst') && node.initializer) {
-            let funcNode: ts.ArrowFunction | ts.FunctionExpression | undefined;
+            let funcNode: ts.ArrowFunction | ts.FunctionExpression | undefined
 
             // Handle arrow functions: const CatalystButton = ({ color }: ButtonProps) => ...
             if (ts.isArrowFunction(node.initializer)) {
-              funcNode = node.initializer;
+              funcNode = node.initializer
             }
             // Handle forwardRef calls: const CatalystButton = forwardRef(function(...){})
             else if (
@@ -106,14 +106,14 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
               node.initializer.expression.text === 'forwardRef' &&
               node.initializer.arguments.length > 0
             ) {
-              const firstArg = node.initializer.arguments[0];
+              const firstArg = node.initializer.arguments[0]
               if (ts.isArrowFunction(firstArg) || ts.isFunctionExpression(firstArg)) {
-                funcNode = firstArg;
+                funcNode = firstArg
               }
             }
 
             if (funcNode && funcNode.parameters.length > 0) {
-              const firstParam = funcNode.parameters[0];
+              const firstParam = funcNode.parameters[0]
 
               // Handle object pattern parameters: { color, size }: ButtonProps
               if (ts.isParameter(firstParam) && firstParam.type) {
@@ -121,9 +121,9 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                   ts.isTypeReferenceNode(firstParam.type) &&
                   ts.isIdentifier(firstParam.type.typeName)
                 ) {
-                  const currentTypeName = firstParam.type.typeName.text;
-                  const baseName = varName.replace('Catalyst', '');
-                  const expectedTypeName = `Catalyst${baseName}Props`;
+                  const currentTypeName = firstParam.type.typeName.text
+                  const baseName = varName.replace('Catalyst', '')
+                  const expectedTypeName = `Catalyst${baseName}Props`
 
                   // Check if we should transform this type
                   const shouldTransform =
@@ -135,16 +135,16 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                         !currentTypeName.startsWith('Catalyst')) ||
                       (currentTypeName.endsWith('Props') &&
                         !currentTypeName.startsWith('Catalyst'))) &&
-                    !headlessPropsTypes.has(currentTypeName);
+                    !headlessPropsTypes.has(currentTypeName)
 
                   if (shouldTransform) {
                     changes.push(
                       `Updated function parameter type from ${currentTypeName} to ${expectedTypeName} in ${varName}`
-                    );
+                    )
 
                     // Add to mapping if not a Headless type
                     if (!headlessPropsTypes.has(currentTypeName)) {
-                      oldToNewMap.set(currentTypeName, expectedTypeName);
+                      oldToNewMap.set(currentTypeName, expectedTypeName)
                     }
 
                     // Update the type reference
@@ -152,7 +152,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                       firstParam.type,
                       ts.factory.createIdentifier(expectedTypeName),
                       firstParam.type.typeArguments
-                    );
+                    )
 
                     const updatedParam = ts.factory.updateParameterDeclaration(
                       firstParam,
@@ -162,7 +162,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                       firstParam.questionToken,
                       updatedType,
                       firstParam.initializer
-                    );
+                    )
 
                     if (ts.isArrowFunction(funcNode)) {
                       const updatedFunc = ts.factory.updateArrowFunction(
@@ -173,7 +173,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                         funcNode.type,
                         funcNode.equalsGreaterThanToken,
                         funcNode.body
-                      );
+                      )
 
                       return ts.factory.updateVariableDeclaration(
                         node,
@@ -181,7 +181,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                         node.exclamationToken,
                         node.type,
                         updatedFunc
-                      );
+                      )
                     } else if (ts.isFunctionExpression(funcNode)) {
                       const updatedFunc = ts.factory.updateFunctionExpression(
                         funcNode,
@@ -192,7 +192,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                         [updatedParam, ...funcNode.parameters.slice(1)],
                         funcNode.type,
                         funcNode.body
-                      );
+                      )
 
                       if (ts.isCallExpression(node.initializer)) {
                         const updatedCall = ts.factory.updateCallExpression(
@@ -200,7 +200,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                           node.initializer.expression,
                           node.initializer.typeArguments,
                           [updatedFunc, ...node.initializer.arguments.slice(1)]
-                        );
+                        )
 
                         return ts.factory.updateVariableDeclaration(
                           node,
@@ -208,7 +208,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
                           node.exclamationToken,
                           node.type,
                           updatedCall
-                        );
+                        )
                       }
                     }
                   }
@@ -218,18 +218,18 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -247,7 +247,7 @@ export function updateFunctionParameterTypes(context: ASTContext): ts.SourceFile
  * - Handles complex typeof expressions in utility types
  */
 export function updateTypeofUsages(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, changes } = context;
+  const { sourceFile, oldToNewMap, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 2: Typeof Expression Updates with TypeScript AST
@@ -256,33 +256,33 @@ export function updateTypeofUsages(context: ASTContext): ts.SourceFile {
   // To:    ComponentPropsWithoutRef<typeof CatalystButton>
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process typeof expressions
         if (ts.isTypeQueryNode(node) && ts.isIdentifier(node.exprName)) {
-          const oldName = node.exprName.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.exprName.text
+          const newName = oldToNewMap.get(oldName)
 
           if (newName) {
-            changes.push(`Updated typeof reference from typeof ${oldName} to typeof ${newName}`);
+            changes.push(`Updated typeof reference from typeof ${oldName} to typeof ${newName}`)
 
-            return ts.factory.updateTypeQueryNode(node, ts.factory.createIdentifier(newName));
+            return ts.factory.updateTypeQueryNode(node, ts.factory.createIdentifier(newName))
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -301,7 +301,7 @@ export function updateTypeofUsages(context: ASTContext): ts.SourceFile {
  * - Handles self-closing JSX elements properly
  */
 export function updateJSXReferences(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, changes } = context;
+  const { sourceFile, oldToNewMap, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 3: JSX Reference Updates with TypeScript AST
@@ -310,79 +310,79 @@ export function updateJSXReferences(context: ASTContext): ts.SourceFile {
   // To:    <CatalystButton color="blue">Click me</CatalystButton>
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process JSX expressions in attributes: <Component as={Button} />
         if (ts.isJsxExpression(node) && node.expression && ts.isIdentifier(node.expression)) {
-          const oldName = node.expression.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.expression.text
+          const newName = oldToNewMap.get(oldName)
 
           if (newName) {
-            changes.push(`Updated JSX expression from as={${oldName}} to as={${newName}}`);
+            changes.push(`Updated JSX expression from as={${oldName}} to as={${newName}}`)
 
-            return ts.factory.updateJsxExpression(node, ts.factory.createIdentifier(newName));
+            return ts.factory.updateJsxExpression(node, ts.factory.createIdentifier(newName))
           }
         }
 
         // Process JSX opening elements: <Button>
         if (ts.isJsxOpeningElement(node) && ts.isIdentifier(node.tagName)) {
-          const oldName = node.tagName.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.tagName.text
+          const newName = oldToNewMap.get(oldName)
 
           if (newName) {
-            changes.push(`Updated JSX opening element from <${oldName}> to <${newName}>`);
+            changes.push(`Updated JSX opening element from <${oldName}> to <${newName}>`)
 
             return ts.factory.updateJsxOpeningElement(
               node,
               ts.factory.createIdentifier(newName),
               node.typeArguments,
               node.attributes
-            );
+            )
           }
         }
 
         // Process JSX closing elements: </Button>
         if (ts.isJsxClosingElement(node) && ts.isIdentifier(node.tagName)) {
-          const oldName = node.tagName.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.tagName.text
+          const newName = oldToNewMap.get(oldName)
 
           if (newName) {
-            changes.push(`Updated JSX closing element from </${oldName}> to </${newName}>`);
+            changes.push(`Updated JSX closing element from </${oldName}> to </${newName}>`)
 
-            return ts.factory.updateJsxClosingElement(node, ts.factory.createIdentifier(newName));
+            return ts.factory.updateJsxClosingElement(node, ts.factory.createIdentifier(newName))
           }
         }
 
         // Process JSX self-closing elements: <Button />
         if (ts.isJsxSelfClosingElement(node) && ts.isIdentifier(node.tagName)) {
-          const oldName = node.tagName.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.tagName.text
+          const newName = oldToNewMap.get(oldName)
 
           if (newName) {
-            changes.push(`Updated JSX self-closing element from <${oldName} /> to <${newName} />`);
+            changes.push(`Updated JSX self-closing element from <${oldName} /> to <${newName} />`)
 
             return ts.factory.updateJsxSelfClosingElement(
               node,
               ts.factory.createIdentifier(newName),
               node.typeArguments,
               node.attributes
-            );
+            )
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -401,7 +401,7 @@ export function updateJSXReferences(context: ASTContext): ts.SourceFile {
  * - Preserves `Headless.ButtonProps` references unchanged
  */
 export function updateTypeReferences(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, changes } = context;
+  const { sourceFile, oldToNewMap, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 4: Type Reference Updates with TypeScript AST
@@ -410,44 +410,44 @@ export function updateTypeReferences(context: ASTContext): ts.SourceFile {
   // To:    React.ComponentProps<CatalystButton>
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process type references
         if (ts.isTypeReferenceNode(node)) {
           // Handle simple identifiers: ButtonProps
           if (ts.isIdentifier(node.typeName)) {
-            const oldName = node.typeName.text;
-            const newName = oldToNewMap.get(oldName);
+            const oldName = node.typeName.text
+            const newName = oldToNewMap.get(oldName)
 
             if (newName) {
-              changes.push(`Updated type reference from ${oldName} to ${newName}`);
+              changes.push(`Updated type reference from ${oldName} to ${newName}`)
 
               return ts.factory.updateTypeReferenceNode(
                 node,
                 ts.factory.createIdentifier(newName),
                 node.typeArguments
-              );
+              )
             }
           }
           // Handle qualified names: React.ComponentProps<Button>
           else if (ts.isQualifiedName(node.typeName)) {
             // NEVER transform Headless namespace references
             if (ts.isIdentifier(node.typeName.left) && node.typeName.left.text === 'Headless') {
-              return node;
+              return node
             }
 
             if (ts.isIdentifier(node.typeName.right)) {
-              const oldName = node.typeName.right.text;
-              const newName = oldToNewMap.get(oldName);
+              const oldName = node.typeName.right.text
+              const newName = oldToNewMap.get(oldName)
 
               if (newName) {
                 const leftName = ts.isIdentifier(node.typeName.left)
                   ? node.typeName.left.text
-                  : 'Unknown';
+                  : 'Unknown'
                 changes.push(
                   `Updated qualified type reference from ${leftName}.${oldName} to ${leftName}.${newName}`
-                );
+                )
 
                 return ts.factory.updateTypeReferenceNode(
                   node,
@@ -457,24 +457,24 @@ export function updateTypeReferences(context: ASTContext): ts.SourceFile {
                     ts.factory.createIdentifier(newName)
                   ),
                   node.typeArguments
-                );
+                )
               }
             }
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -494,7 +494,7 @@ export function updateTypeReferences(context: ASTContext): ts.SourceFile {
  * - Skips transforming import statements and type declarations
  */
 export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, changes } = context;
+  const { sourceFile, oldToNewMap, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 5: Direct Identifier Updates with TypeScript AST
@@ -503,18 +503,18 @@ export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
   // To:    const MyButton = CatalystButton
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process identifiers with exclusions
         if (ts.isIdentifier(node)) {
-          const oldName = node.text;
-          const newName = oldToNewMap.get(oldName);
+          const oldName = node.text
+          const newName = oldToNewMap.get(oldName)
 
           // Only process if this identifier is in our transformation mapping
           // and looks like a component name (starts with uppercase letter)
           if (newName && oldName.charAt(0) >= 'A' && oldName.charAt(0) <= 'Z') {
-            const parent = node.parent;
+            const parent = node.parent
 
             // Skip Headless namespace member expressions: Headless.Button
             if (parent && ts.isPropertyAccessExpression(parent)) {
@@ -523,7 +523,7 @@ export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
                 parent.expression.text === 'Headless' &&
                 parent.name === node
               ) {
-                return node;
+                return node
               }
             }
 
@@ -534,7 +534,7 @@ export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
                 parent.left.text === 'Headless' &&
                 parent.right === node
               ) {
-                return node;
+                return node
               }
             }
 
@@ -566,25 +566,25 @@ export function updateDirectIdentifiers(context: ASTContext): ts.SourceFile {
                 // Shorthand property assignments: { sizes }
                 (ts.isShorthandPropertyAssignment(parent) && parent.name === node) ||
                 // Property access expressions (left side): Button.something
-                (ts.isPropertyAccessExpression(parent) && parent.expression === node));
+                (ts.isPropertyAccessExpression(parent) && parent.expression === node))
 
             if (!shouldExclude) {
-              changes.push(`Updated identifier reference from ${oldName} to ${newName}`);
-              return ts.factory.createIdentifier(newName);
+              changes.push(`Updated identifier reference from ${oldName} to ${newName}`)
+              return ts.factory.createIdentifier(newName)
             }
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }

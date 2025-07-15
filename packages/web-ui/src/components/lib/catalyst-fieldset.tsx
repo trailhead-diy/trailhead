@@ -1,27 +1,27 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
 export function CatalystFieldset({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.FieldsetProps, 'as' | 'className'>) {
   return (
     <Headless.Fieldset
       {...props}
       className={cn('*:data-[slot=text]:mt-1 [&>*+[data-slot=control]]:mt-6', className)}
     />
-  );
+  )
 }
 export function CatalystLegend({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.LegendProps, 'as' | 'className'>) {
   return (
     <Headless.Legend
@@ -32,16 +32,16 @@ export function CatalystLegend({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystFieldGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div data-slot="control" {...props} className={cn('space-y-8', className)} />;
+  return <div data-slot="control" {...props} className={cn('space-y-8', className)} />
 }
 export function CatalystField({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
@@ -56,13 +56,13 @@ export function CatalystField({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystLabel({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.LabelProps, 'as' | 'className'>) {
   return (
     <Headless.Label
@@ -73,13 +73,13 @@ export function CatalystLabel({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDescription({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -90,13 +90,13 @@ export function CatalystDescription({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystErrorMessage({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -107,5 +107,5 @@ export function CatalystErrorMessage({
         className
       )}
     />
-  );
+  )
 }

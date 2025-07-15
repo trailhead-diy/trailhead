@@ -16,3 +16,6 @@ export type {
   ExcelParseOptions,
   ExcelWriteOptions,
 } from './types.js'
+
+// Re-export main types from data types
+export type { ExcelOperations } from '../types.js'

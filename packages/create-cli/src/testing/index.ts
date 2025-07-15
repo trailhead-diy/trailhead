@@ -12,14 +12,14 @@
  *   assertProjectGeneration,
  *   testTemplateRendering,
  * } from '@esteban-url/create-cli/testing'
- * 
+ *
  * // Create mock scaffolder
  * const scaffolder = createMockScaffolder()
- * 
+ *
  * // Test project generation
  * const result = await scaffolder.generateProject('my-cli', 'basic')
  * assertProjectGeneration(result, 'my-cli')
- * 
+ *
  * // Test template rendering
  * const rendered = await testTemplateRendering(
  *   templateFixtures.packageJson,
@@ -73,10 +73,18 @@ export interface GeneratedProject {
 export interface MockScaffolder {
   readonly availableTemplates: Map<string, ProjectTemplate>
   addTemplate(template: ProjectTemplate): void
-  generateProject(projectName: string, templateId: string, variables?: Record<string, any>, outputPath?: string): Promise<Result<GeneratedProject, CoreError>>
+  generateProject(
+    projectName: string,
+    templateId: string,
+    variables?: Record<string, any>,
+    outputPath?: string
+  ): Promise<Result<GeneratedProject, CoreError>>
   renderTemplate(templateContent: string, variables: Record<string, any>): Result<string, CoreError>
   validateProjectName(name: string): Result<void, CoreError>
-  validateVariables(template: ProjectTemplate, variables: Record<string, any>): Result<void, CoreError>
+  validateVariables(
+    template: ProjectTemplate,
+    variables: Record<string, any>
+  ): Result<void, CoreError>
   getGenerationHistory(): ProjectGenerationContext[]
   clearHistory(): void
 }
@@ -91,25 +99,29 @@ export interface MockScaffolder {
 export function createMockScaffolder(): MockScaffolder {
   const templates = new Map<string, ProjectTemplate>()
   const generationHistory: ProjectGenerationContext[] = []
-  
+
   // Add default templates
   templates.set('basic', {
     id: 'basic',
     name: 'Basic CLI',
     description: 'A basic CLI application template',
     files: {
-      'package.json': JSON.stringify({
-        name: '{{projectName}}',
-        version: '{{version}}',
-        description: '{{description}}',
-        main: 'dist/index.js',
-        bin: { '{{projectName}}': 'dist/index.js' },
-        scripts: {
-          build: 'tsc',
-          dev: 'tsx src/index.ts',
-          test: 'vitest',
+      'package.json': JSON.stringify(
+        {
+          name: '{{projectName}}',
+          version: '{{version}}',
+          description: '{{description}}',
+          main: 'dist/index.js',
+          bin: { '{{projectName}}': 'dist/index.js' },
+          scripts: {
+            build: 'tsc',
+            dev: 'tsx src/index.ts',
+            test: 'vitest',
+          },
         },
-      }, null, 2),
+        null,
+        2
+      ),
       'src/index.ts': `#!/usr/bin/env node
 import { program } from 'commander'
 
@@ -128,14 +140,18 @@ program
 
 program.parse()
 `,
-      'tsconfig.json': JSON.stringify({
-        extends: '@repo/typescript-config/base.json',
-        compilerOptions: {
-          outDir: 'dist',
-          rootDir: 'src',
+      'tsconfig.json': JSON.stringify(
+        {
+          extends: '@repo/typescript-config/base.json',
+          compilerOptions: {
+            outDir: 'dist',
+            rootDir: 'src',
+          },
+          include: ['src/**/*'],
         },
-        include: ['src/**/*'],
-      }, null, 2),
+        null,
+        2
+      ),
       'README.md': `# {{projectName}}
 
 {{description}}
@@ -155,26 +171,35 @@ npm install -g {{projectName}}
     },
     variables: [
       { name: 'projectName', type: 'string', description: 'Project name', required: true },
-      { name: 'description', type: 'string', description: 'Project description', default: 'A CLI application' },
+      {
+        name: 'description',
+        type: 'string',
+        description: 'Project description',
+        default: 'A CLI application',
+      },
       { name: 'version', type: 'string', description: 'Initial version', default: '1.0.0' },
       { name: 'author', type: 'string', description: 'Author name', default: 'Anonymous' },
     ],
   })
-  
+
   templates.set('advanced', {
     id: 'advanced',
     name: 'Advanced CLI',
     description: 'An advanced CLI application with commands and configuration',
     files: {
-      'package.json': JSON.stringify({
-        name: '{{projectName}}',
-        version: '{{version}}',
-        description: '{{description}}',
-        dependencies: {
-          '@esteban-url/cli': '^1.0.0',
-          '@esteban-url/core': '^1.0.0',
+      'package.json': JSON.stringify(
+        {
+          name: '{{projectName}}',
+          version: '{{version}}',
+          description: '{{description}}',
+          dependencies: {
+            '@esteban-url/cli': '^1.0.0',
+            '@esteban-url/core': '^1.0.0',
+          },
         },
-      }, null, 2),
+        null,
+        2
+      ),
       'src/index.ts': `import { createCLI } from '@esteban-url/cli'
 import { helloCommand } from './commands/hello.js'
 
@@ -202,19 +227,24 @@ export const helloCommand = createCommand({
     },
     variables: [
       { name: 'projectName', type: 'string', description: 'Project name', required: true },
-      { name: 'description', type: 'string', description: 'Project description', default: 'An advanced CLI application' },
+      {
+        name: 'description',
+        type: 'string',
+        description: 'Project description',
+        default: 'An advanced CLI application',
+      },
       { name: 'version', type: 'string', description: 'Initial version', default: '1.0.0' },
       { name: 'useTypeScript', type: 'boolean', description: 'Use TypeScript', default: true },
     ],
   })
-  
+
   return {
     availableTemplates: templates,
-    
+
     addTemplate(template: ProjectTemplate): void {
       templates.set(template.id, template)
     },
-    
+
     async generateProject(
       projectName: string,
       templateId: string,
@@ -226,7 +256,7 @@ export const helloCommand = createCommand({
       if (nameValidation.isErr()) {
         return err(nameValidation.error)
       }
-      
+
       // Get template
       const template = templates.get(templateId)
       if (!template) {
@@ -242,7 +272,7 @@ export const helloCommand = createCommand({
           timestamp: new Date(),
         } as CoreError)
       }
-      
+
       // Merge variables with defaults
       const allVariables: Record<string, any> = { projectName, ...variables }
       for (const variable of template.variables) {
@@ -250,13 +280,13 @@ export const helloCommand = createCommand({
           allVariables[variable.name] = variable.default
         }
       }
-      
+
       // Validate variables
       const variableValidation = this.validateVariables(template, allVariables)
       if (variableValidation.isErr()) {
         return err(variableValidation.error)
       }
-      
+
       // Create generation context
       const context: ProjectGenerationContext = {
         projectName,
@@ -265,9 +295,9 @@ export const helloCommand = createCommand({
         outputPath,
         timestamp: Date.now(),
       }
-      
+
       generationHistory.push(context)
-      
+
       // Generate files (mock implementation)
       const generatedFiles: string[] = []
       for (const [fileName, templateContent] of Object.entries(template.files)) {
@@ -275,11 +305,11 @@ export const helloCommand = createCommand({
         if (renderResult.isErr()) {
           return err(renderResult.error)
         }
-        
+
         generatedFiles.push(fileName)
         // In real implementation, would write file to filesystem
       }
-      
+
       return ok({
         name: projectName,
         path: outputPath,
@@ -288,17 +318,20 @@ export const helloCommand = createCommand({
         context,
       })
     },
-    
-    renderTemplate(templateContent: string, variables: Record<string, any>): Result<string, CoreError> {
+
+    renderTemplate(
+      templateContent: string,
+      variables: Record<string, any>
+    ): Result<string, CoreError> {
       try {
         // Simple template rendering (mock implementation)
         let rendered = templateContent
-        
+
         for (const [key, value] of Object.entries(variables)) {
           const pattern = new RegExp(`{{${key}}}`, 'g')
           rendered = rendered.replace(pattern, String(value))
         }
-        
+
         // Check for unresolved variables
         const unresolvedPattern = /{{(\w+)}}/g
         const unresolvedMatches = rendered.match(unresolvedPattern)
@@ -315,7 +348,7 @@ export const helloCommand = createCommand({
             timestamp: new Date(),
           } as CoreError)
         }
-        
+
         return ok(rendered)
       } catch (error) {
         return err({
@@ -331,7 +364,7 @@ export const helloCommand = createCommand({
         } as CoreError)
       }
     },
-    
+
     validateProjectName(name: string): Result<void, CoreError> {
       if (!name || name.trim().length === 0) {
         return err({
@@ -346,12 +379,13 @@ export const helloCommand = createCommand({
           timestamp: new Date(),
         } as CoreError)
       }
-      
+
       if (!/^[a-z0-9-_]+$/.test(name)) {
         return err({
           domain: 'create-cli',
           code: 'INVALID_PROJECT_NAME',
-          message: 'Project name can only contain lowercase letters, numbers, hyphens, and underscores',
+          message:
+            'Project name can only contain lowercase letters, numbers, hyphens, and underscores',
           type: 'create-cli-error' as const,
           recoverable: true,
           component: 'MockScaffolder',
@@ -360,14 +394,17 @@ export const helloCommand = createCommand({
           timestamp: new Date(),
         } as CoreError)
       }
-      
+
       return ok(undefined)
     },
-    
-    validateVariables(template: ProjectTemplate, variables: Record<string, any>): Result<void, CoreError> {
+
+    validateVariables(
+      template: ProjectTemplate,
+      variables: Record<string, any>
+    ): Result<void, CoreError> {
       for (const variable of template.variables) {
         const value = variables[variable.name]
-        
+
         // Check required variables
         if (variable.required && (value === undefined || value === null || value === '')) {
           return err({
@@ -382,7 +419,7 @@ export const helloCommand = createCommand({
             timestamp: new Date(),
           } as CoreError)
         }
-        
+
         // Check type validation
         if (value !== undefined && variable.type === 'boolean' && typeof value !== 'boolean') {
           return err({
@@ -397,7 +434,7 @@ export const helloCommand = createCommand({
             timestamp: new Date(),
           } as CoreError)
         }
-        
+
         // Check choices
         if (value !== undefined && variable.choices && !variable.choices.includes(value)) {
           return err({
@@ -412,7 +449,7 @@ export const helloCommand = createCommand({
             timestamp: new Date(),
           } as CoreError)
         }
-        
+
         // Check custom validation
         if (value !== undefined && variable.validation && !variable.validation(value)) {
           return err({
@@ -428,14 +465,14 @@ export const helloCommand = createCommand({
           } as CoreError)
         }
       }
-      
+
       return ok(undefined)
     },
-    
+
     getGenerationHistory(): ProjectGenerationContext[] {
       return [...generationHistory]
     },
-    
+
     clearHistory(): void {
       generationHistory.length = 0
     },
@@ -451,25 +488,33 @@ export const templateFixtures = {
    * Simple template files
    */
   packageJson: {
-    template: JSON.stringify({
-      name: '{{projectName}}',
-      version: '{{version}}',
-      description: '{{description}}',
-      main: 'dist/index.js',
-    }, null, 2),
+    template: JSON.stringify(
+      {
+        name: '{{projectName}}',
+        version: '{{version}}',
+        description: '{{description}}',
+        main: 'dist/index.js',
+      },
+      null,
+      2
+    ),
     variables: {
       projectName: 'my-cli',
       version: '1.0.0',
       description: 'A test CLI application',
     },
-    expected: JSON.stringify({
-      name: 'my-cli',
-      version: '1.0.0',
-      description: 'A test CLI application',
-      main: 'dist/index.js',
-    }, null, 2),
+    expected: JSON.stringify(
+      {
+        name: 'my-cli',
+        version: '1.0.0',
+        description: 'A test CLI application',
+        main: 'dist/index.js',
+      },
+      null,
+      2
+    ),
   },
-  
+
   readmeTemplate: {
     template: `# {{projectName}}
 
@@ -505,7 +550,7 @@ npm install -g awesome-cli
 Created by Jane Developer.
 `,
   },
-  
+
   /**
    * Template variables for testing
    */
@@ -516,7 +561,7 @@ Created by Jane Developer.
       version: '1.0.0',
       author: 'Test Author',
     },
-    
+
     advanced: {
       projectName: 'advanced-cli',
       description: 'An advanced CLI application',
@@ -524,24 +569,19 @@ Created by Jane Developer.
       useTypeScript: true,
       framework: 'commander',
     },
-    
+
     invalid: {
       projectName: '', // Invalid: empty name
       version: '1.0.0',
     },
   },
-  
+
   /**
    * Expected project structures
    */
   projectStructures: {
-    basic: [
-      'package.json',
-      'src/index.ts',
-      'tsconfig.json',
-      'README.md',
-    ],
-    
+    basic: ['package.json', 'src/index.ts', 'tsconfig.json', 'README.md'],
+
     advanced: [
       'package.json',
       'src/index.ts',
@@ -566,14 +606,16 @@ export function assertProjectGeneration(
   expectedFileCount?: number
 ): void {
   if (result.isErr()) {
-    throw new Error(`Expected project generation to succeed, but got error: ${result.error.message}`)
+    throw new Error(
+      `Expected project generation to succeed, but got error: ${result.error.message}`
+    )
   }
-  
+
   const project = result.value
   if (project.name !== expectedProjectName) {
     throw new Error(`Expected project name '${expectedProjectName}', but got '${project.name}'`)
   }
-  
+
   if (expectedFileCount !== undefined && project.files.length !== expectedFileCount) {
     throw new Error(
       `Expected ${expectedFileCount} files, but got ${project.files.length}: ${project.files.join(', ')}`
@@ -589,9 +631,11 @@ export function assertTemplateRendering(
   expectedContent?: string
 ): void {
   if (result.isErr()) {
-    throw new Error(`Expected template rendering to succeed, but got error: ${result.error.message}`)
+    throw new Error(
+      `Expected template rendering to succeed, but got error: ${result.error.message}`
+    )
   }
-  
+
   if (expectedContent && result.value !== expectedContent) {
     throw new Error(`Rendered content does not match expected content`)
   }
@@ -607,21 +651,16 @@ export function assertValidationFailure(
   if (result.isOk()) {
     throw new Error(`Expected validation to fail, but it succeeded`)
   }
-  
+
   if (result.error.code !== expectedErrorCode) {
-    throw new Error(
-      `Expected error code '${expectedErrorCode}', but got '${result.error.code}'`
-    )
+    throw new Error(`Expected error code '${expectedErrorCode}', but got '${result.error.code}'`)
   }
 }
 
 /**
  * Asserts that generated project contains expected files
  */
-export function assertProjectFiles(
-  project: GeneratedProject,
-  expectedFiles: string[]
-): void {
+export function assertProjectFiles(project: GeneratedProject, expectedFiles: string[]): void {
   for (const expectedFile of expectedFiles) {
     if (!project.files.includes(expectedFile)) {
       throw new Error(
@@ -661,28 +700,30 @@ export async function testProjectGeneration(
 /**
  * Creates a test scenario for scaffolding operations
  */
-export function createScaffoldingTestScenario(options: {
-  templates?: ProjectTemplate[]
-  projectName?: string
-  variables?: Record<string, any>
-} = {}): {
+export function createScaffoldingTestScenario(
+  options: {
+    templates?: ProjectTemplate[]
+    projectName?: string
+    variables?: Record<string, any>
+  } = {}
+): {
   scaffolder: MockScaffolder
   runGeneration: (templateId: string) => Promise<Result<GeneratedProject, CoreError>>
   testTemplate: (content: string, vars: Record<string, any>) => Result<string, CoreError>
   cleanup: () => void
 } {
   const scaffolder = createMockScaffolder()
-  
+
   // Add custom templates if provided
   if (options.templates) {
     for (const template of options.templates) {
       scaffolder.addTemplate(template)
     }
   }
-  
+
   return {
     scaffolder,
-    
+
     async runGeneration(templateId: string): Promise<Result<GeneratedProject, CoreError>> {
       return scaffolder.generateProject(
         options.projectName || 'test-project',
@@ -690,11 +731,11 @@ export function createScaffoldingTestScenario(options: {
         options.variables
       )
     },
-    
+
     testTemplate(content: string, vars: Record<string, any>): Result<string, CoreError> {
       return scaffolder.renderTemplate(content, vars)
     },
-    
+
     cleanup(): void {
       scaffolder.clearHistory()
     },
@@ -712,14 +753,14 @@ export const createCliTesting = {
   // Scaffolder creation
   createMockScaffolder,
   createScaffoldingTestScenario,
-  
+
   // Template testing
   testTemplateRendering,
   testProjectGeneration,
-  
+
   // Fixtures and test data
   fixtures: templateFixtures,
-  
+
   // Assertions
   assertProjectGeneration,
   assertTemplateRendering,

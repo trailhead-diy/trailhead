@@ -49,7 +49,7 @@ const colors = {
     '[--switch-bg-ring:var(--destructive)]/90 [--switch-bg:var(--destructive)] dark:[--switch-bg-ring:transparent]',
     '[--switch:var(--destructive-foreground)] [--switch-ring:var(--destructive)]/90 [--switch-shadow:var(--destructive)]/20',
   ],
-};
+}
 ```
 
 ## Switch State Colors

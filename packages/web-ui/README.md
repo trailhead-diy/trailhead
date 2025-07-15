@@ -51,18 +51,18 @@ trailhead-ui install --framework nextjs
 
 ```tsx
 // After CLI installation, components are ready to use
-import { Button, Alert } from './components/ui';
-import { ThemeProvider, useTheme } from './components/ui/theme';
+import { Button, Alert } from './components/ui'
+import { ThemeProvider, useTheme } from './components/ui/theme'
 
 function ThemeDemo() {
-  const { setTheme, themes } = useTheme();
+  const { setTheme, themes } = useTheme()
 
   return (
     <div className="space-y-4">
       <Alert variant="success">Trailhead UI is ready! 🎉</Alert>
 
       <div className="flex gap-2">
-        {themes.slice(0, 5).map(theme => (
+        {themes.slice(0, 5).map((theme) => (
           <Button key={theme} variant="outline" onClick={() => setTheme(theme)}>
             {theme}
           </Button>
@@ -73,7 +73,7 @@ function ThemeDemo() {
         Get Started
       </Button>
     </div>
-  );
+  )
 }
 
 export default function App() {
@@ -81,7 +81,7 @@ export default function App() {
     <ThemeProvider defaultTheme="zinc">
       <ThemeDemo />
     </ThemeProvider>
-  );
+  )
 }
 ```
 
@@ -93,7 +93,7 @@ All 26 Catalyst UI components with semantic token support:
 
 ```tsx
 // Forms & Inputs
-import { Button, Input, Textarea, Select, Checkbox, Radio, Switch } from './components/ui';
+import { Button, Input, Textarea, Select, Checkbox, Radio, Switch } from './components/ui'
 
 // Layout & Navigation
 import {
@@ -105,13 +105,13 @@ import {
   AuthLayout,
   Navbar,
   Pagination,
-} from './components/ui';
+} from './components/ui'
 
 // Data Display
-import { Table, Badge, Avatar, DescriptionList, Alert, Divider } from './components/ui';
+import { Table, Badge, Avatar, DescriptionList, Alert, Divider } from './components/ui'
 
 // Typography & Utilities
-import { Heading, Text, Link, Fieldset, Listbox, Combobox } from './components/ui';
+import { Heading, Text, Link, Fieldset, Listbox, Combobox } from './components/ui'
 ```
 
 ### Semantic Token System
@@ -120,27 +120,27 @@ Hierarchical tokens preserving Catalyst's visual hierarchy:
 
 ```tsx
 // Text tokens by contrast level
-'text-primary'; // Highest contrast - headlines, key content
-'text-secondary'; // Medium-high contrast - body text
-'text-tertiary'; // Medium contrast - supporting text
-'text-muted'; // Lowest contrast - placeholders, disabled
+'text-primary' // Highest contrast - headlines, key content
+'text-secondary' // Medium-high contrast - body text
+'text-tertiary' // Medium contrast - supporting text
+'text-muted' // Lowest contrast - placeholders, disabled
 
 // Icon state tokens
-'icon-primary'; // Active icons
-'icon-secondary'; // Navigation icons
-'icon-active'; // Interactive states
-'icon-inactive'; // Disabled states
+'icon-primary' // Active icons
+'icon-secondary' // Navigation icons
+'icon-active' // Interactive states
+'icon-inactive' // Disabled states
 
 // Border weight tokens
-'border-strong'; // High emphasis borders
-'border-medium'; // Default borders
-'border-subtle'; // Low emphasis borders
-'border-ghost'; // Barely visible borders
+'border-strong' // High emphasis borders
+'border-medium' // Default borders
+'border-subtle' // Low emphasis borders
+'border-ghost' // Barely visible borders
 
 // Component-specific tokens
-'sidebar-text-primary'; // Sidebar-specific text
-'table-header-text'; // Table header styling
-'button-text-hover'; // Button hover states
+'sidebar-text-primary' // Sidebar-specific text
+'table-header-text' // Table header styling
+'button-text-hover' // Button hover states
 ```
 
 ### Functional Theme Builder
@@ -148,7 +148,7 @@ Hierarchical tokens preserving Catalyst's visual hierarchy:
 Create custom themes with type-safe builder API:
 
 ```tsx
-import { createTheme } from './components/ui/theme';
+import { createTheme } from './components/ui/theme'
 
 // Build custom theme
 const brandTheme = createTheme('Brand')
@@ -165,12 +165,12 @@ const brandTheme = createTheme('Brand')
     background: 'oklch(0.95 0.002 286.375)',
     text: 'oklch(0.141 0.005 285.823)',
   })
-  .build();
+  .build()
 
 // Use in ThemeProvider
-<ThemeProvider themes={[...defaultThemes, brandTheme]}>
+;<ThemeProvider themes={[...defaultThemes, brandTheme]}>
   <App />
-</ThemeProvider>;
+</ThemeProvider>
 ```
 
 ## Advanced Features
@@ -178,14 +178,14 @@ const brandTheme = createTheme('Brand')
 ### Runtime Theme Switching
 
 ```tsx
-import { useTheme, ThemeSwitcher } from './components/ui/theme';
+import { useTheme, ThemeSwitcher } from './components/ui/theme'
 
 function CustomThemeSwitcher() {
-  const { theme, setTheme, themes } = useTheme();
+  const { theme, setTheme, themes } = useTheme()
 
   return (
     <div className="flex gap-2">
-      {themes.map(themeName => (
+      {themes.map((themeName) => (
         <button
           key={themeName}
           onClick={() => setTheme(themeName)}
@@ -199,17 +199,17 @@ function CustomThemeSwitcher() {
         </button>
       ))}
     </div>
-  );
+  )
 }
 
 // Or use the built-in component
-<ThemeSwitcher />;
+;<ThemeSwitcher />
 ```
 
 ### Component Composition
 
 ```tsx
-import { Button, Dialog, Input, Badge } from './components/ui';
+import { Button, Dialog, Input, Badge } from './components/ui'
 
 function UserProfileDialog({ user, isOpen, onClose }) {
   return (
@@ -238,7 +238,7 @@ function UserProfileDialog({ user, isOpen, onClose }) {
         </form>
       </Dialog.Panel>
     </Dialog>
-  );
+  )
 }
 ```
 
@@ -302,7 +302,7 @@ trailhead-ui init
 
 ```tsx
 // app/layout.tsx
-import { ThemeProvider } from './components/ui/theme';
+import { ThemeProvider } from './components/ui/theme'
 
 export default function RootLayout({ children }) {
   return (
@@ -313,7 +313,7 @@ export default function RootLayout({ children }) {
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
 ```
 
@@ -321,15 +321,15 @@ export default function RootLayout({ children }) {
 
 ```tsx
 // main.tsx
-import { ThemeProvider } from './components/ui/theme';
-import './globals.css';
+import { ThemeProvider } from './components/ui/theme'
+import './globals.css'
 
 function App() {
   return (
     <ThemeProvider defaultTheme="zinc">
       <YourApp />
     </ThemeProvider>
-  );
+  )
 }
 ```
 
@@ -337,7 +337,7 @@ function App() {
 
 ```tsx
 // src/app/Document.tsx
-import { ThemeProvider } from './components/ui/theme';
+import { ThemeProvider } from './components/ui/theme'
 
 export const Document = ({ children }) => (
   <html lang="en">
@@ -352,7 +352,7 @@ export const Document = ({ children }) => (
       </ThemeProvider>
     </body>
   </html>
-);
+)
 ```
 
 ## Architecture
@@ -384,16 +384,16 @@ Each component is a thin wrapper that:
 
 ```tsx
 // button.tsx (wrapper)
-export { Button } from './lib/catalyst-button';
-export type { ButtonProps } from './lib/catalyst-button';
+export { Button } from './lib/catalyst-button'
+export type { ButtonProps } from './lib/catalyst-button'
 
 // lib/catalyst-button.tsx (enhanced implementation)
-import { Button as CatalystButton } from '@headlessui/react';
-import { cn } from '../utils/cn';
+import { Button as CatalystButton } from '@headlessui/react'
+import { cn } from '../utils/cn'
 
 export interface ButtonProps extends ComponentProps<typeof CatalystButton> {
-  variant?: 'solid' | 'outline' | 'plain';
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  variant?: 'solid' | 'outline' | 'plain'
+  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger'
 }
 
 export function Button({ className, variant = 'solid', color, ...props }) {
@@ -409,7 +409,7 @@ export function Button({ className, variant = 'solid', color, ...props }) {
       )}
       {...props}
     />
-  );
+  )
 }
 ```
 
@@ -427,7 +427,7 @@ const colors = {
     500: 'oklch(0.623 0.214 259.815)', // Medium
     950: 'oklch(0.145 0.057 255.542)', // Very dark
   },
-};
+}
 ```
 
 ### Semantic Token Mapping
@@ -445,14 +445,14 @@ const buttonTokens = {
     text: 'var(--button-outline-text)',
     border: 'var(--button-outline-border)',
   },
-};
+}
 ```
 
 ### Theme Registration
 
 ```typescript
 // Register custom themes
-import { registerTheme } from './components/ui/theme';
+import { registerTheme } from './components/ui/theme'
 
 const customTheme = {
   name: 'corporate',
@@ -461,9 +461,9 @@ const customTheme = {
     secondary: 'oklch(0.967 0.001 286.375)',
     // ... more colors
   },
-};
+}
 
-registerTheme(customTheme);
+registerTheme(customTheme)
 ```
 
 ## Testing
@@ -473,9 +473,9 @@ The library includes comprehensive tests following High-ROI testing principles:
 ### Component Tests
 
 ```tsx
-import { render, screen } from '@testing-library/react';
-import { Button } from './button';
-import { ThemeProvider } from './theme';
+import { render, screen } from '@testing-library/react'
+import { Button } from './button'
+import { ThemeProvider } from './theme'
 
 describe('Button', () => {
   test('renders with semantic tokens', () => {
@@ -485,30 +485,30 @@ describe('Button', () => {
           Click me
         </Button>
       </ThemeProvider>
-    );
+    )
 
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-primary', 'text-primary-foreground');
-  });
+    const button = screen.getByRole('button')
+    expect(button).toHaveClass('bg-primary', 'text-primary-foreground')
+  })
 
   test('handles theme switching', async () => {
     const { rerender } = render(
       <ThemeProvider defaultTheme="zinc">
         <Button>Test</Button>
       </ThemeProvider>
-    );
+    )
 
     // Test theme change
     rerender(
       <ThemeProvider defaultTheme="blue">
         <Button>Test</Button>
       </ThemeProvider>
-    );
+    )
 
     // Verify CSS custom properties updated
-    expect(document.documentElement.style.getPropertyValue('--primary')).toBeTruthy();
-  });
-});
+    expect(document.documentElement.style.getPropertyValue('--primary')).toBeTruthy()
+  })
+})
 ```
 
 ### Integration Tests
@@ -516,7 +516,7 @@ describe('Button', () => {
 ```tsx
 describe('Theme System Integration', () => {
   test('theme switching updates all components', async () => {
-    const { user } = setupUserEvent();
+    const { user } = setupUserEvent()
 
     render(
       <ThemeProvider>
@@ -524,16 +524,16 @@ describe('Theme System Integration', () => {
         <Button>Primary Button</Button>
         <Alert variant="success">Success message</Alert>
       </ThemeProvider>
-    );
+    )
 
     // Switch theme
-    await user.click(screen.getByText('blue'));
+    await user.click(screen.getByText('blue'))
 
     // Verify all components updated
-    expect(screen.getByRole('button')).toHaveThemeColors('blue');
-    expect(screen.getByRole('alert')).toHaveThemeColors('blue');
-  });
-});
+    expect(screen.getByRole('button')).toHaveThemeColors('blue')
+    expect(screen.getByRole('alert')).toHaveThemeColors('blue')
+  })
+})
 ```
 
 ## Performance
@@ -548,8 +548,8 @@ describe('Theme System Integration', () => {
 
 ```typescript
 // Only import what you need
-import { Button } from './components/ui/button';
-import { useTheme } from './components/ui/theme';
+import { Button } from './components/ui/button'
+import { useTheme } from './components/ui/theme'
 
 // Not the entire library
 // import * from './components/ui'; // ❌ Don't do this
@@ -565,7 +565,7 @@ const themeCache = {
     enableSystem: true,
     themes: ['zinc', 'blue', 'green'],
   },
-};
+}
 ```
 
 ## Migration Guides
@@ -574,34 +574,30 @@ const themeCache = {
 
 ```tsx
 // Before (shadcn/ui)
-import { Button } from '@/components/ui/button';
-
-<Button variant="default" size="default">
+import { Button } from '@/components/ui/button'
+;<Button variant="default" size="default">
   Click me
-</Button>;
+</Button>
 
 // After (Trailhead UI)
-import { Button } from './components/ui/button';
-
-<Button variant="solid" color="primary">
+import { Button } from './components/ui/button'
+;<Button variant="solid" color="primary">
   Click me
-</Button>;
+</Button>
 ```
 
 ### From Vanilla Catalyst
 
 ```tsx
 // Before (Vanilla Catalyst)
-import { Button } from '@headlessui/react';
-
-<Button className="bg-blue-600 text-white px-4 py-2 rounded">Click me</Button>;
+import { Button } from '@headlessui/react'
+;<Button className="bg-blue-600 text-white px-4 py-2 rounded">Click me</Button>
 
 // After (Trailhead UI)
-import { Button } from './components/ui/button';
-
-<Button variant="solid" color="primary">
+import { Button } from './components/ui/button'
+;<Button variant="solid" color="primary">
   Click me
-</Button>;
+</Button>
 ```
 
 ## Development

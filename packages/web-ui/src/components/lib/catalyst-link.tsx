@@ -8,11 +8,11 @@
  *
  * https://catalyst.tailwindui.com/docs#client-side-router-integration
  */
-import * as Headless from '@headlessui/react';
-import React, { forwardRef } from 'react';
+import * as Headless from '@headlessui/react'
+import React, { forwardRef } from 'react'
 export const CatalystLink = forwardRef(function CatalystLink(
   props: {
-    href: string;
+    href: string
   } & React.ComponentPropsWithoutRef<'a'>,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
@@ -20,5 +20,5 @@ export const CatalystLink = forwardRef(function CatalystLink(
     <Headless.DataInteractive>
       <a {...props} ref={ref} />
     </Headless.DataInteractive>
-  );
-});
+  )
+})

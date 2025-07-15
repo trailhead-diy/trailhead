@@ -2,39 +2,39 @@
  * Dev Refresh Command - Copy fresh Catalyst components for development
  */
 
-import { ok, err } from '@esteban-url/cli';
+import { ok, err } from '@esteban-url/cli'
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/cli/command';
-import { join } from 'path';
+} from '@esteban-url/cli/command'
+import { join } from 'path'
 
 // Import framework utilities
-import { ensureDirectory, pathExists } from '@esteban-url/cli/filesystem';
+import { ensureDirectory, pathExists } from '@esteban-url/cli/filesystem'
 
 // Import local utilities
-import { copyFreshFilesBatch } from '../core/shared/file-utils.js';
-import { loadConfigSync, logConfigDiscovery } from '../config.js';
-import { createError } from '@esteban-url/cli/core';
-import { type StrictDevRefreshOptions } from '../core/types/command-options.js';
-import { runMainPipeline as runNewPipeline } from '../../transforms/index.js';
-import chalk from 'chalk';
+import { copyFreshFilesBatch } from '../core/shared/file-utils.js'
+import { loadConfigSync, logConfigDiscovery } from '../config.js'
+import { createError } from '@esteban-url/cli/core'
+import { type StrictDevRefreshOptions } from '../core/types/command-options.js'
+import { runMainPipeline as runNewPipeline } from '../../transforms/index.js'
+import chalk from 'chalk'
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 // Use strict typing for better type safety
-type DevRefreshOptions = StrictDevRefreshOptions;
+type DevRefreshOptions = StrictDevRefreshOptions
 
 interface RefreshConfig {
-  source: string;
-  dest: string;
-  clean: boolean;
-  copiedFiles: string[];
+  source: string
+  dest: string
+  clean: boolean
+  copiedFiles: string[]
 }
 
 // ============================================================================
@@ -50,9 +50,9 @@ const createRefreshPhases = (
       name: 'Validating paths',
       execute: async (config: RefreshConfig) => {
         // Check if source exists
-        const sourceExistsResult = await pathExists(config.source);
+        const sourceExistsResult = await pathExists(config.source)
         if (sourceExistsResult.isErr()) {
-          return err(sourceExistsResult.error);
+          return err(sourceExistsResult.error)
         }
         if (!sourceExistsResult.value) {
           return err(
@@ -60,7 +60,7 @@ const createRefreshPhases = (
               'SOURCE_NOT_FOUND',
               `Source directory not found: ${config.source}. Please ensure catalyst-ui-kit is installed or provide a valid source path`
             )
-          );
+          )
         }
 
         // Source and dest cannot be the same
@@ -70,10 +70,10 @@ const createRefreshPhases = (
               'INVALID_CONFIGURATION',
               'Source and destination cannot be the same directory'
             )
-          );
+          )
         }
 
-        return ok(config);
+        return ok(config)
       },
     },
     {
@@ -81,35 +81,35 @@ const createRefreshPhases = (
       execute: async (config: RefreshConfig) => {
         try {
           if (config.clean) {
-            const destExistsResult = await pathExists(config.dest);
+            const destExistsResult = await pathExists(config.dest)
             if (destExistsResult.isErr()) {
-              return err(destExistsResult.error);
+              return err(destExistsResult.error)
             }
             if (destExistsResult.value) {
               // Use Node.js fs for removal since CLI framework doesn't export removeDirectory
-              const { rm } = await import('fs/promises');
-              await rm(config.dest, { recursive: true });
+              const { rm } = await import('fs/promises')
+              await rm(config.dest, { recursive: true })
             }
           }
 
-          const result = await ensureDirectory(config.dest);
+          const result = await ensureDirectory(config.dest)
           if (result.isErr()) {
             return err(
               createError(
                 'FILESYSTEM_ERROR',
                 `Failed to create destination directory: ${result.error.message}`
               )
-            );
+            )
           }
 
-          return ok(config);
+          return ok(config)
         } catch (error) {
           return err(
             createError(
               'FILESYSTEM_ERROR',
               `Failed to prepare destination: ${error instanceof Error ? error.message : 'Unknown error'}`
             )
-          );
+          )
         }
       },
     },
@@ -121,48 +121,46 @@ const createRefreshPhases = (
           config.dest,
           true, // force
           true // addPrefix - add catalyst- prefix to component files
-        );
+        )
 
         if (copyResult.isErr()) {
-          return err(
-            createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`)
-          );
+          return err(createError('COPY_ERROR', `Failed to copy files: ${copyResult.error.message}`))
         }
 
-        const { copied, skipped, failed } = copyResult.value;
+        const { copied, skipped, failed } = copyResult.value
 
         // Update config with copied files for transformation phase
-        config.copiedFiles = copied;
+        config.copiedFiles = copied
 
         if (options.verbose) {
-          console.log(chalk.green(`✅ Copied ${copied.length} components successfully!`));
+          console.log(chalk.green(`✅ Copied ${copied.length} components successfully!`))
 
           if (copied.length > 0) {
-            console.log(chalk.gray('\nCopied files:'));
+            console.log(chalk.gray('\nCopied files:'))
             copied.slice(0, 10).forEach((file: string) => {
-              console.log(chalk.gray(`  ✓ ${file}`));
-            });
+              console.log(chalk.gray(`  ✓ ${file}`))
+            })
             if (copied.length > 10) {
-              console.log(chalk.gray(`  ... and ${copied.length - 10} more`));
+              console.log(chalk.gray(`  ... and ${copied.length - 10} more`))
             }
           }
 
           if (skipped.length > 0) {
-            console.log(chalk.gray(`\nSkipped ${skipped.length} identical files`));
+            console.log(chalk.gray(`\nSkipped ${skipped.length} identical files`))
           }
 
           if (failed.length > 0) {
-            console.log(chalk.yellow(`\nFailed to copy ${failed.length} files:`));
+            console.log(chalk.yellow(`\nFailed to copy ${failed.length} files:`))
             failed.forEach((file: string) => {
-              console.log(chalk.yellow(`  ✗ ${file}`));
-            });
+              console.log(chalk.yellow(`  ✗ ${file}`))
+            })
           }
         }
 
-        return ok(config);
+        return ok(config)
       },
     },
-  ];
+  ]
 
   // Conditionally add the transform phase
   if (!options.skipTransforms) {
@@ -170,7 +168,7 @@ const createRefreshPhases = (
       name: 'Applying enhancement transforms',
       execute: async (config: RefreshConfig) => {
         if (config.copiedFiles.length === 0) {
-          return ok(config);
+          return ok(config)
         }
 
         const result = await runNewPipeline(config.dest, {
@@ -178,10 +176,10 @@ const createRefreshPhases = (
           dryRun: false,
           filter: (filename: string) => {
             // Only process the files we just copied
-            return config.copiedFiles.some(copiedFile => filename.includes(copiedFile));
+            return config.copiedFiles.some((copiedFile) => filename.includes(copiedFile))
           },
           logger: logger,
-        });
+        })
 
         if (!result.success) {
           return err(
@@ -189,20 +187,20 @@ const createRefreshPhases = (
               'ENHANCEMENT_ERROR',
               `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
             )
-          );
+          )
         }
 
         if (options.verbose) {
-          console.log(chalk.green(`✨ Enhanced ${result.processedFiles} components`));
+          console.log(chalk.green(`✨ Enhanced ${result.processedFiles} components`))
         }
 
-        return ok(config);
+        return ok(config)
       },
-    });
+    })
   }
 
-  return phases;
-};
+  return phases
+}
 
 // ============================================================================
 // COMMAND CONFIGURATION
@@ -263,20 +261,20 @@ export const createDevRefreshCommand = () => {
 
     action: async (options: DevRefreshOptions, cmdContext: CommandContext) => {
       // Load configuration
-      const configResult = loadConfigSync(cmdContext.projectRoot);
-      const loadedConfig = configResult.config;
-      const configPath = configResult.filepath;
+      const configResult = loadConfigSync(cmdContext.projectRoot)
+      const loadedConfig = configResult.config
+      const configPath = configResult.filepath
 
       // Only show config info in verbose mode
       if (options.verbose || loadedConfig.verbose) {
         if (configPath) {
-          cmdContext.logger.info(`Configuration loaded from: ${configPath}`);
+          cmdContext.logger.info(`Configuration loaded from: ${configPath}`)
         }
-        logConfigDiscovery(configPath, loadedConfig, true, configResult.source);
+        logConfigDiscovery(configPath, loadedConfig, true, configResult.source)
       }
 
       // Build configuration merging: CLI options > config file > defaults
-      const devRefreshConfig = loadedConfig.devRefresh;
+      const devRefreshConfig = loadedConfig.devRefresh
       const config: RefreshConfig = {
         source: join(
           cmdContext.projectRoot,
@@ -288,7 +286,7 @@ export const createDevRefreshCommand = () => {
         ),
         clean: options.clean ?? true,
         copiedFiles: [], // Will be populated after copying
-      };
+      }
 
       // Display configuration only in verbose mode
       if (options.verbose || loadedConfig.verbose) {
@@ -301,18 +299,18 @@ export const createDevRefreshCommand = () => {
             { label: 'Apply transforms', value: options.skipTransforms ? 'no' : 'yes' },
           ],
           cmdContext
-        );
+        )
       }
 
       // Execute all phases (validation, preparation, copying, transformations)
-      const phases = createRefreshPhases(options, cmdContext.logger);
+      const phases = createRefreshPhases(options, cmdContext.logger)
       const phaseResult = await executeWithPhases(phases, config, {
         ...cmdContext,
         verbose: options.verbose || loadedConfig.verbose || false,
-      });
+      })
 
       if (phaseResult.isErr()) {
-        return err(phaseResult.error);
+        return err(phaseResult.error)
       }
 
       // Display final results
@@ -320,28 +318,28 @@ export const createDevRefreshCommand = () => {
         if (options.verbose) {
           cmdContext.logger.success(
             `✅ Copied ${config.copiedFiles.length} fresh components successfully!`
-          );
+          )
           cmdContext.logger.info(
             '\nComponents copied without transforms! Original Catalyst components are ready to use.'
-          );
+          )
         } else {
           cmdContext.logger.success(
             `Dev Refresh Complete! Successfully copied ${config.copiedFiles.length} components.`
-          );
+          )
         }
       } else {
         if (options.verbose) {
           cmdContext.logger.success(
             `✅ Refreshed and enhanced ${config.copiedFiles.length} components successfully!`
-          );
+          )
         } else {
           cmdContext.logger.success(
             `Dev Refresh Complete! Successfully enhanced ${config.copiedFiles.length} components.`
-          );
+          )
         }
       }
 
-      return ok(undefined);
+      return ok(undefined)
     },
-  });
-};
+  })
+}

@@ -9,10 +9,10 @@ import {
   checkbox,
   createDirectoryPrompt,
   createConfirmationPrompt,
-} from '@esteban-url/cli/prompts';
-import { existsSync, readFileSync } from 'fs';
-import { join } from 'path';
-import type { InstallOptions, FrameworkChoice, PromptChoice } from '../utils/types.js';
+} from '@esteban-url/cli/prompts'
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
+import type { InstallOptions, FrameworkChoice, PromptChoice } from '../utils/types.js'
 
 /**
  * Pure function: Detect default Catalyst source path
@@ -23,34 +23,34 @@ export const detectCatalystSource = (): string | null => {
     '../catalyst-ui-kit/typescript',
     './catalyst-ui-kit',
     '../catalyst-ui-kit',
-  ];
+  ]
 
   for (const path of candidatePaths) {
     if (existsSync(path)) {
       // Check if it contains expected component files
       const hasComponents =
-        existsSync(join(path, 'button.tsx')) || existsSync(join(path, 'src', 'button.tsx'));
+        existsSync(join(path, 'button.tsx')) || existsSync(join(path, 'src', 'button.tsx'))
       if (hasComponents) {
-        return path;
+        return path
       }
     }
   }
 
-  return null;
-};
+  return null
+}
 
 /**
  * Pure function: Detect default destination directory
  */
 export const detectDestinationDir = (): string => {
   if (existsSync('./src/components')) {
-    return 'src/components/th';
+    return 'src/components/th'
   }
   if (existsSync('./components')) {
-    return 'components/th';
+    return 'components/th'
   }
-  return 'components/th';
-};
+  return 'components/th'
+}
 
 /**
  * Pure function: Generate framework choices
@@ -77,7 +77,7 @@ export const getFrameworkChoices = (): readonly FrameworkChoice[] =>
       value: 'generic-react',
       description: 'Any React setup',
     },
-  ] as const;
+  ] as const
 
 /**
  * Pure function: Generate installation mode choices
@@ -101,39 +101,39 @@ export const getInstallationModeChoices = (): readonly PromptChoice<
       value: 'custom',
       description: 'Choose what to install',
     },
-  ] as const;
+  ] as const
 
 /**
  * Prompt for framework selection
  */
 export const promptFramework = async (): Promise<FrameworkChoice['value']> => {
-  const choices = getFrameworkChoices();
+  const choices = getFrameworkChoices()
 
   return await select({
     message: 'Which framework are you using?',
-    choices: choices.map(choice => ({
+    choices: choices.map((choice) => ({
       name: choice.name,
       value: choice.value,
       description: choice.description,
     })),
-  });
-};
+  })
+}
 
 /**
  * Prompt for installation mode
  */
 export const promptInstallationMode = async (): Promise<'full' | 'minimal' | 'custom'> => {
-  const choices = getInstallationModeChoices();
+  const choices = getInstallationModeChoices()
 
   return await select({
     message: 'What would you like to install?',
-    choices: choices.map(choice => ({
+    choices: choices.map((choice) => ({
       name: choice.name,
       value: choice.value,
       description: choice.description,
     })),
-  });
-};
+  })
+}
 
 /**
  * Show helpful error message for invalid Catalyst path
@@ -161,87 +161,87 @@ const showCatalystPathHelp = (path: string, reason: string): string => {
     '   • /path/to/catalyst-ui-kit/typescript',
     '',
     'Enter a new path or press Ctrl+C to exit:',
-  ].join('\n');
+  ].join('\n')
 
-  return helpMessage;
-};
+  return helpMessage
+}
 
 /**
  * Prompt for Catalyst source path with helpful error handling
  */
 export const promptCatalystSource = async (): Promise<string> => {
-  const detectedPath = detectCatalystSource();
+  const detectedPath = detectCatalystSource()
 
   const validatePath = (value: string): string | true => {
     if (!value.trim()) {
-      return 'Catalyst source path is required';
+      return 'Catalyst source path is required'
     }
 
-    const path = value.trim();
+    const path = value.trim()
 
     if (!existsSync(path)) {
-      return showCatalystPathHelp(path, `Path "${path}" does not exist`);
+      return showCatalystPathHelp(path, `Path "${path}" does not exist`)
     }
 
     // Check for expected component files
     const hasComponents =
-      existsSync(join(path, 'button.tsx')) || existsSync(join(path, 'src', 'button.tsx'));
+      existsSync(join(path, 'button.tsx')) || existsSync(join(path, 'src', 'button.tsx'))
 
     if (!hasComponents) {
       return showCatalystPathHelp(
         path,
         `Path "${path}" does not contain expected Catalyst component files`
-      );
+      )
     }
 
-    return true;
-  };
+    return true
+  }
 
   return await input({
     message: 'Path to your Catalyst UI components:',
     default: detectedPath || './catalyst-ui-kit/typescript',
     validate: validatePath,
-  });
-};
+  })
+}
 
 /**
  * Prompt for destination directory using enhanced framework
  */
 export const promptDestination = async (): Promise<{ destinationDir: string }> => {
-  const defaultDestinationDir = detectDestinationDir();
+  const defaultDestinationDir = detectDestinationDir()
 
   const directoryPrompt = createDirectoryPrompt(
     'Installation destination directory:',
     defaultDestinationDir
-  );
+  )
 
-  const destinationDir = await directoryPrompt();
-  return { destinationDir };
-};
+  const destinationDir = await directoryPrompt()
+  return { destinationDir }
+}
 
 /**
  * Prompt for overwrite confirmation using enhanced framework
  */
 export const promptOverwrite = async (existingFiles: readonly string[]): Promise<boolean> => {
-  if (existingFiles.length === 0) return false;
+  if (existingFiles.length === 0) return false
 
-  const details = existingFiles.map(file => `Overwrite ${file}`);
+  const details = existingFiles.map((file) => `Overwrite ${file}`)
 
   const overwritePrompt = createConfirmationPrompt(
     'Do you want to overwrite existing files?',
     details,
     false
-  );
+  )
 
-  return await overwritePrompt();
-};
+  return await overwritePrompt()
+}
 
 /**
  * Prompt for configuration options
  */
 export const promptConfigOptions = async (): Promise<{
-  generateConfig: boolean;
-  installDependencies: boolean;
+  generateConfig: boolean
+  installDependencies: boolean
 }> => {
   const options = await checkbox({
     message: 'Additional options:',
@@ -257,13 +257,13 @@ export const promptConfigOptions = async (): Promise<{
         checked: true,
       },
     ],
-  });
+  })
 
   return {
     generateConfig: options.includes('generateConfig'),
     installDependencies: options.includes('installDependencies'),
-  };
-};
+  }
+}
 
 /**
  * Prompt for wrapper component option using enhanced framework
@@ -274,58 +274,58 @@ export const promptWrapperOption = async (): Promise<boolean> => {
     'Wrapper: components/ui/button.tsx',
     'Implementation: components/ui/lib/catalyst-button.tsx',
     'Alternative: single file structure without wrappers',
-  ];
+  ]
 
   const wrapperPrompt = createConfirmationPrompt(
     'Use wrapper components? (recommended)',
     details,
     true
-  );
+  )
 
-  return await wrapperPrompt();
-};
+  return await wrapperPrompt()
+}
 
 /**
  * Show initial help and setup guidance
  */
 const showInitialGuidance = (): void => {
-  console.log("Welcome to Trailhead UI! Let's set up your project.\n");
-  console.log('📋 Before we start, please ensure you have:');
-  console.log('   • Catalyst UI Kit downloaded from Tailwind Plus');
-  console.log('   • TypeScript version extracted to your project');
-  console.log('   • Components accessible at ./catalyst-ui-kit/typescript/\n');
-  console.log('💡 Tip: Press Ctrl+C at any time to exit and check your setup\n');
-};
+  console.log("Welcome to Trailhead UI! Let's set up your project.\n")
+  console.log('📋 Before we start, please ensure you have:')
+  console.log('   • Catalyst UI Kit downloaded from Tailwind Plus')
+  console.log('   • TypeScript version extracted to your project')
+  console.log('   • Components accessible at ./catalyst-ui-kit/typescript/\n')
+  console.log('💡 Tip: Press Ctrl+C at any time to exit and check your setup\n')
+}
 
 /**
  * Detect framework from package.json
  */
 const detectFrameworkFromPackageJson = async (): Promise<string | null> => {
-  const packageJsonPath = join(process.cwd(), 'package.json');
+  const packageJsonPath = join(process.cwd(), 'package.json')
   if (!existsSync(packageJsonPath)) {
-    return null;
+    return null
   }
 
   try {
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
     const allDeps = {
       ...packageJson.dependencies,
       ...packageJson.devDependencies,
-    };
+    }
 
     // Check for RedwoodJS/SDK
     if (allDeps.rwsdk || allDeps['@redwoodjs/sdk']) {
-      return 'redwood-sdk';
+      return 'redwood-sdk'
     }
 
     // Check for Next.js
     if (allDeps.next) {
-      return 'nextjs';
+      return 'nextjs'
     }
 
     // Check for Vite
     if (allDeps.vite) {
-      return 'vite';
+      return 'vite'
     }
 
     // Also check for wrangler config file (RedwoodJS indicator)
@@ -333,79 +333,79 @@ const detectFrameworkFromPackageJson = async (): Promise<string | null> => {
       existsSync(join(process.cwd(), 'wrangler.jsonc')) ||
       existsSync(join(process.cwd(), 'wrangler.json'))
     ) {
-      return 'redwood-sdk';
+      return 'redwood-sdk'
     }
 
-    return null;
+    return null
   } catch {
-    return null;
+    return null
   }
-};
+}
 
 /**
  * Get friendly framework name
  */
 const getFrameworkName = (framework: string): string => {
-  const frameworks = getFrameworkChoices();
-  const found = frameworks.find(f => f.value === framework);
-  return found ? found.name : framework;
-};
+  const frameworks = getFrameworkChoices()
+  const found = frameworks.find((f) => f.value === framework)
+  return found ? found.name : framework
+}
 
 /**
  * Run interactive installation prompts
  */
 export const runInstallationPrompts = async (): Promise<InstallOptions> => {
-  showInitialGuidance();
+  showInitialGuidance()
 
   // Always prompt for Catalyst source first
-  const catalystSource = await promptCatalystSource();
+  const catalystSource = await promptCatalystSource()
 
   // Try to auto-detect framework first
-  let framework: FrameworkChoice['value'];
-  const detectedFramework = await detectFrameworkFromPackageJson();
+  let framework: FrameworkChoice['value']
+  const detectedFramework = await detectFrameworkFromPackageJson()
   if (detectedFramework) {
-    console.log(`\nDetected framework: ${getFrameworkName(detectedFramework)}`);
+    console.log(`\nDetected framework: ${getFrameworkName(detectedFramework)}`)
     const useDetected = await confirm({
       message: 'Use this framework?',
       default: true,
-    });
+    })
     framework = useDetected
       ? (detectedFramework as FrameworkChoice['value'])
-      : await promptFramework();
+      : await promptFramework()
   } else {
-    framework = await promptFramework();
+    framework = await promptFramework()
   }
 
-  const mode = await promptInstallationMode();
+  const mode = await promptInstallationMode()
 
-  let destinationDir = detectDestinationDir();
+  let destinationDir = detectDestinationDir()
 
   // Prompt for destination directory in custom mode or always ask for confirmation
   if (mode === 'custom') {
-    const dirs = await promptDestination();
-    destinationDir = dirs.destinationDir;
+    const dirs = await promptDestination()
+    destinationDir = dirs.destinationDir
   } else {
     // Show detected default and ask for confirmation
-    console.log(`\nDetected destination directory:`);
-    console.log(`  Installation destination: ${destinationDir}`);
-    console.log(`  Components will be placed in: ${destinationDir}/`);
-    console.log(`  Library files will be placed in: ${destinationDir}/lib/`);
+    console.log(`\nDetected destination directory:`)
+    console.log(`  Installation destination: ${destinationDir}`)
+    console.log(`  Components will be placed in: ${destinationDir}/`)
+    console.log(`  Library files will be placed in: ${destinationDir}/lib/`)
 
     const useDefaults = await confirm({
       message: 'Use this destination?',
       default: true,
-    });
+    })
 
     if (!useDefaults) {
-      const dirs = await promptDestination();
-      destinationDir = dirs.destinationDir;
+      const dirs = await promptDestination()
+      destinationDir = dirs.destinationDir
     }
   }
 
-  const configOptions = await promptConfigOptions();
+  const configOptions = await promptConfigOptions()
 
   // Prompt for wrapper option
-  const wrappers = await promptWrapperOption();
+  const wrappers = await promptWrapperOption()
 
   return {
     framework,
@@ -418,5 +418,5 @@ export const runInstallationPrompts = async (): Promise<InstallOptions> => {
     verbose: false,
     interactive: true,
     wrappers,
-  };
-};
+  }
+}

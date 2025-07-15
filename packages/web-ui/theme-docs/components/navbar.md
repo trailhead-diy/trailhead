@@ -28,10 +28,10 @@ Like the sidebar, the navbar's current page indicator uses hardcoded colors.
 
 ```tsx
 // Current - HARDCODED
-'absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-zinc-950 dark:bg-white';
+'absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-zinc-950 dark:bg-white'
 
 // Recommended Fix
-'absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-primary';
+'absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-primary'
 ```
 
 **Impact**: Current page indicator invisible in themed environments, breaking navigation context.

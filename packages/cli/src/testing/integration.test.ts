@@ -5,7 +5,7 @@
 
 import { describe, test, expect } from 'vitest'
 import { ok, err } from '@esteban-url/core'
-import { setupResultMatchers, createOkResult, createTestError } from '@esteban-url/core/testing'
+import { setupResultMatchers, createTestError } from '@esteban-url/core/testing'
 import { createMockFileSystem } from '@esteban-url/fs/testing'
 
 // Setup cross-package matchers
@@ -15,18 +15,22 @@ describe('Cross-Package Testing Composition', () => {
   test('should compose core and filesystem testing utilities', async () => {
     const mockFs = createMockFileSystem({
       '/project/package.json': '{"name": "test"}',
-      '/project/src/index.ts': 'export default "hello"'
+      '/project/src/index.ts': 'export default "hello"',
     })
 
     // Test filesystem operations with Result types
     const content = mockFs.getFileContent('/project/package.json')
-    const packageJsonResult = content ? ok(content) : err(createTestError('FILE_NOT_FOUND', 'File not found'))
+    const packageJsonResult = content
+      ? ok(content)
+      : err(createTestError('FILE_NOT_FOUND', 'File not found'))
     expect(packageJsonResult).toBeOk()
     expect(packageJsonResult).toHaveValue('{"name": "test"}')
 
     // Test with error case
     const missingContent = mockFs.getFileContent('/project/missing.txt')
-    const missingResult = missingContent ? ok(missingContent) : err(createTestError('FILE_NOT_FOUND', 'File not found'))
+    const missingResult = missingContent
+      ? ok(missingContent)
+      : err(createTestError('FILE_NOT_FOUND', 'File not found'))
     expect(missingResult).toBeErr()
     expect(missingResult).toHaveErrorCode('FILE_NOT_FOUND')
   })
@@ -35,19 +39,19 @@ describe('Cross-Package Testing Composition', () => {
     const errors = [
       createTestError('VALIDATION_ERROR', 'Invalid input'),
       createTestError('FS_ERROR', 'File not found'),
-      createTestError('NETWORK_ERROR', 'Connection failed')
+      createTestError('NETWORK_ERROR', 'Connection failed'),
     ]
 
-    const results = errors.map(error => err(error))
-    
+    const results = errors.map((error) => err(error))
+
     // Test that all results are errors
-    results.forEach(result => {
+    results.forEach((result) => {
       expect(result).toBeErr()
     })
 
     // Test error codes
     expect(results[0]).toHaveErrorCode('VALIDATION_ERROR')
-    expect(results[1]).toHaveErrorCode('FS_ERROR') 
+    expect(results[1]).toHaveErrorCode('FS_ERROR')
     expect(results[2]).toHaveErrorCode('NETWORK_ERROR')
   })
 
@@ -57,8 +61,8 @@ describe('Cross-Package Testing Composition', () => {
 
     // Test error aggregation across packages
     const errors = [fsError, networkError]
-    const errorMessages = errors.map(e => e.message)
-    
+    const errorMessages = errors.map((e) => e.message)
+
     expect(errorMessages).toContain('test.txt not found')
     expect(errorMessages).toContain('Connection failed')
     expect(errors.length).toBe(2)
@@ -68,12 +72,14 @@ describe('Cross-Package Testing Composition', () => {
     // Simulate a CLI workflow with filesystem operations
     const mockFs = createMockFileSystem({
       '/workspace/package.json': '{"name": "test-cli", "version": "1.0.0"}',
-      '/workspace/src/index.ts': 'export default {}'
+      '/workspace/src/index.ts': 'export default {}',
     })
 
     // 1. Read package.json
     const packageContent = mockFs.getFileContent('/workspace/package.json')
-    const packageResult = packageContent ? ok(packageContent) : err(createTestError('FILE_NOT_FOUND', 'package.json not found'))
+    const packageResult = packageContent
+      ? ok(packageContent)
+      : err(createTestError('FILE_NOT_FOUND', 'package.json not found'))
     expect(packageResult).toBeOk()
 
     // 2. Parse and validate package data

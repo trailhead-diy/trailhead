@@ -2,10 +2,10 @@
 // Auto generated on DEVELOPMENT
 
 // @ts-nocheck
-'use client';
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import { useState } from 'react';
+'use client'
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import { useState } from 'react'
 export function CatalystCombobox<T>({
   options,
   displayValue,
@@ -18,26 +18,26 @@ export function CatalystCombobox<T>({
   children,
   ...props
 }: {
-  options: T[];
-  displayValue: (value: T | null) => string | undefined;
-  filter?: (value: T, query: string) => boolean;
-  className?: string;
-  placeholder?: string;
-  autoFocus?: boolean;
-  'aria-label'?: string;
-  children: (value: NonNullable<T>) => React.ReactElement;
+  options: T[]
+  displayValue: (value: T | null) => string | undefined
+  filter?: (value: T, query: string) => boolean
+  className?: string
+  placeholder?: string
+  autoFocus?: boolean
+  'aria-label'?: string
+  children: (value: NonNullable<T>) => React.ReactElement
 } & Omit<Headless.ComboboxProps<T, false>, 'as' | 'multiple' | 'children'> & {
-    anchor?: 'top' | 'bottom';
+    anchor?: 'top' | 'bottom'
   }) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('')
   const filteredOptions =
     query === ''
       ? options
-      : options.filter(option =>
+      : options.filter((option) =>
           filter
             ? filter(option, query)
             : displayValue(option)?.toLowerCase().includes(query.toLowerCase())
-        );
+        )
   return (
     <Headless.Combobox
       {...props}
@@ -68,7 +68,7 @@ export function CatalystCombobox<T>({
           data-slot="control"
           aria-label={ariaLabel}
           displayValue={(option: T) => displayValue(option) ?? ''}
-          onChange={event => setQuery(event.target.value)}
+          onChange={(event) => setQuery(event.target.value)}
           placeholder={placeholder}
           className={cn([
             className,
@@ -137,15 +137,15 @@ export function CatalystCombobox<T>({
         {({ option }) => children(option)}
       </Headless.ComboboxOptions>
     </Headless.Combobox>
-  );
+  )
 }
 export function CatalystComboboxOption<T>({
   children,
   className,
   ...props
 }: {
-  className?: string;
-  children?: React.ReactNode;
+  className?: string
+  children?: React.ReactNode
 } & Omit<Headless.ComboboxOptionProps<'div', T>, 'as' | 'className'>) {
   let sharedClasses = cn(
     // Base
@@ -156,7 +156,7 @@ export function CatalystComboboxOption<T>({
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  );
+  )
   return (
     <Headless.ComboboxOption
       {...props}
@@ -183,7 +183,7 @@ export function CatalystComboboxOption<T>({
         <path d="M4 8.5l3 3L12 4" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </Headless.ComboboxOption>
-  );
+  )
 }
 export function CatalystComboboxLabel({
   className,
@@ -194,7 +194,7 @@ export function CatalystComboboxLabel({
       {...props}
       className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
     />
-  );
+  )
 }
 export function CatalystComboboxDescription({
   className,
@@ -211,5 +211,5 @@ export function CatalystComboboxDescription({
     >
       <span className="flex-1 truncate">{children}</span>
     </span>
-  );
+  )
 }

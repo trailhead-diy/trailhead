@@ -162,12 +162,20 @@ export function calculateWeightedProgress(
   totalSteps: number,
   weights?: number[]
 ): number {
+  if (totalSteps === 0) {
+    return 0 // Handle 0/0 case
+  }
+
   if (!weights || weights.length !== totalSteps) {
     // Fallback to equal weights
     return Math.round((currentStep / totalSteps) * 100)
   }
 
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
+  if (totalWeight === 0) {
+    return 0 // Handle case where all weights are 0
+  }
+
   const completedWeight = weights.slice(0, currentStep).reduce((sum, weight) => sum + weight, 0)
 
   return Math.round((completedWeight / totalWeight) * 100)

@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Radio, RadioField, RadioGroup } from '../radio';
-import { Label } from '../fieldset';
-import { useState } from 'react';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { Radio, RadioField, RadioGroup } from '../radio'
+import { Label } from '../fieldset'
+import { useState } from 'react'
 
 describe('Radio Components', () => {
   const getRadio = (text: string) =>
-    screen.getByText(text).closest('[data-slot="field"]')?.querySelector('[role="radio"]');
+    screen.getByText(text).closest('[data-slot="field"]')?.querySelector('[role="radio"]')
 
   it('handles selection behavior and disabled state', () => {
     render(
@@ -24,27 +24,27 @@ describe('Radio Components', () => {
           <Label>Disabled Option</Label>
         </RadioField>
       </RadioGroup>
-    );
+    )
 
     // Initial state
-    expect(getRadio('Option 1')).toHaveAttribute('aria-checked', 'true');
-    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'false');
+    expect(getRadio('Option 1')).toHaveAttribute('aria-checked', 'true')
+    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'false')
 
     // Change selection
-    fireEvent.click(screen.getByText('Option 2'));
-    expect(getRadio('Option 1')).toHaveAttribute('aria-checked', 'false');
-    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(screen.getByText('Option 2'))
+    expect(getRadio('Option 1')).toHaveAttribute('aria-checked', 'false')
+    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'true')
 
     // Disabled option cannot be selected
-    fireEvent.click(screen.getByText('Disabled Option'));
-    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'true');
-    expect(getRadio('Disabled Option')).toHaveAttribute('aria-checked', 'false');
-  });
+    fireEvent.click(screen.getByText('Disabled Option'))
+    expect(getRadio('Option 2')).toHaveAttribute('aria-checked', 'true')
+    expect(getRadio('Disabled Option')).toHaveAttribute('aria-checked', 'false')
+  })
 
   it('supports controlled state and onChange handler', () => {
     function ControlledRadio() {
-      const [value, setValue] = useState('option1');
-      const handleChange = vi.fn(setValue);
+      const [value, setValue] = useState('option1')
+      const handleChange = vi.fn(setValue)
       return (
         <>
           <RadioGroup value={value} onChange={handleChange}>
@@ -59,14 +59,14 @@ describe('Radio Components', () => {
           </RadioGroup>
           <div data-testid="value">{value}</div>
         </>
-      );
+      )
     }
 
-    render(<ControlledRadio />);
-    expect(screen.getByTestId('value')).toHaveTextContent('option1');
-    fireEvent.click(screen.getByText('Option 2'));
-    expect(screen.getByTestId('value')).toHaveTextContent('option2');
-  });
+    render(<ControlledRadio />)
+    expect(screen.getByTestId('value')).toHaveTextContent('option1')
+    fireEvent.click(screen.getByText('Option 2'))
+    expect(screen.getByTestId('value')).toHaveTextContent('option2')
+  })
 
   it('provides accessibility features and keyboard navigation', () => {
     const { container } = render(
@@ -78,25 +78,25 @@ describe('Radio Components', () => {
           </RadioField>
         ))}
       </RadioGroup>
-    );
+    )
 
     // ARIA relationships
     expect(container.querySelector('[role="radiogroup"]')).toHaveAttribute(
       'aria-label',
       'Choose an option'
-    );
-    expect(container.querySelectorAll('[role="radio"]')).toHaveLength(3);
+    )
+    expect(container.querySelectorAll('[role="radio"]')).toHaveLength(3)
 
     // Keyboard navigation
-    const radios = Array.from(container.querySelectorAll('[role="radio"]')) as HTMLElement[];
-    radios[0].focus();
+    const radios = Array.from(container.querySelectorAll('[role="radio"]')) as HTMLElement[]
+    radios[0].focus()
 
-    fireEvent.keyDown(radios[0], { key: 'ArrowDown' });
-    expect(document.activeElement).toBe(radios[1]);
-    expect(radios[1]).toHaveAttribute('aria-checked', 'true');
+    fireEvent.keyDown(radios[0], { key: 'ArrowDown' })
+    expect(document.activeElement).toBe(radios[1])
+    expect(radios[1]).toHaveAttribute('aria-checked', 'true')
 
-    fireEvent.keyDown(radios[1], { key: 'ArrowUp' });
-    expect(document.activeElement).toBe(radios[0]);
-    expect(radios[0]).toHaveAttribute('aria-checked', 'true');
-  });
-});
+    fireEvent.keyDown(radios[1], { key: 'ArrowUp' })
+    expect(document.activeElement).toBe(radios[0])
+    expect(radios[0]).toHaveAttribute('aria-checked', 'true')
+  })
+})

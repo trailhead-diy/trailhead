@@ -6,7 +6,7 @@
  * mappings module to apply component-specific color tokens.
  */
 
-import { getSemanticColorsForComponent } from './mappings.js';
+import { getSemanticColorsForComponent } from './mappings.js'
 
 /**
  * Core semantic colors transformation logic
@@ -26,13 +26,13 @@ import { getSemanticColorsForComponent } from './mappings.js';
  * ```
  */
 export function executeSemanticColorsTransform(input: string): {
-  content: string;
-  changed: boolean;
-  warnings: string[];
+  content: string
+  changed: boolean
+  warnings: string[]
 } {
-  let content = input;
-  const warnings: string[] = [];
-  let changed = false;
+  let content = input
+  const warnings: string[] = []
+  let changed = false
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Detect Colors Object Patterns
@@ -42,13 +42,13 @@ export function executeSemanticColorsTransform(input: string): {
   //        const styles = { base: '...', colors: { zinc: '...', blue: '...' } }
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const directColorsObject = /const colors = \{/.test(content);
-  const nestedColorsObject = /colors:\s*\{/.test(content);
-  const stylesColorsObject = /const styles = \{[\s\S]*?colors:\s*\{/.test(content);
+  const directColorsObject = /const colors = \{/.test(content)
+  const nestedColorsObject = /colors:\s*\{/.test(content)
+  const stylesColorsObject = /const styles = \{[\s\S]*?colors:\s*\{/.test(content)
 
   if (!directColorsObject && !nestedColorsObject && !stylesColorsObject) {
-    warnings.push('No colors object found in component');
-    return { content, changed: false, warnings };
+    warnings.push('No colors object found in component')
+    return { content, changed: false, warnings }
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -59,11 +59,11 @@ export function executeSemanticColorsTransform(input: string): {
   //        then generates component-specific semantic colors (primary, secondary, etc.)
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const semanticColors = getSemanticColorsForComponent(content);
+  const semanticColors = getSemanticColorsForComponent(content)
 
   if (semanticColors.length === 0) {
-    warnings.push('Unknown component type, no semantic colors available');
-    return { content, changed: false, warnings };
+    warnings.push('Unknown component type, no semantic colors available')
+    return { content, changed: false, warnings }
   }
 
   /////////////////////////////////////////////////////////////////////////////////
@@ -73,14 +73,14 @@ export function executeSemanticColorsTransform(input: string): {
   //        in colors object to avoid adding duplicates
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const semanticColorKeys = ['primary', 'secondary', 'destructive', 'accent', 'muted'];
-  const hasSemanticColors = semanticColorKeys.some(colorKey => {
+  const semanticColorKeys = ['primary', 'secondary', 'destructive', 'accent', 'muted']
+  const hasSemanticColors = semanticColorKeys.some((colorKey) => {
     // Check if the color key exists as a property (more precise check)
-    return content.includes(`${colorKey}:`);
-  });
+    return content.includes(`${colorKey}:`)
+  })
 
   if (!hasSemanticColors) {
-    let patternFound = false;
+    let patternFound = false
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 4: Apply Semantic Colors to Direct Colors Object
@@ -91,24 +91,24 @@ export function executeSemanticColorsTransform(input: string): {
     /////////////////////////////////////////////////////////////////////////////////
     if (directColorsObject) {
       // More flexible pattern that captures the entire colors object
-      const colorsObjectPattern = /(const colors = \{[\s\S]*?)(})/;
-      const match = content.match(colorsObjectPattern);
+      const colorsObjectPattern = /(const colors = \{[\s\S]*?)(})/
+      const match = content.match(colorsObjectPattern)
 
       if (match) {
-        const beforeClosing = match[1];
-        const closing = match[2];
+        const beforeClosing = match[1]
+        const closing = match[2]
 
         // Check if the content before closing brace ends with a comma
-        const needsComma = !beforeClosing.trim().endsWith(',');
-        const commaPrefix = needsComma ? ',' : '';
+        const needsComma = !beforeClosing.trim().endsWith(',')
+        const commaPrefix = needsComma ? ',' : ''
 
         // Add semantic colors before the closing brace with proper indentation
-        const semanticColorsBlock = semanticColors.map(color => `  ${color}`).join('\n');
-        const newColorsObject = `${beforeClosing}${commaPrefix}\n  ${semanticColorsBlock}\n${closing}`;
+        const semanticColorsBlock = semanticColors.map((color) => `  ${color}`).join('\n')
+        const newColorsObject = `${beforeClosing}${commaPrefix}\n  ${semanticColorsBlock}\n${closing}`
 
-        content = content.replace(colorsObjectPattern, newColorsObject);
-        changed = true;
-        patternFound = true;
+        content = content.replace(colorsObjectPattern, newColorsObject)
+        changed = true
+        patternFound = true
       }
     }
 
@@ -123,35 +123,35 @@ export function executeSemanticColorsTransform(input: string): {
       // Use a more robust regex that handles both patterns:
       // 1. colors: { ... }; (direct colors object)
       // 2. colors: { ... }, (nested colors object in styles)
-      const colorsPattern = /(colors:\s*\{[\s\S]*?)(\n\s*}[,;]?)/;
-      const match = content.match(colorsPattern);
+      const colorsPattern = /(colors:\s*\{[\s\S]*?)(\n\s*}[,;]?)/
+      const match = content.match(colorsPattern)
 
       if (match) {
-        const beforeClosing = match[1];
-        const closingWithIndent = match[2];
+        const beforeClosing = match[1]
+        const closingWithIndent = match[2]
 
         // Check if the content before closing brace ends with a comma
-        const needsComma = !beforeClosing.trim().endsWith(',');
-        const commaPrefix = needsComma ? ',' : '';
+        const needsComma = !beforeClosing.trim().endsWith(',')
+        const commaPrefix = needsComma ? ',' : ''
 
         // Extract the indentation from the closing brace line
-        const indentMatch = closingWithIndent.match(/\n(\s*)/);
-        const indent = indentMatch ? indentMatch[1] : '  ';
+        const indentMatch = closingWithIndent.match(/\n(\s*)/)
+        const indent = indentMatch ? indentMatch[1] : '  '
 
         // Add semantic colors before the closing brace with proper indentation
-        const semanticColorsBlock = semanticColors.map(color => `${indent}  ${color}`).join('\n');
-        const newColorsObject = `${beforeClosing}${commaPrefix}\n\n${semanticColorsBlock}\n${closingWithIndent}`;
+        const semanticColorsBlock = semanticColors.map((color) => `${indent}  ${color}`).join('\n')
+        const newColorsObject = `${beforeClosing}${commaPrefix}\n\n${semanticColorsBlock}\n${closingWithIndent}`
 
-        content = content.replace(colorsPattern, newColorsObject);
-        changed = true;
-        patternFound = true;
+        content = content.replace(colorsPattern, newColorsObject)
+        changed = true
+        patternFound = true
       }
     }
 
     if (!patternFound) {
-      warnings.push('Could not find colors object pattern to add semantic colors');
+      warnings.push('Could not find colors object pattern to add semantic colors')
     }
   }
 
-  return { content, changed, warnings };
+  return { content, changed, warnings }
 }

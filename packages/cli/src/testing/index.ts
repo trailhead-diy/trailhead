@@ -4,7 +4,7 @@
  * CLI-specific testing utilities for command execution, interactive testing, and CLI workflows.
  * For general testing utilities, see the respective domain packages:
  * - @esteban-url/core/testing - Result matchers, error testing
- * - @esteban-url/fs/testing - Filesystem fixtures, path utilities  
+ * - @esteban-url/fs/testing - Filesystem fixtures, path utilities
  * - @esteban-url/validation/testing - Schema testing
  *
  * @example
@@ -21,11 +21,11 @@
  *   // CLI performance monitoring
  *   measureCLIPerformance, createCLIPerformanceMonitor
  * } from '@esteban-url/cli/testing'
- * 
+ *
  * // Test CLI command execution
  * const result = await runCommand(myCommand, ['--verbose'])
  * expectCommandSuccess(result)
- * 
+ *
  * // Test interactive prompts
  * const interactive = createInteractiveTest(myInteractiveCommand)
  * await simulatePrompts(interactive, ['yes', 'save'])
@@ -133,15 +133,15 @@ export type {
 /**
  * This package now focuses exclusively on CLI-specific testing utilities.
  * For other testing needs, import from the appropriate domain packages:
- * 
+ *
  * @example
  * ```typescript
  * // Result testing
  * import { setupResultMatchers } from '@esteban-url/core/testing'
- * 
+ *
  * // Filesystem testing
  * import { createTestTempDir, normalizePath } from '@esteban-url/fs/testing'
- * 
+ *
  * // CLI testing (this package)
  * import { runCommand, createInteractiveTest } from '@esteban-url/cli/testing'
  * ```
@@ -153,16 +153,16 @@ export type {
 
 /**
  * Utilities moved to other packages:
- * 
+ *
  * @esteban-url/core/testing:
  * - resultMatchers, setupResultMatchers
  * - Result helpers and factories
- * 
+ *
  * @esteban-url/fs/testing:
  * - createTestTempDir, cleanup, createTestFile
  * - normalizePath, pathAssertions
  * - fixture management for files
- * 
+ *
  * Future domain packages:
  * - data/testing: CSV/JSON fixtures and validators
  * - validation/testing: Schema testing utilities

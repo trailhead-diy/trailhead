@@ -2,29 +2,29 @@
 // Auto generated on DEVELOPMENT
 
 // @ts-nocheck
-'use client';
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
-import { CatalystButton } from './catalyst-button';
-import { CatalystLink } from './catalyst-link';
+'use client'
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
+import { CatalystButton } from './catalyst-button'
+import { CatalystLink } from './catalyst-link'
 export function CatalystDropdown(props: Headless.MenuProps) {
-  return <Headless.Menu {...props} />;
+  return <Headless.Menu {...props} />
 }
 export function CatalystDropdownButton<T extends React.ElementType = typeof CatalystButton>({
   as = CatalystButton,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.MenuButtonProps<T>, 'className'>) {
-  return <Headless.MenuButton as={as} {...props} />;
+  return <Headless.MenuButton as={as} {...props} />
 }
 export function CatalystDropdownMenu({
   anchor = 'bottom',
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.MenuItemsProps, 'as' | 'className'>) {
   return (
     <Headless.MenuItems
@@ -51,13 +51,13 @@ export function CatalystDropdownMenu({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDropdownItem({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & (
   | Omit<Headless.MenuItemProps<'button'>, 'as' | 'className'>
   | Omit<Headless.MenuItemProps<typeof CatalystLink>, 'as' | 'className'>
@@ -81,24 +81,24 @@ export function CatalystDropdownItem({
     // Avatar
     '*:data-[slot=avatar]:mr-2.5 *:data-[slot=avatar]:-ml-1 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:mr-2 sm:*:data-[slot=avatar]:size-5',
     className
-  );
+  )
   return 'href' in props ? (
     <Headless.MenuItem as={CatalystLink} {...props} className={classes} />
   ) : (
     <Headless.MenuItem as="button" type="button" {...props} className={classes} />
-  );
+  )
 }
 export function CatalystDropdownHeader({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn('col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3', className)} />;
+  return <div {...props} className={cn('col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3', className)} />
 }
 export function CatalystDropdownSection({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.MenuSectionProps, 'as' | 'className'>) {
   return (
     <Headless.MenuSection
@@ -109,13 +109,13 @@ export function CatalystDropdownSection({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDropdownHeading({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.MenuHeadingProps, 'as' | 'className'>) {
   return (
     <Headless.MenuHeading
@@ -125,13 +125,13 @@ export function CatalystDropdownHeading({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDropdownDivider({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.MenuSeparatorProps, 'as' | 'className'>) {
   return (
     <Headless.MenuSeparator
@@ -141,19 +141,19 @@ export function CatalystDropdownDivider({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDropdownLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div data-slot="label" className={cn('col-start-2 row-start-1', className)} {...props} />;
+  return <div data-slot="label" className={cn('col-start-2 row-start-1', className)} {...props} />
 }
 export function CatalystDropdownDescription({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DescriptionProps, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -164,15 +164,15 @@ export function CatalystDropdownDescription({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDropdownShortcut({
   keys,
   className,
   ...props
 }: {
-  keys: string | string[];
-  className?: string;
+  keys: string | string[]
+  className?: string
 } & Omit<Headless.DescriptionProps<'kbd'>, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -193,5 +193,5 @@ export function CatalystDropdownShortcut({
         </kbd>
       ))}
     </Headless.Description>
-  );
+  )
 }

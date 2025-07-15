@@ -2,10 +2,10 @@
 // Auto generated on DEVELOPMENT
 
 // @ts-nocheck
-'use client';
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import { Fragment } from 'react';
+'use client'
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import { Fragment } from 'react'
 export function CatalystListbox<T>({
   className,
   placeholder,
@@ -14,11 +14,11 @@ export function CatalystListbox<T>({
   children: options,
   ...props
 }: {
-  className?: string;
-  placeholder?: React.ReactNode;
-  autoFocus?: boolean;
-  'aria-label'?: string;
-  children?: React.ReactNode;
+  className?: string
+  placeholder?: React.ReactNode
+  autoFocus?: boolean
+  'aria-label'?: string
+  children?: React.ReactNode
 } & Omit<Headless.ListboxProps<typeof Fragment, T>, 'as' | 'multiple'>) {
   return (
     <Headless.Listbox {...props} multiple={false}>
@@ -112,15 +112,15 @@ export function CatalystListbox<T>({
         {options}
       </Headless.ListboxOptions>
     </Headless.Listbox>
-  );
+  )
 }
 export function CatalystListboxOption<T>({
   children,
   className,
   ...props
 }: {
-  className?: string;
-  children?: React.ReactNode;
+  className?: string
+  children?: React.ReactNode
 } & Omit<Headless.ListboxOptionProps<'div', T>, 'as' | 'className'>) {
   let sharedClasses = cn(
     // Base
@@ -131,12 +131,12 @@ export function CatalystListboxOption<T>({
     'forced-colors:*:data-[slot=icon]:text-[CanvasText] forced-colors:group-data-focus/option:*:data-[slot=icon]:text-[Canvas]',
     // Avatars
     '*:data-[slot=avatar]:-mx-0.5 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:size-5'
-  );
+  )
   return (
     <Headless.ListboxOption as={Fragment} {...props}>
       {({ selectedOption }) => {
         if (selectedOption) {
-          return <div className={cn(sharedClasses, className)}>{children}</div>;
+          return <div className={cn(sharedClasses, className)}>{children}</div>
         }
         return (
           <div
@@ -168,10 +168,10 @@ export function CatalystListboxOption<T>({
             </svg>
             <span className={cn(sharedClasses, 'col-start-2', className)}>{children}</span>
           </div>
-        );
+        )
       }}
     </Headless.ListboxOption>
-  );
+  )
 }
 export function CatalystListboxLabel({
   className,
@@ -182,7 +182,7 @@ export function CatalystListboxLabel({
       {...props}
       className={cn('ml-2.5 truncate first:ml-0 sm:ml-2 sm:first:ml-0', className)}
     />
-  );
+  )
 }
 export function CatalystListboxDescription({
   className,
@@ -199,5 +199,5 @@ export function CatalystListboxDescription({
     >
       <span className="flex-1 truncate">{children}</span>
     </span>
-  );
+  )
 }

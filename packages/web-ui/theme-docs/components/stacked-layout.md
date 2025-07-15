@@ -12,30 +12,30 @@ The Stacked Layout component is **mostly correctly implemented** with semantic t
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring';
+'bg-white shadow-xs ring-1 ring-zinc-950/5 dark:bg-card dark:ring-ring'
 
 // Recommended Fix
-'bg-background shadow-xs ring-1 ring-border dark:bg-card dark:ring-ring';
+'bg-background shadow-xs ring-1 ring-border dark:bg-card dark:ring-ring'
 ```
 
 ### 2. Main Content Area Background (Line 90) - High Priority
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10';
+'lg:bg-white lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-zinc-950/5 dark:lg:bg-zinc-900 dark:lg:ring-white/10'
 
 // Recommended Fix
-'lg:bg-background lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-border dark:lg:bg-card dark:lg:ring-ring';
+'lg:bg-background lg:p-10 lg:shadow-xs lg:ring-1 lg:ring-border dark:lg:bg-card dark:lg:ring-ring'
 ```
 
 ### 3. Modal Backdrop Color (Line 34) - Low Priority
 
 ```tsx
 // Current - HARDCODED
-'bg-black/30';
+'bg-black/30'
 
 // Recommended Fix (for theme consistency)
-'bg-background/30';
+'bg-background/30'
 ```
 
 **Impact**: Background and border inconsistencies affect visual cohesion across different layout configurations and themes.

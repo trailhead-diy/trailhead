@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "private": false,
-  "description": "Functional data processing (CSV, JSON, Excel) with Result types for Trailhead System",
+  "description": "Unified data processing and format detection (CSV, JSON, Excel) with Result types for Trailhead System",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "@esteban-url:registry": "https://npm.pkg.github.com"
@@ -28,21 +28,21 @@
       "types": "./dist/excel/index.d.ts",
       "default": "./dist/excel/index.js"
     },
-    "./streaming": {
-      "types": "./dist/streaming/index.d.ts",
-      "default": "./dist/streaming/index.js"
+    "./formats": {
+      "types": "./dist/formats/index.d.ts",
+      "default": "./dist/formats/index.js"
     },
-    "./streaming/csv": {
-      "types": "./dist/streaming/csv-streaming.d.ts",
-      "default": "./dist/streaming/csv-streaming.js"
+    "./formats/detection": {
+      "types": "./dist/detection/index.d.ts",
+      "default": "./dist/detection/index.js"
     },
-    "./streaming/json": {
-      "types": "./dist/streaming/json-streaming.d.ts",
-      "default": "./dist/streaming/json-streaming.js"
+    "./formats/mime": {
+      "types": "./dist/mime/index.d.ts",
+      "default": "./dist/mime/index.js"
     },
-    "./streaming/excel": {
-      "types": "./dist/streaming/excel-streaming.d.ts",
-      "default": "./dist/streaming/excel-streaming.js"
+    "./formats/conversion": {
+      "types": "./dist/conversion/index.d.ts",
+      "default": "./dist/conversion/index.js"
     },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
@@ -66,15 +66,9 @@
     "@esteban-url/core": "workspace:*",
     "@esteban-url/fs": "workspace:*",
     "papaparse": "^5.4.1",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
-  },
-  "peerDependencies": {
-    "@esteban-url/streams": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@esteban-url/streams": {
-      "optional": true
-    }
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "file-type": "^19.5.0",
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "@repo/oxlint-config": "workspace:*",
@@ -82,6 +76,7 @@
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.0.10",
     "@types/papaparse": "^5.3.14",
+    "@types/mime-types": "^2.1.4",
     "@vitest/coverage-v8": "^3.2.4",
     "oxlint": "^1.6.0",
     "tsup": "^8.5.0",
@@ -102,6 +97,9 @@
     "csv",
     "json",
     "excel",
+    "formats",
+    "detection",
+    "mime",
     "processing",
     "functional",
     "result-types",

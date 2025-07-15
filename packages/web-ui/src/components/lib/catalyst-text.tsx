@@ -1,8 +1,8 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import { cn } from '../utils/cn';
-import { CatalystLink } from './catalyst-link';
+import { cn } from '../utils/cn'
+import { CatalystLink } from './catalyst-link'
 export function CatalystText({ className, ...props }: React.ComponentPropsWithoutRef<'p'>) {
   return (
     <p
@@ -10,7 +10,7 @@ export function CatalystText({ className, ...props }: React.ComponentPropsWithou
       {...props}
       className={cn('text-base/6 text-zinc-500 sm:text-sm/6 dark:text-zinc-400', className)}
     />
-  );
+  )
 }
 export function CatalystTextLink({
   className,
@@ -24,12 +24,12 @@ export function CatalystTextLink({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystStrong({ className, ...props }: React.ComponentPropsWithoutRef<'strong'>) {
   return (
     <strong {...props} className={cn('font-medium text-zinc-950 dark:text-white', className)} />
-  );
+  )
 }
 export function CatalystCode({ className, ...props }: React.ComponentPropsWithoutRef<'code'>) {
   return (
@@ -40,5 +40,5 @@ export function CatalystCode({ className, ...props }: React.ComponentPropsWithou
         className
       )}
     />
-  );
+  )
 }
