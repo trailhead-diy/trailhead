@@ -38,6 +38,7 @@
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "types": "tsc --noEmit"
   },
   "dependencies": {
