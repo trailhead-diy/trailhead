@@ -6,6 +6,7 @@ export default defineConfig({
     'detection/index': 'src/detection/index.ts',
     'mime/index': 'src/mime/index.ts',
     'conversion/index': 'src/conversion/index.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // We use tsc for declarations

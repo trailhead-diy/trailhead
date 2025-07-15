@@ -6,6 +6,7 @@ export default defineConfig({
     'csv/index': 'src/csv/index.ts',
     'json/index': 'src/json/index.ts',
     'excel/index': 'src/excel/index.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // We use tsc for declarations

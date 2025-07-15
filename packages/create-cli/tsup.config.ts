@@ -4,7 +4,10 @@ import { join, dirname } from 'path'
 import fg from 'fast-glob'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: {
+    index: 'src/index.ts',
+    'testing/index': 'src/testing/index.ts',
+  },
   format: ['esm'],
   dts: false, // We generate these separately with tsc
   sourcemap: true,

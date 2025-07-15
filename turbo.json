@@ -29,7 +29,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**", "test-results/**", "temp/**"],
+      "outputs": [],
       "inputs": [
         "src/**",
         "tests/**",

@@ -12,7 +12,9 @@
  *   // Error factories
  *   createValidationError, createFsError, createTestError,
  *   // Async utilities
- *   createAsyncOk, fromPromise, chainAsync
+ *   createAsyncOk, fromPromise, chainAsync,
+ *   // Vitest matchers
+ *   setupResultMatchers, resultMatchers
  * } from '@esteban-url/core/testing'
  *
  * // Test Result types
@@ -29,9 +31,15 @@
  * if (asyncResult.isOk()) {
  *   // Handle success
  * }
+ *
+ * // Setup Vitest matchers
+ * setupResultMatchers()
+ * expect(result).toBeOk()
+ * expect(result).toHaveValue('success')
  * ```
  */
 
 export * from './result-helpers.js'
 export * from './error-factories.js'
 export * from './async-helpers.js'
+export * from './vitest-matchers.js'

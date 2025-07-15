@@ -132,7 +132,10 @@ export const unwrapErr = <T, E>(result: Result<T, E>): E => {
  */
 export const assertOk = <T, E>(result: Result<T, E>): asserts result is Result<T, never> => {
   if (result.isErr()) {
-    throw new Error(`Expected Ok but got Err: ${JSON.stringify(result.error)}`)
+    const errorDisplay = typeof result.error === 'object' && result.error !== null
+      ? JSON.stringify(result.error, null, 2)
+      : String(result.error)
+    throw new Error(`Expected Ok but got Err:\n${errorDisplay}\n\nResult path: ${getResultPath(result)}`)
   }
 }
 
@@ -152,7 +155,10 @@ export const assertOk = <T, E>(result: Result<T, E>): asserts result is Result<T
  */
 export const assertErr = <T, E>(result: Result<T, E>): asserts result is Result<never, E> => {
   if (result.isOk()) {
-    throw new Error(`Expected Err but got Ok: ${JSON.stringify(result.value)}`)
+    const valueDisplay = typeof result.value === 'object' && result.value !== null
+      ? JSON.stringify(result.value, null, 2)
+      : String(result.value)
+    throw new Error(`Expected Err but got Ok:\n${valueDisplay}\n\nResult path: ${getResultPath(result)}`)
   }
 }
 
@@ -317,3 +323,20 @@ export const createResultMatcher =
       onErr(result.error)
     }
   }
+
+/**
+ * Gets a debug path for a Result to help trace where it came from
+ * 
+ * @param result - The Result to get a path for
+ * @returns A string describing the Result's type and origin
+ */
+const getResultPath = <T, E>(result: Result<T, E>): string => {
+  if (result.isOk()) {
+    return `Ok(${typeof result.value})`
+  } else {
+    const errorType = result.error && typeof result.error === 'object' && 'code' in result.error
+      ? (result.error as any).code
+      : typeof result.error
+    return `Err(${errorType})`
+  }
+}

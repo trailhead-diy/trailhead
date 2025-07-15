@@ -43,6 +43,10 @@
     "./streaming/excel": {
       "types": "./dist/streaming/excel-streaming.d.ts",
       "default": "./dist/streaming/excel-streaming.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
     }
   },
   "scripts": {

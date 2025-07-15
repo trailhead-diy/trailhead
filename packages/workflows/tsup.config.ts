@@ -7,6 +7,7 @@ export default defineConfig({
     'steps/index': 'src/steps/index.ts',
     'execution/index': 'src/execution/index.ts',
     'state/index': 'src/state/index.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // Use tsc for declarations

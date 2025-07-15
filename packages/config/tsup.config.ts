@@ -7,6 +7,7 @@ export default defineConfig({
     'loaders/index': 'src/loaders/operations.ts',
     'validators/index': 'src/validators/operations.ts',
     'transformers/index': 'src/transformers/operations.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // Use tsc for declarations

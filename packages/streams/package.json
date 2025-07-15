@@ -23,6 +23,10 @@
     "./duplex": {
       "types": "./dist/duplex/index.d.ts",
       "default": "./dist/duplex/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
     }
   },
   "files": [

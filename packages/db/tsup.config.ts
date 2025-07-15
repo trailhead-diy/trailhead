@@ -7,6 +7,7 @@ export default defineConfig({
     'adapters/index': 'src/adapters/index.ts',
     'query/index': 'src/query/index.ts',
     'schema/index': 'src/schema/index.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // TypeScript declarations generated separately

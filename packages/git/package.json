@@ -23,6 +23,10 @@
     "./diff": {
       "types": "./dist/diff/index.d.ts",
       "default": "./dist/diff/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
     }
   },
   "files": [

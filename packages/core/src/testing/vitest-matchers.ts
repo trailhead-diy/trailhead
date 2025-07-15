@@ -1,9 +1,47 @@
-import type { Result } from '@esteban-url/core'
-
 /**
- * Custom Vitest matchers for Result types
- * Provides fluent assertions for improved developer experience
+ * Comprehensive Vitest matchers for Result types
+ * 
+ * These matchers provide fluent assertions for Result types in tests,
+ * offering better error messages and type-safe testing patterns.
+ * 
+ * @example
+ * ```typescript
+ * import { setupResultMatchers } from '@esteban-url/core/testing'
+ * 
+ * // Setup in test files or global setup
+ * setupResultMatchers()
+ * 
+ * // Use in tests
+ * const result = someOperation()
+ * expect(result).toBeOk()
+ * expect(result).toHaveValue('expected-value')
+ * expect(errorResult).toBeErr()
+ * expect(errorResult).toHaveErrorCode('VALIDATION_ERROR')
+ * ```
  */
+
+import type { Result } from '../errors/index.js'
+
+// Type-safe utility for extracting Result value types
+type InferOkType<T> = T extends Result<infer U, any> ? U : never
+type InferErrType<T> = T extends Result<any, infer E> ? E : never
+
+// Enhanced error type constraints
+interface TypedError {
+  readonly code: string
+  readonly message: string
+  readonly category?: string
+}
+
+// Strict typing for Result matchers - simplified for compatibility
+interface ResultMatchers<R> {
+  toBeOk(): any
+  toBeErr(): any  
+  toHaveValue<T extends InferOkType<R>>(expected: T): any
+  toHaveErrorCode<E extends InferErrType<R>>(expected: E extends TypedError ? E['code'] : string): any
+  toHaveErrorMessage<E extends InferErrType<R>>(expected: string | RegExp): any
+  toHaveLength<T extends InferOkType<R>>(expected: T extends readonly any[] ? number : never): any
+}
 
 /**
  * Matcher to check if a Result is successful
@@ -19,7 +57,7 @@ const toBeOk = function (this: any, received: Result<any, any>) {
   } else {
     return {
       pass: false,
-      message: () => `Expected Result to be successful, but got error: ${received.error.message}`,
+      message: () => `Expected Result to be successful, but got error: ${received.error.message || JSON.stringify(received.error)}`,
     }
   }
 }
@@ -51,7 +89,7 @@ const toHaveValue = function (this: any, received: Result<any, any>, expected: a
     return {
       pass: false,
       message: () =>
-        `Expected Result to have value ${this.utils?.printExpected?.(expected) || expected}, but Result was an error: ${received.error.message}`,
+        `Expected Result to have value ${this.utils?.printExpected?.(expected) || expected}, but Result was an error: ${received.error.message || JSON.stringify(received.error)}`,
     }
   }
 
@@ -168,7 +206,7 @@ const toHaveLength = function (this: any, received: Result<any, any>, expectedLe
     return {
       pass: false,
       message: () =>
-        `Expected Result to have array of length ${expectedLength}, but Result was an error: ${received.error.message}`,
+        `Expected Result to have array of length ${expectedLength}, but Result was an error: ${received.error.message || JSON.stringify(received.error)}`,
     }
   }
 
@@ -199,7 +237,7 @@ const toMatchResult = function (this: any, received: Result<any, any>, expected:
     return {
       pass: false,
       message: () =>
-        `Expected Result to match ${this.utils?.printExpected?.(expected) || expected}, but Result was an error: ${received.error.message}`,
+        `Expected Result to match ${this.utils?.printExpected?.(expected) || expected}, but Result was an error: ${received.error.message || JSON.stringify(received.error)}`,
     }
   }
 
@@ -229,38 +267,22 @@ export const resultMatchers = {
 }
 
 /**
- * Type declarations for TypeScript
- * Temporarily disabled for build - interfaces removed to fix lint warnings
- */
-// declare module 'vitest' {
-//   interface Assertion<T = any> {
-//     toBeOk(): T
-//     toBeErr(): T
-//     toHaveValue(expected: any): T
-//     toHaveError(expected: any): T
-//     toHaveErrorCode(code: string): T
-//     toHaveErrorMessage(message: string | RegExp): T
-//     toHaveLength(length: number): T
-//     toMatchResult(expected: any): T
-//   }
-//
-//   interface AsymmetricMatchersContaining {
-//     toBeOk(): any
-//     toBeErr(): any
-//     toHaveValue(expected: any): any
-//     toHaveError(expected: any): any
-//     toHaveErrorCode(code: string): any
-//     toHaveErrorMessage(message: string | RegExp): any
-//     toHaveLength(length: number): any
-//     toMatchResult(expected: any): any
-//   }
-// }
-// } // End temporarily disabled declare module
-
-/**
  * Setup function to register matchers with Vitest
+ * 
+ * Call this in your test setup files or individual test files to register
+ * the Result matchers with the global expect function.
+ * 
+ * @example
+ * ```typescript
+ * // In vitest.setup.ts or individual test files
+ * import { setupResultMatchers } from '@esteban-url/core/testing'
+ * 
+ * setupResultMatchers()
+ * ```
+ * 
+ * @throws Error if expect.extend is not available
  */
-export function setupResultMatchers() {
+export function setupResultMatchers(): void {
   if (
     typeof globalThis !== 'undefined' &&
     'expect' in globalThis &&
@@ -271,3 +293,35 @@ export function setupResultMatchers() {
     throw new Error('setupResultMatchers requires a test framework with expect.extend')
   }
 }
+
+/**
+ * Enhanced type declarations for TypeScript with strict Result type checking
+ * These extend the Vitest expect interface with type-safe Result matchers
+ */
+
+// Global augmentation for enhanced Vitest types with Result constraints
+declare global {
+  namespace Vi {
+    interface AsymmetricMatchersContaining {
+      toBeOk(): any
+      toBeErr(): any
+      toHaveValue(expected: any): any
+      toHaveErrorCode(expected: string): any
+      toHaveErrorMessage(expected: string | RegExp): any
+      toHaveLength(expected: number): any
+    }
+    
+    interface Assertion<T = any> {
+      // Result-specific matchers with type constraints
+      toBeOk(): Assertion<T>
+      toBeErr(): Assertion<T>
+      toHaveValue(expected: any): Assertion<T>
+      toHaveErrorCode(expected: string): Assertion<T>
+      toHaveErrorMessage(expected: string | RegExp): Assertion<T>
+      toHaveLength(expected: number): Assertion<T>
+    }
+  }
+}
+
+// Export type utilities for consumer packages
+export type { InferOkType, InferErrType, TypedError, ResultMatchers }

@@ -52,63 +52,28 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   })
 }
 
-// Result type matchers for testing
-export const resultMatchers = {
-  toBeOk: (received: any) => {
-    const pass = received && typeof received === 'object' && received.isOk === true
-    return {
-      pass,
-      message: () =>
-        pass
-          ? `expected ${JSON.stringify(received)} not to be Ok`
-          : `expected ${JSON.stringify(received)} to be Ok`,
-    }
-  },
-  toBeErr: (received: any) => {
-    const pass = received && typeof received === 'object' && received.isErr === true
-    return {
-      pass,
-      message: () =>
-        pass
-          ? `expected ${JSON.stringify(received)} not to be Err`
-          : `expected ${JSON.stringify(received)} to be Err`,
-    }
-  },
-  toBeOkWith: (received: any, expected: any) => {
-    const pass =
-      received &&
-      typeof received === 'object' &&
-      received.isOk === true &&
-      JSON.stringify(received.value) === JSON.stringify(expected)
-    return {
-      pass,
-      message: () =>
-        pass
-          ? `expected ${JSON.stringify(received)} not to be Ok with ${JSON.stringify(expected)}`
-          : `expected ${JSON.stringify(received)} to be Ok with ${JSON.stringify(expected)}`,
-    }
-  },
-  toBeErrWith: (received: any, expected: any) => {
-    const pass =
-      received &&
-      typeof received === 'object' &&
-      received.isErr === true &&
-      JSON.stringify(received.error) === JSON.stringify(expected)
-    return {
-      pass,
-      message: () =>
-        pass
-          ? `expected ${JSON.stringify(received)} not to be Err with ${JSON.stringify(expected)}`
-          : `expected ${JSON.stringify(received)} to be Err with ${JSON.stringify(expected)}`,
-    }
-  },
-}
-
 /**
- * Setup Result matchers in test files
- * Call this in your test setup or individual test files
+ * Cross-cutting test utilities that don't belong to any specific domain
+ * For Result matchers, use @esteban-url/core/testing instead
  */
-export const setupResultMatchers = () => {
-  // This function should be called in test setup files
-  return resultMatchers
+export const testPatterns = {
+  /**
+   * Create a timeout configuration for tests
+   */
+  timeout: (ms: number) => ({ timeout: ms }),
+  
+  /**
+   * Create a retry configuration for tests
+   */
+  retry: (count: number) => ({ retry: count }),
+  
+  /**
+   * Conditional skip utility
+   */
+  skip: (condition: boolean) => condition,
+  
+  /**
+   * Create a test description with consistent formatting
+   */
+  describe: (domain: string, feature: string) => `${domain}: ${feature}`,
 }

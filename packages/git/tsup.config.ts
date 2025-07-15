@@ -7,6 +7,7 @@ export default defineConfig({
     'status/index': 'src/status/index.ts',
     'diff/index': 'src/diff/index.ts',
     'commands/index': 'src/commands/index.ts',
+    'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
   dts: false, // TypeScript declarations generated separately
