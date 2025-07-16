@@ -1,9 +1,9 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
 export function CatalystSwitchGroup({
   className,
   ...props
@@ -20,13 +20,13 @@ export function CatalystSwitchGroup({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystSwitchField({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
@@ -46,7 +46,7 @@ export function CatalystSwitchField({
         className
       )}
     />
-  );
+  )
 }
 const colors = {
   'dark/zinc': [
@@ -157,15 +157,15 @@ const colors = {
     '[--switch-bg-ring:var(--color-gray-700)]/90 [--switch-bg:var(--color-gray-600)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:var(--color-gray-700)]/90 [--switch-shadow:var(--color-gray-900)]/20',
   ],
-};
-type Color = keyof typeof colors;
+}
+type Color = keyof typeof colors
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
-  className?: string;
+  color?: Color
+  className?: string
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Switch
@@ -214,5 +214,5 @@ export function CatalystSwitch({
         )}
       />
     </Headless.Switch>
-  );
+  )
 }

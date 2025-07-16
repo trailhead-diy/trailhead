@@ -3,36 +3,36 @@
  * Simplified alternative to the complex transforms command
  */
 
-import { ok, err, createError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createError } from '@esteban-url/cli/core'
 import {
   createCommand,
   executeWithPhases,
   displaySummary,
   type CommandPhase,
   type CommandContext,
-} from '@esteban-url/trailhead-cli/command';
-import { existsSync } from 'fs';
-import { join } from 'path';
-import chalk from 'chalk';
+} from '@esteban-url/cli/command'
+import { existsSync } from 'fs'
+import { join } from 'path'
+import chalk from 'chalk'
 
-import { runMainPipeline, getMainPipelineInfo } from '../../transforms/index.js';
-import { loadConfigSync, logConfigDiscovery } from '../config.js';
+import { runMainPipeline, getMainPipelineInfo } from '../../transforms/index.js'
+import { loadConfigSync, logConfigDiscovery } from '../config.js'
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 interface EnhanceOptions {
-  readonly src?: string;
-  readonly dryRun?: boolean;
-  readonly verbose?: boolean;
-  readonly info?: boolean;
+  readonly src?: string
+  readonly dryRun?: boolean
+  readonly verbose?: boolean
+  readonly info?: boolean
 }
 
 interface EnhanceConfig {
-  sourceDir: string;
-  dryRun: boolean;
-  verbose: boolean;
+  sourceDir: string
+  dryRun: boolean
+  verbose: boolean
 }
 
 // ============================================================================
@@ -46,9 +46,9 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
       if (!existsSync(config.sourceDir)) {
         return err(
           createError('SOURCE_NOT_FOUND', `Source directory not found: ${config.sourceDir}`)
-        );
+        )
       }
-      return ok(config);
+      return ok(config)
     },
   },
   {
@@ -87,13 +87,13 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
             'table',
             'text',
             'textarea',
-          ];
+          ]
 
-          return catalystComponents.some(component =>
+          return catalystComponents.some((component) =>
             filename.includes(`catalyst-${component}.tsx`)
-          );
+          )
         },
-      });
+      })
 
       if (!result.success) {
         return err(
@@ -101,17 +101,17 @@ const createEnhancePhases = (_options: EnhanceOptions): CommandPhase<EnhanceConf
             'ENHANCEMENT_ERROR',
             `Enhancement pipeline failed: ${result.errors.length} errors occurred during enhancement`
           )
-        );
+        )
       }
 
       console.log(
         chalk.green(`✨ Enhanced ${result.processedFiles} components with semantic colors`)
-      );
+      )
 
-      return ok(config);
+      return ok(config)
     },
   },
-];
+]
 
 // ============================================================================
 // COMMAND CONFIGURATION
@@ -159,32 +159,32 @@ export const createEnhanceCommand = () => {
     action: async (options: EnhanceOptions, cmdContext: CommandContext) => {
       // Show pipeline info if requested
       if (options.info) {
-        const info = getMainPipelineInfo();
+        const info = getMainPipelineInfo()
 
-        console.log(chalk.blue('🔧 Enhancement Pipeline Information'));
-        console.log(chalk.gray(`Total transforms: ${info.transformCount}`));
-        console.log('');
+        console.log(chalk.blue('🔧 Enhancement Pipeline Information'))
+        console.log(chalk.gray(`Total transforms: ${info.transformCount}`))
+        console.log('')
 
         Object.entries(info.categories).forEach(([category, count]) => {
-          console.log(chalk.cyan(`${category}: ${count} transforms`));
-        });
+          console.log(chalk.cyan(`${category}: ${count} transforms`))
+        })
 
-        console.log('');
-        console.log(chalk.gray('Transform details:'));
+        console.log('')
+        console.log(chalk.gray('Transform details:'))
         info.transforms.forEach((transform: any) => {
-          console.log(`  • ${chalk.green(transform.name)}: ${transform.description}`);
-        });
+          console.log(`  • ${chalk.green(transform.name)}: ${transform.description}`)
+        })
 
-        return ok(undefined);
+        return ok(undefined)
       }
 
       // Load configuration
-      const configResult = loadConfigSync(cmdContext.projectRoot);
-      const loadedConfig = configResult.config;
-      const configPath = configResult.filepath;
+      const configResult = loadConfigSync(cmdContext.projectRoot)
+      const loadedConfig = configResult.config
+      const configPath = configResult.filepath
 
       if (options.verbose && configPath) {
-        logConfigDiscovery(configPath, loadedConfig, options.verbose, configResult.source);
+        logConfigDiscovery(configPath, loadedConfig, options.verbose, configResult.source)
       }
 
       // Resolve source directory
@@ -192,23 +192,19 @@ export const createEnhanceCommand = () => {
         ? options.src.startsWith('/')
           ? options.src
           : join(cmdContext.projectRoot, options.src)
-        : join(cmdContext.projectRoot, 'src/components/lib');
+        : join(cmdContext.projectRoot, 'src/components/lib')
 
       const config: EnhanceConfig = {
         sourceDir,
         dryRun: Boolean(options.dryRun),
         verbose: options.verbose ?? false,
-      };
+      }
 
       // Execute command phases
-      const phasesResult = await executeWithPhases(
-        createEnhancePhases(options),
-        config,
-        cmdContext
-      );
+      const phasesResult = await executeWithPhases(createEnhancePhases(options), config, cmdContext)
 
       if (!phasesResult.isOk()) {
-        return err(phasesResult.error);
+        return err(phasesResult.error)
       }
 
       // Display summary
@@ -224,9 +220,9 @@ export const createEnhanceCommand = () => {
           ...(configPath ? [{ label: 'Config', value: configPath }] : []),
         ],
         cmdContext
-      );
+      )
 
-      return ok(undefined);
+      return ok(undefined)
     },
-  });
-};
+  })
+}

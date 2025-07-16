@@ -48,8 +48,8 @@
  * Pure functional interface with no classes.
  */
 
-import type { ASTContext } from './core.js';
-import ts from 'typescript';
+import type { ASTContext } from './core.js'
+import ts from 'typescript'
 
 /**
  * Process import declarations and update paths to use catalyst- prefix using TypeScript AST
@@ -69,7 +69,7 @@ import ts from 'typescript';
  * - Handles multiple import specifiers in a single declaration
  */
 export function processImportDeclarations(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, changes } = context;
+  const { sourceFile, oldToNewMap, changes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Import Declaration Processing with TypeScript AST
@@ -78,23 +78,23 @@ export function processImportDeclarations(context: ASTContext): ts.SourceFile {
   // To:    import { CatalystButton, CatalystInput } from './catalyst-components'
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process import declarations
         if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-          const source = node.moduleSpecifier.text;
+          const source = node.moduleSpecifier.text
 
           // Skip all @headlessui/react imports - never transform them
           if (source === '@headlessui/react') {
-            return node;
+            return node
           }
 
           // Transform relative imports that don't already have catalyst- prefix
           if (source.startsWith('./') && !source.startsWith('./catalyst-')) {
-            const newSource = `./catalyst-${source.slice(2)}`;
-            let hasUpdatedSpecifiers = false;
-            let updatedSpecifiers: ts.ImportSpecifier[] = [];
+            const newSource = `./catalyst-${source.slice(2)}`
+            let hasUpdatedSpecifiers = false
+            let updatedSpecifiers: ts.ImportSpecifier[] = []
 
             // Update import specifiers if present
             if (
@@ -102,30 +102,30 @@ export function processImportDeclarations(context: ASTContext): ts.SourceFile {
               node.importClause.namedBindings &&
               ts.isNamedImports(node.importClause.namedBindings)
             ) {
-              updatedSpecifiers = node.importClause.namedBindings.elements.map(specifier => {
-                const importedName = specifier.name.text;
+              updatedSpecifiers = node.importClause.namedBindings.elements.map((specifier) => {
+                const importedName = specifier.name.text
 
                 if (!importedName.startsWith('Catalyst')) {
-                  const newName = `Catalyst${importedName}`;
-                  oldToNewMap.set(importedName, newName);
-                  hasUpdatedSpecifiers = true;
+                  const newName = `Catalyst${importedName}`
+                  oldToNewMap.set(importedName, newName)
+                  hasUpdatedSpecifiers = true
 
                   return ts.factory.updateImportSpecifier(
                     specifier,
                     false,
                     specifier.propertyName,
                     ts.factory.createIdentifier(newName)
-                  );
+                  )
                 }
 
-                return specifier;
-              });
+                return specifier
+              })
             }
 
-            changes.push(`Updated import from ${source} to ${newSource}`);
+            changes.push(`Updated import from ${source} to ${newSource}`)
 
             // Create updated import declaration
-            let updatedImportClause = node.importClause;
+            let updatedImportClause = node.importClause
             if (
               hasUpdatedSpecifiers &&
               node.importClause &&
@@ -137,7 +137,7 @@ export function processImportDeclarations(context: ASTContext): ts.SourceFile {
                 false,
                 node.importClause.name,
                 ts.factory.updateNamedImports(node.importClause.namedBindings, updatedSpecifiers)
-              );
+              )
             }
 
             return ts.factory.updateImportDeclaration(
@@ -146,20 +146,20 @@ export function processImportDeclarations(context: ASTContext): ts.SourceFile {
               updatedImportClause,
               ts.factory.createStringLiteral(newSource),
               node.assertClause
-            );
+            )
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }

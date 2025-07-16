@@ -1,9 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`CLI Testing Utilities > CLI Snapshot Testing > should create snapshots for CLI output > snapshot-test 1`] = `
-{
-  "exitCode": 0,
-  "stderr": "",
-  "stdout": "Snapshot test output",
-}
-`;

@@ -1,0 +1,187 @@
+# Getting Started with
+{{projectName}}
+
+This guide will help you get started with
+{{projectName}}
+quickly and effectively. ## Prerequisites - Node.js
+{{nodeVersion}}
+or higher -
+{{packageManager}}
+package manager ## Installation ### Global Installation ```bash
+{{#if (eq packageManager 'npm')}}
+  npm install -g
+  {{packageName}}
+{{else}}
+  pnpm install -g
+  {{packageName}}
+{{/if}}
+``` ### Local Installation ```bash
+{{#if (eq packageManager 'npm')}}
+  npm install
+  {{packageName}}
+{{else}}
+  pnpm add
+  {{packageName}}
+{{/if}}
+``` ## Quick Start 1. **Verify Installation** ```bash
+{{packageName}}
+--version ``` 2. **Show Available Commands** ```bash
+{{packageName}}
+--help ```
+
+{{#if features.config}}
+  3. **Initialize Configuration** ```bash
+  {{packageName}}
+  config --init ``` This creates a `config.json` file with default settings. 4. **Validate
+  Configuration** ```bash
+  {{packageName}}
+  config --validate ```
+{{/if}}
+
+{{#if features.examples}}
+  5. **Build Your Project** ```bash
+  {{packageName}}
+  build ``` 6. **Start Development Mode** ```bash
+  {{packageName}}
+  dev ```
+{{/if}}
+
+## Basic Usage Patterns ### Command Structure All commands follow this pattern: ```bash
+{{packageName}}
+<command />
+[options] [arguments] ``` ### Getting Help - Global help: `{{packageName}}
+--help` - Command help: `{{packageName}}
+<command />
+--help` - Help command: `{{packageName}}
+help` ### Common Options Most commands support these options: - `--verbose` - Enable detailed output
+- `--help` - Show command help - `--dry-run` - Preview actions without executing (where applicable)
+
+{{#if features.examples}}
+  ## Development Workflow ### Building Your Project The `build` command compiles your TypeScript
+  code: ```bash # Basic build
+  {{packageName}}
+  build # Clean build (remove existing files first)
+  {{packageName}}
+  build --clean # Production build
+  {{packageName}}
+  build --production # Watch mode (rebuild on changes)
+  {{packageName}}
+  build --watch ``` ### Development Mode The `dev` command starts development mode with hot
+  reloading: ```bash # Start with defaults
+  {{packageName}}
+  dev # Custom port
+  {{packageName}}
+  dev --port 8080 # Debug mode
+  {{packageName}}
+  dev --debug # Disable hot reloading
+  {{packageName}}
+  dev --no-hot ```
+{{/if}}
+
+{{#if features.config}}
+  ## Configuration Management ### Configuration File
+
+  {{projectName}}
+  uses a JSON configuration file for settings: ```json { "name": "{{packageName}}", "version": "{{version}}",
+  "environment": "development", "settings": { "debug": true, "verbose": false, "maxRetries": 3,
+  "timeout": 5000 } } ``` ### Configuration Commands ```bash # Create initial config
+  {{packageName}}
+  config --init # Show current config
+  {{packageName}}
+  config --show # Validate config
+  {{packageName}}
+  config --validate ``` ### Environment-Specific Configuration You can maintain different
+  configurations for different environments: - `config.json` - Default configuration -
+  `config.development.json` - Development overrides - `config.production.json` - Production
+  overrides
+{{/if}}
+
+{{#if features.validation}}
+  ## File Validation
+
+  {{projectName}}
+  includes built-in validation for common file types: ### JSON Files ```bash # Validate JSON syntax
+  {{packageName}}
+  validate --file data.json --type json ``` ### Package.json ```bash # Validate package.json
+  structure
+  {{packageName}}
+  validate --file package.json --type package ```
+
+  {{#if features.config}}
+    ### Configuration Files ```bash # Validate config against schema
+    {{packageName}}
+    validate --file config.json --type config ```
+  {{/if}}
+
+  ### Auto-Detection The validate command can auto-detect file types: ```bash # Auto-detects based
+  on filename
+  {{packageName}}
+  validate --file package.json
+  {{packageName}}
+  validate --file config.json
+  {{packageName}}
+  validate --file data.json ```
+{{/if}}
+
+## Error Handling
+
+{{projectName}}
+uses explicit error handling with detailed error messages: - **Error Codes**: Each error has a
+specific code for programmatic handling - **Context**: Errors include relevant context and
+suggestions - **Recovery**: Many errors include recovery suggestions ### Common Error Scenarios
+
+{{#if features.config}}
+  1. **Missing Configuration** ```bash # Error: Configuration file not found # Solution: Initialize
+  configuration
+  {{packageName}}
+  config --init ```
+{{/if}}
+
+{{#if features.validation}}
+  2. **Invalid File Format** ```bash # Error: Invalid JSON syntax # Solution: Check file syntax and
+  fix errors
+  {{packageName}}
+  validate --file data.json ```
+{{/if}}
+
+3. **Permission Issues** ```bash # Error: Permission denied # Solution: Check file permissions or
+run with appropriate privileges ``` ## Best Practices 1. **Use Configuration Files**
+{{#if features.config}}
+  - Keep settings in `config.json` instead of command-line flags - Use environment-specific
+  configuration files - Validate configuration before deployment
+{{else}}
+  - Use environment variables for configuration - Document required environment variables
+{{/if}}
+
+2. **Validate Early and Often**
+{{#if features.validation}}
+  - Validate input files before processing - Use the built-in validation commands - Add custom
+  validation for your specific use cases
+{{else}}
+  - Validate inputs in your commands - Provide clear error messages
+{{/if}}
+
+3. **Development Workflow** - Use watch mode during development - Enable debug mode for
+troubleshooting - Run tests before committing changes 4. **Error Handling** - Always check command
+exit codes in scripts - Handle errors gracefully in automated workflows - Use verbose mode for
+debugging ## Next Steps - Read the [API Reference](api-reference.md) for detailed command
+documentation - Check the [Architecture Guide](architecture.md) to understand the system design -
+Explore examples in your project's `examples/` directory (if available) - Join the community
+discussions for support and tips ## Troubleshooting ### Common Issues 1. **Command Not Found** -
+Ensure
+{{packageName}}
+is installed globally - Check your PATH environment variable - Try running with `npx
+{{packageName}}` if installed locally 2. **Permission Errors** - Check file and directory
+permissions - Ensure you have write access to the target directory - Consider using `sudo` if needed
+(be cautious)
+
+{{#if features.config}}
+  3. **Configuration Issues** - Validate your configuration file - Check for JSON syntax errors -
+  Ensure all required fields are present
+{{/if}}
+
+### Getting Help - Use `{{packageName}}
+--help` for command documentation - Check the [troubleshooting guide](../troubleshooting.md) - Open
+an issue on GitHub if you encounter bugs - Join community discussions for support --- Happy coding
+with
+{{projectName}}! 🚀

@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../table';
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '../table'
 
 describe('Table Components', () => {
   it('should render accessible data table with semantic structure', () => {
@@ -26,22 +26,22 @@ describe('Table Components', () => {
           </TableRow>
         </TableBody>
       </Table>
-    );
+    )
 
     // Test semantic table structure
-    const table = screen.getByRole('table');
-    expect(table).toBeInTheDocument();
+    const table = screen.getByRole('table')
+    expect(table).toBeInTheDocument()
 
     // Test headers
-    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Email' })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: 'Status' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Email' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Status' })).toBeInTheDocument()
 
     // Test data cells
-    expect(screen.getByRole('cell', { name: 'John Doe' })).toBeInTheDocument();
-    expect(screen.getByRole('cell', { name: 'jane@example.com' })).toBeInTheDocument();
-    expect(screen.getByRole('cell', { name: 'Active' })).toBeInTheDocument();
-  });
+    expect(screen.getByRole('cell', { name: 'John Doe' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: 'jane@example.com' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: 'Active' })).toBeInTheDocument()
+  })
 
   it('should support table variants for different use cases', () => {
     render(
@@ -52,11 +52,11 @@ describe('Table Components', () => {
           </TableRow>
         </TableBody>
       </Table>
-    );
+    )
 
-    expect(screen.getByRole('table')).toBeInTheDocument();
+    expect(screen.getByRole('table')).toBeInTheDocument()
     expect(
       screen.getByRole('cell', { name: 'Compact content with visual styling' })
-    ).toBeInTheDocument();
-  });
-});
+    ).toBeInTheDocument()
+  })
+})

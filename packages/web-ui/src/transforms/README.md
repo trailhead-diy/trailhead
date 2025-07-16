@@ -1,6 +1,6 @@
 # Transform System
 
-A functional transform system for code modifications built on @esteban-url/trailhead-cli framework.
+A functional transform system for code modifications built on @esteban-url/cli framework.
 
 ## Overview
 
@@ -34,7 +34,7 @@ Each transform is a pure function that takes input content and returns a Result:
 ```typescript
 function transformName(input: string): Result<TransformResult, CLIError> {
   // Transform logic
-  return Ok({ content: transformed, changed: true, warnings: [] });
+  return Ok({ content: transformed, changed: true, warnings: [] })
 }
 ```
 
@@ -47,7 +47,7 @@ export const transformMetadata = {
   name: 'transform-name',
   description: 'Description of what the transform does',
   category: 'semantic' | 'format' | 'quality' | 'import' | 'ast',
-};
+}
 ```
 
 ### Transform Pipeline
@@ -61,7 +61,7 @@ const transforms = [
   { ...semanticColorsTransform, transform: transformSemanticColors },
   { ...fileHeadersTransform, transform: transformFileHeaders },
   { ...tsNocheckTransform, transform: transformTsNocheck },
-];
+]
 ```
 
 ## Available Transforms
@@ -109,13 +109,13 @@ trailhead-ui enhance
 ### Programmatic Usage
 
 ```typescript
-import { runMainPipeline } from './index.js';
+import { runMainPipeline } from './index.js'
 
 const result = await runMainPipeline('./src/components', {
   verbose: true,
   dryRun: false,
-  filter: filename => filename.endsWith('.tsx'),
-});
+  filter: (filename) => filename.endsWith('.tsx'),
+})
 ```
 
 ## Testing
@@ -123,12 +123,12 @@ const result = await runMainPipeline('./src/components', {
 All transforms include comprehensive tests:
 
 ```typescript
-import { transformSemanticColors } from '../transforms/semantic-colors.js';
-import { expectResult } from '@esteban-url/trailhead-cli/testing';
+import { transformSemanticColors } from '../transforms/semantic-colors.js'
+import { expectResult } from '@esteban-url/cli/testing'
 
-const result = transformSemanticColors(input);
-expectResult(result);
-expect(result.value.changed).toBe(true);
+const result = transformSemanticColors(input)
+expectResult(result)
+expect(result.value.changed).toBe(true)
 ```
 
 ## Error Handling
@@ -137,9 +137,9 @@ All transforms use Result types for consistent error handling:
 
 ```typescript
 if (result.success) {
-  console.log(result.value.content);
+  console.log(result.value.content)
 } else {
-  console.error(result.error.message);
+  console.error(result.error.message)
 }
 ```
 

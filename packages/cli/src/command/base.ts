@@ -1,17 +1,16 @@
-import { Command } from 'commander';
-import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
-import type { CommandContext, CommandOption } from './types.js';
-import { validateCommandConfigWithCache } from './validation.js';
+import { Command } from 'commander'
+import type { Result, CoreError } from '@esteban-url/core'
+import type { CommandContext, CommandOption } from './types.js'
+import { validateCommandConfigWithCache } from './validation.js'
 
 /**
  * Base command options available to all commands
  */
 export interface CommandOptions {
   /** Enable verbose logging output */
-  readonly verbose?: boolean;
+  readonly verbose?: boolean
   /** Preview mode - show what would be done without executing */
-  readonly dryRun?: boolean;
+  readonly dryRun?: boolean
 }
 
 /**
@@ -20,19 +19,19 @@ export interface CommandOptions {
  */
 export interface CommandConfig<T extends CommandOptions> {
   /** Command name (used for CLI invocation) */
-  readonly name: string;
+  readonly name: string
   /** Command description for help text */
-  readonly description: string;
+  readonly description: string
   /** Command arguments specification (e.g., '<input> [output]') */
-  readonly arguments?: string;
+  readonly arguments?: string
   /** Available command options/flags */
-  readonly options?: CommandOption[];
+  readonly options?: CommandOption[]
   /** Usage examples for help text */
-  readonly examples?: string[];
+  readonly examples?: string[]
   /** Main command implementation */
-  readonly action: CommandAction<T>;
+  readonly action: CommandAction<T>
   /** Optional validation for command options */
-  readonly validation?: CommandValidator<T>;
+  readonly validation?: CommandValidator<T>
 }
 
 /**
@@ -42,13 +41,13 @@ export interface CommandConfig<T extends CommandOptions> {
 export type CommandAction<T extends CommandOptions> = (
   options: T,
   context: CommandContext
-) => Promise<Result<void, CLIError>>;
+) => Promise<Result<void, CoreError>>
 
 /**
  * Command validation function type
  * @template T - Command options type
  */
-export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, CLIError>;
+export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, CoreError>
 
 /**
  * Create a command object for use with createCLI
@@ -120,9 +119,9 @@ export function createCommand<T extends CommandOptions>(
   config: CommandConfig<T>
 ): import('./types.js').Command<T> {
   // Validate configuration
-  const validationResult = validateCommandConfigWithCache(config);
+  const validationResult = validateCommandConfigWithCache(config)
   if (validationResult.isErr()) {
-    throw new Error(`Invalid command configuration: ${validationResult.error.message}`);
+    throw new Error(`Invalid command configuration: ${validationResult.error.message}`)
   }
 
   return {
@@ -131,5 +130,5 @@ export function createCommand<T extends CommandOptions>(
     arguments: config.arguments,
     options: config.options,
     execute: config.action,
-  };
+  }
 }

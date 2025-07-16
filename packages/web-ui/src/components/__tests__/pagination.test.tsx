@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
 import {
   Pagination,
   PaginationPrevious,
@@ -7,7 +7,7 @@ import {
   PaginationList,
   PaginationPage,
   PaginationGap,
-} from '../pagination';
+} from '../pagination'
 
 describe('Pagination Components', () => {
   it('should render accessible pagination with current page indication', () => {
@@ -25,21 +25,21 @@ describe('Pagination Components', () => {
         </PaginationList>
         <PaginationNext href="/page/3">Next</PaginationNext>
       </Pagination>
-    );
+    )
 
     // Test navigation structure
-    const nav = screen.getByLabelText('Search results pagination');
-    expect(nav).toBeInTheDocument();
+    const nav = screen.getByLabelText('Search results pagination')
+    expect(nav).toBeInTheDocument()
 
     // Test links
-    expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/page/1');
-    expect(screen.getByRole('link', { name: 'Next page' })).toHaveAttribute('href', '/page/3');
+    expect(screen.getByRole('link', { name: 'Previous page' })).toHaveAttribute('href', '/page/1')
+    expect(screen.getByRole('link', { name: 'Next page' })).toHaveAttribute('href', '/page/3')
 
     // Test current page
-    const currentPage = screen.getByText('2');
-    expect(currentPage.closest('a')).toHaveAttribute('aria-current', 'page');
+    const currentPage = screen.getByText('2')
+    expect(currentPage.closest('a')).toHaveAttribute('aria-current', 'page')
 
     // Test gap
-    expect(screen.getByText('…')).toBeInTheDocument();
-  });
-});
+    expect(screen.getByText('…')).toBeInTheDocument()
+  })
+})

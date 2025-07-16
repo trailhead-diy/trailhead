@@ -1,0 +1,15 @@
+import { z } from 'zod'
+
+export const configSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  version: z.string().regex(/^\d+\.\d+\.\d+/, 'Version must be in semver format'),
+  environment: z.enum(['development', 'production', 'test']),
+  settings: z.object({
+    debug: z.boolean(),
+    verbose: z.boolean(),
+    maxRetries: z.number().min(0).optional(),
+    timeout: z.number().min(1000).optional()
+  })
+})
+
+export type Config = z.infer<typeof configSchema>

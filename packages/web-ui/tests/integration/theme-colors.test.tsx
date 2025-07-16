@@ -3,26 +3,26 @@
  * Tests that actually matter for user experience
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { ThemeProvider, useTheme } from '../../src/components/theme/theme-provider';
-import { Button } from '../../src/components/button';
-import { Input } from '../../src/components/input';
-import { SidebarItem } from '../../src/components/sidebar';
+import { describe, it, expect, beforeEach } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { ThemeProvider, useTheme } from '../../src/components/theme/theme-provider'
+import { Button } from '../../src/components/button'
+import { Input } from '../../src/components/input'
+import { SidebarItem } from '../../src/components/sidebar'
 
 // Component to test theme changes
 function ThemeTestComponent() {
-  const { currentTheme, setTheme, themes } = useTheme();
+  const { currentTheme, setTheme, themes } = useTheme()
 
   return (
     <div>
       <p>Current theme: {currentTheme}</p>
       <select
         value={currentTheme || 'zinc'}
-        onChange={e => setTheme(e.target.value)}
+        onChange={(e) => setTheme(e.target.value)}
         data-testid="theme-select"
       >
-        {themes.map(theme => (
+        {themes.map((theme) => (
           <option key={theme} value={theme}>
             {theme}
           </option>
@@ -31,16 +31,16 @@ function ThemeTestComponent() {
       <Button data-testid="test-button">Test Button</Button>
       <Input data-testid="test-input" placeholder="Test input" />
     </div>
-  );
+  )
 }
 
 describe('Theme Color Changes', () => {
   beforeEach(() => {
     // Clear any existing styles
-    document.head.innerHTML = '';
-    document.documentElement.removeAttribute('data-theme');
-    document.documentElement.classList.remove('dark');
-  });
+    document.head.innerHTML = ''
+    document.documentElement.removeAttribute('data-theme')
+    document.documentElement.classList.remove('dark')
+  })
 
   // TODO: Enable when we have a proper next-themes mock that sets CSS variables
   it('changes primary color when theme changes', () => {
@@ -48,22 +48,22 @@ describe('Theme Color Changes', () => {
       <ThemeProvider defaultTheme="zinc">
         <ThemeTestComponent />
       </ThemeProvider>
-    );
+    )
 
-    const themeSelect = screen.getByTestId('theme-select');
-    const rootElement = document.documentElement;
+    const themeSelect = screen.getByTestId('theme-select')
+    const rootElement = document.documentElement
 
     // Check initial theme
-    expect(rootElement.getAttribute('data-theme')).toBe('zinc');
+    expect(rootElement.getAttribute('data-theme')).toBe('zinc')
 
     // Change to orange theme
-    fireEvent.change(themeSelect, { target: { value: 'orange' } });
-    expect(rootElement.getAttribute('data-theme')).toBe('orange');
+    fireEvent.change(themeSelect, { target: { value: 'orange' } })
+    expect(rootElement.getAttribute('data-theme')).toBe('orange')
 
     // In test environment, CSS variables aren't set by next-themes mock
     // We can verify the theme change was applied through the data-theme attribute
     // In real browser, this would set CSS variables with OKLCH colors
-  });
+  })
 
   // TODO: Enable when semantic token conversion is complete for focus states
   it.fails('focus rings use theme primary color', () => {
@@ -74,22 +74,22 @@ describe('Theme Color Changes', () => {
           <Button data-testid="test-button">Click me</Button>
         </div>
       </ThemeProvider>
-    );
+    )
 
-    const input = screen.getByTestId('test-input');
-    const button = screen.getByTestId('test-button');
+    const input = screen.getByTestId('test-input')
+    const button = screen.getByTestId('test-button')
 
     // Focus the input
-    fireEvent.focus(input);
+    fireEvent.focus(input)
 
     // Check that focus styles are applied (ring-primary class should be present)
-    const inputWrapper = input.closest('[data-slot="control"]');
-    expect(inputWrapper?.className).toMatch(/ring-primary|after:ring-primary/);
+    const inputWrapper = input.closest('[data-slot="control"]')
+    expect(inputWrapper?.className).toMatch(/ring-primary|after:ring-primary/)
 
     // Focus the button
-    fireEvent.focus(button);
-    expect(button.className).toMatch(/outline-primary|focus.*primary/);
-  });
+    fireEvent.focus(button)
+    expect(button.className).toMatch(/outline-primary|focus.*primary/)
+  })
 
   it('dropdown hover uses theme primary color', () => {
     // Read the dropdown.tsx file and verify it contains the expected class
@@ -104,11 +104,11 @@ describe('Theme Color Changes', () => {
         // Focus
         'data-focus:bg-primary data-focus:text-white',
       )
-    `;
+    `
 
     // Verify the dropdown item uses theme primary color on focus
-    expect(dropdownItemCode).toContain('data-focus:bg-primary');
-  });
+    expect(dropdownItemCode).toContain('data-focus:bg-primary')
+  })
 
   // TODO: Enable when sidebar component is updated with semantic tokens
   it.fails('sidebar icons change color with theme in light/dark mode', () => {
@@ -121,57 +121,57 @@ describe('Theme Color Changes', () => {
           Dashboard
         </SidebarItem>
       </nav>
-    );
+    )
 
     const { rerender } = render(
       <ThemeProvider defaultTheme="zinc">
         <TestSidebar />
       </ThemeProvider>
-    );
+    )
 
-    const sidebarItem = screen.getByTestId('sidebar-item');
+    const sidebarItem = screen.getByTestId('sidebar-item')
 
     // Light mode: icons should use fill-foreground
-    expect(sidebarItem.className).toContain('*:data-[slot=icon]:fill-foreground');
-    expect(sidebarItem.className).toContain('data-current:*:data-[slot=icon]:fill-foreground');
+    expect(sidebarItem.className).toContain('*:data-[slot=icon]:fill-foreground')
+    expect(sidebarItem.className).toContain('data-current:*:data-[slot=icon]:fill-foreground')
 
     // Dark mode: icons should still use semantic tokens
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add('dark')
     rerender(
       <ThemeProvider defaultTheme="zinc">
         <TestSidebar />
       </ThemeProvider>
-    );
+    )
 
-    expect(sidebarItem.className).toContain('dark:data-current:*:data-[slot=icon]:fill-foreground');
-  });
+    expect(sidebarItem.className).toContain('dark:data-current:*:data-[slot=icon]:fill-foreground')
+  })
 
   it('theme changes persist across page reloads', () => {
     const { rerender } = render(
       <ThemeProvider defaultTheme="zinc">
         <ThemeTestComponent />
       </ThemeProvider>
-    );
+    )
 
-    const themeSelect = screen.getByTestId('theme-select');
+    const themeSelect = screen.getByTestId('theme-select')
 
     // Change theme
-    fireEvent.change(themeSelect, { target: { value: 'violet' } });
+    fireEvent.change(themeSelect, { target: { value: 'violet' } })
 
     // Verify localStorage was updated (via next-themes)
-    const storedTheme = localStorage.getItem('theme');
-    expect(storedTheme).toBe('violet');
+    const storedTheme = localStorage.getItem('theme')
+    expect(storedTheme).toBe('violet')
 
     // Simulate page reload by re-rendering
     rerender(
       <ThemeProvider defaultTheme="zinc">
         <ThemeTestComponent />
       </ThemeProvider>
-    );
+    )
 
     // Theme should persist
-    expect(screen.getByText('Current theme: violet')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Current theme: violet')).toBeInTheDocument()
+  })
 
   // TODO: Enable when all components are updated with semantic tokens
   it.fails('all interactive elements use theme colors', () => {
@@ -190,17 +190,17 @@ describe('Theme Color Changes', () => {
           </label>
         </div>
       </ThemeProvider>
-    );
+    )
 
     // All focus states should reference primary color
-    const button = screen.getByTestId('button');
-    const input = screen.getByTestId('input');
+    const button = screen.getByTestId('button')
+    const input = screen.getByTestId('input')
 
-    expect(button.className).toMatch(/outline-primary|focus.*primary/);
+    expect(button.className).toMatch(/outline-primary|focus.*primary/)
 
-    const inputWrapper = input.closest('[data-slot="control"]');
-    expect(inputWrapper?.className).toMatch(/ring-primary|after:ring-primary/);
-  });
+    const inputWrapper = input.closest('[data-slot="control"]')
+    expect(inputWrapper?.className).toMatch(/ring-primary|after:ring-primary/)
+  })
 
   it('semantic colors provide proper contrast in light and dark modes', () => {
     const TestContrast = () => (
@@ -208,30 +208,30 @@ describe('Theme Color Changes', () => {
         <div className="bg-card text-card-foreground p-2">Card content</div>
         <div className="bg-muted text-muted-foreground p-2">Muted content</div>
       </div>
-    );
+    )
 
     const { rerender } = render(
       <ThemeProvider defaultTheme="zinc">
         <TestContrast />
       </ThemeProvider>
-    );
+    )
 
-    const container = screen.getByTestId('container');
+    const container = screen.getByTestId('container')
 
     // Light mode
-    expect(container.className).toContain('bg-background');
-    expect(container.className).toContain('text-foreground');
+    expect(container.className).toContain('bg-background')
+    expect(container.className).toContain('text-foreground')
 
     // Dark mode
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add('dark')
     rerender(
       <ThemeProvider defaultTheme="zinc">
         <TestContrast />
       </ThemeProvider>
-    );
+    )
 
     // Classes remain the same, but CSS variables change
-    expect(container.className).toContain('bg-background');
-    expect(container.className).toContain('text-foreground');
-  });
-});
+    expect(container.className).toContain('bg-background')
+    expect(container.className).toContain('text-foreground')
+  })
+})

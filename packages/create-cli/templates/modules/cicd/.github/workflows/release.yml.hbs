@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: {{nodeVersion}}
+        {{#if (eq packageManager "pnpm")}}
+        cache: 'pnpm'
+        {{else}}
+        cache: 'npm'
+        {{/if}}
+        registry-url: 'https://registry.npmjs.org'
+
+    {{#if (eq packageManager "pnpm")}}
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+    {{/if}}
+
+    - name: Install dependencies
+      run: {{packageManager}} install
+
+    - name: Run tests
+      run: {{packageManager}} run test
+
+    - name: Build project
+      run: {{packageManager}} run build
+
+    - name: Extract version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.version.outputs.VERSION }}
+        body: |
+          ## Changes in ${{ steps.version.outputs.VERSION }}
+          
+          ### Features
+          - List new features here
+          
+          ### Bug Fixes
+          - List bug fixes here
+          
+          ### Breaking Changes
+          - List breaking changes here
+          
+          Full Changelog: https://github.com/${{ github.repository }}/compare/v${{ steps.version.outputs.PREVIOUS_VERSION }}...v${{ steps.version.outputs.VERSION }}
+        draft: false
+        prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
+
+    - name: Publish to npm
+      run: {{packageManager}} publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Create GitHub Package
+      run: |
+        echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com" >> .npmrc
+        {{packageManager}} publish --registry=https://npm.pkg.github.com
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

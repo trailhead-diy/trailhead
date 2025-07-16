@@ -1,0 +1,69 @@
+{
+  "name": "@esteban-url/git",
+  "version": "1.0.0",
+  "description": "Functional Git operations for CLI applications",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./commands": {
+      "types": "./dist/commands/index.d.ts",
+      "default": "./dist/commands/index.js"
+    },
+    "./status": {
+      "types": "./dist/status/index.d.ts",
+      "default": "./dist/status/index.js"
+    },
+    "./diff": {
+      "types": "./dist/diff/index.d.ts",
+      "default": "./dist/diff/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup && tsc --emitDeclarationOnly",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "git",
+    "version-control",
+    "functional-programming",
+    "cli",
+    "typescript"
+  ],
+  "author": "Esteban Borai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esteban-url/trailhead-cli.git",
+    "directory": "packages/git"
+  }
+}

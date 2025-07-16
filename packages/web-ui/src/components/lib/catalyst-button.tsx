@@ -1,10 +1,10 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import React, { forwardRef } from 'react';
-import { CatalystLink } from './catalyst-link';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import React, { forwardRef } from 'react'
+import { CatalystLink } from './catalyst-link'
 const styles = {
   base: [
     // Base
@@ -178,30 +178,30 @@ const styles = {
       '[--btn-icon:var(--color-gray-300)] data-active:[--btn-icon:var(--color-gray-200)] data-hover:[--btn-icon:var(--color-gray-200)]',
     ],
   },
-};
+}
 export type CatalystButtonProps = (
   | {
-      color?: keyof typeof styles.colors;
-      outline?: never;
-      plain?: never;
+      color?: keyof typeof styles.colors
+      outline?: never
+      plain?: never
     }
   | {
-      color?: never;
-      outline: true;
-      plain?: never;
+      color?: never
+      outline: true
+      plain?: never
     }
   | {
-      color?: never;
-      outline?: never;
-      plain: true;
+      color?: never
+      outline?: never
+      plain: true
     }
 ) & {
-  className?: string;
-  children: React.ReactNode;
+  className?: string
+  children: React.ReactNode
 } & (
     | Omit<Headless.ButtonProps, 'as' | 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof CatalystLink>, 'className'>
-  );
+  )
 export const CatalystButton = forwardRef(function CatalystButton(
   { color, outline, plain, className, children, ...props }: CatalystButtonProps,
   ref: React.ForwardedRef<HTMLElement>
@@ -214,7 +214,7 @@ export const CatalystButton = forwardRef(function CatalystButton(
         ? styles.plain
         : cn(styles.solid, styles.colors[color ?? 'dark/zinc']),
     className
-  );
+  )
   return 'href' in props ? (
     <CatalystLink {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
@@ -223,8 +223,8 @@ export const CatalystButton = forwardRef(function CatalystButton(
     <Headless.Button {...props} className={cn(classes, 'cursor-default')} ref={ref}>
       <CatalystTouchTarget>{children}</CatalystTouchTarget>
     </Headless.Button>
-  );
-});
+  )
+})
 /**
  * Expand the hit area to at least 44×44px on touch devices
  */
@@ -237,5 +237,5 @@ export function CatalystTouchTarget({ children }: { children: React.ReactNode })
       />
       {children}
     </>
-  );
+  )
 }

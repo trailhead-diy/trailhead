@@ -1,6 +1,13 @@
-import type { Result } from 'neverthrow';
-import type { FileSystem } from '../filesystem/index.js';
-import type { Logger } from '../core/index.js';
+import type { Result, CoreError } from '@esteban-url/core'
+import type { Logger } from '../utils/logger.js'
+
+// Simple FileSystem interface for CLI context
+interface FileSystem {
+  readFile: (path: string) => Promise<Result<string, CoreError>>
+  writeFile: (path: string, content: string) => Promise<Result<void, CoreError>>
+  exists: (path: string) => Promise<Result<boolean, CoreError>>
+  [key: string]: any // Allow additional fs methods
+}
 
 /**
  * Context object provided to command actions during execution
@@ -10,15 +17,15 @@ import type { Logger } from '../core/index.js';
  */
 export interface CommandContext {
   /** Absolute path to the project root directory */
-  readonly projectRoot: string;
+  readonly projectRoot: string
   /** Logger instance for command output */
-  readonly logger: Logger;
+  readonly logger: Logger
   /** Whether verbose logging is enabled */
-  readonly verbose: boolean;
+  readonly verbose: boolean
   /** Filesystem abstraction for file operations */
-  readonly fs: FileSystem;
+  readonly fs: FileSystem
   /** Positional arguments passed to the command */
-  readonly args: string[];
+  readonly args: string[]
 }
 
 /**
@@ -29,19 +36,19 @@ export interface CommandContext {
  */
 export interface CommandOption {
   /** Option name for programmatic access (extracted from flags if not provided) */
-  name?: string;
+  name?: string
   /** Single character alias for the option (e.g., 'v' for verbose) */
-  alias?: string;
+  alias?: string
   /** Commander.js style flags string (e.g., '-v, --verbose' or '--output <dir>') */
-  flags?: string;
+  flags?: string
   /** Description shown in help text */
-  description: string;
+  description: string
   /** Expected value type for the option */
-  type?: 'string' | 'boolean' | 'number';
+  type?: 'string' | 'boolean' | 'number'
   /** Whether the option is required */
-  required?: boolean;
+  required?: boolean
   /** Default value when option is not provided */
-  default?: any;
+  default?: any
 }
 
 /**
@@ -49,13 +56,13 @@ export interface CommandOption {
  */
 export interface CommandArgument {
   /** Argument name used for help text and validation */
-  name: string;
+  name: string
   /** Description shown in help text */
-  description: string;
+  description: string
   /** Whether this argument accepts multiple values */
-  variadic?: boolean;
+  variadic?: boolean
   /** Whether this argument is required */
-  required?: boolean;
+  required?: boolean
 }
 
 /**
@@ -68,18 +75,15 @@ export interface CommandArgument {
  */
 export interface Command<T = any> {
   /** Command name used for CLI invocation */
-  name: string;
+  name: string
   /** Description shown in help text */
-  description: string;
+  description: string
   /** Commander.js style arguments specification (e.g., '<input> [output]') */
-  arguments?: string | CommandArgument[];
+  arguments?: string | CommandArgument[]
   /** Array of command options/flags */
-  options?: CommandOption[];
+  options?: CommandOption[]
   /** Function that implements the command logic */
-  execute: (
-    options: T,
-    context: CommandContext
-  ) => Promise<Result<void, import('../core/errors/index.js').CLIError>>;
+  execute: (options: T, context: CommandContext) => Promise<Result<void, CoreError>>
 }
 
 /**
@@ -95,12 +99,9 @@ export interface Command<T = any> {
  */
 export interface CommandPhase<T> {
   /** Human-readable name of the phase for logging */
-  name: string;
+  name: string
   /** Function that executes the phase logic */
-  execute: (
-    data: T,
-    context: CommandContext
-  ) => Promise<Result<T, import('../core/errors/index.js').CLIError>>;
+  execute: (data: T, context: CommandContext) => Promise<Result<T, CoreError>>
 }
 
 /**
@@ -110,5 +111,5 @@ export interface CommandPhase<T> {
  */
 export interface InteractiveOptions {
   /** Whether to run in interactive mode with prompts */
-  interactive?: boolean;
+  interactive?: boolean
 }

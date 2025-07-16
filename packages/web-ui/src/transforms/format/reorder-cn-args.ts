@@ -47,9 +47,9 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
-import ts from 'typescript';
+import type { Result, CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js'
+import ts from 'typescript'
 
 /**
  * Transform metadata
@@ -58,7 +58,7 @@ export const reorderCnArgsTransform = createTransformMetadata(
   'reorder-cn-args',
   'Reorder cn() arguments to place className last',
   'quality'
-);
+)
 
 /**
  * Reorder cn(...) function call arguments to place className variables last
@@ -80,8 +80,8 @@ export const reorderCnArgsTransform = createTransformMetadata(
  */
 export function transformReorderCnArgs(input: string): Result<TransformResult, CLIError> {
   return executeTransform(() => {
-    const warnings: string[] = [];
-    let changed = false;
+    const warnings: string[] = []
+    let changed = false
 
     try {
       /////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
         ts.ScriptTarget.Latest,
         true,
         ts.ScriptKind.TSX
-      );
+      )
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 2: Create AST Transformer
@@ -106,8 +106,8 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
       //        to find and transform cn() function calls
       //
       /////////////////////////////////////////////////////////////////////////////////
-      const transformer: ts.TransformerFactory<ts.SourceFile> = context => {
-        return sourceFile => {
+      const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
+        return (sourceFile) => {
           function visitNode(node: ts.Node): ts.Node {
             /////////////////////////////////////////////////////////////////////////////////
             // Phase 3: Identify cn() Function Calls
@@ -122,8 +122,8 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
               ts.isIdentifier(node.expression) &&
               node.expression.text === 'cn'
             ) {
-              const args = Array.from(node.arguments);
-              if (args.length <= 1) return node;
+              const args = Array.from(node.arguments)
+              if (args.length <= 1) return node
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 4: Classify Arguments
@@ -133,13 +133,13 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
               //
               /////////////////////////////////////////////////////////////////////////////////
               const classNameArgs = args.filter(
-                arg => ts.isIdentifier(arg) && /^className\d*$/.test(arg.text)
-              );
+                (arg) => ts.isIdentifier(arg) && /^className\d*$/.test(arg.text)
+              )
               const otherArgs = args.filter(
-                arg => !ts.isIdentifier(arg) || !/^className\d*$/.test(arg.text)
-              );
+                (arg) => !ts.isIdentifier(arg) || !/^className\d*$/.test(arg.text)
+              )
 
-              if (classNameArgs.length === 0) return node;
+              if (classNameArgs.length === 0) return node
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 5: Check Current Order
@@ -149,13 +149,13 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
               //
               /////////////////////////////////////////////////////////////////////////////////
               const lastOtherIndex = args.findLastIndex(
-                arg => !ts.isIdentifier(arg) || !/^className\d*$/.test(arg.text)
-              );
+                (arg) => !ts.isIdentifier(arg) || !/^className\d*$/.test(arg.text)
+              )
               const firstClassNameIndex = args.findIndex(
-                arg => ts.isIdentifier(arg) && /^className\d*$/.test(arg.text)
-              );
+                (arg) => ts.isIdentifier(arg) && /^className\d*$/.test(arg.text)
+              )
 
-              if (lastOtherIndex < firstClassNameIndex) return node;
+              if (lastOtherIndex < firstClassNameIndex) return node
 
               /////////////////////////////////////////////////////////////////////////////////
               // Phase 6: Reorder Arguments
@@ -164,21 +164,21 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
               // To:    cn('base-styles', 'more-styles', className)
               //
               /////////////////////////////////////////////////////////////////////////////////
-              changed = true;
-              warnings.push('Reordered cn() arguments to place className variables last');
+              changed = true
+              warnings.push('Reordered cn() arguments to place className variables last')
 
               return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, [
                 ...otherArgs,
                 ...classNameArgs,
-              ]);
+              ])
             }
 
-            return ts.visitEachChild(node, visitNode, context);
+            return ts.visitEachChild(node, visitNode, context)
           }
 
-          return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-        };
-      };
+          return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+        }
+      }
 
       /////////////////////////////////////////////////////////////////////////////////
       // Phase 7: Apply Transformation and Generate Code
@@ -187,15 +187,15 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
       // To:    (transformed source code string)
       //
       /////////////////////////////////////////////////////////////////////////////////
-      const result = ts.transform(sourceFile, [transformer]);
+      const result = ts.transform(sourceFile, [transformer])
       const printer = ts.createPrinter({
         newLine: ts.NewLineKind.LineFeed,
         removeComments: false,
-      });
-      const content = printer.printFile(result.transformed[0]);
-      result.dispose();
+      })
+      const content = printer.printFile(result.transformed[0])
+      result.dispose()
 
-      return { content, changed, warnings };
+      return { content, changed, warnings }
     } catch (error) {
       // Fallback: return original content if parsing fails
       return {
@@ -204,7 +204,7 @@ export function transformReorderCnArgs(input: string): Result<TransformResult, C
         warnings: [
           `TypeScript AST parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         ],
-      };
+      }
     }
-  });
+  })
 }

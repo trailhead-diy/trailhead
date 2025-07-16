@@ -1,4 +1,4 @@
-import { defineConfig } from './src/cli/core/config/define-config';
+import { defineConfig } from './src/cli/core/config/define-config'
 
 /**
  * Example TypeScript configuration for Trailhead UI
@@ -34,4 +34,4 @@ export default defineConfig({
   // Global settings
   verbose: false,
   dryRun: false,
-});
+})

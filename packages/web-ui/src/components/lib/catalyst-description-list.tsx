@@ -1,7 +1,7 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import { cn } from '../utils/cn';
+import { cn } from '../utils/cn'
 export function CatalystDescriptionList({
   className,
   ...props
@@ -14,7 +14,7 @@ export function CatalystDescriptionList({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDescriptionTerm({
   className,
@@ -28,7 +28,7 @@ export function CatalystDescriptionTerm({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDescriptionDetails({
   className,
@@ -42,5 +42,5 @@ export function CatalystDescriptionDetails({
         className
       )}
     />
-  );
+  )
 }

@@ -1,7 +1,7 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import { isSemanticToken, createSemanticRadioStyles } from '../theme/index';
-import { cn } from '../utils/cn';
+import * as Headless from '@headlessui/react'
+import { isSemanticToken, createSemanticRadioStyles } from '../theme/index'
+import { cn } from '../utils/cn'
 
 export function CatalystRadioGroup({
   className,
@@ -19,7 +19,7 @@ export function CatalystRadioGroup({
         className
       )}
     />
-  );
+  )
 }
 
 export function CatalystRadioField({
@@ -44,7 +44,7 @@ export function CatalystRadioField({
         className
       )}
     />
-  );
+  )
 }
 
 const base = [
@@ -74,7 +74,7 @@ const base = [
   'group-data-disabled:opacity-50',
   'group-data-disabled:border-border group-data-disabled:bg-card/5 group-data-disabled:[--radio-checked-indicator:var(--color-foreground)]/50 group-data-disabled:before:bg-transparent',
   'dark:group-data-disabled:border-border dark:group-data-disabled:bg-card dark:group-data-disabled:[--radio-checked-indicator:var(--color-background)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
-];
+]
 
 const colors = {
   'dark/zinc': [
@@ -124,9 +124,9 @@ const colors = {
     '[--radio-checked-indicator:var(--accent-foreground)] [--radio-checked-bg:var(--accent)] [--radio-checked-border:var(--accent)]/90',
   destructive:
     '[--radio-checked-indicator:var(--destructive-foreground)] [--radio-checked-bg:var(--destructive)] [--radio-checked-border:var(--destructive)]/90',
-};
+}
 
-type Color = keyof typeof colors;
+type Color = keyof typeof colors
 
 export function CatalystRadio({
   color = 'dark/zinc',
@@ -138,11 +138,11 @@ export function CatalystRadio({
 >) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticRadioStyles(color);
+      return createSemanticRadioStyles(color)
     }
 
-    return colors[color] || colors['dark/zinc'];
-  })();
+    return colors[color] || colors['dark/zinc']
+  })()
 
   return (
     <Headless.Radio
@@ -160,5 +160,5 @@ export function CatalystRadio({
         />
       </span>
     </Headless.Radio>
-  );
+  )
 }

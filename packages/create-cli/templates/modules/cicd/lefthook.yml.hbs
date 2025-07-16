@@ -1,0 +1,41 @@
+# Lefthook configuration for
+{{projectName}}
+# Git hooks for quality assurance pre-commit: parallel: true commands: lint: glob: "*.{js,ts,json}"
+run:
+{{packageManager}}
+run lint:fix stage_fixed: true types: glob: "*.{ts,tsx}" run:
+{{packageManager}}
+run types
+
+{{#if features.testing}}
+  test-staged: glob: "*.{js,ts}" run:
+  {{packageManager}}
+  run test -- --passWithNoTests --findRelatedTests {staged_files}
+{{/if}}
+
+{{#if features.validation}}
+  validate-config: glob: "config*.json" run:
+  {{packageName}}
+  validate --file {staged_files} validate-package: glob: "package.json" run:
+  {{packageName}}
+  validate --file package.json --type package
+{{/if}}
+
+pre-push: commands:
+{{#if features.testing}}
+  test: run:
+  {{packageManager}}
+  run test
+{{/if}}
+
+build: run:
+{{packageManager}}
+run build security-audit: run:
+{{packageManager}}
+audit commit-msg: commands: conventional-commit: run: | # Check if commit message follows
+conventional commits format if ! grep -qE
+"^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}" "$1"; then echo
+"❌ Commit message must follow Conventional Commits format:" echo " type(scope): description" echo
+"" echo "Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert" echo
+"" echo "Examples:" echo " feat(auth): add OAuth2 integration" echo " fix(api): resolve null pointer
+in user service" echo " docs(readme): update installation instructions" exit 1 fi

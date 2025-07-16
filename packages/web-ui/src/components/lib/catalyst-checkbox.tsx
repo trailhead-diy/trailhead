@@ -1,9 +1,9 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
 export function CatalystCheckboxGroup({
   className,
   ...props
@@ -20,13 +20,13 @@ export function CatalystCheckboxGroup({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystCheckboxField({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
@@ -46,7 +46,7 @@ export function CatalystCheckboxField({
         className
       )}
     />
-  );
+  )
 }
 const base = [
   // Basic layout
@@ -74,7 +74,7 @@ const base = [
   // Forced colors mode
   'forced-colors:[--checkbox-check:HighlightText] forced-colors:[--checkbox-checked-bg:Highlight] forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
   'dark:forced-colors:[--checkbox-check:HighlightText] dark:forced-colors:[--checkbox-checked-bg:Highlight] dark:forced-colors:group-data-disabled:[--checkbox-check:Highlight]',
-];
+]
 const colors = {
   'dark/zinc': [
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-zinc-900)] [--checkbox-checked-border:var(--color-zinc-950)]/90',
@@ -124,15 +124,15 @@ const colors = {
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-purple-600)] [--checkbox-checked-border:var(--color-purple-700)]/90',
   muted:
     '[--checkbox-check:var(--color-white)] [--checkbox-checked-bg:var(--color-gray-600)] [--checkbox-checked-border:var(--color-gray-700)]/90',
-};
-type Color = keyof typeof colors;
+}
+type Color = keyof typeof colors
 export function CatalystCheckbox({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
-  className?: string;
+  color?: Color
+  className?: string
 } & Omit<Headless.CheckboxProps, 'as' | 'className'>) {
   return (
     <Headless.Checkbox
@@ -165,5 +165,5 @@ export function CatalystCheckbox({
         </svg>
       </span>
     </Headless.Checkbox>
-  );
+  )
 }

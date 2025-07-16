@@ -10,15 +10,15 @@
  * ```
  */
 export function filterUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
-  const result: Partial<T> = {};
+  const result: Partial<T> = {}
 
   for (const [key, value] of Object.entries(obj)) {
     if (value !== undefined) {
-      result[key as keyof T] = value;
+      result[key as keyof T] = value
     }
   }
 
-  return result;
+  return result
 }
 
 /**
@@ -39,8 +39,8 @@ export function mergeOptionsWithDefaults<T extends Record<string, any>>(
   defaults: T,
   options: Partial<T>
 ): T {
-  const filteredOptions = filterUndefined(options);
-  return { ...defaults, ...filteredOptions };
+  const filteredOptions = filterUndefined(options)
+  return { ...defaults, ...filteredOptions }
 }
 
 /**
@@ -58,26 +58,26 @@ export function mergeOptionsWithDefaults<T extends Record<string, any>>(
  */
 export function coerceOptionType(value: any, type: 'string' | 'number' | 'boolean'): any {
   if (value === undefined || value === null) {
-    return value;
+    return value
   }
 
   switch (type) {
     case 'string':
-      return String(value);
+      return String(value)
 
     case 'number': {
-      const num = Number(value);
-      return isNaN(num) ? value : num;
+      const num = Number(value)
+      return isNaN(num) ? value : num
     }
 
     case 'boolean':
-      if (typeof value === 'boolean') return value;
-      if (value === 'true') return true;
-      if (value === 'false') return false;
-      return Boolean(value);
+      if (typeof value === 'boolean') return value
+      if (value === 'true') return true
+      if (value === 'false') return false
+      return Boolean(value)
 
     default:
-      return value;
+      return value
   }
 }
 
@@ -100,19 +100,19 @@ export function coerceOptionType(value: any, type: 'string' | 'number' | 'boolea
 export function processCommandOptions<T extends Record<string, any>>(
   rawOptions: Record<string, any>,
   optionDefinitions?: Array<{
-    name: string;
-    type?: 'string' | 'number' | 'boolean';
+    name: string
+    type?: 'string' | 'number' | 'boolean'
   }>
 ): T {
-  const processed: Record<string, any> = {};
+  const processed: Record<string, any> = {}
 
   // First, copy all defined options with type coercion
   if (optionDefinitions) {
     for (const def of optionDefinitions) {
       if (def.name in rawOptions) {
-        const value = rawOptions[def.name];
+        const value = rawOptions[def.name]
         if (value !== undefined) {
-          processed[def.name] = def.type ? coerceOptionType(value, def.type) : value;
+          processed[def.name] = def.type ? coerceOptionType(value, def.type) : value
         }
       }
     }
@@ -121,9 +121,9 @@ export function processCommandOptions<T extends Record<string, any>>(
   // Then copy any additional options that weren't defined
   for (const [key, value] of Object.entries(rawOptions)) {
     if (!(key in processed) && value !== undefined) {
-      processed[key] = value;
+      processed[key] = value
     }
   }
 
-  return processed as T;
+  return processed as T
 }

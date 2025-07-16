@@ -1,10 +1,10 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Description, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/th/fieldset';
-import { Input } from '@/components/th/input';
-import { Select } from '@/components/th/select';
-import { Text } from '@/components/th/text';
-import { Textarea } from '@/components/th/textarea';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Description, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/th/fieldset'
+import { Input } from '@/components/th/input'
+import { Select } from '@/components/th/select'
+import { Text } from '@/components/th/text'
+import { Textarea } from '@/components/th/textarea'
 
 export default function FieldsetPage(): React.JSX.Element {
   return (
@@ -42,5 +42,5 @@ export default function FieldsetPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

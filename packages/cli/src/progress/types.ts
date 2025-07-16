@@ -1,23 +1,23 @@
-import type { Options as CliProgressOptions } from 'cli-progress';
+import type { Options as CliProgressOptions } from 'cli-progress'
 
 /**
  * Progress state represents the current state of a long-running operation
  */
 export interface ProgressState {
   /** Current step being executed */
-  currentStep: number;
+  currentStep: number
   /** Total number of steps */
-  totalSteps: number;
+  totalSteps: number
   /** Current step name/description */
-  stepName: string;
+  stepName: string
   /** Progress percentage (0-100) */
-  percentage: number;
+  percentage: number
   /** Start time of the operation */
-  startTime: number;
+  startTime: number
   /** Whether the operation is complete */
-  completed: boolean;
+  completed: boolean
   /** Optional metadata for the current step */
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown>
 }
 
 /**
@@ -25,17 +25,17 @@ export interface ProgressState {
  */
 export interface ProgressTracker {
   /** Update progress to next step */
-  nextStep: (stepName: string, metadata?: Record<string, unknown>) => ProgressState;
+  nextStep: (stepName: string, metadata?: Record<string, unknown>) => ProgressState
   /** Update progress to specific step */
-  setStep: (step: number, stepName: string, metadata?: Record<string, unknown>) => ProgressState;
+  setStep: (step: number, stepName: string, metadata?: Record<string, unknown>) => ProgressState
   /** Mark operation as complete */
-  complete: () => ProgressState;
+  complete: () => ProgressState
   /** Get current progress state */
-  getState: () => ProgressState;
+  getState: () => ProgressState
   /** Reset progress tracker */
-  reset: (totalSteps: number) => ProgressState;
+  reset: (totalSteps: number) => ProgressState
   /** Stop and clean up progress display */
-  stop: () => void;
+  stop: () => void
 }
 
 /**
@@ -43,13 +43,13 @@ export interface ProgressTracker {
  */
 export interface ProgressOptions {
   /** Total number of steps in the operation */
-  totalSteps: number;
+  totalSteps: number
   /** Step weights for weighted progress calculation */
-  stepWeights?: number[];
+  stepWeights?: number[]
   /** Custom cli-progress options */
-  barOptions?: Partial<CliProgressOptions>;
+  barOptions?: Partial<CliProgressOptions>
   /** Format template for progress display */
-  format?: string;
+  format?: string
   /** Whether to show step names in progress */
-  showStepNames?: boolean;
+  showStepNames?: boolean
 }

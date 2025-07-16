@@ -1,0 +1,222 @@
+# {{projectName}}
+
+{{description}}
+
+Built with [@esteban-url/trailhead-cli](https://github.com/esteban-url/trailhead).
+
+## Installation
+
+```bash
+{{#if (eq packageManager "npm")}}
+npm install -g {{packageName}}
+{{else}}
+pnpm install -g {{packageName}}
+{{/if}}
+```
+
+## Usage
+
+```bash
+# Show help
+{{packageName}} --help
+
+# Show version
+{{packageName}} --version
+
+{{#if features.examples}}
+# Build the project
+{{packageName}} build
+
+# Start development mode
+{{packageName}} dev
+{{/if}}
+
+{{#if features.config}}
+# Initialize configuration
+{{packageName}} config --init
+
+# Validate configuration
+{{packageName}} config --validate
+{{/if}}
+
+{{#if features.validation}}
+# Validate files
+{{packageName}} validate --file package.json
+{{/if}}
+```
+
+## Commands
+
+### Core Commands
+
+- `help` - Show help information
+- `version` - Show version information
+
+{{#if features.examples}}
+### Development Commands
+
+- `build [--clean] [--watch] [--production]` - Build the project
+- `dev [--port <port>] [--hot] [--debug]` - Start development mode
+{{/if}}
+
+{{#if features.config}}
+### Configuration Commands
+
+- `config --init` - Initialize a new configuration file
+- `config --validate` - Validate existing configuration
+- `config --show` - Show current configuration
+{{/if}}
+
+{{#if features.validation}}
+### Validation Commands
+
+- `validate --file <path> [--type <type>]` - Validate files and data
+  - Types: `json`, `config`, `package`
+{{/if}}
+
+## Configuration
+
+{{#if features.config}}
+{{projectName}} uses a JSON configuration file (`config.json`) for settings.
+
+Initialize a configuration file:
+
+```bash
+{{packageName}} config --init
+```
+
+Example configuration:
+
+```json
+{
+  "name": "{{packageName}}",
+  "version": "{{version}}",
+  "environment": "development",
+  "settings": {
+    "debug": true,
+    "verbose": false,
+    "maxRetries": 3,
+    "timeout": 5000
+  }
+}
+```
+
+Validate your configuration:
+
+```bash
+{{packageName}} config --validate
+```
+{{else}}
+Configuration is managed through command-line flags and environment variables.
+{{/if}}
+
+## Development
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd {{projectName}}
+
+# Install dependencies
+{{packageManager}} install
+
+# Build the project
+{{packageManager}} run build
+
+{{#if features.testing}}
+# Run tests
+{{packageManager}} test
+
+# Run tests in watch mode
+{{packageManager}} run test:watch
+
+# Generate coverage report
+{{packageManager}} run test:coverage
+{{/if}}
+
+# Start development mode
+{{packageManager}} run dev
+```
+
+## Project Structure
+
+```
+{{projectName}}/
+├── src/
+│   ├── commands/         # Command implementations
+│   ├── lib/             # Shared utilities
+│   └── index.ts         # Main CLI entry point
+├── bin/
+│   └── cli.js          # Executable script
+{{#if features.testing}}
+├── src/__tests__/       # Test files
+{{/if}}
+{{#if features.config}}
+├── config.example.json  # Example configuration
+{{/if}}
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Architecture
+
+{{projectName}} is built using functional programming principles with:
+
+- **Result types** for explicit error handling
+- **Pure functions** and immutable data structures
+- **Modular command architecture** with @esteban-url/trailhead-cli
+- **TypeScript** for type safety
+
+{{#if features.validation}}
+### Validation
+
+The CLI includes comprehensive validation for:
+- JSON file syntax and structure
+- Configuration schema compliance
+- Input parameter validation
+- File existence and accessibility
+{{/if}}
+
+{{#if features.testing}}
+### Testing
+
+The project uses Vitest for testing with:
+- Unit tests for individual commands
+- Integration tests for CLI workflows
+- High-ROI testing approach focusing on user interactions
+- Coverage reporting
+{{/if}}
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Add tests for your changes
+5. Ensure all tests pass (`{{packageManager}} test`)
+6. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+## License
+
+{{#if (eq license "MIT")}}
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+{{else if (eq license "Apache-2.0")}}
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+{{else if (eq license "ISC")}}
+This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+{{else}}
+This project is licensed under a custom license - see the [LICENSE](LICENSE) file for details.
+{{/if}}
+
+## Support
+
+- 📖 [Documentation](docs/)
+- 🐛 [Issue Tracker](https://github.com/{{author.name}}/{{projectName}}/issues)
+- 💬 [Discussions](https://github.com/{{author.name}}/{{projectName}}/discussions)
+
+---
+
+Built with ❤️ using [@esteban-url/trailhead-cli](https://github.com/esteban-url/trailhead)

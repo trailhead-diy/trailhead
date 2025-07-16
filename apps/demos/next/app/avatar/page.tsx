@@ -1,11 +1,11 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Avatar } from '@/components/th';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Avatar } from '@/components/th'
 
 export default function AvatarPage(): React.JSX.Element {
   const user = {
     avatarUrl: 'https://trailheadui.com/images/avatar-1.jpg',
-  };
+  }
   return (
     <DemoLayout>
       <List title="Avatar">
@@ -16,5 +16,5 @@ export default function AvatarPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

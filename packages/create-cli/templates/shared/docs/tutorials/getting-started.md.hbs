@@ -1,0 +1,81 @@
+--- type: tutorial title: Getting Started with
+{{projectName}}
+description: A step-by-step guide to build your first CLI application with
+{{projectName}}
+difficulty: beginner duration: 15 minutes --- # Getting Started with
+{{projectName}}
+
+This tutorial will guide you through creating your first CLI application using
+{{projectName}}. By the end, you'll have a working CLI that can greet users and perform basic
+operations. ## Prerequisites - Node.js 18 or higher -
+{{packageManager}}
+package manager - Basic knowledge of TypeScript/JavaScript ## Step 1: Installation First, install
+{{projectName}}
+globally: ```bash
+{{packageManager}}
+add -g
+{{packageName}}
+``` Verify the installation: ```bash
+{{packageName}}
+--version ``` You should see version
+{{version}}
+or higher. ## Step 2: Create Your First Command Let's create a simple "hello" command. In your
+project directory: ```bash mkdir my-first-cli cd my-first-cli
+{{packageName}}
+init ``` This creates a basic project structure. Now add a hello command: ```typescript //
+src/commands/hello.ts import { createCommand } from '@esteban-url/trailhead-cli/command' import { Ok
+} from '@esteban-url/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
+description: 'Greet someone', arguments: '[name]', options: [ { name: 'enthusiastic', alias: 'e',
+type: 'boolean', description: 'Add enthusiasm to the greeting' } ], action: async (options, context)
+=> { const { logger, args } = context const name = args[0] || 'World' const enthusiasm =
+options.enthusiastic ? '!' : '.' logger.success(`Hello, ${name}${enthusiasm}`) return Ok(undefined)
+} }) ``` ## Step 3: Register the Command Update your main CLI file to include the new command:
+```typescript // src/index.ts import { createCLI } from '@esteban-url/trailhead-cli' import {
+helloCommand } from './commands/hello.js' async function main() { const cli = createCLI({ name:
+'my-first-cli', version: '1.0.0', description: 'My first CLI application', commands: [helloCommand]
+}) await cli.run() } main().catch(console.error) ``` ## Step 4: Build and Test Build your CLI:
+```bash
+{{packageManager}}
+build ``` Test your new command: ```bash node bin/cli.js hello # Output: Hello, World. node
+bin/cli.js hello Alice --enthusiastic # Output: Hello, Alice! ``` ## Step 5: Add Error Handling
+Let's enhance our command with proper error handling: ```typescript // src/commands/hello.ts
+(updated) import { createCommand } from '@esteban-url/trailhead-cli/command' import { Ok, Err } from
+'@esteban-url/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
+description: 'Greet someone', arguments: '[name]', options: [ { name: 'enthusiastic', alias: 'e',
+type: 'boolean', description: 'Add enthusiasm to the greeting' }, { name: 'language', alias: 'l',
+type: 'string', description: 'Greeting language (en|es|fr)' } ], action: async (options, context) =>
+{ const { logger, args } = context const name = args[0] || 'World' const language = options.language
+|| 'en' // Validate language const supportedLanguages = ['en', 'es', 'fr'] if
+(!supportedLanguages.includes(language)) { logger.error(`Unsupported language: ${language}`)
+logger.info(`Supported languages: ${supportedLanguages.join(', ')}`) return Err(new Error(`Invalid
+language: ${language}`)) } // Get greeting by language const greetings = { en: 'Hello', es: 'Hola',
+fr: 'Bonjour' } const greeting = greetings[language as keyof typeof greetings] const enthusiasm =
+options.enthusiastic ? '!' : '.' logger.success(`${greeting}, ${name}${enthusiasm}`) return
+Ok(undefined) } }) ``` ## Step 6: Add Tests Create a test for your command: ```typescript //
+src/commands/__tests__/hello.test.ts import { describe, it, expect } from 'vitest' import {
+createTestContext } from '@esteban-url/trailhead-cli/testing' import { helloCommand } from
+'../hello.js' describe('hello command', () => { it('should greet with default name', async () => {
+const context = createTestContext({ args: [] }) const result = await helloCommand.execute({},
+context) expect(result.success).toBe(true) expect(context.logger.info).toHaveBeenCalledWith('Hello,
+World.') }) it('should greet with custom name', async () => { const context = createTestContext({
+args: ['Alice'] }) const result = await helloCommand.execute({ enthusiastic: true }, context)
+expect(result.success).toBe(true) expect(context.logger.info).toHaveBeenCalledWith('Hello, Alice!')
+}) it('should handle invalid language', async () => { const context = createTestContext({ args:
+['Bob'] }) const result = await helloCommand.execute({ language: 'invalid' }, context)
+expect(result.success).toBe(false) expect(result.error.message).toContain('Invalid language') }) })
+``` Run your tests: ```bash
+{{packageManager}}
+test ``` ## What You've Learned In this tutorial, you've learned how to: - ✅ Install and set up
+{{projectName}}
+- ✅ Create a basic CLI command with options and arguments - ✅ Handle errors using Result types -
+✅ Register commands with the CLI - ✅ Write tests for your commands - ✅ Build and run your CLI
+application ## Next Steps Now that you have a basic CLI working, you can: 1. **Add more commands** -
+Create additional commands for different operations 2. **Use configuration** - Learn about
+configuration management 3. **Add file operations** - Work with files using the filesystem
+abstraction 4. **Explore advanced features** - Check out validation, performance tracking, and more
+## Troubleshooting **Command not found**: Make sure you've built the project with `{{packageManager}}
+build` **TypeScript errors**: Ensure you're using Node.js 18+ and have all dependencies installed
+**Test failures**: Check that you've imported the correct modules and your test context is set up
+properly ## Related Guides - [How to Add Configuration](../how-to/add-configuration.md) - [How to
+Handle File Operations](../how-to/file-operations.md) - [Command
+Architecture](../explanation/command-architecture.md)

@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from 'next'
 
 /**
  * Next.js Configuration
@@ -32,6 +32,6 @@ const nextConfig: NextConfig = {
     // Fail build on lint errors
     ignoreDuringBuilds: false,
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

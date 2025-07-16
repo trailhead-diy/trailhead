@@ -1,10 +1,10 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
-import { CatalystText } from './catalyst-text';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
+import { CatalystText } from './catalyst-text'
 const sizes = {
   xs: 'sm:max-w-xs',
   sm: 'sm:max-w-sm',
@@ -15,16 +15,16 @@ const sizes = {
   '3xl': 'sm:max-w-3xl',
   '4xl': 'sm:max-w-4xl',
   '5xl': 'sm:max-w-5xl',
-};
+}
 export function CatalystDialog({
   size = 'lg',
   className,
   children,
   ...props
 }: {
-  size?: keyof typeof sizes;
-  className?: string;
-  children: React.ReactNode;
+  size?: keyof typeof sizes
+  className?: string
+  children: React.ReactNode
 } & Omit<Headless.DialogProps, 'as' | 'className'>) {
   return (
     <Headless.Dialog {...props}>
@@ -49,13 +49,13 @@ export function CatalystDialog({
         </div>
       </div>
     </Headless.Dialog>
-  );
+  )
 }
 export function CatalystDialogTitle({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DialogTitleProps, 'as' | 'className'>) {
   return (
     <Headless.DialogTitle
@@ -65,13 +65,13 @@ export function CatalystDialogTitle({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystDialogDescription({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DescriptionProps<typeof CatalystText>, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -79,10 +79,10 @@ export function CatalystDialogDescription({
       {...props}
       className={cn('mt-2 text-pretty', className)}
     />
-  );
+  )
 }
 export function CatalystDialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn('mt-6', className)} />;
+  return <div {...props} className={cn('mt-6', className)} />
 }
 export function CatalystDialogActions({
   className,
@@ -96,5 +96,5 @@ export function CatalystDialogActions({
         className
       )}
     />
-  );
+  )
 }

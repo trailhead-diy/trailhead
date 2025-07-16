@@ -1,10 +1,16 @@
-import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
-import type { FileSystem } from '../filesystem/index.js';
-import type { CommandContext, CommandOption } from './types.js';
-import type { CommandConfig, CommandOptions } from './base.js';
-import { createCommand } from './base.js';
-import { err, requiredFieldError, fileNotFoundError } from '../core/errors/index.js';
+import type { Result, CoreError } from '@esteban-url/core'
+import type { CommandContext, CommandOption } from './types.js'
+
+// Simple FileSystem interface for file processing
+interface FileSystem {
+  readFile: (path: string) => Promise<Result<string, CoreError>>
+  writeFile: (path: string, content: string) => Promise<Result<void, CoreError>>
+  exists: (path: string) => Promise<Result<boolean, CoreError>>
+  [key: string]: any // Allow additional fs methods
+}
+import type { CommandConfig, CommandOptions } from './base.js'
+import { createCommand } from './base.js'
+import { err, createCoreError } from '@esteban-url/core'
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112
@@ -69,69 +75,69 @@ export const commonOptions = {
     type: 'boolean' as const,
     default: false,
   }),
-};
+}
 
 // Fluent API for building option sets
 export interface OptionsBuilder {
-  common(names: (keyof typeof commonOptions)[]): OptionsBuilder;
-  format(choices: string[], defaultValue?: string): OptionsBuilder;
-  custom(options: CommandOption[]): OptionsBuilder;
-  build(): CommandOption[];
+  common(names: (keyof typeof commonOptions)[]): OptionsBuilder
+  format(choices: string[], defaultValue?: string): OptionsBuilder
+  custom(options: CommandOption[]): OptionsBuilder
+  build(): CommandOption[]
 }
 
 export function defineOptions(initialOptions: CommandOption[] = []): OptionsBuilder {
   return {
     common: (names: (keyof typeof commonOptions)[]): OptionsBuilder => {
-      const newOptions = names.map(name => commonOptions[name]());
-      return defineOptions([...initialOptions, ...newOptions]);
+      const newOptions = names.map((name) => commonOptions[name]())
+      return defineOptions([...initialOptions, ...newOptions])
     },
 
     format: (choices: string[], defaultValue?: string): OptionsBuilder => {
       // Replace existing format option if present
-      const filteredOptions = initialOptions.filter(opt => opt.name !== 'format');
-      const formatOption = commonOptions.format(choices, defaultValue);
-      return defineOptions([...filteredOptions, formatOption]);
+      const filteredOptions = initialOptions.filter((opt) => opt.name !== 'format')
+      const formatOption = commonOptions.format(choices, defaultValue)
+      return defineOptions([...filteredOptions, formatOption])
     },
 
     custom: (options: CommandOption[]): OptionsBuilder => {
-      return defineOptions([...initialOptions, ...options]);
+      return defineOptions([...initialOptions, ...options])
     },
 
     build: (): CommandOption[] => {
-      return [...initialOptions];
+      return [...initialOptions]
     },
-  };
+  }
 }
 
 // File processing command builder types
 export interface FileProcessingOptions extends CommandOptions {
-  output?: string;
-  format?: string;
-  verbose?: boolean;
-  dryRun?: boolean;
-  force?: boolean;
+  output?: string
+  format?: string
+  verbose?: boolean
+  dryRun?: boolean
+  force?: boolean
 }
 
 export interface FileProcessingContext {
-  inputFile: string;
-  outputPath?: string;
-  fs: FileSystem;
+  inputFile: string
+  outputPath?: string
+  fs: FileSystem
 }
 
 export interface FileProcessingConfig<T extends FileProcessingOptions> {
-  name: string;
-  description: string;
+  name: string
+  description: string
   inputFile: {
-    required?: boolean;
-    description?: string;
-  };
-  commonOptions?: (keyof typeof commonOptions)[];
-  customOptions?: CommandOption[];
+    required?: boolean
+    description?: string
+  }
+  commonOptions?: (keyof typeof commonOptions)[]
+  customOptions?: CommandOption[]
   action: (
     options: T,
     context: CommandContext,
     processing: FileProcessingContext
-  ) => Promise<Result<void, CLIError>>;
+  ) => Promise<Result<void, CoreError>>
 }
 
 /**
@@ -150,18 +156,18 @@ export interface FileProcessingConfig<T extends FileProcessingOptions> {
 export function createFileProcessingCommand<T extends FileProcessingOptions>(
   config: FileProcessingConfig<T>
 ): ReturnType<typeof createCommand<T>> {
-  const options: CommandOption[] = [];
+  const options: CommandOption[] = []
 
   // Add common options if specified
   if (config.commonOptions) {
     for (const optionName of config.commonOptions) {
-      options.push(commonOptions[optionName]());
+      options.push(commonOptions[optionName]())
     }
   }
 
   // Add custom options
   if (config.customOptions) {
-    options.push(...config.customOptions);
+    options.push(...config.customOptions)
   }
 
   const commandConfig: CommandConfig<T> = {
@@ -171,24 +177,39 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
     options,
     action: async (options, context) => {
       // Extract input file from arguments
-      const [inputFile] = context.args;
+      const [inputFile] = context.args
 
       if (config.inputFile.required !== false && !inputFile) {
-        return err(requiredFieldError('input file'));
+        return err(
+          createCoreError('VALIDATION_ERROR', 'CLI_ERROR', 'input file is required', {
+            recoverable: true,
+          })
+        )
       }
 
       // Validate file exists if provided
       if (inputFile) {
-        const fileCheck = await context.fs.access(inputFile);
+        const fileCheck = await context.fs.exists(inputFile)
         if (fileCheck.isErr()) {
-          return err(fileNotFoundError(inputFile));
+          return err(
+            createCoreError('FILESYSTEM_ERROR', 'CLI_ERROR', `file not found: ${inputFile}`, {
+              recoverable: false,
+            })
+          )
+        }
+        if (fileCheck.isOk() && !fileCheck.value) {
+          return err(
+            createCoreError('FILESYSTEM_ERROR', 'CLI_ERROR', `file not found: ${inputFile}`, {
+              recoverable: false,
+            })
+          )
         }
       }
 
       // Resolve output path if output option is provided
-      let outputPath: string | undefined;
+      let outputPath: string | undefined
       if (options.output) {
-        outputPath = options.output;
+        outputPath = options.output
       }
 
       // Create processing context with validated paths
@@ -196,12 +217,12 @@ export function createFileProcessingCommand<T extends FileProcessingOptions>(
         inputFile: inputFile ?? '',
         outputPath,
         fs: context.fs,
-      };
+      }
 
       // Execute the command action with enhanced context
-      return config.action(options, context, processingContext);
+      return config.action(options, context, processingContext)
     },
-  };
+  }
 
-  return createCommand<T>(commandConfig);
+  return createCommand<T>(commandConfig)
 }

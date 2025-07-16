@@ -1,10 +1,10 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import type React from 'react';
-import { CatalystText } from './catalyst-text';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import type React from 'react'
+import { CatalystText } from './catalyst-text'
 const sizes = {
   xs: 'sm:max-w-xs',
   sm: 'sm:max-w-sm',
@@ -15,16 +15,16 @@ const sizes = {
   '3xl': 'sm:max-w-3xl',
   '4xl': 'sm:max-w-4xl',
   '5xl': 'sm:max-w-5xl',
-};
+}
 export function CatalystAlert({
   size = 'md',
   className,
   children,
   ...props
 }: {
-  size?: keyof typeof sizes;
-  className?: string;
-  children: React.ReactNode;
+  size?: keyof typeof sizes
+  className?: string
+  children: React.ReactNode
 } & Omit<Headless.DialogProps, 'as' | 'className'>) {
   return (
     <Headless.Dialog {...props}>
@@ -49,13 +49,13 @@ export function CatalystAlert({
         </div>
       </div>
     </Headless.Dialog>
-  );
+  )
 }
 export function CatalystAlertTitle({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DialogTitleProps, 'as' | 'className'>) {
   return (
     <Headless.DialogTitle
@@ -65,13 +65,13 @@ export function CatalystAlertTitle({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystAlertDescription({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.DescriptionProps<typeof CatalystText>, 'as' | 'className'>) {
   return (
     <Headless.Description
@@ -79,10 +79,10 @@ export function CatalystAlertDescription({
       {...props}
       className={cn('mt-2 text-center text-pretty sm:text-left', className)}
     />
-  );
+  )
 }
 export function CatalystAlertBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div {...props} className={cn('mt-4', className)} />;
+  return <div {...props} className={cn('mt-4', className)} />
 }
 export function CatalystAlertActions({
   className,
@@ -96,5 +96,5 @@ export function CatalystAlertActions({
         className
       )}
     />
-  );
+  )
 }

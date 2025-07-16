@@ -4,17 +4,17 @@
  */
 export interface StatsTracker<T extends Record<string, any> = Record<string, any>> {
   /** Number of files that have been processed */
-  readonly filesProcessed: number;
+  readonly filesProcessed: number
   /** Number of files that have been modified */
-  readonly filesModified: number;
+  readonly filesModified: number
   /** Total number of operations performed */
-  readonly totalOperations: number;
+  readonly totalOperations: number
   /** Map of operation types to their counts */
-  readonly operationsByType: Map<string, number>;
+  readonly operationsByType: Map<string, number>
   /** Timestamp when tracking started (milliseconds) */
-  readonly startTime: number;
+  readonly startTime: number
   /** Optional custom data for application-specific tracking */
-  readonly custom?: T;
+  readonly custom?: T
 }
 
 /**
@@ -41,7 +41,7 @@ export function createStats<T extends Record<string, any> = Record<string, any>>
     operationsByType: new Map(),
     startTime: Date.now(),
     custom,
-  };
+  }
 }
 
 /**
@@ -65,21 +65,21 @@ export function createStats<T extends Record<string, any> = Record<string, any>>
 export function updateStats<T extends Record<string, any> = Record<string, any>>(
   stats: StatsTracker<T>,
   update: {
-    filesProcessed?: number;
-    filesModified?: number;
-    operations?: number;
-    operationTypes?: Array<{ type: string; count?: number }>;
-    custom?: Partial<T>;
+    filesProcessed?: number
+    filesModified?: number
+    operations?: number
+    operationTypes?: Array<{ type: string; count?: number }>
+    custom?: Partial<T>
   }
 ): StatsTracker<T> {
-  const newOperationsByType = new Map(stats.operationsByType);
+  const newOperationsByType = new Map(stats.operationsByType)
 
   // Update operation type counts
   if (update.operationTypes) {
     update.operationTypes.forEach(({ type, count = 1 }) => {
-      const currentCount = newOperationsByType.get(type) || 0;
-      newOperationsByType.set(type, currentCount + count);
-    });
+      const currentCount = newOperationsByType.get(type) || 0
+      newOperationsByType.set(type, currentCount + count)
+    })
   }
 
   return {
@@ -89,7 +89,7 @@ export function updateStats<T extends Record<string, any> = Record<string, any>>
     totalOperations: stats.totalOperations + (update.operations || 0),
     operationsByType: newOperationsByType,
     custom: update.custom ? ({ ...stats.custom, ...update.custom } as T) : stats.custom,
-  };
+  }
 }
 
 /**
@@ -105,7 +105,7 @@ export function updateStats<T extends Record<string, any> = Record<string, any>>
  * ```
  */
 export function getElapsedTime(stats: StatsTracker): number {
-  return Date.now() - stats.startTime;
+  return Date.now() - stats.startTime
 }
 
 /**
@@ -128,22 +128,22 @@ export function getElapsedTime(stats: StatsTracker): number {
  * ```
  */
 export function formatStats(stats: StatsTracker): string {
-  const elapsed = getElapsedTime(stats);
-  const seconds = (elapsed / 1000).toFixed(2);
+  const elapsed = getElapsedTime(stats)
+  const seconds = (elapsed / 1000).toFixed(2)
 
   const lines = [
     `Files processed: ${stats.filesProcessed}`,
     `Files modified: ${stats.filesModified}`,
     `Total operations: ${stats.totalOperations}`,
     `Time elapsed: ${seconds}s`,
-  ];
+  ]
 
   if (stats.operationsByType.size > 0) {
-    lines.push('\nOperations by type:');
+    lines.push('\nOperations by type:')
     stats.operationsByType.forEach((count, type) => {
-      lines.push(`  ${type}: ${count}`);
-    });
+      lines.push(`  ${type}: ${count}`)
+    })
   }
 
-  return lines.join('\n');
+  return lines.join('\n')
 }

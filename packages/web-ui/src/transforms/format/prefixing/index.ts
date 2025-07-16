@@ -68,23 +68,23 @@
  * Pure functional interface with no classes.
  */
 
-import { err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js';
+import { err, type Result, type CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../../utils.js'
 import {
   createASTContext,
   processExportDeclarations,
   detectHeadlessReferences,
   mapTypeAliases,
   generateTransformedCode,
-} from './core.js';
+} from './core.js'
 import {
   updateFunctionParameterTypes,
   updateTypeofUsages,
   updateJSXReferences,
   updateTypeReferences,
   updateDirectIdentifiers,
-} from './references.js';
-import { processImportDeclarations } from './imports.js';
+} from './references.js'
+import { processImportDeclarations } from './imports.js'
 
 /**
  * Transform metadata
@@ -93,7 +93,7 @@ export const catalystPrefixTransform = createTransformMetadata(
   'catalyst-prefix',
   'Add Catalyst prefix to component names and references',
   'format'
-);
+)
 
 /**
  * Add Catalyst prefix to component names and references using TypeScript AST
@@ -125,13 +125,13 @@ export const catalystPrefixTransform = createTransformMetadata(
  */
 export function transformCatalystPrefix(input: string): Result<TransformResult, CLIError> {
   // Initialize context first to handle errors properly
-  const contextResult = createASTContext(input);
+  const contextResult = createASTContext(input)
   if (contextResult.isErr()) {
-    return err(contextResult.error);
+    return err(contextResult.error)
   }
 
   return executeTransform(() => {
-    const context = contextResult.value;
+    const context = contextResult.value
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Initialize TypeScript AST Context
@@ -148,7 +148,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    export function CatalystButton() { }
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = processExportDeclarations(context);
+    context.sourceFile = processExportDeclarations(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 3: Headless UI Protection
@@ -157,7 +157,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    (protected set: Button - no transformation)
     //
     /////////////////////////////////////////////////////////////////////////////////
-    detectHeadlessReferences(context);
+    detectHeadlessReferences(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 4: Type Alias Mapping
@@ -166,7 +166,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    type CatalystButtonProps = { children: React.ReactNode }
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = mapTypeAliases(context);
+    context.sourceFile = mapTypeAliases(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 5: Import Declaration Processing
@@ -175,7 +175,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    import { CatalystButton } from './catalyst-button'
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = processImportDeclarations(context);
+    context.sourceFile = processImportDeclarations(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 6: Reference Updates - Function Parameter Types
@@ -184,7 +184,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    function CatalystButton({ color }: CatalystButtonProps) { }
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = updateFunctionParameterTypes(context);
+    context.sourceFile = updateFunctionParameterTypes(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 7: Reference Updates - Typeof Expressions
@@ -193,7 +193,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    ComponentPropsWithoutRef<typeof CatalystButton>
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = updateTypeofUsages(context);
+    context.sourceFile = updateTypeofUsages(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 8: Reference Updates - JSX Elements
@@ -202,7 +202,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    <CatalystButton color="blue">Click me</CatalystButton>
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = updateJSXReferences(context);
+    context.sourceFile = updateJSXReferences(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 9: Reference Updates - Type References
@@ -211,7 +211,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    React.ComponentProps<CatalystButton>
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = updateTypeReferences(context);
+    context.sourceFile = updateTypeReferences(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 10: Reference Updates - Direct Identifiers
@@ -220,7 +220,7 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    const MyButton = CatalystButton
     //
     /////////////////////////////////////////////////////////////////////////////////
-    context.sourceFile = updateDirectIdentifiers(context);
+    context.sourceFile = updateDirectIdentifiers(context)
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 11: Code Generation
@@ -229,12 +229,12 @@ export function transformCatalystPrefix(input: string): Result<TransformResult, 
     // To:    (final transformed source code)
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const content = generateTransformedCode(context.sourceFile);
+    const content = generateTransformedCode(context.sourceFile)
 
     return {
       content,
       changed: context.changes.length > 0,
       warnings: context.warnings,
-    };
-  });
+    }
+  })
 }

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/trailhead-cli';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
-import { Ok } from '@esteban-url/trailhead-cli';
-import { platform, homedir, tmpdir } from 'os';
+import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok } from '@esteban-url/trailhead-cli'
+import { platform, homedir, tmpdir } from 'os'
 
 const infoCommand = createCommand({
   name: 'info',
@@ -15,24 +15,24 @@ const infoCommand = createCommand({
       tempDirectory: tmpdir(),
       nodeVersion: process.version,
       cwd: process.cwd(),
-    };
+    }
 
-    console.log('System Information:');
-    console.log(`Platform: ${info.platform}`);
-    console.log(`Home: ${info.homeDirectory}`);
-    console.log(`Temp: ${info.tempDirectory}`);
-    console.log(`Node: ${info.nodeVersion}`);
-    console.log(`Working Directory: ${info.cwd}`);
+    console.log('System Information:')
+    console.log(`Platform: ${info.platform}`)
+    console.log(`Home: ${info.homeDirectory}`)
+    console.log(`Temp: ${info.tempDirectory}`)
+    console.log(`Node: ${info.nodeVersion}`)
+    console.log(`Working Directory: ${info.cwd}`)
 
-    return Ok(undefined);
+    return Ok(undefined)
   },
-});
+})
 
 const cli = createCLI({
   name: 'cross-platform',
   version: '1.0.0',
   description: 'A cross-platform CLI example',
   commands: [infoCommand],
-});
+})
 
-cli.run();
+cli.run()

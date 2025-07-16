@@ -1,15 +1,40 @@
-export {
-  mockFileSystem,
-  mockLogger,
-  mockPrompts,
-  mockConfig,
-  createConfigMock,
-  createEnhancedMockFileSystem,
-  createTestMockFileSystem,
-  createCLIMockFileSystem,
-  createCrossPlatformMockFileSystem,
-} from './mocks.js';
-export { createTestContext, createTestContextWithFiles } from './context.js';
+/**
+ * @esteban-url/cli/testing
+ *
+ * CLI-specific testing utilities for command execution, interactive testing, and CLI workflows.
+ * For general testing utilities, see the respective domain packages:
+ * - @esteban-url/core/testing - Result matchers, error testing
+ * - @esteban-url/fs/testing - Filesystem fixtures, path utilities
+ * - @esteban-url/validation/testing - Schema testing
+ *
+ * @example
+ * ```typescript
+ * import {
+ *   // CLI command testing
+ *   runCommand, createCLITestRunner, testCLICommand,
+ *   // Interactive testing
+ *   createInteractiveTest, simulatePrompts,
+ *   // CLI context and mocking
+ *   createTestContext, mockLogger,
+ *   // CLI assertions
+ *   expectCommandSuccess, expectCommandFailure,
+ *   // CLI performance monitoring
+ *   measureCLIPerformance, createCLIPerformanceMonitor
+ * } from '@esteban-url/cli/testing'
+ *
+ * // Test CLI command execution
+ * const result = await runCommand(myCommand, ['--verbose'])
+ * expectCommandSuccess(result)
+ *
+ * // Test interactive prompts
+ * const interactive = createInteractiveTest(myInteractiveCommand)
+ * await simulatePrompts(interactive, ['yes', 'save'])
+ * ```
+ */
+
+// ========================================
+// CLI Command Execution and Testing
+// ========================================
 export {
   runCommand,
   createCommandTestRunner,
@@ -19,56 +44,29 @@ export {
   getTestContext,
   getTestFiles,
   getTestLogs,
-} from './runner.js';
+} from './runner.js'
 
-export type { CommandTestRunnerState } from './runner.js';
+export type { CommandTestRunnerState } from './runner.js'
 
-export type { TestContextOptions } from './context.js';
-export type {
-  MockFileSystemOptions,
-  EnhancedMockFileSystem,
-  MockConfigOptions,
-  CreateConfigMockOptions,
-} from './mocks.js';
-
-export {
-  expectResult,
-  expectError,
-  expectSuccess,
-  expectFailure,
-  expectErrorCode,
-  expectErrorMessage,
-} from './assertions.js';
-
-// Test suite builders
-export {
-  createResultTestSuite,
-  createFileSystemTestSuite,
-  createErrorTemplateTestSuite,
-  createValidationTestSuite,
-  createMockFactory,
-  createTestSuite,
-} from './test-suites.js';
-
-export type {
-  ResultTestCase,
-  FileSystemTestCase,
-  ErrorTemplateTestCase,
-  ValidationTestCase,
-  MockFactory,
-  TestContextConfig,
-} from './test-suites.js';
-
-// CLI testing utilities
 export {
   createCLITestRunner,
   expectCLISnapshot,
   createWorkflowTest,
   createCommandTestSuite,
   createInteractiveTest,
-} from './cli-testing.js';
+} from './cli-testing.js'
 
-// Interactive testing
+export type {
+  CLISnapshotOptions,
+  CLITestResult,
+  WorkflowStep,
+  CommandTestCase,
+  InteractiveTestStep,
+} from './cli-testing.js'
+
+// ========================================
+// Interactive CLI Testing
+// ========================================
 export {
   createInteractiveTestRunner,
   addResponse,
@@ -79,16 +77,37 @@ export {
   sendRaw,
   killProcess,
   createInteractiveTestHelper,
-} from './interactive.js';
+} from './interactive.js'
 
 export type {
   InteractiveTestConfig,
   PromptResponse,
   InteractiveTestResult,
   InteractiveTestRunnerState,
-} from './interactive.js';
+} from './interactive.js'
 
-// Performance monitoring
+// ========================================
+// CLI Context and Mocking
+// ========================================
+export { createTestContext, createTestContextWithFiles } from './context.js'
+
+export type { TestContextOptions } from './context.js'
+
+// ========================================
+// CLI-Specific Assertions
+// ========================================
+export {
+  expectResult,
+  expectError,
+  expectSuccess,
+  expectFailure,
+  expectErrorCode,
+  expectErrorMessage,
+} from './assertions.js'
+
+// ========================================
+// CLI Performance Monitoring
+// ========================================
 export {
   createPerformanceMonitorState,
   monitorPerformance,
@@ -99,88 +118,53 @@ export {
   checkPerformanceThresholds,
   withPerformanceMonitoring,
   createCLIPerformanceMonitor,
-} from './performance.js';
+} from './performance.js'
 
 export type {
   PerformanceMetrics,
   PerformanceReport,
   PerformanceMonitorState as CLIPerformanceMonitorState,
-} from './performance.js';
+} from './performance.js'
 
-export type {
-  CLISnapshotOptions,
-  CLITestResult,
-  WorkflowStep,
-  CommandTestCase,
-  InteractiveTestStep,
-} from './cli-testing.js';
+// ========================================
+// Domain-Focused CLI Testing
+// ========================================
 
-// Vitest matchers
-export { resultMatchers, setupResultMatchers } from './vitest-matchers.js';
+/**
+ * This package now focuses exclusively on CLI-specific testing utilities.
+ * For other testing needs, import from the appropriate domain packages:
+ *
+ * @example
+ * ```typescript
+ * // Result testing
+ * import { setupResultMatchers } from '@esteban-url/core/testing'
+ *
+ * // Filesystem testing
+ * import { createTestTempDir, normalizePath } from '@esteban-url/fs/testing'
+ *
+ * // CLI testing (this package)
+ * import { runCommand, createInteractiveTest } from '@esteban-url/cli/testing'
+ * ```
+ */
 
-// Fixture management
-export {
-  createFixtureManager,
-  fixtures,
-  testData,
-  createTempFixture,
-  createFixtureBuilder,
-  addFile,
-  addCsv,
-  addJson,
-  addPackageJson,
-  addDirectory,
-  buildFixtures,
-  fixtureBuilder,
-} from './fixtures.js';
+// ========================================
+// Migration Notes
+// ========================================
 
-export type { FixtureManager, FixtureBuilderState } from './fixtures.js';
-
-// Test debugging and profiling
-export {
-  createPerformanceMonitor,
-  measure,
-  getPerformanceStats,
-  getAllPerformanceStats,
-  clearPerformanceStats,
-  printPerformanceReport,
-  createTestDebugger,
-  enableDebugger,
-  disableDebugger,
-  debugLog,
-  infoLog,
-  warnLog,
-  errorLog,
-  traceResult,
-  getDebugLogs,
-  clearDebugLogs,
-  printDebugReport,
-  createTestStateInspector,
-  captureSnapshot,
-  compareSnapshots,
-  getSnapshot,
-  clearSnapshots,
-  printSnapshotComparison,
-  testUtils,
-  profileTest,
-  debugTest,
-} from './test-debugging.js';
-
-export type {
-  PerformanceMonitorState as TestPerformanceMonitorState,
-  TestDebuggerState,
-  TestStateInspectorState,
-  TestUtilsState,
-} from './test-debugging.js';
-
-// Cross-platform path utilities
-export {
-  normalizePath,
-  toPosixPath,
-  toWindowsPath,
-  createTestPath,
-  createPathRegex,
-  pathAssertions,
-  testPaths,
-  isWindows,
-} from './path-utils.js';
+/**
+ * Utilities moved to other packages:
+ *
+ * @esteban-url/core/testing:
+ * - resultMatchers, setupResultMatchers
+ * - Result helpers and factories
+ *
+ * @esteban-url/fs/testing:
+ * - createTestTempDir, cleanup, createTestFile
+ * - normalizePath, pathAssertions
+ * - fixture management for files
+ *
+ * Future domain packages:
+ * - data/testing: CSV/JSON fixtures and validators
+ * - validation/testing: Schema testing utilities
+ * - config/testing: Configuration testing helpers
+ */

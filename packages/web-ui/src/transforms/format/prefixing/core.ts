@@ -45,18 +45,18 @@
  * Pure functional interface with no classes.
  */
 
-import { ok, err, type Result, type CLIError } from '@esteban-url/trailhead-cli/core';
-import ts from 'typescript';
+import { ok, err, type Result, type CLIError } from '@esteban-url/cli/core'
+import ts from 'typescript'
 
 /**
  * AST context for TypeScript-based transformations
  */
 export interface ASTContext {
-  sourceFile: ts.SourceFile;
-  oldToNewMap: Map<string, string>;
-  headlessPropsTypes: Set<string>;
-  changes: string[];
-  warnings: string[];
+  sourceFile: ts.SourceFile
+  oldToNewMap: Map<string, string>
+  headlessPropsTypes: Set<string>
+  changes: string[]
+  warnings: string[]
 }
 
 /**
@@ -70,7 +70,7 @@ export function createASTContext(input: string): Result<ASTContext, CLIError> {
       ts.ScriptTarget.Latest,
       true,
       ts.ScriptKind.TSX
-    );
+    )
 
     return ok({
       sourceFile,
@@ -78,13 +78,13 @@ export function createASTContext(input: string): Result<ASTContext, CLIError> {
       headlessPropsTypes: new Set<string>(),
       changes: [],
       warnings: [],
-    });
+    })
   } catch (error) {
     return err({
       code: 'TS_AST_INIT_ERROR',
       message: `Failed to initialize TypeScript AST: ${error instanceof Error ? error.message : String(error)}`,
       recoverable: false,
-    });
+    })
   }
 }
 
@@ -113,27 +113,27 @@ function hasExportModifier(node: ts.Node): boolean {
     ts.isVariableStatement(node) ||
     ts.isTypeAliasDeclaration(node)
   ) {
-    if (node.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
-      return true;
+    if (node.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+      return true
     }
   }
 
   // Check parent nodes for export context
-  let current = node.parent;
+  let current = node.parent
   while (current) {
     if (ts.isExportDeclaration(current) || ts.isExportAssignment(current)) {
-      return true;
+      return true
     }
     if (ts.isVariableStatement(current) || ts.isFunctionDeclaration(current)) {
-      return current.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+      return current.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.ExportKeyword) ?? false
     }
-    current = current.parent;
+    current = current.parent
   }
-  return false;
+  return false
 }
 
 export function processExportDeclarations(context: ASTContext): ts.SourceFile {
-  const { sourceFile, changes, oldToNewMap } = context;
+  const { sourceFile, changes, oldToNewMap } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 1: Export Declaration Processing with TypeScript AST
@@ -142,8 +142,8 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
   // To:    export function CatalystButton() { return <button />; }
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process export declarations
         if (
@@ -152,22 +152,22 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
           ts.isNamedExports(node.exportClause)
         ) {
           // Handle: export { Button, Input }
-          const updatedElements = node.exportClause.elements.map(element => {
-            const originalName = element.name.text;
+          const updatedElements = node.exportClause.elements.map((element) => {
+            const originalName = element.name.text
             if (!originalName.startsWith('Catalyst')) {
-              const newName = `Catalyst${originalName}`;
-              oldToNewMap.set(originalName, newName);
-              changes.push(`Updated export name from ${originalName} to ${newName}`);
+              const newName = `Catalyst${originalName}`
+              oldToNewMap.set(originalName, newName)
+              changes.push(`Updated export name from ${originalName} to ${newName}`)
 
               return ts.factory.updateExportSpecifier(
                 element,
                 false,
                 ts.factory.createIdentifier(newName),
                 element.propertyName || ts.factory.createIdentifier(originalName)
-              );
+              )
             }
-            return element;
-          });
+            return element
+          })
 
           return ts.factory.updateExportDeclaration(
             node,
@@ -176,20 +176,20 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
             ts.factory.updateNamedExports(node.exportClause, updatedElements),
             node.moduleSpecifier,
             node.assertClause
-          );
+          )
         }
 
         // Process function declarations in export statements
         if (ts.isFunctionDeclaration(node) && node.name) {
-          const originalName = node.name.text;
+          const originalName = node.name.text
 
           // Only process if this function is actually exported
-          const isExported = hasExportModifier(node);
+          const isExported = hasExportModifier(node)
 
           if (!originalName.startsWith('Catalyst') && isExported) {
-            const newName = `Catalyst${originalName}`;
-            oldToNewMap.set(originalName, newName);
-            changes.push(`Updated function name from ${originalName} to ${newName}`);
+            const newName = `Catalyst${originalName}`
+            oldToNewMap.set(originalName, newName)
+            changes.push(`Updated function name from ${originalName} to ${newName}`)
 
             return ts.factory.updateFunctionDeclaration(
               node,
@@ -200,22 +200,22 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
               node.parameters,
               node.type,
               node.body
-            );
+            )
           }
         }
 
         // Process variable declarations in export statements
         if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
-          const originalName = node.name.text;
+          const originalName = node.name.text
 
           // Only process if this variable is actually exported and looks like a component
-          const isExported = hasExportModifier(node);
-          const looksLikeComponent = originalName.charAt(0) >= 'A' && originalName.charAt(0) <= 'Z';
+          const isExported = hasExportModifier(node)
+          const looksLikeComponent = originalName.charAt(0) >= 'A' && originalName.charAt(0) <= 'Z'
 
           if (!originalName.startsWith('Catalyst') && isExported && looksLikeComponent) {
-            const newName = `Catalyst${originalName}`;
-            oldToNewMap.set(originalName, newName);
-            changes.push(`Updated variable name from ${originalName} to ${newName}`);
+            const newName = `Catalyst${originalName}`
+            oldToNewMap.set(originalName, newName)
+            changes.push(`Updated variable name from ${originalName} to ${newName}`)
 
             return ts.factory.updateVariableDeclaration(
               node,
@@ -223,22 +223,22 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
               node.exclamationToken,
               node.type,
               node.initializer
-            );
+            )
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -256,7 +256,7 @@ export function processExportDeclarations(context: ASTContext): ts.SourceFile {
  * - Handles namespace imports like `import * as Headless from '@headlessui/react'`
  */
 export function detectHeadlessReferences(context: ASTContext): void {
-  const { sourceFile, headlessPropsTypes } = context;
+  const { sourceFile, headlessPropsTypes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 2: Headless UI Protection with TypeScript AST
@@ -268,15 +268,15 @@ export function detectHeadlessReferences(context: ASTContext): void {
   /////////////////////////////////////////////////////////////////////////////////
   function visitNode(node: ts.Node): void {
     if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-      const moduleSpecifier = node.moduleSpecifier.text;
+      const moduleSpecifier = node.moduleSpecifier.text
 
       if (moduleSpecifier === '@headlessui/react' && node.importClause) {
         // Handle named imports: import { Button, ButtonProps } from '@headlessui/react'
         if (node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
-          node.importClause.namedBindings.elements.forEach(element => {
-            const importedName = element.name.text;
-            headlessPropsTypes.add(importedName);
-          });
+          node.importClause.namedBindings.elements.forEach((element) => {
+            const importedName = element.name.text
+            headlessPropsTypes.add(importedName)
+          })
         }
 
         // Handle namespace imports: import * as Headless from '@headlessui/react'
@@ -290,10 +290,10 @@ export function detectHeadlessReferences(context: ASTContext): void {
       }
     }
 
-    ts.forEachChild(node, visitNode);
+    ts.forEachChild(node, visitNode)
   }
 
-  visitNode(sourceFile);
+  visitNode(sourceFile)
 }
 
 /**
@@ -311,7 +311,7 @@ export function detectHeadlessReferences(context: ASTContext): void {
  * - Generates automatic Props mappings for discovered components
  */
 export function mapTypeAliases(context: ASTContext): ts.SourceFile {
-  const { sourceFile, oldToNewMap, headlessPropsTypes } = context;
+  const { sourceFile, oldToNewMap, headlessPropsTypes } = context
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 3: Type Alias Mapping with TypeScript AST
@@ -320,12 +320,12 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
   // To:    type CatalystButtonProps = { children: React.ReactNode }
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const transformer: ts.TransformerFactory<ts.SourceFile> = transformContext => {
-    return sourceFile => {
+  const transformer: ts.TransformerFactory<ts.SourceFile> = (transformContext) => {
+    return (sourceFile) => {
       function visitNode(node: ts.Node): ts.Node {
         // Process type alias declarations
         if (ts.isTypeAliasDeclaration(node)) {
-          const typeName = node.name.text;
+          const typeName = node.name.text
 
           // Only process Props types, not all types
           if (
@@ -333,14 +333,16 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
             !headlessPropsTypes.has(typeName) &&
             typeName.endsWith('Props')
           ) {
-            const newTypeName = `Catalyst${typeName}`;
-            oldToNewMap.set(typeName, newTypeName);
+            const newTypeName = `Catalyst${typeName}`
+            oldToNewMap.set(typeName, newTypeName)
 
             // Ensure the type alias is exported by adding export modifier if not present
-            const hasExport = node.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+            const hasExport = node.modifiers?.some(
+              (mod) => mod.kind === ts.SyntaxKind.ExportKeyword
+            )
             const modifiers = hasExport
               ? node.modifiers
-              : [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword), ...(node.modifiers || [])];
+              : [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword), ...(node.modifiers || [])]
 
             return ts.factory.updateTypeAliasDeclaration(
               node,
@@ -348,27 +350,27 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
               ts.factory.createIdentifier(newTypeName),
               node.typeParameters,
               node.type
-            );
+            )
           } else if (typeName.startsWith('Catalyst')) {
             // Map existing Catalyst types
-            const baseName = typeName.replace('Catalyst', '');
+            const baseName = typeName.replace('Catalyst', '')
             if (baseName && !oldToNewMap.has(baseName) && !headlessPropsTypes.has(baseName)) {
-              oldToNewMap.set(baseName, typeName);
+              oldToNewMap.set(baseName, typeName)
             }
           }
         }
 
-        return ts.visitEachChild(node, visitNode, transformContext);
+        return ts.visitEachChild(node, visitNode, transformContext)
       }
 
-      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile;
-    };
-  };
+      return ts.visitNode(sourceFile, visitNode) as ts.SourceFile
+    }
+  }
 
   // First pass: build mappings
   function buildMappings(node: ts.Node): void {
     if (ts.isTypeAliasDeclaration(node)) {
-      const typeName = node.name.text;
+      const typeName = node.name.text
 
       // Only process Props types, not all types
       if (
@@ -376,19 +378,19 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
         !headlessPropsTypes.has(typeName) &&
         typeName.endsWith('Props')
       ) {
-        oldToNewMap.set(typeName, `Catalyst${typeName}`);
+        oldToNewMap.set(typeName, `Catalyst${typeName}`)
       } else if (typeName.startsWith('Catalyst') && typeName.endsWith('Props')) {
-        const baseName = typeName.replace('Catalyst', '');
+        const baseName = typeName.replace('Catalyst', '')
         if (baseName && !oldToNewMap.has(baseName) && !headlessPropsTypes.has(baseName)) {
-          oldToNewMap.set(baseName, typeName);
+          oldToNewMap.set(baseName, typeName)
         }
       }
     }
 
-    ts.forEachChild(node, buildMappings);
+    ts.forEachChild(node, buildMappings)
   }
 
-  buildMappings(sourceFile);
+  buildMappings(sourceFile)
 
   /////////////////////////////////////////////////////////////////////////////////
   // Phase 4: Props Suffix Handling
@@ -397,27 +399,27 @@ export function mapTypeAliases(context: ASTContext): ts.SourceFile {
   // To:    ButtonProps -> CatalystButtonProps (auto-generated mapping)
   //
   /////////////////////////////////////////////////////////////////////////////////
-  const catalystFunctions = Array.from(oldToNewMap.values()).filter(name =>
+  const catalystFunctions = Array.from(oldToNewMap.values()).filter((name) =>
     name.startsWith('Catalyst')
-  );
+  )
 
-  catalystFunctions.forEach(catalystName => {
-    const baseName = catalystName.replace('Catalyst', '');
+  catalystFunctions.forEach((catalystName) => {
+    const baseName = catalystName.replace('Catalyst', '')
     if (baseName) {
-      const basePropsName = `${baseName}Props`;
-      const catalystPropsName = `Catalyst${baseName}Props`;
+      const basePropsName = `${baseName}Props`
+      const catalystPropsName = `Catalyst${baseName}Props`
       if (!oldToNewMap.has(basePropsName) && !headlessPropsTypes.has(basePropsName)) {
-        oldToNewMap.set(basePropsName, catalystPropsName);
+        oldToNewMap.set(basePropsName, catalystPropsName)
       }
     }
-  });
+  })
 
   // Second pass: apply transformations
-  const result = ts.transform(sourceFile, [transformer]);
-  const transformedSourceFile = result.transformed[0];
-  result.dispose();
+  const result = ts.transform(sourceFile, [transformer])
+  const transformedSourceFile = result.transformed[0]
+  result.dispose()
 
-  return transformedSourceFile;
+  return transformedSourceFile
 }
 
 /**
@@ -430,7 +432,7 @@ export function generateTransformedCode(sourceFile: ts.SourceFile): string {
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
     removeComments: false,
-  });
+  })
 
-  return printer.printFile(sourceFile);
+  return printer.printFile(sourceFile)
 }

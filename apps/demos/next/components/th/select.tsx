@@ -1,8 +1,8 @@
-import { forwardRef, type ComponentProps } from 'react';
-import { cn } from './utils/cn';
-import { CatalystSelect } from './lib/catalyst-select';
+import { forwardRef, type ComponentProps } from 'react'
+import { cn } from './utils/cn'
+import { CatalystSelect } from './lib/catalyst-select'
 
-export type SelectProps = ComponentProps<typeof CatalystSelect>;
+export type SelectProps = ComponentProps<typeof CatalystSelect>
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, children, ...props }, ref) => (
@@ -10,6 +10,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       {children}
     </CatalystSelect>
   )
-);
+)
 
-Select.displayName = 'Select';
+Select.displayName = 'Select'

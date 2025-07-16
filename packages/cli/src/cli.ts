@@ -1,22 +1,22 @@
-import { Command } from 'commander';
-import type { Command as CommandInterface, CommandContext } from './command/index.js';
-import { createDefaultLogger } from './core/logger.js';
-import { createFileSystem } from './filesystem/index.js';
-import { validateCommandOption } from './command/validation.js';
-import { processCommandOptionsWithCache } from './command/performance.js';
+import { Command } from 'commander'
+import type { Command as CommandInterface, CommandContext } from './command/index.js'
+import { createDefaultLogger } from './utils/logger.js'
+import { fs } from '@esteban-url/fs'
+import { validateCommandOption } from './command/validation.js'
+import { processCommandOptionsWithCache } from './command/performance.js'
 
 /**
  * Configuration object for creating a CLI application
  */
 export interface CLIConfig {
   /** CLI application name (used in help text and version output) */
-  name: string;
+  name: string
   /** Version string for the CLI application */
-  version: string;
+  version: string
   /** Description shown in help text */
-  description: string;
+  description: string
   /** Array of commands to register with the CLI */
-  commands?: CommandInterface<any>[];
+  commands?: CommandInterface<any>[]
 }
 
 /**
@@ -27,7 +27,7 @@ export interface CLI {
    * Run the CLI with provided arguments
    * @param argv - Command line arguments (defaults to process.argv)
    */
-  run(argv?: string[]): Promise<void>;
+  run(argv?: string[]): Promise<void>
 }
 
 /**
@@ -104,105 +104,105 @@ export function createCLI(config: CLIConfig): CLI {
   const program = new Command()
     .name(config.name)
     .version(config.version)
-    .description(config.description);
+    .description(config.description)
 
-  const commands: CommandInterface<any>[] = config.commands || [];
+  const commands: CommandInterface<any>[] = config.commands || []
 
   return {
     async run(argv: string[] = process.argv): Promise<void> {
       // Register all commands
       for (const command of commands) {
-        const cmd = program.command(command.name).description(command.description);
+        const cmd = program.command(command.name).description(command.description)
 
         // Add arguments if specified
         if (command.arguments) {
           if (typeof command.arguments === 'string') {
-            cmd.arguments(command.arguments);
+            cmd.arguments(command.arguments)
           } else {
             // Handle array of argument definitions
             const argumentsString = command.arguments
-              .map(arg => {
+              .map((arg) => {
                 if (arg.variadic) {
-                  return arg.required !== false ? `<${arg.name}...>` : `[${arg.name}...]`;
+                  return arg.required !== false ? `<${arg.name}...>` : `[${arg.name}...]`
                 } else {
-                  return arg.required !== false ? `<${arg.name}>` : `[${arg.name}]`;
+                  return arg.required !== false ? `<${arg.name}>` : `[${arg.name}]`
                 }
               })
-              .join(' ');
-            cmd.arguments(argumentsString);
+              .join(' ')
+            cmd.arguments(argumentsString)
           }
         }
 
         // Add options with performance optimization
         if (command.options && command.options.length > 0) {
           // Process all options with caching for better performance
-          const processedOptions = processCommandOptionsWithCache(command.options);
+          const processedOptions = processCommandOptionsWithCache(command.options)
 
           for (let i = 0; i < processedOptions.length; i++) {
-            const option = command.options[i];
-            const processed = processedOptions[i];
+            const option = command.options[i]
+            const processed = processedOptions[i]
 
             // Validate option configuration with enhanced error messages
-            const validationResult = validateCommandOption(option, i);
+            const validationResult = validateCommandOption(option, i)
             if (validationResult.isErr()) {
-              const error = validationResult.error;
-              console.error(`\n❌ CLI Configuration Error in command '${command.name}':`);
-              console.error(`   ${error.message}`);
+              const error = validationResult.error
+              console.error(`\n❌ CLI Configuration Error in command '${command.name}':`)
+              console.error(`   ${error.message}`)
               if (error.suggestion) {
-                console.error(`   💡 Suggestion: ${error.suggestion}`);
+                console.error(`   💡 Suggestion: ${error.suggestion}`)
               }
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
-              process.exit(1);
+              console.error(`   Option configuration:`, JSON.stringify(option, null, 2))
+              process.exit(1)
             }
 
             try {
               if (option.required) {
-                cmd.requiredOption(processed.flags, option.description, option.default);
+                cmd.requiredOption(processed.flags, option.description, option.default)
               } else {
-                cmd.option(processed.flags, option.description, option.default);
+                cmd.option(processed.flags, option.description, option.default)
               }
             } catch (commanderError) {
               console.error(
                 `\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`
-              );
+              )
               console.error(
                 `   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`
-              );
-              console.error(`   Flags: ${processed.flags}`);
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2));
+              )
+              console.error(`   Flags: ${processed.flags}`)
+              console.error(`   Option configuration:`, JSON.stringify(option, null, 2))
               console.error(
                 `   💡 This usually indicates an invalid flags format or conflicting options`
-              );
-              process.exit(1);
+              )
+              process.exit(1)
             }
           }
         }
 
         // Add verbose flag to all commands (only if not already defined)
         const hasVerboseOption = command.options?.some(
-          option => option.flags?.includes('--verbose') || option.flags?.includes('-v')
-        );
+          (option) => option.flags?.includes('--verbose') || option.flags?.includes('-v')
+        )
 
         if (!hasVerboseOption) {
-          cmd.option('-v, --verbose', 'show detailed output', false);
+          cmd.option('-v, --verbose', 'show detailed output', false)
         }
 
         // Set up action handler
         cmd.action(async (...args: any[]) => {
           // Commander passes the Command object as the last argument
-          const commandObj = args[args.length - 1];
+          const commandObj = args[args.length - 1]
           // Extract options from the Command object
-          const options = commandObj.opts();
+          const options = commandObj.opts()
           // All arguments before the Command object are positional arguments
           // For variadic arguments, Commander.js passes them as arrays in the args
-          let positionalArgs: string[] = [];
+          let positionalArgs: string[] = []
           for (let i = 0; i < args.length - 1; i++) {
-            const arg = args[i];
+            const arg = args[i]
             if (Array.isArray(arg)) {
               // Variadic arguments come as arrays
-              positionalArgs = positionalArgs.concat(arg.filter(a => typeof a === 'string'));
+              positionalArgs = positionalArgs.concat(arg.filter((a) => typeof a === 'string'))
             } else if (typeof arg === 'string') {
-              positionalArgs.push(arg);
+              positionalArgs.push(arg)
             }
           }
 
@@ -210,28 +210,28 @@ export function createCLI(config: CLIConfig): CLI {
             projectRoot: process.cwd(),
             logger: createDefaultLogger(options.verbose),
             verbose: options.verbose,
-            fs: createFileSystem(),
+            fs: fs as any, // Type bridge between CLI and FS package interfaces
             args: positionalArgs,
-          };
+          }
 
           try {
-            const result = await command.execute(options, context);
+            const result = await command.execute(options, context)
             if (result.isErr()) {
-              context.logger.error(result.error.message);
+              context.logger.error(result.error.message)
               if (result.error.suggestion) {
-                context.logger.info(`💡 ${result.error.suggestion}`);
+                context.logger.info(`💡 ${result.error.suggestion}`)
               }
-              process.exit(1);
+              process.exit(1)
             }
           } catch (error) {
-            context.logger.error(error instanceof Error ? error.message : 'Unknown error occurred');
-            process.exit(1);
+            context.logger.error(error instanceof Error ? error.message : 'Unknown error occurred')
+            process.exit(1)
           }
-        });
+        })
       }
 
       // Parse arguments
-      await program.parseAsync(argv);
+      await program.parseAsync(argv)
     },
-  };
+  }
 }

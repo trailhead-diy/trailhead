@@ -1,25 +1,25 @@
-'use client';
+'use client'
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import { LayoutGroup, motion } from 'framer-motion';
-import React, { forwardRef, useId } from 'react';
-import { CatalystTouchTarget } from './catalyst-button';
-import { CatalystLink } from './catalyst-link';
-import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index';
-import { cn } from '../utils/cn';
+import * as Headless from '@headlessui/react'
+import { LayoutGroup, motion } from 'framer-motion'
+import React, { forwardRef, useId } from 'react'
+import { CatalystTouchTarget } from './catalyst-button'
+import { CatalystLink } from './catalyst-link'
+import { SemanticColorToken, isSemanticToken, createSemanticStyles } from '../theme/index'
+import { cn } from '../utils/cn'
 
 export function CatalystNavbar({
   className,
   color,
   ...props
 }: React.ComponentPropsWithoutRef<'nav'> & { color?: SemanticColorToken }) {
-  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : '';
+  const resolvedColorClasses = color && isSemanticToken(color) ? createSemanticStyles(color) : ''
   return (
     <nav
       {...props}
       className={cn('flex flex-1 items-center gap-4 py-2.5', resolvedColorClasses, className)}
     />
-  );
+  )
 }
 
 export function CatalystNavbarDivider({
@@ -32,27 +32,27 @@ export function CatalystNavbarDivider({
       {...props}
       className={cn('h-6 w-px bg-border dark:bg-border', className)}
     />
-  );
+  )
 }
 
 export function CatalystNavbarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  let id = useId();
+  let id = useId()
 
   return (
     <LayoutGroup id={id}>
       <div {...props} className={cn('flex items-center gap-3', className)} />
     </LayoutGroup>
-  );
+  )
 }
 
 export function CatalystNavbarSpacer({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div aria-hidden="true" {...props} className={cn('-ml-4 flex-1', className)} />;
+  return <div aria-hidden="true" {...props} className={cn('-ml-4 flex-1', className)} />
 }
 
 export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
@@ -84,7 +84,7 @@ export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
     'dark:text-foreground dark:*:data-[slot=icon]:fill-muted-foreground',
     'dark:data-hover:bg-accent dark:data-hover:*:data-[slot=icon]:fill-foreground',
     'dark:data-active:bg-accent dark:data-active:*:data-[slot=icon]:fill-foreground'
-  );
+  )
 
   return (
     <span className={cn('relative', className)}>
@@ -114,12 +114,12 @@ export const CatalystNavbarItem = forwardRef(function CatalystNavbarItem(
         </Headless.Button>
       )}
     </span>
-  );
-});
+  )
+})
 
 export function CatalystNavbarLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'span'>) {
-  return <span {...props} className={cn('truncate', className)} />;
+  return <span {...props} className={cn('truncate', className)} />
 }

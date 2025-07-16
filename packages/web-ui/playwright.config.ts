@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Playwright Configuration
@@ -10,7 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 
 // Read environment variables
-const CI = !!process.env.CI;
+const CI = !!process.env.CI
 
 export default defineConfig({
   // Test directory for E2E tests
@@ -104,4 +104,4 @@ export default defineConfig({
 
   // Output folder for test artifacts
   outputDir: 'temp/test-results/',
-});
+})

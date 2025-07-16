@@ -46,8 +46,8 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
+import type { Result, CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js'
 
 /**
  * Transform metadata
@@ -56,7 +56,7 @@ export const clsxToCnTransform = createTransformMetadata(
   'clsx-to-cn',
   'Convert clsx imports to cn imports',
   'import'
-);
+)
 
 /**
  * Convert clsx library imports and usage to cn utility imports
@@ -73,9 +73,9 @@ export const clsxToCnTransform = createTransformMetadata(
  */
 export function transformClsxToCn(input: string): Result<TransformResult, CLIError> {
   return executeTransform(() => {
-    let content = input;
-    const warnings: string[] = [];
-    let changed = false;
+    let content = input
+    const warnings: string[] = []
+    let changed = false
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Replace clsx Import Statements
@@ -84,10 +84,10 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
     // To:    import { cn } from '../utils/cn';
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const clsxImportPattern = /import\s+clsx\s+from\s+['"]clsx['"]/g;
+    const clsxImportPattern = /import\s+clsx\s+from\s+['"]clsx['"]/g
     if (clsxImportPattern.test(content)) {
-      content = content.replace(clsxImportPattern, "import { cn } from '../utils/cn';");
-      changed = true;
+      content = content.replace(clsxImportPattern, "import { cn } from '../utils/cn';")
+      changed = true
     }
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -97,10 +97,10 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
     // To:    cn('flex items-center', className)
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const clsxUsagePattern = /\bclsx\(/g;
+    const clsxUsagePattern = /\bclsx\(/g
     if (clsxUsagePattern.test(content)) {
-      content = content.replace(clsxUsagePattern, 'cn(');
-      changed = true;
+      content = content.replace(clsxUsagePattern, 'cn(')
+      changed = true
     }
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -110,11 +110,11 @@ export function transformClsxToCn(input: string): Result<TransformResult, CLIErr
     //        such as dynamic imports, comments, or complex patterns
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const remainingClsxPattern = /\bclsx\b/g;
+    const remainingClsxPattern = /\bclsx\b/g
     if (remainingClsxPattern.test(content)) {
-      warnings.push('Found remaining clsx references that may need manual review');
+      warnings.push('Found remaining clsx references that may need manual review')
     }
 
-    return { content, changed, warnings };
-  });
+    return { content, changed, warnings }
+  })
 }

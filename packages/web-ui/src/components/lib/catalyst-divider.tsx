@@ -1,13 +1,13 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import { cn } from '../utils/cn';
+import { cn } from '../utils/cn'
 export function CatalystDivider({
   soft = false,
   className,
   ...props
 }: {
-  soft?: boolean;
+  soft?: boolean
 } & React.ComponentPropsWithoutRef<'hr'>) {
   return (
     <hr
@@ -20,5 +20,5 @@ export function CatalystDivider({
         className
       )}
     />
-  );
+  )
 }

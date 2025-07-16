@@ -5,23 +5,23 @@
  * Focused on Catalyst component operations and UI installation workflows
  */
 
-import * as path from 'node:path';
+import * as path from 'node:path'
 import {
   findFiles,
   readFile,
   writeFile as frameworkWriteFile,
   compareFiles as frameworkCompareFiles,
   type FileComparison,
-} from '@esteban-url/trailhead-cli/filesystem';
+} from '@esteban-url/cli/filesystem'
 import type {
   ConversionStats,
   FileProcessingResult,
   ConverterConfig,
   Result,
   AsyncResult,
-} from './types.js';
-import { createError, ok, err, type CLIError } from '@esteban-url/trailhead-cli/core';
-import { isNotTestRelated } from './file-filters.js';
+} from './types.js'
+import { createError, ok, err, type CLIError } from '@esteban-url/cli/core'
+import { isNotTestRelated } from './file-filters.js'
 
 // ============================================================================
 // CONVERSION STATS UTILITIES
@@ -36,7 +36,7 @@ export function createConversionStats(): ConversionStats {
     filesModified: 0,
     totalConversions: 0,
     conversionsByType: new Map(),
-  };
+  }
 }
 
 /**
@@ -52,15 +52,15 @@ export function updateStats(
     filesModified: stats.filesModified + (result.success && result.changes > 0 ? 1 : 0),
     totalConversions: stats.totalConversions + (result.success ? result.changes : 0),
     conversionsByType: new Map(stats.conversionsByType),
-  };
+  }
 
   // Update conversion type counts
   for (const conversion of conversionTypes) {
-    const current = newStats.conversionsByType.get(conversion.description) || 0;
-    newStats.conversionsByType.set(conversion.description, current + 1);
+    const current = newStats.conversionsByType.get(conversion.description) || 0
+    newStats.conversionsByType.set(conversion.description, current + 1)
   }
 
-  return newStats;
+  return newStats
 }
 
 // ============================================================================
@@ -71,7 +71,7 @@ export function updateStats(
  * Get relative path for display purposes
  */
 export function getRelativePath(projectRoot: string, absolutePath: string): string {
-  return path.relative(projectRoot, absolutePath);
+  return path.relative(projectRoot, absolutePath)
 }
 
 // ============================================================================
@@ -93,15 +93,15 @@ export async function findComponentFiles(
     '**/__tests__/**',
     '**/*.test.*',
     '**/*.spec.*',
-    ...skipFiles.map(f => `**/${f}`),
-  ]);
+    ...skipFiles.map((f) => `**/${f}`),
+  ])
 
   if (!result.isOk()) {
-    return [];
+    return []
   }
 
   // Additional filtering to ensure no test files are included
-  return result.value.filter(file => isNotTestRelated(file));
+  return result.value.filter((file) => isNotTestRelated(file))
 }
 
 /**
@@ -114,90 +114,90 @@ export async function copyFreshFilesBatch(
   force: boolean = false,
   addPrefix: boolean = false
 ): AsyncResult<{
-  copied: string[];
-  skipped: string[];
-  failed: string[];
+  copied: string[]
+  skipped: string[]
+  failed: string[]
   filesToConfirm: Array<{
-    fileName: string;
-    sourceFile: string;
-    destFile: string;
-    comparison: FileComparison;
-  }>;
+    fileName: string
+    sourceFile: string
+    destFile: string
+    comparison: FileComparison
+  }>
 }> {
   try {
-    const sourceFiles = await findComponentFiles(catalystSourceDir);
-    const copied: string[] = [];
-    const skipped: string[] = [];
-    const failed: string[] = [];
+    const sourceFiles = await findComponentFiles(catalystSourceDir)
+    const copied: string[] = []
+    const skipped: string[] = []
+    const failed: string[] = []
     const filesToConfirm: Array<{
-      fileName: string;
-      sourceFile: string;
-      destFile: string;
-      comparison: FileComparison;
-    }> = [];
+      fileName: string
+      sourceFile: string
+      destFile: string
+      comparison: FileComparison
+    }> = []
 
     for (const sourceFile of sourceFiles) {
-      const fileName = path.basename(sourceFile);
-      const destFileName = addPrefix ? `catalyst-${fileName}` : fileName;
-      const destFile = path.join(destDir, destFileName);
+      const fileName = path.basename(sourceFile)
+      const destFileName = addPrefix ? `catalyst-${fileName}` : fileName
+      const destFile = path.join(destDir, destFileName)
 
       // Check if destination exists and compare
-      const comparisonResult = await frameworkCompareFiles(sourceFile, destFile);
+      const comparisonResult = await frameworkCompareFiles(sourceFile, destFile)
 
       if (!comparisonResult.isOk()) {
-        failed.push(destFileName);
-        continue;
+        failed.push(destFileName)
+        continue
       }
 
-      const comparison = comparisonResult.value;
+      const comparison = comparisonResult.value
 
       if (!comparison.destExists) {
         // File doesn't exist at destination, copy it
-        const sourceResult = await readFile(sourceFile);
+        const sourceResult = await readFile(sourceFile)
         if (sourceResult.isOk()) {
-          const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+          const writeResult = await frameworkWriteFile(destFile, sourceResult.value)
           if (writeResult.isOk()) {
-            copied.push(destFileName);
+            copied.push(destFileName)
           } else {
-            failed.push(destFileName);
+            failed.push(destFileName)
           }
         } else {
-          failed.push(destFileName);
+          failed.push(destFileName)
         }
-        continue;
+        continue
       }
 
       if (comparison.identical) {
-        skipped.push(destFileName);
-        continue;
+        skipped.push(destFileName)
+        continue
       }
 
       // Destination exists and is different
       if (force) {
-        const sourceResult = await readFile(sourceFile);
+        const sourceResult = await readFile(sourceFile)
         if (sourceResult.isOk()) {
-          const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+          const writeResult = await frameworkWriteFile(destFile, sourceResult.value)
           if (writeResult.isOk()) {
-            copied.push(destFileName);
+            copied.push(destFileName)
           } else {
-            failed.push(destFileName);
+            failed.push(destFileName)
           }
         } else {
-          failed.push(destFileName);
+          failed.push(destFileName)
         }
       } else {
         // Collect for confirmation
-        filesToConfirm.push({ fileName: destFileName, sourceFile, destFile, comparison });
+        filesToConfirm.push({ fileName: destFileName, sourceFile, destFile, comparison })
       }
     }
 
-    return ok({ copied, skipped, failed, filesToConfirm });
+    return ok({ copied, skipped, failed, filesToConfirm })
   } catch (error) {
     return err(
       createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
       })
-    );
+    )
   }
 }
 
@@ -212,43 +212,43 @@ export async function copyFreshFiles(
   addPrefix: boolean = false
 ): AsyncResult<{ copied: string[]; skipped: string[] }> {
   try {
-    const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix);
+    const batchResult = await copyFreshFilesBatch(catalystSourceDir, destDir, force, addPrefix)
 
     if (!batchResult.isOk()) {
-      return batchResult;
+      return batchResult
     }
 
-    const { copied, skipped, filesToConfirm } = batchResult.value;
-    const finalCopied = [...copied];
-    const finalSkipped = [...skipped];
+    const { copied, skipped, filesToConfirm } = batchResult.value
+    const finalCopied = [...copied]
+    const finalSkipped = [...skipped]
 
     // Handle confirmation for conflicting files
     for (const { fileName, sourceFile, destFile, comparison } of filesToConfirm) {
       if (onConfirmOverwrite) {
-        const shouldOverwrite = await onConfirmOverwrite(destFile, comparison);
+        const shouldOverwrite = await onConfirmOverwrite(destFile, comparison)
         if (shouldOverwrite) {
-          const sourceResult = await readFile(sourceFile);
+          const sourceResult = await readFile(sourceFile)
           if (sourceResult.isOk()) {
-            const writeResult = await frameworkWriteFile(destFile, sourceResult.value);
+            const writeResult = await frameworkWriteFile(destFile, sourceResult.value)
             if (writeResult.isOk()) {
-              finalCopied.push(fileName);
+              finalCopied.push(fileName)
             }
           }
         } else {
-          finalSkipped.push(fileName);
+          finalSkipped.push(fileName)
         }
       } else {
-        finalSkipped.push(fileName);
+        finalSkipped.push(fileName)
       }
     }
 
-    return ok({ copied: finalCopied, skipped: finalSkipped });
+    return ok({ copied: finalCopied, skipped: finalSkipped })
   } catch (error) {
     return err(
       createError('FILE_OPERATION_ERROR', 'Failed to copy fresh files', {
         cause: error instanceof Error ? error : undefined,
       })
-    );
+    )
   }
 }
 
@@ -257,12 +257,12 @@ export async function copyFreshFiles(
  */
 export function validateConfig(config: ConverterConfig): Result<ConverterConfig, CLIError> {
   if (!config.name || config.name.trim().length === 0) {
-    return err(createError('VALIDATION_ERROR', 'Converter name is required'));
+    return err(createError('VALIDATION_ERROR', 'Converter name is required'))
   }
 
   if (!config.description || config.description.trim().length === 0) {
-    return err(createError('VALIDATION_ERROR', 'Converter description is required'));
+    return err(createError('VALIDATION_ERROR', 'Converter description is required'))
   }
 
-  return ok(config);
+  return ok(config)
 }

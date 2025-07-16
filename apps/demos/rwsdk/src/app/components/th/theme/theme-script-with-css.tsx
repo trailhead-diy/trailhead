@@ -26,7 +26,7 @@ const themes: Record<string, { light: Record<string, string>; dark: Record<strin
     },
   },
   // Add other themes as needed
-};
+}
 
 export function ThemeScriptWithCSS() {
   const scriptContent = `
@@ -87,7 +87,7 @@ export function ThemeScriptWithCSS() {
         // Silent fail
       }
     })();
-  `.trim();
+  `.trim()
 
-  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />;
+  return <script dangerouslySetInnerHTML={{ __html: scriptContent }} />
 }

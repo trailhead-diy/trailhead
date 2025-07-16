@@ -1,5 +1,5 @@
-import { test, expect, testUtils } from '../fixtures/test-base';
-import { DemoPage } from '../pages/demo-page';
+import { test, expect, testUtils } from '../fixtures/test-base'
+import { DemoPage } from '../pages/demo-page'
 
 /**
  * Theme Switcher Integration Tests
@@ -12,128 +12,128 @@ import { DemoPage } from '../pages/demo-page';
  */
 
 test.describe('Theme Switcher', () => {
-  let demoPage: DemoPage;
+  let demoPage: DemoPage
 
   test.beforeEach(async ({ page }) => {
-    demoPage = new DemoPage(page);
-    await demoPage.goto('/');
-  });
+    demoPage = new DemoPage(page)
+    await demoPage.goto('/')
+  })
 
   test('should switch themes via UI interaction', async ({ page: _page }) => {
     // Arrange: Get initial theme
-    const initialTheme = await demoPage.getCurrentTheme();
-    expect(initialTheme).toBeTruthy();
+    const initialTheme = await demoPage.getCurrentTheme()
+    expect(initialTheme).toBeTruthy()
 
     // Act: Switch to a different theme
-    const targetTheme = initialTheme === 'blue' ? 'green' : 'blue';
+    const targetTheme = initialTheme === 'blue' ? 'green' : 'blue'
 
-    await demoPage.switchTheme(targetTheme);
+    await demoPage.switchTheme(targetTheme)
 
     // Assert: Theme is changed
-    const newTheme = await demoPage.getCurrentTheme();
-    expect(newTheme).toBe(targetTheme);
+    const newTheme = await demoPage.getCurrentTheme()
+    expect(newTheme).toBe(targetTheme)
 
     // Verify theme is applied to components
-    await demoPage.verifyThemeApplied(targetTheme);
-  });
+    await demoPage.verifyThemeApplied(targetTheme)
+  })
 
   test('should persist theme selection across page reloads', async ({ page }) => {
     // Arrange: Set a specific theme
-    await demoPage.switchTheme('green');
+    await demoPage.switchTheme('green')
 
     // Act: Reload the page
-    await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.reload()
+    await page.waitForLoadState('networkidle')
 
     // Assert: Theme persists
-    const themeAfterReload = await demoPage.getCurrentTheme();
-    expect(themeAfterReload).toBe('green');
+    const themeAfterReload = await demoPage.getCurrentTheme()
+    expect(themeAfterReload).toBe('green')
 
     // Verify stored in localStorage
-    const storedTheme = await demoPage.getStoredTheme();
-    expect(storedTheme).toBe('green');
-  });
+    const storedTheme = await demoPage.getStoredTheme()
+    expect(storedTheme).toBe('green')
+  })
 
   test('should support keyboard navigation', async ({ page: _page }) => {
     // This test verifies accessibility requirements
-    await demoPage.testKeyboardNavigation();
-  });
+    await demoPage.testKeyboardNavigation()
+  })
 
   test('should apply semantic color tokens to components', async ({ page }) => {
     // Switch to a vibrant theme to test color application
-    await demoPage.switchTheme('rose');
+    await demoPage.switchTheme('rose')
 
     // Check that buttons use semantic tokens
-    const buttonClasses = await page.locator('button').first().getAttribute('class');
-    expect(testUtils.hasSemanticColorClass(buttonClasses || '')).toBe(true);
+    const buttonClasses = await page.locator('button').first().getAttribute('class')
+    expect(testUtils.hasSemanticColorClass(buttonClasses || '')).toBe(true)
 
     // Check that cards/panels use semantic tokens
-    const cardElement = await page.locator('[class*="rounded"], [class*="shadow"]').first();
+    const cardElement = await page.locator('[class*="rounded"], [class*="shadow"]').first()
     if ((await cardElement.count()) > 0) {
-      const cardClasses = await cardElement.getAttribute('class');
-      expect(testUtils.hasSemanticColorClass(cardClasses || '')).toBe(true);
+      const cardClasses = await cardElement.getAttribute('class')
+      expect(testUtils.hasSemanticColorClass(cardClasses || '')).toBe(true)
     }
-  });
+  })
 
   test('should maintain accessible color contrast', async ({ page: _page }) => {
     // Test multiple themes for accessibility
 
-    const themesToTest = ['red', 'blue', 'green'];
+    const themesToTest = ['red', 'blue', 'green']
 
     for (const theme of themesToTest) {
-      await demoPage.switchTheme(theme);
-      await demoPage.checkThemeAccessibility();
+      await demoPage.switchTheme(theme)
+      await demoPage.checkThemeAccessibility()
     }
-  });
+  })
 
   test('should handle rapid theme switching', async ({ page }) => {
     // Stress test: Switch themes rapidly
 
-    const themes = ['red', 'blue', 'green', 'orange', 'violet'];
+    const themes = ['red', 'blue', 'green', 'orange', 'violet']
 
     for (let i = 0; i < 3; i++) {
       for (const theme of themes) {
-        await demoPage.switchTheme(theme);
+        await demoPage.switchTheme(theme)
 
         // Verify theme applied correctly
-        const currentTheme = await demoPage.getCurrentTheme();
-        expect(currentTheme).toBe(theme);
+        const currentTheme = await demoPage.getCurrentTheme()
+        expect(currentTheme).toBe(theme)
       }
     }
 
     // Final verification - page should still be functional
-    await expect(page).toHaveTitle(/Catalyst|Demo|Trailhead/i);
-  });
+    await expect(page).toHaveTitle(/Catalyst|Demo|Trailhead/i)
+  })
 
   test('should work on mobile viewports', async ({ page: _page, isMobile }) => {
     // Skip if not mobile test
     if (!isMobile) {
-      test.skip();
-      return;
+      test.skip()
+      return
     }
 
     // Mobile-specific theme switching test
-    await demoPage.switchTheme('violet');
+    await demoPage.switchTheme('violet')
 
-    const theme = await demoPage.getCurrentTheme();
-    expect(theme).toBe('violet');
-  });
-});
+    const theme = await demoPage.getCurrentTheme()
+    expect(theme).toBe('violet')
+  })
+})
 
 test.describe('Theme System Integration', () => {
-  let demoPage: DemoPage;
+  let demoPage: DemoPage
 
   test.beforeEach(async ({ page }) => {
-    demoPage = new DemoPage(page);
-  });
+    demoPage = new DemoPage(page)
+  })
 
   test('should load theme CSS variables', async ({ page }) => {
-    await demoPage.goto('/');
+    await demoPage.goto('/')
 
     // Verify CSS custom properties are defined
     const hasThemeVariables = await page.evaluate(() => {
-      const root = document.documentElement;
-      const styles = getComputedStyle(root);
+      const root = document.documentElement
+      const styles = getComputedStyle(root)
 
       const requiredVars = [
         '--background',
@@ -151,30 +151,30 @@ test.describe('Theme System Integration', () => {
         '--border',
         '--input',
         '--ring',
-      ];
+      ]
 
-      return requiredVars.every(varName => {
-        const value = styles.getPropertyValue(varName);
-        return value && value.trim() !== '';
-      });
-    });
+      return requiredVars.every((varName) => {
+        const value = styles.getPropertyValue(varName)
+        return value && value.trim() !== ''
+      })
+    })
 
-    expect(hasThemeVariables).toBe(true);
-  });
+    expect(hasThemeVariables).toBe(true)
+  })
 
   test('should handle missing theme gracefully', async ({ page }) => {
-    await demoPage.goto('/');
+    await demoPage.goto('/')
 
     // Try to set an invalid theme via JavaScript
     await page.evaluate(() => {
-      document.documentElement.setAttribute('data-theme', 'non-existent-theme');
-    });
+      document.documentElement.setAttribute('data-theme', 'non-existent-theme')
+    })
 
     // Page should still be functional
-    await expect(page).not.toHaveTitle(/error/i);
+    await expect(page).not.toHaveTitle(/error/i)
 
     // Should fall back to a valid theme
-    const theme = await demoPage.getCurrentTheme();
-    expect(theme).toBeTruthy();
-  });
-});
+    const theme = await demoPage.getCurrentTheme()
+    expect(theme).toBeTruthy()
+  })
+})

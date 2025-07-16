@@ -1,16 +1,16 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
-import React, { forwardRef } from 'react';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
+import React, { forwardRef } from 'react'
 export const CatalystSelect = forwardRef(function CatalystSelect(
   {
     className,
     multiple,
     ...props
   }: {
-    className?: string;
+    className?: string
   } & Omit<Headless.SelectProps, 'as' | 'className'>,
   ref: React.ForwardedRef<HTMLSelectElement>
 ) {
@@ -82,5 +82,5 @@ export const CatalystSelect = forwardRef(function CatalystSelect(
         </span>
       )}
     </span>
-  );
-});
+  )
+})

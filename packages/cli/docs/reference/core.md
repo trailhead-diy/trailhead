@@ -25,8 +25,8 @@ Fundamental types and utilities for error handling, validation, and logging.
 ### Basic Usage
 
 ```typescript
-import { Ok, Err, isOk, isErr } from '@esteban-url/trailhead-cli';
-import type { Result } from '@esteban-url/trailhead-cli';
+import { Ok, Err, isOk, isErr } from '@esteban-url/trailhead-cli'
+import type { Result } from '@esteban-url/trailhead-cli'
 ```
 
 ### Type Definition
@@ -34,7 +34,7 @@ import type { Result } from '@esteban-url/trailhead-cli';
 ```typescript
 type Result<T, E = Error> =
   | { readonly success: true; readonly value: T }
-  | { readonly success: false; readonly error: E };
+  | { readonly success: false; readonly error: E }
 ```
 
 ### Creating Results
@@ -44,10 +44,10 @@ type Result<T, E = Error> =
 Creates a successful result.
 
 ```typescript
-const result = Ok(42);
+const result = Ok(42)
 // { success: true, value: 42 }
 
-const voidResult = Ok(undefined);
+const voidResult = Ok(undefined)
 // { success: true, value: undefined }
 ```
 
@@ -56,7 +56,7 @@ const voidResult = Ok(undefined);
 Creates an error result.
 
 ```typescript
-const result = Err(new Error('Something went wrong'));
+const result = Err(new Error('Something went wrong'))
 // { success: false, error: Error }
 ```
 
@@ -66,7 +66,7 @@ const result = Err(new Error('Something went wrong'));
 
 ```typescript
 if (isOk(result)) {
-  console.log(result.value); // TypeScript knows result.value exists
+  console.log(result.value) // TypeScript knows result.value exists
 }
 ```
 
@@ -74,7 +74,7 @@ if (isOk(result)) {
 
 ```typescript
 if (isErr(result)) {
-  console.log(result.error.message); // TypeScript knows result.error exists
+  console.log(result.error.message) // TypeScript knows result.error exists
 }
 ```
 
@@ -85,8 +85,8 @@ if (isErr(result)) {
 Extracts the value or throws the error.
 
 ```typescript
-const value = unwrap(Ok(42)); // 42
-const error = unwrap(Err(new Error('Oops'))); // Throws Error
+const value = unwrap(Ok(42)) // 42
+const error = unwrap(Err(new Error('Oops'))) // Throws Error
 ```
 
 #### `map<T, U>(result: Result<T>, fn: (value: T) => U): Result<U>`
@@ -94,8 +94,8 @@ const error = unwrap(Err(new Error('Oops'))); // Throws Error
 Transforms a successful value.
 
 ```typescript
-const doubled = map(Ok(21), x => x * 2); // Ok(42)
-const error = map(Err('error'), x => x * 2); // Err("error")
+const doubled = map(Ok(21), (x) => x * 2) // Ok(42)
+const error = map(Err('error'), (x) => x * 2) // Err("error")
 ```
 
 #### `chain<T, U, E>(result: Result<T, E>, fn: (value: T) => Result<U, E>): Result<U, E>`
@@ -103,7 +103,7 @@ const error = map(Err('error'), x => x * 2); // Err("error")
 Chains operations that return Results.
 
 ```typescript
-const result = chain(Ok(10), x => (x > 0 ? Ok(x * 2) : Err('negative'))); // Ok(20)
+const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err('negative'))) // Ok(20)
 ```
 
 ## Error Handling
@@ -111,14 +111,14 @@ const result = chain(Ok(10), x => (x > 0 ? Ok(x * 2) : Err('negative'))); // Ok(
 ### Error Creation
 
 ```typescript
-import { createError } from '@esteban-url/trailhead-cli/core';
+import { createError } from '@esteban-url/trailhead-cli/core'
 
 const error = createError({
   code: 'FILE_NOT_FOUND',
   message: 'Config file not found',
   suggestion: "Run 'init' to create a default config",
   details: { path: './config.json' },
-});
+})
 ```
 
 ### Error Types
@@ -127,34 +127,34 @@ const error = createError({
 
 ```typescript
 interface CLIError extends Error {
-  code: string;
-  details?: unknown;
-  suggestion?: string;
-  recoverable?: boolean;
+  code: string
+  details?: unknown
+  suggestion?: string
+  recoverable?: boolean
 }
 ```
 
 #### Specialized Errors
 
 ```typescript
-import { fileSystemError, validationError, displayError } from '@esteban-url/trailhead-cli/core';
+import { fileSystemError, validationError, displayError } from '@esteban-url/trailhead-cli/core'
 
 // File system error
 const fsError = fileSystemError({
   path: '/etc/config',
   operation: 'read',
   code: 'EACCES',
-});
+})
 
 // Validation error
 const valError = validationError({
   field: 'email',
   value: 'invalid',
   message: 'Must be a valid email',
-});
+})
 
 // Display formatted error
-displayError(error, console.error);
+displayError(error, console.error)
 ```
 
 ## Validation
@@ -162,21 +162,21 @@ displayError(error, console.error);
 ### Validation Pipeline
 
 ```typescript
-import { createValidationPipeline } from '@esteban-url/trailhead-cli/core';
-import type { ValidationRule } from '@esteban-url/trailhead-cli/core';
+import { createValidationPipeline } from '@esteban-url/trailhead-cli/core'
+import type { ValidationRule } from '@esteban-url/trailhead-cli/core'
 
 const pipeline = createValidationPipeline([
   {
     name: 'required',
-    validate: value => value != null || 'Value is required',
+    validate: (value) => value != null || 'Value is required',
   },
   {
     name: 'email',
-    validate: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email',
+    validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email',
   },
-]);
+])
 
-const result = await pipeline.validate('user@example.com');
+const result = await pipeline.validate('user@example.com')
 ```
 
 ### Built-in Validators
@@ -194,18 +194,18 @@ import {
   pattern,
   email,
   url,
-} from '@esteban-url/trailhead-cli/core';
+} from '@esteban-url/trailhead-cli/core'
 
 // String validation
-const nameValidator = string().pipe(minLength(2)).pipe(maxLength(50));
+const nameValidator = string().pipe(minLength(2)).pipe(maxLength(50))
 
 // Number validation
-const ageValidator = number().pipe(min(0)).pipe(max(150));
+const ageValidator = number().pipe(min(0)).pipe(max(150))
 
 // Pattern validation
 const usernameValidator = string().pipe(
   pattern(/^[a-zA-Z0-9_]+$/, 'Only alphanumeric and underscore')
-);
+)
 ```
 
 ## Logging
@@ -214,11 +214,11 @@ const usernameValidator = string().pipe(
 
 ```typescript
 interface Logger {
-  info(message: string): void;
-  success(message: string): void;
-  warning(message: string): void;
-  error(message: string): void;
-  debug(message: string): void;
+  info(message: string): void
+  success(message: string): void
+  warning(message: string): void
+  error(message: string): void
+  debug(message: string): void
 }
 ```
 
@@ -229,27 +229,27 @@ import {
   createDefaultLogger,
   createSilentLogger,
   createPrefixedLogger,
-} from '@esteban-url/trailhead-cli/core';
+} from '@esteban-url/trailhead-cli/core'
 
 // Standard console logger with colors
-const logger = createDefaultLogger();
+const logger = createDefaultLogger()
 
 // Silent logger for testing
-const silent = createSilentLogger();
+const silent = createSilentLogger()
 
 // Logger with prefix
-const prefixed = createPrefixedLogger('[Server]', logger);
-prefixed.info('Started'); // [Server] Started
+const prefixed = createPrefixedLogger('[Server]', logger)
+prefixed.info('Started') // [Server] Started
 ```
 
 ### Logger Usage
 
 ```typescript
-logger.info('Processing files...');
-logger.success('✓ Completed successfully');
-logger.warning('⚠ Deprecation warning');
-logger.error('✗ Operation failed');
-logger.debug('Debug info (only if verbose)');
+logger.info('Processing files...')
+logger.success('✓ Completed successfully')
+logger.warning('⚠ Deprecation warning')
+logger.error('✗ Operation failed')
+logger.debug('Debug info (only if verbose)')
 ```
 
 ## Type Reference
@@ -258,40 +258,40 @@ logger.debug('Debug info (only if verbose)');
 
 ```typescript
 // Main result type
-type Result<T, E = Error> = Ok<T> | Err<E>;
+type Result<T, E = Error> = Ok<T> | Err<E>
 
 // Success variant
 type Ok<T> = {
-  readonly success: true;
-  readonly value: T;
-};
+  readonly success: true
+  readonly value: T
+}
 
 // Error variant
 type Err<E> = {
-  readonly success: false;
-  readonly error: E;
-};
+  readonly success: false
+  readonly error: E
+}
 ```
 
 ### Error Types
 
 ```typescript
 interface CLIError extends Error {
-  code: string;
-  details?: unknown;
-  suggestion?: string;
-  recoverable?: boolean;
+  code: string
+  details?: unknown
+  suggestion?: string
+  recoverable?: boolean
 }
 
 interface FileSystemError extends CLIError {
-  path: string;
-  operation: string;
+  path: string
+  operation: string
 }
 
 interface ValidationError extends CLIError {
-  field?: string;
-  value?: unknown;
-  constraints?: Record<string, any>;
+  field?: string
+  value?: unknown
+  constraints?: Record<string, any>
 }
 ```
 
@@ -299,13 +299,13 @@ interface ValidationError extends CLIError {
 
 ```typescript
 interface ValidationRule<T> {
-  name: string;
-  validate: (value: T) => boolean | string;
+  name: string
+  validate: (value: T) => boolean | string
 }
 
 interface ValidationPipeline<T> {
-  validate(value: T): Promise<Result<T>>;
-  addRule(rule: ValidationRule<T>): ValidationPipeline<T>;
+  validate(value: T): Promise<Result<T>>
+  addRule(rule: ValidationRule<T>): ValidationPipeline<T>
 }
 ```
 

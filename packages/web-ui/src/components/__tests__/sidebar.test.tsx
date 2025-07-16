@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   Sidebar,
   SidebarHeader,
@@ -12,7 +12,7 @@ import {
   SidebarHeading,
   SidebarItem,
   SidebarLabel,
-} from '../sidebar';
+} from '../sidebar'
 
 describe('Sidebar Components', () => {
   it('creates a complete navigation sidebar with proper composition', () => {
@@ -42,22 +42,22 @@ describe('Sidebar Components', () => {
         </SidebarBody>
         <SidebarFooter>Footer content</SidebarFooter>
       </Sidebar>
-    );
+    )
 
     // Verify structure
-    expect(screen.getByText('Navigation')).toBeInTheDocument();
-    const headings = screen.getAllByRole('heading');
-    expect(headings[1]).toHaveTextContent('Main Navigation');
-    expect(headings[2]).toHaveTextContent('User');
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Projects')).toBeInTheDocument();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.getByText('Footer content')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Navigation')).toBeInTheDocument()
+    const headings = screen.getAllByRole('heading')
+    expect(headings[1]).toHaveTextContent('Main Navigation')
+    expect(headings[2]).toHaveTextContent('User')
+    expect(screen.getByText('Dashboard')).toBeInTheDocument()
+    expect(screen.getByText('Projects')).toBeInTheDocument()
+    expect(screen.getByText('Settings')).toBeInTheDocument()
+    expect(screen.getByText('Footer content')).toBeInTheDocument()
+  })
 
   it('handles navigation interactions and active states', async () => {
-    const user = userEvent.setup();
-    const handleClick = vi.fn();
+    const user = userEvent.setup()
+    const handleClick = vi.fn()
 
     render(
       <Sidebar>
@@ -74,21 +74,21 @@ describe('Sidebar Components', () => {
           </SidebarItem>
         </SidebarBody>
       </Sidebar>
-    );
+    )
 
     // Test link interaction
-    const dashboardLink = screen.getByRole('link', { name: 'Dashboard' });
-    await user.click(dashboardLink);
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    const dashboardLink = screen.getByRole('link', { name: 'Dashboard' })
+    await user.click(dashboardLink)
+    expect(handleClick).toHaveBeenCalledTimes(1)
 
     // Verify active state exists in the UI
-    const dashboardItem = screen.getByText('Dashboard');
-    expect(dashboardItem).toBeInTheDocument();
-  });
+    const dashboardItem = screen.getByText('Dashboard')
+    expect(dashboardItem).toBeInTheDocument()
+  })
 
   it('maintains accessibility and supports user workflows', async () => {
-    const user = userEvent.setup();
-    const toggleSection = vi.fn();
+    const user = userEvent.setup()
+    const toggleSection = vi.fn()
     const { container } = render(
       <Sidebar>
         <SidebarBody>
@@ -107,19 +107,19 @@ describe('Sidebar Components', () => {
         </SidebarBody>
         <SidebarDivider />
       </Sidebar>
-    );
+    )
 
     // Verify navigation landmark
-    const nav = screen.getByRole('navigation', { name: 'Main navigation' });
-    expect(nav).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: 'Main navigation' })
+    expect(nav).toBeInTheDocument()
 
     // Verify divider semantics
-    const divider = container.querySelector('hr');
-    expect(divider).toBeInTheDocument();
+    const divider = container.querySelector('hr')
+    expect(divider).toBeInTheDocument()
 
     // Test collapsible workflow
-    const toggle = screen.getByRole('button', { name: 'Collapsible Section' });
-    await user.click(toggle);
-    expect(toggleSection).toHaveBeenCalledTimes(1);
-  });
-});
+    const toggle = screen.getByRole('button', { name: 'Collapsible Section' })
+    await user.click(toggle)
+    expect(toggleSection).toHaveBeenCalledTimes(1)
+  })
+})

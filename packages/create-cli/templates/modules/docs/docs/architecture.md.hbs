@@ -1,0 +1,458 @@
+# Architecture Guide
+
+This document explains the architecture and design principles behind {{projectName}}.
+
+## Overview
+
+{{projectName}} is built using functional programming principles with the [@esteban-url/trailhead-cli](https://github.com/esteban-url/trailhead) framework, which provides:
+
+- **Result-based error handling** - No exceptions, explicit error propagation
+- **Functional programming** - Pure functions, immutability, composition
+- **Modular architecture** - Tree-shakeable subpath exports
+- **Type safety** - Strict TypeScript with comprehensive types
+
+## Core Principles
+
+### 1. Functional Programming
+
+All code follows functional programming patterns:
+
+```typescript
+// Pure functions with explicit return types
+function processData(input: string): Result<ProcessedData, ValidationError> {
+  // Pure transformation without side effects
+  return validateInput(input)
+    .andThen(parseData)
+    .andThen(enrichData);
+}
+
+// Immutable data structures
+const config = Object.freeze({
+  name: '{{packageName}}',
+  version: '{{version}}',
+  settings: Object.freeze({ debug: false })
+});
+```
+
+### 2. Explicit Error Handling
+
+No exceptions are thrown. All errors are handled explicitly using Result types:
+
+```typescript
+import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core';
+
+function risky Operation(): Result<Success, Error> {
+  try {
+    const result = performOperation();
+    return ok(result);
+  } catch (error) {
+    return err(createCoreError('OPERATION_FAILED', 'Operation failed', {
+      component: '{{packageName}}',
+      operation: 'riskyOperation',
+      cause: error
+    }));
+  }
+}
+
+// Usage
+const result = riskyOperation();
+if (result.isOk()) {
+  console.log('Success:', result.value);
+} else {
+  console.error('Error:', result.error.message);
+}
+```
+
+### 3. Command Architecture
+
+Commands are pure functions that return Results:
+
+```typescript
+import { createCommand } from '@esteban-url/trailhead-cli/command';
+
+export const myCommand = createCommand({
+  name: 'example',
+  description: 'Example command',
+  flags: {
+    input: { type: 'string', required: true },
+    verbose: { type: 'boolean', default: false }
+  },
+  async handler(args) {
+    // Pure function with explicit error handling
+    return processInput(args.flags.input)
+      .andThen(result => logOutput(result, args.flags.verbose))
+      .map(() => undefined); // Commands return Result<void, Error>
+  }
+});
+```
+
+## Project Structure
+
+```
+{{projectName}}/
+├── src/
+│   ├── commands/           # Command implementations
+│   │   ├── build.ts       # Build command
+│   │   ├── dev.ts         # Development command
+│   │   ├── help.ts        # Help command
+│   │   └── version.ts     # Version command
+│   ├── lib/               # Shared utilities
+│   │   {{#if features.config}}
+│   │   ├── config-schema.ts  # Configuration validation
+│   │   {{/if}}
+│   │   {{#if features.validation}}
+│   │   └── validators.ts     # Input validation utilities
+│   │   {{/if}}
+│   └── index.ts           # Main CLI entry point
+{{#if features.testing}}
+├── src/__tests__/         # Test files
+│   ├── commands/          # Command tests
+│   └── integration/       # Integration tests
+{{/if}}
+├── bin/
+│   └── cli.js            # Executable script
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+### Module Organization
+
+Each module has a single responsibility:
+
+- **Commands** (`src/commands/`) - Individual command implementations
+- **Library** (`src/lib/`) - Shared utilities and business logic
+- **Tests** (`src/__tests__/`) - High-ROI tests for user interactions
+- **Configuration** - Schema validation and type definitions
+
+## Data Flow
+
+### 1. Command Execution Flow
+
+```mermaid
+graph TD
+    A[CLI Entry Point] --> B[Parse Arguments]
+    B --> C[Create CLI Instance]
+    C --> D[Route to Command]
+    D --> E[Validate Flags]
+    E --> F[Execute Handler]
+    F --> G{Result?}
+    G -->|Ok| H[Success Output]
+    G -->|Err| I[Error Output]
+    H --> J[Exit 0]
+    I --> K[Exit 1]
+```
+
+### 2. Error Propagation
+
+```mermaid
+graph TD
+    A[Operation] --> B{Try}
+    B -->|Success| C[ok(result)]
+    B -->|Failure| D[err(coreError)]
+    C --> E[Chain Next Operation]
+    D --> F[Propagate Error]
+    E --> G{Next Result?}
+    G -->|Ok| H[Continue Chain]
+    G -->|Err| F
+    F --> I[Handle at Top Level]
+```
+
+## Key Components
+
+### 1. CLI Creation
+
+```typescript
+// src/index.ts
+import { createCLI } from '@esteban-url/trailhead-cli/command';
+
+const cli = createCLI({
+  name: '{{packageName}}',
+  version: '{{version}}',
+  description: '{{description}}',
+  commands: [
+    versionCommand,
+    helpCommand,
+    {{#if features.examples}}
+    buildCommand,
+    devCommand,
+    {{/if}}
+    {{#if features.config}}
+    configCommand,
+    {{/if}}
+  ]
+});
+```
+
+### 2. Command Definition
+
+```typescript
+export const buildCommand = createCommand({
+  name: 'build',
+  description: 'Build the project',
+  flags: {
+    clean: { type: 'boolean', description: 'Clean before build' },
+    watch: { type: 'boolean', description: 'Watch for changes' }
+  },
+  async handler(args) {
+    // Implementation
+  }
+});
+```
+
+{{#if features.config}}
+### 3. Configuration Management
+
+```typescript
+// src/lib/config-schema.ts
+import { z } from 'zod';
+
+export const configSchema = z.object({
+  name: z.string().min(1),
+  version: z.string().regex(/^\d+\.\d+\.\d+/),
+  environment: z.enum(['development', 'production', 'test']),
+  settings: z.object({
+    debug: z.boolean(),
+    verbose: z.boolean()
+  })
+});
+
+export type Config = z.infer<typeof configSchema>;
+```
+{{/if}}
+
+{{#if features.validation}}
+### 4. Validation System
+
+```typescript
+// src/lib/validators.ts
+export function validateInput<T>(
+  value: unknown, 
+  schema: z.ZodSchema<T>
+): Result<T, ValidationError> {
+  const result = schema.safeParse(value);
+  
+  if (!result.success) {
+    return err(createCoreError('VALIDATION_FAILED', 'Input validation failed', {
+      details: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+    }));
+  }
+  
+  return ok(result.data);
+}
+```
+{{/if}}
+
+## Design Patterns
+
+### 1. Result Pattern
+
+Instead of throwing exceptions, all operations return Result types:
+
+```typescript
+type Result<T, E> = Ok<T> | Err<E>;
+
+// Success case
+const success = ok("Operation completed");
+
+// Error case  
+const failure = err(new Error("Something went wrong"));
+
+// Usage
+const result = riskyOperation();
+if (result.isOk()) {
+  // Handle success
+  console.log(result.value);
+} else {
+  // Handle error
+  console.error(result.error.message);
+}
+```
+
+### 2. Command Pattern
+
+Commands are objects with a standardized interface:
+
+```typescript
+interface Command {
+  name: string;
+  description: string;
+  flags: FlagDefinitions;
+  handler: (args: CommandArgs) => Promise<Result<void, Error>>;
+}
+```
+
+### 3. Composition Pattern
+
+Complex operations are built by composing simple functions:
+
+```typescript
+const buildProject = (config: Config) =>
+  validateConfig(config)
+    .andThen(ensureBuildDirectory)
+    .andThen(compileTypeScript)
+    .andThen(bundleAssets)
+    .map(() => undefined);
+```
+
+## Testing Strategy
+
+### High-ROI Testing Approach
+
+Focus on testing user interactions and business logic:
+
+**High-ROI Tests:**
+- Command execution and results
+- Error handling and recovery
+- Business logic transformations
+- Integration workflows
+
+**Low-ROI Tests (Avoided):**
+- Basic rendering or output formatting
+- Framework behavior testing
+- Implementation details
+
+### Test Structure
+
+```typescript
+// src/__tests__/commands/build.test.ts
+describe('build command', () => {
+  it('should build successfully with valid config', async () => {
+    const result = await buildCommand.handler({
+      args: [],
+      flags: { clean: true },
+      context: {}
+    });
+    
+    expect(result.isOk()).toBe(true);
+  });
+  
+  it('should handle build failures gracefully', async () => {
+    // Test error scenarios
+  });
+});
+```
+
+## Performance Considerations
+
+### 1. Lazy Loading
+
+Commands are loaded only when needed:
+
+```typescript
+// Dynamic imports for large commands
+const advancedCommand = await import('./commands/advanced.js');
+```
+
+### 2. Efficient Error Handling
+
+Result types avoid expensive exception stack traces:
+
+```typescript
+// Fast path for success cases
+if (result.isOk()) {
+  return processSuccess(result.value);
+}
+
+// Explicit error handling without stack unwinding
+return handleError(result.error);
+```
+
+### 3. Immutable Data
+
+Using immutable data structures prevents accidental mutations:
+
+```typescript
+const updatedConfig = {
+  ...originalConfig,
+  settings: {
+    ...originalConfig.settings,
+    debug: true
+  }
+};
+```
+
+## Security Considerations
+
+### 1. Input Validation
+
+All inputs are validated using Zod schemas:
+
+```typescript
+{{#if features.validation}}
+const userInput = validateInput(rawInput, userInputSchema);
+if (userInput.isErr()) {
+  return userInput; // Propagate validation error
+}
+{{/if}}
+```
+
+### 2. File System Access
+
+File operations go through the filesystem abstraction:
+
+```typescript
+import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem';
+
+const content = await readFile(filepath);
+if (content.isErr()) {
+  return content; // Handle file access error
+}
+```
+
+### 3. Command Injection Prevention
+
+No shell command execution through unsafe string concatenation:
+
+```typescript
+// Safe: Using spawn with argument array
+spawn('tsc', ['--build', '--clean']);
+
+// Unsafe: String concatenation (avoided)
+// exec(`tsc --build ${userInput}`); // ❌ Never do this
+```
+
+## Extension Points
+
+### Adding New Commands
+
+1. Create command file in `src/commands/`
+2. Implement using `createCommand`
+3. Add to CLI configuration in `src/index.ts`
+4. Add tests in `src/__tests__/commands/`
+
+### Adding New Validation
+
+1. Define schema in `src/lib/validators.ts`
+2. Export validation function
+3. Use in relevant commands
+4. Add tests for validation logic
+
+### Adding New Configuration
+
+1. Update schema in `src/lib/config-schema.ts`
+2. Add validation logic
+3. Update documentation
+4. Add migration logic if needed
+
+## Deployment
+
+### Build Process
+
+```bash
+# TypeScript compilation
+tsc --build
+
+# Bundle for distribution
+tsup src/index.ts --format esm,cjs
+```
+
+### Distribution
+
+- **NPM Package** - Main distribution method
+- **GitHub Packages** - Alternative registry
+- **Standalone Binary** - Future consideration
+
+---
+
+This architecture ensures {{projectName}} is maintainable, testable, and follows modern JavaScript/TypeScript best practices while leveraging the power of functional programming and explicit error handling.

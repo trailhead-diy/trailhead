@@ -1,14 +1,14 @@
-import { ReactNode } from 'react';
-import { ThemeProvider, ThemeSwitcher } from '@/components/th';
-import { Navbar } from '@/components/th/navbar';
+import { ReactNode } from 'react'
+import { ThemeProvider, ThemeSwitcher } from '@/components/th'
+import { Navbar } from '@/components/th/navbar'
 import {
   Sidebar,
   SidebarBody,
   SidebarHeader,
   SidebarItem,
   SidebarSection,
-} from '@/components/th/sidebar';
-import { SidebarLayout } from '@/components/th/sidebar-layout';
+} from '@/components/th/sidebar'
+import { SidebarLayout } from '@/components/th/sidebar-layout'
 
 export const DemoLayout = ({ children }: { children: ReactNode }) => (
   <ThemeProvider>
@@ -57,26 +57,26 @@ export const DemoLayout = ({ children }: { children: ReactNode }) => (
       {children}
     </SidebarLayout>
   </ThemeProvider>
-);
+)
 
 export const List = ({
   children,
   title,
   description,
 }: {
-  children: React.ReactNode;
-  title: string;
-  description?: string;
+  children: React.ReactNode
+  title: string
+  description?: string
 }) => (
   <>
     <h2 className="mb-4 text-2xl font-bold">{title}</h2>
     {description && <p className="mb-4 text-sm text-muted-foreground">{description}</p>}
     <ul className="flex flex-col gap-4">{children}</ul>
   </>
-);
+)
 export const Item = ({ children, title }: { children: React.ReactNode; title?: string }) => (
   <li className="p-4 bg-card border border-border rounded-lg shadow-sm">
     {title && <h3 className="mb-2 text-lg font-semibold">{title}</h3>}
     {children}
   </li>
-);
+)

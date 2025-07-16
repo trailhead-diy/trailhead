@@ -113,8 +113,8 @@ Trailhead is a modern Turborepo monorepo containing UI libraries, CLI frameworks
 ```
 trailhead/                            # Root monorepo
 ├── packages/                         # Public packages
-│   ├── cli/                         # @esteban-url/trailhead-cli - CLI framework
-│   └── web-ui/                      # @esteban-url/trailhead-web-ui - UI component library
+│   ├── cli/                         # @esteban-url/cli - CLI framework
+│   └── web-ui/                      # @esteban-url/web-ui - UI component library
 ├── apps/                            # Applications
 │   └── demos/                       # Demo applications
 │       ├── next/                    # Next.js demo
@@ -157,9 +157,9 @@ pnpm clean
 
 ```bash
 # Work on specific package
-pnpm build --filter=@esteban-url/trailhead-web-ui
-pnpm test --filter=@esteban-url/trailhead-cli
-pnpm lint --filter=@esteban-url/trailhead-web-ui
+pnpm build --filter=@esteban-url/web-ui
+pnpm test --filter=@esteban-url/cli
+pnpm lint --filter=@esteban-url/web-ui
 
 # Work on multiple packages
 pnpm build --filter=./packages/*
@@ -195,13 +195,13 @@ pnpm build --filter=./packages/*
 - **Package Boundaries**: Respect package boundaries and dependencies
 - **Build Dependencies**: Ensure proper dependency order in turbo.json
 
-## Package: @esteban-url/trailhead-cli
+## Package: @esteban-url/cli
 
 A functional CLI framework for building robust, testable command-line applications with TypeScript.
 
 ### Overview
 
-@esteban-url/trailhead-cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
+@esteban-url/cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
 
 ### Features
 
@@ -217,9 +217,9 @@ A functional CLI framework for building robust, testable command-line applicatio
 
 ```bash
 # From monorepo root
-pnpm test --filter=@esteban-url/trailhead-cli
-pnpm build --filter=@esteban-url/trailhead-cli
-pnpm lint --filter=@esteban-url/trailhead-cli
+pnpm test --filter=@esteban-url/cli
+pnpm build --filter=@esteban-url/cli
+pnpm lint --filter=@esteban-url/cli
 
 # From package directory (packages/cli/)
 pnpm test                    # Run all tests
@@ -239,20 +239,20 @@ pnpm lint                   # Linting
 
 ### Module Exports
 
-- **Core** (`@esteban-url/trailhead-cli/core`) - Result types and error handling
-- **Command** (`@esteban-url/trailhead-cli/command`) - Command creation and execution
-- **FileSystem** (`@esteban-url/trailhead-cli/filesystem`) - Abstract filesystem operations
-- **Configuration** (`@esteban-url/trailhead-cli/config`) - Type-safe configuration
-- **Prompts** (`@esteban-url/trailhead-cli/prompts`) - Interactive user prompts
-- **Testing** (`@esteban-url/trailhead-cli/testing`) - Test utilities and mocks
+- **Core** (`@esteban-url/cli/core`) - Result types and error handling
+- **Command** (`@esteban-url/cli/command`) - Command creation and execution
+- **FileSystem** (`@esteban-url/cli/filesystem`) - Abstract filesystem operations
+- **Configuration** (`@esteban-url/cli/config`) - Type-safe configuration
+- **Prompts** (`@esteban-url/cli/prompts`) - Interactive user prompts
+- **Testing** (`@esteban-url/cli/testing`) - Test utilities and mocks
 
-## Package: @esteban-url/trailhead-web-ui
+## Package: @esteban-url/web-ui
 
 Enhanced Catalyst UI with advanced theming system. Built on Tailwind's official React components.
 
 ### Overview
 
-@esteban-url/trailhead-web-ui provides:
+@esteban-url/web-ui provides:
 
 - **Comprehensive theming system** with shadcn/ui compatibility
 - **21 predefined themes** using OKLCH color space for perceptual uniformity
@@ -266,7 +266,7 @@ Enhanced Catalyst UI with advanced theming system. Built on Tailwind's official 
 
 ### CLI Commands
 
-The Trailhead UI CLI provides commands for installing and managing UI components. It's built on top of @esteban-url/trailhead-cli framework.
+The Trailhead UI CLI provides commands for installing and managing UI components. It's built on top of @esteban-url/cli framework.
 
 ```bash
 # CLI installation and usage
@@ -288,9 +288,9 @@ trailhead-ui install -d components/ui        # Custom destination
 
 ```bash
 # From monorepo root
-pnpm test --filter=@esteban-url/trailhead-web-ui
-pnpm build --filter=@esteban-url/trailhead-web-ui
-pnpm lint --filter=@esteban-url/trailhead-web-ui
+pnpm test --filter=@esteban-url/web-ui
+pnpm build --filter=@esteban-url/web-ui
+pnpm lint --filter=@esteban-url/web-ui
 
 # From package directory (packages/web-ui/)
 pnpm test                    # Run all tests

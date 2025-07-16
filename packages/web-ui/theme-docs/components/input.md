@@ -12,80 +12,80 @@ The Input component has hardcoded colors for placeholder text and invalid states
 
 ```tsx
 // Current - HARDCODED
-'*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400';
+'*:data-[slot=icon]:text-zinc-500 dark:*:data-[slot=icon]:text-zinc-400'
 
 // Recommended Fix
-'*:data-[slot=icon]:text-muted-foreground';
+'*:data-[slot=icon]:text-muted-foreground'
 ```
 
 ### 2. Background Pseudo-element (Line 53)
 
 ```tsx
 // Current - HARDCODED
-'before:bg-white';
+'before:bg-white'
 
 // Recommended Fix
-'before:bg-background';
+'before:bg-background'
 ```
 
 ### 3. Disabled State Background (Line 59)
 
 ```tsx
 // Current - HARDCODED
-'has-data-disabled:before:bg-zinc-950/5';
+'has-data-disabled:before:bg-zinc-950/5'
 
 // Recommended Fix
-'has-data-disabled:before:bg-muted/50';
+'has-data-disabled:before:bg-muted/50'
 ```
 
 ### 4. Placeholder Text Color (Line 90)
 
 ```tsx
 // Current - HARDCODED
-'placeholder:text-zinc-500';
+'placeholder:text-zinc-500'
 
 // Recommended Fix
-'placeholder:text-muted-foreground';
+'placeholder:text-muted-foreground'
 ```
 
 ### 5. Border Colors - Light Mode (Line 92)
 
 ```tsx
 // Current - MIXED SEMANTIC/HARDCODED
-'border border-zinc-950/10 data-hover:border-zinc-950/20';
+'border border-zinc-950/10 data-hover:border-zinc-950/20'
 
 // Recommended Fix
-'border border-input data-hover:border-primary/50';
+'border border-input data-hover:border-primary/50'
 ```
 
 ### 6. Background Color (Line 94)
 
 ```tsx
 // Current - HARDCODED DARK MODE
-'bg-transparent dark:bg-white/5';
+'bg-transparent dark:bg-white/5'
 
 // Recommended Fix
-'bg-transparent dark:bg-muted';
+'bg-transparent dark:bg-muted'
 ```
 
 ### 7. Invalid State Border (Line 98)
 
 ```tsx
 // Current - HARDCODED
-'data-invalid:border-red-500';
+'data-invalid:border-red-500'
 
 // Recommended Fix
-'data-invalid:border-destructive';
+'data-invalid:border-destructive'
 ```
 
 ### 8. Disabled State Border (Line 100)
 
 ```tsx
 // Current - HARDCODED
-'data-disabled:border-zinc-950/20 dark:data-disabled:border-white/15';
+'data-disabled:border-zinc-950/20 dark:data-disabled:border-white/15'
 
 // Recommended Fix
-'data-disabled:border-muted-foreground/20';
+'data-disabled:border-muted-foreground/20'
 ```
 
 ## Complete Color Mappings

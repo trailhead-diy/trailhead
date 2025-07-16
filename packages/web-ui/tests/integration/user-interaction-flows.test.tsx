@@ -9,38 +9,38 @@
  * - Data flow between components
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React from 'react';
-import { ThemeProvider } from '../../src/components/theme/theme-provider';
-import { ThemeSwitcher } from '../../src/components/theme/theme-switcher';
-import { Button } from '../../src/components/button';
-import { Alert } from '../../src/components/alert';
-import { Input } from '../../src/components/input';
-import { Dialog } from '../../src/components/dialog';
-import { Switch } from '../../src/components/switch';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { ThemeProvider } from '../../src/components/theme/theme-provider'
+import { ThemeSwitcher } from '../../src/components/theme/theme-switcher'
+import { Button } from '../../src/components/button'
+import { Alert } from '../../src/components/alert'
+import { Input } from '../../src/components/input'
+import { Dialog } from '../../src/components/dialog'
+import { Switch } from '../../src/components/switch'
 
 // Mock next-themes for controlled testing
-let mockTheme = 'catalyst';
-let mockResolvedTheme = 'catalyst';
+let mockTheme = 'catalyst'
+let mockResolvedTheme = 'catalyst'
 const mockSetTheme = vi.fn((newTheme: string) => {
-  mockTheme = newTheme;
-  mockResolvedTheme = newTheme;
-});
+  mockTheme = newTheme
+  mockResolvedTheme = newTheme
+})
 
 vi.mock('next-themes', () => ({
   ThemeProvider: ({ children, ..._props }: any) => {
     // Apply the theme as a class like the real next-themes does
     React.useEffect(() => {
-      document.documentElement.className = mockTheme;
-    }, []);
+      document.documentElement.className = mockTheme
+    }, [])
 
     return (
       <div data-testid="theme-provider" data-theme={mockTheme}>
         {children}
       </div>
-    );
+    )
   },
   useTheme: () => ({
     theme: mockTheme,
@@ -49,98 +49,98 @@ vi.mock('next-themes', () => ({
     resolvedTheme: mockResolvedTheme,
     themes: ['catalyst', 'red', 'green', 'blue', 'purple'],
   }),
-}));
+}))
 
 describe('User Interactions - Critical User Behavior', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockTheme = 'catalyst';
-    mockResolvedTheme = 'catalyst';
-    document.documentElement.className = '';
-  });
+    vi.clearAllMocks()
+    mockTheme = 'catalyst'
+    mockResolvedTheme = 'catalyst'
+    document.documentElement.className = ''
+  })
 
   describe('Button Click Behavior', () => {
     it('should handle form submission correctly', async () => {
-      const user = userEvent.setup();
-      const onSubmit = vi.fn(e => e.preventDefault());
+      const user = userEvent.setup()
+      const onSubmit = vi.fn((e) => e.preventDefault())
 
       render(
         <form onSubmit={onSubmit}>
           <Input name="email" placeholder="Enter email" />
           <Button type="submit">Submit Form</Button>
         </form>
-      );
+      )
 
       // User fills form and submits
-      await user.type(screen.getByPlaceholderText('Enter email'), 'test@example.com');
-      await user.click(screen.getByRole('button', { name: 'Submit Form' }));
+      await user.type(screen.getByPlaceholderText('Enter email'), 'test@example.com')
+      await user.click(screen.getByRole('button', { name: 'Submit Form' }))
 
-      expect(onSubmit).toHaveBeenCalledTimes(1);
-      expect(screen.getByDisplayValue('test@example.com')).toBeInTheDocument();
-    });
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+      expect(screen.getByDisplayValue('test@example.com')).toBeInTheDocument()
+    })
 
     it('should prevent double submission during loading state', async () => {
-      const user = userEvent.setup();
-      const onSubmit = vi.fn();
+      const user = userEvent.setup()
+      const onSubmit = vi.fn()
 
       // Use a flag to simulate the common pattern of preventing double submissions
-      let isSubmitting = false;
+      let isSubmitting = false
 
       const FormComponent = () => {
-        const [isLoading, setIsLoading] = React.useState(false);
+        const [isLoading, setIsLoading] = React.useState(false)
 
         const handleSubmit = async () => {
           // Common pattern: check flag before processing
-          if (isSubmitting) return;
+          if (isSubmitting) return
 
-          isSubmitting = true;
-          setIsLoading(true);
+          isSubmitting = true
+          setIsLoading(true)
 
           // Call the actual submit function
-          onSubmit();
+          onSubmit()
 
           // Simulate async operation
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 50))
 
-          setIsLoading(false);
-          isSubmitting = false;
-        };
+          setIsLoading(false)
+          isSubmitting = false
+        }
 
         return (
           <Button disabled={isLoading} onClick={handleSubmit}>
             {isLoading ? 'Submitting...' : 'Submit'}
           </Button>
-        );
-      };
+        )
+      }
 
-      render(<FormComponent />);
+      render(<FormComponent />)
 
-      const button = screen.getByRole('button');
+      const button = screen.getByRole('button')
 
       // Simulate rapid clicking (common user behavior)
-      const clickPromises = [user.click(button), user.click(button), user.click(button)];
+      const clickPromises = [user.click(button), user.click(button), user.click(button)]
 
       // Execute all clicks
-      await Promise.all(clickPromises);
+      await Promise.all(clickPromises)
 
       // Wait for loading state to be set
       await waitFor(
         () => {
-          expect(button).toBeDisabled();
+          expect(button).toBeDisabled()
         },
         { timeout: 1000 }
-      );
+      )
 
       // Verify only one submission occurred
-      expect(onSubmit).toHaveBeenCalledTimes(1);
-    });
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+    })
 
     it('should handle destructive actions with confirmation', async () => {
-      const user = userEvent.setup();
-      const onDelete = vi.fn();
+      const user = userEvent.setup()
+      const onDelete = vi.fn()
 
       const DeleteComponent = () => {
-        const [showDialog, setShowDialog] = React.useState(false);
+        const [showDialog, setShowDialog] = React.useState(false)
 
         return (
           <>
@@ -155,8 +155,8 @@ describe('User Interactions - Critical User Behavior', () => {
                   <Button
                     color="red"
                     onClick={() => {
-                      onDelete();
-                      setShowDialog(false);
+                      onDelete()
+                      setShowDialog(false)
                     }}
                   >
                     Confirm Delete
@@ -166,32 +166,32 @@ describe('User Interactions - Critical User Behavior', () => {
               </Dialog>
             )}
           </>
-        );
-      };
+        )
+      }
 
-      render(<DeleteComponent />);
+      render(<DeleteComponent />)
 
       // User clicks delete
-      await user.click(screen.getByText('Delete Item'));
+      await user.click(screen.getByText('Delete Item'))
 
       // Confirmation dialog appears
-      expect(screen.getByText('Confirm Deletion')).toBeInTheDocument();
+      expect(screen.getByText('Confirm Deletion')).toBeInTheDocument()
 
       // User confirms deletion
-      await user.click(screen.getByText('Confirm Delete'));
+      await user.click(screen.getByText('Confirm Delete'))
 
-      expect(onDelete).toHaveBeenCalledTimes(1);
-      expect(screen.queryByText('Confirm Deletion')).not.toBeInTheDocument();
-    });
-  });
+      expect(onDelete).toHaveBeenCalledTimes(1)
+      expect(screen.queryByText('Confirm Deletion')).not.toBeInTheDocument()
+    })
+  })
 
   describe('Keyboard Navigation', () => {
     it('should support keyboard navigation in custom select elements', async () => {
-      const user = userEvent.setup();
-      const onSelect = vi.fn();
+      const user = userEvent.setup()
+      const onSelect = vi.fn()
 
       const SelectComponent = () => {
-        const [isOpen, setIsOpen] = React.useState(false);
+        const [isOpen, setIsOpen] = React.useState(false)
 
         return (
           <div>
@@ -208,8 +208,8 @@ describe('User Interactions - Critical User Behavior', () => {
                   role="option"
                   tabIndex={0}
                   onClick={() => {
-                    onSelect('edit');
-                    setIsOpen(false);
+                    onSelect('edit')
+                    setIsOpen(false)
                   }}
                 >
                   Edit Item
@@ -218,8 +218,8 @@ describe('User Interactions - Critical User Behavior', () => {
                   role="option"
                   tabIndex={0}
                   onClick={() => {
-                    onSelect('delete');
-                    setIsOpen(false);
+                    onSelect('delete')
+                    setIsOpen(false)
                   }}
                 >
                   Delete Item
@@ -228,8 +228,8 @@ describe('User Interactions - Critical User Behavior', () => {
                   role="option"
                   tabIndex={0}
                   onClick={() => {
-                    onSelect('share');
-                    setIsOpen(false);
+                    onSelect('share')
+                    setIsOpen(false)
                   }}
                 >
                   Share Item
@@ -237,27 +237,27 @@ describe('User Interactions - Critical User Behavior', () => {
               </div>
             )}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<SelectComponent />);
+      render(<SelectComponent />)
 
-      const trigger = screen.getByRole('button', { name: 'Options' });
+      const trigger = screen.getByRole('button', { name: 'Options' })
 
       // Open with click
-      await user.click(trigger);
+      await user.click(trigger)
 
       // Should show menu
-      expect(screen.getByTestId('options-menu')).toBeInTheDocument();
+      expect(screen.getByTestId('options-menu')).toBeInTheDocument()
 
       // Click on delete option
-      await user.click(screen.getByText('Delete Item'));
+      await user.click(screen.getByText('Delete Item'))
 
-      expect(onSelect).toHaveBeenCalledWith('delete');
-    });
+      expect(onSelect).toHaveBeenCalledWith('delete')
+    })
 
     it('should handle tab navigation correctly', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       render(
         <div>
@@ -265,58 +265,58 @@ describe('User Interactions - Critical User Behavior', () => {
           <Button>Middle button</Button>
           <Input placeholder="Last input" />
         </div>
-      );
+      )
 
-      const firstInput = screen.getByPlaceholderText('First input');
-      const button = screen.getByRole('button', { name: 'Middle button' });
-      const lastInput = screen.getByPlaceholderText('Last input');
+      const firstInput = screen.getByPlaceholderText('First input')
+      const button = screen.getByRole('button', { name: 'Middle button' })
+      const lastInput = screen.getByPlaceholderText('Last input')
 
       // Start by focusing first element
-      firstInput.focus();
-      expect(firstInput).toHaveFocus();
+      firstInput.focus()
+      expect(firstInput).toHaveFocus()
 
       // Tab to next element
-      await user.tab();
-      expect(button).toHaveFocus();
+      await user.tab()
+      expect(button).toHaveFocus()
 
       // Tab to last element
-      await user.tab();
-      expect(lastInput).toHaveFocus();
-    });
+      await user.tab()
+      expect(lastInput).toHaveFocus()
+    })
 
     it('should support escape key to close modals', async () => {
-      const user = userEvent.setup();
-      const onClose = vi.fn();
+      const user = userEvent.setup()
+      const onClose = vi.fn()
 
       const AlertComponent = () => {
-        const [isOpen, setIsOpen] = React.useState(true);
+        const [isOpen, setIsOpen] = React.useState(true)
 
         const handleClose = () => {
-          setIsOpen(false);
-          onClose();
-        };
+          setIsOpen(false)
+          onClose()
+        }
 
         return (
           <Alert open={isOpen} onClose={handleClose}>
             Important message
           </Alert>
-        );
-      };
+        )
+      }
 
-      render(<AlertComponent />);
+      render(<AlertComponent />)
 
-      expect(screen.getByText('Important message')).toBeInTheDocument();
+      expect(screen.getByText('Important message')).toBeInTheDocument()
 
       // Press escape to close
-      await user.keyboard('{Escape}');
+      await user.keyboard('{Escape}')
 
-      expect(onClose).toHaveBeenCalledTimes(1);
-    });
-  });
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
+  })
 
   describe('Theme Switching User Flow', () => {
     it('should persist theme selection across page reloads', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       const ThemeApp = () => (
         <ThemeProvider defaultTheme="catalyst">
@@ -325,30 +325,30 @@ describe('User Interactions - Critical User Behavior', () => {
             <Button>Themed Button</Button>
           </div>
         </ThemeProvider>
-      );
+      )
 
-      const { rerender } = render(<ThemeApp />);
+      const { rerender } = render(<ThemeApp />)
 
       // Select a different theme
-      const switcher = screen.getByRole('combobox');
-      await user.selectOptions(switcher, 'blue');
+      const switcher = screen.getByRole('combobox')
+      await user.selectOptions(switcher, 'blue')
 
-      expect(mockSetTheme).toHaveBeenCalledWith('blue');
-      mockTheme = 'blue';
+      expect(mockSetTheme).toHaveBeenCalledWith('blue')
+      mockTheme = 'blue'
 
       // Simulate page reload
-      rerender(<ThemeApp />);
+      rerender(<ThemeApp />)
 
       // Theme should persist
-      const provider = screen.getByTestId('theme-provider');
-      expect(provider).toHaveAttribute('data-theme', 'blue');
-    });
+      const provider = screen.getByTestId('theme-provider')
+      expect(provider).toHaveAttribute('data-theme', 'blue')
+    })
 
     it('should update all themed components when theme changes', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       const MultiComponentApp = () => {
-        const [alertOpen, setAlertOpen] = React.useState(false);
+        const [alertOpen, setAlertOpen] = React.useState(false)
 
         return (
           <ThemeProvider defaultTheme="catalyst">
@@ -360,32 +360,32 @@ describe('User Interactions - Critical User Behavior', () => {
               </Alert>
             </div>
           </ThemeProvider>
-        );
-      };
+        )
+      }
 
-      render(<MultiComponentApp />);
+      render(<MultiComponentApp />)
 
       // Change theme
-      const switcher = screen.getByRole('combobox');
-      await user.selectOptions(switcher, 'red');
+      const switcher = screen.getByRole('combobox')
+      await user.selectOptions(switcher, 'red')
 
       // Wait for theme to be applied
       await waitFor(() => {
-        expect(mockSetTheme).toHaveBeenCalledWith('red');
-      });
+        expect(mockSetTheme).toHaveBeenCalledWith('red')
+      })
 
       // The mock should have been called, which means the theme switching logic works
       // The actual DOM update would happen in a real next-themes implementation
-      expect(mockSetTheme).toHaveBeenCalledWith('red');
+      expect(mockSetTheme).toHaveBeenCalledWith('red')
 
       // Show alert to verify it also uses new theme
-      await user.click(screen.getByText('Show Alert'));
-      expect(screen.getByText('Themed alert message')).toBeInTheDocument();
-    });
+      await user.click(screen.getByText('Show Alert'))
+      expect(screen.getByText('Themed alert message')).toBeInTheDocument()
+    })
 
     it('should handle theme switching during user interactions', async () => {
-      const user = userEvent.setup();
-      const onSwitchChange = vi.fn();
+      const user = userEvent.setup()
+      const onSwitchChange = vi.fn()
 
       const InteractiveApp = () => (
         <ThemeProvider defaultTheme="catalyst">
@@ -395,46 +395,46 @@ describe('User Interactions - Critical User Behavior', () => {
             <span>Toggle setting</span>
           </div>
         </ThemeProvider>
-      );
+      )
 
-      render(<InteractiveApp />);
+      render(<InteractiveApp />)
 
       // Interact with switch while changing theme
-      const switchElement = screen.getByRole('switch');
-      const themeSwitcher = screen.getByRole('combobox');
+      const switchElement = screen.getByRole('switch')
+      const themeSwitcher = screen.getByRole('combobox')
 
-      await user.click(switchElement);
-      await user.selectOptions(themeSwitcher, 'green');
-      await user.click(switchElement);
+      await user.click(switchElement)
+      await user.selectOptions(themeSwitcher, 'green')
+      await user.click(switchElement)
 
       // Both interactions should work correctly
-      expect(onSwitchChange).toHaveBeenCalledTimes(2);
-      expect(mockSetTheme).toHaveBeenCalledWith('green');
-    });
-  });
+      expect(onSwitchChange).toHaveBeenCalledTimes(2)
+      expect(mockSetTheme).toHaveBeenCalledWith('green')
+    })
+  })
 
   describe('Error State Handling', () => {
     it('should display validation errors on form fields', async () => {
-      const user = userEvent.setup();
-      const onValidationChange = vi.fn();
+      const user = userEvent.setup()
+      const onValidationChange = vi.fn()
 
       const ValidationForm = () => {
-        const [error, setError] = React.useState(false);
+        const [error, setError] = React.useState(false)
 
         return (
           <div>
             <Button
               onClick={() => {
-                setError(true);
-                onValidationChange(true);
+                setError(true)
+                onValidationChange(true)
               }}
             >
               Trigger Error
             </Button>
             <Button
               onClick={() => {
-                setError(false);
-                onValidationChange(false);
+                setError(false)
+                onValidationChange(false)
               }}
             >
               Clear Error
@@ -445,46 +445,46 @@ describe('User Interactions - Critical User Behavior', () => {
               </Alert>
             )}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<ValidationForm />);
+      render(<ValidationForm />)
 
       // Trigger validation error
-      await user.click(screen.getByText('Trigger Error'));
+      await user.click(screen.getByText('Trigger Error'))
 
       // Error should appear
-      expect(onValidationChange).toHaveBeenCalledWith(true);
-      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+      expect(onValidationChange).toHaveBeenCalledWith(true)
+      expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument()
 
       // Clear the error
-      await user.click(screen.getByText('Clear Error'));
+      await user.click(screen.getByText('Clear Error'))
 
       // Error should disappear
-      expect(onValidationChange).toHaveBeenCalledWith(false);
-      expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument();
-    });
+      expect(onValidationChange).toHaveBeenCalledWith(false)
+      expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument()
+    })
 
     it('should handle async operation errors gracefully', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       const AsyncComponent = () => {
-        const [error, setError] = React.useState('');
-        const [success, setSuccess] = React.useState(false);
+        const [error, setError] = React.useState('')
+        const [success, setSuccess] = React.useState(false)
 
         const handleAsyncOperation = async () => {
           try {
             // Simulate async operation that fails
-            await Promise.reject(new Error('Operation failed'));
+            await Promise.reject(new Error('Operation failed'))
           } catch (_err) {
-            setError('Operation failed. Please try again.');
+            setError('Operation failed. Please try again.')
           }
-        };
+        }
 
         const handleSuccess = () => {
-          setError('');
-          setSuccess(true);
-        };
+          setError('')
+          setSuccess(true)
+        }
 
         return (
           <div>
@@ -497,33 +497,33 @@ describe('User Interactions - Critical User Behavior', () => {
             )}
             {success && <div>Operation completed successfully</div>}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<AsyncComponent />);
+      render(<AsyncComponent />)
 
       // Trigger error
-      await user.click(screen.getByText('Trigger Error'));
+      await user.click(screen.getByText('Trigger Error'))
 
       // Wait for error to appear
       await waitFor(() => {
-        expect(screen.getByText('Operation failed. Please try again.')).toBeInTheDocument();
-      });
+        expect(screen.getByText('Operation failed. Please try again.')).toBeInTheDocument()
+      })
 
       // Clear error and trigger success
-      await user.click(screen.getByText('Trigger Success'));
+      await user.click(screen.getByText('Trigger Success'))
 
-      expect(screen.getByText('Operation completed successfully')).toBeInTheDocument();
-      expect(screen.queryByText('Operation failed. Please try again.')).not.toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Operation completed successfully')).toBeInTheDocument()
+      expect(screen.queryByText('Operation failed. Please try again.')).not.toBeInTheDocument()
+    })
+  })
 
   describe('Accessibility User Experience', () => {
     it('should announce dynamic content changes to screen readers', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup()
 
       const AnnouncementComponent = () => {
-        const [message, setMessage] = React.useState('');
+        const [message, setMessage] = React.useState('')
 
         return (
           <div>
@@ -536,23 +536,23 @@ describe('User Interactions - Critical User Behavior', () => {
               </div>
             )}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<AnnouncementComponent />);
+      render(<AnnouncementComponent />)
 
-      await user.click(screen.getByText('Complete Operation'));
+      await user.click(screen.getByText('Complete Operation'))
 
-      const announcement = screen.getByRole('status');
-      expect(announcement).toHaveTextContent('Operation completed successfully');
-      expect(announcement).toHaveAttribute('aria-live', 'polite');
-    });
+      const announcement = screen.getByRole('status')
+      expect(announcement).toHaveTextContent('Operation completed successfully')
+      expect(announcement).toHaveAttribute('aria-live', 'polite')
+    })
 
     it('should support high contrast mode detection', () => {
       // Simulate high contrast media query
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: vi.fn().mockImplementation(query => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query === '(prefers-contrast: high)',
           media: query,
           onchange: null,
@@ -562,27 +562,27 @@ describe('User Interactions - Critical User Behavior', () => {
           removeEventListener: vi.fn(),
           dispatchEvent: vi.fn(),
         })),
-      });
+      })
 
       const ContrastComponent = () => {
-        const [highContrast, setHighContrast] = React.useState(false);
+        const [highContrast, setHighContrast] = React.useState(false)
 
         React.useEffect(() => {
-          const mediaQuery = window.matchMedia('(prefers-contrast: high)');
-          setHighContrast(mediaQuery.matches);
-        }, []);
+          const mediaQuery = window.matchMedia('(prefers-contrast: high)')
+          setHighContrast(mediaQuery.matches)
+        }, [])
 
         return (
           <div data-testid="contrast-container" data-high-contrast={highContrast}>
             <Button>High Contrast Button</Button>
           </div>
-        );
-      };
+        )
+      }
 
-      render(<ContrastComponent />);
+      render(<ContrastComponent />)
 
-      const container = screen.getByTestId('contrast-container');
-      expect(container).toHaveAttribute('data-high-contrast', 'true');
-    });
-  });
-});
+      const container = screen.getByTestId('contrast-container')
+      expect(container).toHaveAttribute('data-high-contrast', 'true')
+    })
+  })
+})

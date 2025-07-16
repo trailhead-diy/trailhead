@@ -12,10 +12,10 @@ The Textarea component shares the same styling as Input and has the same issues 
 
 ```tsx
 // Current - HARDCODED
-'before:bg-white before:shadow-sm';
+'before:bg-white before:shadow-sm'
 
 // Recommended Fix
-'before:bg-background before:shadow-sm';
+'before:bg-background before:shadow-sm'
 ```
 
 **Impact**: Textarea pseudo-elements may not match theme background colors, affecting visual consistency across themed environments.

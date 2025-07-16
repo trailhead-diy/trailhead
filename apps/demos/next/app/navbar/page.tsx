@@ -1,6 +1,6 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Avatar } from '@/components/th/avatar';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Avatar } from '@/components/th/avatar'
 import {
   Dropdown,
   DropdownButton,
@@ -8,7 +8,7 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/th/dropdown';
+} from '@/components/th/dropdown'
 import {
   Navbar,
   NavbarDivider,
@@ -16,7 +16,7 @@ import {
   NavbarLabel,
   NavbarSection,
   NavbarSpacer,
-} from '@/components/th/navbar';
+} from '@/components/th/navbar'
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
@@ -25,8 +25,8 @@ import {
   PlusIcon,
   ShieldCheckIcon,
   UserIcon,
-} from '@heroicons/react/16/solid';
-import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid';
+} from '@heroicons/react/16/solid'
+import { InboxIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 export default function NavbarPage(): React.JSX.Element {
   return (
@@ -111,5 +111,5 @@ export default function NavbarPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

@@ -1,25 +1,24 @@
-import type { Result } from 'neverthrow';
-import type { CLIError } from '../core/errors/index.js';
+import type { Result, CoreError } from '@esteban-url/core'
 
 /**
  * Assert that a Result is successful
  */
 export function expectResult<T>(
-  result: Result<T, CLIError>
-): asserts result is Extract<Result<T, CLIError>, { isOk(): true }> {
+  result: Result<T, CoreError>
+): asserts result is Extract<Result<T, CoreError>, { isOk(): true }> {
   if (result.isErr()) {
-    throw new Error(`Expected successful result, but got error: ${result.error.message}`);
+    throw new Error(`Expected successful result, but got error: ${result.error.message}`)
   }
 }
 
 /**
  * Assert that a Result is an error
  */
-export function expectError<E = CLIError>(
+export function expectError<E = CoreError>(
   result: Result<any, E>
 ): asserts result is Extract<Result<any, E>, { isErr(): true }> {
   if (result.isOk()) {
-    throw new Error('Expected error result, but operation succeeded');
+    throw new Error('Expected error result, but operation succeeded')
   }
 }
 
@@ -27,22 +26,22 @@ export function expectError<E = CLIError>(
  * Combined assertion and value extraction for successful Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectSuccess<T>(result: Result<T, CLIError>): T {
+export function expectSuccess<T>(result: Result<T, CoreError>): T {
   if (result.isErr()) {
-    throw new Error(`Expected successful result, but got error: ${result.error.message}`);
+    throw new Error(`Expected successful result, but got error: ${result.error.message}`)
   }
-  return result.value;
+  return result.value
 }
 
 /**
  * Combined assertion and error extraction for failed Results
  * Reduces boilerplate from 3 lines to 1 line
  */
-export function expectFailure<E = CLIError>(result: Result<any, E>): E {
+export function expectFailure<E = CoreError>(result: Result<any, E>): E {
   if (result.isOk()) {
-    throw new Error('Expected error result, but operation succeeded');
+    throw new Error('Expected error result, but operation succeeded')
   }
-  return result.error;
+  return result.error
 }
 
 /**
@@ -53,12 +52,12 @@ export function expectErrorCode<E extends { code: string }>(
   expectedCode: string
 ): E {
   if (result.isOk()) {
-    throw new Error('Expected error result, but operation succeeded');
+    throw new Error('Expected error result, but operation succeeded')
   }
   if (result.error.code !== expectedCode) {
-    throw new Error(`Expected error code '${expectedCode}', but got '${result.error.code}'`);
+    throw new Error(`Expected error code '${expectedCode}', but got '${result.error.code}'`)
   }
-  return result.error;
+  return result.error
 }
 
 /**
@@ -69,21 +68,21 @@ export function expectErrorMessage<E extends { message: string }>(
   expectedMessage: string | RegExp
 ): E {
   if (result.isOk()) {
-    throw new Error('Expected error result, but operation succeeded');
+    throw new Error('Expected error result, but operation succeeded')
   }
 
-  const message = result.error.message;
+  const message = result.error.message
   if (typeof expectedMessage === 'string') {
     if (!message.includes(expectedMessage)) {
       throw new Error(
         `Expected error message to contain '${expectedMessage}', but got '${message}'`
-      );
+      )
     }
   } else {
     if (!expectedMessage.test(message)) {
-      throw new Error(`Expected error message to match ${expectedMessage}, but got '${message}'`);
+      throw new Error(`Expected error message to match ${expectedMessage}, but got '${message}'`)
     }
   }
 
-  return result.error;
+  return result.error
 }

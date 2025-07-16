@@ -1,7 +1,7 @@
-'use client';
-import { DemoLayout, Item, List } from '@/components/demo-layout';
-import { Field, Label } from '@/components/th/fieldset';
-import { Textarea } from '@/components/th/textarea';
+'use client'
+import { DemoLayout, Item, List } from '@/components/demo-layout'
+import { Field, Label } from '@/components/th/fieldset'
+import { Textarea } from '@/components/th/textarea'
 
 export default function TextareaPage(): React.JSX.Element {
   return (
@@ -15,5 +15,5 @@ export default function TextareaPage(): React.JSX.Element {
         </Item>
       </List>
     </DemoLayout>
-  );
+  )
 }

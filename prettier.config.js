@@ -5,4 +5,4 @@
  * and serves as the root configuration for all packages in the monorepo.
  */
 
-module.exports = require('./tooling/prettier-config/index.json');
+module.exports = require('./tooling/prettier-config/index.js')

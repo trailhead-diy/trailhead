@@ -1,0 +1,96 @@
+{
+  "name": "@esteban-url/create-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "CLI generator for creating projects with @esteban-url/cli",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "@esteban-url:registry": "https://npm.pkg.github.com"
+  },
+  "bin": {
+    "create-cli": "./bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
+    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:integration": "pnpm --filter=@esteban-url/trailhead-cli build && pnpm build && vitest run src/__tests__/integration-matrix.test.ts",
+    "test:generator:full": "tsx scripts/test-generator-full.ts",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "types": "tsc --noEmit",
+    "format": "prettier --write . --ignore-path .prettierignore",
+    "format:check": "prettier --check . --ignore-path .prettierignore",
+    "clean": "rm -rf dist",
+    "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
+    "prepack": "pnpm build",
+    "validate": "pnpm types && pnpm lint && pnpm test"
+  },
+  "dependencies": {
+    "@esteban-url/cli": "workspace:*",
+    "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*",
+    "@esteban-url/validation": "workspace:*",
+    "@inquirer/prompts": "^7.6.0",
+    "chalk": "^5.4.1",
+    "execa": "^9.6.0",
+    "fast-glob": "^3.3.3",
+    "handlebars": "^4.7.8",
+    "ora": "^8.2.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^24.0.10",
+    "@vitest/coverage-v8": "^3.2.4",
+    "oxlint": "^1.6.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "bin",
+    "templates",
+    "README.md"
+  ],
+  "keywords": [
+    "cli",
+    "generator",
+    "scaffold",
+    "create",
+    "trailhead-cli",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "directory": "packages/create-cli"
+  },
+  "license": "MIT"
+}

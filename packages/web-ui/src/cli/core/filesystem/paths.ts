@@ -2,7 +2,7 @@
  * Path generation utilities for installation
  */
 
-import * as path from 'node:path';
+import * as path from 'node:path'
 // Types removed with installation system
 
 // ============================================================================
@@ -16,12 +16,12 @@ import * as path from 'node:path';
 export const generateSourcePaths = (trailheadRoot: string) => {
   // For path generation, assume development environment by default
   // The actual existence check happens during installation
-  const isDevEnvironment = true;
+  const isDevEnvironment = true
 
   // Use src for development, dist/src for production
-  const basePath = isDevEnvironment ? 'src' : path.join('dist', 'src');
-  const ext = isDevEnvironment ? '.ts' : '.js';
-  const componentExt = isDevEnvironment ? '.tsx' : '.js';
+  const basePath = isDevEnvironment ? 'src' : path.join('dist', 'src')
+  const ext = isDevEnvironment ? '.ts' : '.js'
+  const componentExt = isDevEnvironment ? '.tsx' : '.js'
 
   return {
     // Theme system files
@@ -79,8 +79,8 @@ export const generateSourcePaths = (trailheadRoot: string) => {
     // Index files
     componentsIndex: path.join(trailheadRoot, basePath, 'components', `index${ext}`),
     libIndex: path.join(trailheadRoot, basePath, 'components', 'lib', `index${ext}`),
-  };
-};
+  }
+}
 
 // ============================================================================
 // PATH UTILITIES

@@ -46,8 +46,8 @@
  * Pure functional interface with no classes.
  */
 
-import type { Result, CLIError } from '@esteban-url/trailhead-cli/core';
-import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js';
+import type { Result, CLIError } from '@esteban-url/cli/core'
+import { createTransformMetadata, executeTransform, type TransformResult } from '../utils.js'
 
 /**
  * Transform metadata
@@ -56,7 +56,7 @@ export const tsNocheckTransform = createTransformMetadata(
   'ts-nocheck',
   'Add @ts-nocheck directive to generated files',
   'format'
-);
+)
 
 /**
  * Add @ts-nocheck directive to suppress TypeScript checking in specific files
@@ -79,9 +79,9 @@ export function transformTsNocheck(
   filename?: string
 ): Result<TransformResult, CLIError> {
   return executeTransform(() => {
-    let content = input;
-    const warnings: string[] = [];
-    let changed = false;
+    let content = input
+    const warnings: string[] = []
+    let changed = false
 
     /////////////////////////////////////////////////////////////////////////////////
     // Phase 1: Check if File Should Be Processed
@@ -90,12 +90,12 @@ export function transformTsNocheck(
     //        (only these files need @ts-nocheck due to complex Headless UI types)
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const targetFiles = ['catalyst-combobox.tsx', 'catalyst-dropdown.tsx', 'catalyst-listbox.tsx'];
+    const targetFiles = ['catalyst-combobox.tsx', 'catalyst-dropdown.tsx', 'catalyst-listbox.tsx']
 
-    const shouldProcess = filename && targetFiles.some(target => filename.includes(target));
+    const shouldProcess = filename && targetFiles.some((target) => filename.includes(target))
 
     if (!shouldProcess) {
-      return { content, changed: false, warnings: [] };
+      return { content, changed: false, warnings: [] }
     }
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -105,11 +105,11 @@ export function transformTsNocheck(
     //        to avoid adding duplicate directives
     //
     /////////////////////////////////////////////////////////////////////////////////
-    const hasNocheckDirective = content.includes('// @ts-nocheck');
+    const hasNocheckDirective = content.includes('// @ts-nocheck')
 
     if (hasNocheckDirective) {
-      warnings.push('File already has @ts-nocheck directive');
-      return { content, changed: false, warnings };
+      warnings.push('File already has @ts-nocheck directive')
+      return { content, changed: false, warnings }
     }
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -119,9 +119,9 @@ export function transformTsNocheck(
     // To:    // @ts-nocheck\n'use client'\n// WARNING: This file is auto-generated...
     //
     /////////////////////////////////////////////////////////////////////////////////
-    content = `// @ts-nocheck\n${content}`;
-    changed = true;
+    content = `// @ts-nocheck\n${content}`
+    changed = true
 
-    return { content, changed, warnings };
-  });
+    return { content, changed, warnings }
+  })
 }

@@ -1,0 +1,85 @@
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err, createError } from '@esteban-url/trailhead-cli/core'
+import type { Result } from '@esteban-url/trailhead-cli/core'
+import type { CommandOptions } from '@esteban-url/trailhead-cli/command'
+
+interface BuildOptions extends CommandOptions {
+  output?: string;
+  watch?: boolean;
+  minify?: boolean;
+}
+
+/**
+ * Build Command
+ * 
+ * Example command that demonstrates trailhead-cli patterns:
+ * - Functional command creation
+ * - Result-based error handling
+ * - Context usage for logging and filesystem
+ */
+export const buildCommand = createCommand<BuildOptions>({
+  name: 'build',
+  description: 'Build the project',
+  options: [
+    {
+      flags: '-o, --output <dir>',
+      description: 'Output directory',
+      type: 'string',
+      default: 'dist'
+    },
+    {
+      flags: '-w, --watch',
+      description: 'Watch for changes',
+      type: 'boolean'
+    },
+    {
+      flags: '--minify',
+      description: 'Minify output',
+      type: 'boolean'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, fs, verbose } = context
+    
+    try {
+      logger.info('Starting build process...')
+      
+      if (verbose) {
+        logger.debug(`Build options: ${JSON.stringify(options)}`)
+      }
+      
+      // Example build logic using filesystem abstraction
+      const outputDir = options.output || 'dist'
+      const ensureResult = await fs.ensureDir(outputDir)
+      
+      if (!ensureResult.isOk()) {
+        logger.error(`Failed to create output directory: ${ensureResult.error.message}`)
+        return ensureResult
+      }
+      
+      // Simulate build process
+      logger.info(`Building to ${outputDir}...`)
+      
+      if (options.watch) {
+        logger.info('Watching for changes... (Press Ctrl+C to stop)')
+        // Watch mode implementation would go here
+      }
+      
+      if (options.minify) {
+        logger.info('Minifying output...')
+        // Minification logic would go here
+      }
+      
+      .success('Build completed successfully!')
+      return ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Build failed: ${errorMessage}`)
+      return err(createCoreError('BUILD_FAILED', `Build failed: ${errorMessage}`, {
+        cause: error,
+        recoverable: true
+      }))
+    }
+  }
+})

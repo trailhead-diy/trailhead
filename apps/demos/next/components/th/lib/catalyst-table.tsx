@@ -1,23 +1,23 @@
-'use client';
+'use client'
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
 
-import type React from 'react';
-import { createContext, useContext, useState } from 'react';
-import { CatalystLink } from './catalyst-link';
-import { SemanticColorToken, isSemanticToken, createSemanticTableStyles } from '../theme/index';
-import { cn } from '../utils/cn';
+import type React from 'react'
+import { createContext, useContext, useState } from 'react'
+import { CatalystLink } from './catalyst-link'
+import { SemanticColorToken, isSemanticToken, createSemanticTableStyles } from '../theme/index'
+import { cn } from '../utils/cn'
 
 const TableContext = createContext<{
-  bleed: boolean;
-  dense: boolean;
-  grid: boolean;
-  striped: boolean;
+  bleed: boolean
+  dense: boolean
+  grid: boolean
+  striped: boolean
 }>({
   bleed: false,
   dense: false,
   grid: false,
   striped: false,
-});
+})
 
 export function CatalystTable({
   bleed = false,
@@ -29,14 +29,14 @@ export function CatalystTable({
   color,
   ...props
 }: {
-  bleed?: boolean;
-  dense?: boolean;
-  grid?: boolean;
-  striped?: boolean;
-  color?: SemanticColorToken;
+  bleed?: boolean
+  dense?: boolean
+  grid?: boolean
+  striped?: boolean
+  color?: SemanticColorToken
 } & React.ComponentPropsWithoutRef<'div'>) {
   const resolvedColorClasses =
-    color && isSemanticToken(color) ? createSemanticTableStyles(color) : '';
+    color && isSemanticToken(color) ? createSemanticTableStyles(color) : ''
   return (
     <TableContext.Provider
       value={{ bleed, dense, grid, striped } as React.ContextType<typeof TableContext>}
@@ -69,7 +69,7 @@ export function CatalystTable({
         </div>
       </div>
     </TableContext.Provider>
-  );
+  )
 }
 
 export function CatalystTableHead({
@@ -81,22 +81,22 @@ export function CatalystTableHead({
       {...props}
       className={cn('text-muted-foreground dark:text-muted-foreground', className)}
     />
-  );
+  )
 }
 
 export function CatalystTableBody(props: React.ComponentPropsWithoutRef<'tbody'>) {
-  return <tbody {...props} />;
+  return <tbody {...props} />
 }
 
 const TableRowContext = createContext<{
-  href?: string;
-  target?: string;
-  title?: string;
+  href?: string
+  target?: string
+  title?: string
 }>({
   href: undefined,
   target: undefined,
   title: undefined,
-});
+})
 
 export function CatalystTableRow({
   href,
@@ -105,11 +105,11 @@ export function CatalystTableRow({
   className,
   ...props
 }: {
-  href?: string;
-  target?: string;
-  title?: string;
+  href?: string
+  target?: string
+  title?: string
 } & React.ComponentPropsWithoutRef<'tr'>) {
-  let { striped } = useContext(TableContext);
+  let { striped } = useContext(TableContext)
 
   return (
     <TableRowContext.Provider
@@ -127,11 +127,11 @@ export function CatalystTableRow({
         )}
       />
     </TableRowContext.Provider>
-  );
+  )
 }
 
 export function CatalystTableHeader({ className, ...props }: React.ComponentPropsWithoutRef<'th'>) {
-  let { bleed, grid } = useContext(TableContext);
+  let { bleed, grid } = useContext(TableContext)
 
   return (
     <th
@@ -143,7 +143,7 @@ export function CatalystTableHeader({ className, ...props }: React.ComponentProp
         className
       )}
     />
-  );
+  )
 }
 
 export function CatalystTableCell({
@@ -151,9 +151,9 @@ export function CatalystTableCell({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<'td'>) {
-  let { bleed, dense, grid, striped } = useContext(TableContext);
-  let { href, target, title } = useContext(TableRowContext);
-  let [cellRef, setCellRef] = useState<HTMLElement | null>(null);
+  let { bleed, dense, grid, striped } = useContext(TableContext)
+  let { href, target, title } = useContext(TableRowContext)
+  let [cellRef, setCellRef] = useState<HTMLElement | null>(null)
 
   return (
     <td
@@ -180,5 +180,5 @@ export function CatalystTableCell({
       )}
       {children}
     </td>
-  );
+  )
 }

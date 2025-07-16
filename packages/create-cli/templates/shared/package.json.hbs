@@ -1,0 +1,90 @@
+{
+  "name": "{{packageName}}",
+  "version": "{{version}}",
+  "type": "module",
+  "private": false,
+  "description": "{{description}}",
+  "bin": {
+    "{{packageName}}": "./bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "{{packageManager}} run clean && tsc --emitDeclarationOnly && tsup",
+    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
+    "test": "{{packageManager}} run build && vitest run",
+    "test:coverage": "{{packageManager}} run build && vitest run --coverage",
+    "test:watch": "vitest",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "types": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "pretest": "{{packageManager}} run build",
+    "prepack": "{{packageManager}} run build",
+    "validate": "{{packageManager}} run types && {{packageManager}} run lint && {{packageManager}} run test"
+  },
+  "dependencies": {
+{{#if IS_MONOREPO}}
+    "@esteban-url/cli": "workspace:*",
+    "@esteban-url/core": "workspace:*"{{#if isAdvanced}},
+    "@esteban-url/validation": "workspace:*",
+    "zod": "^3.22.4"{{/if}}
+{{else}}
+    "@esteban-url/cli": "^0.1.0",
+    "@esteban-url/core": "^0.1.0"{{#if isAdvanced}},
+    "@esteban-url/validation": "^0.1.0",
+    "zod": "^3.22.4"{{/if}}
+{{/if}}
+  },
+  "devDependencies": {
+{{#unless IS_MONOREPO}}
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "oxlint": "^0.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+{{/unless}}{{#if IS_MONOREPO}}
+    "@repo/oxlint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^20.11.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "oxlint": "^0.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+{{/if}}
+  },
+  "engines": {
+    "node": ">=18.0.0"{{#if (eq packageManager "pnpm")}},
+    "pnpm": ">=8.0.0"{{/if}}
+  },{{#if (eq packageManager "pnpm")}}
+  "packageManager": "pnpm@10.12.4",{{/if}}
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "keywords": [
+    "cli",
+    "command-line",
+    "typescript",
+    "trailhead-cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/{{author}}/{{packageName}}.git"
+  },
+  "author": "{{author}} <{{email}}>",
+  "license": "{{license}}"
+}

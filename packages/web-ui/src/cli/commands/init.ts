@@ -2,12 +2,12 @@
  * Init Command - Initialize a new Trailhead UI project
  */
 
-import { ok } from '@esteban-url/trailhead-cli';
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
-import { type StrictInitOptions } from '../core/types/command-options.js';
+import { ok } from '@esteban-url/cli'
+import { createCommand, type CommandContext } from '@esteban-url/cli/command'
+import { type StrictInitOptions } from '../core/types/command-options.js'
 
 // Use strict typing for better type safety
-type InitOptions = StrictInitOptions;
+type InitOptions = StrictInitOptions
 
 export const createInitCommand = () => {
   return createCommand<InitOptions>({
@@ -32,9 +32,9 @@ export const createInitCommand = () => {
     ],
 
     action: async (_options: InitOptions, context: CommandContext) => {
-      context.logger.info('🚧 Init command coming soon!');
-      context.logger.info('For now, use: trailhead-ui install');
-      return ok(undefined);
+      context.logger.info('🚧 Init command coming soon!')
+      context.logger.info('For now, use: trailhead-ui install')
+      return ok(undefined)
     },
-  });
-};
+  })
+}

@@ -1,8 +1,8 @@
-import { forwardRef, type ComponentProps } from 'react';
-import { cn } from './utils/cn';
-import { CatalystButton } from './lib/catalyst-button';
+import { forwardRef, type ComponentProps } from 'react'
+import { cn } from './utils/cn'
+import { CatalystButton } from './lib/catalyst-button'
 
-export type ButtonProps = ComponentProps<typeof CatalystButton>;
+export type ButtonProps = ComponentProps<typeof CatalystButton>
 
 export const Button = forwardRef<HTMLElement, ButtonProps>(
   ({ className, children, ...props }, ref) => (
@@ -10,6 +10,6 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(
       {children}
     </CatalystButton>
   )
-);
+)
 
-Button.displayName = 'Button';
+Button.displayName = 'Button'

@@ -33,7 +33,7 @@ Consider a traditional CLI framework approach:
 // ❌ Class-based approach
 class Command extends BaseCommand {
   constructor(private deps: Dependencies) {
-    super();
+    super()
   }
 
   async run() {
@@ -61,7 +61,7 @@ const command: Command = {
     // Explicit dependencies via context
     // Easy to test and compose
   },
-};
+}
 ```
 
 ## Core Concepts
@@ -77,7 +77,7 @@ const command: Command = {
   execute: async (options, context) => {
     // Pure function with explicit dependencies
   },
-};
+}
 ```
 
 **Key insight**: When behavior is separated from data, both become more predictable, testable, and reusable.
@@ -101,8 +101,8 @@ The framework organizes functionality into independent modules that can be impor
 
 ```typescript
 // Import only what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from '@esteban-url/trailhead-cli/filesystem'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 // Only these modules affect your bundle size
 ```
 
@@ -135,7 +135,7 @@ const buildCommand: Command = {
   execute: async (options, context) => {
     // Pure function with explicit dependencies
   },
-};
+}
 ```
 
 This enables:
@@ -196,8 +196,8 @@ This enables:
 
 ```typescript
 // Granular imports
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from '@esteban-url/trailhead-cli/filesystem'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 // Only these specific modules are bundled
 ```
 
@@ -225,8 +225,8 @@ This creates:
 ```typescript
 // All dependencies are explicit
 interface Context {
-  fs: FileSystem;
-  logger: Logger;
+  fs: FileSystem
+  logger: Logger
 }
 
 async function processFile(path: string, context: Context) {
@@ -260,9 +260,9 @@ This enables:
 const ConfigSchema = z.object({
   port: z.number().min(1).max(65535),
   host: z.string().min(1),
-});
+})
 
-type Config = z.infer<typeof ConfigSchema>; // Type inferred from schema
+type Config = z.infer<typeof ConfigSchema> // Type inferred from schema
 ```
 
 This provides:
@@ -329,25 +329,25 @@ When building a CLI that processes files, the design decisions work together:
 
 ```typescript
 // Only import what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { readFile } from '@esteban-url/trailhead-cli/filesystem'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
 
 const processCommand: Command = {
   name: 'process',
   execute: async (options, context) => {
     // Result types make error handling explicit
-    const fileResult = await context.fs.readFile(options.input);
+    const fileResult = await context.fs.readFile(options.input)
     if (!fileResult.success) {
-      return fileResult; // Propagate error
+      return fileResult // Propagate error
     }
 
     // Pure function for processing
-    const processed = processContent(fileResult.value);
+    const processed = processContent(fileResult.value)
 
     // Context injection enables testing
-    return context.fs.writeFile(options.output, processed);
+    return context.fs.writeFile(options.output, processed)
   },
-};
+}
 ```
 
 The modular imports ensure your CLI doesn't include configuration parsing, prompts, or other unused features.
@@ -359,18 +359,18 @@ The modular imports ensure your CLI doesn't include configuration parsing, promp
 const ConfigSchema = z.object({
   apiKey: z.string().min(1),
   timeout: z.number().default(5000),
-});
+})
 
 // Result types for composable error handling
 const loadConfig = async (path: string, fs: FileSystem): Promise<Result<Config>> => {
-  const fileResult = await fs.readFile(path);
-  if (!fileResult.success) return fileResult;
+  const fileResult = await fs.readFile(path)
+  if (!fileResult.success) return fileResult
 
-  const parseResult = parseJSON(fileResult.value);
-  if (!parseResult.success) return parseResult;
+  const parseResult = parseJSON(fileResult.value)
+  if (!parseResult.success) return parseResult
 
-  return validateConfig(ConfigSchema, parseResult.value);
-};
+  return validateConfig(ConfigSchema, parseResult.value)
+}
 ```
 
 This approach catches configuration errors early with clear messages, rather than failing silently or with cryptic runtime errors.

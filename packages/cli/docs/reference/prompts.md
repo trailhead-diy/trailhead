@@ -23,13 +23,13 @@ Interactive user input functionality through a re-export of [@inquirer/prompts](
 ## Import
 
 ```typescript
-import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts';
+import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts';
+import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts'
 ```
 
 ## Prompt Functions
@@ -42,18 +42,18 @@ Get text input from the user.
 const name = await prompt({
   message: 'What is your name?',
   default: 'Anonymous',
-  validate: input => input.length > 0 || 'Name is required',
-});
+  validate: (input) => input.length > 0 || 'Name is required',
+})
 
 // With transformation
 const email = await prompt({
   message: 'Enter your email:',
-  validate: input => {
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
-    return valid || 'Please enter a valid email';
+  validate: (input) => {
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input)
+    return valid || 'Please enter a valid email'
   },
-  transformer: input => input.toLowerCase(),
-});
+  transformer: (input) => input.toLowerCase(),
+})
 ```
 
 ### `select` (Single Choice)
@@ -68,7 +68,7 @@ const color = await select({
     { name: 'Green', value: '#00ff00' },
     { name: 'Blue', value: '#0000ff' },
   ],
-});
+})
 
 // With descriptions
 const framework = await select({
@@ -90,7 +90,7 @@ const framework = await select({
       description: 'Platform for building mobile and desktop apps',
     },
   ],
-});
+})
 ```
 
 ### `confirm` (Yes/No)
@@ -101,11 +101,11 @@ Get a boolean confirmation.
 const proceed = await confirm({
   message: 'Do you want to continue?',
   default: true,
-});
+})
 
 if (!proceed) {
-  console.log('Operation cancelled');
-  process.exit(0);
+  console.log('Operation cancelled')
+  process.exit(0)
 }
 ```
 
@@ -124,7 +124,7 @@ const features = await multiselect({
     { name: 'CI/CD', value: 'cicd' },
   ],
   required: true,
-});
+})
 
 // Result: ['typescript', 'eslint', 'prettier']
 ```
@@ -134,13 +134,13 @@ const features = await multiselect({
 Get sensitive input with masking.
 
 ```typescript
-import { password } from '@esteban-url/trailhead-cli/prompts';
+import { password } from '@esteban-url/trailhead-cli/prompts'
 
 const secret = await password({
   message: 'Enter your password:',
   mask: '*',
-  validate: input => input.length >= 8 || 'Password must be at least 8 characters',
-});
+  validate: (input) => input.length >= 8 || 'Password must be at least 8 characters',
+})
 ```
 
 ### `number` (Numeric Input)
@@ -148,20 +148,20 @@ const secret = await password({
 Get numeric input with validation.
 
 ```typescript
-import { number } from '@esteban-url/trailhead-cli/prompts';
+import { number } from '@esteban-url/trailhead-cli/prompts'
 
 const port = await number({
   message: 'Enter port number:',
   default: 3000,
   min: 1,
   max: 65535,
-  validate: value => {
+  validate: (value) => {
     if (value < 1024 && value !== 80 && value !== 443) {
-      return 'Ports below 1024 require admin privileges';
+      return 'Ports below 1024 require admin privileges'
     }
-    return true;
+    return true
   },
-});
+})
 ```
 
 ### `editor` (Text Editor)
@@ -169,14 +169,14 @@ const port = await number({
 Open the user's default text editor.
 
 ```typescript
-import { editor } from '@esteban-url/trailhead-cli/prompts';
+import { editor } from '@esteban-url/trailhead-cli/prompts'
 
 const content = await editor({
   message: 'Edit the configuration:',
   default: '# Enter your configuration here\n',
   postfix: '.yaml', // File extension for syntax highlighting
   waitForUseInput: true,
-});
+})
 ```
 
 ## Common Options
@@ -187,9 +187,9 @@ Most prompt types accept these common options:
 
 ```typescript
 interface CommonOptions {
-  message: string; // The question to ask
-  default?: any; // Default value
-  theme?: Theme; // Custom theme
+  message: string // The question to ask
+  default?: any // Default value
+  theme?: Theme // Custom theme
 }
 ```
 
@@ -200,15 +200,15 @@ All prompts support validation:
 ```typescript
 const result = await prompt({
   message: 'Enter project name:',
-  validate: input => {
+  validate: (input) => {
     // Return true if valid
     if (/^[a-z0-9-]+$/.test(input)) {
-      return true;
+      return true
     }
     // Return error message if invalid
-    return 'Project name must be lowercase with hyphens only';
+    return 'Project name must be lowercase with hyphens only'
   },
-});
+})
 ```
 
 ## Advanced Usage
@@ -217,11 +217,11 @@ const result = await prompt({
 
 ```typescript
 interface Choice<T> {
-  name: string; // Display name
-  value: T; // Returned value
-  description?: string; // Optional description
-  disabled?: boolean | string; // Disable with optional reason
-  type?: 'separator'; // Visual separator
+  name: string // Display name
+  value: T // Returned value
+  description?: string // Optional description
+  disabled?: boolean | string // Disable with optional reason
+  type?: 'separator' // Visual separator
 }
 
 const option = await select({
@@ -234,7 +234,7 @@ const option = await select({
     { name: 'Option 3', value: 3, description: 'Recommended' },
     { name: 'Option 4', value: 4, disabled: 'Coming soon' },
   ],
-});
+})
 ```
 
 ### Conditional Prompts
@@ -243,33 +243,33 @@ const option = await select({
 const type = await select({
   message: 'Project type:',
   choices: ['library', 'application'],
-});
+})
 
-let entryPoint = 'src/index.ts';
+let entryPoint = 'src/index.ts'
 if (type === 'library') {
   entryPoint = await prompt({
     message: 'Entry point:',
     default: 'src/index.ts',
-  });
+  })
 }
 ```
 
 ### Dynamic Choices
 
 ```typescript
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
+import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 
-const fs = createFileSystem();
-const templatesResult = await fs.readdir('./templates');
+const fs = createFileSystem()
+const templatesResult = await fs.readdir('./templates')
 
 if (templatesResult.success) {
   const template = await select({
     message: 'Choose a template:',
-    choices: templatesResult.value.map(name => ({
-      name: name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    choices: templatesResult.value.map((name) => ({
+      name: name.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
       value: name,
     })),
-  });
+  })
 }
 ```
 
@@ -281,14 +281,14 @@ Prompts can be cancelled by the user (Ctrl+C):
 try {
   const name = await prompt({
     message: 'Your name:',
-  });
-  console.log(`Hello, ${name}!`);
+  })
+  console.log(`Hello, ${name}!`)
 } catch (error) {
   if (error.message === 'Prompt was cancelled') {
-    console.log('\nOperation cancelled by user');
-    process.exit(0);
+    console.log('\nOperation cancelled by user')
+    process.exit(0)
   }
-  throw error;
+  throw error
 }
 ```
 
@@ -297,20 +297,20 @@ try {
 Use mock prompts for testing:
 
 ```typescript
-import { createTestContext, mockPrompts } from '@esteban-url/trailhead-cli/testing';
+import { createTestContext, mockPrompts } from '@esteban-url/trailhead-cli/testing'
 
 test('interactive command', async () => {
   const prompts = mockPrompts({
     'Project name:': 'my-project',
     'Choose a template:': 'typescript',
     'Initialize git?': true,
-  });
+  })
 
-  const context = createTestContext({ prompts });
+  const context = createTestContext({ prompts })
 
-  const result = await initCommand.execute({}, context);
-  expect(result.success).toBe(true);
-});
+  const result = await initCommand.execute({}, context)
+  expect(result.success).toBe(true)
+})
 ```
 
 ## Styling
@@ -323,12 +323,12 @@ const answer = await prompt({
   theme: {
     prefix: '❯',
     style: {
-      message: text => chalk.cyan(text),
-      answer: text => chalk.green(text),
-      defaultAnswer: text => chalk.dim(text),
+      message: (text) => chalk.cyan(text),
+      answer: (text) => chalk.green(text),
+      defaultAnswer: (text) => chalk.dim(text),
     },
   },
-});
+})
 ```
 
 ## Best Practices
@@ -354,23 +354,23 @@ export {
   expand, // Expand choices
   rawlist, // Numbered list
   number, // Numeric input
-} from '@inquirer/prompts';
+} from '@inquirer/prompts'
 
 // Common types
 interface PromptOptions {
-  message: string;
-  default?: any;
-  validate?: (input: any) => boolean | string | Promise<boolean | string>;
-  theme?: Theme;
+  message: string
+  default?: any
+  validate?: (input: any) => boolean | string | Promise<boolean | string>
+  theme?: Theme
 }
 
 interface Choice<T = string> {
-  name: string;
-  value: T;
-  description?: string;
-  disabled?: boolean | string;
-  checked?: boolean;
-  type?: 'separator';
+  name: string
+  value: T
+  description?: string
+  disabled?: boolean | string
+  checked?: boolean
+  type?: 'separator'
 }
 ```
 

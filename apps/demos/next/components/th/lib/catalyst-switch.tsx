@@ -1,8 +1,8 @@
 // AUTO-GENERATED FILE - DO NOT MODIFY. This file is auto-generated and will be overwritten.
-import * as Headless from '@headlessui/react';
-import type React from 'react';
-import { isSemanticToken, createSemanticSwitchStyles } from '../theme/index';
-import { cn } from '../utils/cn';
+import * as Headless from '@headlessui/react'
+import type React from 'react'
+import { isSemanticToken, createSemanticSwitchStyles } from '../theme/index'
+import { cn } from '../utils/cn'
 
 export function CatalystSwitchGroup({
   className,
@@ -20,7 +20,7 @@ export function CatalystSwitchGroup({
         className
       )}
     />
-  );
+  )
 }
 
 export function CatalystSwitchField({
@@ -45,7 +45,7 @@ export function CatalystSwitchField({
         className
       )}
     />
-  );
+  )
 }
 
 const colors = {
@@ -154,25 +154,25 @@ const colors = {
     '[--switch-bg-ring:var(--destructive)]/90 [--switch-bg:var(--destructive)] dark:[--switch-bg-ring:transparent]',
     '[--switch:var(--destructive-foreground)] [--switch-ring:var(--destructive)]/90 [--switch-shadow:var(--destructive)]/20',
   ],
-};
+}
 
-type Color = keyof typeof colors;
+type Color = keyof typeof colors
 
 export function CatalystSwitch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
-  className?: string;
+  color?: Color
+  className?: string
 } & Omit<Headless.SwitchProps, 'as' | 'className' | 'children'>) {
   const resolvedColorClasses = (() => {
     if (color && isSemanticToken(color)) {
-      return createSemanticSwitchStyles(color);
+      return createSemanticSwitchStyles(color)
     }
 
-    return colors[color] || colors['dark/zinc'];
-  })();
+    return colors[color] || colors['dark/zinc']
+  })()
 
   return (
     <Headless.Switch
@@ -220,5 +220,5 @@ export function CatalystSwitch({
         )}
       />
     </Headless.Switch>
-  );
+  )
 }

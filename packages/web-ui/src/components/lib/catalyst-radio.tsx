@@ -1,13 +1,13 @@
 // WARNING: This file is auto-generated and will be overwritten.
 // Auto generated on DEVELOPMENT
 
-import * as Headless from '@headlessui/react';
-import { cn } from '../utils/cn';
+import * as Headless from '@headlessui/react'
+import { cn } from '../utils/cn'
 export function CatalystRadioGroup({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.RadioGroupProps, 'as' | 'className'>) {
   return (
     <Headless.RadioGroup
@@ -21,13 +21,13 @@ export function CatalystRadioGroup({
         className
       )}
     />
-  );
+  )
 }
 export function CatalystRadioField({
   className,
   ...props
 }: {
-  className?: string;
+  className?: string
 } & Omit<Headless.FieldProps, 'as' | 'className'>) {
   return (
     <Headless.Field
@@ -47,7 +47,7 @@ export function CatalystRadioField({
         className
       )}
     />
-  );
+  )
 }
 const base = [
   // Basic layout
@@ -76,7 +76,7 @@ const base = [
   'group-data-disabled:opacity-50',
   'group-data-disabled:border-zinc-950/25 group-data-disabled:bg-zinc-950/5 group-data-disabled:[--radio-checked-indicator:var(--color-zinc-950)]/50 group-data-disabled:before:bg-transparent',
   'dark:group-data-disabled:border-white/20 dark:group-data-disabled:bg-white/2.5 dark:group-data-disabled:[--radio-checked-indicator:var(--color-white)]/50 dark:group-data-checked:group-data-disabled:after:hidden',
-];
+]
 const colors = {
   'dark/zinc': [
     '[--radio-checked-bg:var(--color-zinc-900)] [--radio-checked-border:var(--color-zinc-950)]/90 [--radio-checked-indicator:var(--color-white)]',
@@ -126,15 +126,15 @@ const colors = {
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-purple-600)] [--radio-checked-border:var(--color-purple-700)]/90',
   muted:
     '[--radio-checked-indicator:var(--color-white)] [--radio-checked-bg:var(--color-gray-600)] [--radio-checked-border:var(--color-gray-700)]/90',
-};
-type Color = keyof typeof colors;
+}
+type Color = keyof typeof colors
 export function CatalystRadio({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color;
-  className?: string;
+  color?: Color
+  className?: string
 } & Omit<Headless.RadioProps, 'as' | 'className' | 'children'>) {
   return (
     <Headless.Radio
@@ -152,5 +152,5 @@ export function CatalystRadio({
         />
       </span>
     </Headless.Radio>
-  );
+  )
 }

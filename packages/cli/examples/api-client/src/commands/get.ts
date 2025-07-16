@@ -1,13 +1,13 @@
-import { Ok, Err } from '@esteban-url/trailhead-cli';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
-import type { CommandContext } from '@esteban-url/trailhead-cli/command';
-import { HttpClient } from '../http/client.js';
+import { Ok, Err } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@esteban-url/trailhead-cli/command'
+import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { HttpClient } from '../http/client.js'
 
 interface GetOptions {
-  'auth-key'?: string;
-  retry?: number;
-  timeout?: number;
-  'output-format'?: string;
+  'auth-key'?: string
+  retry?: number
+  timeout?: number
+  'output-format'?: string
 }
 
 export const getCommand = createCommand({
@@ -43,27 +43,27 @@ export const getCommand = createCommand({
     },
   ],
   action: async (options: GetOptions, context: CommandContext) => {
-    const [url] = context.args;
+    const [url] = context.args
 
     if (!url) {
-      return Err(new Error('URL is required. Usage: api-client get <url>'));
+      return Err(new Error('URL is required. Usage: api-client get <url>'))
     }
 
     // Validate URL
     try {
-      const _validatedUrl = new URL(url);
+      const _validatedUrl = new URL(url)
     } catch {
-      return Err(new Error('Invalid URL provided'));
+      return Err(new Error('Invalid URL provided'))
     }
 
-    const client = new HttpClient();
-    const headers: Record<string, string> = {};
+    const client = new HttpClient()
+    const headers: Record<string, string> = {}
 
     if (options['auth-key']) {
-      headers['Authorization'] = `Bearer ${options['auth-key']}`;
+      headers['Authorization'] = `Bearer ${options['auth-key']}`
     }
 
-    context.logger.info(`Making GET request to ${url}...`);
+    context.logger.info(`Making GET request to ${url}...`)
 
     const result = await client.request(
       {
@@ -79,36 +79,36 @@ export const getCommand = createCommand({
             backoff: 2,
           }
         : undefined
-    );
+    )
 
     if (!result.success) {
-      context.logger.error(`Request failed: ${result.error.message}`);
-      return result;
+      context.logger.error(`Request failed: ${result.error.message}`)
+      return result
     }
 
-    const response = result.value;
+    const response = result.value
 
     switch (options['output-format']) {
       case 'headers':
-        console.log(JSON.stringify(response.headers, null, 2));
-        break;
+        console.log(JSON.stringify(response.headers, null, 2))
+        break
       case 'raw':
-        console.log(response.data);
-        break;
+        console.log(response.data)
+        break
       default:
         if (typeof response.data === 'object') {
-          console.log(JSON.stringify(response.data, null, 2));
+          console.log(JSON.stringify(response.data, null, 2))
         } else {
-          console.log(response.data);
+          console.log(response.data)
         }
     }
 
     if (response.status >= 400) {
-      context.logger.warn(`HTTP ${response.status}: ${response.statusText}`);
+      context.logger.warn(`HTTP ${response.status}: ${response.statusText}`)
     } else {
-      context.logger.success(`Request completed successfully (${response.status})`);
+      context.logger.success(`Request completed successfully (${response.status})`)
     }
 
-    return Ok(undefined);
+    return Ok(undefined)
   },
-});
+})

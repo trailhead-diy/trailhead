@@ -1,0 +1,195 @@
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { loadConfig, defineConfig } from '@esteban-url/config'
+import { z } from 'zod'
+
+/**
+ * Configuration schema for {{projectName}}
+ */
+const configSchema = z.object({
+  name: z.string(),
+  type: z.enum(['library', 'application', 'cli', 'api']),
+  version: z.string(),
+  features: z.object({
+    linting: z.boolean().default(true),
+    testing: z.boolean().default(true),
+    typescript: z.boolean().default(true)
+  }),
+  build: z.object({
+    outDir: z.string().default('dist'),
+    target: z.string().default('node18'),
+    sourcemap: z.boolean().default(true),
+    minify: z.boolean().default(false)
+  })
+})
+
+type ProjectConfig = z.infer<typeof configSchema>
+
+interface ConfigOptions extends CommandOptions {
+  get?: string;
+  set?: string;
+  list?: boolean;
+  validate?: boolean;
+}
+
+/**
+ * Config Command
+ * 
+ * Advanced example demonstrating:
+ * - Type-safe configuration management
+ * - Schema validation with Zod
+ * - Configuration file discovery
+ * - Environment-specific overrides
+ */
+export const configCommand = createCommand<ConfigOptions>({
+  name: 'config',
+  description: 'Manage project configuration',
+  arguments: '[key] [value]',
+  options: [
+    {
+      flags: '-g, --get <key>',
+      description: 'Get configuration value',
+      type: 'string'
+    },
+    {
+      flags: '-s, --set <key=value>',
+      description: 'Set configuration value (format: key=value)',
+      type: 'string'
+    },
+    {
+      flags: '-l, --list',
+      description: 'List all configuration values',
+      type: 'boolean'
+    },
+    {
+      flags: '--validate',
+      description: 'Validate configuration file',
+      type: 'boolean'
+    }
+  ],
+  action: async (options, context) => {
+    const { logger, verbose, args } = context
+    
+    try {
+      // Load configuration
+      const loadResult = await loadConfig(configSchema, { name: '{{packageName}}' })
+      
+      if (!loadResult.isOk()) {
+        logger.error(`Failed to load configuration: ${loadResult.error.message}`)
+        return loadResult
+      }
+      
+      const projectConfig = loadResult.value
+      
+      // Handle different command operations
+      if (options.validate) {
+        logger.success('Configuration is valid!')
+        if (verbose) {
+          logger.debug(`Configuration: ${JSON.stringify(projectConfig)}`)
+        }
+        return ok(undefined)
+      }
+      
+      if (options.list) {
+        logger.info('Current configuration:')
+        console.log(JSON.stringify(projectConfig, null, 2))
+        return ok(undefined)
+      }
+      
+      if (options.get) {
+        const value = getNestedValue(projectConfig, options.get)
+        if (value !== undefined) {
+          console.log(value)
+        } else {
+          logger.error(`Configuration key not found: ${options.get}`)
+          return err({
+            code: 'CONFIG_KEY_NOT_FOUND',
+            message: `Key not found: ${options.get}`,
+            details: {
+              key: options.get
+            },
+            suggestion: 'Use --list to see available configuration keys'
+          } satisfies CoreError)
+        }
+        return ok(undefined)
+      }
+      
+      if (options.set) {
+        const [key, value] = options.set.split('=', 2)
+        if (!key || value === undefined) {
+          logger.error('Invalid format. Use: --set key=value')
+          return err({
+            code: 'INVALID_CONFIG_FORMAT',
+            message: 'Invalid set format',
+            details: {
+              format: 'key=value'
+            },
+            suggestion: 'Use format: --set key=value'
+          } satisfies CoreError)
+        }
+        
+        logger.info(`Setting ${key} = ${value}`)
+        // In a real implementation, you'd update the config file
+        logger.error('Configuration updates not implemented in this example')
+        return ok(undefined)
+      }
+      
+      // Handle positional arguments
+      if (args.length > 0) {
+        const key = args[0]
+        const value = getNestedValue(projectConfig, key)
+        
+        if (value !== undefined) {
+          console.log(value)
+        } else {
+          logger.error(`Configuration key not found: ${key}`)
+          return err({
+            code: 'CONFIG_KEY_NOT_FOUND',
+            message: `Key not found: ${key}`,
+            details: {
+              key
+            },
+            suggestion: 'Use --list to see available configuration keys'
+          } satisfies CoreError)
+        }
+        
+        return ok(undefined)
+      }
+      
+      // Default: show configuration summary
+      logger.info(`Project: ${(projectConfig as any).name} (${(projectConfig as any).type})`)
+      logger.info(`Version: ${(projectConfig as any).version}`)
+      logger.info(`Features: ${Object.entries((projectConfig as any).features)
+        .filter(([, enabled]) => enabled)
+        .map(([name]) => name)
+        .join(', ')}`
+      )
+      logger.info(`Build target: ${(projectConfig as any).build.target}`)
+      
+      return ok(undefined)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error(`Config operation failed: ${errorMessage}`)
+      return err({
+        code: 'CONFIG_OPERATION_FAILED',
+        message: `Config failed: ${errorMessage}`,
+        details: {
+          operation: 'config'
+        },
+        cause: error instanceof Error ? error : undefined
+      } satisfies CoreError)
+    }
+  }
+})
+
+/**
+ * Get nested object value by dot notation key
+ */
+function getNestedValue(obj: any, key: string): any {
+  return key.split('.').reduce((current, prop) => {
+    return current && current[prop] !== undefined ? current[prop] : undefined
+  }, obj)
+}
