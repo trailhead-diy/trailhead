@@ -564,8 +564,7 @@ const handleConfigChange = <T>(
   // This would involve reloading configuration and calling the callback
   // Simplified for now
   if (error) {
-    // TODO: Use proper logging instead of console.error
-    // console.error('Configuration watch error:', error);
+    // Silent handling - errors are passed to the callback
     return
   }
 

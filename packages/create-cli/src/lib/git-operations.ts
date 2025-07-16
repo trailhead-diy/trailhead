@@ -2,9 +2,7 @@ import { ok, err, createCoreError } from '@esteban-url/core'
 import type { Result, CoreError } from '@esteban-url/core'
 import { execa } from 'execa'
 
-// TODO: Replace with @esteban-url/git when workspace dependencies are resolved
-// import { createGitOperations, createGitCommandOperations } from '@esteban-url/git';
-// import type { GitRepository } from '@esteban-url/git';
+// NOTE: Using execa directly until @esteban-url/git provides config and status operations
 
 interface GitRepository {
   path: string
@@ -110,7 +108,6 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   }
 
-  // FIXME: @esteban-url/git missing config operations - using execa fallback
   const configureUser = async (
     projectPath: string,
     name: string,
@@ -142,7 +139,6 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   }
 
-  // FIXME: @esteban-url/git missing config operations - using execa fallback
   const getConfig = async (
     projectPath: string,
     key: string
@@ -166,7 +162,6 @@ export function createGeneratorGitOperations(): GitOperationsForGenerator {
     }
   }
 
-  // FIXME: @esteban-url/git missing status operations - using execa fallback
   const verifyStatus = async (projectPath: string): Promise<Result<void, CoreError>> => {
     try {
       await execa('git', ['status', '--porcelain'], {

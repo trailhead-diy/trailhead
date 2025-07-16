@@ -297,27 +297,43 @@ pre-push:
     branch-sync-check:
       priority: 2
       run: |
-        cd packages/cli && pnpm build > /dev/null 2>&1
+        cd packages/git && pnpm build > /dev/null 2>&1
         node --input-type=module -e "
-          import { checkBranchSync, formatSyncStatus } from './dist/git/index.js';
+          import { createGitStatusOperations, createGitOperations } from './dist/index.js';
           (async () => {
-            const result = await checkBranchSync('origin/main', { fetch: true });
-            if (!result.success) {
-              console.log('ℹ️ Could not check branch sync:', result.error.message);
+            try {
+              const gitOps = createGitOperations();
+              const statusOps = createGitStatusOperations();
+              
+              // Get current repository
+              const repoResult = await gitOps.getRepository(process.cwd());
+              if (repoResult.isErr()) {
+                console.log('ℹ️ Could not get repository:', repoResult.error.message);
+                process.exit(0);
+              }
+              
+              const repo = repoResult.value;
+              
+              // Check branch sync
+              const syncResult = await statusOps.checkBranchSync(repo, 'origin/main', { fetch: true });
+              if (syncResult.isErr()) {
+                console.log('ℹ️ Could not check branch sync:', syncResult.error.message);
+                process.exit(0);
+              }
+              
+              const status = syncResult.value;
+              if (!status.isUpToDate) {
+                console.log('⚠️ ' + statusOps.formatSyncStatus(status));
+                if (status.behind > 10) {
+                  console.log('❌ Branch is significantly behind. Please sync before pushing.');
+                  process.exit(1);
+                }
+              }
+            } catch (err) {
+              console.log('ℹ️ Branch sync check failed:', err.message);
               process.exit(0);
             }
-            const status = result.value;
-            if (!status.isUpToDate) {
-              console.log('⚠️ ' + formatSyncStatus(status));
-              if (status.behind > 10) {
-                console.log('❌ Branch is significantly behind. Please sync before pushing.');
-                process.exit(1);
-              }
-            }
-          })().catch(err => {
-            console.log('ℹ️ Branch sync check failed:', err.message);
-            process.exit(0);
-          });
+          })();
         "
 
 # Personal overrides (not committed)

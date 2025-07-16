@@ -161,6 +161,12 @@ export interface GitStatusOperations {
   readonly hasChanges: (repo: GitRepository) => Promise<GitResult<boolean>>
   readonly getUntrackedFiles: (repo: GitRepository) => Promise<GitResult<readonly string[]>>
   readonly getStagedFiles: (repo: GitRepository) => Promise<GitResult<readonly GitFileStatus[]>>
+  readonly checkBranchSync: (
+    repo: GitRepository,
+    targetBranch: string,
+    options?: GitBranchSyncOptions
+  ) => Promise<GitResult<GitBranchSyncStatus>>
+  readonly formatSyncStatus: (status: GitBranchSyncStatus) => string
 }
 
 export interface GitDiffOperations {
@@ -348,4 +354,23 @@ export interface GitBranchConfig {
   readonly remote?: string
   readonly merge?: string
   readonly rebase?: boolean
+}
+
+// ========================================
+// Git Branch Sync Types
+// ========================================
+
+export interface GitBranchSyncStatus {
+  readonly currentBranch: string
+  readonly targetBranch: string
+  readonly ahead: number
+  readonly behind: number
+  readonly isUpToDate: boolean
+  readonly diverged: boolean
+  readonly lastFetch?: Date
+}
+
+export interface GitBranchSyncOptions {
+  readonly fetch?: boolean
+  readonly timeout?: number
 }

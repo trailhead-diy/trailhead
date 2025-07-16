@@ -13,7 +13,6 @@ function createCommand(config: Command): Command {
 import { ok, err, createCoreError } from '@esteban-url/core'
 import { createConfigManager } from '../lib/config-manager.js'
 import { createPresetManager } from '../lib/preset-manager.js'
-// import { generateConfigJsonSchema } from '../lib/config-schema.js';
 
 /**
  * Configuration management command for create-trailhead-cli

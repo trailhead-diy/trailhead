@@ -2,7 +2,7 @@
 // Re-export essential fp-ts functions for the Trailhead ecosystem
 
 // Core composition and pipeline functions
-export { pipe, flow, identity, constant } from 'fp-ts/function'
+export { pipe, flow, identity, constant } from 'fp-ts/lib/function.js'
 
 // Result type utilities - bridge between fp-ts and neverthrow patterns
 import { type Result, ResultAsync, err } from 'neverthrow'

@@ -1,4 +1,3 @@
-// import { executeGitCommandSimple } from '@esteban-url/trailhead-cli/git';
 import type { ProjectConfig, TemplateContext } from './types.js'
 
 /**
@@ -102,7 +101,7 @@ function sanitizePackageName(projectName: string): string {
  * Get git user name with security validation
  */
 async function getGitUser(): Promise<string> {
-  const nameResult = { isOk: () => false, value: 'Your Name' } // TODO: Implement git config
+  const nameResult = { isOk: () => false, value: 'Your Name' } // Git config not available yet
 
   if (!nameResult.isOk()) {
     return 'Your Name'
@@ -126,7 +125,7 @@ async function getGitUser(): Promise<string> {
  * Get git user email with security validation
  */
 async function getGitEmail(): Promise<string> {
-  const emailResult = { isOk: () => false, value: 'your.email@example.com' } // TODO: Implement git config
+  const emailResult = { isOk: () => false, value: 'your.email@example.com' } // Git config not available yet
 
   if (!emailResult.isOk()) {
     return 'your.email@example.com'

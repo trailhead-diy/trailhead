@@ -3,7 +3,6 @@ import type { CommandContext } from '../command/index.js'
 import type { FileSystem } from '@esteban-url/fs'
 import type { Logger } from '../utils/logger.js'
 import { createMockFileSystem } from '@esteban-url/fs/testing'
-// import { mockLogger } from './mocks.js' // Temporarily disabled
 
 export interface TestContextOptions {
   projectRoot?: string

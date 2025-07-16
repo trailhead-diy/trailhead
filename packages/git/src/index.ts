@@ -54,4 +54,6 @@ export type {
   GitCoreConfig,
   GitRemoteConfig,
   GitBranchConfig,
+  GitBranchSyncStatus,
+  GitBranchSyncOptions,
 } from './types.js'

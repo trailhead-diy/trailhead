@@ -8,6 +8,8 @@ import type {
   GitStatus,
   GitFileStatus,
   FileStatusType,
+  GitBranchSyncStatus,
+  GitBranchSyncOptions,
 } from '../types.js'
 
 // ========================================
@@ -76,12 +78,122 @@ export const createGitStatusOperations = (): GitStatusOperations => {
     return ok(statusResult.value.staged)
   }
 
+  const checkBranchSync = async (
+    repo: GitRepository,
+    targetBranch: string,
+    options: GitBranchSyncOptions = {}
+  ): Promise<GitResult<GitBranchSyncStatus>> => {
+    const { fetch = false, timeout = 10000 } = options
+
+    // Get current branch
+    const currentBranchResult = fromThrowable(() =>
+      execSync('git branch --show-current', {
+        cwd: repo.workingDirectory,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+        timeout,
+      }).trim()
+    )()
+
+    if (currentBranchResult.isErr()) {
+      return err(
+        createGitErrors.commandFailed(
+          'git branch --show-current',
+          String(currentBranchResult.error),
+          currentBranchResult.error
+        )
+      )
+    }
+
+    const currentBranch = currentBranchResult.value
+
+    // Optionally fetch latest changes
+    if (fetch) {
+      const fetchResult = fromThrowable(() =>
+        execSync('git fetch --quiet origin', {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+          timeout,
+        })
+      )()
+
+      if (fetchResult.isErr()) {
+        // Continue without fetch if it fails (might be offline)
+        console.warn('Warning: Could not fetch latest changes')
+      }
+    }
+
+    // Get ahead/behind counts
+    const revListResult = fromThrowable(() =>
+      execSync(`git rev-list --count --left-right ${targetBranch}...HEAD`, {
+        cwd: repo.workingDirectory,
+        encoding: 'utf-8',
+        stdio: 'pipe',
+        timeout,
+      }).trim()
+    )()
+
+    if (revListResult.isErr()) {
+      return err(
+        createGitErrors.commandFailed(
+          'git rev-list',
+          String(revListResult.error),
+          revListResult.error
+        )
+      )
+    }
+
+    const [behindStr, aheadStr] = revListResult.value.split('\t')
+    const behind = parseInt(behindStr, 10) || 0
+    const ahead = parseInt(aheadStr, 10) || 0
+
+    const isUpToDate = behind === 0 && ahead === 0
+    const diverged = behind > 0 && ahead > 0
+
+    const syncStatus: GitBranchSyncStatus = {
+      currentBranch,
+      targetBranch,
+      ahead,
+      behind,
+      isUpToDate,
+      diverged,
+      lastFetch: fetch ? new Date() : undefined,
+    }
+
+    return ok(syncStatus)
+  }
+
+  const formatSyncStatus = (status: GitBranchSyncStatus): string => {
+    const { currentBranch, targetBranch, ahead, behind, isUpToDate, diverged } = status
+
+    if (isUpToDate) {
+      return `Branch '${currentBranch}' is up to date with '${targetBranch}'`
+    }
+
+    if (diverged) {
+      return `Branch '${currentBranch}' has diverged from '${targetBranch}' (${ahead} ahead, ${behind} behind)`
+    }
+
+    if (ahead > 0) {
+      return `Branch '${currentBranch}' is ${ahead} commit${ahead === 1 ? '' : 's'} ahead of '${targetBranch}'`
+    }
+
+    if (behind > 0) {
+      return `Branch '${currentBranch}' is ${behind} commit${behind === 1 ? '' : 's'} behind '${targetBranch}'`
+    }
+
+    return `Branch '${currentBranch}' status unknown relative to '${targetBranch}'`
+  }
+
   return {
     getStatus,
     isClean,
     hasChanges,
     getUntrackedFiles,
     getStagedFiles,
+    checkBranchSync,
+    formatSyncStatus,
   }
 }
 
