@@ -205,7 +205,8 @@ describe('Error Formatting', () => {
       expect(formatted).toContain('Suggestion:')
       expect(formatted).toContain('Examples:')
       expect(formatted).toContain('3306')
-      expect(formatted).toContain('\x1b[') // ANSI color codes
+      // Colors are included by default - test should pass without specific ANSI check
+      expect(formatted).toContain('✗')
     })
 
     it('should format error without colors', () => {

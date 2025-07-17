@@ -17,4 +17,5 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   target: 'node18',
+  external: ['@esteban-url/core', '@esteban-url/validation', '@esteban-url/fs', '@esteban-url/cli'],
 })

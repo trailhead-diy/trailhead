@@ -1,13 +1,13 @@
 import type { ConfigValidationError } from './errors.js'
 import { isConfigValidationError } from './errors.js'
-// Stub color functions - would normally come from @esteban-url/cli/utils
-const redColor = (text: string): string => `\x1b[31m${text}\x1b[0m`
-const _success = (text: string): string => `\x1b[32m${text}\x1b[0m`
-const warning = (text: string): string => `\x1b[33m${text}\x1b[0m`
-const info = (text: string): string => `\x1b[36m${text}\x1b[0m`
-const muted = (text: string): string => `\x1b[90m${text}\x1b[0m`
-const bold = (text: string): string => `\x1b[1m${text}\x1b[0m`
-const _dim = (text: string): string => `\x1b[2m${text}\x1b[0m`
+import { error as errorColor, warning, info, muted, bold } from '@esteban-url/core/utils'
+
+/**
+ * Configuration validation error formatting with semantic colors
+ *
+ * Uses proper CLI color utilities from @esteban-url/core/utils for consistent styling
+ * across the entire monorepo. Colors are applied semantically based on error context.
+ */
 
 // ========================================
 // Error Formatting System
@@ -97,7 +97,7 @@ export const createValidationErrorFormatter = (
 
     // Header
     if (includeColors) {
-      message += `${redColor('✗')} Invalid ${info(error.expectedType)} for field ${warning(`"${error.field}"`)}${pathStr}${valueStr}${muted(ruleStr)}\n`
+      message += `${errorColor('✗')} Invalid ${info(error.expectedType)} for field ${warning(`"${error.field}"`)}${pathStr}${valueStr}${muted(ruleStr)}\n`
     } else {
       message += `✗ Invalid ${error.expectedType} for field "${error.field}"${pathStr}${valueStr}${ruleStr}\n`
     }
@@ -148,7 +148,7 @@ export const createValidationErrorFormatter = (
 
     // Header
     if (includeColors) {
-      summary += `${redColor(`Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:`)}\n\n`
+      summary += `${errorColor(`Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:`)}\n\n`
     } else {
       summary += `Found ${errors.length} configuration error${errors.length === 1 ? '' : 's'}:\n\n`
     }
@@ -180,7 +180,7 @@ export const createValidationErrorFormatter = (
     let summary = ''
 
     if (includeColors) {
-      summary += `${redColor(`Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}`)}\n\n`
+      summary += `${errorColor(`Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}`)}\n\n`
     } else {
       summary += `Configuration validation failed with ${errors.length} error${errors.length === 1 ? '' : 's'}\n\n`
     }

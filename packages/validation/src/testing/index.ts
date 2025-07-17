@@ -860,10 +860,6 @@ export function createValidationTestScenario(
   }
 }
 
-// Keep existing exports for backward compatibility
-export * from './schema-builders.js'
-export * from './validation-helpers.js'
-
 // ========================================
 // Export Collections
 // ========================================
