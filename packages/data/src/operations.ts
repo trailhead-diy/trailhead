@@ -100,9 +100,12 @@ async function detectFileFormat(
       return err(
         createDataError(
           'UNSUPPORTED_FORMAT',
+          'DATA_UNSUPPORTED_FORMAT',
           `Cannot determine data format for file: ${filePath}`,
-          `Detected format: ${detectedFormat}`,
-          { filePath, detectedFormat }
+          {
+            details: `Detected format: ${detectedFormat}`,
+            context: { filePath, detectedFormat },
+          }
         )
       )
   }
@@ -143,9 +146,12 @@ function detectContentFormat(
   return err(
     createDataError(
       'FORMAT_DETECTION_FAILED',
+      'DATA_FORMAT_DETECTION_FAILED',
       'Cannot determine data format from content',
-      'Content does not match known patterns',
-      { fileName, contentLength: content.length }
+      {
+        details: 'Content does not match known patterns',
+        context: { fileName, contentLength: content.length },
+      }
     )
   )
 }
@@ -186,9 +192,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
             return err(
               createDataError(
                 'UNSUPPORTED_FORMAT',
+                'DATA_UNSUPPORTED_FORMAT',
                 `Unsupported data format: ${format}`,
-                `File: ${filePath}`,
-                { filePath, format }
+                {
+                  details: `File: ${filePath}`,
+                  context: { filePath, format },
+                }
               )
             )
         }
@@ -196,9 +205,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         return err(
           createDataError(
             'PARSE_AUTO_FAILED',
+            'DATA_PARSING_FAILED',
             `Auto-parsing failed for file: ${filePath}`,
-            String(error),
-            { filePath, error }
+            {
+              details: String(error),
+              context: { filePath, error },
+            }
           )
         )
       }
@@ -223,18 +235,24 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
             return err(
               createDataError(
                 'EXCEL_FROM_STRING_UNSUPPORTED',
+                'DATA_UNSUPPORTED_FORMAT',
                 'Excel format cannot be parsed from string content',
-                'Use parseExcelFromContent with Buffer instead',
-                { fileName }
+                {
+                  details: 'Use parseExcelFromContent with Buffer instead',
+                  context: { fileName },
+                }
               )
             )
           default:
             return err(
               createDataError(
                 'UNSUPPORTED_FORMAT',
+                'DATA_UNSUPPORTED_FORMAT',
                 `Unsupported data format: ${format}`,
-                `Content length: ${content.length}`,
-                { fileName, format, contentLength: content.length }
+                {
+                  details: `Content length: ${content.length}`,
+                  context: { fileName, format, contentLength: content.length },
+                }
               )
             )
         }
@@ -242,9 +260,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         return err(
           createDataError(
             'PARSE_AUTO_CONTENT_FAILED',
+            'DATA_PARSING_FAILED',
             'Auto-parsing failed for content',
-            String(error),
-            { fileName, error, contentLength: content.length }
+            {
+              details: String(error),
+              context: { fileName, error, contentLength: content.length },
+            }
           )
         )
       }
@@ -263,9 +284,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
               return err(
                 createDataError(
                   'INVALID_CSV_DATA',
+                  'DATA_UNSUPPORTED_FORMAT',
                   'CSV write requires array data',
-                  'Data must be an array of objects',
-                  { filePath, dataType: typeof data }
+                  {
+                    details: 'Data must be an array of objects',
+                    context: { filePath, dataType: typeof data },
+                  }
                 )
               )
             }
@@ -277,9 +301,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
               return err(
                 createDataError(
                   'INVALID_EXCEL_DATA',
+                  'DATA_UNSUPPORTED_FORMAT',
                   'Excel write requires array data',
-                  'Data must be an array of objects',
-                  { filePath, dataType: typeof data }
+                  {
+                    details: 'Data must be an array of objects',
+                    context: { filePath, dataType: typeof data },
+                  }
                 )
               )
             }
@@ -293,9 +320,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         return err(
           createDataError(
             'WRITE_AUTO_FAILED',
+            'DATA_CONVERSION_FAILED',
             `Auto-writing failed for file: ${filePath}`,
-            String(error),
-            { filePath, error }
+            {
+              details: String(error),
+              context: { filePath, error },
+            }
           )
         )
       }
@@ -354,27 +384,36 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
             return err(
               createDataError(
                 'CSV_CONVERSION_FAILED',
+                'DATA_CONVERSION_FAILED',
                 'Data must be an array of objects for CSV conversion',
-                'Invalid data structure',
-                { dataType: typeof data, isArray: Array.isArray(data) }
+                {
+                  details: 'Invalid data structure',
+                  context: { dataType: typeof data, isArray: Array.isArray(data) },
+                }
               )
             )
           case 'excel':
             return err(
               createDataError(
                 'EXCEL_CONVERSION_UNSUPPORTED',
+                'DATA_UNSUPPORTED_FORMAT',
                 'Excel conversion to string not supported',
-                'Use Excel operations directly for Excel output',
-                { targetFormat }
+                {
+                  details: 'Use Excel operations directly for Excel output',
+                  context: { targetFormat },
+                }
               )
             )
           default:
             return err(
               createDataError(
                 'UNSUPPORTED_CONVERSION',
+                'DATA_UNSUPPORTED_FORMAT',
                 `Conversion to format '${targetFormat}' not supported`,
-                'Use supported formats: json, csv',
-                { targetFormat }
+                {
+                  details: 'Use supported formats: json, csv',
+                  context: { targetFormat },
+                }
               )
             )
         }
@@ -382,9 +421,12 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         return err(
           createDataError(
             'CONVERSION_FAILED',
+            'DATA_CONVERSION_FAILED',
             `Format conversion to ${targetFormat} failed`,
-            String(error),
-            { targetFormat, error }
+            {
+              details: String(error),
+              context: { targetFormat, error },
+            }
           )
         )
       }

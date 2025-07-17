@@ -91,7 +91,7 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
   ): FormatResult<FileFormatInfo> => {
     try {
       if (!extension) {
-        return err(createDetectionError('No file extension provided'))
+        return err(createDetectionError('No file extension provided', {}))
       }
 
       const normalizedExt = extension.toLowerCase().startsWith('.')
@@ -104,12 +104,10 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
 
       if (!extensionMapping) {
         return err(
-          createDetectionError(
-            `Unknown file extension: ${extension}`,
-            `Extension "${extension}" not found in format database`,
-            undefined,
-            { extension, normalizedExt }
-          )
+          createDetectionError(`Unknown file extension: ${extension}`, {
+            details: `Extension "${extension}" not found in format database`,
+            context: { extension, normalizedExt },
+          })
         )
       }
 
@@ -125,7 +123,7 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
   ): FormatResult<FileFormatInfo> => {
     try {
       if (!mimeType) {
-        return err(createDetectionError('No MIME type provided'))
+        return err(createDetectionError('No MIME type provided', {}))
       }
 
       const normalizedMime = mimeType.toLowerCase().split(';')[0].trim()
@@ -133,12 +131,10 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
 
       if (!format) {
         return err(
-          createDetectionError(
-            `Unknown MIME type: ${mimeType}`,
-            `MIME type "${mimeType}" not found in format database`,
-            undefined,
-            { mimeType, normalizedMime }
-          )
+          createDetectionError(`Unknown MIME type: ${mimeType}`, {
+            details: `MIME type "${mimeType}" not found in format database`,
+            context: { mimeType, normalizedMime },
+          })
         )
       }
 
@@ -170,12 +166,11 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
 
       if (results.length === 0 && errors.length > 0) {
         return err(
-          createDetectionError(
-            'Batch detection failed',
-            `Failed to detect formats for all ${files.length} files`,
-            errors[0],
-            { fileCount: files.length, errorCount: errors.length }
-          )
+          createDetectionError('Batch detection failed', {
+            details: `Failed to detect formats for all ${files.length} files`,
+            cause: errors[0],
+            context: { fileCount: files.length, errorCount: errors.length },
+          })
         )
       }
 
@@ -213,12 +208,10 @@ const detectFromMagicNumbers = (
   }
 
   return err(
-    createDetectionError(
-      'No magic number pattern matched',
-      'File content does not match any known magic number signatures',
-      undefined,
-      { bufferLength: buffer.length }
-    )
+    createDetectionError('No magic number pattern matched', {
+      details: 'File content does not match any known magic number signatures',
+      context: { bufferLength: buffer.length },
+    })
   )
 }
 
@@ -260,12 +253,10 @@ const detectWithFileType = async (
 
     if (!fileTypeResult) {
       return err(
-        createDetectionError(
-          'Unknown file format',
-          'File content could not be identified by any detection method',
-          undefined,
-          { bufferLength: buffer.length }
-        )
+        createDetectionError('Unknown file format', {
+          details: 'File content could not be identified by any detection method',
+          context: { bufferLength: buffer.length },
+        })
       )
     }
 

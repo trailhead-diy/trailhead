@@ -18,7 +18,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       const mergedOptions = { ...excelConfig, ...options }
 
       if (!buffer || buffer.length === 0) {
-        return err(createExcelError('Empty buffer provided'))
+        return err(createExcelError('Empty buffer provided', {}))
       }
 
       const parseOptions: ExcelParseOptions = {
@@ -36,7 +36,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       const workbook = XLSX.read(buffer, parseOptions)
 
       if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-        return err(createExcelError('No worksheets found in Excel file'))
+        return err(createExcelError('No worksheets found in Excel file', {}))
       }
 
       let worksheetName = mergedOptions.worksheetName
@@ -54,12 +54,10 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       const worksheet = workbook.Sheets[worksheetName]
       if (!worksheet) {
         return err(
-          createExcelError(
-            `Worksheet "${worksheetName}" not found`,
-            `Available worksheets: ${workbook.SheetNames.join(', ')}`,
-            undefined,
-            { worksheetName, availableWorksheets: workbook.SheetNames }
-          )
+          createExcelError(`Worksheet "${worksheetName}" not found`, {
+            details: `Available worksheets: ${workbook.SheetNames.join(', ')}`,
+            context: { worksheetName, availableWorksheets: workbook.SheetNames },
+          })
         )
       }
 
@@ -74,12 +72,10 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
 
       if (mergedOptions.maxRows && data.length > mergedOptions.maxRows) {
         return err(
-          createExcelError(
-            'Row limit exceeded',
-            `Found ${data.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
-            undefined,
-            { rowCount: data.length, maxRows: mergedOptions.maxRows }
-          )
+          createExcelError('Row limit exceeded', {
+            details: `Found ${data.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
+            context: { rowCount: data.length, maxRows: mergedOptions.maxRows },
+          })
         )
       }
 
@@ -130,11 +126,11 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       const mergedOptions = { ...excelConfig, ...options }
 
       if (!Array.isArray(data)) {
-        return err(createExcelError('Data must be an array'))
+        return err(createExcelError('Data must be an array', {}))
       }
 
       if (data.length === 0) {
-        return err(createExcelError('Cannot create Excel file from empty data'))
+        return err(createExcelError('Cannot create Excel file from empty data', {}))
       }
 
       const worksheet = XLSX.utils.json_to_sheet(data, {
@@ -188,7 +184,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
   const detectFormat = (buffer: Buffer): DataResult<ExcelFormatInfo> => {
     try {
       if (!buffer || buffer.length === 0) {
-        return err(createExcelError('Empty buffer provided for format detection'))
+        return err(createExcelError('Empty buffer provided for format detection', {}))
       }
 
       const workbook = XLSX.read(buffer, { type: 'buffer', bookSheets: true })
@@ -251,7 +247,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
   const getWorksheetNames = (buffer: Buffer): DataResult<string[]> => {
     try {
       if (!buffer || buffer.length === 0) {
-        return err(createExcelError('Empty buffer provided'))
+        return err(createExcelError('Empty buffer provided', {}))
       }
 
       const workbook = XLSX.read(buffer, { type: 'buffer', bookSheets: true })
@@ -266,7 +262,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
   ): Promise<DataResult<Buffer>> => {
     try {
       if (!worksheets || worksheets.length === 0) {
-        return err(createExcelError('No worksheets provided'))
+        return err(createExcelError('No worksheets provided', {}))
       }
 
       const workbook = XLSX.utils.book_new()
@@ -281,7 +277,7 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       }
 
       if (workbook.SheetNames.length === 0) {
-        return err(createExcelError('No valid worksheets to create'))
+        return err(createExcelError('No valid worksheets to create', {}))
       }
 
       const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })

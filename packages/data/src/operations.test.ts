@@ -220,8 +220,8 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
-        expect(result.error.message).toBe('UNSUPPORTED_FORMAT')
+        expect(result.error.code).toBe('DATA_UNSUPPORTED_FORMAT')
+        expect(result.error.message).toContain('Cannot determine data format')
       }
     })
 
@@ -325,8 +325,8 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
-        expect(result.error.message).toBe('EXCEL_FROM_STRING_UNSUPPORTED')
+        expect(result.error.code).toBe('DATA_UNSUPPORTED_FORMAT')
+        expect(result.error.message).toContain('Excel format cannot be parsed from string')
       }
     })
 
@@ -338,8 +338,8 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
-        expect(result.error.message).toBe('FORMAT_DETECTION_FAILED')
+        expect(result.error.code).toBe('DATA_FORMAT_DETECTION_FAILED')
+        expect(result.error.message).toContain('Cannot determine data format from content')
       }
     })
   })
@@ -424,8 +424,8 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
-        expect(result.error.message).toBe('INVALID_CSV_DATA')
+        expect(result.error.code).toBe('DATA_UNSUPPORTED_FORMAT')
+        expect(result.error.message).toContain('CSV write requires array data')
       }
     })
 
@@ -437,8 +437,8 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
-        expect(result.error.message).toBe('INVALID_EXCEL_DATA')
+        expect(result.error.code).toBe('DATA_UNSUPPORTED_FORMAT')
+        expect(result.error.message).toContain('Excel write requires array data')
       }
     })
   })
@@ -481,7 +481,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
+        expect(result.error.code).toBe('DATA_CONVERSION_FAILED')
       }
     })
 
@@ -493,7 +493,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
+        expect(result.error.code).toBe('DATA_UNSUPPORTED_FORMAT')
       }
     })
 
@@ -505,7 +505,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.code).toBe('DATA_ERROR')
+        expect(result.error.code).toBe('DATA_CONVERSION_FAILED')
       }
     })
   })
@@ -588,8 +588,8 @@ describe('Error Handling Edge Cases', () => {
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
-      expect(result.error.code).toBe('DATA_ERROR')
-      expect(result.error.message).toBe('PARSE_AUTO_FAILED')
+      expect(result.error.code).toBe('DATA_PARSING_FAILED')
+      expect(result.error.message).toContain('Auto-parsing failed for file')
     }
   })
 
@@ -609,8 +609,8 @@ describe('Error Handling Edge Cases', () => {
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
-      expect(result.error.code).toBe('DATA_ERROR')
-      expect(result.error.message).toBe('PARSE_AUTO_CONTENT_FAILED')
+      expect(result.error.code).toBe('DATA_PARSING_FAILED')
+      expect(result.error.message).toContain('Auto-parsing failed for content')
     }
   })
 
@@ -627,8 +627,8 @@ describe('Error Handling Edge Cases', () => {
 
     expect(result.isErr()).toBe(true)
     if (result.isErr()) {
-      expect(result.error.code).toBe('DATA_ERROR')
-      expect(result.error.message).toBe('WRITE_AUTO_FAILED')
+      expect(result.error.code).toBe('DATA_CONVERSION_FAILED')
+      expect(result.error.message).toContain('Auto-writing failed for file')
     }
   })
 })
