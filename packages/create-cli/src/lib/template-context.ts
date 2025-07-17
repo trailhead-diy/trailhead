@@ -27,7 +27,7 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
     PROJECT_NAME: config.projectName,
     IS_MONOREPO: isMonorepo,
     PACKAGE_MANAGER: config.packageManager,
-    PACKAGE_MANAGER_VERSION: '10.12.4',
+    PACKAGE_MANAGER_VERSION: '10.13.1',
     PACKAGES_DIR: 'packages',
     PACKAGES_PATTERN: '^packages/([^/]+)/',
     TEST_COMMAND: `${config.packageManager} test`,

@@ -35,7 +35,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
       setupFiles,
       testTimeout,
       passWithNoTests,
-      reporter: reporters,
+      reporters,
       environmentOptions:
         environment === 'jsdom'
           ? {
@@ -216,8 +216,11 @@ export const testSetup = {
 
     /**
      * Setup for mock timers
+     * Note: This function should be called within a test context where vi is available
      */
     mockTimers: () => {
+      // @ts-expect-error vi is available in test context
+      const { vi } = globalThis
       vi.useFakeTimers()
       return () => vi.useRealTimers()
     },
@@ -237,8 +240,11 @@ export const testSetup = {
 
     /**
      * Restore mocks
+     * Note: This function should be called within a test context where vi is available
      */
     restoreMocks: () => {
+      // @ts-expect-error vi is available in test context
+      const { vi } = globalThis
       vi.restoreAllMocks()
     },
   },

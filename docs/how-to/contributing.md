@@ -28,7 +28,7 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
 
    The monorepo uses different PNPM versions:
    - **Root**: PNPM 8.15.0 (specified in root package.json)
-   - **@esteban-url/trailhead-web-ui**: PNPM 10.12.4 (specified in its package.json)
+   - **@esteban-url/trailhead-web-ui**: PNPM 10.13.1 (specified in its package.json)
 
    This is intentional to support different feature requirements. The root version manages the monorepo infrastructure while individual packages can specify their own versions for optimal compatibility.
 

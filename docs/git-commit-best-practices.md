@@ -66,7 +66,7 @@ Our modern stack is already optimized for 2025 best practices:
 
 ### Additional Modern Tools
 
-- **PNPM (10.12.4)**: Fastest package manager with workspace support
+- **PNPM (10.13.1)**: Fastest package manager with workspace support
 - **Changesets**: Automated semantic versioning and release management
 - **Conventional Commits Validation**: Enforced via Lefthook hooks
 
