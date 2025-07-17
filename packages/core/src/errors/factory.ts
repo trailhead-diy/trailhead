@@ -67,90 +67,105 @@ export const chainError = <E extends CoreError>(
 })
 
 /**
- * Convenience factory for common error types with sensible defaults
+ * Creates a standardized error factory function for a specific domain
+ * This eliminates the need for each package to define its own error creation patterns
  */
-export const createCommonError = {
-  validation: (
+export const createErrorFactory = (
+  component: string,
+  defaultSeverity: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+) => {
+  return (
+    type: string,
     code: string,
     message: string,
-    component: string,
-    operation: string,
     options?: {
+      operation?: string
       details?: string
       cause?: unknown
-      suggestion?: string
-      recoverable?: boolean
       context?: Record<string, unknown>
+      recoverable?: boolean
+      severity?: 'low' | 'medium' | 'high' | 'critical'
+      suggestion?: string
     }
-  ): CoreError =>
-    createCoreError('VALIDATION_ERROR', code, message, {
+  ): CoreError => {
+    return createCoreError(type, code, message, {
       component,
-      operation,
-      severity: 'medium',
-      recoverable: true,
-      ...options,
-    }),
+      operation: options?.operation || 'process',
+      severity: options?.severity || defaultSeverity,
+      details: options?.details,
+      cause: options?.cause,
+      context: options?.context,
+      recoverable: options?.recoverable ?? true,
+      suggestion: options?.suggestion,
+    })
+  }
+}
 
-  filesystem: (
-    code: string,
-    message: string,
-    component: string,
-    operation: string,
-    options?: {
-      details?: string
-      cause?: unknown
-      suggestion?: string
-      recoverable?: boolean
-      context?: Record<string, unknown>
-    }
-  ): CoreError =>
-    createCoreError('FILESYSTEM_ERROR', code, message, {
-      component,
-      operation,
-      severity: 'high',
-      recoverable: false,
-      ...options,
-    }),
+/**
+ * Common error factories for shared use across packages
+ */
+export const createDataError = createErrorFactory('data', 'medium')
+export const createFileSystemError = createErrorFactory('filesystem', 'high')
+export const createValidationError = createErrorFactory('validation', 'medium')
+export const createConfigError = createErrorFactory('config', 'medium')
+export const createGitError = createErrorFactory('git', 'medium')
+export const createCliError = createErrorFactory('cli', 'medium')
 
-  network: (
-    code: string,
-    message: string,
-    component: string,
-    operation: string,
-    options?: {
-      details?: string
-      cause?: unknown
-      suggestion?: string
-      recoverable?: boolean
-      context?: Record<string, unknown>
-    }
-  ): CoreError =>
-    createCoreError('NETWORK_ERROR', code, message, {
-      component,
-      operation,
-      severity: 'medium',
-      recoverable: true,
-      ...options,
-    }),
+/**
+ * Common error mapping utilities
+ */
+export const mapNodeError = (
+  component: string,
+  operation: string,
+  path: string,
+  error: unknown
+): CoreError => {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const errorFactory = createErrorFactory(component)
 
-  parsing: (
-    code: string,
-    message: string,
-    component: string,
-    operation: string,
-    options?: {
-      details?: string
-      cause?: unknown
-      suggestion?: string
-      recoverable?: boolean
-      context?: Record<string, unknown>
+  return errorFactory('NodeError', 'NODE_ERROR', `${operation} failed`, {
+    operation,
+    details: `Path: ${path}, Error: ${errorMessage}`,
+    cause: error,
+    context: { operation, path },
+  })
+}
+
+export const mapLibraryError = (
+  component: string,
+  library: string,
+  operation: string,
+  error: unknown
+): CoreError => {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const errorFactory = createErrorFactory(component)
+
+  return errorFactory('LibraryError', 'LIBRARY_ERROR', `${library} operation failed`, {
+    operation,
+    details: `Library: ${library}, Operation: ${operation}, Error: ${errorMessage}`,
+    cause: error,
+    context: { library, operation },
+  })
+}
+
+export const mapValidationError = (
+  component: string,
+  field: string,
+  value: unknown,
+  error: unknown
+): CoreError => {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const errorFactory = createErrorFactory(component)
+
+  return errorFactory(
+    'ValidationError',
+    'VALIDATION_ERROR',
+    `Validation failed for field: ${field}`,
+    {
+      operation: 'validate',
+      details: `Field: ${field}, Value: ${JSON.stringify(value)}, Error: ${errorMessage}`,
+      cause: error,
+      context: { field, value },
     }
-  ): CoreError =>
-    createCoreError('PARSING_ERROR', code, message, {
-      component,
-      operation,
-      severity: 'medium',
-      recoverable: true,
-      ...options,
-    }),
+  )
 }
