@@ -1,6 +1,6 @@
 /**
  * Format detection and conversion testing utilities
- * Merged from @esteban-url/formats/testing
+ * Consolidated format testing functionality
  */
 
 import { ok, err, type Result } from '@esteban-url/core'
@@ -269,25 +269,93 @@ export async function testFormatConversion(
 ): Promise<Result<string, CoreError>> {
   // Mock conversion logic - in real implementation this would use actual converters
   try {
-    // Simple mock conversion
-    if (sourceFormat === 'json' && targetFormat === 'yaml') {
+    // JSON conversions
+    if (sourceFormat === 'json') {
       const data = JSON.parse(sourceContent)
-      // Mock YAML conversion
-      return ok(`# Converted from JSON\ndata: ${JSON.stringify(data)}`)
+
+      if (targetFormat === 'yaml') {
+        return ok(convertJsonToYaml(data))
+      }
+
+      if (targetFormat === 'csv') {
+        return ok(convertJsonToCsv(data))
+      }
+
+      if (targetFormat === 'xml') {
+        return ok(convertJsonToXml(data))
+      }
+
+      if (targetFormat === 'toml') {
+        return ok(convertJsonToToml(data))
+      }
     }
 
-    if (sourceFormat === 'csv' && targetFormat === 'json') {
-      const lines = sourceContent.split('\n')
-      const headers = lines[0].split(',')
-      const rows = lines.slice(1).map((line) => {
-        const values = line.split(',')
-        const row: Record<string, string> = {}
-        headers.forEach((header, index) => {
-          row[header] = values[index] || ''
-        })
-        return row
-      })
-      return ok(JSON.stringify(rows, null, options.indent || 2))
+    // CSV conversions
+    if (sourceFormat === 'csv') {
+      const csvData = parseCsvContent(sourceContent)
+
+      if (targetFormat === 'json') {
+        return ok(JSON.stringify(csvData, null, options.indent || 2))
+      }
+
+      if (targetFormat === 'yaml') {
+        return ok(convertJsonToYaml(csvData))
+      }
+
+      if (targetFormat === 'xml') {
+        return ok(convertJsonToXml(csvData))
+      }
+    }
+
+    // YAML conversions
+    if (sourceFormat === 'yaml') {
+      const yamlData = parseYamlContent(sourceContent)
+
+      if (targetFormat === 'json') {
+        return ok(JSON.stringify(yamlData, null, options.indent || 2))
+      }
+
+      if (targetFormat === 'csv') {
+        return ok(convertJsonToCsv(yamlData))
+      }
+
+      if (targetFormat === 'xml') {
+        return ok(convertJsonToXml(yamlData))
+      }
+    }
+
+    // XML conversions
+    if (sourceFormat === 'xml') {
+      const xmlData = parseXmlContent(sourceContent)
+
+      if (targetFormat === 'json') {
+        return ok(JSON.stringify(xmlData, null, options.indent || 2))
+      }
+
+      if (targetFormat === 'yaml') {
+        return ok(convertJsonToYaml(xmlData))
+      }
+
+      if (targetFormat === 'csv') {
+        return ok(convertJsonToCsv(xmlData))
+      }
+    }
+
+    // TOML conversions
+    if (sourceFormat === 'toml') {
+      const tomlData = parseTomlContent(sourceContent)
+
+      if (targetFormat === 'json') {
+        return ok(JSON.stringify(tomlData, null, options.indent || 2))
+      }
+
+      if (targetFormat === 'yaml') {
+        return ok(convertJsonToYaml(tomlData))
+      }
+
+      if (targetFormat === 'csv') {
+        return ok(convertJsonToCsv(tomlData))
+      }
     }
 
     // Default: return source content with comment
@@ -326,7 +394,7 @@ export function validateFormat(
         break
 
       case 'csv':
-        const lines = content.split('\n')
+        const lines = content.split('\n').filter((line) => line.trim())
         if (lines.length < 2) {
           errors.push('CSV must have at least header and one data row')
         }
@@ -343,10 +411,89 @@ export function validateFormat(
         if (!content.includes('<') || !content.includes('>')) {
           errors.push('XML must contain tags')
         }
+        // Check for balanced tags with proper nesting
+        const openTagsMatch = content.match(/<([^/\s>][^>]*?)>/g) || []
+        const closeTagsMatch = content.match(/<\/([^>]*?)>/g) || []
+
+        if (openTagsMatch.length !== closeTagsMatch.length) {
+          errors.push('XML tags are not balanced')
+        }
+
+        // Check for mismatched tag names
+        const openTagNames = openTagsMatch
+          .map((tag) => tag.match(/<([^/\s>]+)/)?.[1] || '')
+          .filter(Boolean)
+        const closeTagNames = closeTagsMatch
+          .map((tag) => tag.match(/<\/([^>]+)/)?.[1] || '')
+          .filter(Boolean)
+
+        for (let i = 0; i < Math.min(openTagNames.length, closeTagNames.length); i++) {
+          if (openTagNames[i] !== closeTagNames[closeTagNames.length - 1 - i]) {
+            errors.push('XML tags are not properly nested')
+            break
+          }
+        }
+        break
+
+      case 'yaml':
+        // Basic YAML validation
+        if (!content.includes(':')) {
+          errors.push('YAML must contain key-value pairs with colons')
+        }
+        // Check for proper indentation consistency
+        const yamlLines = content
+          .split('\n')
+          .filter((line) => line.trim() && !line.trim().startsWith('#'))
+        const indentLevels = yamlLines.map((line) => line.length - line.trimStart().length)
+        const hasInconsistentIndent = indentLevels.some(
+          (level, index) =>
+            index > 0 &&
+            level > indentLevels[index - 1] &&
+            (level - indentLevels[index - 1]) % 2 !== 0
+        )
+        if (hasInconsistentIndent) {
+          errors.push('YAML indentation is inconsistent')
+        }
+        break
+
+      case 'toml':
+        // Basic TOML validation
+        if (!content.includes('=')) {
+          errors.push('TOML must contain key-value pairs with equals signs')
+        }
+        // Check for section headers
+        const tomlLines = content
+          .split('\n')
+          .filter((line) => line.trim() && !line.trim().startsWith('#'))
+        const sections = tomlLines.filter(
+          (line) => line.trim().startsWith('[') && line.trim().endsWith(']')
+        )
+        const keyValues = tomlLines.filter((line) => line.includes('='))
+        if (sections.length === 0 && keyValues.length === 0) {
+          errors.push('TOML must contain either sections or key-value pairs')
+        }
+        break
+
+      case 'ini':
+        // Basic INI validation
+        if (!content.includes('=') && !content.includes('[')) {
+          errors.push('INI must contain sections or key-value pairs')
+        }
+        break
+
+      case 'markdown':
+        // Basic Markdown validation - very lenient
+        if (content.length === 0) {
+          errors.push('Markdown content cannot be empty')
+        }
+        break
+
+      case 'text':
+        // Text files are always valid
         break
 
       default:
-        // Other formats would have their own validation
+        errors.push(`Validation for format "${format}" is not implemented`)
         break
     }
 
@@ -423,6 +570,193 @@ export function assertFormatValidation(
       `Expected ${expectedErrorCount} validation errors, but got ${validation.errors.length}`
     )
   }
+}
+
+// ========================================
+// Format Conversion Helpers
+// ========================================
+
+/**
+ * Parse CSV content into JSON structure
+ */
+function parseCsvContent(content: string): any[] {
+  const lines = content.split('\n').filter((line) => line.trim())
+  if (lines.length === 0) return []
+
+  const headers = lines[0].split(',').map((h) => h.trim())
+  return lines.slice(1).map((line) => {
+    const values = line.split(',').map((v) => v.trim())
+    const row: Record<string, string> = {}
+    headers.forEach((header, index) => {
+      row[header] = values[index] || ''
+    })
+    return row
+  })
+}
+
+/**
+ * Convert JSON to YAML format (simple implementation)
+ */
+function convertJsonToYaml(data: any, indent: number = 0): string {
+  const spaces = '  '.repeat(indent)
+
+  if (Array.isArray(data)) {
+    return data
+      .map((item) =>
+        typeof item === 'object'
+          ? `${spaces}- ${convertJsonToYaml(item, indent + 1).trim()}`
+          : `${spaces}- ${item}`
+      )
+      .join('\n')
+  }
+
+  if (typeof data === 'object' && data !== null) {
+    return Object.entries(data)
+      .map(([key, value]) => {
+        if (typeof value === 'object') {
+          return `${spaces}${key}:\n${convertJsonToYaml(value, indent + 1)}`
+        }
+        return `${spaces}${key}: ${value}`
+      })
+      .join('\n')
+  }
+
+  return `${spaces}${data}`
+}
+
+/**
+ * Convert JSON to CSV format
+ */
+function convertJsonToCsv(data: any): string {
+  if (!Array.isArray(data)) {
+    data = [data]
+  }
+
+  if (data.length === 0) return ''
+
+  const headers = Object.keys(data[0])
+  const headerRow = headers.join(',')
+  const dataRows = data.map((item: any) =>
+    headers.map((header) => `"${item[header] || ''}"`).join(',')
+  )
+
+  return [headerRow, ...dataRows].join('\n')
+}
+
+/**
+ * Convert object to XML format (simple implementation)
+ */
+function objectToXml(obj: any, tagName: string = 'item'): string {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => objectToXml(item, tagName)).join('\n')
+  }
+
+  if (typeof obj === 'object' && obj !== null) {
+    const elements = Object.entries(obj)
+      .map(([key, value]) => {
+        if (typeof value === 'object') {
+          return `  <${key}>\n${objectToXml(value, 'item')
+            .split('\n')
+            .map((line) => `    ${line}`)
+            .join('\n')}\n  </${key}>`
+        }
+        return `  <${key}>${value}</${key}>`
+      })
+      .join('\n')
+
+    return `<${tagName}>\n${elements}\n</${tagName}>`
+  }
+
+  return `<${tagName}>${obj}</${tagName}>`
+}
+
+/**
+ * Convert JSON to XML format (simple implementation)
+ */
+function convertJsonToXml(data: any, rootElement: string = 'root'): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n${objectToXml(data, rootElement)}`
+}
+
+/**
+ * Convert JSON to TOML format (simple implementation)
+ */
+function convertJsonToToml(data: any): string {
+  const lines: string[] = []
+
+  function processObject(obj: any, prefix: string = ''): void {
+    for (const [key, value] of Object.entries(obj)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key
+
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        lines.push(`[${fullKey}]`)
+        processObject(value, fullKey)
+      } else if (Array.isArray(value)) {
+        lines.push(`${key} = [${value.map((v) => `"${v}"`).join(', ')}]`)
+      } else {
+        lines.push(`${key} = "${value}"`)
+      }
+    }
+  }
+
+  processObject(data)
+  return lines.join('\n')
+}
+
+/**
+ * Parse YAML content (simple implementation)
+ */
+function parseYamlContent(content: string): any {
+  const lines = content.split('\n').filter((line) => line.trim() && !line.trim().startsWith('#'))
+  const result: any = {}
+
+  for (const line of lines) {
+    const [key, ...valueParts] = line.split(':')
+    if (key && valueParts.length > 0) {
+      result[key.trim()] = valueParts.join(':').trim()
+    }
+  }
+
+  return result
+}
+
+/**
+ * Parse XML content (simple implementation)
+ */
+function parseXmlContent(content: string): any {
+  // Very basic XML parsing - in real implementation would use proper XML parser
+  const tagRegex = /<(\w+)>(.*?)<\/\1>/g
+  const result: any = {}
+  let match
+
+  while ((match = tagRegex.exec(content)) !== null) {
+    const [, tagName, tagContent] = match
+    // Handle nested tags or simple text content
+    if (tagContent.includes('<')) {
+      result[tagName] = parseXmlContent(tagContent)
+    } else {
+      result[tagName] = tagContent.trim()
+    }
+  }
+
+  return result
+}
+
+/**
+ * Parse TOML content (simple implementation)
+ */
+function parseTomlContent(content: string): any {
+  const lines = content.split('\n').filter((line) => line.trim() && !line.trim().startsWith('#'))
+  const result: any = {}
+
+  for (const line of lines) {
+    const [key, ...valueParts] = line.split('=')
+    if (key && valueParts.length > 0) {
+      const value = valueParts.join('=').trim().replace(/^"|"$/g, '')
+      result[key.trim()] = value
+    }
+  }
+
+  return result
 }
 
 // ========================================
