@@ -27,6 +27,10 @@
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "default": "./dist/testing/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
     }
   },
   "scripts": {
@@ -43,6 +47,7 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
+    "chalk": "^5.4.1",
     "fp-ts": "^2.16.10",
     "neverthrow": "^8.2.0"
   },
