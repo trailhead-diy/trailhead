@@ -6,6 +6,7 @@ export default defineConfig({
     'errors/index': 'src/errors/index.ts',
     'functional/index': 'src/functional/index.ts',
     'testing/index': 'src/testing/index.ts',
+    'utils/index': 'src/utils/index.ts',
   },
   format: ['esm'],
   dts: false, // We use tsc for declarations

@@ -17,3 +17,6 @@ export {
   fromThrowable as fromThrowableAsync,
   fromThrowableAsync as fromThrowableAsyncFunc,
 } from './functional/async.js'
+
+// Essential utilities for CLI applications
+export * from './utils/index.js'
