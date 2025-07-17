@@ -87,3 +87,6 @@ export const fs = {
   readIfExists: readIfExists(),
   copyIfExists: copyIfExists(),
 }
+
+// Path utilities
+export * from './utils/index.js'
