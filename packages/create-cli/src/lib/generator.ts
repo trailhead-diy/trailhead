@@ -1,11 +1,13 @@
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err } from '@esteban-url/core'
 import type { Result, CoreError } from '@esteban-url/core'
 import { resolve, dirname } from 'path'
 import { fs } from '@esteban-url/fs'
 import { fileURLToPath } from 'url'
 import { execa } from 'execa'
-import chalk from 'chalk'
-import ora from 'ora'
+import { chalk, createSpinner } from '@esteban-url/cli/utils'
+import { debugTemplateContext, debugError, debugStats } from './logger-utils.js'
+import { createGeneratorError, ERROR_CODES } from './error-helpers.js'
+import { createCoreError } from '@esteban-url/core'
 import { createGeneratorGitOperations } from './git-operations.js'
 import {
   validateProjectName,
@@ -21,7 +23,13 @@ import type { ModernProjectConfig } from './interactive-prompts.js'
 import { createTemplateContext } from './template-context.js'
 import { getTemplateFiles } from './template-loader.js'
 import { composeTemplate } from './modular-templates.js'
-import { TemplateCompiler } from './template-compiler.js'
+import {
+  compileTemplate,
+  precompileTemplates,
+  createTemplateCompilerContext,
+  getTemplateCacheStats,
+  cleanupTemplateCache,
+} from './template-compiler.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -29,20 +37,35 @@ const __dirname = dirname(__filename)
 /**
  * Simple package manager detection
  */
-function detectPackageManager(): Result<string, Error> {
+function detectPackageManager(): Result<string, CoreError> {
   try {
     // For now, just return the configured package manager
     // In a full implementation, this would check for lock files, etc.
     return ok('pnpm')
-  } catch {
-    return err(new Error('No package manager detected'))
+  } catch (error) {
+    return err(
+      createGeneratorError(
+        ERROR_CODES.PACKAGE_MANAGER_DETECTION_FAILED,
+        'No package manager detected',
+        {
+          operation: 'detectPackageManager',
+          cause: error instanceof Error ? error : undefined,
+          recoverable: true,
+        }
+      )
+    )
   }
 }
 
 // Filesystem operations are now imported directly
 
-// Global template compiler instance for caching
-const templateCompiler = new TemplateCompiler()
+// Global template compiler context for caching
+let globalTemplateCompilerContext = createTemplateCompilerContext({
+  enableCache: true,
+  maxCacheSize: 100,
+  strict: true,
+  escapeHtml: true,
+})
 
 /**
  * Generate a new CLI project from templates
@@ -100,7 +123,7 @@ export async function generateProject(
     // Phase 1: Prepare template context
     const templateContext = await createTemplateContext(config)
     if (verbose) {
-      logger.debug('Template context:', templateContext)
+      debugTemplateContext(logger, 'Template context', templateContext)
     }
 
     // Phase 2: Load template files
@@ -143,9 +166,16 @@ export async function generateProject(
       })
 
     if (templatePaths.length > 0) {
-      const precompileSpinner = ora('Pre-compiling templates...').start()
-      await templateCompiler.precompileTemplates(templatePaths)
-      precompileSpinner.succeed(`Pre-compiled ${templatePaths.length} templates`)
+      const precompileSpinner = createSpinner('Pre-compiling templates...')
+      precompileSpinner.start()
+      const precompileResult = await precompileTemplates(
+        templatePaths,
+        globalTemplateCompilerContext
+      )
+      if (precompileResult.isOk()) {
+        globalTemplateCompilerContext = precompileResult.value
+      }
+      precompileSpinner.success(`Pre-compiled ${templatePaths.length} templates`)
     }
 
     // Phase 3: Create project directory
@@ -157,14 +187,15 @@ export async function generateProject(
     }
 
     // Phase 4: Process and copy files
-    const spinner = ora('Processing template files...').start()
+    const spinner = createSpinner('Processing template files...')
+    spinner.start()
     const startTime = performance.now()
 
     for (const templateFile of templateFiles) {
       const result = await processTemplateFile(templateFile, templateContext, config, context)
 
       if (!result.isOk()) {
-        spinner.fail(`Failed to process ${templateFile.source}`)
+        spinner.error(`Failed to process ${templateFile.source}`)
         return result
       }
 
@@ -176,13 +207,16 @@ export async function generateProject(
     const processingTime = performance.now() - startTime
     const avgTimePerFile = processingTime / templateFiles.length
 
-    spinner.succeed(
+    spinner.success(
       `Template files processed (${Math.round(processingTime)}ms, ${Math.round(avgTimePerFile)}ms avg)`
     )
 
     if (verbose) {
-      const cacheStats = templateCompiler.getCacheStats()
-      logger.debug(`Template cache: ${cacheStats.size} entries cached`)
+      const cacheStats = getTemplateCacheStats(globalTemplateCompilerContext)
+      debugStats(logger, 'Template cache', {
+        entries: cacheStats.size,
+        files: cacheStats.entries.length,
+      })
     }
 
     // Phase 5: Initialize git repository
@@ -215,7 +249,7 @@ export async function generateProject(
       if (!verificationResult.isOk()) {
         logger.warning('Project verification failed - project may not be ready for development')
         if (verbose) {
-          logger.debug('Verification error:', verificationResult.error)
+          debugError(logger, 'Project verification', verificationResult.error)
         }
       } else {
         logger.info('✅ Project is ready for development')
@@ -223,11 +257,11 @@ export async function generateProject(
     }
 
     // Phase 9: Cleanup template cache if needed
-    templateCompiler.cleanup(50) // Keep max 50 entries
+    globalTemplateCompilerContext = cleanupTemplateCache(globalTemplateCompilerContext, 50)
 
     return ok(undefined)
   } catch (error) {
-    logger.error('Generator failed:', error)
+    logger.error(`Generator failed: ${error instanceof Error ? error.message : String(error)}`)
     return err(
       createCoreError('PROJECT_GENERATION_FAILED', 'CLI_ERROR', 'Project generation failed', {
         cause: error,
@@ -395,7 +429,27 @@ async function processTemplateFile(
 
     if (templateFile.isTemplate) {
       // Process template with optimized compiler
-      const processedContent = await templateCompiler.compileTemplate(templatePath, templateContext)
+      const compileResult = await compileTemplate(
+        templatePath,
+        templateContext,
+        globalTemplateCompilerContext
+      )
+      if (compileResult.isErr()) {
+        return err(
+          createCoreError(
+            'TEMPLATE_COMPILE_ERROR',
+            'TEMPLATE_ERROR',
+            `Failed to compile template ${templateFile.relativePath}: ${compileResult.error.message}`,
+            {
+              component: 'Generator',
+              operation: 'processTemplateFile',
+              cause: compileResult.error,
+              recoverable: false,
+            }
+          )
+        )
+      }
+      const processedContent = compileResult.value
 
       const writeResult = await fs.writeFile(outputPath, processedContent)
       if (writeResult.isErr()) {
@@ -499,21 +553,22 @@ async function initializeGitRepository(
   }
   const _safePath = pathValidation.value
 
-  const spinner = ora('Initializing git repository...').start()
+  const spinner = createSpinner('Initializing git repository...')
+  spinner.start()
 
   const gitOps = createGeneratorGitOperations()
 
   // Initialize git repository
   const initResult = await gitOps.initRepository(projectPath)
   if (initResult.isErr()) {
-    spinner.fail('Failed to initialize git repository')
+    spinner.error('Failed to initialize git repository')
     return err(initResult.error)
   }
 
   // Stage all files
   const stageResult = await gitOps.stageFiles(projectPath, ['.'])
   if (stageResult.isErr()) {
-    spinner.fail('Failed to stage files')
+    spinner.error('Failed to stage files')
     return err(stageResult.error)
   }
 
@@ -523,11 +578,11 @@ async function initializeGitRepository(
     'feat: initial project setup\n\nGenerated using create-trailhead-cli with modern architecture'
   )
   if (commitResult.isErr()) {
-    spinner.fail('Failed to create initial commit')
+    spinner.error('Failed to create initial commit')
     return err(commitResult.error)
   }
 
-  spinner.succeed('Git repository initialized')
+  spinner.success('Git repository initialized')
   return ok(undefined)
 }
 
@@ -584,7 +639,8 @@ async function installDependencies(
     }
 
     const packageManager = packageManagerResult.value
-    const spinner = ora(`Installing dependencies with ${packageManager}...`).start()
+    const spinner = createSpinner(`Installing dependencies with ${packageManager}...`)
+    spinner.start()
 
     // Use CLI package manager configuration
     const installArgs = packageManager === 'pnpm' ? ['install', '--ignore-workspace'] : ['install']
@@ -596,7 +652,7 @@ async function installDependencies(
       timeout: 300000, // 5 minute timeout for security
     })
 
-    spinner.succeed('Dependencies installed')
+    spinner.success('Dependencies installed')
     return ok(undefined)
   } catch (error) {
     return err(
@@ -634,7 +690,8 @@ async function setupDevelopmentEnvironment(
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
   const { logger } = context
-  const spinner = ora('Setting up development environment...').start()
+  const spinner = createSpinner('Setting up development environment...')
+  spinner.start()
 
   try {
     // IDE configuration is handled through template files in modules/vscode/
@@ -643,20 +700,20 @@ async function setupDevelopmentEnvironment(
     const gitConfigResult = await setupGitConfiguration(config, context)
     if (!gitConfigResult.isOk()) {
       spinner.text = 'Git configuration failed, continuing...'
-      logger.debug('Git config error:', gitConfigResult.error)
+      debugError(logger, 'Git configuration', gitConfigResult.error)
     }
 
     // Setup development scripts
     const scriptsResult = await setupDevelopmentScripts(config, context)
     if (!scriptsResult.isOk()) {
       spinner.text = 'Development scripts setup failed, continuing...'
-      logger.debug('Scripts setup error:', scriptsResult.error)
+      debugError(logger, 'Development scripts setup', scriptsResult.error)
     }
 
-    spinner.succeed('Development environment configured')
+    spinner.success('Development environment configured')
     return ok(undefined)
   } catch (error) {
-    spinner.fail('Failed to setup development environment')
+    spinner.error('Failed to setup development environment')
     return err(
       createCoreError(
         'DEV_ENVIRONMENT_SETUP_FAILED',
@@ -705,7 +762,7 @@ async function setupGitConfiguration(
             )
           }
         } else {
-          logger.debug('Failed to set git user configuration:', configResult.error)
+          logger.debug(`Failed to set git user configuration: ${configResult.error.message}`)
         }
       }
     }
@@ -783,20 +840,21 @@ async function verifyProjectReadiness(
   context: GeneratorContext
 ): Promise<Result<void, CoreError>> {
   const { logger: _logger } = context
-  const spinner = ora('Verifying project readiness...').start()
+  const spinner = createSpinner('Verifying project readiness...')
+  spinner.start()
 
   try {
     // Verify package.json exists and is valid
     const packageJsonResult = await verifyPackageJson(config.projectPath)
     if (!packageJsonResult.isOk()) {
-      spinner.fail('Package.json verification failed')
+      spinner.error('Package.json verification failed')
       return err(packageJsonResult.error)
     }
 
     // Verify TypeScript configuration
     const tsConfigResult = await verifyTypeScriptConfig(config.projectPath)
     if (!tsConfigResult.isOk()) {
-      spinner.fail('TypeScript configuration verification failed')
+      spinner.error('TypeScript configuration verification failed')
       return err(tsConfigResult.error)
     }
 
@@ -804,7 +862,7 @@ async function verifyProjectReadiness(
     if ('initGit' in config && config.initGit) {
       const gitResult = await verifyGitRepository(config.projectPath)
       if (!gitResult.isOk()) {
-        spinner.fail('Git repository verification failed')
+        spinner.error('Git repository verification failed')
         return err(gitResult.error)
       }
     }
@@ -812,7 +870,7 @@ async function verifyProjectReadiness(
     // Verify project structure
     const structureResult = await verifyProjectStructure(config)
     if (!structureResult.isOk()) {
-      spinner.fail('Project structure verification failed')
+      spinner.error('Project structure verification failed')
       return err(structureResult.error)
     }
 
@@ -820,15 +878,15 @@ async function verifyProjectReadiness(
     if (config.installDependencies) {
       const buildResult = await verifyBuildAndTest(config, context)
       if (!buildResult.isOk()) {
-        spinner.fail('Build and test verification failed')
+        spinner.error('Build and test verification failed')
         return err(buildResult.error)
       }
     }
 
-    spinner.succeed('Project verification completed')
+    spinner.success('Project verification completed')
     return ok(undefined)
   } catch (error) {
-    spinner.fail('Project verification failed')
+    spinner.error('Project verification failed')
     return err(
       createCoreError('PROJECT_VERIFICATION_FAILED', 'CLI_ERROR', 'Project verification failed', {
         cause: error,

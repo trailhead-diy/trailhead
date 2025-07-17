@@ -1,6 +1,7 @@
 import { ok, err } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 import type { ProjectConfig } from './types.js'
+import { createArgsParserError, ERROR_CODES, ERROR_SUGGESTIONS } from './error-helpers.js'
 
 export interface ParsedArgs extends ProjectConfig {
   help: boolean
@@ -10,7 +11,7 @@ export interface ParsedArgs extends ProjectConfig {
 /**
  * Parse command line arguments into configuration
  */
-export function parseArguments(args: string[]): Result<ParsedArgs, Error> {
+export function parseArguments(args: string[]): Result<ParsedArgs, CoreError> {
   try {
     const config: ParsedArgs = {
       projectName: '',
@@ -54,11 +55,27 @@ export function parseArguments(args: string[]): Result<ParsedArgs, Error> {
         case '-t':
         case '--template':
           if (i + 1 >= args.length) {
-            return err(new Error('--template requires a value'))
+            return err(
+              createArgsParserError(
+                ERROR_CODES.MISSING_TEMPLATE_VALUE,
+                '--template requires a value',
+                {
+                  suggestion: ERROR_SUGGESTIONS.TEMPLATE_OPTIONS,
+                }
+              )
+            )
           }
           const template = args[i + 1]
           if (template !== 'basic' && template !== 'advanced') {
-            return err(new Error('Template must be "basic" or "advanced"'))
+            return err(
+              createArgsParserError(
+                ERROR_CODES.INVALID_TEMPLATE_VALUE,
+                'Template must be "basic" or "advanced"',
+                {
+                  suggestion: ERROR_SUGGESTIONS.TEMPLATE_OPTIONS,
+                }
+              )
+            )
           }
           config.template = template
           i++ // Skip the value
@@ -67,11 +84,27 @@ export function parseArguments(args: string[]): Result<ParsedArgs, Error> {
         case '-p':
         case '--package-manager':
           if (i + 1 >= args.length) {
-            return err(new Error('--package-manager requires a value'))
+            return err(
+              createArgsParserError(
+                ERROR_CODES.MISSING_PACKAGE_MANAGER_VALUE,
+                '--package-manager requires a value',
+                {
+                  suggestion: ERROR_SUGGESTIONS.PACKAGE_MANAGER_OPTIONS,
+                }
+              )
+            )
           }
           const pm = args[i + 1]
           if (pm !== 'npm' && pm !== 'pnpm') {
-            return err(new Error('Package manager must be "npm" or "pnpm"'))
+            return err(
+              createArgsParserError(
+                ERROR_CODES.INVALID_PACKAGE_MANAGER_VALUE,
+                'Package manager must be "npm" or "pnpm"',
+                {
+                  suggestion: ERROR_SUGGESTIONS.PACKAGE_MANAGER_OPTIONS,
+                }
+              )
+            )
           }
           config.packageManager = pm
           i++ // Skip the value
@@ -103,10 +136,20 @@ export function parseArguments(args: string[]): Result<ParsedArgs, Error> {
 
         default:
           if (arg.startsWith('-')) {
-            return err(new Error(`Unknown option: ${arg}`))
+            return err(
+              createArgsParserError(ERROR_CODES.UNKNOWN_OPTION, `Unknown option: ${arg}`, {
+                context: { option: arg },
+                suggestion: ERROR_SUGGESTIONS.HELP_COMMAND,
+              })
+            )
           }
           // Additional positional arguments are not supported
-          return err(new Error(`Unexpected argument: ${arg}`))
+          return err(
+            createArgsParserError(ERROR_CODES.UNEXPECTED_ARGUMENT, `Unexpected argument: ${arg}`, {
+              context: { argument: arg },
+              suggestion: ERROR_SUGGESTIONS.PROJECT_NAME_REQUIRED,
+            })
+          )
       }
 
       i++
@@ -114,11 +157,24 @@ export function parseArguments(args: string[]): Result<ParsedArgs, Error> {
 
     // Validate required arguments
     if (!config.help && !config.version && !config.projectName) {
-      return err(new Error('Project name is required'))
+      return err(
+        createArgsParserError(ERROR_CODES.PROJECT_NAME_REQUIRED, 'Project name is required', {
+          suggestion: ERROR_SUGGESTIONS.PROJECT_NAME_REQUIRED,
+        })
+      )
     }
 
     return ok(config)
   } catch (error) {
-    return err(error instanceof Error ? error : new Error(String(error)))
+    return err(
+      createArgsParserError(
+        ERROR_CODES.ARGUMENT_PARSING_ERROR,
+        'Failed to parse command line arguments',
+        {
+          cause: error instanceof Error ? error : undefined,
+          recoverable: false,
+        }
+      )
+    )
   }
 }

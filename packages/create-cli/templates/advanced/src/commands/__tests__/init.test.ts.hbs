@@ -20,7 +20,7 @@ it('should handle existing configuration without force flag', async () => {
 testContext.fs.exists.mockResolvedValue({ success: true, value: true })
 mockConfirm.mockResolvedValueOnce(false) // Don't overwrite const result = await
 initCommand.execute({}, testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('Configuration file already exists')
+expect(testContext.logger.warning).toHaveBeenCalledWith('Configuration file already exists')
 expect(testContext.logger.info).toHaveBeenCalledWith('Initialization cancelled') }) it('should
 overwrite existing configuration when confirmed', async () => {
 testContext.fs.exists.mockResolvedValue({ success: true, value: true })
@@ -79,7 +79,7 @@ testContext.fs.ensureDirectory.mockResolvedValueOnce({ success: true, value: und
 testContext.fs.ensureDirectory.mockResolvedValueOnce({ success: false, error: new Error('Permission
 denied') }) testContext.fs.ensureDirectory.mockResolvedValueOnce({ success: true, value: undefined
 }) const result = await initCommand.execute({}, testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('Failed to create directory: tests') })
+expect(testContext.logger.warning).toHaveBeenCalledWith('Failed to create directory: tests') })
 it('should log debug information in verbose mode', async () => { testContext.verbose = true
 testContext.fs.exists.mockResolvedValue({ success: true, value: false })
 testContext.fs.writeFile.mockResolvedValue({ success: true, value: undefined })

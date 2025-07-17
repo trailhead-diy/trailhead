@@ -37,7 +37,7 @@ expect(testContext.logger.error).toHaveBeenCalledWith('Configuration key not fou
 nonexistent.key') }) it('should handle set operation', async () => { const result = await
 configCommand.execute({ set: 'build.minify=true' }, testContext) expect(result.isOk()).toBe(true)
 expect(testContext.logger.info).toHaveBeenCalledWith('Setting build.minify = true')
-expect(testContext.logger.warn).toHaveBeenCalledWith('Configuration updates not implemented in this
+expect(testContext.logger.warning).toHaveBeenCalledWith('Configuration updates not implemented in this
 example') }) it('should handle invalid set format', async () => { const result = await
 configCommand.execute({ set: 'invalid-format' }, testContext) expect(result.isOk()).toBe(false)
 expect(testContext.logger.error).toHaveBeenCalledWith('Invalid format. Use: --set key=value') })

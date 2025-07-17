@@ -1,5 +1,5 @@
 import { ok, err, createCoreError } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 import { readFile, writeFile, exists, defaultFSConfig } from '@esteban-url/fs'
 import { resolve } from 'path'
 import {
@@ -10,512 +10,595 @@ import {
   generateConfigJsonSchema,
   type ConfigFile,
   type PresetConfig,
-  // type ModernProjectConfigValidated,
 } from './config-schema.js'
 import type { ModernProjectConfig } from './interactive-prompts.js'
 
-/**
- * Configuration manager for create-trailhead-cli
- * Handles loading, saving, and validating configuration files
- */
+// ========================================
+// Functional Config Management API
+// ========================================
 
+/**
+ * Configuration context for functional config operations
+ */
+export interface ConfigContext {
+  readonly configDir: string
+  readonly presetDir: string
+  readonly verbose: boolean
+}
+
+/**
+ * Configuration manager options
+ */
 export interface ConfigManagerOptions {
   configDir?: string
   presetDir?: string
   verbose?: boolean
 }
 
-export class ConfigManager {
-  private configDir: string
-  private presetDir: string
-  private verbose: boolean
+/**
+ * Create a configuration context with the specified options
+ *
+ * @param options - Configuration options
+ * @returns Configuration context
+ */
+export function createConfigContext(options: ConfigManagerOptions = {}): ConfigContext {
+  const configDir = options.configDir || resolve(process.cwd(), '.trailhead')
+  const presetDir = options.presetDir || resolve(configDir, 'presets')
 
-  constructor(options: ConfigManagerOptions = {}) {
-    this.configDir = options.configDir || resolve(process.cwd(), '.trailhead')
-    this.presetDir = options.presetDir || resolve(this.configDir, 'presets')
-    this.verbose = options.verbose || false
+  return {
+    configDir,
+    presetDir,
+    verbose: options.verbose || false,
   }
+}
 
-  /**
-   * Save configuration to file
-   */
-  async saveConfig(
-    config: ModernProjectConfig,
-    filename = 'config.json'
-  ): Promise<Result<string, any>> {
-    try {
-      const configFile = createConfigFile(config)
-      const configPath = resolve(this.configDir, filename)
-
-      // Ensure config directory exists
-      const ensureDirResult = await this.ensureConfigDirectory()
-      if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error)
-      }
-
-      // Write config file
-      const content = JSON.stringify(configFile, null, 2)
-      const writeResult = await writeFile(defaultFSConfig)(configPath, content)
-
-      if (writeResult.isErr()) {
-        return err(
-          createCoreError('CONFIG_SAVE_FAILED', 'CLI_ERROR', 'Failed to save configuration file', {
-            component: 'create-trailhead-cli',
-            operation: 'saveConfig',
-            cause: writeResult.error,
-            details: `Could not write to ${configPath}`,
-          })
-        )
-      }
-
-      if (this.verbose) {
-        console.log(`Configuration saved to ${configPath}`)
-      }
-
-      return ok(configPath)
-    } catch (error) {
-      return err(
-        createCoreError('CONFIG_SAVE_ERROR', 'CLI_ERROR', 'Configuration save error', {
-          component: 'create-trailhead-cli',
-          operation: 'saveConfig',
+/**
+ * Ensure configuration directory exists
+ *
+ * @param context - Configuration context
+ * @returns Result indicating success or error
+ */
+export async function ensureConfigDirectory(
+  context: ConfigContext
+): Promise<Result<void, CoreError>> {
+  try {
+    const { mkdir } = await import('node:fs/promises')
+    await mkdir(context.configDir, { recursive: true })
+    return ok(undefined)
+  } catch (error) {
+    return err(
+      createCoreError(
+        'CONFIG_DIR_CREATION_FAILED',
+        'CLI_ERROR',
+        `Failed to create config directory: ${context.configDir}`,
+        {
+          component: 'ConfigManager',
+          operation: 'ensureConfigDirectory',
           cause: error,
+          recoverable: false,
+        }
+      )
+    )
+  }
+}
+
+/**
+ * Ensure preset directory exists
+ *
+ * @param context - Configuration context
+ * @returns Result indicating success or error
+ */
+export async function ensurePresetDirectory(
+  context: ConfigContext
+): Promise<Result<void, CoreError>> {
+  try {
+    const { mkdir } = await import('node:fs/promises')
+    await mkdir(context.presetDir, { recursive: true })
+    return ok(undefined)
+  } catch (error) {
+    return err(
+      createCoreError(
+        'PRESET_DIR_CREATION_FAILED',
+        'CLI_ERROR',
+        `Failed to create preset directory: ${context.presetDir}`,
+        {
+          component: 'ConfigManager',
+          operation: 'ensurePresetDirectory',
+          cause: error,
+          recoverable: false,
+        }
+      )
+    )
+  }
+}
+
+/**
+ * Save configuration to file
+ *
+ * @param config - Project configuration to save
+ * @param filename - Configuration filename
+ * @param context - Configuration context
+ * @returns Result with saved file path or error
+ */
+export async function saveConfig(
+  config: ModernProjectConfig,
+  filename: string = 'config.json',
+  context: ConfigContext
+): Promise<Result<string, CoreError>> {
+  try {
+    const configFile = createConfigFile(config)
+    const configPath = resolve(context.configDir, filename)
+
+    // Ensure config directory exists
+    const ensureDirResult = await ensureConfigDirectory(context)
+    if (ensureDirResult.isErr()) {
+      return err(ensureDirResult.error)
+    }
+
+    // Write config file
+    const content = JSON.stringify(configFile, null, 2)
+    const writeResult = await writeFile(defaultFSConfig)(configPath, content)
+
+    if (writeResult.isErr()) {
+      return err(
+        createCoreError('CONFIG_SAVE_FAILED', 'CLI_ERROR', 'Failed to save configuration file', {
+          component: 'ConfigManager',
+          operation: 'saveConfig',
+          cause: writeResult.error,
+          context: { configPath },
           recoverable: false,
         })
       )
     }
+
+    if (context.verbose) {
+      console.log(`Configuration saved to ${configPath}`)
+    }
+
+    return ok(configPath)
+  } catch (error) {
+    return err(
+      createCoreError('CONFIG_SAVE_ERROR', 'CLI_ERROR', 'Configuration save error', {
+        component: 'ConfigManager',
+        operation: 'saveConfig',
+        cause: error,
+        recoverable: false,
+      })
+    )
   }
+}
 
-  /**
-   * Load configuration from file
-   */
-  async loadConfig(filename = 'config.json'): Promise<Result<ConfigFile, any>> {
-    try {
-      const configPath = resolve(this.configDir, filename)
+/**
+ * Load configuration from file
+ *
+ * @param filename - Configuration filename
+ * @param context - Configuration context
+ * @returns Result with loaded configuration or error
+ */
+export async function loadConfig(
+  filename: string = 'config.json',
+  context: ConfigContext
+): Promise<Result<ConfigFile, CoreError>> {
+  try {
+    const configPath = resolve(context.configDir, filename)
 
-      // Check if file exists
-      const fileExists = await exists(defaultFSConfig)(configPath)
-      if (fileExists.isErr() || !fileExists.value) {
-        return err(
-          createCoreError(
-            'CONFIG_NOT_FOUND',
-            'CLI_ERROR',
-            `Configuration file not found: ${filename}`,
-            {
-              component: 'create-trailhead-cli',
-              operation: 'loadConfig',
-              details: `Looked for config at ${configPath}`,
-              recoverable: true,
-              severity: 'medium',
-            }
-          )
-        )
-      }
-
-      // Read file content
-      const readResult = await readFile(defaultFSConfig)(configPath)
-      if (readResult.isErr()) {
-        return err(
-          createCoreError('CONFIG_READ_FAILED', 'CLI_ERROR', 'Failed to read configuration file', {
-            component: 'create-trailhead-cli',
+    // Check if file exists
+    const fileExists = await exists(defaultFSConfig)(configPath)
+    if (fileExists.isErr() || !fileExists.value) {
+      return err(
+        createCoreError(
+          'CONFIG_NOT_FOUND',
+          'CLI_ERROR',
+          `Configuration file not found: ${filename}`,
+          {
+            component: 'ConfigManager',
             operation: 'loadConfig',
-            cause: readResult.error,
-            details: `Could not read ${configPath}`,
-          })
+            context: { configPath },
+            recoverable: true,
+          }
         )
-      }
+      )
+    }
 
-      // Parse JSON
-      let parsedConfig: unknown
-      try {
-        parsedConfig = JSON.parse(readResult.value)
-      } catch (parseError) {
+    // Read and parse config file
+    const readResult = await readFile(defaultFSConfig)(configPath)
+    if (readResult.isErr()) {
+      return err(
+        createCoreError('CONFIG_READ_FAILED', 'CLI_ERROR', 'Failed to read configuration file', {
+          component: 'ConfigManager',
+          operation: 'loadConfig',
+          cause: readResult.error,
+          context: { configPath },
+          recoverable: false,
+        })
+      )
+    }
+
+    try {
+      const configData = JSON.parse(readResult.value)
+      const validation = validateConfigFile(configData)
+
+      if (validation.isErr()) {
         return err(
           createCoreError(
-            'CONFIG_PARSE_FAILED',
+            'CONFIG_VALIDATION_FAILED',
             'CLI_ERROR',
-            'Failed to parse configuration file',
+            'Configuration file validation failed',
             {
-              component: 'create-trailhead-cli',
+              component: 'ConfigManager',
               operation: 'loadConfig',
-              cause: parseError,
-              details: `Invalid JSON in ${configPath}`,
+              cause: validation.error,
+              context: { configPath },
+              recoverable: false,
             }
           )
         )
       }
 
-      // Validate configuration
-      const validationResult = validateConfigFile(parsedConfig)
-      if (validationResult.isErr()) {
-        return validationResult
-      }
-
-      if (this.verbose) {
+      if (context.verbose) {
         console.log(`Configuration loaded from ${configPath}`)
       }
 
-      return ok(validationResult.value)
-    } catch (error) {
+      return ok(validation.value)
+    } catch (parseError) {
       return err(
-        createCoreError('CONFIG_LOAD_ERROR', 'CLI_ERROR', 'Configuration load error', {
-          component: 'create-trailhead-cli',
+        createCoreError('CONFIG_PARSE_FAILED', 'CLI_ERROR', 'Failed to parse configuration file', {
+          component: 'ConfigManager',
           operation: 'loadConfig',
-          cause: error,
+          cause: parseError,
+          context: { configPath },
           recoverable: false,
         })
       )
     }
+  } catch (error) {
+    return err(
+      createCoreError('CONFIG_LOAD_ERROR', 'CLI_ERROR', 'Configuration load error', {
+        component: 'ConfigManager',
+        operation: 'loadConfig',
+        cause: error,
+        recoverable: false,
+      })
+    )
   }
+}
 
-  /**
-   * Save preset configuration
-   */
-  async savePreset(preset: PresetConfig, filename?: string): Promise<Result<string, any>> {
-    try {
-      const presetFilename = filename || `${preset.name}.json`
-      const presetPath = resolve(this.presetDir, presetFilename)
+/**
+ * Save preset configuration
+ *
+ * @param preset - Preset configuration to save
+ * @param filename - Optional preset filename
+ * @param context - Configuration context
+ * @returns Result with saved file path or error
+ */
+export async function savePreset(
+  preset: PresetConfig,
+  filename: string | undefined,
+  context: ConfigContext
+): Promise<Result<string, CoreError>> {
+  try {
+    const presetFilename = filename || `${preset.name}.json`
+    const presetPath = resolve(context.presetDir, presetFilename)
 
-      // Ensure preset directory exists
-      const ensureDirResult = await this.ensurePresetDirectory()
-      if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error)
-      }
+    // Ensure preset directory exists
+    const ensureDirResult = await ensurePresetDirectory(context)
+    if (ensureDirResult.isErr()) {
+      return err(ensureDirResult.error)
+    }
 
-      // Validate preset
-      const validationResult = validatePresetConfig(preset)
-      if (validationResult.isErr()) {
-        return err(validationResult.error)
-      }
-
-      // Write preset file
-      const content = JSON.stringify(validationResult.value, null, 2)
-      const writeResult = await writeFile(defaultFSConfig)(presetPath, content)
-
-      if (writeResult.isErr()) {
-        return err(
-          createCoreError('PRESET_SAVE_FAILED', 'CLI_ERROR', 'Failed to save preset', {
-            component: 'create-trailhead-cli',
-            operation: 'savePreset',
-            cause: writeResult.error,
-            details: `Could not write to ${presetPath}`,
-          })
-        )
-      }
-
-      if (this.verbose) {
-        console.log(`Preset saved to ${presetPath}`)
-      }
-
-      return ok(presetPath)
-    } catch (error) {
+    // Validate preset
+    const validationResult = validatePresetConfig(preset)
+    if (validationResult.isErr()) {
       return err(
-        createCoreError('PRESET_SAVE_ERROR', 'CLI_ERROR', 'Preset save error', {
-          component: 'create-trailhead-cli',
+        createCoreError('PRESET_VALIDATION_FAILED', 'CLI_ERROR', 'Preset validation failed', {
+          component: 'ConfigManager',
           operation: 'savePreset',
-          cause: error,
+          cause: validationResult.error,
           recoverable: false,
         })
       )
     }
+
+    // Write preset file
+    const content = JSON.stringify(validationResult.value, null, 2)
+    const writeResult = await writeFile(defaultFSConfig)(presetPath, content)
+
+    if (writeResult.isErr()) {
+      return err(
+        createCoreError('PRESET_SAVE_FAILED', 'CLI_ERROR', 'Failed to save preset', {
+          component: 'ConfigManager',
+          operation: 'savePreset',
+          cause: writeResult.error,
+          context: { presetPath },
+          recoverable: false,
+        })
+      )
+    }
+
+    if (context.verbose) {
+      console.log(`Preset saved to ${presetPath}`)
+    }
+
+    return ok(presetPath)
+  } catch (error) {
+    return err(
+      createCoreError('PRESET_SAVE_ERROR', 'CLI_ERROR', 'Preset save error', {
+        component: 'ConfigManager',
+        operation: 'savePreset',
+        cause: error,
+        recoverable: false,
+      })
+    )
   }
+}
 
-  /**
-   * Load preset configuration
-   */
-  async loadPreset(name: string): Promise<Result<PresetConfig, any>> {
+/**
+ * Load preset configuration
+ *
+ * @param name - Preset name
+ * @param context - Configuration context
+ * @returns Result with loaded preset or error
+ */
+export async function loadPreset(
+  name: string,
+  context: ConfigContext
+): Promise<Result<PresetConfig, CoreError>> {
+  try {
+    // Check built-in presets first
+    const builtInPreset = BUILT_IN_PRESETS.find((p) => p.name === name)
+    if (builtInPreset) {
+      if (context.verbose) {
+        console.log(`Loaded built-in preset: ${name}`)
+      }
+      return ok(builtInPreset)
+    }
+
+    // Try to load from file
+    const presetPath = resolve(context.presetDir, `${name}.json`)
+    const fileExists = await exists(defaultFSConfig)(presetPath)
+
+    if (fileExists.isErr() || !fileExists.value) {
+      return err(
+        createCoreError('PRESET_NOT_FOUND', 'CLI_ERROR', `Preset not found: ${name}`, {
+          component: 'ConfigManager',
+          operation: 'loadPreset',
+          context: { presetPath },
+          recoverable: true,
+        })
+      )
+    }
+
+    const readResult = await readFile(defaultFSConfig)(presetPath)
+    if (readResult.isErr()) {
+      return err(
+        createCoreError('PRESET_READ_FAILED', 'CLI_ERROR', 'Failed to read preset file', {
+          component: 'ConfigManager',
+          operation: 'loadPreset',
+          cause: readResult.error,
+          context: { presetPath },
+          recoverable: false,
+        })
+      )
+    }
+
     try {
-      const presetFilename = name.endsWith('.json') ? name : `${name}.json`
-      const presetPath = resolve(this.presetDir, presetFilename)
+      const presetData = JSON.parse(readResult.value)
+      const validation = validatePresetConfig(presetData)
 
-      // Check if file exists
-      const fileExists = await exists(defaultFSConfig)(presetPath)
-      if (fileExists.isErr() || !fileExists.value) {
+      if (validation.isErr()) {
         return err(
-          createCoreError('PRESET_NOT_FOUND', 'CLI_ERROR', `Preset not found: ${name}`, {
-            component: 'create-trailhead-cli',
+          createCoreError('PRESET_VALIDATION_FAILED', 'CLI_ERROR', 'Preset validation failed', {
+            component: 'ConfigManager',
             operation: 'loadPreset',
-            details: `Looked for preset at ${presetPath}`,
-            recoverable: true,
-            severity: 'medium',
+            cause: validation.error,
+            context: { presetPath },
+            recoverable: false,
           })
         )
       }
 
-      // Read file content
-      const readResult = await readFile(defaultFSConfig)(presetPath)
-      if (readResult.isErr()) {
-        return err(
-          createCoreError('PRESET_READ_FAILED', 'CLI_ERROR', 'Failed to read preset file', {
-            component: 'create-trailhead-cli',
-            operation: 'loadPreset',
-            cause: readResult.error,
-            details: `Could not read ${presetPath}`,
-          })
-        )
-      }
-
-      // Parse JSON
-      let parsedPreset: unknown
-      try {
-        parsedPreset = JSON.parse(readResult.value)
-      } catch (parseError) {
-        return err(
-          createCoreError('PRESET_PARSE_FAILED', 'CLI_ERROR', 'Failed to parse preset file', {
-            component: 'create-trailhead-cli',
-            operation: 'loadPreset',
-            cause: parseError,
-            details: `Invalid JSON in ${presetPath}`,
-          })
-        )
-      }
-
-      // Validate preset
-      const validationResult = validatePresetConfig(parsedPreset)
-      if (validationResult.isErr()) {
-        return validationResult
-      }
-
-      if (this.verbose) {
+      if (context.verbose) {
         console.log(`Preset loaded from ${presetPath}`)
       }
 
-      return ok(validationResult.value)
-    } catch (error) {
+      return ok(validation.value)
+    } catch (parseError) {
       return err(
-        createCoreError('PRESET_LOAD_ERROR', 'CLI_ERROR', 'Preset load error', {
-          component: 'create-trailhead-cli',
+        createCoreError('PRESET_PARSE_FAILED', 'CLI_ERROR', 'Failed to parse preset file', {
+          component: 'ConfigManager',
           operation: 'loadPreset',
-          cause: error,
+          cause: parseError,
+          context: { presetPath },
           recoverable: false,
         })
       )
     }
-  }
-
-  /**
-   * List available presets
-   */
-  async listPresets(): Promise<Result<string[], any>> {
-    try {
-      const { readdir } = await import('node:fs/promises')
-
-      // Check if preset directory exists
-      const dirExists = await exists(defaultFSConfig)(this.presetDir)
-      if (dirExists.isErr() || !dirExists.value) {
-        return ok([]) // No presets directory means no presets
-      }
-
-      const files = await readdir(this.presetDir)
-      const presetFiles = files
-        .filter((file) => file.endsWith('.json'))
-        .map((file) => file.replace('.json', ''))
-
-      return ok(presetFiles)
-    } catch (error) {
-      return err(
-        createCoreError('PRESET_LIST_ERROR', 'CLI_ERROR', 'Failed to list presets', {
-          component: 'create-trailhead-cli',
-          operation: 'listPresets',
-          cause: error,
-          recoverable: true,
-        })
-      )
-    }
-  }
-
-  /**
-   * Apply preset to configuration
-   */
-  async applyPreset(
-    presetName: string,
-    userConfig: Partial<ModernProjectConfig>
-  ): Promise<Result<Partial<ModernProjectConfig>, any>> {
-    try {
-      const presetResult = await this.loadPreset(presetName)
-      if (presetResult.isErr()) {
-        return err(presetResult.error)
-      }
-
-      const preset = presetResult.value
-      const mergedConfig = mergePresetWithConfig(preset, userConfig)
-
-      if (this.verbose) {
-        console.log(`Applied preset: ${preset.name}`)
-      }
-
-      return ok(mergedConfig)
-    } catch (error) {
-      return err(
-        createCoreError('PRESET_APPLY_ERROR', 'CLI_ERROR', 'Failed to apply preset', {
-          component: 'create-trailhead-cli',
-          operation: 'applyPreset',
-          cause: error,
-          recoverable: false,
-        })
-      )
-    }
-  }
-
-  /**
-   * Generate JSON schema file for IDE support
-   */
-  async generateSchemaFile(): Promise<Result<string, any>> {
-    try {
-      const schema = generateConfigJsonSchema()
-      const schemaPath = resolve(this.configDir, 'config.schema.json')
-
-      // Ensure config directory exists
-      const ensureDirResult = await this.ensureConfigDirectory()
-      if (ensureDirResult.isErr()) {
-        return err(ensureDirResult.error)
-      }
-
-      // Write schema file
-      const content = JSON.stringify(schema, null, 2)
-      const writeResult = await writeFile(defaultFSConfig)(schemaPath, content)
-
-      if (writeResult.isErr()) {
-        return err(
-          createCoreError('SCHEMA_SAVE_FAILED', 'CLI_ERROR', 'Failed to save JSON schema', {
-            component: 'create-trailhead-cli',
-            operation: 'generateSchemaFile',
-            cause: writeResult.error,
-            details: `Could not write to ${schemaPath}`,
-          })
-        )
-      }
-
-      if (this.verbose) {
-        console.log(`JSON schema saved to ${schemaPath}`)
-      }
-
-      return ok(schemaPath)
-    } catch (error) {
-      return err(
-        createCoreError('SCHEMA_GENERATE_ERROR', 'CLI_ERROR', 'Schema generation error', {
-          component: 'create-trailhead-cli',
-          operation: 'generateSchemaFile',
-          cause: error,
-          recoverable: false,
-        })
-      )
-    }
-  }
-
-  /**
-   * Clean up old configuration files
-   */
-  async cleanup(maxAge = 30): Promise<Result<number, any>> {
-    try {
-      const { readdir, stat, unlink } = await import('node:fs/promises')
-
-      // Check if config directory exists
-      const dirExists = await exists(defaultFSConfig)(this.configDir)
-      if (dirExists.isErr() || !dirExists.value) {
-        return ok(0) // No directory means nothing to clean
-      }
-
-      const files = await readdir(this.configDir)
-      const now = Date.now()
-      const maxAgeMs = maxAge * 24 * 60 * 60 * 1000 // Convert days to milliseconds
-
-      let cleanedCount = 0
-
-      for (const file of files) {
-        if (!file.endsWith('.json') || file === 'config.json') {
-          continue // Skip non-JSON files and main config
-        }
-
-        const filePath = resolve(this.configDir, file)
-        const stats = await stat(filePath)
-
-        if (now - stats.mtime.getTime() > maxAgeMs) {
-          await unlink(filePath)
-          cleanedCount++
-
-          if (this.verbose) {
-            console.log(`Cleaned up old config: ${file}`)
-          }
-        }
-      }
-
-      return ok(cleanedCount)
-    } catch (error) {
-      return err(
-        createCoreError('CONFIG_CLEANUP_ERROR', 'CLI_ERROR', 'Configuration cleanup error', {
-          component: 'create-trailhead-cli',
-          operation: 'cleanup',
-          cause: error,
-          recoverable: true,
-        })
-      )
-    }
-  }
-
-  /**
-   * Get configuration directory path
-   */
-  getConfigDir(): string {
-    return this.configDir
-  }
-
-  /**
-   * Get preset directory path
-   */
-  getPresetDir(): string {
-    return this.presetDir
-  }
-
-  /**
-   * Ensure configuration directory exists
-   */
-  private async ensureConfigDirectory(): Promise<Result<void, any>> {
-    try {
-      const { mkdir } = await import('node:fs/promises')
-      await mkdir(this.configDir, { recursive: true })
-      return ok(undefined)
-    } catch (error) {
-      return err(
-        createCoreError(
-          'CONFIG_DIR_CREATE_FAILED',
-          'CLI_ERROR',
-          'Failed to create configuration directory',
-          {
-            component: 'create-trailhead-cli',
-            operation: 'ensureConfigDirectory',
-            cause: error,
-            details: `Could not create directory ${this.configDir}`,
-          }
-        )
-      )
-    }
-  }
-
-  /**
-   * Ensure preset directory exists
-   */
-  private async ensurePresetDirectory(): Promise<Result<void, any>> {
-    try {
-      const { mkdir } = await import('node:fs/promises')
-      await mkdir(this.presetDir, { recursive: true })
-      return ok(undefined)
-    } catch (error) {
-      return err(
-        createCoreError(
-          'PRESET_DIR_CREATE_FAILED',
-          'CLI_ERROR',
-          'Failed to create preset directory',
-          {
-            component: 'create-trailhead-cli',
-            operation: 'ensurePresetDirectory',
-            cause: error,
-            details: `Could not create directory ${this.presetDir}`,
-          }
-        )
-      )
-    }
+  } catch (error) {
+    return err(
+      createCoreError('PRESET_LOAD_ERROR', 'CLI_ERROR', 'Preset load error', {
+        component: 'ConfigManager',
+        operation: 'loadPreset',
+        cause: error,
+        recoverable: false,
+      })
+    )
   }
 }
+
+/**
+ * List available presets
+ *
+ * @param context - Configuration context
+ * @returns Result with preset names or error
+ */
+export async function listPresets(context: ConfigContext): Promise<Result<string[], CoreError>> {
+  try {
+    const presets: string[] = []
+
+    // Add built-in presets
+    presets.push(...BUILT_IN_PRESETS.map((p) => p.name))
+
+    // Add custom presets from directory
+    try {
+      const { readdir } = await import('node:fs/promises')
+      const files = await readdir(context.presetDir)
+      const customPresets = files
+        .filter((file) => file.endsWith('.json'))
+        .map((file) => file.replace('.json', ''))
+        .filter((name) => !BUILT_IN_PRESETS.some((p) => p.name === name))
+
+      presets.push(...customPresets)
+    } catch {
+      // Directory doesn't exist or can't be read - just use built-in presets
+    }
+
+    return ok(presets)
+  } catch (error) {
+    return err(
+      createCoreError('PRESET_LIST_ERROR', 'CLI_ERROR', 'Failed to list presets', {
+        component: 'ConfigManager',
+        operation: 'listPresets',
+        cause: error,
+        recoverable: false,
+      })
+    )
+  }
+}
+
+/**
+ * Apply preset to configuration
+ *
+ * @param config - Base configuration
+ * @param presetName - Preset name to apply
+ * @param context - Configuration context
+ * @returns Result with merged configuration or error
+ */
+export async function applyPreset(
+  config: ModernProjectConfig,
+  presetName: string,
+  context: ConfigContext
+): Promise<Result<ModernProjectConfig, CoreError>> {
+  try {
+    const presetResult = await loadPreset(presetName, context)
+    if (presetResult.isErr()) {
+      return err(presetResult.error)
+    }
+
+    const mergedConfig = mergePresetWithConfig(presetResult.value, config)
+    return ok(mergedConfig as ModernProjectConfig)
+  } catch (error) {
+    return err(
+      createCoreError('PRESET_APPLY_ERROR', 'CLI_ERROR', 'Failed to apply preset', {
+        component: 'ConfigManager',
+        operation: 'applyPreset',
+        cause: error,
+        recoverable: false,
+      })
+    )
+  }
+}
+
+/**
+ * Generate JSON schema file
+ *
+ * @param context - Configuration context
+ * @returns Result with schema file path or error
+ */
+export async function generateSchemaFile(
+  context: ConfigContext
+): Promise<Result<string, CoreError>> {
+  try {
+    const schema = generateConfigJsonSchema()
+    const schemaPath = resolve(context.configDir, 'config.schema.json')
+
+    // Ensure config directory exists
+    const ensureDirResult = await ensureConfigDirectory(context)
+    if (ensureDirResult.isErr()) {
+      return err(ensureDirResult.error)
+    }
+
+    const content = JSON.stringify(schema, null, 2)
+    const writeResult = await writeFile(defaultFSConfig)(schemaPath, content)
+
+    if (writeResult.isErr()) {
+      return err(
+        createCoreError('SCHEMA_SAVE_FAILED', 'CLI_ERROR', 'Failed to save schema file', {
+          component: 'ConfigManager',
+          operation: 'generateSchemaFile',
+          cause: writeResult.error,
+          context: { schemaPath },
+          recoverable: false,
+        })
+      )
+    }
+
+    return ok(schemaPath)
+  } catch (error) {
+    return err(
+      createCoreError('SCHEMA_GENERATION_ERROR', 'CLI_ERROR', 'Schema generation error', {
+        component: 'ConfigManager',
+        operation: 'generateSchemaFile',
+        cause: error,
+        recoverable: false,
+      })
+    )
+  }
+}
+
+/**
+ * Cleanup old configuration files
+ *
+ * @param maxAge - Maximum age in days
+ * @param context - Configuration context
+ * @returns Result with number of cleaned files or error
+ */
+export async function cleanupOldConfigs(
+  maxAge: number = 30,
+  context: ConfigContext
+): Promise<Result<number, CoreError>> {
+  try {
+    let cleanedCount = 0
+    const cutoffTime = Date.now() - maxAge * 24 * 60 * 60 * 1000
+
+    const { readdir, stat, unlink } = await import('node:fs/promises')
+
+    try {
+      const files = await readdir(context.configDir)
+
+      for (const file of files) {
+        if (file.endsWith('.json') && file !== 'config.schema.json') {
+          const filePath = resolve(context.configDir, file)
+          const stats = await stat(filePath)
+
+          if (stats.mtime.getTime() < cutoffTime) {
+            await unlink(filePath)
+            cleanedCount++
+            if (context.verbose) {
+              console.log(`Cleaned up old config file: ${file}`)
+            }
+          }
+        }
+      }
+    } catch {
+      // Directory doesn't exist or can't be read - nothing to clean
+    }
+
+    return ok(cleanedCount)
+  } catch (error) {
+    return err(
+      createCoreError('CLEANUP_ERROR', 'CLI_ERROR', 'Failed to cleanup old configs', {
+        component: 'ConfigManager',
+        operation: 'cleanupOldConfigs',
+        cause: error,
+        recoverable: false,
+      })
+    )
+  }
+}
+
+// ========================================
+// Built-in Presets and Exports
+// ========================================
 
 /**
  * Built-in presets for common project types
@@ -597,13 +680,6 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     installDependencies: false,
   },
 ]
-
-/**
- * Create a default config manager instance
- */
-export function createConfigManager(options?: ConfigManagerOptions): ConfigManager {
-  return new ConfigManager(options)
-}
 
 // Re-export types for convenience
 export type { PresetConfig } from './config-schema.js'

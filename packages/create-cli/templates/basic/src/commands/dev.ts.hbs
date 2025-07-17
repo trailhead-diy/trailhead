@@ -86,7 +86,7 @@ export const devCommand = createCommand<DevOptions>({
       }
       
       if (verbose) {
-        logger.debug(`Server configuration: ${JSON.stringify({ port, host, open: options.open })}`)
+        logger.debug(`Server configuration: port=${port}, host=${host}, open=${options.open ?? false}`)
       }
       
       // Validate port availability (example)

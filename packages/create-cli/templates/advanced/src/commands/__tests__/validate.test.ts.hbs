@@ -34,26 +34,26 @@ expect(result.isOk()).toBe(true) expect(mockGlob).toHaveBeenCalledWith('custom/*
 mockGlob.mockResolvedValue(['src/debug.ts']) mockReadFile.mockResolvedValue('console.log("debug
 info"); export const value = 42;') const result = await validateCommand.execute({ source: true },
 testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('src/debug.ts: Contains console.log
+expect(testContext.logger.warning).toHaveBeenCalledWith('src/debug.ts: Contains console.log
 statements') }) it('should detect any type warnings in TypeScript files', async () => {
 mockGlob.mockResolvedValue(['src/types.ts']) mockReadFile.mockResolvedValue('export function
 process(data: any): void {}') const result = await validateCommand.execute({ source: true },
 testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('src/types.ts: Contains "any" type - consider
+expect(testContext.logger.warning).toHaveBeenCalledWith('src/types.ts: Contains "any" type - consider
 more specific types') }) it('should detect files without exports', async () => {
 mockGlob.mockResolvedValue(['src/script.ts']) mockReadFile.mockResolvedValue('console.log("no
 exports here")') const result = await validateCommand.execute({ source: true }, testContext)
 expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('src/script.ts: File does not export anything')
+expect(testContext.logger.warning).toHaveBeenCalledWith('src/script.ts: File does not export anything')
 }) it('should detect empty configuration files', async () => {
 mockGlob.mockResolvedValue(['empty.config.js']) mockReadFile.mockResolvedValue('') const result =
 await validateCommand.execute({ config: true }, testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('empty.config.js: Configuration file is empty')
+expect(testContext.logger.warning).toHaveBeenCalledWith('empty.config.js: Configuration file is empty')
 }) it('should detect test files without test cases', async () => {
 mockGlob.mockResolvedValue(['tests/empty.test.ts']) mockReadFile.mockResolvedValue('export const
 helper = () => {}') const result = await validateCommand.execute({ tests: true }, testContext)
 expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('tests/empty.test.ts: Test file does not
+expect(testContext.logger.warning).toHaveBeenCalledWith('tests/empty.test.ts: Test file does not
 contain test cases') }) it('should detect focused tests as errors', async () => {
 mockGlob.mockResolvedValue(['tests/focused.test.ts'])
 mockReadFile.mockResolvedValue('describe("test", () => { it.only("should work", () => {}) })') const
@@ -98,7 +98,7 @@ failed: Unexpected validation error') }) it('should show warnings in verbose mod
 testContext.verbose = true mockGlob.mockResolvedValue(['src/warning.ts'])
 mockReadFile.mockResolvedValue('console.log("debug")') const result = await
 validateCommand.execute({ source: true }, testContext) expect(result.isOk()).toBe(true)
-expect(testContext.logger.warn).toHaveBeenCalledWith('src/warning.ts: Contains console.log
+expect(testContext.logger.warning).toHaveBeenCalledWith('src/warning.ts: Contains console.log
 statements') }) it('should show info messages in verbose mode', async () => { testContext.verbose =
 true mockGlob.mockResolvedValue(['src/good.ts']) mockReadFile.mockResolvedValue('export const value
 = 42') const result = await validateCommand.execute({ source: true }, testContext)

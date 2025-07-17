@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
+import { createCLI } from '@esteban-url/cli'
+import { createDefaultLogger } from '@esteban-url/cli/utils'
 import { generateProject } from './lib/generator.js'
-import { parseArgumentsModern, gatherProjectConfig } from './lib/interactive-prompts.js'
-import { createLogger } from './lib/logger.js'
+import { gatherProjectConfig } from './lib/interactive-prompts.js'
 import { configCommand } from './commands/config.js'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions, CommandContext } from '@esteban-url/cli/command'
+import { ok, err } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
+import { createGeneratorError, ERROR_CODES, ERROR_SUGGESTIONS } from './lib/error-helpers.js'
 
 // Export utilities for programmatic use
 export { generateProject } from './lib/generator.js'
@@ -27,208 +33,184 @@ export type {
 export type { ModernProjectConfig } from './lib/interactive-prompts.js'
 
 /**
- * Create Trailhead CLI Generator
- *
- * A CLI generator that creates new projects using the new @esteban-url/* architecture
- * Built with functional programming principles and explicit error handling
+ * Generate command options
  */
-async function main() {
-  const logger = createLogger()
-
-  try {
-    const args = process.argv.slice(2)
-
-    // Handle config command separately
-    if (args.length > 0 && args[0] === 'config') {
-      const configResult = await configCommand.handler({
-        args: args.slice(1),
-        flags: parseConfigFlags(args.slice(1)),
-        context: {},
-      })
-
-      if (configResult.isErr()) {
-        logger.error(configResult.error.message)
-        process.exit(1)
-      }
-
-      process.exit(0)
-    }
-
-    const parseResult = parseArgumentsModern(args)
-
-    if (parseResult.isErr()) {
-      logger.error(parseResult.error.message)
-      process.exit(1)
-    }
-
-    const { projectName, flags, interactive, help, version } = parseResult.value
-
-    if (help) {
-      showHelp()
-      process.exit(0)
-    }
-
-    if (version) {
-      console.log('0.1.0')
-      process.exit(0)
-    }
-
-    // Validate project name if not interactive
-    if (!interactive && !projectName) {
-      logger.error('Project name is required when not in interactive mode')
-      process.exit(1)
-    }
-
-    // Gather configuration (interactive or from flags)
-    const configResult = await gatherProjectConfig(projectName, flags)
-
-    if (configResult.isErr()) {
-      logger.error(`Failed to configure project: ${configResult.error.message}`)
-      process.exit(1)
-    }
-
-    const config = configResult.value
-
-    // Show configuration summary
-    if (!config.dryRun) {
-      logger.info('')
-      logger.info('📋 Project Configuration:')
-      logger.info(`   Name: ${config.projectName}`)
-      logger.info(`   Type: ${config.projectType}`)
-      logger.info(`   Template: ${config.template}`)
-      logger.info(`   Package Manager: ${config.packageManager}`)
-      logger.info(`   Author: ${config.author.name} <${config.author.email}>`)
-      logger.info(`   License: ${config.license}`)
-      logger.info(
-        `   Features: ${Object.entries(config.features)
-          .filter(([, enabled]) => enabled)
-          .map(([name]) => name)
-          .join(', ')}`
-      )
-      logger.info('')
-    }
-
-    const result = await generateProject(config, {
-      logger,
-      verbose: config.verbose,
-      templateConfig: undefined,
-    })
-
-    if (result.isErr()) {
-      logger.error(`Failed to generate project: ${result.error.message}`)
-      process.exit(1)
-    }
-
-    if (!config.dryRun) {
-      logger.success(`Successfully generated '${config.projectName}' 🎉`)
-      logger.info('')
-      logger.info('🚀 Next steps:')
-      logger.info(`   cd ${config.projectName}`)
-      if (!config.installDependencies) {
-        logger.info(`   ${config.packageManager} install`)
-      }
-      logger.info(`   ${config.packageManager} dev`)
-      if (config.features.testing) {
-        logger.info(`   ${config.packageManager} test`)
-      }
-      logger.info('')
-      logger.info('Happy coding! ✨')
-    }
-  } catch (error) {
-    logger.error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`)
-    process.exit(1)
-  }
-}
-
-function showHelp() {
-  console.log(`
-create-trailhead-cli - Modern CLI generator with interactive setup and configuration management
-
-Usage:
-  create-trailhead-cli [project-name] [options]
-  create-trailhead-cli config [config-options]
-
-Commands:
-  config                     Manage configuration files and presets
-
-Arguments:
-  [project-name]             Name of the project to create (optional - will prompt if not provided)
-
-Project Generation Options:
-  -t, --template <type>      Template variant (basic, advanced) - skips interactive mode
-  -p, --package-manager <pm> Package manager (npm, pnpm) 
-  --docs                     Include documentation features
-  --no-git                   Skip git repository initialization
-  --no-install               Skip dependency installation
-  --non-interactive          Skip interactive prompts (requires project name)
-  --force                    Overwrite existing directory
-  --dry-run                  Show what would be generated without creating files
-  --verbose                  Enable verbose output
-  -h, --help                 Show this help message
-  -v, --version              Show version number
-
-Configuration Management:
-  config --list-presets      List available configuration presets
-  config --preset <name>     Show details of a specific preset
-  config --generate-schema   Generate JSON schema for IDE support
-  config --cleanup           Clean up old configuration files
-
-Interactive Mode (default):
-  The CLI includes an interactive setup process with preset support.
-  You can use built-in presets or create custom ones for common configurations.
-
-Examples:
-  create-trailhead-cli                              # Full interactive setup with presets
-  create-trailhead-cli my-cli                       # Interactive with pre-filled name
-  create-trailhead-cli my-cli --template basic --non-interactive
-  create-trailhead-cli my-cli --template advanced --docs --package-manager npm
-  create-trailhead-cli my-cli --dry-run
-
-  create-trailhead-cli config --list-presets        # Show available presets
-  create-trailhead-cli config --preset advanced-cli # Show preset details
-  create-trailhead-cli config --generate-schema     # Generate JSON schema
-`)
+interface GenerateOptions extends CommandOptions {
+  /** Template variant to use */
+  readonly template?: string
+  /** Package manager preference */
+  readonly packageManager?: string
+  /** Include documentation features */
+  readonly docs?: boolean
+  /** Skip git repository initialization */
+  readonly noGit?: boolean
+  /** Skip dependency installation */
+  readonly noInstall?: boolean
+  /** Skip interactive prompts */
+  readonly nonInteractive?: boolean
+  /** Overwrite existing directory */
+  readonly force?: boolean
+  /** Show what would be generated without creating files */
+  readonly dryRun?: boolean
 }
 
 /**
- * Parse config command flags
+ * Generate command - creates new CLI projects
  */
-function parseConfigFlags(args: string[]): Record<string, any> {
-  const flags: Record<string, any> = {}
+const generateCommand = createCommand<GenerateOptions>({
+  name: 'generate',
+  description: 'Generate a new CLI project using the @esteban-url/* architecture',
+  arguments: '[project-name]',
+  options: [
+    {
+      flags: '-t, --template <type>',
+      description: 'Template variant (basic, advanced)',
+      type: 'string',
+    },
+    {
+      flags: '-p, --package-manager <pm>',
+      description: 'Package manager (npm, pnpm)',
+      type: 'string',
+    },
+    {
+      flags: '--docs',
+      description: 'Include documentation features',
+      type: 'boolean',
+    },
+    {
+      flags: '--no-git',
+      description: 'Skip git repository initialization',
+      type: 'boolean',
+    },
+    {
+      flags: '--no-install',
+      description: 'Skip dependency installation',
+      type: 'boolean',
+    },
+    {
+      flags: '--non-interactive',
+      description: 'Skip interactive prompts (requires project name)',
+      type: 'boolean',
+    },
+    {
+      flags: '--force',
+      description: 'Overwrite existing directory',
+      type: 'boolean',
+    },
+  ],
+  examples: [
+    'generate my-cli',
+    'generate my-cli --template basic --non-interactive',
+    'generate my-cli --template advanced --docs --package-manager npm',
+    'generate my-cli --dry-run',
+  ],
+  action: async (
+    options: GenerateOptions,
+    context: CommandContext
+  ): Promise<Result<void, CoreError>> => {
+    try {
+      const logger = createDefaultLogger(options.verbose)
+      const projectName = context.args[0]
 
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i]
+      // Interactive mode when no project name provided
+      if (!projectName && !options.nonInteractive) {
+        return err(
+          createGeneratorError(
+            ERROR_CODES.PROJECT_NAME_REQUIRED,
+            'Project name is required. Use the generate command with a project name.',
+            {
+              operation: 'generateCommand',
+              suggestion: ERROR_SUGGESTIONS.CLI_USAGE,
+            }
+          )
+        )
+      }
 
-    switch (arg) {
-      case '--list':
-      case '--list-presets':
-        flags['list-presets'] = true
-        break
-      case '--generate-schema':
-        flags['generate-schema'] = true
-        break
-      case '--cleanup':
-        flags.cleanup = true
-        break
-      case '--verbose':
-        flags.verbose = true
-        break
-      case '--preset':
-        if (i + 1 < args.length) {
-          flags.preset = args[i + 1]
-          i++ // Skip next arg
-        }
-        break
-      case '--config-dir':
-        if (i + 1 < args.length) {
-          flags['config-dir'] = args[i + 1]
-          i++ // Skip next arg
-        }
-        break
+      // Non-interactive mode - validate project name
+      if (!projectName) {
+        return err(
+          createGeneratorError(
+            ERROR_CODES.PROJECT_NAME_REQUIRED,
+            'Project name is required when not in interactive mode',
+            {
+              operation: 'generateCommand',
+              suggestion: ERROR_SUGGESTIONS.NON_INTERACTIVE_HELP,
+            }
+          )
+        )
+      }
+
+      // Convert options to config format
+      const flags = {
+        template: (options.template || 'basic') as 'basic' | 'advanced',
+        packageManager: (options.packageManager || 'pnpm') as 'npm' | 'pnpm',
+        docs: options.docs,
+        'no-git': options.noGit,
+        'no-install': options.noInstall,
+        force: options.force,
+        'dry-run': options.dryRun,
+        verbose: options.verbose,
+        'non-interactive': true,
+      }
+
+      const configResult = await gatherProjectConfig(projectName, flags)
+
+      if (configResult.isErr()) {
+        return err(
+          createGeneratorError(
+            ERROR_CODES.CONFIG_GATHER_ERROR,
+            `Failed to configure project: ${configResult.error.message}`,
+            {
+              operation: 'generateCommand',
+              cause: configResult.error,
+            }
+          )
+        )
+      }
+
+      const config = configResult.value
+
+      context.logger.info(`Generating ${config.template} CLI project: ${config.projectName}`)
+
+      const result = await generateProject(config, {
+        logger,
+        verbose: options.verbose || false,
+        templateConfig: undefined,
+      })
+
+      if (result.isErr()) {
+        return result
+      }
+
+      context.logger.info(`Successfully generated '${config.projectName}' 🎉`)
+      return ok(undefined)
+    } catch (error) {
+      return err(
+        createGeneratorError(ERROR_CODES.GENERATE_COMMAND_ERROR, 'Generate command failed', {
+          operation: 'generateCommand',
+          cause: error instanceof Error ? error : undefined,
+          context: { details: error instanceof Error ? error.message : String(error) },
+        })
+      )
     }
-  }
+  },
+})
 
-  return flags
+/**
+ * Create Trailhead CLI Generator
+ *
+ * A CLI generator that creates new projects using the @esteban-url/* architecture
+ * Built with functional programming principles and explicit error handling
+ */
+async function main() {
+  const cli = createCLI({
+    name: 'create-trailhead-cli',
+    version: '0.1.0',
+    description: 'Modern CLI generator with interactive setup and configuration management',
+    commands: [generateCommand, configCommand],
+  })
+
+  await cli.run()
 }
 
 // Run the CLI
