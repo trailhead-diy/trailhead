@@ -45,7 +45,7 @@ export const buildCommand = createCommand<BuildOptions>({
       logger.info('Starting build process...')
       
       if (verbose) {
-        logger.debug(`Build options: ${JSON.stringify(options)}`)
+        logger.debug(`Build options: production=${options.production}, watch=${options.watch}, output=${options.output || 'dist'}`)
       }
       
       // Example build logic using filesystem abstraction

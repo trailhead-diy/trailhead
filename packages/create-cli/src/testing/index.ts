@@ -30,6 +30,12 @@
 
 import { ok, err, type Result } from '@esteban-url/core'
 import type { CoreError } from '@esteban-url/core'
+import {
+  createMockScaffolderError,
+  createTemplateCompilerError,
+  ERROR_CODES,
+} from '../lib/error-helpers.js'
+import { expectSuccess } from '@esteban-url/cli/testing'
 
 // ========================================
 // Scaffolding Types and Interfaces
@@ -260,17 +266,16 @@ export const helloCommand = createCommand({
       // Get template
       const template = templates.get(templateId)
       if (!template) {
-        return err({
-          domain: 'create-cli',
-          code: 'TEMPLATE_NOT_FOUND',
-          message: `Template '${templateId}' not found`,
-          type: 'create-cli-error' as const,
-          recoverable: true,
-          component: 'MockScaffolder',
-          operation: 'generateProject',
-          severity: 'high' as const,
-          timestamp: new Date(),
-        } as CoreError)
+        return err(
+          createMockScaffolderError(
+            ERROR_CODES.TEMPLATE_NOT_FOUND,
+            `Template '${templateId}' not found`,
+            {
+              operation: 'generateProject',
+              context: { templateId },
+            }
+          )
+        )
       }
 
       // Merge variables with defaults
@@ -336,63 +341,57 @@ export const helloCommand = createCommand({
         const unresolvedPattern = /{{(\w+)}}/g
         const unresolvedMatches = rendered.match(unresolvedPattern)
         if (unresolvedMatches) {
-          return err({
-            domain: 'create-cli',
-            code: 'UNRESOLVED_VARIABLES',
-            message: `Unresolved template variables: ${unresolvedMatches.join(', ')}`,
-            type: 'create-cli-error' as const,
-            recoverable: true,
-            component: 'MockScaffolder',
-            operation: 'renderTemplate',
-            severity: 'high' as const,
-            timestamp: new Date(),
-          } as CoreError)
+          return err(
+            createTemplateCompilerError(
+              ERROR_CODES.UNRESOLVED_VARIABLES,
+              `Unresolved template variables: ${unresolvedMatches.join(', ')}`,
+              {
+                operation: 'renderTemplate',
+                context: { unresolvedVariables: unresolvedMatches },
+              }
+            )
+          )
         }
 
         return ok(rendered)
       } catch (error) {
-        return err({
-          domain: 'create-cli',
-          code: 'TEMPLATE_RENDER_FAILED',
-          message: `Template rendering failed: ${error}`,
-          type: 'create-cli-error' as const,
-          recoverable: true,
-          component: 'MockScaffolder',
-          operation: 'renderTemplate',
-          severity: 'high' as const,
-          timestamp: new Date(),
-        } as CoreError)
+        return err(
+          createTemplateCompilerError(
+            ERROR_CODES.TEMPLATE_RENDER_FAILED,
+            `Template rendering failed: ${error}`,
+            {
+              operation: 'renderTemplate',
+              cause: error instanceof Error ? error : undefined,
+            }
+          )
+        )
       }
     },
 
     validateProjectName(name: string): Result<void, CoreError> {
       if (!name || name.trim().length === 0) {
-        return err({
-          domain: 'create-cli',
-          code: 'INVALID_PROJECT_NAME',
-          message: 'Project name cannot be empty',
-          type: 'create-cli-error' as const,
-          recoverable: true,
-          component: 'MockScaffolder',
-          operation: 'validateProjectName',
-          severity: 'high' as const,
-          timestamp: new Date(),
-        } as CoreError)
+        return err(
+          createMockScaffolderError(
+            ERROR_CODES.INVALID_PROJECT_NAME,
+            'Project name cannot be empty',
+            {
+              operation: 'validateProjectName',
+            }
+          )
+        )
       }
 
       if (!/^[a-z0-9-_]+$/.test(name)) {
-        return err({
-          domain: 'create-cli',
-          code: 'INVALID_PROJECT_NAME',
-          message:
+        return err(
+          createMockScaffolderError(
+            ERROR_CODES.INVALID_PROJECT_NAME,
             'Project name can only contain lowercase letters, numbers, hyphens, and underscores',
-          type: 'create-cli-error' as const,
-          recoverable: true,
-          component: 'MockScaffolder',
-          operation: 'validateProjectName',
-          severity: 'high' as const,
-          timestamp: new Date(),
-        } as CoreError)
+            {
+              operation: 'validateProjectName',
+              context: { projectName: name },
+            }
+          )
+        )
       }
 
       return ok(undefined)
@@ -407,62 +406,58 @@ export const helloCommand = createCommand({
 
         // Check required variables
         if (variable.required && (value === undefined || value === null || value === '')) {
-          return err({
-            domain: 'create-cli',
-            code: 'MISSING_REQUIRED_VARIABLE',
-            message: `Required variable '${variable.name}' is missing`,
-            type: 'create-cli-error' as const,
-            recoverable: true,
-            component: 'MockScaffolder',
-            operation: 'validateVariables',
-            severity: 'high' as const,
-            timestamp: new Date(),
-          } as CoreError)
+          return err(
+            createMockScaffolderError(
+              ERROR_CODES.MISSING_REQUIRED_VARIABLE,
+              `Required variable '${variable.name}' is missing`,
+              {
+                operation: 'validateVariables',
+                context: { variableName: variable.name },
+              }
+            )
+          )
         }
 
         // Check type validation
         if (value !== undefined && variable.type === 'boolean' && typeof value !== 'boolean') {
-          return err({
-            domain: 'create-cli',
-            code: 'INVALID_VARIABLE_TYPE',
-            message: `Variable '${variable.name}' must be a boolean`,
-            type: 'create-cli-error' as const,
-            recoverable: true,
-            component: 'MockScaffolder',
-            operation: 'validateVariables',
-            severity: 'high' as const,
-            timestamp: new Date(),
-          } as CoreError)
+          return err(
+            createMockScaffolderError(
+              ERROR_CODES.INVALID_VARIABLE_TYPE,
+              `Variable '${variable.name}' must be a boolean`,
+              {
+                operation: 'validateVariables',
+                context: { variableName: variable.name, expectedType: 'boolean' },
+              }
+            )
+          )
         }
 
         // Check choices
         if (value !== undefined && variable.choices && !variable.choices.includes(value)) {
-          return err({
-            domain: 'create-cli',
-            code: 'INVALID_VARIABLE_CHOICE',
-            message: `Variable '${variable.name}' must be one of: ${variable.choices.join(', ')}`,
-            type: 'create-cli-error' as const,
-            recoverable: true,
-            component: 'MockScaffolder',
-            operation: 'validateVariables',
-            severity: 'high' as const,
-            timestamp: new Date(),
-          } as CoreError)
+          return err(
+            createMockScaffolderError(
+              ERROR_CODES.INVALID_VARIABLE_CHOICE,
+              `Variable '${variable.name}' must be one of: ${variable.choices.join(', ')}`,
+              {
+                operation: 'validateVariables',
+                context: { variableName: variable.name, choices: variable.choices },
+              }
+            )
+          )
         }
 
         // Check custom validation
         if (value !== undefined && variable.validation && !variable.validation(value)) {
-          return err({
-            domain: 'create-cli',
-            code: 'VARIABLE_VALIDATION_FAILED',
-            message: `Variable '${variable.name}' failed validation`,
-            type: 'create-cli-error' as const,
-            recoverable: true,
-            component: 'MockScaffolder',
-            operation: 'validateVariables',
-            severity: 'high' as const,
-            timestamp: new Date(),
-          } as CoreError)
+          return err(
+            createMockScaffolderError(
+              ERROR_CODES.VARIABLE_VALIDATION_FAILED,
+              `Variable '${variable.name}' failed validation`,
+              {
+                operation: 'validateVariables',
+                context: { variableName: variable.name },
+              }
+            )
+          )
         }
       }
 
@@ -598,51 +593,60 @@ Created by Jane Developer.
 // ========================================
 
 /**
- * Asserts that project generation succeeded
+ * Asserts that project generation succeeded using CLI framework patterns
  */
 export function assertProjectGeneration(
   result: Result<GeneratedProject, CoreError>,
   expectedProjectName: string,
   expectedFileCount?: number
 ): void {
+  // Use CLI testing utilities for Result validation
+  expectSuccess(result)
+
   if (result.isErr()) {
-    throw new Error(
-      `Expected project generation to succeed, but got error: ${result.error.message}`
-    )
+    throw new Error(`Project generation failed: ${result.error.message}`)
   }
 
   const project = result.value
   if (project.name !== expectedProjectName) {
-    throw new Error(`Expected project name '${expectedProjectName}', but got '${project.name}'`)
+    throw new Error(
+      `Project name assertion failed: expected '${expectedProjectName}', got '${project.name}'`
+    )
   }
 
   if (expectedFileCount !== undefined && project.files.length !== expectedFileCount) {
     throw new Error(
-      `Expected ${expectedFileCount} files, but got ${project.files.length}: ${project.files.join(', ')}`
+      `File count assertion failed: expected ${expectedFileCount} files, got ${project.files.length}\n` +
+        `Generated files: ${project.files.join(', ')}`
     )
   }
 }
 
 /**
- * Asserts that template rendering succeeded
+ * Asserts that template rendering succeeded using CLI framework patterns
  */
 export function assertTemplateRendering(
   result: Result<string, CoreError>,
   expectedContent?: string
 ): void {
+  // Use CLI testing utilities for Result validation
+  expectSuccess(result)
+
   if (result.isErr()) {
-    throw new Error(
-      `Expected template rendering to succeed, but got error: ${result.error.message}`
-    )
+    throw new Error(`Template rendering failed: ${result.error.message}`)
   }
 
   if (expectedContent && result.value !== expectedContent) {
-    throw new Error(`Rendered content does not match expected content`)
+    throw new Error(
+      `Template content assertion failed: rendered content does not match expected content\n` +
+        `Expected: ${expectedContent}\n` +
+        `Actual: ${result.value}`
+    )
   }
 }
 
 /**
- * Asserts that project validation failed with expected error
+ * Asserts that project validation failed with expected error using CLI framework patterns
  */
 export function assertValidationFailure(
   result: Result<void, CoreError>,
@@ -652,8 +656,12 @@ export function assertValidationFailure(
     throw new Error(`Expected validation to fail, but it succeeded`)
   }
 
-  if (result.error.code !== expectedErrorCode) {
-    throw new Error(`Expected error code '${expectedErrorCode}', but got '${result.error.code}'`)
+  const error = result.error
+  if (error.code !== expectedErrorCode) {
+    throw new Error(
+      `Error code assertion failed: expected '${expectedErrorCode}', got '${error.code}'\n` +
+        `Error message: ${error.message}`
+    )
   }
 }
 
@@ -743,6 +751,127 @@ export function createScaffoldingTestScenario(
 }
 
 // ========================================
+// Result-Based Testing Utilities
+// ========================================
+
+/**
+ * Validates project generation without throwing, returns Result
+ */
+export function validateProjectGeneration(
+  result: Result<GeneratedProject, CoreError>,
+  expectedProjectName: string,
+  expectedFileCount?: number
+): Result<GeneratedProject, CoreError> {
+  if (result.isErr()) {
+    return result
+  }
+
+  const project = result.value
+
+  if (project.name !== expectedProjectName) {
+    return err(
+      createMockScaffolderError(
+        ERROR_CODES.INVALID_PROJECT_NAME,
+        `Project name validation failed: expected '${expectedProjectName}', got '${project.name}'`,
+        {
+          operation: 'validateProjectGeneration',
+          context: { expectedProjectName, actualProjectName: project.name },
+        }
+      )
+    )
+  }
+
+  if (expectedFileCount !== undefined && project.files.length !== expectedFileCount) {
+    return err(
+      createMockScaffolderError(
+        'PROJECT_FILE_COUNT_MISMATCH' as any,
+        `File count validation failed: expected ${expectedFileCount} files, got ${project.files.length}`,
+        {
+          operation: 'validateProjectGeneration',
+          context: {
+            expectedFileCount,
+            actualFileCount: project.files.length,
+            generatedFiles: project.files,
+          },
+        }
+      )
+    )
+  }
+
+  return ok(project)
+}
+
+/**
+ * Validates template rendering without throwing, returns Result
+ */
+export function validateTemplateRendering(
+  result: Result<string, CoreError>,
+  expectedContent?: string
+): Result<string, CoreError> {
+  if (result.isErr()) {
+    return result
+  }
+
+  if (expectedContent && result.value !== expectedContent) {
+    return err(
+      createTemplateCompilerError(
+        'TEMPLATE_CONTENT_MISMATCH' as any,
+        'Template content validation failed: rendered content does not match expected content',
+        {
+          operation: 'validateTemplateRendering',
+          context: {
+            expectedContent: expectedContent.slice(0, 100) + '...',
+            actualContent: result.value.slice(0, 100) + '...',
+          },
+        }
+      )
+    )
+  }
+
+  return result
+}
+
+/**
+ * Validates that an operation failed with expected error, returns Result
+ */
+export function validateExpectedFailure(
+  result: Result<any, CoreError>,
+  expectedErrorCode: string
+): Result<CoreError, CoreError> {
+  if (result.isOk()) {
+    return err(
+      createMockScaffolderError(
+        'UNEXPECTED_SUCCESS' as any,
+        'Expected operation to fail, but it succeeded',
+        {
+          operation: 'validateExpectedFailure',
+          context: { expectedErrorCode },
+        }
+      )
+    )
+  }
+
+  if (result.error.code !== expectedErrorCode) {
+    return err(
+      createMockScaffolderError(
+        'ERROR_CODE_MISMATCH' as any,
+        `Error code validation failed: expected '${expectedErrorCode}', got '${result.error.code}'`,
+        {
+          operation: 'validateExpectedFailure',
+          context: {
+            expectedErrorCode,
+            actualErrorCode: result.error.code,
+            errorMessage: result.error.message,
+          },
+        }
+      )
+    )
+  }
+
+  return ok(result.error)
+}
+
+// ========================================
 // Export Collections
 // ========================================
 
@@ -761,9 +890,14 @@ export const createCliTesting = {
   // Fixtures and test data
   fixtures: templateFixtures,
 
-  // Assertions
+  // Throwing assertions (traditional testing)
   assertProjectGeneration,
   assertTemplateRendering,
   assertValidationFailure,
   assertProjectFiles,
+
+  // Result-based validations (functional testing)
+  validateProjectGeneration,
+  validateTemplateRendering,
+  validateExpectedFailure,
 }

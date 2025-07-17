@@ -172,7 +172,7 @@ export const buildCommand = createCommand({
       }
       
       if (verbose) {
-        logger.debug('Build configuration:', buildConfig)
+        logger.debug(`Build configuration: outDir=${buildConfig.outDir}, target=${buildConfig.target}, minify=${buildConfig.minify}`)
       }
       
       logger.info(`Building to ${buildConfig.outDir}...`)

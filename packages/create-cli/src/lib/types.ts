@@ -8,6 +8,8 @@
  * @module Types
  */
 
+import type { Logger } from '@esteban-url/cli/utils'
+
 /**
  * Available template variants for CLI project generation
  *
@@ -227,7 +229,7 @@ export interface TemplateLoaderConfig {
  */
 export interface GeneratorContext {
   /** Logger instance for user feedback and debugging */
-  logger: any
+  logger: Logger
   /** Whether to enable verbose logging output */
   verbose: boolean
   /** Optional template loader configuration for custom template paths */

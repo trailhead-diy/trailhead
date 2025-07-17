@@ -87,7 +87,7 @@ export const configCommand = createCommand<ConfigOptions>({
       if (options.validate) {
         logger.success('Configuration is valid!')
         if (verbose) {
-          logger.debug(`Configuration: ${JSON.stringify(projectConfig)}`)
+          logger.debug('Configuration loaded and validated successfully')
         }
         return ok(undefined)
       }

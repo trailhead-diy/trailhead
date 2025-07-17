@@ -2,8 +2,8 @@ import { ok, err, createCoreError } from '@esteban-url/core'
 import type { Result } from '@esteban-url/core'
 import { input, select, confirm, checkbox } from '@inquirer/prompts'
 import type { ProjectConfig, TemplateVariant, PackageManager } from './types.js'
-import { createConfigManager } from './config-manager.js'
-import { createPresetManager } from './preset-manager.js'
+import { createConfigContext } from './config-manager.js'
+import { selectPreset, configureWithPreset, createInteractivePreset } from './preset-manager.js'
 import { validateModernProjectConfig } from './config-schema.js'
 import { resolve } from 'path'
 
@@ -37,12 +37,11 @@ export async function gatherProjectConfig(
   flags: Partial<ProjectConfig> = {}
 ): Promise<Result<ModernProjectConfig, any>> {
   try {
-    // Initialize configuration and preset managers
-    const configManager = createConfigManager({ verbose: flags.verbose })
-    const presetManager = createPresetManager(configManager)
+    // Initialize configuration context
+    const configContext = createConfigContext({ verbose: flags.verbose })
 
     // Step 1: Check for preset usage
-    const presetResult = await presetManager.selectPreset()
+    const presetResult = await selectPreset(configContext)
     if (presetResult.isErr()) {
       return err(presetResult.error)
     }
@@ -52,7 +51,7 @@ export async function gatherProjectConfig(
 
     // If a preset was selected, apply it
     if (selectedPreset) {
-      const applyResult = await presetManager.applyPresetInteractive(selectedPreset, baseConfig)
+      const applyResult = await configureWithPreset(baseConfig, configContext)
       if (applyResult.isErr()) {
         return err(applyResult.error)
       }
@@ -304,7 +303,7 @@ export async function gatherProjectConfig(
       })
 
       if (saveAsPreset) {
-        const presetResult = await presetManager.createPreset(config)
+        const presetResult = await createInteractivePreset(config, configContext)
         if (presetResult.isErr()) {
           console.warn('Failed to save preset, but continuing with project generation')
         }

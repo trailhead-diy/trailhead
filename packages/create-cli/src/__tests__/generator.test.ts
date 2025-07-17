@@ -3,8 +3,13 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 import { rmSync, existsSync } from 'fs'
 import { generateProject } from '../lib/generator.js'
-import { createLogger } from '../lib/logger.js'
+import { createDefaultLogger } from '@esteban-url/cli/utils'
+import { expectSuccess } from '@esteban-url/cli/testing'
+import { setupResultMatchers } from '@esteban-url/core/testing'
 import type { ModernProjectConfig } from '../lib/interactive-prompts.js'
+
+// Setup Result matchers for better testing
+setupResultMatchers()
 
 describe('Generator Integration', () => {
   let testDir: string
@@ -12,7 +17,7 @@ describe('Generator Integration', () => {
 
   beforeEach(() => {
     testDir = join(tmpdir(), `create-trailhead-cli-test-${Date.now()}`)
-    logger = createLogger()
+    logger = createDefaultLogger(false)
   })
 
   afterEach(() => {
@@ -51,10 +56,8 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, { logger, verbose: false })
 
-    if (result.isErr()) {
-      console.error('Generator error:', result.error)
-    }
-    expect(result.isOk()).toBe(true)
+    expectSuccess(result)
+    expect(result).toBeOk()
   })
 
   it('should generate an advanced project successfully', async () => {
@@ -90,10 +93,8 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, { logger, verbose: false })
 
-    if (result.isErr()) {
-      console.error('Generator error:', result.error)
-    }
-    expect(result.isOk()).toBe(true)
+    expectSuccess(result)
+    expect(result).toBeOk()
   })
 
   it('should validate project configuration', async () => {
@@ -125,6 +126,7 @@ describe('Generator Integration', () => {
 
     const result = await generateProject(config, { logger, verbose: false })
 
-    expect(result.isErr()).toBe(true)
+    expectError(result)
+    expect(result).toBeErr()
   })
 })

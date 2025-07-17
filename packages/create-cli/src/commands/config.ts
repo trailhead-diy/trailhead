@@ -1,57 +1,104 @@
 #!/usr/bin/env node
 
-// Temporary simple command interface until @esteban-url/cli is available
-interface Command {
-  name: string
-  description: string
-  handler: (args: any) => Promise<any>
-}
-
-function createCommand(config: Command): Command {
-  return config
-}
 import { ok, err, createCoreError } from '@esteban-url/core'
-import { createConfigManager } from '../lib/config-manager.js'
-import { createPresetManager } from '../lib/preset-manager.js'
+import type { Result, CoreError } from '@esteban-url/core'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandOptions, CommandContext } from '@esteban-url/cli/command'
+import {
+  createConfigContext,
+  generateSchemaFile,
+  cleanupOldConfigs,
+} from '../lib/config-manager.js'
+import { listPresetsDetailed } from '../lib/preset-manager.js'
+import { loadPreset } from '../lib/config-manager.js'
+
+/**
+ * Configuration options for the config command
+ */
+interface ConfigOptions extends CommandOptions {
+  /** List all available presets */
+  readonly listPresets?: boolean
+  /** Generate JSON schema for IDE support */
+  readonly generateSchema?: boolean
+  /** Show details of a specific preset */
+  readonly preset?: string
+  /** Clean up old configuration files */
+  readonly cleanup?: boolean
+  /** Use custom configuration directory */
+  readonly configDir?: string
+}
 
 /**
  * Configuration management command for create-trailhead-cli
  */
-export const configCommand = createCommand({
+export const configCommand = createCommand<ConfigOptions>({
   name: 'config',
   description: 'Manage configuration files and presets',
-  async handler(args: any) {
-    const { flags } = args
-
+  options: [
+    {
+      flags: '--list-presets',
+      description: 'List all available presets with details',
+      type: 'boolean',
+    },
+    {
+      flags: '--generate-schema',
+      description: 'Generate JSON schema for IDE support',
+      type: 'boolean',
+    },
+    {
+      flags: '--preset <name>',
+      description: 'Show details of a specific preset',
+      type: 'string',
+    },
+    {
+      flags: '--cleanup',
+      description: 'Clean up old configuration files',
+      type: 'boolean',
+    },
+    {
+      flags: '--config-dir <path>',
+      description: 'Use custom configuration directory',
+      type: 'string',
+    },
+  ],
+  examples: [
+    'config --list-presets',
+    'config --preset advanced-cli',
+    'config --generate-schema',
+    'config --cleanup',
+  ],
+  action: async (
+    options: ConfigOptions,
+    context: CommandContext
+  ): Promise<Result<void, CoreError>> => {
     try {
-      const configManager = createConfigManager({
-        configDir: flags['config-dir'],
-        verbose: flags.verbose,
+      const configContext = createConfigContext({
+        configDir: options.configDir,
+        verbose: options.verbose,
       })
-      const presetManager = createPresetManager(configManager)
 
       // List presets
-      if (flags.list || flags['list-presets']) {
-        return await handleListPresets(presetManager)
+      if (options.listPresets) {
+        return await handleListPresets(configContext)
       }
 
       // Generate JSON schema
-      if (flags['generate-schema']) {
-        return await handleGenerateSchema(configManager)
+      if (options.generateSchema) {
+        return await handleGenerateSchema(configContext)
       }
 
       // Load specific preset
-      if (flags.preset) {
-        return await handleLoadPreset(presetManager, flags.preset)
+      if (options.preset) {
+        return await handleLoadPreset(configContext, options.preset)
       }
 
       // Clean up old configs
-      if (flags.cleanup) {
-        return await handleCleanup(configManager)
+      if (options.cleanup) {
+        return await handleCleanup(configContext)
       }
 
       // Show help if no specific action
-      console.log(`
+      context.logger.info(`
 create-trailhead-cli config - Configuration and preset management
 
 Usage:
@@ -72,8 +119,8 @@ Examples:
   create-trailhead-cli config --cleanup
 
 Configuration Files:
-  Config directory: ${configManager.getConfigDir()}
-  Preset directory: ${configManager.getPresetDir()}
+  Config directory: ${configContext.configDir}
+  Preset directory: ${configContext.presetDir}
 `)
 
       return ok(undefined)
@@ -93,10 +140,10 @@ Configuration Files:
 /**
  * Handle listing presets
  */
-async function handleListPresets(presetManager: any) {
+async function handleListPresets(configContext: any): Promise<Result<void, CoreError>> {
   console.log('📋 Listing available presets...\n')
 
-  const listResult = await presetManager.listPresetsDetailed()
+  const listResult = await listPresetsDetailed(configContext)
   if (listResult.isErr()) {
     console.error('❌ Failed to list presets:', listResult.error.message)
     return listResult
@@ -108,13 +155,13 @@ async function handleListPresets(presetManager: any) {
 /**
  * Handle generating JSON schema
  */
-async function handleGenerateSchema(configManager: any) {
+async function handleGenerateSchema(configContext: any): Promise<Result<void, CoreError>> {
   console.log('📄 Generating JSON schema...')
 
-  const schemaResult = await configManager.generateSchemaFile()
+  const schemaResult = await generateSchemaFile(configContext)
   if (schemaResult.isErr()) {
     console.error('❌ Failed to generate schema:', schemaResult.error.message)
-    return schemaResult
+    return err(schemaResult.error)
   }
 
   console.log(`✅ JSON schema generated: ${schemaResult.value}`)
@@ -126,13 +173,16 @@ async function handleGenerateSchema(configManager: any) {
 /**
  * Handle loading specific preset
  */
-async function handleLoadPreset(presetManager: any, presetName: string) {
+async function handleLoadPreset(
+  configContext: any,
+  presetName: string
+): Promise<Result<void, CoreError>> {
   console.log(`📋 Loading preset: ${presetName}`)
 
-  const presetResult = await presetManager.configManager.loadPreset(presetName)
+  const presetResult = await loadPreset(presetName, configContext)
   if (presetResult.isErr()) {
     console.error(`❌ Failed to load preset '${presetName}':`, presetResult.error.message)
-    return presetResult
+    return err(presetResult.error)
   }
 
   const preset = presetResult.value
@@ -172,13 +222,13 @@ async function handleLoadPreset(presetManager: any, presetName: string) {
 /**
  * Handle cleanup
  */
-async function handleCleanup(configManager: any) {
+async function handleCleanup(configContext: any): Promise<Result<void, CoreError>> {
   console.log('🧹 Cleaning up old configuration files...')
 
-  const cleanupResult = await configManager.cleanup(30) // 30 days
+  const cleanupResult = await cleanupOldConfigs(30, configContext) // 30 days
   if (cleanupResult.isErr()) {
     console.error('❌ Failed to cleanup:', cleanupResult.error.message)
-    return cleanupResult
+    return err(cleanupResult.error)
   }
 
   const cleanedCount = cleanupResult.value
