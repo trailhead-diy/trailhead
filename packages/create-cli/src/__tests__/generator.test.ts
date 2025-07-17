@@ -4,7 +4,7 @@ import { join } from 'path'
 import { rmSync, existsSync } from 'fs'
 import { generateProject } from '../lib/generator.js'
 import { createDefaultLogger } from '@esteban-url/cli/utils'
-import { expectSuccess } from '@esteban-url/cli/testing'
+import { expectSuccess, expectError } from '@esteban-url/cli/testing'
 import { setupResultMatchers } from '@esteban-url/core/testing'
 import type { ModernProjectConfig } from '../lib/interactive-prompts.js'
 
