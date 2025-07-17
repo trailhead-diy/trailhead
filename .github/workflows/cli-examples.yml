@@ -2,12 +2,12 @@ name: CLI Examples Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'packages/cli/**'
       - '.github/workflows/cli-examples.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
       - 'packages/cli/**'
       - '.github/workflows/cli-examples.yml'
@@ -27,7 +27,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]  # Just test on latest LTS
+        node-version: [20.x] # Just test on latest LTS
 
     steps:
       - name: Checkout repository
@@ -36,7 +36,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.12.4
+          version: 10.13.1
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -75,7 +75,6 @@ jobs:
             packages/cli/examples/test-results.xml
           retention-days: 7
 
-
   examples-validation:
     name: Validate Examples
     runs-on: ubuntu-latest
@@ -88,7 +87,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.12.4
+          version: 10.13.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -115,22 +114,22 @@ jobs:
         working-directory: packages/cli/examples
         run: |
           echo "📁 Validating example file structure..."
-          
+
           # Check that all documented example directories exist
           test -d todo-cli || { echo "❌ todo-cli directory missing"; exit 1; }
           test -d file-processor || { echo "❌ file-processor directory missing"; exit 1; }
           test -d api-client || { echo "❌ api-client directory missing"; exit 1; }
           test -d cross-platform-cli || { echo "❌ cross-platform-cli directory missing"; exit 1; }
           test -d project-generator || { echo "❌ project-generator directory missing"; exit 1; }
-          
+
           # Check main example files exist
           test -f todo-cli/src/index.ts || { echo "❌ todo-cli/src/index.ts missing"; exit 1; }
           test -f file-processor/src/index.ts || { echo "❌ file-processor/src/index.ts missing"; exit 1; }
           test -f api-client/src/index.ts || { echo "❌ api-client/src/index.ts missing"; exit 1; }
-          
+
           # Check test runner script
           test -x test-examples.sh || { echo "❌ test-examples.sh missing or not executable"; exit 1; }
-          
+
           echo "✅ All example files present"
 
   security-scan:
@@ -146,19 +145,19 @@ jobs:
         run: |
           cd packages/cli
           npm audit --audit-level moderate || true
-          
+
           # Check for common security issues in examples
           echo "🔒 Checking examples for security issues..."
-          
+
           # Check for hardcoded secrets (basic patterns)
           if grep -r "password.*=" examples/ | grep -v "test" | grep -v "example" | grep -v ".md"; then
             echo "⚠️ Potential hardcoded passwords found in examples"
           fi
-          
+
           # Check for eval usage
           if grep -r "eval(" examples/; then
             echo "❌ eval() usage found in examples - potential security risk"
             exit 1
           fi
-          
+
           echo "✅ Basic security checks passed"

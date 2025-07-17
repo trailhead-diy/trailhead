@@ -4,22 +4,22 @@ on:
   workflow_call:
     inputs:
       os-matrix:
-        description: "JSON array of operating systems to test on"
+        description: 'JSON array of operating systems to test on'
         required: false
         type: string
         default: '["ubuntu-latest"]'
       node-version:
-        description: "Node.js version to use"
+        description: 'Node.js version to use'
         required: false
         type: string
-        default: "20.11.0"
+        default: '20.11.0'
       pnpm-version:
-        description: "pnpm version to use"
+        description: 'pnpm version to use'
         required: false
         type: string
-        default: "10.12.4"
+        default: '10.13.1'
       fast-mode:
-        description: "Enable fast mode optimizations for Tier 1 CI"
+        description: 'Enable fast mode optimizations for Tier 1 CI'
         required: false
         type: boolean
         default: true
