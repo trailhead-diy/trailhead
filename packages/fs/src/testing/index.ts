@@ -35,5 +35,5 @@
  */
 
 export * from './mock-fs.js'
-export * from './path-helpers.js'
+export * from '../utils/path-utils.js'
 export * from './fixtures.js'

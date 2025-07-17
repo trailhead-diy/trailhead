@@ -17,7 +17,7 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
       const mergedOptions = { ...jsonConfig, ...options }
 
       if (!data || data.trim().length === 0) {
-        return err(createJSONError('Empty JSON data provided'))
+        return err(createJSONError('Empty JSON data provided', {}))
       }
 
       let processedData = data
@@ -40,12 +40,11 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
     } catch (error) {
       if (error instanceof SyntaxError) {
         return err(
-          createParsingError(
-            'JSON parsing failed',
-            `Invalid JSON syntax: ${error.message}`,
-            error,
-            { originalData: data.substring(0, 100) + '...' }
-          )
+          createParsingError('JSON parsing failed', {
+            details: `Invalid JSON syntax: ${error.message}`,
+            cause: error,
+            context: { originalData: data.substring(0, 100) + '...' },
+          })
         )
       }
       return err(mapLibraryError('JSON', 'parseString', error))
@@ -69,14 +68,17 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
       const mergedOptions = { ...jsonConfig, ...options }
 
       if (data === undefined) {
-        return err(createJSONError('Cannot stringify undefined value'))
+        return err(createJSONError('Cannot stringify undefined value', {}))
       }
 
       const jsonString = JSON.stringify(data, mergedOptions.replacer, mergedOptions.space)
 
       if (jsonString === undefined) {
         return err(
-          createJSONError('Stringify returned undefined - data contains non-serializable values')
+          createJSONError(
+            'Stringify returned undefined - data contains non-serializable values',
+            {}
+          )
         )
       }
 
@@ -84,7 +86,10 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
     } catch (error) {
       if (error instanceof TypeError) {
         return err(
-          createJSONError('JSON stringify failed', `Cannot serialize data: ${error.message}`, error)
+          createJSONError('JSON stringify failed', {
+            details: `Cannot serialize data: ${error.message}`,
+            cause: error,
+          })
         )
       }
       return err(mapLibraryError('JSON', 'stringify', error))

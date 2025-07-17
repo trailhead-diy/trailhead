@@ -21,7 +21,7 @@ export const createConversionOperations: CreateConversionOperations = (_config =
   const checkConversion = (fromFormat: string, toFormat: string): FormatResult<ConversionInfo> => {
     try {
       if (!fromFormat || !toFormat) {
-        return err(createConversionError('Both source and target formats are required'))
+        return err(createConversionError('Both source and target formats are required', {}))
       }
 
       const normalizedFrom = normalizeFormat(fromFormat)
@@ -99,7 +99,9 @@ export const createConversionOperations: CreateConversionOperations = (_config =
       }
 
       return err(
-        createUnsupportedFormatError(`${normalizedFrom} → ${normalizedTo}`, 'conversion chain')
+        createUnsupportedFormatError(`${normalizedFrom} → ${normalizedTo}`, {
+          details: 'conversion chain',
+        })
       )
     } catch (error) {
       return err(mapLibraryError('Conversion', 'getConversionChain', error))

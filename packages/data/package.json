@@ -74,6 +74,7 @@
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@repo/tsup-config": "workspace:*",
     "@types/node": "^24.0.10",
     "@types/papaparse": "^5.3.14",
     "@types/mime-types": "^2.1.4",

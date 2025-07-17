@@ -12,7 +12,7 @@ export interface GitError extends CoreError {
 }
 
 // ========================================
-// Result Type Alias
+// Result Type - Use standard Result<T, CoreError>
 // ========================================
 
 export type GitResult<T> = Result<T, GitError>

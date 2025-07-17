@@ -4,6 +4,13 @@
  * Git-specific testing utilities for repository operations, commit testing, and Git workflows.
  * Provides domain-focused utilities for testing Git operations and repository states.
  *
+ * ## Features
+ * - **High-fidelity mocks**: Realistic git operation simulation with proper state management
+ * - **Result-based testing**: All operations return proper Result types for explicit error handling
+ * - **Comprehensive coverage**: Support for branches, commits, tags, status, and more
+ * - **Test repository management**: Easy creation and cleanup of test repositories
+ * - **Cross-package integration**: Works seamlessly with other Trailhead testing utilities
+ *
  * @example
  * ```typescript
  * import {
@@ -18,14 +25,36 @@
  * await repo.addFile('README.md', '# Test Project')
  * await repo.commit('Initial commit')
  *
- * // Test git operations
- * const result = await gitOperations.getCommitHistory(repo.path)
- * assertCommitExists(result, 'Initial commit')
+ * // Mock git operations with Result types
+ * const mockGit = createMockGit()
+ * const result = await mockGit.status()
+ * expect(result).toBeOk()
+ * expect(result.value.clean).toBe(true)
+ *
+ * // Test git operations with proper error handling
+ * const checkoutResult = await mockGit.checkout('non-existent-branch')
+ * expect(checkoutResult).toBeErr()
+ * expect(checkoutResult.error.code).toBe('BRANCH_NOT_FOUND')
  * ```
  */
 
 import { ok, err, type Result } from '@esteban-url/core'
 import type { CoreError } from '@esteban-url/core'
+import type { GitError, GitCommit, GitStatus, GitPerson } from '../types.js'
+import {
+  createInitialMockState,
+  createBranchNotFoundError,
+  createMockCommit,
+  createMockStatus,
+  addBranch,
+  branchExists,
+  switchBranch,
+  addCommit,
+  getCommitHistory,
+  stageFiles,
+  addTag,
+  resetMockState,
+} from './mock-helpers.js'
 
 // ========================================
 // Git Test Repository Management
@@ -35,17 +64,12 @@ export interface TestRepository {
   readonly path: string
   readonly gitDir: string
   addFile(filePath: string, content: string): Promise<void>
-  commit(message: string, author?: GitAuthor): Promise<string>
+  commit(message: string, author?: GitPerson): Promise<string>
   createBranch(branchName: string): Promise<void>
   checkoutBranch(branchName: string): Promise<void>
   addTag(tagName: string, message?: string): Promise<void>
   getCommitHash(message: string): Promise<string | null>
   cleanup(): Promise<void>
-}
-
-export interface GitAuthor {
-  name: string
-  email: string
 }
 
 /**
@@ -54,42 +78,59 @@ export interface GitAuthor {
 export async function createTestRepository(
   options: {
     name?: string
-    author?: GitAuthor
+    author?: GitPerson
   } = {}
 ): Promise<TestRepository> {
-  const { name = 'test-repo', author = { name: 'Test User', email: 'test@example.com' } } = options
+  const {
+    name = 'test-repo',
+    author = { name: 'Test User', email: 'test@example.com', date: new Date() },
+  } = options
 
   // Implementation would create actual git repo
   const tempPath = `/tmp/git-test-${Date.now()}-${name}`
   const gitDir = `${tempPath}/.git`
 
   const commits: Array<{ hash: string; message: string }> = []
+  const files = new Map<string, string>()
+  const branches = ['main']
+  let currentBranch = 'main'
+  const tags = new Map<string, string>()
 
   return {
     path: tempPath,
     gitDir,
 
     async addFile(filePath: string, content: string): Promise<void> {
-      // Mock implementation - would use fs to create file
-      // await fs.writeFile(path.join(tempPath, filePath), content)
+      // Mock implementation - simulates adding file to git staging area
+      const relativePath = filePath.startsWith('/') ? filePath.slice(1) : filePath
+      files.set(relativePath, content)
     },
 
-    async commit(message: string, commitAuthor?: GitAuthor): Promise<string> {
+    async commit(message: string, commitAuthor?: GitPerson): Promise<string> {
       const hash = `commit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       commits.push({ hash, message })
       return hash
     },
 
     async createBranch(branchName: string): Promise<void> {
-      // Mock implementation - would create git branch
+      // Mock implementation - simulates creating git branch
+      if (!branches.includes(branchName)) {
+        branches.push(branchName)
+      }
     },
 
     async checkoutBranch(branchName: string): Promise<void> {
-      // Mock implementation - would checkout branch
+      // Mock implementation - simulates checking out git branch
+      if (branches.includes(branchName)) {
+        currentBranch = branchName
+      } else {
+        throw new Error(`Branch '${branchName}' does not exist`)
+      }
     },
 
     async addTag(tagName: string, tagMessage?: string): Promise<void> {
-      // Mock implementation - would create git tag
+      // Mock implementation - simulates creating git tag
+      tags.set(tagName, tagMessage || '')
     },
 
     async getCommitHash(message: string): Promise<string | null> {
@@ -98,7 +139,13 @@ export async function createTestRepository(
     },
 
     async cleanup(): Promise<void> {
-      // Mock implementation - would remove temp directory
+      // Mock implementation - simulates cleaning up repository state
+      files.clear()
+      commits.length = 0
+      branches.length = 0
+      branches.push('main')
+      currentBranch = 'main'
+      tags.clear()
     },
   }
 }
@@ -160,34 +207,74 @@ export const gitFixtures = {
 // ========================================
 
 export interface MockGitOperations {
-  init: any
-  add: any
-  commit: any
-  branch: any
-  checkout: any
-  merge: any
-  tag: any
-  log: any
-  status: any
+  init: () => Promise<Result<void, GitError>>
+  add: (files: string[]) => Promise<Result<void, GitError>>
+  commit: (message: string, author?: GitPerson) => Promise<Result<string, GitError>>
+  branch: (branchName?: string) => Promise<Result<string[], GitError>>
+  checkout: (branchName: string) => Promise<Result<void, GitError>>
+  merge: (branchName: string) => Promise<Result<void, GitError>>
+  tag: (tagName: string, message?: string) => Promise<Result<void, GitError>>
+  log: (options?: { maxCount?: number }) => Promise<Result<GitCommit[], GitError>>
+  status: () => Promise<Result<GitStatus, GitError>>
 }
 
 /**
  * Creates mock Git operations for testing
  */
 export function createMockGit(): MockGitOperations {
-  // Simple mock functions that return Result types
-  const mockFn = (returnValue: any) => () => Promise.resolve(returnValue)
+  const mockState = createInitialMockState()
 
   return {
-    init: mockFn(ok(undefined)),
-    add: mockFn(ok(undefined)),
-    commit: mockFn(ok('abc123')),
-    branch: mockFn(ok(undefined)),
-    checkout: mockFn(ok(undefined)),
-    merge: mockFn(ok(undefined)),
-    tag: mockFn(ok(undefined)),
-    log: mockFn(ok([])),
-    status: mockFn(ok({ clean: true, files: [] })),
+    async init(): Promise<Result<void, GitError>> {
+      return ok(undefined)
+    },
+
+    async add(files: string[]): Promise<Result<void, GitError>> {
+      stageFiles(mockState, files)
+      return ok(undefined)
+    },
+
+    async commit(message: string, author?: GitPerson): Promise<Result<string, GitError>> {
+      const commit = createMockCommit(message, author)
+      addCommit(mockState, commit)
+      return ok(commit.sha)
+    },
+
+    async branch(branchName?: string): Promise<Result<string[], GitError>> {
+      if (branchName) {
+        addBranch(mockState, branchName)
+      }
+      return ok([...mockState.branches])
+    },
+
+    async checkout(branchName: string): Promise<Result<void, GitError>> {
+      if (!branchExists(mockState, branchName)) {
+        return err(createBranchNotFoundError(branchName, 'checkout'))
+      }
+      switchBranch(mockState, branchName)
+      return ok(undefined)
+    },
+
+    async merge(branchName: string): Promise<Result<void, GitError>> {
+      if (!branchExists(mockState, branchName)) {
+        return err(createBranchNotFoundError(branchName, 'merge'))
+      }
+      return ok(undefined)
+    },
+
+    async tag(tagName: string, message?: string): Promise<Result<void, GitError>> {
+      addTag(mockState, tagName, message || '')
+      return ok(undefined)
+    },
+
+    async log(options?: { maxCount?: number }): Promise<Result<GitCommit[], GitError>> {
+      const commits = getCommitHistory(mockState, options?.maxCount)
+      return ok(commits)
+    },
+
+    async status(): Promise<Result<GitStatus, GitError>> {
+      return ok(createMockStatus(mockState))
+    },
   }
 }
 
@@ -271,7 +358,7 @@ export async function createGitWorkflow(
   options: {
     repositoryName?: string
     initialFiles?: Record<string, string>
-    author?: GitAuthor
+    author?: GitPerson
   } = {}
 ): Promise<{
   repository: TestRepository

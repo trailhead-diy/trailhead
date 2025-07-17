@@ -1,187 +1,138 @@
-import { createCoreError } from '@esteban-url/core'
+import {
+  createErrorFactory,
+  mapNodeError as coreMapNodeError,
+  mapLibraryError as coreMapLibraryError,
+  mapValidationError as coreMapValidationError,
+} from '@esteban-url/core'
 import type { CoreError } from '@esteban-url/core'
 import type { FileSystemError } from '@esteban-url/fs'
 
 // ========================================
-// Error Factory Functions
+// Standardized Error Factory
 // ========================================
 
-export const createDataError = (
-  message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
-): CoreError =>
-  createCoreError('DataError', 'DATA_ERROR', message, {
-    component: 'data',
-    operation: 'process',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
-    suggestion: 'Check data format and processing options',
-  })
+const createDataError = createErrorFactory('data', 'medium')
+
+// ========================================
+// Specialized Error Factories
+// ========================================
 
 export const createCSVError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('CSVError', 'CSV_ERROR', message, {
-    component: 'data',
+  createDataError('CSVError', 'CSV_ERROR', message, {
     operation: 'csv',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Verify CSV format, delimiter, and encoding',
+    ...options,
   })
 
 export const createJSONError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('JSONError', 'JSON_ERROR', message, {
-    component: 'data',
+  createDataError('JSONError', 'JSON_ERROR', message, {
     operation: 'json',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Check JSON syntax and structure',
+    ...options,
   })
 
 export const createExcelError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('ExcelError', 'EXCEL_ERROR', message, {
-    component: 'data',
+  createDataError('ExcelError', 'EXCEL_ERROR', message, {
     operation: 'excel',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Verify Excel file format and worksheet configuration',
+    ...options,
   })
 
 export const createParsingError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('ParsingError', 'PARSING_ERROR', message, {
-    component: 'data',
+  createDataError('ParsingError', 'PARSING_ERROR', message, {
     operation: 'parse',
     severity: 'high',
-    details,
-    cause,
-    context,
     recoverable: false,
     suggestion: 'Review data format and parsing configuration',
+    ...options,
   })
 
 export const createValidationError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('ValidationError', 'VALIDATION_ERROR', message, {
-    component: 'data',
+  createDataError('ValidationError', 'VALIDATION_ERROR', message, {
     operation: 'validate',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Check data integrity and validation rules',
+    ...options,
   })
 
 export const createFormatDetectionError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('FormatDetectionError', 'FORMAT_DETECTION_ERROR', message, {
-    component: 'data',
+  createDataError('FormatDetectionError', 'FORMAT_DETECTION_ERROR', message, {
     operation: 'detect',
     severity: 'low',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Specify format explicitly or check file content',
+    ...options,
   })
 
 export const createConversionError = (
   message: string,
-  details?: string,
-  cause?: unknown,
-  context?: Record<string, unknown>
+  options?: {
+    details?: string
+    cause?: unknown
+    context?: Record<string, unknown>
+  }
 ): CoreError =>
-  createCoreError('ConversionError', 'CONVERSION_ERROR', message, {
-    component: 'data',
+  createDataError('ConversionError', 'CONVERSION_ERROR', message, {
     operation: 'convert',
-    severity: 'medium',
-    details,
-    cause,
-    context,
-    recoverable: true,
     suggestion: 'Verify source and target format compatibility',
+    ...options,
   })
 
 // ========================================
-// Error Mapping Utilities
+// Error Mapping Utilities (using core implementations)
 // ========================================
 
-export const mapNodeError = (operation: string, path: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error)
+export const mapNodeError = (operation: string, path: string, error: unknown): CoreError =>
+  coreMapNodeError('data', operation, path, error)
 
-  return createDataError(
-    `${operation} failed`,
-    `Operation: ${operation}, Path: ${path}, Error: ${errorMessage}`,
-    error,
-    { operation, path }
-  )
-}
+export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError =>
+  coreMapLibraryError('data', library, operation, error)
 
-export const mapLibraryError = (library: string, operation: string, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error)
-
-  return createDataError(
-    `${library} operation failed`,
-    `Library: ${library}, Operation: ${operation}, Error: ${errorMessage}`,
-    error,
-    { library, operation }
-  )
-}
-
-export const mapValidationError = (field: string, value: unknown, error: unknown): CoreError => {
-  const errorMessage = error instanceof Error ? error.message : String(error)
-
-  return createValidationError(
-    `Validation failed for field: ${field}`,
-    `Field: ${field}, Value: ${JSON.stringify(value)}, Error: ${errorMessage}`,
-    error,
-    { field, value }
-  )
-}
+export const mapValidationError = (field: string, value: unknown, error: unknown): CoreError =>
+  coreMapValidationError('data', field, value, error)
 
 export const mapFileSystemError = (fsError: FileSystemError, operation: string): CoreError => {
-  return createCoreError('FileSystemError', 'FS_ERROR', fsError.message, {
-    component: 'data',
+  return createDataError('FileSystemError', 'FS_ERROR', fsError.message, {
     operation,
     severity: 'high',
     details: fsError.details,
@@ -191,3 +142,6 @@ export const mapFileSystemError = (fsError: FileSystemError, operation: string):
     suggestion: fsError.suggestion || 'Check file path and permissions',
   })
 }
+
+// Export the factory for use in operations
+export { createDataError }

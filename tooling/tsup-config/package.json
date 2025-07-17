@@ -1,0 +1,32 @@
+{
+  "name": "@repo/tsup-config",
+  "version": "1.0.0",
+  "description": "Shared tsup configuration for the Trailhead monorepo",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./shared": {
+      "import": "./dist/tsup.shared.js",
+      "types": "./dist/tsup.shared.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "tsup": "^8.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

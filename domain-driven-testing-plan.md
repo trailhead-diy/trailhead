@@ -24,16 +24,11 @@ Transform the Trailhead monorepo from centralized testing utilities to a domain-
 
 - `@esteban-url/config` - 11 lines placeholder
 - `@esteban-url/data` - 100 lines, appears unused
-- `@esteban-url/streams` - 186 lines, appears unused
 - `@esteban-url/validation` - 196 lines, appears unused
 
 ### **Packages Missing Testing Directories**
 
 - `@esteban-url/git`
-- `@esteban-url/watcher`
-- `@esteban-url/formats`
-- `@esteban-url/workflows`
-- `@esteban-url/db`
 - `@esteban-url/create-cli`
 
 ## **Target Architecture**
@@ -210,10 +205,6 @@ export const configHelpers = {
 Each of the following packages will receive new testing directories with domain-appropriate utilities:
 
 - **@esteban-url/git/testing** - Git operations, repository mocking, commit fixtures
-- **@esteban-url/watcher/testing** - File watching simulation, event mocking
-- **@esteban-url/formats/testing** - Format detection, conversion testing
-- **@esteban-url/workflows/testing** - Workflow execution, pipeline testing
-- **@esteban-url/db/testing** - Database mocking, query testing
 - **@esteban-url/create-cli/testing** - Template generation, scaffolding testing
 
 ## **Composition Pattern Examples**
@@ -354,7 +345,7 @@ export const domain = {
 
 **Implement Missing Testing Directories**
 
-- Create testing directories for: git, watcher, formats, workflows, db, create-cli
+- Create testing directories for: git, create-cli
 - Implement shallow but functional utilities for each domain
 
 ### **Phase 3: Complete Remaining Packages**
@@ -397,11 +388,7 @@ export const domain = {
 ### **Low Priority**
 
 8. `packages/git/src/testing/` - Create new directory
-9. `packages/watcher/src/testing/` - Create new directory
-10. `packages/formats/src/testing/` - Create new directory
-11. `packages/workflows/src/testing/` - Create new directory
-12. `packages/db/src/testing/` - Create new directory
-13. `packages/create-cli/src/testing/` - Create new directory
+9. `packages/create-cli/src/testing/` - Create new directory
 
 ### **All Packages**
 

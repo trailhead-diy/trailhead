@@ -98,7 +98,7 @@ export interface ExcelProcessingOptions extends ProcessingOptions {
 }
 
 // ========================================
-// Result Types
+// Result Types - Use standard Result<T, CoreError>
 // ========================================
 
 export type DataResult<T> = Result<T, CoreError>

@@ -46,7 +46,7 @@ export const createMimeOperations: CreateMimeOperations = (config = {}) => {
   ): FormatResult<readonly string[]> => {
     try {
       if (!mimeType) {
-        return err(createMimeError('MIME type is required'))
+        return err(createMimeError('MIME type is required', {}))
       }
 
       const normalizedMimeType = normalizeMimeTypeString(mimeType)
@@ -70,7 +70,7 @@ export const createMimeOperations: CreateMimeOperations = (config = {}) => {
   const isMimeType = (mimeType: string, category: FileCategory): FormatResult<boolean> => {
     try {
       if (!mimeType) {
-        return err(createMimeError('MIME type is required'))
+        return err(createMimeError('MIME type is required', {}))
       }
 
       const normalizedMimeType = normalizeMimeTypeString(mimeType)
@@ -91,7 +91,7 @@ export const createMimeOperations: CreateMimeOperations = (config = {}) => {
   const normalizeMimeType = (mimeType: string): FormatResult<string> => {
     try {
       if (!mimeType) {
-        return err(createMimeError('MIME type is required'))
+        return err(createMimeError('MIME type is required', {}))
       }
 
       const normalized = normalizeMimeTypeString(mimeType)
@@ -107,7 +107,7 @@ export const createMimeOperations: CreateMimeOperations = (config = {}) => {
   ): FormatResult<MimeTypeInfo> => {
     try {
       if (!mimeType) {
-        return err(createMimeError('MIME type is required'))
+        return err(createMimeError('MIME type is required', {}))
       }
 
       const parsed = parseMimeTypeString(mimeType)

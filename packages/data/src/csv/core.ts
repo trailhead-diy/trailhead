@@ -33,7 +33,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       const mergedOptions = { ...csvConfig, ...options }
 
       if (!inputData || inputData.trim().length === 0) {
-        return err(createCSVError('Empty CSV data provided'))
+        return err(createCSVError('Empty CSV data provided', {}))
       }
 
       const parseResult = Papa.parse(inputData, {
@@ -52,8 +52,10 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       if (parseResult.errors.length > 0 && !mergedOptions.errorTolerant) {
         const errorMessages = parseResult.errors.map((e) => e.message).join(', ')
         return err(
-          createParsingError('CSV parsing failed', `Errors: ${errorMessages}`, parseResult.errors, {
-            errors: parseResult.errors,
+          createParsingError('CSV parsing failed', {
+            details: `Errors: ${errorMessages}`,
+            cause: parseResult.errors,
+            context: { errors: parseResult.errors },
           })
         )
       }
@@ -65,20 +67,19 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       // Runtime validation of data structure
       if (!Array.isArray(rawData)) {
         return err(
-          createParsingError('Invalid parse result', 'Papa Parse returned non-array data', [], {
-            receivedType: typeof rawData,
+          createParsingError('Invalid parse result', {
+            details: 'Papa Parse returned non-array data',
+            context: { receivedType: typeof rawData },
           })
         )
       }
 
       if (mergedOptions.maxRows && rawData.length > mergedOptions.maxRows) {
         return err(
-          createCSVError(
-            'Row limit exceeded',
-            `Found ${rawData.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
-            undefined,
-            { rowCount: rawData.length, maxRows: mergedOptions.maxRows }
-          )
+          createCSVError('Row limit exceeded', {
+            details: `Found ${rawData.length} rows, maximum allowed: ${mergedOptions.maxRows}`,
+            context: { rowCount: rawData.length, maxRows: mergedOptions.maxRows },
+          })
         )
       }
 
@@ -140,7 +141,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       const mergedOptions = { ...csvConfig, ...options }
 
       if (!Array.isArray(data)) {
-        return err(createCSVError('Data must be an array'))
+        return err(createCSVError('Data must be an array', {}))
       }
 
       if (data.length === 0) {
@@ -201,7 +202,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
   const detectFormat = (data: string): DataResult<CSVFormatInfo> => {
     try {
       if (!data || data.trim().length === 0) {
-        return err(createCSVError('Empty data provided for format detection'))
+        return err(createCSVError('Empty data provided for format detection', {}))
       }
 
       const delimiters = [',', ';', '\t', '|']

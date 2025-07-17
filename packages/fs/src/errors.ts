@@ -1,4 +1,8 @@
+import { createErrorFactory } from '@esteban-url/core'
 import type { FileSystemError } from './types.js'
+
+// Use standardized error factory from core
+const createFSError = createErrorFactory('filesystem', 'high')
 
 export const createFileSystemError = (
   operation: string,
@@ -13,25 +17,26 @@ export const createFileSystemError = (
     context?: Record<string, unknown>
   }
 ): FileSystemError => {
-  return {
-    type: 'FILESYSTEM_ERROR',
-    code: options?.code || 'FS_ERROR',
-    message,
+  const coreError = createFSError('FILESYSTEM_ERROR', options?.code || 'FS_ERROR', message, {
+    operation,
     details: options?.path ? `Path: ${options.path}` : undefined,
     cause: options?.cause,
     suggestion: options?.suggestion,
     recoverable: options?.recoverable ?? false,
+    severity: options?.severity || 'high',
     context: {
       operation,
       path: options?.path,
       ...options?.context,
     },
-    component: 'filesystem',
-    operation,
-    timestamp: new Date(),
-    severity: options?.severity || 'high',
+  })
+
+  // Convert CoreError to FileSystemError with additional properties
+  return {
+    ...coreError,
+    type: 'FILESYSTEM_ERROR' as const,
     path: options?.path,
-  }
+  } as FileSystemError
 }
 
 export const mapNodeError = (operation: string, path: string, error: any): FileSystemError => {
