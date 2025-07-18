@@ -13,6 +13,11 @@ import type {
   GitResetOptions,
   GitRevertOptions,
   GitMergeOptions,
+  GitFetchOptions,
+  GitRebaseOptions,
+  GitCherryPickOptions,
+  GitBisectOptions,
+  GitCleanOptions,
 } from '../types.js'
 import { createGitError } from '../errors.js'
 
@@ -373,6 +378,211 @@ export const createGitCommandOperations = (): GitCommandOperations => {
     return result.isOk() ? ok(undefined) : err(result.error)
   }
 
+  const fetch = async (
+    repo: GitRepository,
+    options: GitFetchOptions = {}
+  ): Promise<GitResult<void>> => {
+    const args = ['fetch']
+
+    if (options.all) {
+      args.push('--all')
+    } else if (options.remote) {
+      args.push(options.remote)
+      if (options.branch) {
+        args.push(options.branch)
+      }
+    }
+
+    if (options.prune) args.push('--prune')
+    if (options.tags) args.push('--tags')
+    if (options.depth) args.push(`--depth=${options.depth}`)
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'FETCH_FAILED',
+      'Failed to fetch from remote',
+      'Check network connection and remote repository'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
+  const rebase = async (
+    repo: GitRepository,
+    onto?: string,
+    options: GitRebaseOptions = {}
+  ): Promise<GitResult<void>> => {
+    const args = ['rebase']
+
+    if (options.interactive) args.push('-i')
+    if (options.preserve) args.push('--preserve-merges')
+    if (options.autosquash) args.push('--autosquash')
+    if (options.continue) args.push('--continue')
+    if (options.abort) args.push('--abort')
+    if (options.skip) args.push('--skip')
+
+    if (onto && !options.continue && !options.abort && !options.skip) {
+      if (options.onto) args.push('--onto', options.onto)
+      args.push(onto)
+    }
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'REBASE_FAILED',
+      `Failed to rebase${onto ? ` onto ${onto}` : ''}`,
+      'Resolve conflicts or abort rebase'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
+  const cherryPick = async (
+    repo: GitRepository,
+    commit: string,
+    options: GitCherryPickOptions = {}
+  ): Promise<GitResult<void>> => {
+    const args = ['cherry-pick']
+
+    if (options.noCommit) args.push('--no-commit')
+    if (options.edit) args.push('--edit')
+    if (options.signoff) args.push('--signoff')
+    if (options.mainline) args.push(`--mainline=${options.mainline}`)
+    if (options.strategy) args.push(`--strategy=${options.strategy}`)
+
+    args.push(commit)
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'CHERRY_PICK_FAILED',
+      `Failed to cherry-pick commit ${commit}`,
+      'Resolve conflicts or abort cherry-pick'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
+  const bisect = async (
+    repo: GitRepository,
+    options: GitBisectOptions
+  ): Promise<GitResult<void>> => {
+    const args = ['bisect', options.command]
+
+    if (options.command === 'start') {
+      if (options.bad) args.push(options.bad)
+      if (options.good) args.push(options.good)
+    } else if (options.commit) {
+      args.push(options.commit)
+    }
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'BISECT_FAILED',
+      `Failed to ${options.command} bisect`,
+      'Check bisect state or reset bisect'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
+  const clean = async (
+    repo: GitRepository,
+    options: GitCleanOptions = {}
+  ): Promise<GitResult<void>> => {
+    const args = ['clean']
+
+    if (options.force) args.push('-f')
+    if (options.directories) args.push('-d')
+    if (options.ignored) args.push('-x')
+    if (options.dryRun) args.push('-n')
+    if (options.excludePattern) args.push(`--exclude=${options.excludePattern}`)
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'CLEAN_FAILED',
+      'Failed to clean untracked files',
+      'Use force option if needed and check permissions'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
+  const createCommit = async (
+    repo: GitRepository,
+    message: string,
+    options: GitCommitOptions = {}
+  ): Promise<GitResult<string>> => {
+    // This is an enhanced version of commit that ensures atomic commits
+    // First validate that there are staged changes
+    const statusResult = fromThrowable(() =>
+      execSync('git status --porcelain', {
+        cwd: repo.workingDirectory,
+        encoding: 'utf8',
+      })
+    )()
+
+    if (statusResult.isErr()) {
+      return err(
+        createGitError('COMMIT_FAILED', 'Failed to check status before commit', 'commit', {
+          cause: statusResult.error,
+          suggestion: 'Check repository status',
+          recoverable: true,
+          workingDirectory: repo.workingDirectory,
+        })
+      )
+    }
+
+    const hasStaged = statusResult.value
+      .split('\n')
+      .some((line) => line.length > 1 && line[0] !== ' ' && line[0] !== '?')
+
+    if (!hasStaged && !options.all) {
+      return err(
+        createGitError('COMMIT_FAILED', 'No staged changes to commit', 'commit', {
+          suggestion: 'Stage files with git add before committing',
+          recoverable: true,
+          workingDirectory: repo.workingDirectory,
+        })
+      )
+    }
+
+    // Use the existing commit function
+    return commit(repo, message, options)
+  }
+
+  const amendCommit = async (
+    repo: GitRepository,
+    message?: string,
+    options: GitCommitOptions = {}
+  ): Promise<GitResult<void>> => {
+    const args = ['commit', '--amend']
+
+    if (message) {
+      args.push('-m', `"${message}"`)
+    } else {
+      args.push('--no-edit')
+    }
+
+    if (options.author) args.push(`--author="${options.author}"`)
+    if (options.date) args.push(`--date="${options.date.toISOString()}"`)
+    if (options.signoff) args.push('--signoff')
+    if (options.gpgSign) args.push('--gpg-sign')
+
+    const result = safeGitExec(
+      `git ${args.join(' ')}`,
+      repo.workingDirectory,
+      'AMEND_FAILED',
+      'Failed to amend commit',
+      'Check if there is a commit to amend'
+    )
+
+    return result.isOk() ? ok(undefined) : err(result.error)
+  }
+
   return {
     add,
     commit,
@@ -384,5 +594,12 @@ export const createGitCommandOperations = (): GitCommandOperations => {
     reset,
     revert,
     merge,
+    fetch,
+    rebase,
+    cherryPick,
+    bisect,
+    clean,
+    createCommit,
+    amendCommit,
   }
 }

@@ -3,7 +3,6 @@
  * Extracted for better code organization and reusability
  */
 
-import { ok, err } from '@esteban-url/core'
 import type { GitError, GitCommit, GitStatus, GitPerson } from '../types.js'
 
 // ========================================

@@ -24,6 +24,38 @@
       "types": "./dist/diff/index.d.ts",
       "default": "./dist/diff/index.js"
     },
+    "./log": {
+      "types": "./dist/log/index.d.ts",
+      "default": "./dist/log/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    },
+    "./remote": {
+      "types": "./dist/remote/index.d.ts",
+      "default": "./dist/remote/index.js"
+    },
+    "./stash": {
+      "types": "./dist/stash/index.d.ts",
+      "default": "./dist/stash/index.js"
+    },
+    "./staging": {
+      "types": "./dist/staging/index.d.ts",
+      "default": "./dist/staging/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "default": "./dist/validation/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "default": "./dist/hooks/index.js"
+    },
+    "./exclusion": {
+      "types": "./dist/exclusion/index.d.ts",
+      "default": "./dist/exclusion/index.js"
+    },
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "default": "./dist/testing/index.js"

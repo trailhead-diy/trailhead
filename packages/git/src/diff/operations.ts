@@ -13,6 +13,12 @@ import type {
   DiffLine,
   DiffLineType,
   FileStatusType,
+  DiffStat,
+  GitBlame,
+  GitBlameLine,
+  GitBlameOptions,
+  GitCommit,
+  FileChangeMap,
 } from '../types.js'
 
 // ========================================
@@ -101,10 +107,255 @@ export const createGitDiffOperations = (): GitDiffOperations => {
     return ok(fileDiff)
   }
 
+  const getDiffBetweenCommits = async (
+    repo: GitRepository,
+    from: string,
+    to: string,
+    options: GitDiffOptions = {}
+  ): Promise<GitResult<GitDiff>> => {
+    const args = buildDiffArgs(options)
+    const safeExec = fromThrowable(
+      () =>
+        execSync(`git diff ${from}..${to} ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeExec()
+    if (result.isErr()) {
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
+    }
+
+    const diff = parseDiffOutput(result.value)
+    return ok(diff)
+  }
+
+  const getDiffStats = async (
+    repo: GitRepository,
+    options: GitDiffOptions = {}
+  ): Promise<GitResult<DiffStat>> => {
+    const args = buildDiffArgs(options)
+    const safeExec = fromThrowable(
+      () =>
+        execSync(`git diff --numstat ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeExec()
+    if (result.isErr()) {
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
+    }
+
+    const lines = result.value.trim().split('\n').filter(Boolean)
+    let filesChanged = 0
+    let insertions = 0
+    let deletions = 0
+
+    for (const line of lines) {
+      const match = line.match(/^(\d+|-)\s+(\d+|-)\s+(.+)$/)
+      if (match) {
+        filesChanged++
+        const added = match[1] === '-' ? 0 : parseInt(match[1], 10)
+        const removed = match[2] === '-' ? 0 : parseInt(match[2], 10)
+        insertions += added
+        deletions += removed
+      }
+    }
+
+    const stats: DiffStat = {
+      filesChanged,
+      insertions,
+      deletions,
+    }
+
+    return ok(stats)
+  }
+
+  const getDiffFiles = async (
+    repo: GitRepository,
+    options: GitDiffOptions = {}
+  ): Promise<GitResult<readonly DiffFile[]>> => {
+    // Use numstat to get file-level diff information
+    const args = buildDiffArgs(options)
+    const safeExec = fromThrowable(
+      () =>
+        execSync(`git diff --numstat --name-status ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeExec()
+    if (result.isErr()) {
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
+    }
+
+    const files: DiffFile[] = []
+    const lines = result.value.trim().split('\n').filter(Boolean)
+
+    // First pass: get numstat data
+    const numstatData: Map<string, { insertions: number; deletions: number }> = new Map()
+    for (const line of lines) {
+      const numstatMatch = line.match(/^(\d+|-)\s+(\d+|-)\s+(.+)$/)
+      if (numstatMatch) {
+        const [, added, removed, path] = numstatMatch
+        numstatData.set(path, {
+          insertions: added === '-' ? 0 : parseInt(added, 10),
+          deletions: removed === '-' ? 0 : parseInt(removed, 10),
+        })
+      }
+    }
+
+    // Second pass: get name-status data
+    const nameStatusResult = fromThrowable(
+      () =>
+        execSync(`git diff --name-status ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )()
+
+    if (nameStatusResult.isOk()) {
+      const statusLines = nameStatusResult.value.trim().split('\n').filter(Boolean)
+      for (const line of statusLines) {
+        const match = line.match(/^([AMDRCUTX])\s+(.+?)(?:\s+(.+))?$/)
+        if (match) {
+          const [, status, path, newPath] = match
+          const stats = numstatData.get(newPath || path) || { insertions: 0, deletions: 0 }
+
+          files.push({
+            path: newPath || path,
+            oldPath: status === 'R' && path !== newPath ? path : undefined,
+            status: parseFileStatusChar(status),
+            hunks: [], // Would need full diff parsing for hunks
+            binary: stats.insertions === 0 && stats.deletions === 0,
+            similarity: undefined,
+            insertions: stats.insertions,
+            deletions: stats.deletions,
+          })
+        }
+      }
+    }
+
+    return ok(files)
+  }
+
+  const getBlame = async (
+    repo: GitRepository,
+    path: string,
+    options: GitBlameOptions = {}
+  ): Promise<GitResult<GitBlame>> => {
+    const args = ['blame', '--porcelain']
+
+    if (options.startLine) args.push(`-L${options.startLine},${options.endLine || '$'}`)
+    if (options.reverse) args.push('--reverse')
+    if (options.firstParent) args.push('--first-parent')
+
+    args.push(path)
+
+    const safeExec = fromThrowable(
+      () =>
+        execSync(`git ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeExec()
+    if (result.isErr()) {
+      return err(createGitErrors.blameFailed(path, result.error))
+    }
+
+    const blame = parseBlameOutput(result.value)
+    return ok(blame)
+  }
+
+  const getChangedFilesByType = async (
+    repo: GitRepository,
+    options: GitDiffOptions = {}
+  ): Promise<GitResult<FileChangeMap>> => {
+    const args = buildDiffArgs(options)
+    const safeExec = fromThrowable(
+      () =>
+        execSync(`git diff --name-status ${args.join(' ')}`, {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeExec()
+    if (result.isErr()) {
+      return err(createGitErrors.diffFailed(repo.workingDirectory, result.error))
+    }
+
+    const added: string[] = []
+    const modified: string[] = []
+    const deleted: string[] = []
+    const renamed: Array<{ from: string; to: string }> = []
+
+    const lines = result.value.trim().split('\n').filter(Boolean)
+    for (const line of lines) {
+      const match = line.match(/^([AMDRCUTX])\s+(.+?)(?:\s+(.+))?$/)
+      if (match) {
+        const [, status, path, newPath] = match
+
+        switch (status) {
+          case 'A':
+            added.push(newPath || path)
+            break
+          case 'M':
+            modified.push(newPath || path)
+            break
+          case 'D':
+            deleted.push(newPath || path)
+            break
+          case 'R':
+            if (newPath) {
+              renamed.push({ from: path, to: newPath })
+            } else {
+              modified.push(path)
+            }
+            break
+          case 'C':
+            added.push(newPath || path)
+            break
+          case 'U':
+            modified.push(newPath || path)
+            break
+          default:
+            modified.push(newPath || path)
+        }
+      }
+    }
+
+    const changeMap: FileChangeMap = {
+      added,
+      modified,
+      deleted,
+      renamed,
+    }
+
+    return ok(changeMap)
+  }
+
   return {
     getDiff,
     getDiffSummary,
     getFileDiff,
+    getDiffFiles,
+    getDiffBetweenCommits,
+    getDiffStats,
+    getBlame,
+    getChangedFilesByType,
   }
 }
 
@@ -173,7 +424,11 @@ const parseDiffOutput = (output: string): GitDiff => {
     if (line.startsWith('diff --git ')) {
       // Save previous file
       if (currentFile) {
-        files.push(currentFile as DiffFile)
+        files.push({
+          ...currentFile,
+          insertions: 0,
+          deletions: 0,
+        } as DiffFile)
       }
 
       // Start new file
@@ -297,6 +552,8 @@ const parseDiffOutput = (output: string): GitDiff => {
       hunks: currentFile.hunks!,
       binary: currentFile.binary!,
       similarity: currentFile.similarity,
+      insertions: 0,
+      deletions: 0,
     })
   }
 
@@ -353,5 +610,141 @@ const parseDiffSummary = (output: string): DiffSummary => {
     insertions,
     deletions,
     binary,
+  }
+}
+
+const parseBlameOutput = (output: string): GitBlame => {
+  const lines = output.split('\n')
+  const blameLines: GitBlameLine[] = []
+  const commitData: Record<
+    string,
+    {
+      sha: string
+      authorName?: string
+      authorEmail?: string
+      authorTime?: Date
+      committerName?: string
+      committerEmail?: string
+      committerTime?: Date
+      message?: string
+    }
+  > = {}
+  let currentCommit: string | null = null
+  let currentLineNumber = 1
+  let currentOriginalLineNumber = 1
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    // SHA line
+    if (line.match(/^[0-9a-f]{40} \d+ \d+/)) {
+      const parts = line.split(' ')
+      currentCommit = parts[0]
+      currentOriginalLineNumber = parseInt(parts[1], 10)
+      currentLineNumber = parseInt(parts[2], 10)
+
+      if (!commitData[currentCommit]) {
+        commitData[currentCommit] = { sha: currentCommit }
+      }
+    }
+    // Author info
+    else if (line.startsWith('author ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        commitData[currentCommit].authorName = line.substring(7)
+      }
+    } else if (line.startsWith('author-mail ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        commitData[currentCommit].authorEmail = line.substring(12).replace(/[<>]/g, '')
+      }
+    } else if (line.startsWith('author-time ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        const timestamp = parseInt(line.substring(12), 10)
+        commitData[currentCommit].authorTime = new Date(timestamp * 1000)
+      }
+    } else if (line.startsWith('committer ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        commitData[currentCommit].committerName = line.substring(10)
+      }
+    } else if (line.startsWith('committer-mail ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        commitData[currentCommit].committerEmail = line.substring(15).replace(/[<>]/g, '')
+      }
+    } else if (line.startsWith('committer-time ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        const timestamp = parseInt(line.substring(15), 10)
+        commitData[currentCommit].committerTime = new Date(timestamp * 1000)
+      }
+    } else if (line.startsWith('summary ')) {
+      if (currentCommit && commitData[currentCommit]) {
+        commitData[currentCommit].message = line.substring(8)
+      }
+    }
+    // Content line
+    else if (line.startsWith('\t')) {
+      if (currentCommit && commitData[currentCommit]) {
+        const data = commitData[currentCommit]
+        blameLines.push({
+          lineNumber: currentLineNumber,
+          content: line.substring(1),
+          commit: currentCommit,
+          author: {
+            name: data.authorName || '',
+            email: data.authorEmail || '',
+            date: data.authorTime || new Date(),
+          },
+          originalLineNumber: currentOriginalLineNumber,
+          finalLineNumber: currentLineNumber,
+        })
+      }
+    }
+  }
+
+  // Build commits object
+  const commits: Record<string, GitCommit> = {}
+  for (const [sha, data] of Object.entries(commitData)) {
+    commits[sha] = {
+      sha,
+      author: {
+        name: data.authorName || '',
+        email: data.authorEmail || '',
+        date: data.authorTime || new Date(),
+      },
+      committer: {
+        name: data.committerName || '',
+        email: data.committerEmail || '',
+        date: data.committerTime || new Date(),
+      },
+      date: data.authorTime || new Date(),
+      message: data.message || '',
+      parents: [],
+    }
+  }
+
+  return {
+    lines: blameLines,
+    commits,
+  }
+}
+
+const parseFileStatusChar = (status: string): FileStatusType => {
+  switch (status) {
+    case 'A':
+      return 'added'
+    case 'M':
+      return 'modified'
+    case 'D':
+      return 'deleted'
+    case 'R':
+      return 'renamed'
+    case 'C':
+      return 'copied'
+    case 'U':
+      return 'unmerged'
+    case 'T':
+      return 'modified' // Type change
+    case 'X':
+      return 'untracked' // Unknown
+    default:
+      return 'modified'
   }
 }
