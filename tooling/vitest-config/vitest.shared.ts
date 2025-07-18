@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitest/config'
+import path from 'path'
+import { existsSync } from 'fs'
 
 export interface VitestConfigOptions {
   environment?: 'node' | 'jsdom'
@@ -15,6 +17,43 @@ export interface VitestConfigOptions {
   }
   reporters?: ('verbose' | 'dot' | 'json' | 'html' | 'junit')[]
   passWithNoTests?: boolean
+  /**
+   * Additional package aliases to resolve
+   * @example { '@my-org/package': '../package/src' }
+   */
+  additionalAliases?: Record<string, string>
+}
+
+/**
+ * Automatically generate aliases for @esteban-url/* packages
+ * Resolves to the src directory of sibling packages
+ */
+function generateWorkspaceAliases(currentDir: string): Record<string, string> {
+  const aliases: Record<string, string> = {}
+
+  // Common @esteban-url packages that might be dependencies
+  const workspacePackages = [
+    'core',
+    'cli',
+    'config',
+    'data',
+    'fs',
+    'git',
+    'validation',
+    'dependency-analysis',
+    'web-ui',
+    'create-cli',
+  ]
+
+  for (const pkg of workspacePackages) {
+    const packagePath = path.resolve(currentDir, '..', pkg, 'src')
+    // Only add alias if the package directory exists
+    if (existsSync(packagePath)) {
+      aliases[`@esteban-url/${pkg}`] = packagePath
+    }
+  }
+
+  return aliases
 }
 
 export const createVitestConfig = (options: VitestConfigOptions = {}) => {
@@ -26,9 +65,20 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
     hooks = {},
     reporters = ['verbose'],
     passWithNoTests = false,
+    additionalAliases = {},
   } = options
 
+  // Get the directory where this function is called from
+  const callerDir = process.cwd()
+  const workspaceAliases = generateWorkspaceAliases(callerDir)
+
   return defineConfig({
+    resolve: {
+      alias: {
+        ...workspaceAliases,
+        ...additionalAliases,
+      },
+    },
     test: {
       globals: true,
       environment,
