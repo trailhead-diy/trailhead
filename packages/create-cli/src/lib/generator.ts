@@ -30,6 +30,7 @@ import {
   getTemplateCacheStats,
   cleanupTemplateCache,
 } from './template-compiler.js'
+import { formatGeneratedCode } from './transform-helpers.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -451,7 +452,10 @@ async function processTemplateFile(
       }
       const processedContent = compileResult.value
 
-      const writeResult = await fs.writeFile(outputPath, processedContent)
+      // Format the generated code if it's a code file
+      const formattedContent = await formatGeneratedCode(processedContent, outputPath)
+
+      const writeResult = await fs.writeFile(outputPath, formattedContent)
       if (writeResult.isErr()) {
         return err(
           createCoreError(
