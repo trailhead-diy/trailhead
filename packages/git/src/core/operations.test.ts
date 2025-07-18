@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { execSync } from 'node:child_process'
 import { createGitOperations } from './operations.js'
 
 describe('Git Core Operations', () => {

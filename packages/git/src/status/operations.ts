@@ -13,6 +13,32 @@ import type {
 } from '../types.js'
 
 // ========================================
+// Helper Functions
+// ========================================
+
+const formatSyncStatus = (status: GitBranchSyncStatus): string => {
+  const { currentBranch, targetBranch, ahead, behind, isUpToDate, diverged } = status
+
+  if (isUpToDate) {
+    return `Branch '${currentBranch}' is up to date with '${targetBranch}'`
+  }
+
+  if (diverged) {
+    return `Branch '${currentBranch}' has diverged from '${targetBranch}' (${ahead} ahead, ${behind} behind)`
+  }
+
+  if (ahead > 0) {
+    return `Branch '${currentBranch}' is ${ahead} commit${ahead === 1 ? '' : 's'} ahead of '${targetBranch}'`
+  }
+
+  if (behind > 0) {
+    return `Branch '${currentBranch}' is ${behind} commit${behind === 1 ? '' : 's'} behind '${targetBranch}'`
+  }
+
+  return `Branch '${currentBranch}' status unknown relative to '${targetBranch}'`
+}
+
+// ========================================
 // Git Status Operations
 // ========================================
 
@@ -120,7 +146,7 @@ export const createGitStatusOperations = (): GitStatusOperations => {
 
       if (fetchResult.isErr()) {
         // Continue without fetch if it fails (might be offline)
-        console.warn('Warning: Could not fetch latest changes')
+        // Warning: Could not fetch latest changes - continuing offline
       }
     }
 
@@ -164,26 +190,62 @@ export const createGitStatusOperations = (): GitStatusOperations => {
     return ok(syncStatus)
   }
 
-  const formatSyncStatus = (status: GitBranchSyncStatus): string => {
-    const { currentBranch, targetBranch, ahead, behind, isUpToDate, diverged } = status
-
-    if (isUpToDate) {
-      return `Branch '${currentBranch}' is up to date with '${targetBranch}'`
+  const getModifiedFiles = async (
+    repo: GitRepository
+  ): Promise<GitResult<readonly GitFileStatus[]>> => {
+    const statusResult = await getStatus(repo)
+    if (statusResult.isErr()) {
+      return err(statusResult.error)
     }
 
-    if (diverged) {
-      return `Branch '${currentBranch}' has diverged from '${targetBranch}' (${ahead} ahead, ${behind} behind)`
+    return ok(statusResult.value.modified)
+  }
+
+  const getConflictedFiles = async (repo: GitRepository): Promise<GitResult<readonly string[]>> => {
+    const safeStatus = fromThrowable(
+      () =>
+        execSync('git diff --name-only --diff-filter=U', {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeStatus()
+    if (result.isErr()) {
+      // No conflicts might result in empty output, which is not an error
+      return ok([])
     }
 
-    if (ahead > 0) {
-      return `Branch '${currentBranch}' is ${ahead} commit${ahead === 1 ? '' : 's'} ahead of '${targetBranch}'`
+    const conflictedFiles = result.value
+      .trim()
+      .split('\n')
+      .filter((line) => line.length > 0)
+
+    return ok(conflictedFiles)
+  }
+
+  const getIgnoredFiles = async (repo: GitRepository): Promise<GitResult<readonly string[]>> => {
+    const safeStatus = fromThrowable(
+      () =>
+        execSync('git status --porcelain --ignored', {
+          cwd: repo.workingDirectory,
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        }) as string
+    )
+
+    const result = safeStatus()
+    if (result.isErr()) {
+      return err(createGitErrors.statusFailed(repo.workingDirectory, result.error))
     }
 
-    if (behind > 0) {
-      return `Branch '${currentBranch}' is ${behind} commit${behind === 1 ? '' : 's'} behind '${targetBranch}'`
-    }
+    const ignoredFiles = result.value
+      .split('\n')
+      .filter((line) => line.startsWith('!! '))
+      .map((line) => line.substring(3))
 
-    return `Branch '${currentBranch}' status unknown relative to '${targetBranch}'`
+    return ok(ignoredFiles)
   }
 
   return {
@@ -192,6 +254,9 @@ export const createGitStatusOperations = (): GitStatusOperations => {
     hasChanges,
     getUntrackedFiles,
     getStagedFiles,
+    getModifiedFiles,
+    getConflictedFiles,
+    getIgnoredFiles,
     checkBranchSync,
     formatSyncStatus,
   }

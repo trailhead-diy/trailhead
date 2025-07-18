@@ -53,7 +53,6 @@ import {
   getCommitHistory,
   stageFiles,
   addTag,
-  resetMockState,
 } from './mock-helpers.js'
 
 // ========================================
@@ -81,10 +80,7 @@ export async function createTestRepository(
     author?: GitPerson
   } = {}
 ): Promise<TestRepository> {
-  const {
-    name = 'test-repo',
-    author = { name: 'Test User', email: 'test@example.com', date: new Date() },
-  } = options
+  const { name = 'test-repo' } = options
 
   // Implementation would create actual git repo
   const tempPath = `/tmp/git-test-${Date.now()}-${name}`
@@ -93,7 +89,7 @@ export async function createTestRepository(
   const commits: Array<{ hash: string; message: string }> = []
   const files = new Map<string, string>()
   const branches = ['main']
-  let currentBranch = 'main'
+  let _currentBranch = 'main'
   const tags = new Map<string, string>()
 
   return {
@@ -106,7 +102,7 @@ export async function createTestRepository(
       files.set(relativePath, content)
     },
 
-    async commit(message: string, commitAuthor?: GitPerson): Promise<string> {
+    async commit(message: string, _commitAuthor?: GitPerson): Promise<string> {
       const hash = `commit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       commits.push({ hash, message })
       return hash
@@ -122,7 +118,7 @@ export async function createTestRepository(
     async checkoutBranch(branchName: string): Promise<void> {
       // Mock implementation - simulates checking out git branch
       if (branches.includes(branchName)) {
-        currentBranch = branchName
+        _currentBranch = branchName
       } else {
         throw new Error(`Branch '${branchName}' does not exist`)
       }
@@ -144,7 +140,7 @@ export async function createTestRepository(
       commits.length = 0
       branches.length = 0
       branches.push('main')
-      currentBranch = 'main'
+      _currentBranch = 'main'
       tags.clear()
     },
   }
@@ -400,7 +396,7 @@ export async function createGitWorkflow(
       await repository.commit(`feat: add ${branchName} feature`)
     },
 
-    async mergeToMain(branchName: string): Promise<void> {
+    async mergeToMain(_branchName: string): Promise<void> {
       await repository.checkoutBranch('main')
       // Mock merge operation
     },
