@@ -6,7 +6,7 @@ import {
   createMockDependencyGraph,
   createMockDependencyNode,
 } from '../testing/index.js'
-import type { FileChange } from '../types.js'
+import type { FileChange, AtomicCommitGroup } from '../types.js'
 import * as depCruiser from '../graph/dependency-cruiser.js'
 import * as treeSitter from '../graph/tree-sitter-parser.js'
 
@@ -202,7 +202,7 @@ describe('DependencyAnalysisEngine', () => {
 
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
-      const allFiles = result.value.groups.flatMap((g) => g.files)
+      const allFiles = result.value.groups.flatMap((g: AtomicCommitGroup) => g.files)
       expect(allFiles).not.toContain('src/file-0.ts')
       expect(allFiles).not.toContain('src/file-1.ts')
     }

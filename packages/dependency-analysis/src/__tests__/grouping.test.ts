@@ -11,7 +11,7 @@ import {
   createMockDependencyGraph,
   createMockChanges,
 } from '../testing/index.js'
-import type { FileChange } from '../types.js'
+import type { FileChange, AtomicCommitGroup } from '../types.js'
 
 describe('Grouping Strategy Detection', () => {
   it('should detect simple changes correctly', () => {
@@ -77,7 +77,7 @@ describe('Simple Grouping', () => {
     if (result.isOk()) {
       const groups = result.value
       expect(groups).toHaveLength(2)
-      expect(groups.every((g) => g.type === 'core-api')).toBe(true)
+      expect(groups.every((g: AtomicCommitGroup) => g.type === 'core-api')).toBe(true)
     }
   })
 
@@ -168,7 +168,7 @@ describe('Complex Grouping', () => {
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
       const groups = result.value
-      const apiGroups = groups.filter((g) => g.type === 'core-api')
+      const apiGroups = groups.filter((g: AtomicCommitGroup) => g.type === 'core-api')
       expect(apiGroups.length).toBeGreaterThan(0)
       expect(apiGroups[0].estimatedRisk).toBe('high')
     }
@@ -187,7 +187,7 @@ describe('Complex Grouping', () => {
     expect(result.isOk()).toBe(true)
     if (result.isOk()) {
       const groups = result.value
-      const allFiles = groups.flatMap((g) => g.files)
+      const allFiles = groups.flatMap((g: AtomicCommitGroup) => g.files)
       expect(allFiles).not.toContain('package.json')
       expect(allFiles).not.toContain('turbo.json')
     }

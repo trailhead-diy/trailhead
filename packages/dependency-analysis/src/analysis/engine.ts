@@ -72,7 +72,7 @@ class DependencyAnalysisEngineImpl implements DependencyAnalysisEngine {
       warnings.push(`Found ${graph.cycles.length} circular dependencies`)
     }
 
-    const highRiskGroups = groups.filter((g) => g.estimatedRisk === 'high')
+    const highRiskGroups = groups.filter((g: AtomicCommitGroup) => g.estimatedRisk === 'high')
     if (highRiskGroups.length > 0) {
       warnings.push(
         `${highRiskGroups.length} high-risk groups detected - careful review recommended`

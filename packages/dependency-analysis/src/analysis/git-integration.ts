@@ -302,7 +302,7 @@ export async function createAtomicCommits(
 
     // Reset all staged files
     if (stagedFilesResult.value.length > 0) {
-      const filePaths = stagedFilesResult.value.map((f) => f.path)
+      const filePaths = stagedFilesResult.value.map((f: any) => f.path)
       const resetResult = await git.staging.resetFiles(git.repository, filePaths)
       if (!resetResult.isOk()) {
         return rollback({
