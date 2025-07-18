@@ -6,4 +6,5 @@ export default createVitestConfig({
     enabled: true,
     threshold: 80,
   },
+  useTsconfigPaths: true,
 })

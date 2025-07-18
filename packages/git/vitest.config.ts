@@ -3,6 +3,7 @@ import { defineConfig, mergeConfig } from 'vitest/config'
 
 const baseConfig = createVitestConfig({
   environment: 'node',
+  useTsconfigPaths: true,
 })
 
 const packageSpecificConfig = defineConfig({

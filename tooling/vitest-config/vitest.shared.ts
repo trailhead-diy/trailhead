@@ -1,6 +1,5 @@
-import { defineConfig, type Plugin } from 'vitest/config'
-import path from 'path'
-import { existsSync } from 'fs'
+import { defineConfig } from 'vitest/config'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export interface VitestConfigOptions {
   environment?: 'node' | 'jsdom'
@@ -22,61 +21,11 @@ export interface VitestConfigOptions {
    * @example { '@my-org/package': '../package/src' }
    */
   additionalAliases?: Record<string, string>
-}
-
-/**
- * Automatically generate aliases for @esteban-url/* packages
- * Resolves to the src directory of sibling packages
- */
-function generateWorkspaceAliases(currentDir: string): Record<string, string> {
-  const aliases: Record<string, string> = {}
-
-  // Common @esteban-url packages that might be dependencies
-  const workspacePackages = [
-    'core',
-    'cli',
-    'config',
-    'data',
-    'fs',
-    'git',
-    'validation',
-    'dependency-analysis',
-    'web-ui',
-    'create-cli',
-  ]
-
-  for (const pkg of workspacePackages) {
-    const packagePath = path.resolve(currentDir, '..', pkg, 'src')
-    // Only add alias if the package directory exists
-    if (existsSync(packagePath)) {
-      aliases[`@esteban-url/${pkg}`] = packagePath
-    }
-  }
-
-  return aliases
-}
-
-/**
- * Vite plugin to handle workspace package resolution
- * Ensures that imports from dist folders are redirected to source
- */
-function workspaceResolutionPlugin(): Plugin {
-  return {
-    name: 'workspace-resolution',
-    resolveId(id) {
-      // Handle @esteban-url/* package imports
-      if (id.startsWith('@esteban-url/')) {
-        const [, packageName] = id.split('/')
-        const srcPath = path.resolve(process.cwd(), '..', packageName, 'src', 'index.ts')
-        
-        // If the source file exists, resolve to it
-        if (existsSync(srcPath)) {
-          return srcPath
-        }
-      }
-      return null
-    },
-  }
+  /**
+   * Whether to use vite-tsconfig-paths plugin for module resolution
+   * @default true
+   */
+  useTsconfigPaths?: boolean
 }
 
 export const createVitestConfig = (options: VitestConfigOptions = {}) => {
@@ -89,21 +38,18 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
     reporters = ['verbose'],
     passWithNoTests = false,
     additionalAliases = {},
+    useTsconfigPaths = true,
   } = options
 
-  // Get the directory where this function is called from
-  const callerDir = process.cwd()
-  const workspaceAliases = generateWorkspaceAliases(callerDir)
+  // Add vite-tsconfig-paths plugin if enabled
+  const plugins = useTsconfigPaths ? [tsconfigPaths()] : []
 
   return defineConfig({
-    plugins: [workspaceResolutionPlugin()],
+    plugins,
     resolve: {
-      alias: {
-        ...workspaceAliases,
-        ...additionalAliases,
-      },
-      // Ensure .js extensions are resolved to .ts files in source
-      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+      alias: additionalAliases,
+      // Ensure we use source files in tests, not dist
+      conditions: ['development', 'module'],
     },
     test: {
       globals: true,
