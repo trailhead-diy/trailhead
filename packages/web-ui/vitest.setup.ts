@@ -4,8 +4,10 @@ import '@testing-library/jest-dom'
 import { mockAnimationsApi } from 'jsdom-testing-mocks'
 import React from 'react'
 
-// Mock animations API for Headless UI
-mockAnimationsApi()
+// Mock animations API for Headless UI (only when jsdom is available)
+if (typeof window !== 'undefined') {
+  mockAnimationsApi()
+}
 
 // Global console mock system for clean test output
 const originalConsole = {

@@ -4,6 +4,7 @@
  */
 import chalk from 'chalk'
 
+// Re-export chalk
 export { chalk }
 
 /** Format success messages in green */
