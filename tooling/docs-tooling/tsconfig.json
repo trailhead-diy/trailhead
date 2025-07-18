@@ -1,8 +1,7 @@
 {
-  "extends": "../../tooling/typescript-config/base.json",
+  "extends": "../../tooling/typescript-config/node.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "moduleResolution": "node",
     "types": ["node"]
   },

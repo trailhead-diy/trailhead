@@ -6,7 +6,30 @@
     "types": ["node"],
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@esteban-url/core": ["../../packages/core/src"],
+      "@esteban-url/core/*": ["../../packages/core/src/*"],
+      "@esteban-url/cli": ["../../packages/cli/src"],
+      "@esteban-url/cli/*": ["../../packages/cli/src/*"],
+      "@esteban-url/config": ["../../packages/config/src"],
+      "@esteban-url/config/*": ["../../packages/config/src/*"],
+      "@esteban-url/data": ["../../packages/data/src"],
+      "@esteban-url/data/*": ["../../packages/data/src/*"],
+      "@esteban-url/fs": ["../../packages/fs/src"],
+      "@esteban-url/fs/*": ["../../packages/fs/src/*"],
+      "@esteban-url/git": ["../../packages/git/src"],
+      "@esteban-url/git/*": ["../../packages/git/src/*"],
+      "@esteban-url/validation": ["../../packages/validation/src"],
+      "@esteban-url/validation/*": ["../../packages/validation/src/*"],
+      "@esteban-url/dependency-analysis": ["../../packages/dependency-analysis/src"],
+      "@esteban-url/dependency-analysis/*": ["../../packages/dependency-analysis/src/*"],
+      "@esteban-url/web-ui": ["../../packages/web-ui/src"],
+      "@esteban-url/web-ui/*": ["../../packages/web-ui/src/*"],
+      "@esteban-url/create-cli": ["../../packages/create-cli/src"],
+      "@esteban-url/create-cli/*": ["../../packages/create-cli/src/*"]
+    }
   },
   "include": ["src/**/*", "**/*.ts"],
   "exclude": ["**/*.tsx", "**/*.jsx", "node_modules", "dist", "build", ".turbo"]
