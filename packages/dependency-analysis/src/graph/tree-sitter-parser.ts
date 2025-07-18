@@ -113,7 +113,7 @@ function extractImports(tree: any, sourceCode: string): ImportInfo[] {
   return imports
 }
 
-function extractExports(tree: Parser.Tree, sourceCode: string): ExportInfo[] {
+function extractExports(tree: any, sourceCode: string): ExportInfo[] {
   const exports: ExportInfo[] = []
   if (!parser) return exports
   const exportQuery = (parser.getLanguage() as any).query(`
