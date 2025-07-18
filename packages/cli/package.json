@@ -38,8 +38,8 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
-    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "build": "pnpm clean && tsup",
+    "build:prod": "NODE_ENV=production tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
