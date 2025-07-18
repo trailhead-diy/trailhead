@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, type Plugin } from 'vitest/config'
 import path from 'path'
 import { existsSync } from 'fs'
 
@@ -56,6 +56,29 @@ function generateWorkspaceAliases(currentDir: string): Record<string, string> {
   return aliases
 }
 
+/**
+ * Vite plugin to handle workspace package resolution
+ * Ensures that imports from dist folders are redirected to source
+ */
+function workspaceResolutionPlugin(): Plugin {
+  return {
+    name: 'workspace-resolution',
+    resolveId(id) {
+      // Handle @esteban-url/* package imports
+      if (id.startsWith('@esteban-url/')) {
+        const [, packageName] = id.split('/')
+        const srcPath = path.resolve(process.cwd(), '..', packageName, 'src', 'index.ts')
+        
+        // If the source file exists, resolve to it
+        if (existsSync(srcPath)) {
+          return srcPath
+        }
+      }
+      return null
+    },
+  }
+}
+
 export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   const {
     environment = 'node',
@@ -73,11 +96,14 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   const workspaceAliases = generateWorkspaceAliases(callerDir)
 
   return defineConfig({
+    plugins: [workspaceResolutionPlugin()],
     resolve: {
       alias: {
         ...workspaceAliases,
         ...additionalAliases,
       },
+      // Ensure .js extensions are resolved to .ts files in source
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     },
     test: {
       globals: true,
