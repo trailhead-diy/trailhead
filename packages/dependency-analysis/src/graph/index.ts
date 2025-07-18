@@ -1,129 +1,131 @@
-import { err, ok, type Result } from "@esteban-url/core";
-import type { DependencyError, DependencyGraph, DependencyNode } from "../types.js";
-import { generateDependencyGraphWithCruiser, type CruiserOptions } from "./dependency-cruiser.js";
-import { parseTypeScriptModule } from "./tree-sitter-parser.js";
+import { err, ok, type Result } from '@esteban-url/core'
+import type { DependencyError, DependencyGraph, DependencyNode } from '../types.js'
+import { generateDependencyGraphWithCruiser, type CruiserOptions } from './dependency-cruiser.js'
+import { parseTypeScriptModule } from './tree-sitter-parser.js'
 
 export interface GraphGenerationOptions extends CruiserOptions {
-  readonly enhanceWithAST?: boolean;
-  readonly includeTestFiles?: boolean;
+  readonly enhanceWithAST?: boolean
+  readonly includeTestFiles?: boolean
 }
 
 async function enhanceNodeWithAST(node: DependencyNode): Promise<DependencyNode> {
-  if (node.type !== "source" || !node.path.endsWith(".ts") && !node.path.endsWith(".tsx")) {
-    return node;
+  if (node.type !== 'source' || (!node.path.endsWith('.ts') && !node.path.endsWith('.tsx'))) {
+    return node
   }
 
-  const parseResult = await parseTypeScriptModule(node.path);
-  
+  const parseResult = await parseTypeScriptModule(node.path)
+
   if (!parseResult.isOk()) {
-    return node;
+    return node
   }
 
-  const { imports, exports, hasApiChanges } = parseResult.value;
+  const { imports, exports, hasApiChanges } = parseResult.value
 
   return {
     ...node,
     imports: imports,
     exports: exports,
     apiSurfaceChanges: hasApiChanges,
-    riskLevel: hasApiChanges ? "high" : node.riskLevel,
-  };
+    riskLevel: hasApiChanges ? 'high' : node.riskLevel,
+  }
 }
 
 export async function generateDependencyGraph(
   paths: readonly string[],
-  options: GraphGenerationOptions = {},
+  options: GraphGenerationOptions = {}
 ): Promise<Result<DependencyGraph, DependencyError>> {
-  const graphResult = await generateDependencyGraphWithCruiser(paths, options);
-  
+  const graphResult = await generateDependencyGraphWithCruiser(paths, options)
+
   if (!graphResult.isOk()) {
-    return graphResult;
+    return graphResult
   }
 
-  const graph = graphResult.value;
+  const graph = graphResult.value
 
   if (!options.enhanceWithAST) {
-    return ok(graph);
+    return ok(graph)
   }
 
   try {
-    const enhancedNodes = new Map<string, DependencyNode>();
-    
+    const enhancedNodes = new Map<string, DependencyNode>()
+
     for (const [path, node] of graph.nodes) {
-      const enhancedNode = await enhanceNodeWithAST(node);
-      enhancedNodes.set(path, enhancedNode);
+      const enhancedNode = await enhanceNodeWithAST(node)
+      enhancedNodes.set(path, enhancedNode)
     }
 
     return ok({
       ...graph,
       nodes: enhancedNodes,
-    });
+    })
   } catch (error) {
     return err({
-      type: "graph-error",
-      message: error instanceof Error ? error.message : "Unknown error enhancing graph with AST",
-    });
+      type: 'graph-error',
+      message: error instanceof Error ? error.message : 'Unknown error enhancing graph with AST',
+    })
   }
 }
 
 export function findDependents(
   graph: DependencyGraph,
-  targetPaths: readonly string[],
+  targetPaths: readonly string[]
 ): readonly string[] {
-  const dependents = new Set<string>();
-  const targets = new Set(targetPaths);
+  const dependents = new Set<string>()
+  const targets = new Set(targetPaths)
 
   for (const [path, dependencies] of graph.edges) {
     for (const dep of dependencies) {
       if (targets.has(dep)) {
-        dependents.add(path);
+        dependents.add(path)
       }
     }
   }
 
-  return Array.from(dependents);
+  return Array.from(dependents)
 }
 
-export function topologicalSort(graph: DependencyGraph): Result<readonly string[], DependencyError> {
-  const sorted: string[] = [];
-  const visited = new Set<string>();
-  const visiting = new Set<string>();
+export function topologicalSort(
+  graph: DependencyGraph
+): Result<readonly string[], DependencyError> {
+  const sorted: string[] = []
+  const visited = new Set<string>()
+  const visiting = new Set<string>()
 
   function visit(node: string): boolean {
     if (visited.has(node)) {
-      return true;
-    }
-    
-    if (visiting.has(node)) {
-      return false;
+      return true
     }
 
-    visiting.add(node);
-    
-    const dependencies = graph.edges.get(node) || [];
+    if (visiting.has(node)) {
+      return false
+    }
+
+    visiting.add(node)
+
+    const dependencies = graph.edges.get(node) || []
     for (const dep of dependencies) {
       if (!visit(dep)) {
-        return false;
+        return false
       }
     }
 
-    visiting.delete(node);
-    visited.add(node);
-    sorted.push(node);
-    
-    return true;
+    visiting.delete(node)
+    visited.add(node)
+    sorted.push(node)
+
+    return true
   }
 
   for (const node of graph.nodes.keys()) {
     if (!visit(node)) {
       return err({
-        type: "graph-error",
-        message: "Circular dependency detected during topological sort",
-      });
+        type: 'graph-error',
+        message: 'Circular dependency detected during topological sort',
+      })
     }
   }
 
-  return ok(sorted);
+  return ok(sorted)
 }
 
-export { generateDependencyGraphWithCruiser, parseTypeScriptModule };
+export { generateDependencyGraphWithCruiser, parseTypeScriptModule }

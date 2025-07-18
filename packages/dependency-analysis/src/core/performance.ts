@@ -3,15 +3,15 @@
  */
 export interface PerformanceMetrics {
   /** The name of the operation being measured */
-  readonly operation: string;
+  readonly operation: string
   /** Start time in milliseconds (from performance.now()) */
-  readonly startTime: number;
+  readonly startTime: number
   /** End time in milliseconds (from performance.now()) */
-  readonly endTime: number;
+  readonly endTime: number
   /** Duration in milliseconds */
-  readonly duration: number;
+  readonly duration: number
   /** Optional metadata about the operation (e.g., file count, size) */
-  readonly metadata?: Record<string, unknown>;
+  readonly metadata?: Record<string, unknown>
 }
 
 /**
@@ -19,7 +19,7 @@ export interface PerformanceMetrics {
  * @param metadata - Optional metadata to attach to the performance metrics
  * @returns The recorded performance metrics
  */
-export type ProfilerStopFn = (metadata?: Record<string, unknown>) => PerformanceMetrics;
+export type ProfilerStopFn = (metadata?: Record<string, unknown>) => PerformanceMetrics
 
 /**
  * Performance profiler for measuring operation timings
@@ -36,131 +36,131 @@ export interface PerformanceProfiler {
    * const metrics = stop({ fileCount: 100 });
    * ```
    */
-  start(operation: string): ProfilerStopFn;
-  
+  start(operation: string): ProfilerStopFn
+
   /**
    * Get all recorded performance metrics
    * @returns Array of all performance metrics recorded since creation or last reset
    */
-  getMetrics(): readonly PerformanceMetrics[];
-  
+  getMetrics(): readonly PerformanceMetrics[]
+
   /**
    * Clear all recorded metrics
    */
-  reset(): void;
-  
+  reset(): void
+
   /**
    * Generate a human-readable summary of all recorded metrics
    * @returns Formatted summary string with statistics per operation
    */
-  summary(): string;
+  summary(): string
 }
 
 /**
  * Creates a new performance profiler instance
- * 
+ *
  * @returns A new performance profiler
- * 
+ *
  * @example
  * ```typescript
  * const profiler = createPerformanceProfiler();
- * 
+ *
  * const stop = profiler.start("parse-files");
  * // ... do work ...
  * stop({ fileCount: 42 });
- * 
+ *
  * console.log(profiler.summary());
  * ```
  */
 export function createPerformanceProfiler(): PerformanceProfiler {
-  const metrics: PerformanceMetrics[] = [];
-  
+  const metrics: PerformanceMetrics[] = []
+
   const start = (operation: string): (() => PerformanceMetrics) => {
-    const startTime = performance.now();
-    
+    const startTime = performance.now()
+
     return (metadata?: Record<string, unknown>): PerformanceMetrics => {
-      const endTime = performance.now();
+      const endTime = performance.now()
       const metric: PerformanceMetrics = {
         operation,
         startTime,
         endTime,
         duration: endTime - startTime,
         metadata,
-      };
-      
-      metrics.push(metric);
-      return metric;
-    };
-  };
-  
+      }
+
+      metrics.push(metric)
+      return metric
+    }
+  }
+
   const getMetrics = (): readonly PerformanceMetrics[] => {
-    return [...metrics];
-  };
-  
+    return [...metrics]
+  }
+
   const reset = (): void => {
-    metrics.length = 0;
-  };
-  
+    metrics.length = 0
+  }
+
   const summary = (): string => {
     if (metrics.length === 0) {
-      return "No performance metrics collected";
+      return 'No performance metrics collected'
     }
-    
-    const totalDuration = metrics.reduce((sum, m) => sum + m.duration, 0);
-    const operationStats = new Map<string, { count: number; totalDuration: number }>();
-    
+
+    const totalDuration = metrics.reduce((sum, m) => sum + m.duration, 0)
+    const operationStats = new Map<string, { count: number; totalDuration: number }>()
+
     for (const metric of metrics) {
-      const stats = operationStats.get(metric.operation) || { count: 0, totalDuration: 0 };
-      stats.count++;
-      stats.totalDuration += metric.duration;
-      operationStats.set(metric.operation, stats);
+      const stats = operationStats.get(metric.operation) || { count: 0, totalDuration: 0 }
+      stats.count++
+      stats.totalDuration += metric.duration
+      operationStats.set(metric.operation, stats)
     }
-    
+
     const lines: string[] = [
       `Performance Summary (${metrics.length} operations, ${totalDuration.toFixed(2)}ms total)`,
-      "─".repeat(60),
-    ];
-    
+      '─'.repeat(60),
+    ]
+
     for (const [operation, stats] of operationStats) {
-      const avgDuration = stats.totalDuration / stats.count;
-      const percentage = (stats.totalDuration / totalDuration * 100).toFixed(1);
-      
+      const avgDuration = stats.totalDuration / stats.count
+      const percentage = ((stats.totalDuration / totalDuration) * 100).toFixed(1)
+
       lines.push(
         `${operation.padEnd(30)} ${stats.count.toString().padStart(4)} calls  ` +
-        `${avgDuration.toFixed(2).padStart(8)}ms avg  ` +
-        `${stats.totalDuration.toFixed(2).padStart(10)}ms total (${percentage}%)`
-      );
+          `${avgDuration.toFixed(2).padStart(8)}ms avg  ` +
+          `${stats.totalDuration.toFixed(2).padStart(10)}ms total (${percentage}%)`
+      )
     }
-    
-    return lines.join("\n");
-  };
-  
+
+    return lines.join('\n')
+  }
+
   return {
     start,
     getMetrics,
     reset,
     summary,
-  };
+  }
 }
 
 /**
  * Global singleton profiler instance for the entire dependency-analysis package
- * 
+ *
  * @remarks
  * This profiler is shared across all modules in the package to provide
  * a unified view of performance across the entire analysis pipeline.
- * 
+ *
  * @example
  * ```typescript
  * import { globalProfiler } from "@esteban-url/dependency-analysis/core";
- * 
+ *
  * // In your analysis code
  * const stop = globalProfiler.start("my-operation");
  * // ... perform operation ...
  * stop();
- * 
+ *
  * // Later, display summary
  * console.log(globalProfiler.summary());
  * ```
  */
-export const globalProfiler = createPerformanceProfiler();
+export const globalProfiler = createPerformanceProfiler()

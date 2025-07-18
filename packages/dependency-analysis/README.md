@@ -23,22 +23,22 @@ pnpm add @esteban-url/dependency-analysis
 ### Basic Example
 
 ```typescript
-import { 
+import {
   createDependencyAnalysisEngine,
   analyzeGitChanges,
   createAtomicCommits,
-  type GitContext 
-} from "@esteban-url/dependency-analysis";
-import { 
+  type GitContext,
+} from '@esteban-url/dependency-analysis'
+import {
   createGitOperations,
   createGitStatusOperations,
   // ... other git operations
-} from "@esteban-url/git";
+} from '@esteban-url/git'
 
 // 1. Set up git context
-const gitOps = createGitOperations();
-const repoResult = await gitOps.open(".");
-const repository = repoResult.value;
+const gitOps = createGitOperations()
+const repoResult = await gitOps.open('.')
+const repository = repoResult.value
 
 const gitContext: GitContext = {
   repository,
@@ -47,24 +47,20 @@ const gitContext: GitContext = {
   log: createGitLogOperations(),
   stash: createGitStashOperations(),
   staging: createGitStagingOperations(),
-};
+}
 
 // 2. Analyze current changes
-const changes = await analyzeGitChanges(gitContext);
+const changes = await analyzeGitChanges(gitContext)
 
 // 3. Create analysis engine and analyze dependencies
-const engine = createDependencyAnalysisEngine();
+const engine = createDependencyAnalysisEngine()
 const analysis = await engine.analyzeChanges(changes.value, {
-  mode: "auto", // or "simple" | "complex"
-  excludeFiles: ["package-lock.json"],
-});
+  mode: 'auto', // or "simple" | "complex"
+  excludeFiles: ['package-lock.json'],
+})
 
 // 4. Create atomic commits
-const commits = await createAtomicCommits(
-  gitContext, 
-  analysis.value.groups,
-  { dryRun: true }
-);
+const commits = await createAtomicCommits(gitContext, analysis.value.groups, { dryRun: true })
 ```
 
 ### Analysis Modes
@@ -72,11 +68,13 @@ const commits = await createAtomicCommits(
 The package supports two analysis modes:
 
 #### Simple Mode (Automatic for <10 files)
+
 - Fast grouping based on file types
 - No dependency graph generation
 - Groups: test files, core implementation, infrastructure
 
 #### Complex Mode (Automatic for complex changes)
+
 - Full dependency graph analysis
 - API change detection
 - Risk-based grouping with topological sorting
@@ -96,19 +94,19 @@ The intelligent grouping algorithm follows this priority:
 
 ```typescript
 interface AnalysisOptions {
-  mode?: "auto" | "simple" | "complex";
-  excludeFiles?: string[];
-  complexityThreshold?: number;
-  preferSimpleGrouping?: boolean;
-  validationCommands?: string[];
-  dryRun?: boolean;
+  mode?: 'auto' | 'simple' | 'complex'
+  excludeFiles?: string[]
+  complexityThreshold?: number
+  preferSimpleGrouping?: boolean
+  validationCommands?: string[]
+  dryRun?: boolean
 }
 
 interface CommitCreationOptions {
-  dryRun?: boolean;
-  stashChanges?: boolean;
-  validateEachCommit?: boolean;
-  conventionalCommitFormat?: boolean;
+  dryRun?: boolean
+  stashChanges?: boolean
+  validateEachCommit?: boolean
+  conventionalCommitFormat?: boolean
 }
 ```
 
@@ -176,15 +174,16 @@ DEPENDENCY_ANALYSIS_DEBUG=true tsx your-script.ts
 The package includes built-in performance profiling:
 
 ```typescript
-import { globalProfiler } from "@esteban-url/dependency-analysis/core";
+import { globalProfiler } from '@esteban-url/dependency-analysis/core'
 
 // Your analysis code here...
 
 // Display performance summary
-console.log(globalProfiler.summary());
+console.log(globalProfiler.summary())
 ```
 
 Example output:
+
 ```
 Performance Summary (12 operations, 2341.23ms total)
 ────────────────────────────────────────────────────────────────
@@ -199,9 +198,9 @@ The package now supports actual validation command execution during commit creat
 
 ```typescript
 const commits = await createAtomicCommits(gitContext, groups, {
-  validateEachCommit: true,  // Run validation commands after each commit
+  validateEachCommit: true, // Run validation commands after each commit
   dryRun: false,
-});
+})
 ```
 
 ## Dependencies
