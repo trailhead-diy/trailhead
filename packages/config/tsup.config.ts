@@ -10,7 +10,7 @@ export default defineConfig({
     'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
-  dts: false, // Use tsc for declarations
+  dts: true,
   sourcemap: true,
   clean: true,
   splitting: true,

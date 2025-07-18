@@ -148,7 +148,7 @@ program.parse()
 `,
       'tsconfig.json': JSON.stringify(
         {
-          extends: '@repo/typescript-config/base.json',
+          extends: '@repo/typescript-config/node.json',
           compilerOptions: {
             outDir: 'dist',
             rootDir: 'src',

@@ -11,8 +11,6 @@
   "bin": {
     "create-cli": "./bin/cli.js"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -25,8 +23,8 @@
     }
   },
   "scripts": {
-    "build": "pnpm clean && tsc --emitDeclarationOnly && tsup",
-    "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
+    "build": "pnpm clean && tsup",
+    "build:prod": "NODE_ENV=production tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -38,6 +36,7 @@
     "types": "tsc --noEmit",
     "format": "prettier --write . --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-path .prettierignore",
+    "format:templates": "echo 'Note: Templates are formatted during generation via transform-helpers.ts'",
     "clean": "rm -rf dist",
     "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
     "prepack": "pnpm build",

@@ -1,71 +1,22 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { runCommand, createTestContext } from '@esteban-url/cli/testing'
-import { buildCommand } from '../../commands/build.js'
-import { devCommand } from '../../commands/dev.js'
-import { createCLI } from '@esteban-url/cli'
-
-describe('{{projectName}} CLI Integration', () => {
-  const testContext = createTestContext()
-
-  beforeEach(() => {
-    testContext.reset()
-  })
-
-  it('should execute build command successfully', async () => {
-    const result = await runCommand(buildCommand, ['--output', 'test-dist'], testContext)
-    
-    expect(result.isOk()).toBe(true)
-    expect(testContext.logs).toContain('Build completed successfully!')
-  })
-
-  it('should execute dev command with port configuration', async () => {
-    const result = await runCommand(devCommand, ['--port', '8080'], testContext)
-    
-    expect(result.isOk()).toBe(true)
-    expect(testContext.logs).toContain('Development server is running!')
-  })
-
-  it('should handle build errors gracefully', async () => {
-    // Mock a filesystem error
-    testContext.fs.ensureDir = async () => ({ 
-      isErr: () => true, 
-      error: { 
-        code: 'PERMISSION_DENIED',
-        message: 'Permission denied' 
-      } 
-    } as any)
-
-    const result = await runCommand(buildCommand, [], testContext)
-    
-    expect(result.isErr()).toBe(true)
-    expect(result.error.code).toBe('BUILD_FAILED')
-  })
-
-  it('should validate port numbers in dev command', async () => {
-    const result = await runCommand(devCommand, ['--port', '0'], testContext)
-    
-    expect(result.isErr()).toBe(true)
-    expect(result.error.code).toBe('DEV_SERVER_FAILED')
-  })
-
-  it('should support verbose logging', async () => {
-    const result = await runCommand(buildCommand, ['--verbose'], testContext)
-    
-    expect(result.isOk()).toBe(true)
-    expect(testContext.verbose).toBe(true)
-    expect(testContext.logs.some(log => log.includes('Build options:'))).toBe(true)
-  })
-
-  it('should create and run CLI instance', async () => {
-    const cli = createCLI({
-      name: '{{packageName}}',
-      version: '{{version}}',
-      description: '{{description}}',
-      commands: [buildCommand, devCommand]
-    })
-
-    // Test that CLI is created successfully
-    expect(cli).toBeDefined()
-    expect(cli.run).toBeInstanceOf(Function)
-  })
-})
+import { describe, it, expect, beforeEach } from 'vitest' import { runCommand, createTestContext }
+from '@esteban-url/cli/testing' import { buildCommand } from '../../commands/build.js' import {
+devCommand } from '../../commands/dev.js' import { createCLI } from '@esteban-url/cli' describe('{{projectName}}
+CLI Integration', () => { const testContext = createTestContext() beforeEach(() => {
+testContext.reset() }) it('should execute build command successfully', async () => { const result =
+await runCommand(buildCommand, ['--output', 'test-dist'], testContext)
+expect(result.isOk()).toBe(true) expect(testContext.logs).toContain('Build completed successfully!')
+}) it('should execute dev command with port configuration', async () => { const result = await
+runCommand(devCommand, ['--port', '8080'], testContext) expect(result.isOk()).toBe(true)
+expect(testContext.logs).toContain('Development server is running!') }) it('should handle build
+errors gracefully', async () => { // Mock a filesystem error testContext.fs.ensureDir = async () =>
+({ isErr: () => true, error: { code: 'PERMISSION_DENIED', message: 'Permission denied' } } as any)
+const result = await runCommand(buildCommand, [], testContext) expect(result.isErr()).toBe(true)
+expect(result.error.code).toBe('BUILD_FAILED') }) it('should validate port numbers in dev command',
+async () => { const result = await runCommand(devCommand, ['--port', '0'], testContext)
+expect(result.isErr()).toBe(true) expect(result.error.code).toBe('DEV_SERVER_FAILED') }) it('should
+support verbose logging', async () => { const result = await runCommand(buildCommand, ['--verbose'],
+testContext) expect(result.isOk()).toBe(true) expect(testContext.verbose).toBe(true)
+expect(testContext.logs.some(log => log.includes('Build options:'))).toBe(true) }) it('should create
+and run CLI instance', async () => { const cli = createCLI({ name: '{{packageName}}', version: '{{version}}',
+description: '{{description}}', commands: [buildCommand, devCommand] }) // Test that CLI is created
+successfully expect(cli).toBeDefined() expect(cli.run).toBeInstanceOf(Function) }) })

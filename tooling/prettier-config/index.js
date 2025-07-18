@@ -15,5 +15,8 @@ module.exports = {
         trailingComma: 'none',
       },
     },
+    // Note: .hbs files in this project are TypeScript/JavaScript templates with Handlebars
+    // variables, not HTML templates. The glimmer parser doesn't support this use case,
+    // so we exclude .hbs files from formatting in package.json scripts.
   ],
 }

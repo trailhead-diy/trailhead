@@ -18,7 +18,7 @@ export default defineConfig({
     'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
-  dts: false, // TypeScript declarations generated separately
+  dts: true,
   splitting: false,
   sourcemap: false,
   clean: true,

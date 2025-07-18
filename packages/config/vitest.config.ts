@@ -1,8 +1,6 @@
-import { defineConfig } from 'vitest/config'
+import { createVitestConfig } from '@repo/vitest-config'
 
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-  },
+export default createVitestConfig({
+  environment: 'node',
+  useTsconfigPaths: true,
 })

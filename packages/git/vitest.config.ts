@@ -1,9 +1,15 @@
-import { defineConfig } from 'vitest/config'
+import { createVitestConfig } from '@repo/vitest-config'
+import { defineConfig, mergeConfig } from 'vitest/config'
 
-export default defineConfig({
+const baseConfig = createVitestConfig({
+  environment: 'node',
+  useTsconfigPaths: true,
+})
+
+const packageSpecificConfig = defineConfig({
   test: {
     name: '@esteban-url/git',
-    environment: 'node',
-    globals: true,
   },
 })
+
+export default mergeConfig(baseConfig, packageSpecificConfig)

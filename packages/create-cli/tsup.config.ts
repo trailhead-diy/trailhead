@@ -9,7 +9,7 @@ export default defineConfig({
     'testing/index': 'src/testing/index.ts',
   },
   format: ['esm'],
-  dts: false, // We generate these separately with tsc
+  dts: true,
   sourcemap: true,
   clean: true,
   splitting: false,

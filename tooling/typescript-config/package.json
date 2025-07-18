@@ -2,9 +2,7 @@
   "name": "@repo/typescript-config",
   "version": "0.1.0",
   "private": true,
-  "main": "base.json",
   "files": [
-    "base.json",
     "react.json",
     "node.json"
   ],
