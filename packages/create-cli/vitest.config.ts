@@ -1,16 +1,19 @@
-import { defineConfig } from 'vitest/config'
+import { createVitestConfig } from '@repo/vitest-config'
+import { defineConfig, mergeConfig } from 'vitest/config'
 
-export default defineConfig({
+const baseConfig = createVitestConfig({
+  environment: 'node',
+})
+
+const packageSpecificConfig = defineConfig({
   test: {
-    globals: true,
-    environment: 'node',
     include: ['src/**/*.test.ts'],
     exclude: ['node_modules', 'dist', 'test-temp*', 'temp-*', '**/test-temp*/**', '**/temp-*/**'],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/**/*.d.ts'],
     },
   },
 })
+
+export default mergeConfig(baseConfig, packageSpecificConfig)

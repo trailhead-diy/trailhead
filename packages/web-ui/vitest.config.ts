@@ -2,7 +2,13 @@ import { createVitestConfig } from '@repo/vitest-config'
 import { defineConfig, mergeConfig } from 'vitest/config'
 import path from 'path'
 
-const baseConfig = createVitestConfig()
+const baseConfig = createVitestConfig({
+  additionalAliases: {
+    '@': path.resolve(__dirname, './src'),
+    '@scripts': path.resolve(__dirname, './scripts'),
+    '@tests': path.resolve(__dirname, './tests'),
+  },
+})
 
 const packageSpecificConfig = defineConfig({
   test: {
@@ -17,13 +23,6 @@ const packageSpecificConfig = defineConfig({
       provider: 'v8',
       include: ['{scripts,src}/**/**/*.{ts,tsx}'],
       exclude: ['**/index.ts', '**/types.ts', '**/*.config.ts', '**/*.setup.ts', '**/*.d.ts'],
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@scripts': path.resolve(__dirname, './scripts'),
-      '@tests': path.resolve(__dirname, './tests'),
     },
   },
 })
