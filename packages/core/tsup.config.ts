@@ -9,7 +9,7 @@ export default defineConfig({
     'utils/index': 'src/utils/index.ts',
   },
   format: ['esm'],
-  dts: false, // Using tsc due to chalk re-export issue
+  dts: true,
   sourcemap: true,
   clean: true,
   splitting: false,

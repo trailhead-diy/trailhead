@@ -4,8 +4,8 @@
  */
 import chalk from 'chalk'
 
-// Re-export chalk
-export { chalk }
+// Re-export chalk as default to avoid tsup declaration issues
+export { default as chalk } from 'chalk'
 
 /** Format success messages in green */
 export const success = chalk.green

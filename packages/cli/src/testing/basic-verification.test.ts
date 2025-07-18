@@ -44,23 +44,4 @@ describe('Domain-Driven Testing Infrastructure', () => {
 
     expect(errResult).toBeErr()
   })
-
-  // Skip: This test requires packages to be built first (post-build verification)
-  test.skip('should verify tsup build outputs exist', async () => {
-    const packages = [
-      '@esteban-url/core',
-      '@esteban-url/fs',
-      '@esteban-url/git',
-      '@esteban-url/config',
-    ]
-
-    for (const pkg of packages) {
-      // Test that we can import both main and testing exports
-      const mainExports = await import(pkg)
-      const testingExports = await import(`${pkg}/testing`)
-
-      expect(typeof mainExports).toBe('object')
-      expect(typeof testingExports).toBe('object')
-    }
-  })
 })
