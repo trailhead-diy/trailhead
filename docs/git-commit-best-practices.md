@@ -75,7 +75,7 @@ Our modern stack is already optimized for 2025 best practices:
 ### Smart Atomic Commit Algorithm
 
 ```bash
-# Enhanced gcwm workflow:
+# Enhanced git commit workflow:
 1. Safety: Stash uncommitted work with timestamp
 2. Pre-validate: Run format, critical lint, type checks
 3. Analyze: Parse `git status --porcelain` for change patterns
@@ -198,7 +198,7 @@ pnpm release         # Automated publishing with generated changelogs
 ### Pre-commit Validation
 
 - Working directory must be clean before starting
-- Create timestamped safety stash: `git stash push -m "gcwm-safety-$(date)"`
+- Create timestamped safety stash: `git stash push -m "safety-$(date)"`
 - Validate each atomic commit independently
 
 ### Build Validation

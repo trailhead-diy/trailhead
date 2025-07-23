@@ -40,10 +40,9 @@ The Trailhead CLI monorepo demonstrates **exceptional architectural vision** wit
 
 ### Utility Packages 🛠️
 
-| Package                  | Grade  | Key Findings                                                                                                              |
-| ------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| **@esteban-url/git**     | **B+** | Strong architecture with functional patterns. Type safety issues (`as any` usage) and complex functions need refactoring. |
-| **@esteban-url/testing** | **B-** | Good functional foundation with comprehensive utilities. Code duplication and implementation inconsistencies.             |
+| Package                  | Grade  | Key Findings                                                                                                  |
+| ------------------------ | ------ | ------------------------------------------------------------------------------------------------------------- |
+| **@esteban-url/testing** | **B-** | Good functional foundation with comprehensive utilities. Code duplication and implementation inconsistencies. |
 
 ### Tooling & Generator Packages 🏗️
 
@@ -95,7 +94,7 @@ The Trailhead CLI monorepo demonstrates **exceptional architectural vision** wit
 
 #### 1. **Type Safety Erosion**
 
-**Affected Packages:** `@esteban-url/core`, `@esteban-url/data`, `@esteban-url/git`
+**Affected Packages:** `@esteban-url/core`, `@esteban-url/data`
 
 - Multiple `as any` type assertions bypass TypeScript safety
 - Type casting in error handling weakens compile-time guarantees

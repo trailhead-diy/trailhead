@@ -28,7 +28,6 @@ Transform the Trailhead monorepo from centralized testing utilities to a domain-
 
 ### **Packages Missing Testing Directories**
 
-- `@esteban-url/git`
 - `@esteban-url/create-cli`
 
 ## **Target Architecture**
@@ -204,7 +203,6 @@ export const configHelpers = {
 
 Each of the following packages will receive new testing directories with domain-appropriate utilities:
 
-- **@esteban-url/git/testing** - Git operations, repository mocking, commit fixtures
 - **@esteban-url/create-cli/testing** - Template generation, scaffolding testing
 
 ## **Composition Pattern Examples**
@@ -387,8 +385,7 @@ export const domain = {
 
 ### **Low Priority**
 
-8. `packages/git/src/testing/` - Create new directory
-9. `packages/create-cli/src/testing/` - Create new directory
+8. `packages/create-cli/src/testing/` - Create new directory
 
 ### **All Packages**
 
