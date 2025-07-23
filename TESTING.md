@@ -189,30 +189,6 @@ const conversionResult = await testFormatConversion(dataFixtures.json.usersList,
 expect(conversionResult).toBeOk()
 ```
 
-### Git Package (`@esteban-url/git/testing`)
-
-Git operations testing utilities:
-
-```typescript
-import {
-  createTestRepository,
-  createMockGit,
-  gitFixtures,
-  assertCommitExists,
-  assertBranchExists,
-} from '@esteban-url/git/testing'
-
-// Create test repository
-const repo = await createTestRepository()
-await repo.addFile('README.md', '# Test Project')
-await repo.commit('Initial commit')
-
-// Test git operations
-const mockGit = createMockGit()
-const result = await mockGit.status()
-expect(result).toBeOk()
-```
-
 ### File System Package (`@esteban-url/fs/testing`)
 
 File system testing utilities:

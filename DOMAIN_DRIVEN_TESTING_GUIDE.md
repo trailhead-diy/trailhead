@@ -43,9 +43,6 @@ import { createOkResult, assertOk, createTestError } from '@esteban-url/core/tes
 // Filesystem testing
 import { createMockFileSystem } from '@esteban-url/fs/testing'
 
-// Git operations testing
-import { createMockGitRepository } from '@esteban-url/git/testing'
-
 // Configuration testing
 import { createTestConfig } from '@esteban-url/config/testing'
 
@@ -160,41 +157,6 @@ expect(result).toHaveValue('export default {}')
 const dirResult = await mockFs.readDirectory('/project/src')
 expect(dirResult).toBeOk()
 expect(dirResult.value).toContain('index.ts')
-```
-
-### @esteban-url/git/testing
-
-Git operation testing with mock repositories.
-
-**Key Exports:**
-
-- `createMockGitRepository` - Mock Git repository with status, branches, commits
-- `mockGitCommands` - Individual command mocks
-- `createGitTestFixture` - Pre-configured test scenarios
-
-**Example:**
-
-```typescript
-import { createMockGitRepository } from '@esteban-url/git/testing'
-
-const mockGit = createMockGitRepository({
-  currentBranch: 'feature/new-feature',
-  status: {
-    staged: ['src/index.ts'],
-    modified: ['README.md'],
-    untracked: ['temp.log'],
-  },
-  branches: ['main', 'feature/new-feature'],
-  commits: [{ hash: 'abc123', message: 'Initial commit', author: 'dev@example.com' }],
-})
-
-const status = await mockGit.getStatus()
-expect(status).toBeOk()
-expect(status.value.staged).toContain('src/index.ts')
-
-const branches = await mockGit.getBranches()
-expect(branches).toBeOk()
-expect(branches.value.current).toBe('feature/new-feature')
 ```
 
 ### @esteban-url/config/testing
@@ -389,7 +351,6 @@ Test how different packages work together:
 import { describe, test, expect, beforeAll } from 'vitest'
 import { setupResultMatchers } from '@esteban-url/core/testing'
 import { createMockFileSystem } from '@esteban-url/fs/testing'
-import { createMockGitRepository } from '@esteban-url/git/testing'
 import { createTestConfig } from '@esteban-url/config/testing'
 import { createValidationTestSuite } from '@esteban-url/validation/testing'
 
@@ -426,15 +387,6 @@ describe('Cross-Package Integration', () => {
       },
     })
 
-    const mockGit = createMockGitRepository({
-      currentBranch: 'feature/new-feature',
-      status: {
-        staged: ['src/index.ts'],
-        modified: [],
-        untracked: ['config.json'],
-      },
-    })
-
     const testConfig = createTestConfig({
       schema: {
         version: { type: 'string', required: true },
@@ -450,12 +402,7 @@ describe('Cross-Package Integration', () => {
     const validationResult = await testConfig.validate(configData)
     expect(validationResult).toBeOk()
 
-    // 3. Check git status
-    const gitStatus = await mockGit.getStatus()
-    expect(gitStatus).toBeOk()
-    expect(gitStatus.value.staged).toContain('src/index.ts')
-
-    // 4. Verify complete workflow
+    // 3. Verify complete workflow
     expect(validationResult.value.version).toBe('1.0.0')
   })
 })

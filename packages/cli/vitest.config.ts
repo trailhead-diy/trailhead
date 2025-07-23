@@ -8,7 +8,6 @@ const baseConfig = createVitestConfig({
     '@': path.resolve(__dirname, './src'),
     '@esteban-url/core': path.resolve(__dirname, '../core/src'),
     '@esteban-url/fs': path.resolve(__dirname, '../fs/src'),
-    '@esteban-url/git': path.resolve(__dirname, '../git/src'),
     '@esteban-url/config': path.resolve(__dirname, '../config/src'),
     '@esteban-url/data': path.resolve(__dirname, '../data/src'),
     '@esteban-url/validation': path.resolve(__dirname, '../validation/src'),
