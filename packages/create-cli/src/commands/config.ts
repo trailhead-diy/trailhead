@@ -8,9 +8,9 @@ import {
   createConfigContext,
   generateSchemaFile,
   cleanupOldConfigs,
-} from '../lib/config-manager.js'
-import { listPresetsDetailed } from '../lib/preset-manager.js'
-import { loadPreset } from '../lib/config-manager.js'
+  loadPreset,
+} from '../lib/config/manager.js'
+import { listPresetsDetailed } from '../lib/config/presets.js'
 
 /**
  * Configuration options for the config command
@@ -189,7 +189,6 @@ async function handleLoadPreset(
 
   console.log(`\n✅ Preset: ${preset.name}`)
   console.log(`   Description: ${preset.description}`)
-  console.log(`   Template: ${preset.template}`)
   console.log(`   Project type: ${preset.projectType}`)
 
   const enabledFeatures = Object.entries(preset.features || {})
@@ -213,7 +212,6 @@ async function handleLoadPreset(
   }
 
   console.log(`   Include docs: ${preset.includeDocs ?? 'default'}`)
-  console.log(`   Initialize Git: ${preset.initGit ?? 'default'}`)
   console.log(`   Install dependencies: ${preset.installDependencies ?? 'default'}`)
 
   return ok(undefined)

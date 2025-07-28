@@ -2,11 +2,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { rmSync, existsSync } from 'fs'
-import { generateProject } from '../lib/generator.js'
+import { generateProject } from '../lib/core/generator.js'
 import { createDefaultLogger } from '@esteban-url/cli/utils'
 import { expectSuccess, expectError } from '@esteban-url/cli/testing'
 import { setupResultMatchers } from '@esteban-url/core/testing'
-import type { ModernProjectConfig } from '../lib/interactive-prompts.js'
+import type { ProjectConfig } from '../lib/config/types.js'
 
 // Setup Result matchers for better testing
 setupResultMatchers()
@@ -27,11 +27,10 @@ describe('Generator Integration', () => {
   })
 
   it('should generate a basic project successfully', async () => {
-    const config: ModernProjectConfig = {
+    const config: ProjectConfig = {
       projectName: 'test-cli',
       projectPath: join(testDir, 'test-cli'),
       description: 'A test CLI application',
-      template: 'basic',
       projectType: 'standalone-cli',
       packageManager: 'pnpm',
       author: {
@@ -47,7 +46,6 @@ describe('Generator Integration', () => {
       typescript: true,
       ide: 'vscode',
       includeDocs: false,
-      initGit: false, // Skip git for test
       installDependencies: false, // Skip install for test
       force: false,
       dryRun: true, // Use dry run for test
@@ -61,11 +59,10 @@ describe('Generator Integration', () => {
   })
 
   it('should generate an advanced project successfully', async () => {
-    const config: ModernProjectConfig = {
+    const config: ProjectConfig = {
       projectName: 'advanced-cli',
       projectPath: join(testDir, 'advanced-cli'),
       description: 'An advanced test CLI application',
-      template: 'advanced',
       projectType: 'standalone-cli',
       packageManager: 'npm',
       author: {
@@ -84,7 +81,6 @@ describe('Generator Integration', () => {
       typescript: true,
       ide: 'vscode',
       includeDocs: true,
-      initGit: false, // Skip git for test
       installDependencies: false, // Skip install for test
       force: false,
       dryRun: true, // Use dry run for test
@@ -98,11 +94,10 @@ describe('Generator Integration', () => {
   })
 
   it('should validate project configuration', async () => {
-    const config: ModernProjectConfig = {
+    const config: ProjectConfig = {
       projectName: '', // Invalid empty name
       projectPath: '',
       description: 'Test description',
-      template: 'basic',
       projectType: 'standalone-cli',
       packageManager: 'pnpm',
       author: {
@@ -117,7 +112,6 @@ describe('Generator Integration', () => {
       typescript: true,
       ide: 'vscode',
       includeDocs: false,
-      initGit: false,
       installDependencies: false,
       force: false,
       dryRun: true,

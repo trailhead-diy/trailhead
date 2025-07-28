@@ -16,10 +16,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./testing": {
-      "types": "./dist/testing/index.d.ts",
-      "default": "./dist/testing/index.js"
     }
   },
   "scripts": {
@@ -47,12 +43,9 @@
     "@esteban-url/core": "workspace:*",
     "@esteban-url/fs": "workspace:*",
     "@esteban-url/validation": "workspace:*",
-    "@inquirer/prompts": "^7.6.0",
-    "chalk": "^5.4.1",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",
-    "ora": "^8.2.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

@@ -22,6 +22,5 @@
   "typescript": true,
   "ide": "vscode",
   "includeDocs": true,
-  "initGit": true,
   "installDependencies": true
 }
