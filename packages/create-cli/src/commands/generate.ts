@@ -58,6 +58,11 @@ export const generateCommand = createCommand<GenerateOptions>({
       description: 'Overwrite existing directory',
       type: 'boolean',
     },
+    {
+      flags: '--dry-run',
+      description: 'Show what would be generated without creating files',
+      type: 'boolean',
+    },
   ],
   examples: [
     'generate my-cli',

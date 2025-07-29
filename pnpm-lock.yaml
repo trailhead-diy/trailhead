@@ -91,68 +91,6 @@ importers:
         specifier: ^1.2.0
         version: 1.6.1(@types/node@20.19.9)(jsdom@26.1.0)(lightningcss@1.30.1)
 
-  apps/my-cli:
-    dependencies:
-      '@esteban-url/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      zod:
-        specifier: ^3.22.4
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.0
-        version: 20.19.9
-      '@vitest/coverage-v8':
-        specifier: ^1.2.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.19.9)(jsdom@26.1.0)(lightningcss@1.30.1))
-      oxlint:
-        specifier: ^0.2.0
-        version: 0.2.18
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.3.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.2.0
-        version: 1.6.1(@types/node@20.19.9)(jsdom@26.1.0)(lightningcss@1.30.1)
-
-  apps/test-cli:
-    dependencies:
-      '@esteban-url/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      zod:
-        specifier: ^3.22.4
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.0
-        version: 20.19.9
-      '@vitest/coverage-v8':
-        specifier: ^1.2.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.19.9)(jsdom@26.1.0)(lightningcss@1.30.1))
-      oxlint:
-        specifier: ^0.2.0
-        version: 0.2.18
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.3.0
-        version: 5.8.3
-      vitest:
-        specifier: ^1.2.0
-        version: 1.6.1(@types/node@20.19.9)(jsdom@26.1.0)(lightningcss@1.30.1)
-
   packages/cli:
     dependencies:
       '@esteban-url/core':

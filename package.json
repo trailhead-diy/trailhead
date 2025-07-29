@@ -28,6 +28,7 @@
     "release": "turbo build --filter=./packages/* && changeset publish",
     "release:dry-run": "changeset publish --dry-run",
     "fresh-start": "node scripts/fresh-start.js",
+    "create-cli": "node packages/create-cli/bin/cli.js",
     "dev:cli": "turbo dev --filter=@esteban-url/cli",
     "dev:ui": "turbo dev --filter=@esteban-url/web-ui",
     "dev:demos": "turbo dev --filter=./apps/demos/*",
