@@ -25,7 +25,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:integration": "pnpm --filter='@repo/*' build && pnpm build && vitest run src/__tests__/integration-matrix.test.ts",
+    "test:integration": "pnpm --filter='@repo/*' build && pnpm build && pnpm test",
     "test:generator:full": "tsx scripts/test-generator-full.ts",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
