@@ -14,8 +14,6 @@ export const projectNameSchema = z
   .regex(/^[a-z0-9-]+$/, 'Project name must be lowercase alphanumeric with hyphens only')
   .max(214, 'Project name must be less than 214 characters') // npm package name limit
 
-export const emailSchema = z.string().email('Invalid email format').min(1, 'Email is required')
-
 export const packageManagerSchema = z.enum(['npm', 'pnpm'], {
   errorMap: () => ({ message: 'Package manager must be "npm" or "pnpm"' }),
 })
@@ -26,10 +24,6 @@ export const projectTypeSchema = z.enum(['standalone-cli', 'library', 'monorepo-
   }),
 })
 
-export const licenseSchema = z.enum(['MIT', 'Apache-2.0', 'ISC', 'custom'], {
-  errorMap: () => ({ message: 'License must be "MIT", "Apache-2.0", "ISC", or "custom"' }),
-})
-
 export const ideSchema = z.enum(['vscode', 'none'], {
   errorMap: () => ({ message: 'IDE must be "vscode" or "none"' }),
 })
@@ -38,12 +32,6 @@ export const nodeVersionSchema = z
   .string()
   .regex(/^\d+$/, 'Node version must be a number')
   .refine((val) => parseInt(val) >= 14, 'Node version must be 14 or higher')
-
-// Author information schema
-export const authorSchema = z.object({
-  name: z.string().min(1, 'Author name is required').max(100, 'Author name too long'),
-  email: emailSchema,
-})
 
 // Feature flags schema with validation
 export const featuresSchema = z.object({
@@ -60,17 +48,12 @@ export const modernProjectConfigSchema = z.object({
   // Basic project information
   projectName: projectNameSchema,
   projectPath: z.string().min(1, 'Project path is required'),
-  description: z.string().min(1, 'Description is required').max(500, 'Description too long'),
 
   // Template configuration
   projectType: projectTypeSchema,
 
   // Package management
   packageManager: packageManagerSchema,
-
-  // Author and licensing
-  author: authorSchema,
-  license: licenseSchema,
 
   // Features and capabilities
   features: featuresSchema,
@@ -82,7 +65,6 @@ export const modernProjectConfigSchema = z.object({
 
   // Generation options
   includeDocs: z.boolean().default(false),
-  installDependencies: z.boolean().default(true),
   dryRun: z.boolean().default(false),
   force: z.boolean().default(false),
   verbose: z.boolean().default(false),
@@ -91,17 +73,13 @@ export const modernProjectConfigSchema = z.object({
 // Configuration file schema (subset for saving to disk)
 export const configFileSchema = z.object({
   projectName: projectNameSchema,
-  description: z.string().min(1),
   projectType: projectTypeSchema,
   packageManager: packageManagerSchema,
-  author: authorSchema,
-  license: licenseSchema,
   features: featuresSchema,
   nodeVersion: nodeVersionSchema,
   typescript: z.boolean(),
   ide: ideSchema,
   includeDocs: z.boolean(),
-  installDependencies: z.boolean(),
 })
 
 // Preset configuration schema for templates
@@ -114,7 +92,6 @@ export const presetConfigSchema = z.object({
   nodeVersion: nodeVersionSchema.optional(),
   ide: ideSchema.optional(),
   includeDocs: z.boolean().optional(),
-  installDependencies: z.boolean().optional(),
 })
 
 // Type exports
@@ -248,17 +225,13 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
 export function createConfigFile(config: ProjectConfig): ConfigFile {
   return {
     projectName: config.projectName,
-    description: config.description,
     projectType: config.projectType,
     packageManager: config.packageManager,
-    author: config.author,
-    license: config.license,
     features: config.features,
     nodeVersion: config.nodeVersion,
     typescript: config.typescript,
     ide: config.ide,
     includeDocs: config.includeDocs,
-    installDependencies: config.installDependencies,
   }
 }
 
@@ -276,7 +249,6 @@ export function mergePresetWithConfig(
     nodeVersion: userConfig.nodeVersion || preset.nodeVersion, // User overrides preset
     ide: userConfig.ide || preset.ide, // User overrides preset
     includeDocs: userConfig.includeDocs ?? preset.includeDocs,
-    installDependencies: userConfig.installDependencies ?? preset.installDependencies,
     features: {
       core: true,
       ...preset.features,
@@ -368,10 +340,6 @@ export function generateConfigJsonSchema() {
       includeDocs: {
         type: 'boolean',
         description: 'Include documentation',
-      },
-      installDependencies: {
-        type: 'boolean',
-        description: 'Install dependencies after generation',
       },
     },
     required: [

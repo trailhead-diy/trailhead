@@ -63,7 +63,7 @@
       "persistent": true
     },
     "validate": {
-      "dependsOn": ["types", "lint", "test"],
+      "dependsOn": ["format", "types", "lint", "test"],
       "outputs": [],
       "cache": true
     },

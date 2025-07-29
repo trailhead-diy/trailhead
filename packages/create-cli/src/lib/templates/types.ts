@@ -46,6 +46,16 @@ export interface TemplateContext {
   currentYear: number
   /** Whether documentation generation is enabled */
   hasDocs: boolean
+  /** Feature flags for template conditional logic */
+  features: {
+    core: boolean
+    config?: boolean
+    validation?: boolean
+    testing?: boolean
+    docs?: boolean
+    examples?: boolean
+    cicd?: boolean
+  }
 
   // Template configuration
   /** CLI version for smart test runner */

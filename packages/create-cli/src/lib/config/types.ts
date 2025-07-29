@@ -23,17 +23,8 @@ export interface ProjectConfig {
   projectName: string
   /** Absolute path where the project will be created */
   projectPath: string
-  /** Project description */
-  description: string
   /** Package manager for dependency installation */
   packageManager: PackageManager
-  /** Author information */
-  author: {
-    name: string
-    email: string
-  }
-  /** License type */
-  license: 'MIT' | 'Apache-2.0' | 'ISC' | 'custom'
   /** Feature flags */
   features: {
     core: true // Always required
@@ -53,8 +44,6 @@ export interface ProjectConfig {
   ide: 'vscode' | 'none'
   /** Whether to include documentation */
   includeDocs: boolean
-  /** Whether to install dependencies after generation */
-  installDependencies: boolean
   /** Whether to run in dry-run mode (no actual file operations) */
   dryRun: boolean
   /** Whether to force overwrite existing directories */

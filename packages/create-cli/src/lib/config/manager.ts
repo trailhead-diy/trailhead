@@ -616,9 +616,8 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     },
     packageManager: 'pnpm',
     nodeVersion: '18',
-    ide: 'vscode',
+    ide: 'none',
     includeDocs: false,
-    installDependencies: true,
   },
   {
     name: 'advanced-cli',
@@ -634,9 +633,8 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     },
     packageManager: 'pnpm',
     nodeVersion: '18',
-    ide: 'vscode',
+    ide: 'none',
     includeDocs: true,
-    installDependencies: true,
   },
   {
     name: 'library',
@@ -651,9 +649,8 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     },
     packageManager: 'pnpm',
     nodeVersion: '18',
-    ide: 'vscode',
+    ide: 'none',
     includeDocs: true,
-    installDependencies: true,
   },
   {
     name: 'monorepo-package',
@@ -667,9 +664,8 @@ export const BUILT_IN_PRESETS: PresetConfig[] = [
     },
     packageManager: 'pnpm',
     nodeVersion: '18',
-    ide: 'vscode',
+    ide: 'none',
     includeDocs: false,
-    installDependencies: false,
   },
 ]
 

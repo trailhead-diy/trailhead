@@ -50,9 +50,9 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
       {
-        source: 'shared/bin/cli.js',
+        source: 'shared/bin/cli.js.hbs',
         destination: 'bin/cli.js',
-        isTemplate: false,
+        isTemplate: true,
         executable: true,
       },
     ],
@@ -95,31 +95,6 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
     },
   },
 
-  validation: {
-    name: 'validation',
-    description: 'Input validation and schema checking',
-    dependencies: ['core'],
-    conflicts: [],
-    files: [
-      {
-        source: 'modules/validation/src/lib/validators.ts.hbs',
-        destination: 'src/lib/validators.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/validation/src/commands/validate.ts.hbs',
-        destination: 'src/commands/validate.ts',
-        isTemplate: true,
-        executable: false,
-      },
-    ],
-    packageDependencies: ['zod'],
-    scripts: {
-      validate: 'node bin/cli.js validate',
-    },
-  },
-
   testing: {
     name: 'testing',
     description: 'Comprehensive testing setup',
@@ -150,93 +125,6 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
       'test:watch': 'vitest',
       'test:coverage': 'vitest run --coverage',
     },
-  },
-
-  docs: {
-    name: 'docs',
-    description: 'Documentation structure and tooling',
-    dependencies: ['core'],
-    conflicts: [],
-    files: [
-      {
-        source: 'modules/docs/README.md.hbs',
-        destination: 'README.md',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/docs/docs/getting-started.md.hbs',
-        destination: 'docs/getting-started.md',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/docs/docs/api-reference.md.hbs',
-        destination: 'docs/api-reference.md',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/docs/docs/architecture.md.hbs',
-        destination: 'docs/architecture.md',
-        isTemplate: true,
-        executable: false,
-      },
-    ],
-    scripts: {
-      'docs:build': 'echo "Documentation built"',
-    },
-  },
-
-  cicd: {
-    name: 'cicd',
-    description: 'CI/CD workflows and automation',
-    dependencies: ['core', 'testing'],
-    conflicts: [],
-    files: [
-      {
-        source: 'modules/cicd/.github/workflows/ci.yml.hbs',
-        destination: '.github/workflows/ci.yml',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/cicd/.github/workflows/release.yml.hbs',
-        destination: '.github/workflows/release.yml',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/cicd/lefthook.yml.hbs',
-        destination: 'lefthook.yml',
-        isTemplate: true,
-        executable: false,
-      },
-    ],
-    scripts: {
-      prepare: 'lefthook install',
-    },
-  },
-
-  examples: {
-    name: 'examples',
-    description: 'Example commands and patterns',
-    dependencies: ['core'],
-    conflicts: [],
-    files: [
-      {
-        source: 'modules/examples/src/commands/build.ts.hbs',
-        destination: 'src/commands/build.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/examples/src/commands/dev.ts.hbs',
-        destination: 'src/commands/dev.ts',
-        isTemplate: true,
-        executable: false,
-      },
-    ],
   },
 }
 
@@ -270,19 +158,9 @@ export function composeTemplate(config: ProjectConfig): Result<ComposedTemplate,
       }
     }
 
-    // Add example modules based on features
-    if (config.features.testing || config.features.docs || config.features.cicd) {
-      // Projects with advanced features get more example commands
-      selectedModules.push(FEATURE_MODULES.examples)
-      if (!config.features.config) {
-        selectedModules.push(FEATURE_MODULES.config)
-      }
-      if (!config.features.validation) {
-        selectedModules.push(FEATURE_MODULES.validation)
-      }
-    } else {
-      // Basic projects get simple examples
-      selectedModules.push(FEATURE_MODULES.examples)
+    // Add config module if testing is enabled but config isn't
+    if (config.features.testing && !config.features.config) {
+      selectedModules.push(FEATURE_MODULES.config)
     }
 
     // Validate dependencies
@@ -449,10 +327,10 @@ export function getRecommendedModules(projectType: string): string[] {
 
   switch (projectType) {
     case 'standalone-cli':
-      return [...base, 'testing', 'examples']
+      return [...base, 'config', 'testing']
 
     case 'library':
-      return [...base, 'testing', 'docs']
+      return [...base, 'config', 'testing']
 
     case 'monorepo-package':
       return [...base, 'testing']

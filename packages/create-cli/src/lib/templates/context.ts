@@ -12,14 +12,23 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
-    description: `CLI application built with @esteban-url/* domain packages`,
-    author: await getGitUser(),
-    email: await getGitEmail(),
+    description: `CLI application built with @esteban-url/cli`,
+    author: 'Your Name',
+    email: 'your.email@example.com',
     license: 'MIT',
     version: '0.1.0',
     packageManager: config.packageManager,
     currentYear: new Date().getFullYear(),
     hasDocs: config.includeDocs,
+    features: {
+      core: true,
+      config: config.features?.config,
+      validation: config.features?.validation,
+      testing: config.features?.testing,
+      docs: config.features?.docs,
+      examples: config.features?.testing || config.features?.docs, // Enable examples if testing or docs are enabled
+      cicd: config.features?.cicd,
+    },
 
     // Template configuration
     CLI_VERSION: '0.1.0',
@@ -94,18 +103,4 @@ function sanitizePackageName(projectName: string): string {
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/^-+|-+$/g, '')
     .replace(/-+/g, '-')
-}
-
-/**
- * Get default user name
- */
-async function getGitUser(): Promise<string> {
-  return 'Your Name'
-}
-
-/**
- * Get default user email
- */
-async function getGitEmail(): Promise<string> {
-  return 'your.email@example.com'
 }

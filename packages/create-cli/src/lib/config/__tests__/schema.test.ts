@@ -15,24 +15,17 @@ describe('Configuration Schema Validation', () => {
   const validConfig: ProjectConfig = {
     projectName: 'test-cli',
     projectPath: '/path/to/test-cli',
-    description: 'A test CLI application',
     projectType: 'standalone-cli',
     packageManager: 'pnpm',
-    author: {
-      name: 'Test Author',
-      email: 'test@example.com',
-    },
-    license: 'MIT',
     features: {
       core: true,
+      config: true,
       testing: true,
-      docs: false,
     },
     nodeVersion: '18',
     typescript: true,
-    ide: 'vscode',
+    ide: 'none',
     includeDocs: false,
-    installDependencies: true,
     dryRun: false,
     force: false,
     verbose: false,
@@ -50,18 +43,6 @@ describe('Configuration Schema Validation', () => {
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
         expect(result.error.message).toContain('Project name must be lowercase alphanumeric')
-      }
-    })
-
-    it('should reject invalid email', () => {
-      const invalidConfig = {
-        ...validConfig,
-        author: { ...validConfig.author, email: 'invalid-email' },
-      }
-      const result = validateProjectConfig(invalidConfig)
-      expect(result.isErr()).toBe(true)
-      if (result.isErr()) {
-        expect(result.error.message).toContain('Invalid email format')
       }
     })
 
@@ -101,7 +82,6 @@ describe('Configuration Schema Validation', () => {
       const configFile = createConfigFile(validConfig)
 
       expect(configFile.projectName).toBe(validConfig.projectName)
-      expect(configFile.author).toEqual(validConfig.author)
       expect(configFile.features).toEqual(validConfig.features)
 
       // Should not include runtime-only properties
@@ -197,42 +177,12 @@ describe('Configuration Schema Validation', () => {
   })
 
   describe('Schema edge cases', () => {
-    it('should handle empty description', () => {
-      const config = { ...validConfig, description: '' }
-      const result = validateProjectConfig(config)
-      expect(result.isErr()).toBe(true)
-      if (result.isErr()) {
-        expect(result.error.message).toContain('Description is required')
-      }
-    })
-
     it('should handle very long project name', () => {
       const config = { ...validConfig, projectName: 'a'.repeat(215) }
       const result = validateProjectConfig(config)
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
         expect(result.error.message).toContain('Project name must be less than 214 characters')
-      }
-    })
-
-    it('should handle very long description', () => {
-      const config = { ...validConfig, description: 'a'.repeat(501) }
-      const result = validateProjectConfig(config)
-      expect(result.isErr()).toBe(true)
-      if (result.isErr()) {
-        expect(result.error.message).toContain('Description too long')
-      }
-    })
-
-    it('should handle empty author name', () => {
-      const config = {
-        ...validConfig,
-        author: { ...validConfig.author, name: '' },
-      }
-      const result = validateProjectConfig(config)
-      expect(result.isErr()).toBe(true)
-      if (result.isErr()) {
-        expect(result.error.message).toContain('Author name is required')
       }
     })
 

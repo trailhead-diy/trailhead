@@ -40,13 +40,13 @@ describe('Generator Integration', () => {
       license: 'MIT',
       features: {
         core: true,
+        config: true,
         testing: true,
       },
       nodeVersion: '18',
       typescript: true,
-      ide: 'vscode',
+      ide: 'none',
       includeDocs: false,
-      installDependencies: false, // Skip install for test
       force: false,
       dryRun: true, // Use dry run for test
       verbose: false,
@@ -73,15 +73,12 @@ describe('Generator Integration', () => {
       features: {
         core: true,
         config: true,
-        validation: true,
         testing: true,
-        docs: true,
       },
       nodeVersion: '18',
       typescript: true,
-      ide: 'vscode',
+      ide: 'none',
       includeDocs: true,
-      installDependencies: false, // Skip install for test
       force: false,
       dryRun: true, // Use dry run for test
       verbose: false,
@@ -110,9 +107,8 @@ describe('Generator Integration', () => {
       },
       nodeVersion: '18',
       typescript: true,
-      ide: 'vscode',
+      ide: 'none',
       includeDocs: false,
-      installDependencies: false,
       force: false,
       dryRun: true,
       verbose: false,

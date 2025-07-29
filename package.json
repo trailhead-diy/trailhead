@@ -15,7 +15,7 @@
     "lint:fix": "turbo lint:fix",
     "types": "turbo types --filter=@esteban-url/cli --filter=@esteban-url/core --filter=@esteban-url/config --filter=@esteban-url/create-cli --filter=@esteban-url/data --filter=@esteban-url/fs --filter=@esteban-url/validation",
     "clean": "turbo clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore --ignore-pattern \"**/*.hbs\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore --ignore-pattern \"**/*.hbs\" --errors-only",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore --ignore-pattern \"**/*.hbs\"",
     "docs:validate": "tsx tooling/docs-tooling/src/validate-docs.ts",
     "docs:lint": "vale docs && markdownlint docs/**/*.md",

@@ -152,17 +152,12 @@ export async function configureWithPreset(
       // Preserve project-specific values from base config
       projectName: baseConfig.projectName || '',
       projectPath: baseConfig.projectPath || '',
-      description: baseConfig.description || selectedPreset.description || '',
-      author: baseConfig.author || { name: '', email: '' },
-      license: baseConfig.license || 'MIT',
       nodeVersion: baseConfig.nodeVersion || selectedPreset.nodeVersion || '18',
       typescript: baseConfig.typescript ?? true,
-      ide: baseConfig.ide || selectedPreset.ide || 'vscode',
+      ide: baseConfig.ide || selectedPreset.ide || 'none',
       projectType: baseConfig.projectType || selectedPreset.projectType || 'standalone-cli',
       packageManager: baseConfig.packageManager || selectedPreset.packageManager || 'pnpm',
       includeDocs: baseConfig.includeDocs ?? selectedPreset.includeDocs ?? false,
-      installDependencies:
-        baseConfig.installDependencies ?? selectedPreset.installDependencies ?? true,
       dryRun: baseConfig.dryRun ?? false,
       force: baseConfig.force ?? false,
       verbose: baseConfig.verbose ?? false,
@@ -233,7 +228,6 @@ export async function createInteractivePreset(
       nodeVersion: baseConfig.nodeVersion,
       ide: baseConfig.ide,
       includeDocs: baseConfig.includeDocs,
-      installDependencies: baseConfig.installDependencies,
     }
 
     // Show preview

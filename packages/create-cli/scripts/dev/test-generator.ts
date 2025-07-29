@@ -145,7 +145,6 @@ async function testCombination(
       template: combination.template,
       packageManager: combination.packageManager,
       includeDocs: combination.scenario.docs,
-      installDependencies: options.install,
       dryRun: false,
     }
 

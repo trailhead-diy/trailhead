@@ -15,7 +15,6 @@ export function parseArguments(
       projectPath: '',
       packageManager: 'pnpm',
       includeDocs: false,
-      installDependencies: true,
       force: false,
       dryRun: false,
       verbose: false,
@@ -89,7 +88,7 @@ export function parseArguments(
           break
 
         case '--no-install':
-          config.installDependencies = false
+          // Deprecated: dependencies are no longer auto-installed
           break
 
         case '--force':

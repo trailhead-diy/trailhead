@@ -2,10 +2,8 @@ import { ok, err } from '@esteban-url/core'
 import type { Result, CoreError } from '@esteban-url/core'
 import { resolve, dirname } from 'path'
 import { fs } from '@esteban-url/fs'
-import { execa } from 'execa'
-import { chalk, createSpinner, detectPackageManager as detectPM } from '@esteban-url/cli/utils'
+import { chalk, createSpinner } from '@esteban-url/cli/utils'
 import { debugTemplateContext, debugError, debugStats } from '../cli/logger.js'
-import { createGeneratorError, ERROR_CODES } from './errors.js'
 import { createCoreError } from '@esteban-url/core'
 import {
   validateProjectName,
@@ -28,41 +26,6 @@ import {
   cleanupTemplateCache,
 } from '../templates/compiler.js'
 import { formatGeneratedCode } from './transforms.js'
-
-/**
- * Detect package manager using CLI utilities
- */
-function detectPackageManager(): Result<string, CoreError> {
-  try {
-    const result = detectPM()
-    if (result.isErr()) {
-      return err(
-        createGeneratorError(
-          ERROR_CODES.PACKAGE_MANAGER_DETECTION_FAILED,
-          'No package manager detected',
-          {
-            operation: 'detectPackageManager',
-            cause: result.error,
-            recoverable: true,
-          }
-        )
-      )
-    }
-    return ok(result.value.name)
-  } catch (error) {
-    return err(
-      createGeneratorError(
-        ERROR_CODES.PACKAGE_MANAGER_DETECTION_FAILED,
-        'No package manager detected',
-        {
-          operation: 'detectPackageManager',
-          cause: error instanceof Error ? error : undefined,
-          recoverable: true,
-        }
-      )
-    )
-  }
-}
 
 // Filesystem operations are now imported directly
 
@@ -92,7 +55,6 @@ let globalTemplateCompilerContext = createTemplateCompilerContext({
  *   template: 'basic',
  *   packageManager: 'pnpm',
  *   includeDocs: true,
- *   installDependencies: true,
  *   dryRun: false
  * }
  *
@@ -204,15 +166,7 @@ export async function generateProject(
       })
     }
 
-    // Phase 6: Install dependencies
-    if (config.installDependencies && !config.dryRun) {
-      const installResult = await installDependencies(config, context)
-      if (!installResult.isOk()) {
-        logger.warning('Failed to install dependencies')
-      }
-    }
-
-    // Phase 7: Configure development environment
+    // Phase 6: Configure development environment
     if (!config.dryRun) {
       const devSetupResult = await setupDevelopmentEnvironment(config, context)
       if (!devSetupResult.isOk()) {
@@ -220,7 +174,7 @@ export async function generateProject(
       }
     }
 
-    // Phase 8: Verify project readiness
+    // Phase 7: Verify project readiness
     if (!config.dryRun) {
       const verificationResult = await verifyProjectReadiness(config, context)
       if (!verificationResult.isOk()) {
@@ -233,7 +187,7 @@ export async function generateProject(
       }
     }
 
-    // Phase 9: Cleanup template cache if needed
+    // Phase 8: Cleanup template cache if needed
     globalTemplateCompilerContext = cleanupTemplateCache(globalTemplateCompilerContext, 50)
 
     return ok(undefined)
@@ -489,87 +443,6 @@ async function processTemplateFile(
 }
 
 /**
- * Install project dependencies using the configured package manager
- *
- * Executes the appropriate install command for the selected package manager
- * (npm or pnpm) in the project directory.
- * Uses secure command execution to prevent injection attacks.
- *
- * @param config - Project configuration containing package manager selection
- * @param context - Generator context with logger for user feedback
- * @returns Promise resolving to Result indicating installation success or failure
- *
- * @internal
- *
- * Automatically detects the best available package manager using CLI utilities.
- * Supports npm and pnpm with proper version validation and caching.
- *
- * Installation runs with piped stdio to suppress verbose output while
- * still capturing errors for diagnostics.
- *
- * @see {@link detectPackageManager} for package manager detection logic
- */
-async function installDependencies(
-  config: ProjectConfig,
-  context: GeneratorContext
-): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context
-
-  try {
-    // Validate project path to prevent command injection
-    const pathValidation = validateProjectPath(config.projectPath, process.cwd())
-    if (!pathValidation.isOk()) {
-      return err(pathValidation.error)
-    }
-    const safePath = pathValidation.value
-
-    // Use CLI package manager detection instead of manual validation
-    const packageManagerResult = detectPackageManager()
-    if (!packageManagerResult.isOk()) {
-      return err(
-        createCoreError(
-          'PACKAGE_MANAGER_NOT_FOUND',
-          'CLI_ERROR',
-          'No suitable package manager found',
-          {
-            cause: packageManagerResult.error,
-            context: { details: 'Package manager detection failed' },
-            suggestion: 'Install pnpm or npm and ensure it is available in PATH',
-          }
-        )
-      )
-    }
-
-    const packageManager = packageManagerResult.value
-    const spinner = createSpinner(`Installing dependencies with ${packageManager}...`)
-    spinner.start()
-
-    // Use CLI package manager configuration
-    const installArgs = packageManager === 'pnpm' ? ['install', '--ignore-workspace'] : ['install']
-
-    await execa(packageManager, installArgs, {
-      cwd: safePath,
-      stdio: 'pipe', // Prevent output injection
-      shell: false, // Disable shell interpretation
-      timeout: 300000, // 5 minute timeout for security
-    })
-
-    spinner.success('Dependencies installed')
-    return ok(undefined)
-  } catch (error) {
-    return err(
-      createCoreError('DEPENDENCY_INSTALL_FAILED', 'CLI_ERROR', 'Failed to install dependencies', {
-        cause: error,
-        context: {
-          details:
-            'Dependency installation failed - ensure the package manager is installed and accessible',
-        },
-      })
-    )
-  }
-}
-
-/**
  * Setup development environment configuration
  *
  * Configures IDE settings, Git configuration, and development tools
@@ -708,14 +581,7 @@ async function verifyProjectReadiness(
       return err(structureResult.error)
     }
 
-    // Verify build and test execution
-    if (config.installDependencies) {
-      const buildResult = await verifyBuildAndTest(config, context)
-      if (!buildResult.isOk()) {
-        spinner.error('Build and test verification failed')
-        return err(buildResult.error)
-      }
-    }
+    // Skip build and test verification since dependencies are not auto-installed
 
     spinner.success('Project verification completed')
     return ok(undefined)
@@ -864,186 +730,6 @@ async function verifyProjectStructure(config: ProjectConfig): Promise<Result<voi
           cause: error,
         }
       )
-    )
-  }
-}
-
-/**
- * Verify build and test execution
- *
- * Executes build and test scripts to ensure the generated project
- * compiles correctly and all tests pass.
- *
- * @param config - Project configuration
- * @param context - Generator context with logger for user feedback
- * @returns Promise resolving to Result indicating verification success or failure
- */
-async function verifyBuildAndTest(
-  config: ProjectConfig,
-  context: GeneratorContext
-): Promise<Result<void, CoreError>> {
-  const { logger: _logger } = context
-
-  try {
-    // Get package manager
-    const packageManagerResult = detectPackageManager()
-    if (!packageManagerResult.isOk()) {
-      return err(
-        createCoreError(
-          'PACKAGE_MANAGER_DETECTION_FAILED',
-          'CLI_ERROR',
-          'Failed to detect package manager',
-          {
-            cause: packageManagerResult.error,
-          }
-        )
-      )
-    }
-
-    const packageManager = packageManagerResult.value
-
-    // Verify TypeScript compilation
-    const typeCheckResult = await runTypeCheck(config.projectPath, packageManager, context)
-    if (!typeCheckResult.isOk()) {
-      return err(typeCheckResult.error)
-    }
-
-    // Verify build execution
-    const buildResult = await runBuild(config.projectPath, packageManager, context)
-    if (!buildResult.isOk()) {
-      return err(buildResult.error)
-    }
-
-    // Verify test execution if tests are enabled
-    if (config.features?.testing) {
-      const testResult = await runTests(config.projectPath, packageManager, context)
-      if (!testResult.isOk()) {
-        return err(testResult.error)
-      }
-    }
-
-    return ok(undefined)
-  } catch (error) {
-    return err(
-      createCoreError(
-        'BUILD_TEST_VERIFICATION_FAILED',
-        'CLI_ERROR',
-        'Failed to verify build and test execution',
-        {
-          cause: error,
-        }
-      )
-    )
-  }
-}
-
-/**
- * Run TypeScript type checking
- */
-async function runTypeCheck(
-  projectPath: string,
-  packageManager: string,
-  context: GeneratorContext
-): Promise<Result<void, CoreError>> {
-  const { logger } = context
-
-  try {
-    if (context.verbose) {
-      logger.info('Running TypeScript type check...')
-    }
-
-    await execa(packageManager, ['run', 'types'], {
-      cwd: projectPath,
-      stdio: 'pipe',
-      shell: false,
-      timeout: 60000, // 1 minute timeout
-    })
-
-    if (context.verbose) {
-      logger.info('TypeScript type check passed')
-    }
-
-    return ok(undefined)
-  } catch (error) {
-    return err(
-      createCoreError('TYPE_CHECK_FAILED', 'CLI_ERROR', 'TypeScript type check failed', {
-        cause: error,
-        context: { details: 'Generated project has TypeScript compilation errors' },
-      })
-    )
-  }
-}
-
-/**
- * Run project build
- */
-async function runBuild(
-  projectPath: string,
-  packageManager: string,
-  context: GeneratorContext
-): Promise<Result<void, CoreError>> {
-  const { logger } = context
-
-  try {
-    if (context.verbose) {
-      logger.info('Running project build...')
-    }
-
-    await execa(packageManager, ['run', 'build'], {
-      cwd: projectPath,
-      stdio: 'pipe',
-      shell: false,
-      timeout: 120000, // 2 minute timeout
-    })
-
-    if (context.verbose) {
-      logger.info('Project build completed successfully')
-    }
-
-    return ok(undefined)
-  } catch (error) {
-    return err(
-      createCoreError('BUILD_FAILED', 'CLI_ERROR', 'Project build failed', {
-        cause: error,
-        context: { details: 'Generated project build script failed' },
-      })
-    )
-  }
-}
-
-/**
- * Run project tests
- */
-async function runTests(
-  projectPath: string,
-  packageManager: string,
-  context: GeneratorContext
-): Promise<Result<void, CoreError>> {
-  const { logger } = context
-
-  try {
-    if (context.verbose) {
-      logger.info('Running project tests...')
-    }
-
-    await execa(packageManager, ['run', 'test'], {
-      cwd: projectPath,
-      stdio: 'pipe',
-      shell: false,
-      timeout: 180000, // 3 minute timeout
-    })
-
-    if (context.verbose) {
-      logger.info('All tests passed')
-    }
-
-    return ok(undefined)
-  } catch (error) {
-    return err(
-      createCoreError('TESTS_FAILED', 'CLI_ERROR', 'Project tests failed', {
-        cause: error,
-        context: { details: 'Generated project tests are failing' },
-      })
     )
   }
 }

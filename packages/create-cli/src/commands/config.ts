@@ -212,7 +212,6 @@ async function handleLoadPreset(
   }
 
   console.log(`   Include docs: ${preset.includeDocs ?? 'default'}`)
-  console.log(`   Install dependencies: ${preset.installDependencies ?? 'default'}`)
 
   return ok(undefined)
 }
