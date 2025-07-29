@@ -20,7 +20,7 @@
     "build": "{{packageManager}} run clean && tsc --emitDeclarationOnly && tsup",
     "build:prod": "NODE_ENV=production tsup && tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
-    "run": "tsx src/index.ts",
+    "start": "tsx src/index.ts",
     "test": "{{packageManager}} run build && vitest run",
     "test:coverage": "{{packageManager}} run build && vitest run --coverage",
     "test:watch": "vitest",
