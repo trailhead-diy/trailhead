@@ -3,7 +3,6 @@
   "files": [],
   "references": [
     { "path": "./packages/cli" },
-    { "path": "./packages/web-ui" },
     { "path": "./tooling/docs-tooling" }
   ],
   "compilerOptions": {
