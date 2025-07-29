@@ -119,11 +119,11 @@ jobs:
         with:
           path: |
             .turbo
-          key: ${{runner.os}}-integration-${{hashFiles('pnpm-lock.yaml')}}-${{hashFiles('packages/create-trailhead-cli/**/*.ts')}}
+          key: ${{runner.os}}-integration-${{hashFiles('pnpm-lock.yaml')}}-${{hashFiles('packages/create-cli/**/*.ts')}}
         continue-on-error: true
 
       - name: Run generator integration tests
-        run: pnpm --filter=create-trailhead-cli test:integration
+        run: pnpm --filter=@esteban-url/create-cli test:integration
 
   # Security checks
   security:
