@@ -9,7 +9,8 @@
     "@esteban-url:registry": "https://npm.pkg.github.com"
   },
   "bin": {
-    "create-cli": "./bin/cli.js"
+    "create-cli": "./bin/cli.js",
+    "@esteban-url/create-cli": "./bin/cli.js"
   },
   "types": "./dist/index.d.ts",
   "exports": {

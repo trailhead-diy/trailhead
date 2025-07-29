@@ -14,17 +14,22 @@ A modern CLI generator built with functional programming principles and the @est
 ## Quick Start
 
 ```bash
-# Install globally
+# Run directly with npx (no installation required)
+npx @esteban-url/create-cli my-awesome-cli
+
+# Or with explicit generate command
+npx @esteban-url/create-cli generate my-awesome-cli
+
+# Install globally for repeated use
 npm install -g @esteban-url/create-cli
+create-trailhead-cli my-awesome-cli
 
-# Generate a new CLI project
-create-trailhead-cli generate my-awesome-cli
-
-# Generate with specific template
-create-trailhead-cli generate my-cli --template advanced
+# With options
+npx @esteban-url/create-cli my-cli --docs --package-manager npm
 
 # See all options
-create-trailhead-cli generate --help
+npx @esteban-url/create-cli --help
+npx @esteban-url/create-cli generate --help
 ```
 
 ## Project Templates
