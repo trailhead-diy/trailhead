@@ -224,7 +224,6 @@ interface ProjectConfig {
   packageManager: 'npm' | 'pnpm'
   includeDocs: boolean
   initGit: boolean
-  installDependencies: boolean
   force: boolean
   dryRun: boolean
   verbose: boolean

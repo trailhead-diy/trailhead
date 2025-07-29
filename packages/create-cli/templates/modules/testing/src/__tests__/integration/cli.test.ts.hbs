@@ -1,33 +1,37 @@
-import { describe, it, expect } from 'vitest' import { execFile as execFileCb } from 'child_process'
-import { promisify } from 'util' describe('{{projectName}}
-CLI Integration', () => { const execFile = promisify(execFileCb) it('should show version when
---version flag is passed', async () => { const { stdout } = await execFile('node', ['bin/cli.js',
-'--version']) expect(stdout.trim()).toBe('{{version}}') }) it('should show help when --help flag is
-passed', async () => { const { stdout } = await execFile('node', ['bin/cli.js', '--help'])
-expect(stdout).toContain('{{projectName}}') expect(stdout).toContain('{{description}}')
-expect(stdout).toContain('Commands:') }) it('should show help when help command is used', async ()
-=> { const { stdout } = await execFile('node', ['bin/cli.js', 'help']) expect(stdout).toContain('{{projectName}}')
-expect(stdout).toContain('Usage:') }) it('should show version when version command is used', async
-() => { const { stdout } = await execFile('node', ['bin/cli.js', 'version'])
-expect(stdout.trim()).toBe('{{version}}') })
+import { describe, it, expect } from 'vitest'
+import { execFile as execFileCb } from 'child_process'
+import { promisify } from 'util'
+
+describe('{{projectName}} CLI Integration', () => {
+  const execFile = promisify(execFileCb)
+
+  it('should show version when --version flag is passed', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', '--version'])
+    expect(stdout.trim()).toBe('{{version}}')
+  })
+
+  it('should show help when --help flag is passed', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', '--help'])
+    expect(stdout).toContain('{{projectName}}')
+    expect(stdout).toContain('{{description}}')
+    expect(stdout).toContain('Commands:')
+  })
+
+  it('should show help when help command is used', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'help'])
+    expect(stdout).toContain('{{projectName}}')
+    expect(stdout).toContain('Usage:')
+  })
+
+  it('should show version when version command is used', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'version'])
+    expect(stdout.trim()).toContain('{{packageName}} version {{version}}')
+  })
 
 {{#if features.config}}
-  it('should handle config command', async () => { const { stdout } = await execFile('node',
-  ['bin/cli.js', 'config']) expect(stdout).toContain('--init, --validate, or --show') })
-{{/if}}
-
-{{#if features.validation}}
-  it('should handle validate command', async () => { const { stdout } = await execFile('node',
-  ['bin/cli.js', 'validate']) expect(stdout).toContain('Usage:') expect(stdout).toContain('--file')
+  it('should handle config command', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'config'])
+    expect(stdout).toContain('--init, --validate, or --show')
   })
-{{/if}}
-
-{{#if features.examples}}
-  it('should handle build command', async () => { try { const { stdout } = await execFile('node',
-  ['bin/cli.js', 'build', '--help']) expect(stdout).toContain('Build the project') } catch (error) {
-  // Command might not be implemented yet expect(String(error)).toContain('build') } }) it('should
-  handle dev command', async () => { try { const { stdout } = await execFile('node', ['bin/cli.js',
-  'dev', '--help']) expect(stdout).toContain('development mode') } catch (error) { // Command might
-  not be implemented yet expect(String(error)).toContain('dev') } })
 {{/if}}
 })

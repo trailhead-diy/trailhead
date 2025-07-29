@@ -12,7 +12,7 @@ const packageSpecificConfig = defineConfig({
     exclude: ['node_modules', 'dist', 'test-temp*', 'temp-*', '**/test-temp*/**', '**/temp-*/**'],
     coverage: {
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/**/*.d.ts'],
+      exclude: ['src/**/*.test.ts', 'src/**/*.d.ts', 'src/testing/**/*'],
     },
   },
 })

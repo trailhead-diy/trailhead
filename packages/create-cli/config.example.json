@@ -21,7 +21,5 @@
   "nodeVersion": "18",
   "typescript": true,
   "ide": "vscode",
-  "includeDocs": true,
-  "initGit": true,
-  "installDependencies": true
+  "includeDocs": true
 }

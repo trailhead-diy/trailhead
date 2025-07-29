@@ -34,13 +34,11 @@
   "dependencies": {
 {{#if IS_MONOREPO}}
     "@esteban-url/cli": "workspace:*",
-    "@esteban-url/core": "workspace:*"{{#if isAdvanced}},
-    "@esteban-url/validation": "workspace:*",
+    "@esteban-url/core": "workspace:*"{{#if features.config}},
     "zod": "^3.22.4"{{/if}}
 {{else}}
     "@esteban-url/cli": "^0.1.0",
-    "@esteban-url/core": "^0.1.0"{{#if isAdvanced}},
-    "@esteban-url/validation": "^0.1.0",
+    "@esteban-url/core": "^0.1.0"{{#if features.config}},
     "zod": "^3.22.4"{{/if}}
 {{/if}}
   },

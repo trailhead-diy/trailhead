@@ -14,6 +14,8 @@ out/
 build/
 *.tsbuildinfo
 .turbo/
+*.bundled_*.mjs
+*.bundled_*.cjs
 
 # Misc
 .DS_Store

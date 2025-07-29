@@ -35,8 +35,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -48,7 +46,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI package
-        run: pnpm build --filter=@esteban-url/trailhead-cli
+        run: pnpm build --filter=@esteban-url/cli
 
       - name: Run TypeScript compilation check
         working-directory: packages/cli
@@ -86,8 +84,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -99,7 +95,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI package
-        run: pnpm build --filter=@esteban-url/trailhead-cli
+        run: pnpm build --filter=@esteban-url/cli
 
       - name: Validate example syntax
         working-directory: packages/cli/examples
