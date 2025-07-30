@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import type { PluginOption } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 export interface VitestConfigOptions {
@@ -25,7 +26,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   } = options
 
   // Add vite-tsconfig-paths plugin if enabled
-  const plugins = useTsconfigPaths ? [tsconfigPaths()] : []
+  const plugins: PluginOption[] = useTsconfigPaths ? [tsconfigPaths()] : []
 
   return defineConfig({
     plugins,

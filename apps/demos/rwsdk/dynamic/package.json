@@ -1,0 +1,59 @@
+{
+  "name": "@demos/rwsdk-dynamic",
+  "version": "1.0.0",
+  "description": "RWSDK dynamic theme demo - runtime theme switching with state management",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "dev:init": "rw-scripts dev-init",
+    "preview": "vite preview",
+    "worker:run": "rw-scripts worker-run",
+    "clean": "npm run clean:vite",
+    "clean:vite": "rm -rf ./node_modules/.vite",
+    "release": "rw-scripts ensure-deploy-env && npm run clean && npm run build && RWSDK_DEPLOY=1 wrangler deploy",
+    "generate": "rw-scripts ensure-env && wrangler types",
+    "check": "npm run generate && npm run types",
+    "types": "tsc",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.4",
+    "@heroicons/react": "^2.2.0",
+    "@tailwindcss/vite": "^4.1.11",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.6",
+    "rwsdk": "0.1.24",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.11",
+    "zustand": "^5.0.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.7.4",
+    "@cloudflare/workers-types": "^4.20250407.0",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitest/coverage-v8": "^3.2.4",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.6",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.20.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
+  }
+}

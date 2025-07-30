@@ -23,6 +23,22 @@ export type {
  * Built with functional programming principles and explicit error handling
  */
 async function main() {
+  // Check if user provided a project name directly (no command)
+  const args = process.argv.slice(2)
+  const firstArg = args[0]
+  const isCommand =
+    firstArg &&
+    (firstArg === 'generate' ||
+      firstArg === 'config' ||
+      firstArg === 'help' ||
+      firstArg.startsWith('-'))
+
+  // If first argument is not a command and not a flag, treat it as project name
+  if (firstArg && !isCommand) {
+    // Insert 'generate' command before the project name
+    process.argv.splice(2, 0, 'generate')
+  }
+
   const cli = createCLI({
     name: 'create-trailhead-cli',
     version: '0.1.0',

@@ -421,7 +421,27 @@ pnpm build                  # Production build
 - `qcu` = Ultra-deep quality check: Requirements audit, security review, architecture impact, future-proofing, code excellence, hidden complexities, testing gaps.
 - `fixlint` = Fix all TypeScript errors and lint warnings. Remove unused imports, prefix unused variables with underscore.
 - `write-tests` = Write high-ROI tests following project principles (no low-ROI rendering/prop tests).
-- `gcwm` = Git commit with meaningful message. MUST use conventional commit format: `type(scope): description`. Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert. Example: `feat(auth): add login flow` or `fix(api): resolve timeout issue`. Each commit should be independently revertable. Focus on "why" not "what" in messages. Keep messages concise and meaningful - avoid verbose explanations.
+  `gcwm` = Git commit with meaningful message. Think like a senior engineer: analyze all changes
+  and determine if they should be split into multiple atomic commits. Each commit should be
+  independently revertible and represent a single logical change.
+
+  Steps:
+  1. Analyze all staged/unstaged changes to understand the full scope
+  2. Group related changes that form logical units of work
+  3. Identify if changes should be split (e.g., refactoring separate from feature, config updates
+   separate from code changes)
+  4. For each logical group:
+     - Stage only the files for that specific change
+     - Create a conventional commit: `type(scope): description`
+     - Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert
+     - Focus on "why" not "what" in messages
+     - Keep messages concise and meaningful
+
+  Example scenarios:
+  - If updating deps + refactoring code: Split into `chore(deps):` and `refactor(module):`
+  commits
+  - If fixing bug + adding tests: Split into `fix(api):` and `test(api):` commits
+  - If moving files + updating imports: Single `refactor(structure):` commit
 - `gbcp` = Git branch, commit, push/PR workflow with concise PR body. Include "Closes #[issue]" in commit/PR for auto-linking. PR body should be succinct yet meaningful: brief summary, key changes (3-7 bullet points max), testing validation, issue reference.
 - `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking. Focus on essential information: what changed, why it matters. Avoid verbose explanations.
 - `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, Read CLAUDE.md and project principles to apply, create TodoWrite plan.
