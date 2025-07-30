@@ -62,6 +62,7 @@
     },
     "validate": {
       "dependsOn": ["format", "types", "lint", "test"],
+      "outputLogs": "errors-only",
       "outputs": [],
       "cache": true
     },
@@ -78,13 +79,7 @@
     "types": {
       "dependsOn": ["^build"],
       "outputs": [],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "tsconfig.json",
-        "tsconfig.*.json",
-        "package.json"
-      ],
+      "inputs": ["src/**", "tests/**", "tsconfig.json", "tsconfig.*.json", "package.json"],
       "outputLogs": "errors-only",
       "cache": true
     },
