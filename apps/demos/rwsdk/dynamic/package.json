@@ -30,13 +30,13 @@
     "@tailwindcss/vite": "^4.1.11",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.6",
-    "rwsdk": "0.1.24",
+    "rwsdk": "0.1.27",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.7.4",
+    "@cloudflare/vite-plugin": "1.10.2",
     "@cloudflare/workers-types": "^4.20250407.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.2",
