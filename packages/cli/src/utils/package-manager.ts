@@ -14,17 +14,17 @@ export interface PackageManager {
 }
 
 /**
- * Minimum version requirements for each package manager
- */
-const VERSION_REQUIREMENTS = {
-  pnpm: '6.0.0',
-  npm: '7.0.0',
-} as const
-
-/**
  * Allowed package manager names for validation
  */
 const ALLOWED_MANAGERS = ['pnpm', 'npm'] as const
+
+/**
+ * Minimum version requirements for each package manager
+ */
+const VERSION_REQUIREMENTS: Record<(typeof ALLOWED_MANAGERS)[number], string> = {
+  pnpm: '6.0.0',
+  npm: '7.0.0',
+} as const
 
 /**
  * Default timeout for package manager commands (5 seconds)

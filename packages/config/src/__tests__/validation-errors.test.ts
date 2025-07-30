@@ -96,7 +96,7 @@ describe('Specific Error Factories', () => {
     expect(error.expectedType).toBe('number')
     expect(error.code).toBe('type')
     expect(error.path).toEqual(['stats'])
-    expect(error.suggestion).toContain('valid number')
+    expect(error.suggestion).toContain('Expected number')
   })
 
   it('should create enum error', () => {

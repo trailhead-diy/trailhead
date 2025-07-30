@@ -3,9 +3,9 @@ type: reference
 title: 'Testing Module API Reference'
 description: 'Testing utilities for CLI applications with mocked dependencies and test runners'
 related:
-  - /docs/reference/api/filesystem
-  - /docs/reference/api/command
-  - /docs/how-to/testing-cli-apps
+  - ./command.md
+  - ./utils.md
+  - ../how-to/functional-patterns.md
 ---
 
 # Testing Module API Reference
@@ -14,11 +14,11 @@ Utilities for testing CLI applications with mocked dependencies and test runners
 
 ## Overview
 
-| Property    | Value                                |
-| ----------- | ------------------------------------ |
-| **Package** | `@esteban-url/trailhead-cli`         |
-| **Module**  | `@esteban-url/trailhead-cli/testing` |
-| **Since**   | `v1.0.0`                             |
+| Property    | Value                      |
+| ----------- | -------------------------- |
+| **Package** | `@esteban-url/cli`         |
+| **Module**  | `@esteban-url/cli/testing` |
+| **Since**   | `v1.0.0`                   |
 
 ## Import
 
@@ -30,7 +30,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from '@esteban-url/trailhead-cli/testing'
+} from '@esteban-url/cli/testing'
 ```
 
 ## Basic Usage
@@ -43,7 +43,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from '@esteban-url/trailhead-cli/testing'
+} from '@esteban-url/cli/testing'
 ```
 
 ## Test Context

@@ -15,19 +15,37 @@ import type { ValidatorFn } from './types.js'
  */
 export const emailSchema = () =>
   z
-    .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address')
-    .max(254, 'Email address is too long') // RFC 5321 limit
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'Email must be a string'
+        }
+        return 'Invalid email'
+      },
+    })
+    .min(1, { error: 'Email is required' })
+    .email({ error: 'Please enter a valid email address' })
+    .max(254, { error: 'Email address is too long' }) // RFC 5321 limit
 
 /**
  * URL validation schema with protocol requirements
  */
 export const urlSchema = (options: { requireHttps?: boolean } = {}) => {
-  const baseSchema = z.string().url('Please enter a valid URL')
+  const baseSchema = z
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'URL must be a string'
+        }
+        return 'Invalid URL'
+      },
+    })
+    .url({ error: 'Please enter a valid URL' })
 
   if (options.requireHttps) {
-    return baseSchema.refine((url) => url.startsWith('https://'), 'URL must use HTTPS protocol')
+    return baseSchema.refine((url) => url.startsWith('https://'), {
+      error: 'URL must use HTTPS protocol',
+    })
   }
 
   return baseSchema
@@ -38,9 +56,18 @@ export const urlSchema = (options: { requireHttps?: boolean } = {}) => {
  */
 export const phoneSchema = () =>
   z
-    .string()
-    .min(1, 'Phone number is required')
-    .regex(/^[+]?[1-9][\d\s\-()]{7,15}$/, 'Please enter a valid phone number')
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'Phone number must be a string'
+        }
+        return 'Invalid phone number'
+      },
+    })
+    .min(1, { error: 'Phone number is required' })
+    .regex(/^[+]?[1-9][\d\s\-()]{7,15}$/, {
+      error: 'Please enter a valid phone number (e.g., +1-234-567-8900)',
+    })
 
 // === String Validation Schemas ===
 
@@ -48,10 +75,33 @@ export const phoneSchema = () =>
  * String length validation with configurable min/max
  */
 export const stringLengthSchema = (min: number = 1, max?: number, fieldName: string = 'Value') => {
-  let schema = z.string().min(min, `${fieldName} must be at least ${min} characters`)
+  let schema = z
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return `${fieldName} must be a string`
+        }
+        return `Invalid ${fieldName.toLowerCase()}`
+      },
+    })
+    .min(min, {
+      error: (issue) => {
+        if (issue.code === 'too_small') {
+          return `${fieldName} must be at least ${issue.minimum} characters`
+        }
+        return `${fieldName} is too short`
+      },
+    })
 
   if (max !== undefined) {
-    schema = schema.max(max, `${fieldName} must be no more than ${max} characters`)
+    schema = schema.max(max, {
+      error: (issue) => {
+        if (issue.code === 'too_big') {
+          return `${fieldName} must be no more than ${issue.maximum} characters`
+        }
+        return `${fieldName} is too long`
+      },
+    })
   }
 
   return schema
@@ -61,16 +111,34 @@ export const stringLengthSchema = (min: number = 1, max?: number, fieldName: str
  * Non-empty string schema
  */
 export const nonEmptyStringSchema = (fieldName: string = 'Value') =>
-  z.string().min(1, `${fieldName} cannot be empty`)
+  z
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return `${fieldName} must be a string`
+        }
+        return `Invalid ${fieldName.toLowerCase()}`
+      },
+    })
+    .min(1, { error: `${fieldName} cannot be empty` })
 
 /**
  * Trimmed string schema that normalizes whitespace
  */
 export const trimmedStringSchema = (fieldName: string = 'Value') =>
   z
-    .string()
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return `${fieldName} must be a string`
+        }
+        return `Invalid ${fieldName.toLowerCase()}`
+      },
+    })
     .transform((val) => val.trim())
-    .refine((val) => val.length > 0, `${fieldName} cannot be empty or only whitespace`)
+    .refine((val) => val.length > 0, {
+      error: `${fieldName} cannot be empty or only whitespace`,
+    })
 
 // === Project and Path Schemas ===
 
@@ -79,28 +147,40 @@ export const trimmedStringSchema = (fieldName: string = 'Value') =>
  */
 export const projectNameSchema = () =>
   z
-    .string()
-    .min(1, 'Project name is required')
-    .max(214, 'Project name is too long')
-    .regex(
-      /^[a-z0-9][a-z0-9._-]*$/,
-      'Project name must start with a letter or number and contain only lowercase letters, numbers, dots, hyphens, and underscores'
-    )
-    .refine(
-      (name) => !name.startsWith('.') && !name.startsWith('_'),
-      'Project name cannot start with a dot or underscore'
-    )
-    .refine(
-      (name) => !['node_modules', 'favicon.ico'].includes(name),
-      'Project name cannot be a reserved name'
-    )
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'Project name must be a string'
+        }
+        return 'Invalid project name'
+      },
+    })
+    .min(1, { error: 'Project name is required' })
+    .max(214, { error: 'Project name is too long (max 214 characters)' })
+    .regex(/^[a-z0-9][a-z0-9._-]*$/, {
+      error:
+        'Project name must start with a letter or number and contain only lowercase letters, numbers, dots, hyphens, and underscores',
+    })
+    .refine((name) => !name.startsWith('.') && !name.startsWith('_'), {
+      error: 'Project name cannot start with a dot or underscore',
+    })
+    .refine((name) => !['node_modules', 'favicon.ico'].includes(name), {
+      error: 'Project name cannot be a reserved name',
+    })
 
 /**
  * Package manager validation schema
  */
 export const packageManagerSchema = () =>
   z.enum(['npm', 'yarn', 'pnpm'], {
-    errorMap: () => ({ message: 'Package manager must be npm, yarn, or pnpm' }),
+    error: (issue) => {
+      if (issue.code === 'invalid_value') {
+        const options = ['npm', 'yarn', 'pnpm']
+        const received = (issue as any).received
+        return `Package manager must be one of: ${options.join(', ')}${received !== undefined ? `, received "${received}"` : ''}`
+      }
+      return 'Invalid package manager'
+    },
   })
 
 /**
@@ -116,15 +196,27 @@ export const filePathSchema = (
   const { allowAbsolute = false, allowTraversal = false, baseDir } = options
 
   return z
-    .string()
-    .min(1, 'File path cannot be empty')
-    .refine((path) => allowAbsolute || !path.startsWith('/'), 'Absolute paths are not allowed')
-    .refine((path) => allowTraversal || !path.includes('../'), 'Path traversal (..) is not allowed')
-    .refine((path) => !path.includes('\0'), 'Path cannot contain null bytes')
-    .refine(
-      (path) => (baseDir ? path.startsWith(baseDir) : true),
-      baseDir ? `Path must be within ${baseDir}` : 'Invalid path'
-    )
+    .string({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'File path must be a string'
+        }
+        return 'Invalid file path'
+      },
+    })
+    .min(1, { error: 'File path cannot be empty' })
+    .refine((path) => allowAbsolute || !path.startsWith('/'), {
+      error: 'Absolute paths are not allowed',
+    })
+    .refine((path) => allowTraversal || !path.includes('../'), {
+      error: 'Path traversal (..) is not allowed',
+    })
+    .refine((path) => !path.includes('\0'), {
+      error: 'Path cannot contain null bytes',
+    })
+    .refine((path) => (baseDir ? path.startsWith(baseDir) : true), {
+      error: baseDir ? `Path must be within ${baseDir}` : 'Invalid path',
+    })
 }
 
 // === Author and Contact Schemas ===
@@ -146,16 +238,49 @@ export const authorSchema = () =>
  */
 export const portSchema = () =>
   z
-    .number()
-    .int('Port must be an integer')
-    .min(1, 'Port must be greater than 0')
-    .max(65535, 'Port must be less than 65536')
+    .number({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return 'Port must be a number'
+        }
+        return 'Invalid port'
+      },
+    })
+    .int({ error: 'Port must be an integer' })
+    .min(1, {
+      error: (issue) => {
+        if (issue.code === 'too_small') {
+          const min = Number(issue.minimum)
+          return `Port must be greater than ${min - 1}`
+        }
+        return 'Port is too small'
+      },
+    })
+    .max(65535, {
+      error: (issue) => {
+        if (issue.code === 'too_big') {
+          const max = Number(issue.maximum)
+          return `Port must be less than ${max + 1}`
+        }
+        return 'Port is too large'
+      },
+    })
 
 /**
  * Positive integer schema
  */
 export const positiveIntegerSchema = (fieldName: string = 'Value') =>
-  z.number().int(`${fieldName} must be an integer`).positive(`${fieldName} must be positive`)
+  z
+    .number({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return `${fieldName} must be a number`
+        }
+        return `Invalid ${fieldName.toLowerCase()}`
+      },
+    })
+    .int({ error: `${fieldName} must be an integer` })
+    .positive({ error: `${fieldName} must be positive` })
 
 // === Date and Time Schemas ===
 
@@ -174,8 +299,12 @@ export const dateSchema = (
 
   if (format === 'iso') {
     return z
-      .string()
-      .datetime()
+      .string({
+        error: 'Date must be a string',
+      })
+      .datetime({
+        error: 'Date must be in ISO 8601 format',
+      })
       .transform((str) => {
         const date = new Date(str)
         if (!allowFuture && date > now) {
@@ -188,8 +317,12 @@ export const dateSchema = (
       })
   } else if (format === 'date-only') {
     return z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+      .string({
+        error: 'Date must be a string',
+      })
+      .regex(/^\d{4}-\d{2}-\d{2}$/, {
+        error: 'Date must be in YYYY-MM-DD format',
+      })
       .transform((str) => {
         const date = new Date(str + 'T00:00:00.000Z')
         if (!allowFuture && date > now) {
@@ -247,18 +380,31 @@ export const arraySchema = <T>(
   let schema = z.array(itemSchema)
 
   if (minLength !== undefined) {
-    schema = schema.min(minLength, `${fieldName} must have at least ${minLength} items`)
+    schema = schema.min(minLength, {
+      error: (issue) => {
+        if (issue.code === 'too_small') {
+          return `${fieldName} must have at least ${issue.minimum} items`
+        }
+        return `${fieldName} has too few items`
+      },
+    })
   }
 
   if (maxLength !== undefined) {
-    schema = schema.max(maxLength, `${fieldName} must have no more than ${maxLength} items`)
+    schema = schema.max(maxLength, {
+      error: (issue) => {
+        if (issue.code === 'too_big') {
+          return `${fieldName} must have no more than ${issue.maximum} items`
+        }
+        return `${fieldName} has too many items`
+      },
+    })
   }
 
   if (unique) {
-    return schema.refine(
-      (arr) => new Set(arr).size === arr.length,
-      `${fieldName} items must be unique`
-    )
+    return schema.refine((arr) => new Set(arr).size === arr.length, {
+      error: `${fieldName} items must be unique`,
+    })
   }
 
   return schema
@@ -275,7 +421,7 @@ export const optionalSchema = <T>(schema: z.ZodSchema<T>) => schema.optional()
  * Create a schema with default value
  */
 export const withDefault = <T>(schema: z.ZodSchema<T>, defaultValue: T) =>
-  schema.default(defaultValue as z.util.noUndefined<T>)
+  schema.default(defaultValue as Exclude<T, undefined>)
 
 /**
  * Merge multiple object schemas
@@ -302,7 +448,9 @@ export const conditionalSchema = <T>(
 
   if (elseSchema) {
     const elseSchemaObj = z.object({
-      [conditionField]: z.any().refine((val) => val !== conditionValue),
+      [conditionField]: z.any().refine((val) => val !== conditionValue, {
+        error: `Field must not equal ${conditionValue}`,
+      }),
       value: elseSchema,
     })
 

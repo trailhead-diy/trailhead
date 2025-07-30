@@ -16,8 +16,7 @@
         "tsup.config.*",
         "vite.config.*",
         "vitest.config.*",
-        "templates/**",
-        "examples/**"
+        "templates/**"
       ],
       "outputLogs": "errors-only",
       "cache": true
@@ -33,7 +32,6 @@
       "inputs": [
         "src/**",
         "tests/**",
-        "examples/**",
         "vitest.config.*",
         "vitest.setup.*",
         "c8.config.*",
@@ -69,7 +67,7 @@
     },
     "lint": {
       "outputs": [],
-      "inputs": ["src/**", "tests/**", "examples/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
+      "inputs": ["src/**", "tests/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
       "outputLogs": "errors-only",
       "cache": true
     },
@@ -83,7 +81,6 @@
       "inputs": [
         "src/**",
         "tests/**",
-        "examples/**",
         "tsconfig.json",
         "tsconfig.*.json",
         "package.json"
@@ -105,7 +102,7 @@
     },
     "lint:fix": {
       "outputs": [],
-      "inputs": ["src/**", "tests/**", "examples/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
+      "inputs": ["src/**", "tests/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
       "outputLogs": "errors-only",
       "cache": false
     }

@@ -90,7 +90,7 @@ describe('Validation Errors', () => {
         const error = zodErrorToValidationError(result.error)
 
         expect(error.type).toBe('VALIDATION_ERROR')
-        expect(error.message).toContain('String must contain at least 5 character(s)')
+        expect(error.message).toContain('Too small: expected string to have >=5 characters')
         expect(error.cause).toBe(result.error)
         expect(error.constraints).toEqual({
           code: 'too_small',
@@ -110,8 +110,8 @@ describe('Validation Errors', () => {
         const error = zodErrorToValidationError(result.error)
 
         expect(error.type).toBe('VALIDATION_ERROR')
-        expect(error.message).toBe('Invalid email')
-        expect(error.constraints?.code).toBe('invalid_string')
+        expect(error.message).toBe('Invalid email address')
+        expect(error.constraints?.code).toBe('invalid_format')
       }
     })
 

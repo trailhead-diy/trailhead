@@ -32,28 +32,26 @@ npx @esteban-url/create-cli --help
 npx @esteban-url/create-cli generate --help
 ```
 
-## Project Templates
+## Project Types & Features
 
-### Basic Template
+### Project Types
 
-Perfect for simple CLI tools:
+Choose the type that matches your use case:
 
-- Core command structure using @esteban-url/cli
-- TypeScript configuration
-- Testing setup with Vitest
-- Build system with tsup
-- Basic project structure
+- **standalone-cli**: Independent CLI application with its own dependencies
+- **library**: Reusable library that can be imported by other projects
+- **monorepo-package**: Package within a monorepo structure
 
-### Advanced Template
+### Feature Modules
 
-Full-featured CLI applications:
+Select features based on your needs:
 
-- All basic template features
-- Configuration management with @esteban-url/config
-- Data validation with @esteban-url/validation
-- Documentation generation
-- Advanced testing patterns
-- Production-ready setup
+- **core** (required): Essential CLI functionality, commands, help system
+- **config**: Configuration management with Zod validation
+- **validation**: Input validation utilities and helpers
+- **testing**: Vitest setup with integration tests
+- **docs**: Documentation structure following Diátaxis framework
+- **cicd**: GitHub Actions workflows and git hooks
 
 ## CLI Framework Integration
 
@@ -156,8 +154,8 @@ my-cli/
 │   │   └── version.ts
 │   ├── lib/                  # Shared utilities
 │   └── __tests__/            # Test files
-├── templates/                # Template files (advanced)
-├── docs/                     # Documentation (advanced)
+├── templates/                # Template files (if docs feature selected)
+├── docs/                     # Documentation (if docs feature selected)
 ├── package.json              # Dependencies and scripts
 ├── tsconfig.json             # TypeScript configuration
 ├── tsup.config.ts            # Build configuration
@@ -195,8 +193,9 @@ pnpm clean                    # Clean build artifacts
 ```bash
 # Generate new project
 pnpm generate <name>          # Interactive generation
-pnpm generate:basic <name>    # Basic template
-pnpm generate:advanced <name> # Advanced template
+pnpm generate <name> --type standalone-cli  # Standalone CLI
+pnpm generate <name> --type library         # Reusable library
+pnpm generate <name> --type monorepo-package # Monorepo package
 
 # Manage configuration
 pnpm config list              # List configuration
@@ -213,7 +212,8 @@ import { generateProject } from '@esteban-url/create-cli'
 
 const result = await generateProject(config, context)
 if (result.isOk()) {
-  console.log(`Project generated at: ${result.value.path}`)
+  console.log(`Project generated at: ${result.value.projectPath}`)
+  console.log(`Files created: ${result.value.filesCreated}`)
 } else {
   console.error(`Generation failed: ${result.error.message}`)
 }
@@ -225,12 +225,22 @@ if (result.isOk()) {
 interface ProjectConfig {
   projectName: string
   projectPath: string
-  template: 'basic' | 'advanced'
+  projectType: 'standalone-cli' | 'library' | 'monorepo-package'
   packageManager: 'npm' | 'pnpm'
+  features: {
+    core: true
+    config?: boolean
+    validation?: boolean
+    testing?: boolean
+    docs?: boolean
+    cicd?: boolean
+  }
+  nodeVersion: string
+  typescript: boolean
+  ide: 'vscode' | 'none'
   includeDocs: boolean
-  initGit: boolean
-  force: boolean
   dryRun: boolean
+  force: boolean
   verbose: boolean
 }
 ```
@@ -262,8 +272,8 @@ expectSuccess(validation)
 ### Global Configuration
 
 ```bash
-# Set default template
-create-trailhead-cli config set defaultTemplate advanced
+# Set default project type
+create-trailhead-cli config set projectType standalone-cli
 
 # Set default package manager
 create-trailhead-cli config set packageManager pnpm
@@ -279,7 +289,7 @@ create-trailhead-cli config list
 DEBUG=create-cli:* create-trailhead-cli generate my-cli
 
 # Skip interactive prompts
-CI=true create-trailhead-cli generate my-cli --template basic
+CI=true create-trailhead-cli generate my-cli --type standalone-cli
 ```
 
 ## Error Handling
@@ -388,18 +398,27 @@ pnpm qc
 
 ## Documentation
 
-### Available Guides
+Complete documentation is available in the [docs directory](./docs/):
 
-- [CLI Framework Migration](./docs/CLI_FRAMEWORK_MIGRATION.md) - Migration from legacy patterns
-- [Error Handling](./docs/ERROR_HANDLING.md) - Comprehensive error handling guide
-- [Testing Patterns](./docs/TESTING_PATTERNS.md) - Testing best practices
-- [Functional Patterns](./docs/FUNCTIONAL_PATTERNS.md) - Functional programming guide
+### 📚 Tutorials
 
-### Architecture Decisions
+- [Getting Started](./docs/tutorials/getting-started.md) - Generate your first CLI in 5 minutes
 
-- [ADR-001: CLI Framework Adoption](./docs/adr/001-cli-framework-adoption.md)
-- [ADR-002: Functional Programming Patterns](./docs/adr/002-functional-programming.md)
-- [ADR-003: Error Handling Strategy](./docs/adr/003-error-handling.md)
+### 📖 How-To Guides
+
+- [Customize Templates](./docs/how-to/customize-templates.md) - Modify or create templates
+- [Add Custom Prompts](./docs/how-to/custom-prompts.md) - Extend interactive setup
+- [Configure Defaults](./docs/how-to/configure-defaults.md) - Set personal preferences
+
+### 📋 Reference
+
+- [API Reference](./docs/reference/api.md) - Programmatic usage
+- [Configuration Schema](./docs/reference/schema.md) - All configuration options
+- [Template System](./docs/reference/templates.md) - Template engine details
+
+### 💡 Explanation
+
+- [Template Architecture](./docs/explanation/templates.md) - Understanding the design
 
 ## License
 

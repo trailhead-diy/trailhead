@@ -4,7 +4,7 @@ import type { Result, CoreError } from '@esteban-url/core'
 // Result Type - Use standard Result<T, CoreError>
 // ========================================
 
-// Type aliases for testing compatibility
+// Type aliases
 export type ConfigValue = unknown
 export type ConfigError = CoreError
 export type ConfigResult<T> = Result<T, CoreError>

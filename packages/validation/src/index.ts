@@ -98,6 +98,8 @@ export {
 
 export type { SchemaRegistryKey } from './schemas.js'
 
+// Zod is re-exported below
+
 // Re-export Zod for custom schemas
 export { z } from 'zod'
 

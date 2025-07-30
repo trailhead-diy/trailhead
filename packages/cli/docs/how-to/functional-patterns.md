@@ -3,23 +3,23 @@ type: how-to
 title: 'How to Apply Functional Programming Patterns'
 description: 'Implement functional programming patterns in your CLI applications for better maintainability and error handling'
 prerequisites:
-  - '@esteban-url/trailhead-cli installed'
+  - '@esteban-url/cli installed'
   - 'Basic TypeScript knowledge'
   - 'Understanding of Result types'
 related:
-  - '/docs/reference/api/core'
-  - '/docs/explanation/architecture'
+  - '../reference/core.md'
+  - '../explanation/architecture.md'
 ---
 
 # How to Apply Functional Programming Patterns
 
-This guide shows you how to implement key functional programming patterns in your @esteban-url/trailhead-cli applications to improve code maintainability, testability, and error handling.
+This guide shows you how to implement key functional programming patterns in your @esteban-url/cli applications to improve code maintainability, testability, and error handling.
 
 ## Prerequisites
 
 Before starting, ensure you have:
 
-- @esteban-url/trailhead-cli installed in your project
+- @esteban-url/cli installed in your project
 - Basic understanding of TypeScript
 - Familiarity with Result types (`Ok` and `Err`)
 - Understanding of async/await patterns
@@ -60,7 +60,7 @@ const getId = (): number => ++count
 ### Basic Error Handling
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
+import { Ok, Err } from '@esteban-url/core'
 
 async function readConfig(path: string): Promise<Result<Config>> {
   const result = await fs.readFile(path)
@@ -82,7 +82,7 @@ async function readConfig(path: string): Promise<Result<Config>> {
 Use `map` and `chain` for Result transformations:
 
 ```typescript
-import { map, chain } from '@esteban-url/trailhead-cli/core'
+import { map, chain } from '@esteban-url/core'
 
 // Transform successful values
 const doubled = map(Ok(21), (x) => x * 2) // Ok(42)

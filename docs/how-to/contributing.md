@@ -11,7 +11,7 @@ related:
   - /docs/reference/documentation-standards.md
   - /docs/reference/writing-guide.md
   - /packages/cli/docs/README.md
-  - /packages/web-ui/docs/README.md
+  - /packages/create-cli/docs/README.md
 ---
 
 # How to Contribute to Trailhead
@@ -28,7 +28,7 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
 
    The monorepo uses different PNPM versions:
    - **Root**: PNPM 8.15.0 (specified in root package.json)
-   - **@esteban-url/trailhead-web-ui**: PNPM 10.13.1 (specified in its package.json)
+   - **Individual packages**: May specify their own PNPM versions for specific feature requirements
 
    This is intentional to support different feature requirements. The root version manages the monorepo infrastructure while individual packages can specify their own versions for optimal compatibility.
 
@@ -50,8 +50,8 @@ Thank you for contributing to the Trailhead monorepo! This guide covers the deve
 
 ```bash
 # Work on specific package
-pnpm build --filter=@esteban-url/trailhead-web-ui
-pnpm test --filter=@esteban-url/trailhead-cli
+pnpm build --filter=@esteban-url/cli
+pnpm test --filter=@esteban-url/create-cli
 
 # Work on multiple packages
 pnpm build --filter=./packages/*

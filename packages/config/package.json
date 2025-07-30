@@ -47,7 +47,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "format": "prettier --write . --log-level=error --ignore-path .prettierignore "
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",

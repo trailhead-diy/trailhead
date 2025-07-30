@@ -60,13 +60,23 @@ export const zodErrorToValidationError = (
   error: z.ZodError,
   options?: { field?: string }
 ): ValidationError => {
-  const firstError = error.errors[0]
+  const issues = error.issues
+
+  if (issues.length === 0) {
+    return createValidationError('Validation failed', {
+      field: options?.field,
+      cause: error,
+      suggestion: 'Check the value and ensure it meets the validation requirements',
+    })
+  }
+
+  const firstError = issues[0]
   const path = firstError.path.join('.')
   const field = options?.field || (path !== '' ? path : undefined)
 
   return createValidationError(firstError.message, {
     field,
-    value: 'received' in firstError ? firstError.received : undefined,
+    value: 'input' in firstError ? (firstError as any).input : undefined,
     cause: error,
     constraints: {
       code: firstError.code,

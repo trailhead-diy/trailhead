@@ -296,10 +296,10 @@ export function createMockValidator(): MockValidator {
             },
           })
         } else {
-          const errors = result.error.errors.map((err) => ({
+          const errors = (result.error.issues || []).map((err: any) => ({
             field: err.path.join('.'),
             message: err.message,
-            value: err.path.reduce((obj, key) => obj?.[key], data),
+            value: err.path.reduce((obj: any, key: any) => obj?.[key], data),
             rule: err.code,
           }))
 

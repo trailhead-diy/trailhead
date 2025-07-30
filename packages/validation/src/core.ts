@@ -48,7 +48,9 @@ export const validateEmail =
       )
     }
 
-    const schema = z.string().email('Invalid email format')
+    const schema = z.string().email({
+      error: 'Invalid email format. Please provide a valid email address like user@example.com',
+    })
     const result = schema.safeParse(email)
 
     if (!result.success) {
@@ -71,7 +73,9 @@ export const validateUrl =
       )
     }
 
-    const schema = z.string().url('Invalid URL format')
+    const schema = z.string().url({
+      error: 'Invalid URL format. Please provide a valid URL like https://example.com',
+    })
     const result = schema.safeParse(url)
 
     if (!result.success) {
@@ -94,9 +98,9 @@ export const validatePhoneNumber =
       )
     }
 
-    const schema = z
-      .string()
-      .regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$|^\d{10}$/, 'Invalid phone number format')
+    const schema = z.string().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$|^\d{10}$/, {
+      error: 'Invalid phone number format. Please provide a valid phone number like (555) 123-4567',
+    })
     const result = schema.safeParse(phone)
 
     if (!result.success) {
@@ -113,10 +117,24 @@ export const validateStringLength =
     _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<string> =>
   (value: string): ValidationResult<string> => {
-    let schema = z.string().min(min, `Value must be at least ${min} characters long`)
+    let schema = z.string().min(min, {
+      error: (issue) => {
+        if (issue.code === 'too_small') {
+          return `Value must be at least ${issue.minimum} characters long`
+        }
+        return 'Invalid string length'
+      },
+    })
 
     if (max !== undefined) {
-      schema = schema.max(max, `Value must be no more than ${max} characters long`)
+      schema = schema.max(max, {
+        error: (issue) => {
+          if (issue.code === 'too_big') {
+            return `Value must be no more than ${issue.maximum} characters long`
+          }
+          return 'Invalid string length'
+        },
+      })
     }
 
     const result = schema.safeParse(value)
@@ -135,14 +153,35 @@ export const validateNumberRange =
     _config: ValidationConfig = defaultValidationConfig
   ): ValidatorFn<number> =>
   (value: number): ValidationResult<number> => {
-    let schema = z.number()
+    let schema = z.number({
+      error: (issue) => {
+        if (issue.code === 'invalid_type') {
+          return `Expected a number, received ${typeof issue.input}`
+        }
+        return 'Invalid number'
+      },
+    })
 
     if (min !== undefined) {
-      schema = schema.min(min, `Value must be at least ${min}`)
+      schema = schema.min(min, {
+        error: (issue) => {
+          if (issue.code === 'too_small') {
+            return `Value must be at least ${issue.minimum}`
+          }
+          return 'Number is too small'
+        },
+      })
     }
 
     if (max !== undefined) {
-      schema = schema.max(max, `Value must be no more than ${max}`)
+      schema = schema.max(max, {
+        error: (issue) => {
+          if (issue.code === 'too_big') {
+            return `Value must be no more than ${issue.maximum}`
+          }
+          return 'Number is too large'
+        },
+      })
     }
 
     const result = schema.safeParse(value)
@@ -157,9 +196,9 @@ export const validateNumberRange =
 export const validateRequired =
   <T>(_config: ValidationConfig = defaultValidationConfig): ValidatorFn<T | null | undefined, T> =>
   (value: T | null | undefined): ValidationResult<T> => {
-    const schema = z
-      .any()
-      .refine((val) => val !== null && val !== undefined && val !== '', 'Value is required')
+    const schema = z.any().refine((val) => val !== null && val !== undefined && val !== '', {
+      error: 'Value is required',
+    })
     const result = schema.safeParse(value)
 
     if (!result.success) {
@@ -173,12 +212,20 @@ export const validateCurrency =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<number> =>
   (value: number): ValidationResult<number> => {
     const schema = z
-      .number()
-      .nonnegative('Currency value must be positive')
-      .refine(
-        (val) => Math.round(val * 100) / 100 === val,
-        'Currency value must have at most 2 decimal places'
-      )
+      .number({
+        error: (issue) => {
+          if (issue.code === 'invalid_type') {
+            return 'Currency value must be a number'
+          }
+          return 'Invalid currency value'
+        },
+      })
+      .nonnegative({
+        error: 'Currency value must be positive',
+      })
+      .refine((val) => Math.round(val * 100) / 100 === val, {
+        error: 'Currency value must have at most 2 decimal places',
+      })
 
     const result = schema.safeParse(value)
 
@@ -204,8 +251,12 @@ export const validateDate =
 
     const schema = z
       .string()
-      .datetime({ message: 'Invalid date format' })
-      .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'))
+      .datetime({ error: 'Invalid date format. Please provide a valid ISO 8601 date' })
+      .or(
+        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+          error: 'Invalid date format. Please provide a date in YYYY-MM-DD format',
+        })
+      )
     const result = schema.safeParse(dateString)
 
     if (!result.success) {

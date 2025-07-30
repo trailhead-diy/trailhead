@@ -1,11 +1,11 @@
 ---
 type: reference
 title: 'Core Module API Reference'
-description: 'Result types, error handling, and validation utilities'
+description: 'Result types, error handling, and validation utilities from @esteban-url/core'
 related:
-  - /docs/reference/api/command
-  - /docs/explanation/result-types
-  - /docs/how-to/error-handling
+  - ./command.md
+  - ../explanation/design-decisions.md
+  - ../how-to/functional-patterns.md
 ---
 
 # Core Module API Reference
@@ -14,19 +14,21 @@ Fundamental types and utilities for error handling, validation, and logging.
 
 ## Overview
 
-| Property    | Value                             |
-| ----------- | --------------------------------- |
-| **Package** | `@esteban-url/trailhead-cli`      |
-| **Module**  | `@esteban-url/trailhead-cli/core` |
-| **Since**   | `v1.0.0`                          |
+| Property    | Value               |
+| ----------- | ------------------- |
+| **Package** | `@esteban-url/core` |
+| **Module**  | `@esteban-url/core` |
+| **Since**   | `v1.0.0`            |
+
+**Note**: The core functionality is provided by the `@esteban-url/core` package, which is a dependency of `@esteban-url/cli`.
 
 ## Result Types
 
 ### Basic Usage
 
 ```typescript
-import { Ok, Err, isOk, isErr } from '@esteban-url/trailhead-cli'
-import type { Result } from '@esteban-url/trailhead-cli'
+import { Ok, Err, isOk, isErr } from '@esteban-url/core'
+import type { Result } from '@esteban-url/core'
 ```
 
 ### Type Definition

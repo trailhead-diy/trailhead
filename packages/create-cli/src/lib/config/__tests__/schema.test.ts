@@ -191,7 +191,7 @@ describe('Configuration Schema Validation', () => {
       const result = validateProjectConfig(config)
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.message).toContain('Node version must be a number')
+        expect(result.error.message).toContain('Node version must be a numeric string')
       }
     })
   })

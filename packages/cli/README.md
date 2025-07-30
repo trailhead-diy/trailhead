@@ -427,8 +427,8 @@ pnpm types
 pnpm lint              # Fast oxlint
 pnpm lint:neverthrow   # Result type validation
 
-# Run examples
-pnpm test:examples
+# Run all tests
+pnpm test
 
 # Complete validation
 pnpm validate
@@ -436,12 +436,7 @@ pnpm validate
 
 ## Examples
 
-Check out the [examples directory](./examples/) for complete applications:
-
-- **[API Client](./examples/api-client/)** - HTTP client CLI with authentication
-- **[File Processor](./examples/file-processor/)** - Batch file processing with progress
-- **[Project Generator](./examples/project-generator/)** - Interactive project scaffolding
-- **[Todo CLI](./examples/todo-cli/)** - Task management with persistent storage
+Check out the [documentation](./docs/) for comprehensive guides and API references.
 
 ## Migration Guide
 

@@ -1,0 +1,16 @@
+# Handlebars templates (handled by transform-helpers.ts)
+**/*.hbs
+
+# Build output
+dist
+
+# Test projects
+my-test-project
+test-project
+another-test
+
+# Dependencies
+node_modules
+
+# Coverage
+coverage

@@ -92,8 +92,7 @@ export interface Command<T = any> {
  * Represents a single phase in a multi-step command execution process.
  * Each phase receives data from the previous phase and can transform it.
  *
- * REQUIRED BY WEB-UI: Used by @esteban-url/trailhead-web-ui transforms command for
- * multi-step file transformation workflows (validate → prepare → execute).
+ * Used for multi-step file transformation workflows (validate → prepare → execute).
  *
  * @template T - Type of data passed between phases
  */

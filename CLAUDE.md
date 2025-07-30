@@ -114,7 +114,7 @@ Trailhead is a modern Turborepo monorepo containing UI libraries, CLI frameworks
 trailhead/                            # Root monorepo
 ├── packages/                         # Public packages
 │   ├── cli/                         # @esteban-url/cli - CLI framework
-│   └── web-ui/                      # @esteban-url/web-ui - UI component library
+│   └── create-cli/                  # @esteban-url/create-cli - CLI generator
 ├── apps/                            # Applications
 │   └── demos/                       # Demo applications
 │       ├── next/                    # Next.js demo
@@ -157,9 +157,9 @@ pnpm clean
 
 ```bash
 # Work on specific package
-pnpm build --filter=@esteban-url/web-ui
-pnpm test --filter=@esteban-url/cli
-pnpm lint --filter=@esteban-url/web-ui
+pnpm build --filter=@esteban-url/cli
+pnpm test --filter=@esteban-url/create-cli
+pnpm lint --filter=@esteban-url/cli
 
 # Work on multiple packages
 pnpm build --filter=./packages/*
@@ -246,120 +246,13 @@ pnpm lint                   # Linting
 - **Prompts** (`@esteban-url/cli/prompts`) - Interactive user prompts
 - **Testing** (`@esteban-url/cli/testing`) - Test utilities and mocks
 
-## Package: @esteban-url/web-ui
-
-Enhanced Catalyst UI with advanced theming system. Built on Tailwind's official React components.
-
-### Overview
-
-@esteban-url/web-ui provides:
-
-- **Comprehensive theming system** with shadcn/ui compatibility
-- **21 predefined themes** using OKLCH color space for perceptual uniformity
-- **Functional theme builder API** for creating custom themes programmatically
-- **Runtime theme switching** with next-themes integration
-- **SSR-safe theming** with no hydration issues
-- **Enhanced TypeScript interfaces** with comprehensive type definitions
-- **Semantic color tokens** for consistent theming across all components
-- **Zero performance overhead** using CSS custom properties
-- **Professional CLI** with smart framework detection and interactive setup
-
-### CLI Commands
-
-The Trailhead UI CLI provides commands for installing and managing UI components. It's built on top of @esteban-url/cli framework.
-
-```bash
-# CLI installation and usage
-pnpm add -g github:esteban-url/trailhead#packages/web-ui
-trailhead-ui install              # Interactive installation wizard
-trailhead-ui transforms           # Transform components to semantic tokens
-trailhead-ui dev:refresh          # Copy fresh Catalyst components
-trailhead-ui profile              # Profile transform performance
-trailhead-ui --help               # Show all available commands
-
-# Common install options
-trailhead-ui install --framework nextjs      # Specify framework
-trailhead-ui install --dry-run               # Preview changes
-trailhead-ui install --force                 # Overwrite existing files
-trailhead-ui install -d components/ui        # Custom destination
-```
-
-### Development Commands
-
-```bash
-# From monorepo root
-pnpm test --filter=@esteban-url/web-ui
-pnpm build --filter=@esteban-url/web-ui
-pnpm lint --filter=@esteban-url/web-ui
-
-# From package directory (packages/web-ui/)
-pnpm test                    # Run all tests
-pnpm test:watch             # Run tests in watch mode
-pnpm test:coverage          # Generate coverage report
-pnpm test:changed           # Run only tests affected by changes
-
-# Type checking and linting
-pnpm types                  # Check TypeScript types
-pnpm lint                   # Run oxlint
-pnpm lint:fix               # Fix linting issues
-pnpm format                 # Format code with prettier
-```
-
-### Architecture
-
-- **26 Catalyst UI Components** with semantic color tokens
-- **Component Architecture**: Wrapper pattern with implementations in `/lib/`
-- **Theme System**: Functional composition, OKLCH colors, runtime switching
-- **Transform System**: AST-based color-to-semantic-token transformations
-- **Testing**: 87 test files with HIGH-ROI testing approach
-
-### Key Features
-
-#### Theme System
-
-- 21 predefined themes (zinc, purple, green, orange, slate, etc.)
-- Functional theme builder API
-- Runtime theme switching with persistence
-- SSR-safe with no hydration issues
-- Full shadcn/ui compatibility
-
-#### Transform System
-
-- AST-based transformations for accurate conversions
-- Component-specific color mappings
-- Performance profiling tools
-- Converts hardcoded colors to semantic tokens
-
-#### Components
-
-All 26 Catalyst UI components with enhanced TypeScript support:
-
-- **Forms**: Button, Input, Textarea, Select, Checkbox, Radio, Switch
-- **Layout**: Dialog, Dropdown, Sidebar, SidebarLayout, StackedLayout, AuthLayout
-- **Data**: Table, Badge, Avatar, DescriptionList
-- **Navigation**: Link, Navbar, Pagination
-- **Typography**: Heading, Text
-- **Utilities**: Alert, Divider, Fieldset, Listbox, Combobox
-
-### Important Patterns
-
-- **File Naming**: Use kebab-case for all component files
-- **Semantic Tokens**: Never hardcode colors, always use semantic tokens
-- **Component Exports**: Wrapper pattern with re-exports from `./lib/`
-- **Theme Development**: Use functional composition with OKLCH colors
-
 ## App: demos/next
 
-Next.js demo application showcasing all Trailhead UI components.
+Next.js demo application.
 
 ### Overview
 
-This demo app demonstrates:
-
-- All 26 UI components in action
-- Theme switching capabilities
-- SSR with Next.js App Router
-- Component composition patterns
+This demo app demonstrates Next.js App Router patterns and best practices.
 
 ### Development Commands
 
@@ -376,21 +269,16 @@ pnpm start                  # Start production server
 
 ### Key Files
 
-- `app/layout.tsx` - Root layout with theme provider
-- `components/demo-layout.tsx` - Shared demo layout
-- `components/th/` - All UI components installed via CLI
+- `app/layout.tsx` - Root layout
+- `src/` - Application source code
 
 ## App: demos/rwsdk
 
-RedwoodJS SDK demo application showcasing Trailhead UI with RedwoodJS.
+RedwoodJS SDK demo application.
 
 ### Overview
 
-This demo app demonstrates:
-
-- Trailhead UI integration with RedwoodJS SDK
-- Server-side rendering with Waku
-- Edge deployment readiness
+This demo app demonstrates RedwoodJS SDK patterns with server-side rendering and edge deployment.
 
 ### Development Commands
 
@@ -406,8 +294,8 @@ pnpm build                  # Production build
 
 ### Key Files
 
-- `src/app/Document.tsx` - Document wrapper with theme
-- `src/app/components/th/` - All UI components
+- `src/app/Document.tsx` - Document wrapper
+- `src/app/` - Application source code
 - `vite.config.mts` - Vite configuration
 - `wrangler.jsonc` - Cloudflare Workers config
 
@@ -429,7 +317,7 @@ pnpm build                  # Production build
   1. Analyze all staged/unstaged changes to understand the full scope
   2. Group related changes that form logical units of work
   3. Identify if changes should be split (e.g., refactoring separate from feature, config updates
-   separate from code changes)
+     separate from code changes)
   4. For each logical group:
      - Stage only the files for that specific change
      - Create a conventional commit: `type(scope): description`
@@ -439,9 +327,10 @@ pnpm build                  # Production build
 
   Example scenarios:
   - If updating deps + refactoring code: Split into `chore(deps):` and `refactor(module):`
-  commits
+    commits
   - If fixing bug + adding tests: Split into `fix(api):` and `test(api):` commits
   - If moving files + updating imports: Single `refactor(structure):` commit
+
 - `gbcp` = Git branch, commit, push/PR workflow with concise PR body. Include "Closes #[issue]" in commit/PR for auto-linking. PR body should be succinct yet meaningful: brief summary, key changes (3-7 bullet points max), testing validation, issue reference.
 - `gpr` = Git push and create PR with concise body. Include "Closes #[issue]" in commit/PR for auto-linking. Focus on essential information: what changed, why it matters. Avoid verbose explanations.
 - `gh-issue` = Comprehensive GitHub issue analysis: fetch details and comments, create feature branch, deep codebase examination, Read CLAUDE.md and project principles to apply, create TodoWrite plan.

@@ -1,35 +1,19 @@
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
-
-export const helpCommand = createCommand({
-  name: 'help',
-  description: 'Show help information',
-  action: async (options, context) => {
-    const { logger } = context
-    
-    logger.info(`
+import { createCommand } from '@esteban-url/cli/command' import { ok } from '@esteban-url/core'
+export const helpCommand = createCommand({ name: 'help', description: 'Show help information',
+action: async (options, context) => { const { logger } = context logger.info(`
 {{projectName}}
 {{description}}
 
 Usage:
-  {{packageName}} <command> [options]
-
-Commands:
-  help          Show this help message
-  version       Show version information
+{{packageName}}
+<command />
+[options] Commands: help Show this help message version Show version information
 {{#if features.config}}
-  config        Manage configuration
+  config Manage configuration
 {{/if}}
 
-Options:
-  -h, --help     Show help
-  -v, --version  Show version
-  --verbose      Enable verbose output
-
-For more information about a specific command:
-  {{packageName}} <command> --help
-`)
-    
-    return ok(undefined)
-  }
-})
+Options: -h, --help Show help -v, --version Show version --verbose Enable verbose output For more
+information about a specific command:
+{{packageName}}
+<command />
+--help `) return ok(undefined) } })

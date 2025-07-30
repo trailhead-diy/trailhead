@@ -2,7 +2,6 @@ packages:
   - 'packages/*'
   - 'apps/*'
   - 'tooling/*'
-  - '!packages/web-ui/catalyst-ui-kit/**'
   - '!apps/demos/**'
   - '!**/node_modules'
   - '!**/.turbo'

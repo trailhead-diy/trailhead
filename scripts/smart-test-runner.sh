@@ -284,9 +284,6 @@ get_package_filter() {
     "cli")
       echo "@esteban-url/trailhead-cli"
       ;;
-    "web-ui")
-      echo "@esteban-url/trailhead-web-ui"
-      ;;
     "create-trailhead-cli")
       echo "@esteban-url/create-trailhead-cli"
       ;;

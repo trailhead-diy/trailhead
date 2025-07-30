@@ -1,20 +1,20 @@
 ---
 type: explanation
 title: Understanding Framework Design Decisions
-description: The rationale and trade-offs behind key architectural choices in @esteban-url/trailhead-cli, from functional programming to Result types
+description: The rationale and trade-offs behind key architectural choices in @esteban-url/cli, from functional programming to Result types
 related:
-  - /docs/explanation/architecture
-  - /docs/how-to/functional-patterns
-  - /docs/reference/api/core
+  - ./architecture.md
+  - ../how-to/functional-patterns.md
+  - ../reference/core.md
 ---
 
 # Understanding Framework Design Decisions
 
-Every architectural choice in @esteban-url/trailhead-cli reflects careful consideration of trade-offs between developer experience, performance, maintainability, and ecosystem compatibility. This explanation explores the reasoning behind major design decisions and their implications.
+Every architectural choice in @esteban-url/cli reflects careful consideration of trade-offs between developer experience, performance, maintainability, and ecosystem compatibility. This explanation explores the reasoning behind major design decisions and their implications.
 
 ## Overview
 
-The design decisions in @esteban-url/trailhead-cli prioritize long-term maintainability, optimal performance, and developer productivity. Rather than following conventional patterns that may seem familiar, the framework adopts approaches that solve fundamental problems in CLI development: bundle size, testability, error handling, and composability.
+The design decisions in @esteban-url/cli prioritize long-term maintainability, optimal performance, and developer productivity. Rather than following conventional patterns that may seem familiar, the framework adopts approaches that solve fundamental problems in CLI development: bundle size, testability, error handling, and composability.
 
 ## Background
 

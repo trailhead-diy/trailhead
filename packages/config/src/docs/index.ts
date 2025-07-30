@@ -2,7 +2,7 @@
 // Documentation Module Exports
 // ========================================
 
-// Legacy type definitions for backwards compatibility
+// Type definitions
 export type { JsonSchemaOutput, JsonSchemaProperty } from './generator.js'
 
 // Enhanced Zod-powered documentation generation (recommended)

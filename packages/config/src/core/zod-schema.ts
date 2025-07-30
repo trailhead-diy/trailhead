@@ -635,7 +635,7 @@ export const validateWithZodSchemaAsync = async <T>(
 export const createZodSchema = <T extends z.ZodRawShape>(shape: T) =>
   createZodSchemaBuilder(z.object(shape))
 
-// Alias for backwards compatibility with existing API
+// Direct exports for common schema builders
 export const string = zodString
 export const number = zodNumber
 export const boolean = zodBoolean
