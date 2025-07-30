@@ -1,25 +1,25 @@
 ---
 type: how-to
 title: 'How to Optimize Import Patterns'
-description: 'Import @esteban-url/trailhead-cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
+description: 'Import @esteban-url/cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
 prerequisites:
-  - '@esteban-url/trailhead-cli installed'
+  - '@esteban-url/cli installed'
   - 'Basic understanding of ES modules'
   - 'Bundler knowledge (esbuild, webpack, etc.)'
 related:
-  - '/docs/reference/api/index'
-  - '/docs/how-to/optimization-guide'
+  - '../reference/command.md'
+  - './optimization-guide.md'
 ---
 
 # How to Optimize Import Patterns
 
-This guide shows you how to import @esteban-url/trailhead-cli modules efficiently to minimize bundle size and maximize tree-shaking benefits.
+This guide shows you how to import @esteban-url/cli modules efficiently to minimize bundle size and maximize tree-shaking benefits.
 
 ## Prerequisites
 
 Before optimizing imports, ensure you have:
 
-- @esteban-url/trailhead-cli installed in your project
+- @esteban-url/cli installed in your project
 - A modern bundler (esbuild, webpack 5+, Vite, etc.)
 - TypeScript configured with `moduleResolution: "bundler"`
 - Understanding of ES module imports vs CommonJS
@@ -32,9 +32,9 @@ Import only what you need using subpath imports:
 
 ```typescript
 // ✅ Optimal - Only imports required code
-import { Ok, Err } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { Ok, Err } from '@esteban-url/core'
+import { createCommand } from '@esteban-url/cli/command'
+import { createFileSystem } from '@esteban-url/fs'
 
 // Bundle size: ~25KB
 ```
@@ -55,7 +55,7 @@ const command = createCommand({
   name: 'interactive',
   async action(options, context) {
     if (options.interactive) {
-      const { prompt, select } = await import('@esteban-url/trailhead-cli/prompts')
+      const { prompt, select } = await import('@esteban-url/cli/prompts')
       const answer = await prompt({ message: 'Enter value:' })
     }
     // Regular non-interactive logic
@@ -71,16 +71,16 @@ const command = createCommand({
 
 ## Quick Reference
 
-| What You Need          | Import From                             | Example                                                                    |
-| ---------------------- | --------------------------------------- | -------------------------------------------------------------------------- |
-| Result types (Ok, Err) | `@esteban-url/trailhead-cli`            | `import { Ok, Err } from "@esteban-url/trailhead-cli"`                     |
-| CLI creation           | `@esteban-url/trailhead-cli`            | `import { createCLI } from "@esteban-url/trailhead-cli"`                   |
-| Commands               | `@esteban-url/trailhead-cli/command`    | `import { createCommand } from "@esteban-url/trailhead-cli/command"`       |
-| File operations        | `@esteban-url/trailhead-cli/filesystem` | `import { createFileSystem } from "@esteban-url/trailhead-cli/filesystem"` |
-| Configuration          | `@esteban-url/trailhead-cli/config`     | `import { defineConfig } from "@esteban-url/trailhead-cli/config"`         |
-| User prompts           | `@esteban-url/trailhead-cli/prompts`    | `import { prompt, select } from "@esteban-url/trailhead-cli/prompts"`      |
-| Testing utilities      | `@esteban-url/trailhead-cli/testing`    | `import { createTestContext } from "@esteban-url/trailhead-cli/testing"`   |
-| Styling & spinners     | `@esteban-url/trailhead-cli/utils`      | `import { chalk, createSpinner } from "@esteban-url/trailhead-cli/utils"`  |
+| What You Need          | Import From                          | Example                                                                   |
+| ---------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
+| Result types (Ok, Err) | `@esteban-url/core`                  | `import { Ok, Err } from "@esteban-url/core"`                             |
+| CLI creation           | `@esteban-url/cli`                   | `import { createCLI } from "@esteban-url/cli"`                            |
+| Commands               | `@esteban-url/cli/command`           | `import { createCommand } from "@esteban-url/cli/command"`                |
+| File operations        | `@esteban-url/fs`                    | `import { createFileSystem } from "@esteban-url/fs"`                      |
+| Configuration          | `@esteban-url/config`                | `import { defineConfig } from "@esteban-url/config"`                      |
+| User prompts           | `@esteban-url/trailhead-cli/prompts` | `import { prompt, select } from "@esteban-url/trailhead-cli/prompts"`     |
+| Testing utilities      | `@esteban-url/trailhead-cli/testing` | `import { createTestContext } from "@esteban-url/trailhead-cli/testing"`  |
+| Styling & spinners     | `@esteban-url/trailhead-cli/utils`   | `import { chalk, createSpinner } from "@esteban-url/trailhead-cli/utils"` |
 
 ## Common Variations
 

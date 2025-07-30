@@ -7,10 +7,10 @@ prerequisites:
   - Basic TypeScript knowledge
   - Experience with messy spreadsheets (unfortunately)
 related:
-  - /docs/reference/api/command
-  - /docs/reference/api/filesystem
-  - /docs/reference/api/prompts
-  - /docs/how-to/functional-patterns
+  - ../reference/command.md
+  - ../reference/prompts.md
+  - ../reference/utils.md
+  - ../how-to/functional-patterns.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use
@@ -795,6 +795,6 @@ _Now go forth and process some CSVs with confidence. Your colleagues will wonder
 
 ## Complete Example
 
-The full working example is available in the [csv-processor example](../../examples/csv-processor/) directory. Clone it, run it, break it, fix it, make it yours.
+You now have all the tools to build a robust CSV processor using the CLI framework. Apply these patterns to your own data processing needs.
 
 **Happy data processing!** 📊✨

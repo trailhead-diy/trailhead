@@ -3,9 +3,9 @@ type: reference
 title: 'Prompts Module API Reference'
 description: 'Interactive user input functionality with inquirer prompts integration'
 related:
-  - /docs/reference/api/command
-  - /docs/reference/api/testing
-  - /docs/how-to/interactive-commands
+  - ./command.md
+  - ./testing.md
+  - ../how-to/functional-patterns.md
 ---
 
 # Prompts Module API Reference
@@ -14,22 +14,22 @@ Interactive user input functionality through a re-export of [@inquirer/prompts](
 
 ## Overview
 
-| Property    | Value                                |
-| ----------- | ------------------------------------ |
-| **Package** | `@esteban-url/trailhead-cli`         |
-| **Module**  | `@esteban-url/trailhead-cli/prompts` |
-| **Since**   | `v1.0.0`                             |
+| Property    | Value                      |
+| ----------- | -------------------------- |
+| **Package** | `@esteban-url/cli`         |
+| **Module**  | `@esteban-url/cli/prompts` |
+| **Since**   | `v1.0.0`                   |
 
 ## Import
 
 ```typescript
-import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts'
+import { prompt, select, confirm, multiselect } from '@esteban-url/cli/prompts'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { prompt, select, confirm, multiselect } from '@esteban-url/trailhead-cli/prompts'
+import { prompt, select, confirm, multiselect } from '@esteban-url/cli/prompts'
 ```
 
 ## Prompt Functions

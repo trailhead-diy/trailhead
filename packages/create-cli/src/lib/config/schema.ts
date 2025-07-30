@@ -9,33 +9,68 @@ import type { ProjectConfig } from './types.js'
 
 // Base schemas for reuse
 export const projectNameSchema = z
-  .string()
-  .min(1, 'Project name is required')
-  .regex(/^[a-z0-9-]+$/, 'Project name must be lowercase alphanumeric with hyphens only')
-  .max(214, 'Project name must be less than 214 characters') // npm package name limit
+  .string({
+    error: (issue) => {
+      if (issue.code === 'invalid_type') {
+        return 'Project name must be a string'
+      }
+      return 'Invalid project name'
+    },
+  })
+  .min(1, { error: 'Project name is required' })
+  .regex(/^[a-z0-9-]+$/, { error: 'Project name must be lowercase alphanumeric with hyphens only' })
+  .max(214, { error: 'Project name must be less than 214 characters' }) // npm package name limit
 
 export const packageManagerSchema = z.enum(['npm', 'pnpm'], {
-  errorMap: () => ({ message: 'Package manager must be "npm" or "pnpm"' }),
+  error: (issue) => {
+    if (issue.code === 'invalid_value') {
+      const received = (issue as any).received
+      return `Package manager must be "npm" or "pnpm", received "${received}"`
+    }
+    return 'Invalid package manager'
+  },
 })
 
 export const projectTypeSchema = z.enum(['standalone-cli', 'library', 'monorepo-package'], {
-  errorMap: () => ({
-    message: 'Project type must be "standalone-cli", "library", or "monorepo-package"',
-  }),
+  error: (issue) => {
+    if (issue.code === 'invalid_value') {
+      const options = ['standalone-cli', 'library', 'monorepo-package']
+      const received = (issue as any).received
+      return `Project type must be one of: ${options.join(', ')}, received "${received}"`
+    }
+    return 'Invalid project type'
+  },
 })
 
 export const ideSchema = z.enum(['vscode', 'none'], {
-  errorMap: () => ({ message: 'IDE must be "vscode" or "none"' }),
+  error: (issue) => {
+    if (issue.code === 'invalid_value') {
+      const received = (issue as any).received
+      return `IDE must be "vscode" or "none", received "${received}"`
+    }
+    return 'Invalid IDE option'
+  },
 })
 
 export const nodeVersionSchema = z
-  .string()
-  .regex(/^\d+$/, 'Node version must be a number')
-  .refine((val) => parseInt(val) >= 14, 'Node version must be 14 or higher')
+  .string({
+    error: 'Node version must be provided as a string',
+  })
+  .regex(/^\d+$/, { error: 'Node version must be a numeric string (e.g., "18", "20")' })
+  .refine((val) => parseInt(val) >= 14, {
+    error: 'Node version must be 14 or higher',
+  })
 
 // Feature flags schema with validation
 export const featuresSchema = z.object({
-  core: z.literal(true, { errorMap: () => ({ message: 'Core feature is required' }) }),
+  core: z.literal(true, {
+    error: (issue) => {
+      if (issue.code === 'invalid_value') {
+        return 'Core feature is required and must be true'
+      }
+      return 'Core feature must be enabled'
+    },
+  }),
   config: z.boolean().optional(),
   validation: z.boolean().optional(),
   testing: z.boolean().optional(),
@@ -102,121 +137,92 @@ export type PresetConfig = z.infer<typeof presetConfigSchema>
  * Validate a project configuration
  */
 export function validateProjectConfig(config: unknown): Result<ProjectConfig, any> {
-  try {
-    const result = modernProjectConfigSchema.safeParse(config)
+  const result = modernProjectConfigSchema.safeParse(config)
 
-    if (!result.success) {
-      const errors = result.error.errors
-        .map((err) => `${err.path.join('.')}: ${err.message}`)
-        .join(', ')
+  if (!result.success) {
+    const errors = result.error.issues
+      .map((issue) => {
+        const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : ''
+        return `${path}${issue.message}`
+      })
+      .join(', ')
 
-      return err(
-        createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', errors, {
-          component: 'create-trailhead-cli',
-          operation: 'validateProjectConfig',
-          details: errors,
-          recoverable: true,
-          severity: 'high',
-        })
-      )
-    }
-
-    return ok(result.data as ProjectConfig)
-  } catch (error) {
     return err(
-      createCoreError('CONFIG_VALIDATION_ERROR', 'CLI_ERROR', 'Configuration validation error', {
+      createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', errors, {
         component: 'create-trailhead-cli',
-        operation: 'validateModernProjectConfig',
-        cause: error,
-        recoverable: false,
+        operation: 'validateProjectConfig',
+        details: errors,
+        context: { issues: result.error.issues },
+        recoverable: true,
         severity: 'high',
       })
     )
   }
+
+  return ok(result.data as ProjectConfig)
 }
 
 /**
  * Validate a configuration file
  */
 export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
-  try {
-    const result = configFileSchema.safeParse(config)
+  const result = configFileSchema.safeParse(config)
 
-    if (!result.success) {
-      const errors = result.error.errors
-        .map((err) => `${err.path.join('.')}: ${err.message}`)
-        .join(', ')
+  if (!result.success) {
+    const errors = result.error.issues
+      .map((issue) => {
+        const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : ''
+        return `${path}${issue.message}`
+      })
+      .join(', ')
 
-      return err(
-        createCoreError(
-          'CONFIG_FILE_VALIDATION_FAILED',
-          'CLI_ERROR',
-          'Configuration file validation failed',
-          {
-            component: 'create-trailhead-cli',
-            operation: 'validateConfigFile',
-            details: errors,
-            recoverable: true,
-            severity: 'medium',
-          }
-        )
-      )
-    }
-
-    return ok(result.data)
-  } catch (error) {
     return err(
       createCoreError(
-        'CONFIG_FILE_VALIDATION_ERROR',
+        'CONFIG_FILE_VALIDATION_FAILED',
         'CLI_ERROR',
-        'Configuration file validation error',
+        'Configuration file validation failed',
         {
           component: 'create-trailhead-cli',
           operation: 'validateConfigFile',
-          cause: error,
-          recoverable: false,
+          details: errors,
+          context: { issues: result.error.issues },
+          recoverable: true,
           severity: 'medium',
         }
       )
     )
   }
+
+  return ok(result.data)
 }
 
 /**
  * Validate a preset configuration
  */
 export function validatePresetConfig(preset: unknown): Result<PresetConfig, any> {
-  try {
-    const result = presetConfigSchema.safeParse(preset)
+  const result = presetConfigSchema.safeParse(preset)
 
-    if (!result.success) {
-      const errors = result.error.errors
-        .map((err) => `${err.path.join('.')}: ${err.message}`)
-        .join(', ')
+  if (!result.success) {
+    const errors = result.error.issues
+      .map((issue) => {
+        const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : ''
+        return `${path}${issue.message}`
+      })
+      .join(', ')
 
-      return err(
-        createCoreError('PRESET_VALIDATION_FAILED', 'CLI_ERROR', errors, {
-          component: 'create-trailhead-cli',
-          operation: 'validatePresetConfig',
-          details: errors,
-          recoverable: true,
-          severity: 'medium',
-        })
-      )
-    }
-
-    return ok(result.data)
-  } catch (error) {
     return err(
-      createCoreError('PRESET_VALIDATION_ERROR', 'CLI_ERROR', 'Preset validation error', {
+      createCoreError('PRESET_VALIDATION_FAILED', 'CLI_ERROR', errors, {
         component: 'create-trailhead-cli',
         operation: 'validatePresetConfig',
-        cause: error,
-        recoverable: false,
+        details: errors,
+        context: { issues: result.error.issues },
+        recoverable: true,
         severity: 'medium',
       })
     )
   }
+
+  return ok(result.data)
 }
 
 /**

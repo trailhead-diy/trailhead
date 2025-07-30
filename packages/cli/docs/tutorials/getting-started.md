@@ -7,14 +7,14 @@ prerequisites:
   - Basic TypeScript knowledge
   - Understanding of async/await
 related:
-  - /docs/reference/api/command
-  - /docs/reference/api/core
-  - /docs/how-to/add-commands
+  - ../reference/command.md
+  - ../reference/testing.md
+  - ../how-to/functional-patterns.md
 ---
 
 # Build Your First CLI Application
 
-In this tutorial, you'll build a simple greeting CLI application using @esteban-url/trailhead-cli. By the end, you'll have a working CLI tool that greets users and understand the framework's core concepts.
+In this tutorial, you'll build a simple greeting CLI application using @esteban-url/cli. By the end, you'll have a working CLI tool that greets users and understand the framework's core concepts.
 
 ## What You'll Build
 
@@ -43,10 +43,10 @@ Install directly from GitHub:
 
 ```bash
 # Using pnpm (recommended)
-pnpm add github:esteban-url/trailhead#packages/cli
+pnpm add @esteban-url/cli
 
 # Using npm
-npm install github:esteban-url/trailhead#packages/cli
+npm install @esteban-url/cli
 ```
 
 ### For Monorepo Development
@@ -303,4 +303,4 @@ cli.run(process.argv)
 - [Import Patterns](./how-to/import-patterns.md) - Master the import system
 - [Command Reference](./reference/command.md) - All command options
 - [Testing Guide](./how-to/testing-guide.md) - Test your CLI
-- [Examples](./examples/) - Real-world CLI applications
+- [API Reference](../reference/) - Complete API documentation

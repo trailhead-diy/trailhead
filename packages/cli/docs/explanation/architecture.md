@@ -1,20 +1,20 @@
 ---
 type: explanation
 title: Understanding the CLI Framework Architecture
-description: Deep dive into the architectural principles and design patterns that make @esteban-url/trailhead-cli lightweight, testable, and maintainable
+description: Deep dive into the architectural principles and design patterns that make @esteban-url/cli lightweight, testable, and maintainable
 related:
-  - /docs/explanation/design-decisions
-  - /docs/how-to/import-patterns
-  - /docs/reference/api/core
+  - ./design-decisions.md
+  - ../how-to/import-patterns.md
+  - ../reference/core.md
 ---
 
 # Understanding the CLI Framework Architecture
 
-The architecture of @esteban-url/trailhead-cli is built on fundamental principles that prioritize developer experience, performance, and maintainability. This explanation explores the conceptual foundations and design patterns that shape how the framework operates.
+The architecture of @esteban-url/cli is built on fundamental principles that prioritize developer experience, performance, and maintainability. This explanation explores the conceptual foundations and design patterns that shape how the framework operates.
 
 ## Overview
 
-The @esteban-url/trailhead-cli architecture represents a modern approach to CLI framework design, emphasizing functional programming patterns, explicit error handling, and modular organization. Rather than following traditional object-oriented patterns, the framework adopts a composition-based architecture that enables superior tree-shaking, testing, and maintainability.
+The @esteban-url/cli architecture represents a modern approach to CLI framework design, emphasizing functional programming patterns, explicit error handling, and modular organization. Rather than following traditional object-oriented patterns, the framework adopts a composition-based architecture that enables superior tree-shaking, testing, and maintainability.
 
 ## Background
 
@@ -39,7 +39,7 @@ This approach has significant drawbacks:
 
 ### Why This Architecture?
 
-@esteban-url/trailhead-cli addresses these problems through **subpath exports** that create clear module boundaries:
+@esteban-url/cli addresses these problems through **subpath exports** that create clear module boundaries:
 
 ```json
 {

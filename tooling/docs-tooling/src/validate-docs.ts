@@ -40,7 +40,7 @@ interface ValidationSummary {
 const DOCS_DIR = join(process.cwd(), 'docs')
 const PACKAGES_DOCS = [
   join(process.cwd(), 'packages/cli/docs'),
-  join(process.cwd(), 'packages/web-ui/docs'),
+  join(process.cwd(), 'packages/create-cli/docs'),
 ]
 
 // Content patterns that indicate mixed types (anti-patterns)

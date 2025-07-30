@@ -96,7 +96,7 @@ pre-commit:
             try {
               // Get all package.json files
               const packages = [];
-              const packageDirs = ['packages/cli', 'packages/web-ui', 'packages/create-trailhead-cli'];
+              const packageDirs = ['packages/cli', 'packages/create-cli'];
               
               for (const dir of packageDirs) {
                 const pkgPath = path.join(dir, 'package.json');
@@ -202,7 +202,7 @@ pre-commit:
             try {
               // Get all package.json files
               const packages = [];
-              const packageDirs = ["packages/cli", "packages/web-ui", "packages/create-trailhead-cli"];
+              const packageDirs = ["packages/cli", "packages/create-cli"];
               
               for (const dir of packageDirs) {
                 const pkgPath = path.join(dir, "package.json");
@@ -279,7 +279,7 @@ prepare-commit-msg:
 commit-msg:
   commands:
     commitlint:
-      run: 'first_line=$(head -n1 {1}); if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+$"; then echo "❌ Commit message must follow conventional format:"; echo "   type(scope?): description"; echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"; echo "   Example: feat(web-ui): add dark mode support"; exit 1; fi'
+      run: 'first_line=$(head -n1 {1}); if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+$"; then echo "❌ Commit message must follow conventional format:"; echo "   type(scope?): description"; echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"; echo "   Example: feat(cli): add new command"; exit 1; fi'
 
 pre-push:
   parallel: true
@@ -297,44 +297,33 @@ pre-push:
     branch-sync-check:
       priority: 2
       run: |
-        cd packages/git && pnpm build > /dev/null 2>&1
-        node --input-type=module -e "
-          import { createGitStatusOperations, createGitOperations } from './dist/index.js';
-          (async () => {
-            try {
-              const gitOps = createGitOperations();
-              const statusOps = createGitStatusOperations();
-              
-              // Get current repository
-              const repoResult = await gitOps.getRepository(process.cwd());
-              if (repoResult.isErr()) {
-                console.log('ℹ️ Could not get repository:', repoResult.error.message);
-                process.exit(0);
-              }
-              
-              const repo = repoResult.value;
-              
-              // Check branch sync
-              const syncResult = await statusOps.checkBranchSync(repo, 'origin/main', { fetch: true });
-              if (syncResult.isErr()) {
-                console.log('ℹ️ Could not check branch sync:', syncResult.error.message);
-                process.exit(0);
-              }
-              
-              const status = syncResult.value;
-              if (!status.isUpToDate) {
-                console.log('⚠️ ' + statusOps.formatSyncStatus(status));
-                if (status.behind > 10) {
-                  console.log('❌ Branch is significantly behind. Please sync before pushing.');
-                  process.exit(1);
-                }
-              }
-            } catch (err) {
-              console.log('ℹ️ Branch sync check failed:', err.message);
-              process.exit(0);
-            }
-          })();
-        "
+        # Simple branch sync check without external dependencies
+        git fetch origin main --quiet 2>/dev/null || true
+        
+        LOCAL=$(git rev-parse HEAD)
+        REMOTE=$(git rev-parse origin/main 2>/dev/null || echo "")
+        BASE=$(git merge-base HEAD origin/main 2>/dev/null || echo "")
+        
+        if [ -z "$REMOTE" ]; then
+          echo "⚠️ Could not check branch sync: origin/main not found"
+          exit 0
+        fi
+        
+        if [ "$LOCAL" = "$REMOTE" ]; then
+          exit 0
+        elif [ "$LOCAL" = "$BASE" ]; then
+          BEHIND=$(git rev-list --count HEAD..origin/main)
+          echo "⚠️ Branch is $BEHIND commits behind origin/main"
+          if [ "$BEHIND" -gt 10 ]; then
+            echo "❌ Branch is significantly behind. Please sync before pushing."
+            exit 1
+          fi
+        elif [ "$REMOTE" = "$BASE" ]; then
+          AHEAD=$(git rev-list --count origin/main..HEAD)
+          echo "ℹ️ Branch is $AHEAD commits ahead of origin/main"
+        else
+          echo "⚠️ Branch has diverged from origin/main"
+        fi
 
 # Personal overrides (not committed)
 # Create .lefthook-local.yml to customize

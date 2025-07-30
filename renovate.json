@@ -24,11 +24,11 @@
       "semanticCommitScope": "cli"
     },
     {
-      "description": "Web UI package dependencies",
-      "matchFileNames": ["packages/web-ui/**"],
-      "groupName": "@esteban-url/trailhead-web-ui dependencies",
-      "labels": ["web-ui", "dependencies"],
-      "semanticCommitScope": "web-ui"
+      "description": "Create CLI package dependencies",
+      "matchFileNames": ["packages/create-cli/**"],
+      "groupName": "@esteban-url/create-cli dependencies",
+      "labels": ["create-cli", "dependencies"],
+      "semanticCommitScope": "create-cli"
     },
     {
       "description": "Demo applications dependencies",

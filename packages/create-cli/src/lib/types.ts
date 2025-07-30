@@ -2,7 +2,7 @@
  * Shared type definitions for the create-trailhead-cli generator system
  *
  * This module re-exports types from their domain-specific modules for
- * backward compatibility and convenience.
+ * convenience.
  *
  * @module Types
  */

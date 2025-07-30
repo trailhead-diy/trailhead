@@ -42,7 +42,7 @@ Thumbs.db
 # Claude Code local settings
 **/.claude/settings.local.json
 
-# Transform logs (web-ui package)
+# Transform logs
 **/transform-logs/
 
 # Lefthook local configuration

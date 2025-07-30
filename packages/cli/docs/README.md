@@ -1,20 +1,20 @@
 ---
 type: explanation
-title: '@esteban-url/trailhead-cli Documentation Overview'
+title: '@esteban-url/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
-  - /docs/tutorials/first-cli-app
-  - /docs/reference/api/core
-  - /docs/explanation/architecture
+  - ./tutorials/getting-started.md
+  - ./reference/command.md
+  - ./explanation/architecture.md
 ---
 
-# @esteban-url/trailhead-cli Documentation
+# @esteban-url/cli Documentation
 
 This framework provides a robust foundation for building command-line applications using functional programming principles.
 
 ## Framework Philosophy
 
-@esteban-url/trailhead-cli is built around four core principles:
+@esteban-url/cli is built around four core principles:
 
 - **Functional programming** - Pure functions, immutability, and composition
 - **Explicit error handling** - Result types instead of exceptions
@@ -27,7 +27,6 @@ This framework provides a robust foundation for building command-line applicatio
 
 - [Quick Start Guide](./tutorials/getting-started.md) - Get up and running in minutes
 - [Architecture Overview](./explanation/architecture.md) - Understand the fundamental principles
-- [Working Examples](../examples/README.md) - Explore real CLI applications
 
 ### API Reference
 
@@ -50,24 +49,12 @@ Task-oriented guides for common scenarios:
 - [Import Patterns](./how-to/import-patterns.md) - Structure your CLI imports
 - [Optimization Guide](./how-to/optimization-guide.md) - Build fast CLIs
 
-### Working Examples
-
-Real-world examples with full source code:
-
-- [API Client](../examples/api-client/) - HTTP client with retry logic
-- [File Processor](../examples/file-processor/) - Advanced file processing
-- [Project Generator](../examples/project-generator/) - Scaffolding tool
-- [Todo CLI](../examples/todo-cli/) - Complete CRUD application
-- [Cross-Platform CLI](../examples/cross-platform-cli/) - OS-specific functionality
-
-See [examples directory](../examples/README.md) for complete list and usage instructions.
-
 ## Key Features
 
 ### 1. Result-Based Error Handling
 
 ```typescript
-import { ok, err } from '@esteban-url/trailhead-cli/core'
+import { ok, err } from '@esteban-url/core'
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
@@ -80,7 +67,7 @@ function divide(a: number, b: number): Result<number> {
 ### 2. Functional Command Creation
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@esteban-url/cli/command'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -96,7 +83,7 @@ const greetCommand = createCommand({
 ### 3. Type-Safe Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { defineConfig } from '@esteban-url/config'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -112,7 +99,7 @@ const config = defineConfig(schema)
 ### 4. Composable Validation
 
 ```typescript
-import { createValidationPipeline, createRule } from '@esteban-url/trailhead-cli/core'
+import { createValidationPipeline, createRule } from '@esteban-url/validation'
 
 const pipeline = createValidationPipeline([
   createRule('length', (value: string) => value.length >= 3 || 'Must be at least 3 characters'),
@@ -151,7 +138,7 @@ const pipeline = createValidationPipeline([
 ### Basic CLI Application
 
 ```typescript
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@esteban-url/cli'
 import { greetCommand } from './commands/greet'
 import { configCommand } from './commands/config'
 
@@ -180,7 +167,7 @@ const config = JSON.parse(result.value)
 ### Testing Pattern
 
 ```typescript
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing'
+import { createTestContext, mockFileSystem } from '@esteban-url/cli/testing'
 
 it('should read configuration', async () => {
   const fs = mockFileSystem({
@@ -200,7 +187,7 @@ it('should read configuration', async () => {
 1. Follow the [Getting Started Guide](./tutorials/getting-started.md) to build your first CLI
 2. Read about [Architecture](./explanation/architecture.md) to understand the framework
 3. Explore the [API Reference](./reference/core.md) for detailed documentation
-4. Check out [Working Examples](../examples/) for real-world applications
+4. Review the API documentation for advanced usage patterns
 
 ## Contributing
 
@@ -215,7 +202,7 @@ We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md
 
 - **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
-- **Examples**: See the [examples directory](../examples/)
+- **Documentation**: See the [documentation directory](../docs/)
 
 ## License
 

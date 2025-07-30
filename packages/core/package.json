@@ -40,7 +40,7 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
-    "format": "prettier --write . --ignore-path .prettierignore",
+    "format": "prettier --write . --log-level=error --ignore-path .prettierignore ",
     "clean": "rm -rf dist",
     "prepack": "pnpm build"
   },
@@ -53,9 +53,9 @@
     "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.1.0",
     "@vitest/coverage-v8": "^3.2.4",
-    "oxlint": "^1.6.0",
+    "oxlint": "^1.9.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

@@ -1,11 +1,11 @@
 ---
 type: reference
 title: 'FileSystem Module API Reference'
-description: 'File system abstraction layer with consistent error handling and memory implementations'
+description: 'File system abstraction layer from @esteban-url/fs package'
 related:
-  - /docs/reference/api/core
-  - /docs/reference/api/testing
-  - /docs/how-to/file-operations
+  - ./core.md
+  - ./testing.md
+  - ../how-to/functional-patterns.md
 ---
 
 # FileSystem Module API Reference
@@ -14,17 +14,19 @@ Abstraction layer for file system operations with consistent error handling and 
 
 ## Overview
 
-| Property    | Value                                   |
-| ----------- | --------------------------------------- |
-| **Package** | `@esteban-url/trailhead-cli`            |
-| **Module**  | `@esteban-url/trailhead-cli/filesystem` |
-| **Since**   | `v1.0.0`                                |
+| Property    | Value             |
+| ----------- | ----------------- |
+| **Package** | `@esteban-url/fs` |
+| **Module**  | `@esteban-url/fs` |
+| **Since**   | `v1.0.0`          |
+
+**Note**: The filesystem functionality is provided by the `@esteban-url/fs` package, which is a dependency of `@esteban-url/cli`.
 
 ## Import
 
 ```typescript
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { createFileSystem } from '@esteban-url/fs'
+import type { FileSystem } from '@esteban-url/fs'
 ```
 
 ## Basic Usage

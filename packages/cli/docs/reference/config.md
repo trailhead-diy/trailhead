@@ -3,9 +3,9 @@ type: reference
 title: 'Config Module API Reference'
 description: 'Type-safe configuration management with schema validation and loading strategies'
 related:
-  - /docs/reference/api/core
-  - /docs/reference/api/filesystem
-  - /docs/how-to/configuration-management
+  - ./core.md
+  - ../how-to/functional-patterns.md
+  - ../explanation/design-decisions.md
 ---
 
 # Config Module API Reference
@@ -14,25 +14,27 @@ Type-safe configuration management with schema validation using Zod and flexible
 
 ## Overview
 
-| Property    | Value                               |
-| ----------- | ----------------------------------- |
-| **Package** | `@esteban-url/trailhead-cli`        |
-| **Module**  | `@esteban-url/trailhead-cli/config` |
-| **Since**   | `v1.0.0`                            |
+| Property    | Value                 |
+| ----------- | --------------------- |
+| **Package** | `@esteban-url/config` |
+| **Module**  | `@esteban-url/config` |
+
+**Note**: The configuration functionality is provided by the `@esteban-url/config` package, which is a dependency of `@esteban-url/cli`.
+| **Since** | `v1.0.0` |
 
 ## Import
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
-import type { ConfigSchema } from '@esteban-url/trailhead-cli/config'
+import { defineConfig, loadConfig } from '@esteban-url/config'
+import type { ConfigSchema } from '@esteban-url/config'
 import { z } from 'zod'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
-import type { ConfigSchema } from '@esteban-url/trailhead-cli/config'
+import { defineConfig, loadConfig } from '@esteban-url/config'
+import type { ConfigSchema } from '@esteban-url/config'
 import { z } from 'zod'
 ```
 

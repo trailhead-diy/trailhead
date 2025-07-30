@@ -6,7 +6,7 @@ related:
   - /docs/reference/documentation-standards.md
   - /docs/how-to/contributing.md
   - /packages/cli/docs/README.md
-  - /packages/web-ui/docs/README.md
+  - /packages/create-cli/docs/README.md
 ---
 
 # Understanding Trailhead's Documentation Philosophy
@@ -187,12 +187,12 @@ Users can:
 - Tutorials for building CLI applications
 - How-to guides for specific implementations
 
-**Web UI Library (`/packages/web-ui/docs/`)**
+**Create CLI (`/packages/create-cli/docs/`)**
 
-- Component documentation and theming system
-- Integration guides for different frameworks
-- CLI tool usage and configuration
-- Transform system explanations
+- CLI project generation and templates
+- Project scaffolding and configuration
+- Template system documentation
+- Best practices for CLI development
 
 ### Getting Started Pathways
 
@@ -259,7 +259,7 @@ Trailhead started with traditional documentation scattered across README files. 
 ### Package-Specific Documentation
 
 - [CLI Framework Hub](../packages/cli/docs/) - Functional CLI development
-- [Web UI Library Hub](../packages/web-ui/docs/) - Component library and theming
+- [Create CLI Hub](../packages/create-cli/docs/) - CLI project generator
 
 ## Discussion
 

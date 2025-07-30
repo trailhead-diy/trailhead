@@ -269,8 +269,7 @@ export async function executeWithConfiguration<T extends ConfigurationOptions, R
  * Runs multiple phases sequentially, passing data between phases and providing
  * progress feedback. If any phase fails, execution stops and the error is returned.
  *
- * Requiered by @esteban-url/trailhead-web-ui
- * transforms command for multi-step file transformation workflows.
+ * Used for multi-step file transformation workflows.
  *
  * @template T - Type of data passed between phases
  * @param phases - Array of phases to execute in order
@@ -327,8 +326,7 @@ export async function executeWithPhases<T>(
  * If dryRun option is enabled, shows what would be done without executing.
  * Otherwise executes normally. Provides user confirmation for destructive operations.
  *
- * Requiered by @esteban-url/trailhead-web-ui
- * transforms command for safe preview of file transformation operations.
+ * Used for safe preview of file transformation operations.
  *
  * @template T - Type of configuration data
  * @template R - Type of execution result
@@ -399,8 +397,7 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
  * Shows a nicely formatted summary with title, key-value pairs, and optional
  * statistics. Uses colors and styling for professional CLI appearance.
  *
- * Requiered by @esteban-url/trailhead-web-ui
- * transforms command to display transformation configuration and results.
+ * Used to display transformation configuration and results.
  *
  * @param title - Main title for the summary
  * @param items - Array of label-value pairs to display

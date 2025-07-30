@@ -25,7 +25,7 @@ export {
   executeSubprocess,
   executeBatch,
   executeWithConfiguration,
-  // Requiered by @esteban-url/trailhead-web-ui
+  // Command patterns for advanced workflows
   executeWithPhases, // Multi-step transformation workflows
   executeWithDryRun, // Safe preview of file operations
   displaySummary, // Formatted configuration/result display

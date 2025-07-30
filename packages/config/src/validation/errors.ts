@@ -127,7 +127,7 @@ export const enhanceZodError = (
   schemaName?: string,
   schema?: z.ZodSchema
 ): CoreError => {
-  const configErrors = zodError.errors.map((issue) => {
+  const configErrors = zodError.issues.map((issue) => {
     const field = issue.path.join('.')
     const rule = issue.code
 
@@ -141,7 +141,10 @@ export const enhanceZodError = (
         for (const pathSegment of issue.path) {
           if (currentSchema instanceof z.ZodObject) {
             const shape = currentSchema.shape
-            currentSchema = shape[pathSegment]
+            // Path segments can be symbols, skip those
+            if (typeof pathSegment === 'string' || typeof pathSegment === 'number') {
+              currentSchema = shape[pathSegment]
+            }
           }
         }
         // Check if the final schema has examples in its _def
@@ -164,44 +167,61 @@ export const enhanceZodError = (
 
     switch (issue.code) {
       case 'invalid_type':
-        suggestion = `Expected ${issue.expected}, received ${issue.received}`
+        suggestion = `Expected ${issue.expected}, received ${(issue as any).received || typeof (issue as any).input}`
         if (examples.length === 0) {
           examples = getTypeExamples(issue.expected)
         }
         break
       case 'too_small':
-        if (issue.type === 'string') {
+        if ((issue as any).type === 'string') {
           suggestion = `Must be at least ${issue.minimum} characters`
         } else {
           suggestion = `Must be at least ${issue.minimum}`
         }
         break
       case 'too_big':
-        if (issue.type === 'string') {
+        if ((issue as any).type === 'string') {
           suggestion = `Must be at most ${issue.maximum} characters`
         } else {
           suggestion = `Must be at most ${issue.maximum}`
         }
         break
-      case 'invalid_enum_value':
-        suggestion = `Must be one of: ${issue.options.map((v) => JSON.stringify(v)).join(', ')}`
-        if (examples.length === 0) {
-          examples = issue.options
+      case 'invalid_value' as any:
+        const enumIssue = issue as any
+        if (enumIssue.options) {
+          suggestion = `Must be one of: ${enumIssue.options.map((v: any) => JSON.stringify(v)).join(', ')}`
+          if (examples.length === 0) {
+            examples = enumIssue.options
+          }
+        } else {
+          suggestion = 'Invalid value'
         }
         break
-      case 'invalid_string':
-        if (issue.validation === 'email') {
+      case 'invalid_format':
+        // String validation details are in 'validation' property
+        const validation = (issue as any).validation || (issue as any).format
+        if (validation === 'email') {
           suggestion = 'Must be a valid email address'
           if (examples.length === 0) {
             examples = ['user@example.com', 'admin@company.org']
           }
-        } else if (issue.validation === 'url') {
+        } else if (validation === 'url') {
           suggestion = 'Must be a valid URL'
           if (examples.length === 0) {
             examples = ['https://example.com', 'http://localhost:3000']
           }
+        } else if (validation === 'datetime') {
+          suggestion = 'Must be a valid ISO 8601 datetime'
+          if (examples.length === 0) {
+            examples = ['2024-01-01T00:00:00Z', new Date().toISOString()]
+          }
+        } else if (validation === 'uuid') {
+          suggestion = 'Must be a valid UUID'
+          if (examples.length === 0) {
+            examples = ['550e8400-e29b-41d4-a716-446655440000']
+          }
         } else {
-          suggestion = `Invalid ${issue.validation} format`
+          suggestion = `Invalid ${validation} format`
         }
         break
       default:
@@ -210,12 +230,13 @@ export const enhanceZodError = (
 
     return createConfigValidationError({
       field,
-      value: undefined, // Zod doesn't always provide the actual value
+      value: 'input' in issue ? (issue as any).input : undefined,
       expectedType: getExpectedType(issue),
       suggestion,
       examples,
       path: issue.path.map(String),
       rule,
+      cause: issue as any,
     })
   })
 
@@ -226,32 +247,41 @@ export const createMissingFieldError = (
   field: string,
   expectedType: string,
   path: readonly string[] = []
-): ConfigValidationError =>
-  createConfigValidationError({
+): ConfigValidationError => {
+  const examples = getTypeExamples(expectedType)
+  const exampleText = examples.length > 0 ? ` (e.g., ${JSON.stringify(examples[0])})` : ''
+
+  return createConfigValidationError({
     field,
     value: undefined,
     expectedType,
-    suggestion: `Add required field "${field}" to your configuration`,
-    examples: getTypeExamples(expectedType),
+    suggestion: `Add required field "${field}" to your configuration${exampleText}`,
+    examples,
     path,
     rule: 'required',
   })
+}
 
 export const createTypeError = (
   field: string,
   value: unknown,
   expectedType: string,
   path: readonly string[] = []
-): ConfigValidationError =>
-  createConfigValidationError({
+): ConfigValidationError => {
+  const actualType = Array.isArray(value) ? 'array' : typeof value
+  const examples = getTypeExamples(expectedType)
+  const exampleText = examples.length > 0 ? ` (e.g., ${JSON.stringify(examples[0])})` : ''
+
+  return createConfigValidationError({
     field,
     value,
     expectedType,
-    suggestion: `Provide a valid ${expectedType} value for field "${field}"`,
-    examples: getTypeExamples(expectedType),
+    suggestion: `Expected ${expectedType} for field "${field}", received ${actualType}${exampleText}`,
+    examples,
     path,
     rule: 'type',
   })
+}
 
 export const createEnumError = (
   field: string,
@@ -387,13 +417,31 @@ const generateLearnMoreUrl = (rule?: string): string => {
 const getExpectedType = (issue: z.ZodIssue): string => {
   switch (issue.code) {
     case 'invalid_type':
-      return issue.expected
-    case 'invalid_enum_value':
+      return (issue as any).expected || 'unknown'
+    case 'invalid_value' as any:
       return 'enum'
     case 'too_small':
     case 'too_big':
-      return issue.type
+      // Type information is available in the issue
+      const sizeIssue = issue as any
+      return sizeIssue.type || sizeIssue.origin || 'value'
+    case 'invalid_format':
+      const formatIssue = issue as any
+      const validation = formatIssue.validation || formatIssue.format
+      if (validation === 'datetime') return 'datetime'
+      if (validation === 'date') return 'date'
+      return 'string'
+    case 'invalid_union':
+      return 'union'
+    case 'custom':
+      return 'custom validation'
     default:
+      // Handle additional error codes
+      const code = issue.code as string
+      if (code === 'invalid_date') return 'date'
+      if (code === 'invalid_literal') return 'literal'
+      if (code === 'invalid_arguments') return 'arguments'
+      if (code === 'invalid_return_type') return 'return type'
       return 'unknown'
   }
 }
@@ -436,6 +484,14 @@ const getTypeExamples = (type: string): readonly unknown[] => {
       return [[], ['item1', 'item2']]
     case 'object':
       return [{}, { key: 'value' }]
+    case 'date':
+      return [new Date().toISOString(), '2024-01-01T00:00:00Z']
+    case 'enum':
+      return ['option1', 'option2']
+    case 'literal':
+      return ['exact-value']
+    case 'union':
+      return ['string-value', 123, true]
     default:
       return []
   }
@@ -458,4 +514,4 @@ export const isSchemaValidationError = (error: unknown): error is CoreError => {
   )
 }
 
-// Clean exports - no legacy compatibility needed
+// Exports

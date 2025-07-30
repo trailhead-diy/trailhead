@@ -25,12 +25,14 @@
     "scripts/.*\\.sh$",
     ".*\\.test\\.(ts|tsx|js|jsx)$",
     ".*/__tests__/.*$",
-    "tests/.*$"
+    "tests/.*$",
+    "pnpm-lock\\.yaml$",
+    "package-lock\\.json$",
+    "yarn\\.lock$"
   ],
   "packageMappings": {
-    "cli": "@esteban-url/trailhead-cli",
-    "web-ui": "@esteban-url/trailhead-web-ui",
-    "create-trailhead-cli": "@esteban-url/create-trailhead-cli"
+    "cli": "@esteban-url/cli",
+    "create-cli": "@esteban-url/create-cli"
   },
   "testCommand": "pnpm test",
   "monorepoMode": true,

@@ -14,24 +14,24 @@ Utilities for creating and executing CLI commands with options, subcommands, and
 
 ## Overview
 
-| Property    | Value                                |
-| ----------- | ------------------------------------ |
-| **Package** | `@esteban-url/trailhead-cli`         |
-| **Module**  | `@esteban-url/trailhead-cli/command` |
-| **Since**   | `v1.0.0`                             |
+| Property    | Value                      |
+| ----------- | -------------------------- |
+| **Package** | `@esteban-url/cli`         |
+| **Module**  | `@esteban-url/cli/command` |
+| **Since**   | `v1.0.0`                   |
 
 ## Import
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@esteban-url/cli/command'
+import type { Command, CommandContext } from '@esteban-url/cli/command'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@esteban-url/cli/command'
+import type { Command, CommandContext } from '@esteban-url/cli/command'
 ```
 
 ## Command Creation
@@ -178,8 +178,8 @@ const userCommand = createCommand({
 Break complex operations into phases with progress tracking.
 
 ```typescript
-import { executeWithPhases } from '@esteban-url/trailhead-cli/command'
-import type { CommandPhase } from '@esteban-url/trailhead-cli/command'
+import { executeWithPhases } from '@esteban-url/cli/command'
+import type { CommandPhase } from '@esteban-url/cli/command'
 
 const phases: CommandPhase<BuildData>[] = [
   {
@@ -217,7 +217,7 @@ const result = await executeWithPhases(
 Execute commands with dry-run preview capability.
 
 ```typescript
-import { executeWithDryRun } from '@esteban-url/trailhead-cli/command'
+import { executeWithDryRun } from '@esteban-url/cli/command'
 
 interface ProcessOptions {
   dryRun?: boolean
@@ -269,7 +269,7 @@ const command = createCommand<ProcessOptions>({
 ### Interactive Execution
 
 ```typescript
-import { executeInteractive } from '@esteban-url/trailhead-cli/command'
+import { executeInteractive } from '@esteban-url/cli/command'
 
 const result = await executeInteractive({
   context,
@@ -292,7 +292,7 @@ const result = await executeInteractive({
 Show formatted results and configuration summaries.
 
 ```typescript
-import { displaySummary } from '@esteban-url/trailhead-cli/command'
+import { displaySummary } from '@esteban-url/cli/command'
 
 const command = createCommand({
   name: 'status',

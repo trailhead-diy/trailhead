@@ -29,8 +29,6 @@
       "@esteban-url/fs/*": ["../../packages/fs/src/*"],
       "@esteban-url/validation": ["../../packages/validation/src"],
       "@esteban-url/validation/*": ["../../packages/validation/src/*"],
-      "@esteban-url/web-ui": ["../../packages/web-ui/src"],
-      "@esteban-url/web-ui/*": ["../../packages/web-ui/src/*"],
       "@esteban-url/create-cli": ["../../packages/create-cli/src"],
       "@esteban-url/create-cli/*": ["../../packages/create-cli/src/*"]
     }

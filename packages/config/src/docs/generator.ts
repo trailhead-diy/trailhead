@@ -1,4 +1,4 @@
-// Legacy type definitions for backwards compatibility
+// Type definitions
 // Note: Main implementations are in zod-generator.ts
 
 export interface JsonSchemaOutput {

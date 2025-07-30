@@ -321,17 +321,19 @@ const generateZodFieldDocumentation = (
     while (unwrapped instanceof z.ZodOptional || unwrapped instanceof z.ZodDefault) {
       if (unwrapped instanceof z.ZodOptional) {
         isOptional = true
-        unwrapped = unwrapped._def.innerType
+        unwrapped = unwrapped.unwrap() as z.ZodTypeAny
       }
       if (unwrapped instanceof z.ZodDefault) {
-        defaultValue = unwrapped._def.defaultValue()
-        unwrapped = unwrapped._def.innerType
+        const def = (unwrapped as any)._def
+        defaultValue =
+          typeof def.defaultValue === 'function' ? def.defaultValue() : def.defaultValue
+        unwrapped = unwrapped.removeDefault() as z.ZodTypeAny
       }
     }
 
     const zodTypeName = unwrapped.constructor.name
     const type = getZodTypeString(unwrapped)
-    const description = (fieldSchema as any)._def?.description
+    const description = (fieldSchema as any).description || (fieldSchema as any)._def?.description
     const examples = (fieldSchema as any)._def?.examples || []
 
     // Extract constraints
@@ -597,7 +599,8 @@ const generateFieldExample = (schema: z.ZodTypeAny): unknown => {
 
   // Check for default value
   if (schema instanceof z.ZodDefault) {
-    return schema._def.defaultValue()
+    const def = (schema as any)._def
+    return typeof def.defaultValue === 'function' ? def.defaultValue() : def.defaultValue
   }
 
   // Generate based on type
@@ -686,14 +689,17 @@ export const generateZodJsonSchema = (
 const zodSchemaToJsonSchemaProperty = (schema: z.ZodTypeAny): ZodJsonSchemaProperty => {
   // Handle optional and default wrappers
   if (schema instanceof z.ZodOptional) {
-    return zodSchemaToJsonSchemaProperty(schema._def.innerType)
+    return zodSchemaToJsonSchemaProperty(schema.unwrap() as z.ZodTypeAny)
   }
 
   if (schema instanceof z.ZodDefault) {
-    const property = zodSchemaToJsonSchemaProperty(schema._def.innerType)
+    const def = (schema as any)._def
+    const defaultValue =
+      typeof def.defaultValue === 'function' ? def.defaultValue() : def.defaultValue
+    const property = zodSchemaToJsonSchemaProperty(schema.removeDefault() as z.ZodTypeAny)
     return {
       ...property,
-      default: schema._def.defaultValue(),
+      default: defaultValue,
     }
   }
 
@@ -726,7 +732,7 @@ const zodSchemaToJsonSchemaProperty = (schema: z.ZodTypeAny): ZodJsonSchemaPrope
   if (schema instanceof z.ZodArray) {
     return {
       type: 'array',
-      items: zodSchemaToJsonSchemaProperty(schema._def.type),
+      items: zodSchemaToJsonSchemaProperty(schema.element as z.ZodTypeAny),
     }
   }
 

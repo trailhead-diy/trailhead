@@ -1,13 +1,13 @@
 # Trailhead
 
-> Modern toolkit for building production-ready CLIs and themeable UI libraries
+> Modern toolkit for building production-ready CLIs with functional programming patterns
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![PNPM](https://img.shields.io/badge/PNPM-10.12+-orange.svg)](https://pnpm.io/)
 [![Turborepo](https://img.shields.io/badge/Turborepo-2.5+-red.svg)](https://turbo.build/)
 
-Trailhead provides modern, type-safe foundations for building robust command-line applications and beautiful UI libraries. Built with functional programming principles, comprehensive testing utilities, and advanced theming capabilities.
+Trailhead provides modern, type-safe foundations for building robust command-line applications. Built with functional programming principles, comprehensive testing utilities, and explicit error handling.
 
 ## Quick Start
 
@@ -30,18 +30,17 @@ const myCommand = createCommand({
 });
 ```
 
-### UI Library
+### Create Your Own CLI
 
 ```bash
-# Install the enhanced Catalyst UI library
-pnpm add @esteban-url/web-ui
+# Generate a new CLI project
+pnpm create @esteban-url/cli my-cli
 
-# Interactive setup with professional CLI
-npx trailhead-ui install
+# Navigate to your project
+cd my-cli
 
-# Start using enhanced components with advanced theming
-import { Button } from './components/ui/button';
-import { ThemeProvider } from './components/ui/theme';
+# Start developing
+pnpm dev
 ```
 
 ## What's Included
@@ -54,17 +53,17 @@ import { ThemeProvider } from './components/ui/theme';
 - **Rich developer experience** - Progress tracking, spinners, and beautiful output
 - **Type safety** - Full TypeScript support with strict error handling
 
-### 🎨 [@esteban-url/web-ui](./packages/web-ui) - Enhanced Catalyst UI
+### 🚀 [@esteban-url/create-cli](./packages/create-cli) - CLI Project Generator
 
-- **Advanced theming system** - 21 predefined themes with runtime switching
-- **Semantic color tokens** - Consistent theming across all components
-- **Professional CLI tooling** - Interactive installation and code transforms
-- **1:1 Catalyst compatibility** - All 26 components with enhanced TypeScript support
-- **OKLCH color space** - Perceptual uniformity for beautiful themes
+- **Quick project scaffolding** - Generate production-ready CLI projects in seconds
+- **Best practices built-in** - Pre-configured with TypeScript, testing, and linting
+- **Flexible templates** - Choose between minimal and full-featured templates
+- **Monorepo support** - Optimized for both standalone and monorepo development
+- **Interactive setup** - Guided configuration with sensible defaults
 
 ### 🚀 Demo Applications
 
-- **[Next.js Demo](./apps/demos/next)** - Showcase all UI components with theme switching
+- **[Next.js Demo](./apps/demos/next)** - Example Next.js application structure
 - **[RedwoodJS SDK Demo](./apps/demos/rwsdk)** - Edge-ready deployment with Waku SSR
 
 ## Architecture
@@ -73,7 +72,7 @@ import { ThemeProvider } from './components/ui/theme';
 trailhead/
 ├── packages/
 │   ├── cli/                    # @esteban-url/cli - Functional CLI framework
-│   └── web-ui/                 # @esteban-url/web-ui - Enhanced Catalyst UI
+│   └── create-cli/             # @esteban-url/create-cli - CLI generator
 ├── apps/demos/
 │   ├── next/                   # Next.js demo application
 │   └── rwsdk/                  # RedwoodJS SDK demo
@@ -97,13 +96,13 @@ trailhead/
 - **🎨 Beautiful Output**: Chalk styling, progress bars, and spinners
 - **🔧 Modular**: Tree-shakeable subpath exports
 
-### UI Library Highlights
+### Create CLI Highlights
 
-- **🎨 Advanced Theming**: Functional theme builder with OKLCH colors
-- **🎯 Semantic Tokens**: Hierarchical color system preserving visual consistency
-- **⚡ Runtime Switching**: Change themes without page reload
-- **🛠️ Professional CLI**: Smart framework detection and interactive setup
-- **🔄 AST Transforms**: Convert hardcoded colors to semantic tokens
+- **🎨 Project Templates**: Pre-configured templates for different CLI types
+- **🎯 Best Practices**: Built-in linting, formatting, and testing setup
+- **⚡ Fast Setup**: Interactive prompts with smart defaults
+- **🛠️ Flexible Output**: Generate standalone or monorepo packages
+- **🔄 Git Ready**: Automatic git initialization with proper .gitignore
 
 ## Development Commands
 
@@ -128,7 +127,7 @@ pnpm format
 
 # Package-specific commands
 pnpm dev --filter=@trailhead/cli
-pnpm test --filter=@esteban-url/trailhead-web-ui
+pnpm test --filter=@esteban-url/create-cli
 ```
 
 ## Getting Started
@@ -137,15 +136,15 @@ pnpm test --filter=@esteban-url/trailhead-web-ui
 
 1. **Install the CLI framework**: `pnpm add @esteban-url/cli`
 2. **Read the guide**: [CLI Framework Documentation](./packages/cli/README.md)
-3. **Explore examples**: Check out [CLI examples](./packages/cli/examples/)
+3. **Read the documentation**: Review the comprehensive API docs
 4. **Build and test**: Use the comprehensive testing utilities
 
-### For UI Development
+### For Creating New CLIs
 
-1. **Install the UI library**: `pnpm add @esteban-url/web-ui`
-2. **Interactive setup**: Run `npx trailhead-ui install`
-3. **Read the guide**: [UI Library Documentation](./packages/web-ui/README.md)
-4. **Explore themes**: Try the 21 predefined themes and create custom ones
+1. **Generate a CLI**: `pnpm create @esteban-url/cli my-awesome-cli`
+2. **Navigate to project**: `cd my-awesome-cli`
+3. **Start developing**: `pnpm dev`
+4. **Read the guide**: [Create CLI Documentation](./packages/create-cli/README.md)
 
 ### For Contributors
 
@@ -184,37 +183,27 @@ const deployCommand = createCommand({
 })
 ```
 
-### Advanced Theme Switching
+### Creating a New CLI Project
 
-```typescript
-import { createTheme, useTheme } from '@esteban-url/web-ui';
+```bash
+# Generate with interactive prompts
+pnpm create @esteban-url/cli my-cli
 
-// Create custom theme
-const brandTheme = createTheme('Brand')
-  .withPrimaryColor('oklch(0.623 0.214 259.815)')
-  .withSecondaryColor('oklch(0.967 0.001 286.375)')
-  .build();
+# Or with options
+pnpm create @esteban-url/cli my-cli \
+  --author "Your Name" \
+  --template full \
+  --git
 
-// Use in components
-function ThemeDemo() {
-  const { setTheme, themes } = useTheme();
-
-  return (
-    <div>
-      {themes.map(theme => (
-        <Button key={theme} onClick={() => setTheme(theme)}>
-          {theme}
-        </Button>
-      ))}
-    </div>
-  );
-}
+# Start developing
+cd my-cli
+pnpm dev
 ```
 
 ## Documentation
 
 - **[CLI Framework Guide](./packages/cli/README.md)** - Complete CLI development guide
-- **[UI Library Guide](./packages/web-ui/README.md)** - Theming and component usage
+- **[Create CLI Guide](./packages/create-cli/README.md)** - CLI project generation
 - **[Development Workflow](./CLAUDE.md)** - Contributing guidelines and principles
 - **[API References](./docs/)** - Detailed API documentation
 

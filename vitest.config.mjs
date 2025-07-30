@@ -10,7 +10,6 @@ export default defineConfig({
       'packages/data',
       'packages/fs',
       'packages/validation',
-      'packages/web-ui',
       'packages/create-cli',
     ],
   },

@@ -55,9 +55,9 @@ const projectNameSchema = z
       ]
       return !reservedNames.includes(name.toLowerCase())
     },
-    (name: string) => ({
-      message: `"${name}" is a reserved name and cannot be used`,
-    })
+    {
+      message: 'Reserved name cannot be used',
+    }
   )
 
 const packageManagerSchema = z.enum(ALLOWED_PACKAGE_MANAGERS)
