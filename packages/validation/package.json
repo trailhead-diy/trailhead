@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",
-    "zod": "^4.0.13"
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@repo/oxlint-config": "workspace:*",

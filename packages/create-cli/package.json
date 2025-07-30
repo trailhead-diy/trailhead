@@ -47,7 +47,7 @@
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",
-    "zod": "^4.0.13"
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@repo/oxlint-config": "workspace:*",
