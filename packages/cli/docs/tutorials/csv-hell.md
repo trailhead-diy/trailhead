@@ -3,14 +3,13 @@ type: tutorial
 title: 'From Spreadsheet Hell to Something You Can Actually Use'
 description: 'Build a real-world CSV transformation CLI that saves your sanity'
 prerequisites:
-  - Node.js 18+ installed
-  - Basic TypeScript knowledge
-  - Experience with messy spreadsheets (unfortunately)
+  - 'Completed getting-started tutorial'
+  - 'Basic understanding of CSV format'
+  - 'Familiarity with data transformation concepts'
 related:
+  - ./getting-started.md
   - ../reference/command.md
-  - ../reference/prompts.md
-  - ../reference/utils.md
-  - ../how-to/functional-patterns.md
+  - ../reference/flow-control.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use
@@ -45,7 +44,7 @@ Most importantly: **It won't crash when your data is garbage** (because it will 
 
 Make sure you have:
 
-- Node.js 18+ (because we live in the modern world)
+- Node.js 18+
 - Basic TypeScript knowledge (you know what `string` means)
 - A healthy sense of humor about data quality (required)
 
@@ -215,7 +214,7 @@ export function transformFields(rows: CSVRow[], fieldMapping: FieldMapping): CSV
 }
 ```
 
-**The magic**: This function renames "First Name " to "firstName" without losing data. Simple but powerful.
+This function renames "First Name " to "firstName" without losing data.
 
 Add the data cleaning function:
 
@@ -745,7 +744,7 @@ Through building this CLI, you've used:
 - **`/config`** - Configuration file handling
 - **`/core`** - Result types and error handling
 
-**The beauty**: Each module does one thing well, and you compose them into something powerful.
+Each module does one thing well, and you compose them together.
 
 ## Next Steps (Because You're Hooked Now)
 
@@ -785,7 +784,7 @@ And it does it all with:
 - Clear error messages
 - Progress feedback
 - No mysterious crashes
-- Beautiful, functional code
+- Functional code
 
 **Welcome to Data Paradise.** Population: You. 🏝️
 
@@ -795,6 +794,6 @@ _Now go forth and process some CSVs with confidence. Your colleagues will wonder
 
 ## Complete Example
 
-You now have all the tools to build a robust CSV processor using the CLI framework. Apply these patterns to your own data processing needs.
+You now have the tools to build a CSV processor using the CLI framework. Apply these patterns to your own data processing needs.
 
 **Happy data processing!** 📊✨

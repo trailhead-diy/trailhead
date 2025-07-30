@@ -4,8 +4,7 @@ title: 'FileSystem Module API Reference'
 description: 'File system abstraction layer from @esteban-url/fs package'
 related:
   - ./core.md
-  - ./testing.md
-  - ../how-to/functional-patterns.md
+  - ../reference/testing.md
 ---
 
 # FileSystem Module API Reference
@@ -391,7 +390,7 @@ const areEqual = await compareFiles(fs, '/file1.txt', '/file2.txt')
 ## Best Practices
 
 1. **Always check Results** - Never assume operations succeed
-2. **Use ensureDir** - For robust directory creation
+2. **Use ensureDir** - For reliable directory creation
 3. **Handle specific errors** - Check error codes for recovery
 4. **Use memory filesystem for tests** - Fast and isolated
 5. **Prefer JSON methods** - For structured data

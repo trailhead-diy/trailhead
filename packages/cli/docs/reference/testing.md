@@ -3,9 +3,8 @@ type: reference
 title: 'Testing Module API Reference'
 description: 'Testing utilities for CLI applications with mocked dependencies and test runners'
 related:
-  - ./command.md
-  - ./utils.md
-  - ../how-to/functional-patterns.md
+  - ./filesystem.md
+  - ../how-to/test-cli-applications.md
 ---
 
 # Testing Module API Reference
@@ -253,7 +252,7 @@ test('processes files correctly', async () => {
 ```typescript
 test('interactive setup', async () => {
   const prompts = mockPrompts({
-    'Project name:': 'awesome-cli',
+    'Project name:': 'my-cli',
     'Choose template:': 'typescript',
     'Install dependencies?': true,
   })
@@ -271,7 +270,7 @@ test('interactive setup', async () => {
   expectResult(result)
 
   // Verify created files
-  expect(await fs.exists('awesome-cli/package.json')).toEqual({
+  expect(await fs.exists('my-cli/package.json')).toEqual({
     success: true,
     value: true,
   })

@@ -3,12 +3,11 @@ type: how-to
 title: 'How to Optimize Import Patterns'
 description: 'Import @esteban-url/cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
 prerequisites:
-  - '@esteban-url/cli installed'
-  - 'Basic understanding of ES modules'
-  - 'Bundler knowledge (esbuild, webpack, etc.)'
+  - 'Node.js ES modules understanding'
+  - 'Basic webpack/bundler knowledge'
 related:
-  - '../reference/command.md'
-  - './optimization-guide.md'
+  - ../tutorials/getting-started.md
+  - ./optimization-guide.md
 ---
 
 # How to Optimize Import Patterns
@@ -20,7 +19,7 @@ This guide shows you how to import @esteban-url/cli modules efficiently to minim
 Before optimizing imports, ensure you have:
 
 - @esteban-url/cli installed in your project
-- A modern bundler (esbuild, webpack 5+, Vite, etc.)
+- A bundler (esbuild, webpack 5+, Vite, etc.)
 - TypeScript configured with `moduleResolution: "bundler"`
 - Understanding of ES module imports vs CommonJS
 

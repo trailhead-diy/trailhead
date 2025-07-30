@@ -4,8 +4,7 @@ title: 'Config Module API Reference'
 description: 'Type-safe configuration management with schema validation and loading strategies'
 related:
   - ./core.md
-  - ../how-to/functional-patterns.md
-  - ../explanation/design-decisions.md
+  - /docs/how-to/apply-functional-patterns.md
 ---
 
 # Config Module API Reference

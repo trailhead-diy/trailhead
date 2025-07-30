@@ -3,9 +3,9 @@ type: reference
 title: 'Core Module API Reference'
 description: 'Result types, error handling, and validation utilities from @esteban-url/core'
 related:
-  - ./command.md
+  - ./flow-control.md
+  - /docs/how-to/apply-functional-patterns.md
   - ../explanation/design-decisions.md
-  - ../how-to/functional-patterns.md
 ---
 
 # Core Module API Reference

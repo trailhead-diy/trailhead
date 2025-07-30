@@ -1,16 +1,16 @@
 ---
 type: reference
 title: 'Type Reference Index'
-description: 'Comprehensive index of all types exported by @esteban-url/trailhead-cli modules'
+description: 'Index of all types exported by @esteban-url/trailhead-cli modules'
 related:
-  - /docs/reference/api/core
-  - /docs/reference/api/command
-  - /docs/reference/api/filesystem
+  - ./core.md
+  - ./command.md
+  - /docs/how-to/apply-functional-patterns.md
 ---
 
 # Type Reference Index
 
-Comprehensive index of all types exported by @esteban-url/trailhead-cli modules.
+Index of all types exported by @esteban-url/trailhead-cli modules.
 
 ## Overview
 

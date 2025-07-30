@@ -3,13 +3,12 @@ type: how-to
 title: 'How to Optimize CLI Performance'
 description: 'Optimize your @esteban-url/trailhead-cli applications for better performance, smaller bundle size, and improved user experience'
 prerequisites:
-  - '@esteban-url/trailhead-cli application built'
-  - 'Basic understanding of bundlers'
-  - 'Node.js performance concepts'
-  - 'Profiling tools knowledge'
+  - 'Working CLI application'
+  - 'Basic performance profiling knowledge'
+  - 'Understanding of Node.js internals'
 related:
-  - '/docs/how-to/import-patterns'
-  - '/docs/reference/api/utils'
+  - ./import-patterns.md
+  - ../reference/utils.md
 ---
 
 # How to Optimize CLI Performance
@@ -332,7 +331,7 @@ const getCachedInMemory = async (key: string): Promise<any | null> => {
 // tsconfig.json for development
 {
   "compilerOptions": {
-    "target": "ES2022", // Modern target for speed
+    "target": "ES2022", // Latest stable target for speed
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

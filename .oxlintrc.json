@@ -14,7 +14,8 @@
     "no-console": "warn",
     "prefer-const": "error",
     "eqeqeq": ["error", "always"],
-    "no-debugger": "error"
+    "no-debugger": "error",
+    "@typescript-eslint/no-explicit-any": "off"
   },
   "ignorePatterns": [
     "dist/**/*",

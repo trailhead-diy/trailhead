@@ -3,9 +3,8 @@ type: reference
 title: 'Utils Module API Reference'
 description: 'Styling, logging, spinners, and statistics tracking utilities for CLI applications'
 related:
-  - ./command.md
-  - ./testing.md
-  - ../how-to/functional-patterns.md
+  - ./core.md
+  - ../how-to/optimization-guide.md
 ---
 
 # Utils Module API Reference

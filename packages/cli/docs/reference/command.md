@@ -3,9 +3,10 @@ type: reference
 title: 'Command Module API Reference'
 description: 'Command creation, execution patterns, and CLI building utilities'
 related:
-  - /docs/reference/api/core
-  - /docs/reference/api/types
-  - /docs/how-to/building-commands
+  - ./core.md
+  - ./types.md
+  - ./command-enhancements.md
+  - ../how-to/migrate-to-command-enhancements.md
 ---
 
 # Command Module API Reference

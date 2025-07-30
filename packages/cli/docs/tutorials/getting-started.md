@@ -3,13 +3,13 @@ type: tutorial
 title: 'Build Your First CLI Application'
 description: 'Create a working CLI tool in 15 minutes using functional programming'
 prerequisites:
-  - Node.js 18+ installed
-  - Basic TypeScript knowledge
-  - Understanding of async/await
+  - 'Node.js 18+ installed'
+  - 'Basic TypeScript knowledge'
+  - 'Understanding of async/await'
 related:
   - ../reference/command.md
   - ../reference/testing.md
-  - ../how-to/functional-patterns.md
+  - /docs/how-to/apply-functional-patterns.md
 ---
 
 # Build Your First CLI Application
@@ -221,6 +221,31 @@ const initCommand = createCommand({
     })
 
     context.logger.success(`Created ${name} with ${template} template`)
+    return Ok(undefined)
+  },
+})
+```
+
+### Use Command Enhancements
+
+Reduce boilerplate with command enhancement utilities:
+
+```typescript
+import { createFileProcessingCommand, commonOptions } from '@esteban-url/trailhead-cli/command'
+
+const processCommand = createFileProcessingCommand({
+  name: 'process',
+  description: 'Process a data file',
+  inputFile: { required: true },
+  commonOptions: ['output', 'format', 'verbose'],
+  action: async (options, context, { inputFile, outputPath, fs }) => {
+    // File validation already done!
+    const data = await parseFile(inputFile, options.format)
+
+    if (outputPath) {
+      await fs.writeFile(outputPath, JSON.stringify(data))
+    }
+
     return Ok(undefined)
   },
 })

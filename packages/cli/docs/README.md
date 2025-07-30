@@ -4,29 +4,27 @@ title: '@esteban-url/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
   - ./tutorials/getting-started.md
-  - ./reference/command.md
+  - ./reference/core.md
   - ./explanation/architecture.md
 ---
 
 # @esteban-url/cli Documentation
 
-This framework provides a robust foundation for building command-line applications using functional programming principles.
+Functional CLI framework for building command-line applications.
 
-## Framework Philosophy
+## Core Principles
 
-@esteban-url/cli is built around four core principles:
-
-- **Functional programming** - Pure functions, immutability, and composition
+- **Functional programming** - Pure functions, immutability, composition
 - **Explicit error handling** - Result types instead of exceptions
-- **Type safety** - Full TypeScript support with strict types
-- **Testability** - Built-in testing utilities and patterns
+- **Type safety** - Strict TypeScript support
+- **Testability** - Built-in testing utilities
 
 ## Documentation Structure
 
 ### Getting Started
 
-- [Quick Start Guide](./tutorials/getting-started.md) - Get up and running in minutes
-- [Architecture Overview](./explanation/architecture.md) - Understand the fundamental principles
+- [Quick Start Guide](./tutorials/getting-started.md)
+- [Architecture Overview](./explanation/architecture.md)
 
 ### API Reference
 
@@ -43,11 +41,11 @@ Complete API documentation for all modules:
 
 ### How-To Guides
 
-Task-oriented guides for common scenarios:
+Task-specific guides:
 
-- [Functional Patterns](./how-to/functional-patterns.md) - Apply FP principles effectively
-- [Import Patterns](./how-to/import-patterns.md) - Structure your CLI imports
-- [Optimization Guide](./how-to/optimization-guide.md) - Build fast CLIs
+- [Functional Patterns](/docs/how-to/apply-functional-patterns.md)
+- [Import Patterns](./how-to/import-patterns.md)
+- [Optimization Guide](./how-to/optimization-guide.md)
 
 ## Key Features
 
@@ -110,29 +108,6 @@ const pipeline = createValidationPipeline([
 ])
 ```
 
-## Framework Philosophy
-
-### Functional Programming First
-
-- **Pure Functions**: Side effects are isolated to the edges
-- **Immutability**: Data structures are never mutated
-- **Composition**: Build complex behavior from simple functions
-- **Explicit Types**: Every function has clear input/output types
-
-### No Hidden Magic
-
-- **Explicit Errors**: All errors are returned as values
-- **No Global State**: All dependencies are injected
-- **No Monkey Patching**: Framework doesn't modify prototypes
-- **Predictable Behavior**: Same inputs always produce same outputs
-
-### Developer Experience
-
-- **Comprehensive Types**: Full IntelliSense support
-- **Clear Error Messages**: Helpful errors with recovery suggestions
-- **Testing Utilities**: Mock implementations for all abstractions
-- **Beautiful Output**: Styled terminal output with Chalk and Ora
-
 ## Quick Examples
 
 ### Basic CLI Application
@@ -145,7 +120,7 @@ import { configCommand } from './commands/config'
 const cli = createCLI({
   name: 'my-app',
   version: '1.0.0',
-  description: 'My awesome CLI tool',
+  description: 'My CLI tool',
   commands: [greetCommand, configCommand],
 })
 

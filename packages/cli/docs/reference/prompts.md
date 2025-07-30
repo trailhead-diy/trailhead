@@ -3,9 +3,8 @@ type: reference
 title: 'Prompts Module API Reference'
 description: 'Interactive user input functionality with inquirer prompts integration'
 related:
-  - ./command.md
-  - ./testing.md
-  - ../how-to/functional-patterns.md
+  - ./core.md
+  - ../tutorials/getting-started.md
 ---
 
 # Prompts Module API Reference
