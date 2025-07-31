@@ -245,7 +245,7 @@ const command: Command = {
     }
 
     spinner.succeed('Complete!')
-    return Ok(undefined)
+    return ok(undefined)
   },
 }
 ```
@@ -293,7 +293,7 @@ const getCachedData = async (key: string, fs: FileSystem): Promise<Result<any>> 
 
     // Use cache if less than 1 hour old
     if (age < 60 * 60 * 1000) {
-      return Ok(data.value)
+      return ok(data.value)
     }
   }
 
@@ -431,10 +431,10 @@ const command: Command = {
       // Report all errors together
       context.logger.error(`${errors.length} operations failed:`)
       errors.forEach((err) => context.logger.error(`  - ${err.message}`))
-      return Err(new Error(`${errors.length} operations failed`))
+      return err(new Error(`${errors.length} operations failed`))
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 }
 ```
@@ -705,7 +705,7 @@ export async function processCommand(options: any, context: CommandContext) {
   // Get file list
   const filesResult = await fs.glob(`${options.input}/**/*`)
   if (!filesResult.success) {
-    return Err(new Error(`Failed to find files: ${filesResult.error.message}`))
+    return err(new Error(`Failed to find files: ${filesResult.error.message}`))
   }
 
   const files = filesResult.value.filter((f) => f.endsWith('.txt'))
@@ -745,10 +745,10 @@ export async function processCommand(options: any, context: CommandContext) {
       context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`)
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   } catch (error) {
     spinner.fail('Processing failed')
-    return Err(new Error(`Processing failed: ${error.message}`))
+    return err(new Error(`Processing failed: ${error.message}`))
   }
 }
 
