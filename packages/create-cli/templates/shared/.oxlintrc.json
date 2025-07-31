@@ -1,4 +1,4 @@
 {
   "$schema": "https://oxc-project.github.io/oxlint/schema.json",
-  "extends": "@repo/oxlint-config/.oxlintrc.json"
+  "extends": "/.oxlintrc.json"
 }
