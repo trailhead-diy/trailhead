@@ -121,22 +121,19 @@ async function startApp() {
 startApp()
 ```
 
-## Step 6: Try Different Sources
+## Step 6: Run Your Application
 
-Run your application with different configurations:
+Run your application to see the configuration in action:
 
 ```bash
-# Use default file configuration
 node dist/index.js
+```
 
-# Override with environment variables
-APP_SERVER_PORT=8080 node dist/index.js
-
-# Override with CLI arguments
-node dist/index.js --server.port=9000 --features.debug=true
-
-# Combine all sources (CLI has highest priority)
-APP_SERVER_PORT=8080 node dist/index.js --server.port=9000
+You should see output like:
+```
+Starting server on localhost:3000
+Database pool size: 10
+Debug mode: false
 ```
 
 ## What You've Learned
@@ -150,7 +147,9 @@ You've successfully:
 
 ## Next Steps
 
-- Explore [schema definition techniques](/docs/how-to/define-schemas)
-- Learn about [configuration sources](/docs/explanation/config-sources)
-- Generate [configuration documentation](/docs/how-to/generate-config-docs)
-- Review the [API reference](/packages/config/docs/reference/api)
+Now that you understand the basics, explore these guides:
+
+- [How to Override Configuration Sources](/docs/how-to/override-config-sources) - Control precedence and override values
+- [How to Define Schemas](/docs/how-to/define-schemas) - Advanced schema techniques
+- [Configuration Sources Explained](/docs/explanation/config-sources) - Deep dive into how sources work
+- [API Reference](/packages/config/docs/reference/api) - Complete API documentation

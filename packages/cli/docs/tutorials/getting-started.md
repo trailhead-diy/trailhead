@@ -7,9 +7,10 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Understanding of async/await'
 related:
-  - /packages/cli/reference/command.md
-  - /packages/cli/reference/testing.md
-  - /docs/how-to/apply-functional-patterns
+  - /packages/cli/docs/how-to/add-file-operations
+  - /packages/cli/docs/how-to/add-interactive-prompts
+  - /packages/cli/docs/how-to/add-configuration
+  - /packages/cli/docs/reference/command
 ---
 
 # Build Your First CLI Application
@@ -167,129 +168,23 @@ async function myAction(options: any, context: CommandContext) {
 }
 ```
 
+## What You've Learned
+
+You've successfully built your first CLI application! You now understand:
+
+- How to create commands with options
+- How to use Result types for error handling
+- How to access command context utilities
+- How to structure a basic CLI application
+
 ## Next Steps
 
-### Add File Operations
+Now that you've completed this tutorial, explore these guides to extend your CLI:
 
-```typescript
-import { ok, err } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { fs } from '@repo/fs'
-
-const readCommand = createCommand({
-  name: 'read',
-  description: 'Read a file',
-  options: [
-    {
-      name: 'file',
-      alias: 'f',
-      type: 'string',
-      required: true,
-      description: 'File to read',
-    },
-  ],
-  action: async (options, context) => {
-    const result = await fs.readFile(options.file)
-
-    if (result.isErr()) {
-      return err(new Error(`Failed to read: ${result.error.message}`))
-    }
-
-    context.logger.info(result.value)
-    return ok(undefined)
-  },
-})
-```
-
-### Add Interactive Prompts
-
-```typescript
-import { ok } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { prompt, select } from '@esteban-url/cli/prompts'
-
-const initCommand = createCommand({
-  name: 'init',
-  description: 'Initialize a project',
-  action: async (options, context) => {
-    const name = await prompt({
-      message: 'Project name:',
-      default: 'my-project',
-    })
-
-    const template = await select({
-      message: 'Choose a template:',
-      choices: ['basic', 'advanced', 'minimal'],
-    })
-
-    context.logger.success(`Created ${name} with ${template} template`)
-    return ok(undefined)
-  },
-})
-```
-
-### File Processing with @repo/fs
-
-Use the file system package for file operations:
-
-```typescript
-import { ok, err } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { fs } from '@repo/fs'
-
-const processCommand = createCommand({
-  name: 'process',
-  description: 'Process a data file',
-  options: [
-    { name: 'input', alias: 'i', type: 'string', required: true, description: 'Input file' },
-    { name: 'output', alias: 'o', type: 'string', description: 'Output file' },
-    { name: 'format', alias: 'f', type: 'string', description: 'Output format' },
-  ],
-  action: async (options, context) => {
-    // Validate input file exists
-    const exists = await fs.exists(options.input)
-    if (exists.isErr()) {
-      return err(new Error(`Input file does not exist: ${options.input}`))
-    }
-
-    // Read and process file
-    const data = await parseFile(options.input, options.format)
-
-    if (options.output) {
-      const writeResult = await fs.writeFile(options.output, JSON.stringify(data))
-      if (writeResult.isErr()) {
-        return err(new Error(`Failed to write output: ${writeResult.error.message}`))
-      }
-    }
-
-    return ok(undefined)
-  },
-})
-```
-
-### Add Configuration
-
-```typescript
-import { createConfigManager } from '@repo/config'
-import { z } from 'zod'
-
-const configSchema = z.object({
-  name: z.string(),
-  version: z.string(),
-  settings: z.object({
-    verbose: z.boolean().default(false),
-    color: z.boolean().default(true),
-  }),
-})
-
-const config = createConfigManager(configSchema)
-
-// In your command
-const result = await config.load()
-if (result.isOk()) {
-  console.log(result.value.name)
-}
-```
+- [How to Add File Operations](/packages/cli/docs/how-to/add-file-operations) - Read, write, and process files
+- [How to Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts) - Make your CLI interactive
+- [How to Add Configuration](/packages/cli/docs/how-to/add-configuration) - Add configuration management
+- [How to Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications) - Write tests for your CLI
 
 ## Complete Example
 
