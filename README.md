@@ -20,6 +20,7 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 ## Choose Your Path
 
 ### 🚀 I want to build a CLI application
+
 **Best for:** Creating command-line tools, build scripts, developer utilities
 
 → **Start here:** [@esteban-url/cli Framework](#cli-framework)  
@@ -27,6 +28,7 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 → **Learn by example:** [Build Your First CLI](./packages/cli/docs/tutorials/getting-started.md)
 
 ### 🔧 I need data processing utilities
+
 **Best for:** File processing, data validation, format conversion
 
 → **Start here:** [Package Ecosystem](#package-ecosystem)  
@@ -34,7 +36,8 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 → **File operations:** [@repo/fs](./packages/fs/README.md)  
 → **Validation:** [@repo/validation](./packages/validation/README.md)
 
-### 📊 I want to scaffold new projects  
+### 📊 I want to scaffold new projects
+
 **Best for:** Generating CLI projects with best practices built-in
 
 → **Start here:** [@esteban-url/create-cli](#create-your-own-cli)  
@@ -42,6 +45,7 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 → **Customization:** [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md)
 
 ### 🤝 I want to contribute to Trailhead
+
 **Best for:** Adding features, fixing bugs, improving documentation
 
 → **Start here:** [Development Workflow](./CLAUDE.md)  
@@ -88,15 +92,15 @@ pnpm dev
 
 ### 🔗 Package Relationship Matrix
 
-| Package | Purpose | Dependencies | Best For |
-|---------|---------|--------------|----------|
-| **[@esteban-url/cli](./packages/cli)** | CLI Framework | `@repo/core`, `@repo/fs`, `@repo/validation` | Building command-line applications |
-| **[@esteban-url/create-cli](./packages/create-cli)** | Project Generator | `@esteban-url/cli` | Scaffolding CLI projects |
-| **[@repo/core](./packages/core)** | Foundation | None | Result types, functional utilities |
-| **[@repo/fs](./packages/fs)** | File System | `@repo/core` | File operations, path utilities |
-| **[@repo/data](./packages/data)** | Data Processing | `@repo/core` | CSV/JSON/Excel processing |
-| **[@repo/validation](./packages/validation)** | Validation | `@repo/core` | Data validation, schema checking |
-| **[@repo/config](./packages/config)** | Configuration | `@repo/core`, `@repo/validation` | Type-safe configuration |
+| Package                                              | Purpose           | Dependencies                                 | Best For                           |
+| ---------------------------------------------------- | ----------------- | -------------------------------------------- | ---------------------------------- |
+| **[@esteban-url/cli](./packages/cli)**               | CLI Framework     | `@repo/core`, `@repo/fs`, `@repo/validation` | Building command-line applications |
+| **[@esteban-url/create-cli](./packages/create-cli)** | Project Generator | `@esteban-url/cli`                           | Scaffolding CLI projects           |
+| **[@repo/core](./packages/core)**                    | Foundation        | None                                         | Result types, functional utilities |
+| **[@repo/fs](./packages/fs)**                        | File System       | `@repo/core`                                 | File operations, path utilities    |
+| **[@repo/data](./packages/data)**                    | Data Processing   | `@repo/core`                                 | CSV/JSON/Excel processing          |
+| **[@repo/validation](./packages/validation)**        | Validation        | `@repo/core`                                 | Data validation, schema checking   |
+| **[@repo/config](./packages/config)**                | Configuration     | `@repo/core`, `@repo/validation`             | Type-safe configuration            |
 
 ### 🎯 When to Use Each Package
 
@@ -115,7 +119,7 @@ import { createCommand } from '@esteban-url/cli/command'
 ```typescript
 // Use @repo/data for format handling
 import { data } from '@repo/data'
-// + @repo/fs for file operations  
+// + @repo/fs for file operations
 // + @repo/validation for data validation
 ```
 
@@ -151,18 +155,18 @@ const processCommand = createCommand({
     // 1. Validate file exists
     const exists = await fs.exists(inputFile)
     if (!exists.value) return err(new Error('File not found'))
-    
+
     // 2. Parse data file
     const parseResult = await data.parseAuto(inputFile)
     if (parseResult.isErr()) return parseResult
-    
+
     // 3. Validate data structure
     const validResult = validate.array(mySchema)(parseResult.value.data)
     if (validResult.isErr()) return validResult
-    
+
     // 4. Write processed data
     return data.writeAuto(outputFile, validResult.value)
-  }
+  },
 })
 ```
 
@@ -178,7 +182,7 @@ import { z } from 'zod'
 const configSchema = z.object({
   apiUrl: z.string().url(),
   timeout: z.number().min(1000).max(30000),
-  features: z.array(z.string())
+  features: z.array(z.string()),
 })
 
 const validateConfig = createSchemaValidator(configSchema)
@@ -190,14 +194,14 @@ const deployCommand = createCommand({
     const configPath = `./config/${env}.json`
     const configResult = await fs.readJson(configPath)
     if (configResult.isErr()) return configResult
-    
+
     // 2. Validate configuration
     const validConfig = validateConfig(configResult.value)
     if (validConfig.isErr()) return validConfig
-    
+
     // 3. Deploy with validated config
     return deployWithConfig(validConfig.value)
-  }
+  },
 })
 ```
 
@@ -214,24 +218,24 @@ const convertCommand = createCommand({
     // 1. Find all data files
     const filesResult = await fs.findFiles('**/*.{csv,json,xlsx}', { cwd: inputDir })
     if (filesResult.isErr()) return filesResult
-    
+
     // 2. Process each file
     const results = await Promise.all(
       filesResult.value.map(async (file) => {
         const inputPath = join(inputDir, file)
         const outputPath = file.replace(/\.[^.]+$/, `.${outputFormat}`)
-        
+
         // Parse original format
         const parseResult = await data.parseAuto(inputPath)
         if (parseResult.isErr()) return parseResult
-        
+
         // Write in new format
         return data.writeAuto(outputPath, parseResult.value.data)
       })
     )
-    
+
     return ok(`Converted ${results.length} files to ${outputFormat}`)
-  }
+  },
 })
 ```
 
@@ -275,7 +279,6 @@ trailhead/
 │   └── rwsdk/                         # RedwoodJS SDK demo
 ├── tooling/                           # Shared development tools
 │   ├── typescript-config/             # Shared TypeScript configurations
-│   ├── oxlint-config/                 # Linting configuration
 │   ├── prettier-config/               # Code formatting
 │   └── vitest-config/                 # Test configuration
 └── docs/                              # Monorepo documentation (Diátaxis framework)
@@ -406,13 +409,13 @@ pnpm dev
 
 ### 📚 Package Documentation
 
-| Package | Quick Start | How-to Guides | API Reference |
-|---------|-------------|---------------|---------------|
-| **CLI Framework** | [Getting Started](./packages/cli/docs/tutorials/getting-started.md) | [Build Complete CLI](./packages/cli/docs/tutorials/build-complete-cli.md) | [Command API](./packages/cli/docs/reference/command.md) |
-| **Create CLI** | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Template API](./packages/create-cli/docs/reference/templates.md) |
-| **Data Processing** | [Data Pipeline Tutorial](./docs/tutorials/data-pipeline-processing.md) | [Convert Data Formats](./docs/how-to/convert-data-formats.md) | [Data API](./packages/data/docs/reference/api.md) |
-| **File Operations** | [File Operations Basics](./docs/tutorials/file-operations-basics.md) | [Atomic File Operations](./docs/how-to/perform-atomic-file-operations.md) | [FS API](./packages/fs/docs/reference/api.md) |
-| **Validation** | [Form Validation Guide](./docs/tutorials/form-validation-guide.md) | [Create Custom Validators](./docs/how-to/create-custom-validators.md) | [Validation API](./packages/validation/docs/reference/api.md) |
+| Package             | Quick Start                                                                 | How-to Guides                                                                | API Reference                                                     |
+| ------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **CLI Framework**   | [Getting Started](./packages/cli/docs/tutorials/getting-started.md)         | [Build Complete CLI](./packages/cli/docs/tutorials/build-complete-cli.md)    | [Command API](./packages/cli/docs/reference/command.md)           |
+| **Create CLI**      | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Template API](./packages/create-cli/docs/reference/templates.md) |
+| **Data Processing** | [Data Pipeline Tutorial](./docs/tutorials/data-pipeline-processing.md)      | [Convert Data Formats](./docs/how-to/convert-data-formats.md)                | [Data API](./packages/data/docs/reference/api.md)                 |
+| **File Operations** | [File Operations Basics](./docs/tutorials/file-operations-basics.md)        | [Atomic File Operations](./docs/how-to/perform-atomic-file-operations.md)    | [FS API](./packages/fs/docs/reference/api.md)                     |
+| **Validation**      | [Form Validation Guide](./docs/tutorials/form-validation-guide.md)          | [Create Custom Validators](./docs/how-to/create-custom-validators.md)        | [Validation API](./packages/validation/docs/reference/api.md)     |
 
 ### 🧭 Find What You Need
 

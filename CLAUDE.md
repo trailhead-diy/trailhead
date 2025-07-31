@@ -120,7 +120,6 @@ trailhead/                            # Root monorepo
 │       ├── next/                    # Next.js demo
 │       └── rwsdk/                   # RedwoodJS SDK demo
 ├── tooling/                         # Internal tooling packages
-│   ├── oxlint-config/              # @repo/oxlint-config - Shared linting
 │   ├── typescript-config/          # @repo/typescript-config - TS configs
 │   ├── prettier-config/            # @repo/prettier-config - Code formatting
 │   └── vitest-config/              # @repo/vitest-config - Test configuration
