@@ -1,7 +1,7 @@
 ---
 type: how-to
-title: 'Migrate to Pipeline Utilities'
-description: 'Replace manual error checking with streamlined pipeline operations'
+title: 'Migrate to Command Execution Patterns'
+description: 'Replace manual error checking with CLI execution patterns'
 prerequisites:
   - Existing code using manual Result checking
   - Understanding of Result types
@@ -9,509 +9,395 @@ prerequisites:
 related:
   - /packages/cli/reference/flow-control.md
   - /packages/cli/how-to/use-result-pipelines
-  - /packages/cli/reference/core.md
+  - /packages/cli/reference/command.md
 ---
 
-# Migrate to Pipeline Utilities
+# Migrate to Command Execution Patterns
 
-This guide shows you how to migrate existing code from manual Result checking to pipeline utilities, eliminating 5-10 lines of boilerplate per operation chain.
+This guide shows you how to migrate existing code from manual Result checking to CLI execution patterns, reducing boilerplate and improving error handling.
 
 ## Identifying Migration Candidates
 
 ### Look for Repetitive Patterns
 
-Common patterns that benefit from pipelines:
+Common patterns that benefit from execution patterns:
 
 ```typescript
-// Pattern 1: Sequential operations with error checking
+// Pattern 1: Batch processing with manual iteration
+for (const item of items) {
+  const result = await processItem(item)
+  if (result.isErr()) {
+    return err(new Error(`Failed on item: ${result.error.message}`))
+  }
+}
+
+// Pattern 2: Sequential operations with error checking
 const step1 = await operation1()
-if (!step1.success) {
-  return Err(new Error(`Step 1 failed: ${step1.error.message}`))
+if (step1.isErr()) {
+  return err(new Error(`Step 1 failed: ${step1.error.message}`))
 }
 
 const step2 = await operation2(step1.value)
-if (!step2.success) {
-  return Err(new Error(`Step 2 failed: ${step2.error.message}`))
+if (step2.isErr()) {
+  return err(new Error(`Step 2 failed: ${step2.error.message}`))
 }
 
-// Pattern 2: Nested error handling
-try {
-  const data = await fetchData()
-  if (!data) {
-    return Err(new Error('No data'))
-  }
-  const processed = await processData(data)
-  if (!processed.success) {
-    return Err(processed.error)
-  }
-  return Ok(processed.value)
-} catch (error) {
-  return Err(error)
+// Pattern 3: Configuration loading with overrides
+const config = await loadConfig(options.config)
+if (config.isErr()) {
+  return config
 }
+const merged = { ...config.value, ...options.override }
+```
 
-// Pattern 3: Multiple async operations
-const results = []
-for (const item of items) {
-  const result = await processItem(item)
-  if (!result.success) {
-    return Err(result.error)
+## Migration Examples
+
+### Batch Processing Migration
+
+#### Before: Manual Iteration
+
+```typescript
+async function processFiles(files: string[]): Promise<Result<ProcessedFile[]>> {
+  const results: ProcessedFile[] = []
+  
+  for (const file of files) {
+    const readResult = await fs.readFile(file)
+    if (readResult.isErr()) {
+      return err(new Error(`Failed to read ${file}: ${readResult.error.message}`))
+    }
+    
+    const processResult = await processContent(readResult.value)
+    if (processResult.isErr()) {
+      return err(new Error(`Failed to process ${file}: ${processResult.error.message}`))
+    }
+    
+    results.push(processResult.value)
   }
-  results.push(result.value)
+  
+  return ok(results)
 }
 ```
 
-## Basic Migration Examples
-
-### Sequential Operations
-
-#### Before: Manual Checking
+#### After: Using executeBatch
 
 ```typescript
-async function transformData(inputFile: string): Promise<Result<void>> {
-  // Read file
-  const readResult = await fs.readFile(inputFile)
-  if (!readResult.success) {
-    return Err(new Error(`Failed to read file: ${readResult.error.message}`))
-  }
+import { executeBatch } from '@esteban-url/cli/command'
 
-  // Parse JSON
-  let parsed
-  try {
-    parsed = JSON.parse(readResult.value)
-  } catch (error) {
-    return Err(new Error(`Invalid JSON: ${error.message}`))
-  }
-
-  // Validate data
-  const validationResult = validateSchema(parsed)
-  if (!validationResult.success) {
-    return Err(new Error(`Validation failed: ${validationResult.error}`))
-  }
-
-  // Transform data
-  const transformed = transformToNewFormat(validationResult.value)
-
-  // Write output
-  const writeResult = await fs.writeFile('output.json', JSON.stringify(transformed))
-  if (!writeResult.success) {
-    return Err(new Error(`Failed to write: ${writeResult.error.message}`))
-  }
-
-  return Ok(undefined)
-}
-```
-
-#### After: Pipeline
-
-```typescript
-import { pipeline } from '@esteban-url/cli/core'
-
-async function transformData(inputFile: string): Promise<Result<void>> {
-  return pipeline(inputFile)
-    .step('Read file', (path) => fs.readFile(path))
-    .step('Parse JSON', (content) => {
-      try {
-        return Ok(JSON.parse(content))
-      } catch (error) {
-        return Err(new Error(`Invalid JSON: ${error.message}`))
+async function processFiles(
+  files: string[],
+  context: CommandContext
+): Promise<Result<ProcessedFile[]>> {
+  return executeBatch(
+    files,
+    async (file) => {
+      const readResult = await fs.readFile(file)
+      if (readResult.isErr()) {
+        return readResult
       }
-    })
-    .step('Validate schema', validateSchema)
-    .map('Transform format', transformToNewFormat)
-    .step('Write output', (data) => fs.writeFile('output.json', JSON.stringify(data)))
-    .execute()
-    .then((result) => (result.success ? Ok(undefined) : result))
+      
+      return processContent(readResult.value)
+    },
+    {
+      batchSize: 5,
+      onProgress: (completed, total) => {
+        context.logger.info(`Processed ${completed}/${total} files`)
+      },
+    },
+    context
+  )
 }
 ```
 
-### Error Context Preservation
+### Sequential Operations Migration
 
-#### Before: Lost Context
-
-```typescript
-async function processUserData(userId: string): Promise<Result<User>> {
-  const fetchResult = await fetchUser(userId)
-  if (!fetchResult.success) {
-    // Original error context is lost
-    return Err(new Error('Failed to fetch user'))
-  }
-
-  const enrichResult = await enrichUserData(fetchResult.value)
-  if (!enrichResult.success) {
-    // Have to manually add context
-    return Err(new Error(`Failed to enrich data for user ${userId}`))
-  }
-
-  return enrichResult
-}
-```
-
-#### After: Automatic Context
+#### Before: Manual Phase Management
 
 ```typescript
-import { pipeline } from '@esteban-url/cli/core'
-
-async function processUserData(userId: string): Promise<Result<User>> {
-  return pipeline({ userId })
-    .step('Fetch user', (ctx) => fetchUser(ctx.userId))
-    .step('Enrich user data', enrichUserData)
-    .onError((error, stepName) => {
-      // Context is automatically preserved
-      console.error(`Failed at "${stepName}" for user ${userId}:`, error)
-      return Err(error)
-    })
-    .execute()
-}
-```
-
-## Migrating Complex Flows
-
-### Conditional Logic
-
-#### Before: Nested Conditions
-
-```typescript
-async function deployApplication(config: DeployConfig): Promise<Result<void>> {
-  const validateResult = await validateConfig(config)
-  if (!validateResult.success) {
-    return Err(validateResult.error)
+async function buildProject(options: BuildOptions): Promise<Result<void>> {
+  console.log('Starting build...')
+  
+  // Validate
+  const validateResult = await validateProject()
+  if (validateResult.isErr()) {
+    return validateResult
   }
-
-  if (config.runTests) {
+  console.log('Validation complete')
+  
+  // Run tests
+  if (!options.skipTests) {
     const testResult = await runTests()
-    if (!testResult.success) {
-      return Err(new Error(`Tests failed: ${testResult.error.message}`))
+    if (testResult.isErr()) {
+      return err(new Error(`Tests failed: ${testResult.error.message}`))
     }
   }
-
-  const buildResult = await buildApplication()
-  if (!buildResult.success) {
-    return Err(new Error(`Build failed: ${buildResult.error.message}`))
+  console.log('Tests passed')
+  
+  // Build
+  const buildResult = await performBuild()
+  if (buildResult.isErr()) {
+    return err(new Error(`Build failed: ${buildResult.error.message}`))
   }
-
-  if (config.environment === 'production') {
-    const approvalResult = await getApproval()
-    if (!approvalResult.success) {
-      return Err(new Error('Deployment not approved'))
+  console.log('Build complete')
+  
+  // Deploy
+  if (options.deploy) {
+    const approved = await confirmDeployment()
+    if (!approved) {
+      return err(new Error('Deployment not approved'))
+    }
+    
+    const deployResult = await deploy()
+    if (deployResult.isErr()) {
+      return err(new Error(`Deploy failed: ${deployResult.error.message}`))
     }
   }
-
-  const deployResult = await deploy(buildResult.value)
-  if (!deployResult.success) {
-    return Err(new Error(`Deploy failed: ${deployResult.error.message}`))
-  }
-
-  return Ok(undefined)
+  
+  return ok(undefined)
 }
 ```
 
-#### After: Clear Flow
+#### After: Using executeWithPhases
 
 ```typescript
-async function deployApplication(config: DeployConfig): Promise<Result<void>> {
-  return pipeline(config)
-    .step('Validate config', validateConfig)
-    .stepIf('Run tests', (cfg) => cfg.runTests, runTests)
-    .step('Build application', buildApplication)
-    .stepIf('Get approval', (cfg) => cfg.environment === 'production', getApproval)
-    .step('Deploy', deploy)
-    .execute()
-    .then((result) => (result.success ? Ok(undefined) : result))
+import { executeWithPhases } from '@esteban-url/cli/command'
+import type { CommandPhase } from '@esteban-url/cli/command'
+
+async function buildProject(
+  options: BuildOptions,
+  context: CommandContext
+): Promise<Result<BuildData>> {
+  const phases: CommandPhase<BuildData>[] = [
+    {
+      name: 'validate',
+      weight: 10,
+      action: async (data) => validateProject(data),
+    },
+    {
+      name: 'test',
+      weight: 30,
+      action: async (data) => {
+        if (options.skipTests) return ok(data)
+        return runTests(data)
+      },
+    },
+    {
+      name: 'build',
+      weight: 40,
+      action: async (data) => performBuild(data),
+    },
+    {
+      name: 'deploy',
+      weight: 20,
+      action: async (data) => {
+        if (!options.deploy) return ok(data)
+        const approved = await confirmDeployment()
+        if (!approved) {
+          return err(createCliError('deployment_cancelled', 'Deployment not approved'))
+        }
+        return deploy(data)
+      },
+    },
+  ]
+  
+  return executeWithPhases(phases, initialBuildData, context)
 }
 ```
 
-### Parallel Operations
+### Configuration Management Migration
 
-#### Before: Sequential Processing
-
-```typescript
-async function gatherMetrics(servers: string[]): Promise<Result<Metrics>> {
-  const cpuResult = await fetchCPUMetrics(servers)
-  if (!cpuResult.success) {
-    return Err(new Error(`CPU metrics failed: ${cpuResult.error.message}`))
-  }
-
-  const memoryResult = await fetchMemoryMetrics(servers)
-  if (!memoryResult.success) {
-    return Err(new Error(`Memory metrics failed: ${memoryResult.error.message}`))
-  }
-
-  const diskResult = await fetchDiskMetrics(servers)
-  if (!diskResult.success) {
-    return Err(new Error(`Disk metrics failed: ${diskResult.error.message}`))
-  }
-
-  return Ok({
-    cpu: cpuResult.value,
-    memory: memoryResult.value,
-    disk: diskResult.value,
-  })
-}
-```
-
-#### After: Parallel Execution
+#### Before: Manual Config Loading
 
 ```typescript
-import { pipeline, parallel } from '@esteban-url/cli/core'
-
-async function gatherMetrics(servers: string[]): Promise<Result<Metrics>> {
-  return pipeline(servers)
-    .step('Fetch all metrics', (servers) =>
-      parallel({
-        cpu: () => fetchCPUMetrics(servers),
-        memory: () => fetchMemoryMetrics(servers),
-        disk: () => fetchDiskMetrics(servers),
-      })
-    )
-    .execute()
-}
-```
-
-## Migrating Error Handling
-
-### Standardizing Error Messages
-
-#### Before: Inconsistent Errors
-
-```typescript
-async function processFile(path: string): Promise<Result<void>> {
-  if (!(await fileExists(path))) {
-    return Err(new Error(`File not found: ${path}`))
-  }
-
-  const content = await readFile(path)
-  if (!content) {
-    return Err(new Error(`Could not read file ${path}`))
-  }
-
-  if (!isValidFormat(content)) {
-    return Err(new Error('Invalid file format'))
-  }
-
-  return Ok(undefined)
-}
-```
-
-#### After: Error Templates
-
-```typescript
-import { pipeline, errorTemplates } from '@esteban-url/cli/core'
-
-async function processFile(path: string): Promise<Result<void>> {
-  return pipeline(path)
-    .step('Check file exists', async (path) => {
-      const exists = await fileExists(path)
-      return exists ? Ok(path) : Err(errorTemplates.fileNotFound(path))
-    })
-    .step('Read file', async (path) => {
-      const content = await readFile(path)
-      return content ? Ok(content) : Err(errorTemplates.permissionDenied(path, 'read'))
-    })
-    .step('Validate format', (content) => {
-      return isValidFormat(content)
-        ? Ok(content)
-        : Err(errorTemplates.invalidFormat('file', 'JSON', 'unknown'))
-    })
-    .execute()
-    .then((result) => (result.success ? Ok(undefined) : result))
-}
-```
-
-## Testing Migration
-
-### Update Test Patterns
-
-#### Before: Complex Test Setup
-
-```typescript
-it('handles errors correctly', async () => {
-  const mockFs = {
-    readFile: jest.fn().mockResolvedValue(Err(new Error('Read failed'))),
-  }
-
-  const result = await processData('test.json', mockFs)
-
-  expect(result.success).toBe(false)
-  expect(result.error.message).toContain('Read failed')
-  expect(mockFs.readFile).toHaveBeenCalledWith('test.json')
-})
-```
-
-#### After: Cleaner Tests
-
-```typescript
-it('handles errors correctly', async () => {
-  const mockFs = {
-    readFile: jest.fn().mockResolvedValue(Err(new Error('Read failed'))),
-  }
-
-  const pipeline = createPipeline('test.json').step('Read file', (path) => mockFs.readFile(path))
-
-  const result = await pipeline.execute()
-
-  expect(result).toBeErr()
-  expect(result.error.message).toBe('Read failed')
-})
-```
-
-## Gradual Migration Strategy
-
-### Phase 1: Identify Hotspots
-
-```typescript
-// Mark functions for migration - identify functions with multiple error checks
-async function complexOperation() {
-  // Original function with 8 separate error checks
-  // This is a candidate for pipeline migration
-  const step1 = await validateInput(input)
-  if (step1.isErr()) return step1
-
-  const step2 = await processData(step1.value)
-  if (step2.isErr()) return step2
-
-  const step3 = await transformResult(step2.value)
-  if (step3.isErr()) return step3
-
-  // ... 5 more similar error checks ...
-
-  return finalResult
-}
-```
-
-### Phase 2: Create Wrapper Functions
-
-```typescript
-// Keep old function during transition
-async function processDataLegacy(input: string): Promise<Result<Output>> {
-  // ... original implementation ...
-}
-
-// New pipeline version
-async function processData(input: string): Promise<Result<Output>> {
-  return pipeline(input)
-    .step('Parse', parse)
-    .step('Validate', validate)
-    .step('Transform', transform)
-    .execute()
-}
-
-// Temporary delegation
-async function processDataCompat(input: string): Promise<Result<Output>> {
-  if (useNewPipeline) {
-    return processData(input)
-  }
-  return processDataLegacy(input)
-}
-```
-
-### Phase 3: Update Tests
-
-```typescript
-describe('processData', () => {
-  // Test both implementations during migration
-  describe.each([
-    ['legacy', processDataLegacy],
-    ['pipeline', processData],
-  ])('%s implementation', (name, implementation) => {
-    it('processes valid data', async () => {
-      const result = await implementation('{"valid": true}')
-      expect(result).toBeOk()
-    })
-  })
-})
-```
-
-### Phase 4: Remove Legacy Code
-
-Once all tests pass with the pipeline version, remove the legacy implementation.
-
-## Common Pitfalls
-
-### 1. Forgetting to Return Results
-
-```typescript
-// Wrong: Forgetting to return
-.step('Process', async (data) => {
-  processData(data) // Missing return!
-})
-
-// Correct: Always return Result
-.step('Process', async (data) => {
-  return processData(data)
-})
-```
-
-### 2. Mixing Patterns
-
-```typescript
-// Avoid: Don't mix manual checking with pipelines
-return pipeline(data)
-  .step('Step 1', step1)
-  .execute()
-  .then(async (result) => {
-    if (!result.success) return result
-    // Don't do manual checking here!
-    const step2Result = await step2(result.value)
-    if (!step2Result.success) {
-      return Err(step2Result.error)
+async function loadAppConfig(options: ConfigOptions): Promise<Result<AppConfig>> {
+  let config: AppConfig = getDefaultConfig()
+  
+  // Load from file if specified
+  if (options.configFile) {
+    const fileResult = await fs.readFile(options.configFile)
+    if (fileResult.isErr()) {
+      return err(new Error(`Failed to load config: ${fileResult.error.message}`))
     }
-    return step2Result
-  })
-
-// Better: Use pipeline throughout
-return pipeline(data).step('Step 1', step1).step('Step 2', step2).execute()
+    
+    try {
+      const fileConfig = JSON.parse(fileResult.value)
+      config = { ...config, ...fileConfig }
+    } catch (error) {
+      return err(new Error(`Invalid config JSON: ${error.message}`))
+    }
+  }
+  
+  // Apply preset
+  if (options.preset) {
+    const presetConfig = getPreset(options.preset)
+    if (!presetConfig) {
+      return err(new Error(`Unknown preset: ${options.preset}`))
+    }
+    config = { ...config, ...presetConfig }
+  }
+  
+  // Apply overrides
+  if (options.override) {
+    config = { ...config, ...options.override }
+  }
+  
+  return ok(config)
+}
 ```
 
-### 3. Losing Type Information
+#### After: Using executeWithConfiguration
 
 ```typescript
-// Preserve types through context
-interface ProcessContext {
-  input: string
-  parsed?: ParsedData
-  validated?: ValidatedData
-}
+import { executeWithConfiguration } from '@esteban-url/cli/command'
 
-pipeline<ProcessContext>({ input: data })
-  .step('Parse', async (ctx) => {
-    const parsed = await parse(ctx.input)
-    return Ok({ ...ctx, parsed })
-  })
-  .step('Validate', async (ctx) => {
-    // TypeScript knows ctx.parsed exists
-    const validated = await validate(ctx.parsed!)
-    return Ok({ ...ctx, validated })
-  })
+async function runWithConfig(
+  options: ConfigOptions,
+  context: CommandContext
+): Promise<Result<void>> {
+  return executeWithConfiguration(
+    options,
+    async (path) => {
+      if (!path) return ok(getDefaultConfig())
+      
+      const content = await fs.readFile(path)
+      if (content.isErr()) return content
+      
+      try {
+        return ok(JSON.parse(content.value))
+      } catch (error) {
+        return err(createDataError('parse', `Invalid JSON: ${error.message}`))
+      }
+    },
+    async (config) => {
+      // Your main logic with merged config
+      return runApplication(config)
+    },
+    context
+  )
+}
+```
+
+### Dry Run Support Migration
+
+#### Before: Manual Dry Run Handling
+
+```typescript
+async function deployApplication(options: DeployOptions): Promise<Result<void>> {
+  if (options.dryRun) {
+    console.log('[DRY RUN] Would deploy to:', options.environment)
+    console.log('[DRY RUN] Would update services:', options.services.join(', '))
+    return ok(undefined)
+  }
+  
+  // Actual deployment
+  const result = await performDeployment(options)
+  if (result.isErr()) {
+    return err(new Error(`Deployment failed: ${result.error.message}`))
+  }
+  
+  return ok(undefined)
+}
+```
+
+#### After: Using executeWithDryRun
+
+```typescript
+import { executeWithDryRun } from '@esteban-url/cli/command'
+
+async function deployApplication(
+  options: DeployOptions,
+  context: CommandContext
+): Promise<Result<void>> {
+  return executeWithDryRun(
+    async () => {
+      // This only runs if not in dry-run mode
+      return performDeployment(options)
+    },
+    options.dryRun,
+    context
+  )
+}
 ```
 
 ## Migration Checklist
 
-- [ ] Identify functions with 3+ sequential operations
-- [ ] Count manual error checks (if statements)
-- [ ] Look for repeated error message patterns
-- [ ] Find parallel operations running sequentially
-- [ ] Create pipeline version alongside original
-- [ ] Update tests to cover both versions
-- [ ] Run performance comparisons
-- [ ] Switch to pipeline version
-- [ ] Remove legacy code
+### 1. Identify Patterns
 
-## Performance Considerations
+- [ ] Batch processing loops → `executeBatch`
+- [ ] Sequential operations → `executeWithPhases`
+- [ ] Config loading logic → `executeWithConfiguration`
+- [ ] Dry run conditions → `executeWithDryRun`
+- [ ] Validation logic → `executeWithValidation`
+- [ ] File operations → `executeFileSystemOperations`
 
-Pipelines add minimal overhead:
+### 2. Add Command Context
 
 ```typescript
-// Benchmark results (typical)
-// Manual checking: 1.2ms
-// Pipeline: 1.3ms
-// Overhead: ~0.1ms (8%)
+// Before
+async function myOperation(options: Options): Promise<Result<void>>
 
-// For CPU-intensive operations, overhead is negligible
-// For I/O operations, overhead is < 1%
+// After
+async function myOperation(
+  options: Options,
+  context: CommandContext
+): Promise<Result<void>>
+```
+
+### 3. Update Error Handling
+
+```typescript
+// Before
+return err(new Error('Something failed'))
+
+// After
+return err(createCliError('operation_failed', 'Something failed'))
+```
+
+### 4. Add Progress Tracking
+
+```typescript
+// Utilize context.logger for progress
+context.logger.info('Starting operation...')
+context.logger.success('Operation completed')
+```
+
+## Benefits After Migration
+
+1. **Reduced Boilerplate**: ~50% less error checking code
+2. **Consistent Progress**: Automatic progress tracking
+3. **Better Error Context**: Errors include operation context
+4. **Dry Run Support**: Built-in preview mode
+5. **Atomic Operations**: Automatic rollback for file operations
+
+## Common Pitfalls
+
+### Don't Mix Patterns
+
+```typescript
+// ❌ Bad: Mixing manual and pattern-based
+const result = await executeBatch(items, processor, options, context)
+if (!result.success) {  // Wrong property!
+  return err(new Error('Failed'))
+}
+
+// ✅ Good: Use Result methods
+const result = await executeBatch(items, processor, options, context)
+if (result.isErr()) {
+  return result
+}
+```
+
+### Remember Context
+
+```typescript
+// ❌ Bad: Forgetting context parameter
+await executeWithPhases(phases, data)
+
+// ✅ Good: Include context
+await executeWithPhases(phases, data, context)
 ```
 
 ## Next Steps
 
-- Explore [Pipeline Features](/packages/cli/how-to/use-result-pipelines)
-- Learn about [Error Templates](/packages/cli/how-to/handle-errors-in-cli)
-- Review [Flow Control Reference](/packages/cli/reference/flow-control)
+- Review [Command Execution Patterns](/packages/cli/how-to/use-result-pipelines)
+- Study [API Reference](/packages/cli/reference/flow-control)
+- Explore [Command Testing](/packages/cli/how-to/test-cli-applications)
