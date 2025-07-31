@@ -3,9 +3,8 @@ type: reference
 title: 'Prompts Module API Reference'
 description: 'Interactive user input functionality with inquirer prompts integration'
 related:
-  - ./command.md
-  - ./testing.md
-  - ../how-to/functional-patterns.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/tutorials/getting-started
 ---
 
 # Prompts Module API Reference
@@ -260,7 +259,7 @@ if (type === 'library') {
 import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
 
 const fs = createFileSystem()
-const templatesResult = await fs.readdir('./templates')
+const templatesResult = await fs.readdir('/docs/reference/templates/tutorial-template')
 
 if (templatesResult.success) {
   const template = await select({
@@ -376,6 +375,6 @@ interface Choice<T = string> {
 
 ## See Also
 
-- [Getting Started](../getting-started.md) - Interactive CLI example
-- [Common Patterns](../how-to/common-patterns.md) - Prompt patterns
-- [Testing Guide](../how-to/testing-guide.md) - Testing interactive CLIs
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Interactive CLI example
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Prompt patterns
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing interactive CLIs

@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 A modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes in public API—just pure functions and immutable data.
 
@@ -42,7 +42,7 @@ npx create-cli my-cli
 
 ```typescript
 import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/cli/core'
+import { ok, err } from '@esteban-url/core'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -69,7 +69,7 @@ await greetCommand.execute(['--name', 'World'])
 ### Result Types - No Exceptions
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/cli/core'
+import { Result, ok, err } from '@esteban-url/core'
 
 // Functions return Results instead of throwing
 async function deployApp(env: string): Promise<Result<string, Error>> {
@@ -87,7 +87,7 @@ async function deployApp(env: string): Promise<Result<string, Error>> {
 
 // Handle results explicitly
 const result = await deployApp('staging')
-if (result.isOk()) {
+if (result.isok()) {
   console.log(result.value)
 } else {
   console.error('Deploy failed:', result.error.message)
@@ -132,20 +132,25 @@ const buildCommand = createCommand({
 
 ## Module Reference
 
-### Core (`@esteban-url/cli/core`)
+### Main Export (`@esteban-url/cli`)
 
-Result types, error handling, and validation pipelines
+The main export provides CLI creation and basic Result types:
 
 ```typescript
-import { Result, ok, err, createValidationPipeline } from '@esteban-url/cli/core'
+import { createCLI, ok, err } from '@esteban-url/cli'
+import type { Result, CoreError } from '@esteban-url/cli'
 
-// Create validation pipeline
-const validateUser = createValidationPipeline([
-  (data) => (data.email ? ok(data) : err(new Error('Email required'))),
-  (data) => (data.email.includes('@') ? ok(data) : err(new Error('Invalid email'))),
-  (data) => (data.age >= 18 ? ok(data) : err(new Error('Must be 18+'))),
-])
+// Create a CLI application
+const cli = createCLI({
+  name: 'my-app',
+  version: '1.0.0',
+  commands: [
+    /* your commands */
+  ],
+})
 ```
+
+**Note**: For extended Result utilities, use `@esteban-url/core` directly.
 
 ### Command (`@esteban-url/cli/command`)
 
@@ -298,9 +303,9 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { createFileSystem } from '@esteban-url/cli/filesystem'
+import { fs } from '@esteban-url/fs'
 
-const fs = createFileSystem()
+// Use @esteban-url/fs package for file operations
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -311,11 +316,11 @@ if (readResult.isOk()) {
   console.error('Failed to read config:', readResult.error.message)
 }
 
-// Batch operations
-const copyResult = await fs.copyFiles([
-  { from: 'src/template.tsx', to: 'dist/template.tsx' },
-  { from: 'src/styles.css', to: 'dist/styles.css' },
-])
+// File operations with Result types
+const copyResult = await fs.copy('src/template.tsx', 'dist/template.tsx')
+if (copyResult.isErr()) {
+  console.error('Copy failed:', copyResult.error.message)
+}
 ```
 
 ## Testing Best Practices
@@ -362,7 +367,7 @@ test('processes configuration file', async () => {
   const context = createTestContext({ fileSystem: mockFs })
   const result = await processProject('/project', context)
 
-  expect(result.isOk()).toBe(true)
+  expect(result.isok()).toBe(true)
   expect(mockFs.exists('/project/dist/index.js')).toBe(true)
 })
 ```
@@ -436,25 +441,31 @@ pnpm validate
 
 ## Examples
 
-Check out the [documentation](./docs/) for comprehensive guides and API references.
+Check out the [documentation](/packages/cli/docs/README.md)for comprehensive guides and API references.
 
 ## Migration Guide
 
 ### From Commander.js
 
+**Before (Legacy Pattern):**
+
 ```typescript
-// Before (Commander.js)
+// Commander.js with exception-based error handling
 program
   .command('deploy')
   .option('-e, --env <env>', 'Environment')
   .action((options) => {
     if (!options.env) {
-      throw new Error('Environment required')
+      throw new Error('Environment required') // ❌ Exception-based
     }
-    deploy(options.env)
+    deploy(options.env) // ❌ No error handling
   })
+```
 
-// After (@esteban-url/cli)
+**After (Modern Pattern):**
+
+```typescript
+// @esteban-url/cli with Result-based error handling
 const deployCommand = createCommand({
   name: 'deploy',
   options: {
@@ -462,35 +473,41 @@ const deployCommand = createCommand({
   },
   action: async ({ env }) => {
     const result = await deploy(env)
-    return result // Returns Result<T, E>
+    return result // ✅ Returns Result<T, E>
   },
 })
 ```
 
 ### From Yargs
 
+**Before (Legacy Pattern):**
+
 ```typescript
-// Before (Yargs)
+// Yargs with try/catch error handling
 yargs.command(
   'build [env]',
   'Build project',
   (yargs) => yargs.positional('env', { type: 'string' }),
   (argv) => {
     try {
-      build(argv.env)
+      build(argv.env) // ❌ Exception-based
     } catch (error) {
-      console.error(error.message)
-      process.exit(1)
+      console.error(error.message) // ❌ Manual error handling
+      process.exit(1) // ❌ Hard exit
     }
   }
 )
+```
 
-// After (@esteban-url/cli)
+**After (Modern Pattern):**
+
+```typescript
+// @esteban-url/cli with Result-based error handling
 const buildCommand = createCommand({
   name: 'build',
   arguments: [{ name: 'env', type: 'string', description: 'Target environment' }],
   action: async ({ env }) => {
-    return build(env) // Returns Result<T, E>
+    return build(env) // ✅ Returns Result<T, E>
   },
 })
 ```
@@ -505,4 +522,4 @@ const buildCommand = createCommand({
 
 ## License
 
-MIT - see [LICENSE](../../LICENSE) for details.
+MIT - see [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE) for details.

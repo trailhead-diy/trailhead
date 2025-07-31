@@ -3,13 +3,14 @@ type: tutorial
 title: 'Build Your First CLI Application'
 description: 'Create a working CLI tool in 15 minutes using functional programming'
 prerequisites:
-  - Node.js 18+ installed
-  - Basic TypeScript knowledge
-  - Understanding of async/await
+  - 'Node.js 18+ installed'
+  - 'Basic TypeScript knowledge'
+  - 'Understanding of async/await'
 related:
-  - ../reference/command.md
-  - ../reference/testing.md
-  - ../how-to/functional-patterns.md
+  - /packages/cli/docs/how-to/add-file-operations
+  - /packages/cli/docs/how-to/add-interactive-prompts
+  - /packages/cli/docs/how-to/add-configuration
+  - /packages/cli/docs/reference/command
 ---
 
 # Build Your First CLI Application
@@ -52,18 +53,20 @@ npm install @esteban-url/cli
 ### For Monorepo Development
 
 ```bash
-pnpm add @esteban-url/trailhead-cli --workspace
+pnpm add @esteban-url/cli --workspace
 ```
 
 ## Important: Import Strategy
 
-@esteban-url/trailhead-cli uses **subpath exports** for optimal tree-shaking. This means:
+@esteban-url/cli uses **subpath exports** for optimal tree-shaking. This means:
 
-- The main export (`@esteban-url/trailhead-cli`) contains only Result types and `createCLI`
+- The main export (`@esteban-url/cli`) contains only `createCLI` and basic Result types (`ok`, `err`)
 - All other functionality must be imported from specific subpaths
+- Extended Result utilities should be imported from `@esteban-url/core`
+- File operations should use `@esteban-url/fs` directly
 - This keeps your bundle size minimal
 
-See the [Import Patterns Guide](./how-to/import-patterns.md) for complete details.
+See the [Import Patterns Guide](/packages/cli/docs/how-to/import-patterns.md)for complete details.
 
 ## Your First CLI Application
 
@@ -74,9 +77,9 @@ Let's build a simple greeting CLI that demonstrates core concepts.
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { ok } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandContext } from '@esteban-url/cli/command'
 
 export const greetCommand = createCommand({
   name: 'greet',
@@ -92,7 +95,7 @@ export const greetCommand = createCommand({
   ],
   action: async (options, context: CommandContext) => {
     context.logger.info(`Hello, ${options.name}!`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -103,7 +106,7 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@esteban-url/cli'
 import { greetCommand } from './commands/greet'
 
 const cli = createCLI({
@@ -134,13 +137,13 @@ node dist/index.js greet --name World
 @esteban-url/trailhead-cli uses Result types for explicit error handling:
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
+import { ok, err } from '@esteban-url/cli'
 
 // Success
-return Ok(data)
+return ok(data)
 
 // Error
-return Err(new Error('Something went wrong'))
+return err(new Error('Something went wrong'))
 ```
 
 ### Command Context
@@ -148,7 +151,7 @@ return Err(new Error('Something went wrong'))
 Every command receives a context with useful utilities:
 
 ```typescript
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import type { CommandContext } from '@esteban-url/cli/command'
 
 async function myAction(options: any, context: CommandContext) {
   // Logger for output
@@ -156,7 +159,8 @@ async function myAction(options: any, context: CommandContext) {
   context.logger.success('Done!')
   context.logger.error('Failed!')
 
-  // File system access
+  // File system access via fs package
+  // Note: Use @repo/fs package for file operations
   const result = await context.fs.readFile('config.json')
 
   // Project root directory
@@ -164,91 +168,23 @@ async function myAction(options: any, context: CommandContext) {
 }
 ```
 
+## What You've Learned
+
+You've successfully built your first CLI application! You now understand:
+
+- How to create commands with options
+- How to use Result types for error handling
+- How to access command context utilities
+- How to structure a basic CLI application
+
 ## Next Steps
 
-### Add File Operations
+Now that you've completed this tutorial, explore these guides to extend your CLI:
 
-```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-
-const readCommand = createCommand({
-  name: 'read',
-  description: 'Read a file',
-  options: [
-    {
-      name: 'file',
-      alias: 'f',
-      type: 'string',
-      required: true,
-      description: 'File to read',
-    },
-  ],
-  action: async (options, context) => {
-    const fs = createFileSystem()
-    const result = await fs.readFile(options.file)
-
-    if (!result.success) {
-      return Err(new Error(`Failed to read: ${result.error.message}`))
-    }
-
-    context.logger.info(result.value)
-    return Ok(undefined)
-  },
-})
-```
-
-### Add Interactive Prompts
-
-```typescript
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { prompt, select } from '@esteban-url/trailhead-cli/prompts'
-
-const initCommand = createCommand({
-  name: 'init',
-  description: 'Initialize a project',
-  action: async (options, context) => {
-    const name = await prompt({
-      message: 'Project name:',
-      default: 'my-project',
-    })
-
-    const template = await select({
-      message: 'Choose a template:',
-      choices: ['basic', 'advanced', 'minimal'],
-    })
-
-    context.logger.success(`Created ${name} with ${template} template`)
-    return Ok(undefined)
-  },
-})
-```
-
-### Add Configuration
-
-```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
-import { z } from 'zod'
-
-const configSchema = z.object({
-  name: z.string(),
-  version: z.string(),
-  settings: z.object({
-    verbose: z.boolean().default(false),
-    color: z.boolean().default(true),
-  }),
-})
-
-const config = defineConfig(configSchema)
-
-// In your command
-const result = await config.load()
-if (result.success) {
-  console.log(result.value.name)
-}
-```
+- [How to Add File Operations](/packages/cli/docs/how-to/add-file-operations.md)- Read, write, and process files
+- [How to Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts.md)- Make your CLI interactive
+- [How to Add Configuration](/packages/cli/docs/how-to/add-configuration.md)- Add configuration management
+- [How to Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications.md)- Write tests for your CLI
 
 ## Complete Example
 
@@ -256,10 +192,10 @@ Here's a minimal but complete CLI application:
 
 ```typescript
 #!/usr/bin/env node
-import { Ok, Err, createCLI } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import { prompt } from '@esteban-url/trailhead-cli/prompts'
+import { ok, err, createCLI } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import { fs } from '@repo/fs'
+import { prompt } from '@esteban-url/cli/prompts'
 
 const mainCommand = createCommand({
   name: 'process',
@@ -272,19 +208,18 @@ const mainCommand = createCommand({
     })
 
     // Read file
-    const fs = createFileSystem()
     const result = await fs.readFile(filename)
 
-    if (!result.success) {
+    if (result.isErr()) {
       context.logger.error(`Failed to read ${filename}`)
-      return result
+      return err(result.error)
     }
 
     // Process content
     const lines = result.value.split('\n').length
     context.logger.success(`Processed ${lines} lines from ${filename}`)
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 
@@ -300,7 +235,7 @@ cli.run(process.argv)
 
 ## Learn More
 
-- [Import Patterns](./how-to/import-patterns.md) - Master the import system
-- [Command Reference](./reference/command.md) - All command options
-- [Testing Guide](./how-to/testing-guide.md) - Test your CLI
-- [API Reference](../reference/) - Complete API documentation
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Master the import system
+- [Command Reference](/packages/cli/docs/reference/command.md)- All command options
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Test your CLI
+- [API Reference](/packages/cli/docs/reference/command.md)- Complete API documentation

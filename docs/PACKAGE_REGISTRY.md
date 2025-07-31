@@ -15,7 +15,7 @@ The Trailhead packages are published to GitHub Packages, which requires authenti
 ## Configuration Files
 
 - **`.npmrc`** - Base pnpm configuration (no authentication required)
-- **`.npmrc.github`** - GitHub Packages authentication (requires GITHUB_TOKEN)
+- **`.npmrc.github`** - GitHub Packages authentication (requires `GITHUB_TOKEN`)
 - **`.npmrc.local`** - Local overrides (git ignored)
 
 ## For Contributors
@@ -32,7 +32,7 @@ The base `.npmrc` configuration will work for all development tasks.
 1. **Set up GitHub Token**:
 
    ```bash
-   export GITHUB_TOKEN=your_github_token
+   export GITHUB_TOKEN="your_github_token"
    ```
 
 2. **Use the setup script** (recommended):
@@ -55,7 +55,7 @@ The GitHub Actions workflows automatically handle authentication:
 
 ## Troubleshooting
 
-### "Failed to replace env in config: ${GITHUB_TOKEN}"
+### Failed to replace env in config: `${GITHUB_TOKEN}`
 
 This warning is harmless and can be ignored. It occurs when:
 
@@ -67,7 +67,7 @@ To suppress the warning locally:
 
 ```bash
 # Option 1: Set a dummy token
-export GITHUB_TOKEN=not-needed
+export GITHUB_TOKEN="not-needed"
 
 # Option 2: Use base configuration only
 mv .npmrc .npmrc.backup
@@ -79,5 +79,5 @@ grep -v "npm.pkg.github.com" .npmrc.backup > .npmrc
 If you need to install published @trailhead packages:
 
 1. Create a GitHub personal access token with `read:packages` scope
-2. Set `GITHUB_TOKEN` environment variable
+2. Set GITHUB_TOKEN environment variable
 3. Run `./scripts/setup-npm-auth.sh`

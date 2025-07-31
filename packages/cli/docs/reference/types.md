@@ -1,16 +1,16 @@
 ---
 type: reference
 title: 'Type Reference Index'
-description: 'Comprehensive index of all types exported by @esteban-url/trailhead-cli modules'
+description: 'Index of all types exported by @esteban-url/trailhead-cli modules'
 related:
-  - /docs/reference/api/core
-  - /docs/reference/api/command
-  - /docs/reference/api/filesystem
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/reference/command.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Type Reference Index
 
-Comprehensive index of all types exported by @esteban-url/trailhead-cli modules.
+Index of all types exported by @esteban-url/trailhead-cli modules.
 
 ## Overview
 
@@ -280,5 +280,5 @@ function isValidationError(error: unknown): error is ValidationError
 
 ## See Also
 
-- [Import Patterns](../how-to/import-patterns.md) - How to import types
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- How to import types
 - Individual module references for detailed type documentation

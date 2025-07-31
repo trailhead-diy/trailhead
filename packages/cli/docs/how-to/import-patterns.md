@@ -3,12 +3,11 @@ type: how-to
 title: 'How to Optimize Import Patterns'
 description: 'Import @esteban-url/cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
 prerequisites:
-  - '@esteban-url/cli installed'
-  - 'Basic understanding of ES modules'
-  - 'Bundler knowledge (esbuild, webpack, etc.)'
+  - 'Node.js ES modules understanding'
+  - 'Basic webpack/bundler knowledge'
 related:
-  - '../reference/command.md'
-  - './optimization-guide.md'
+  - /packages/cli/docs/tutorials/getting-started
+  - /packages/cli/docs/how-to/optimization-guide
 ---
 
 # How to Optimize Import Patterns
@@ -20,7 +19,7 @@ This guide shows you how to import @esteban-url/cli modules efficiently to minim
 Before optimizing imports, ensure you have:
 
 - @esteban-url/cli installed in your project
-- A modern bundler (esbuild, webpack 5+, Vite, etc.)
+- A bundler (esbuild, webpack 5+, Vite, etc.)
 - TypeScript configured with `moduleResolution: "bundler"`
 - Understanding of ES module imports vs CommonJS
 
@@ -456,16 +455,16 @@ Ensure your `tsconfig.json` supports subpath imports:
 
 ## Related Tasks
 
-- **[Performance Optimization](./optimization-guide.md)**: Further optimize your CLI performance
-- **[Bundle Analysis](./bundle-analysis.md)**: Analyze and debug bundle size issues
-- **[Module Loading](./module-loading.md)**: Advanced module loading patterns
+- \*_[Performance Optimization](/packages/cli/docs/how-to/optimization-guide.md)_: Further optimize your CLI performance
+- \*_[Bundle Analysis](/packages/cli/docs/how-to/optimization-guide.md)_: Analyze and debug bundle size issues
+- \*_[Module Loading](/packages/cli/docs/how-to/import-patterns.md)_: Advanced module loading patterns
 
 ## Reference
 
-- [Package Exports Reference](../reference/api/index.md) - All available exports
-- [Module Architecture](../reference/architecture.md) - How modules are structured
-- [Build Configuration](../reference/build-config.md) - Bundler configurations
+- [Package Exports Reference](/packages/cli/docs/reference/command.md)- All available exports
+- [Module Architecture](/packages/cli/docs/explanation/architecture.md)- How modules are structured
+- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler configurations
 
 ---
 
-**See also**: [Architecture Explanation](../explanation/architecture.md) for understanding why subpath exports improve performance
+**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding why subpath exports improve performance

@@ -8,10 +8,9 @@ prerequisites:
   - 'Git knowledge'
   - 'Basic TypeScript familiarity'
 related:
-  - /docs/reference/documentation-standards.md
-  - /docs/reference/writing-guide.md
   - /packages/cli/docs/README.md
   - /packages/create-cli/docs/README.md
+  - /docs/README.md
 ---
 
 # How to Contribute to Trailhead

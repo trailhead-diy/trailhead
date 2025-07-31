@@ -17,10 +17,17 @@
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --log-level=error --ignore-path .gitignore --ignore-pattern \"**/*.hbs\" ",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --log-level=error --ignore-path .gitignore --ignore-pattern \"**/*.hbs\"",
+    "ci:run": "./scripts/ci-optimal.sh",
+    "ci:local": "./scripts/ci-optimal.sh",
+    "ci:affected": "TURBO_ARGS='--affected' ./scripts/ci-optimal.sh",
+    "ci:quick": "turbo lint types test --affected --cache-dir=.turbo --concurrency=100%",
+    "ci:watch": "turbo watch lint types test",
     "docs:validate": "tsx tooling/docs-tooling/src/validate-docs.ts",
     "docs:lint": "vale docs && markdownlint docs/**/*.md",
     "docs:coverage": "tsx tooling/docs-tooling/src/validate-docs.ts --coverage",
     "docs:new": "tsx tooling/docs-tooling/src/create-doc.ts",
+    "docs:validate-links": "tsx tooling/docs-tooling/src/validate-links.ts",
+    "docs:fix-links": "tsx tooling/docs-tooling/src/fix-links.ts",
     "changeset": "changeset",
     "changeset:add": "changeset add",
     "changeset:status": "changeset status --verbose",
@@ -38,7 +45,10 @@
     "prepare": "lefthook install",
     "lefthook": "lefthook",
     "lefthook:install": "lefthook install",
-    "lefthook:uninstall": "lefthook uninstall"
+    "lefthook:uninstall": "lefthook uninstall",
+    "docs:dev": "turbo dev --filter=@repo/docs",
+    "docs:build": "turbo build --filter=@repo/docs",
+    "docs:serve": "turbo serve --filter=@repo/docs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
@@ -69,6 +79,8 @@
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
+      "core-js",
+      "core-js-pure",
       "esbuild",
       "lefthook"
     ]

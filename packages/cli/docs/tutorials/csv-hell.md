@@ -3,14 +3,13 @@ type: tutorial
 title: 'From Spreadsheet Hell to Something You Can Actually Use'
 description: 'Build a real-world CSV transformation CLI that saves your sanity'
 prerequisites:
-  - Node.js 18+ installed
-  - Basic TypeScript knowledge
-  - Experience with messy spreadsheets (unfortunately)
+  - 'Completed getting-started tutorial'
+  - 'Basic understanding of CSV format'
+  - 'Familiarity with data transformation concepts'
 related:
-  - ../reference/command.md
-  - ../reference/prompts.md
-  - ../reference/utils.md
-  - ../how-to/functional-patterns.md
+  - /packages/cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/reference/flow-control.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use
@@ -45,7 +44,7 @@ Most importantly: **It won't crash when your data is garbage** (because it will 
 
 Make sure you have:
 
-- Node.js 18+ (because we live in the modern world)
+- Node.js 18+
 - Basic TypeScript knowledge (you know what `string` means)
 - A healthy sense of humor about data quality (required)
 
@@ -58,7 +57,7 @@ Let's start with a proper project structure. No dumping everything in one file l
 ```bash
 mkdir csv-processor && cd csv-processor
 npm init -y
-npm install @esteban-url/trailhead-cli papaparse yaml
+npm install @esteban-url/cli @repo/fs @repo/data papaparse yaml
 npm install -D @types/node @types/papaparse tsx typescript
 ```
 
@@ -159,29 +158,31 @@ Create `src/lib/csv-parser.ts`. This is where the magic happens:
 import { readFile, writeFile } from 'fs/promises'
 import Papa from 'papaparse'
 import { stringify as stringifyYaml } from 'yaml'
-import { Ok, Err, Result } from '@esteban-url/trailhead-cli'
+import { ok, err, Result } from '@esteban-url/cli'
 import type { CSVRow, FieldMapping, OutputFormat } from './types.js'
 
 export async function parseCSV(filePath: string): Promise<Result<CSVRow[], Error>> {
-  try {
-    const content = await readFile(filePath, 'utf-8')
+  const fileReadResult = await readFile(filePath, 'utf-8')
+    .then((content) => ok(content))
+    .catch((error) => err(new Error(`Failed to read CSV file: ${error.message}`)))
 
-    const result = Papa.parse(content, {
-      header: true, // First row becomes column names
-      skipEmptyLines: true, // Ignore completely empty rows
-      transform: (value: string) => value.trim(), // Auto-trim whitespace!
-      dynamicTyping: false, // Keep everything as strings for consistency
-    })
-
-    if (result.errors.length > 0) {
-      const errorMessages = result.errors.map((err) => `Row ${err.row}: ${err.message}`).join(', ')
-      return Err(new Error(`CSV parsing errors: ${errorMessages}`))
-    }
-
-    return Ok(result.data as CSVRow[])
-  } catch (error) {
-    return Err(new Error(`Failed to read CSV file: ${(error as Error).message}`))
+  if (!fileReadResult.success) {
+    return fileReadResult
   }
+
+  const result = Papa.parse(fileReadResult.value, {
+    header: true, // First row becomes column names
+    skipEmptyLines: true, // Ignore completely empty rows
+    transform: (value: string) => value.trim(), // Auto-trim whitespace!
+    dynamicTyping: false, // Keep everything as strings for consistency
+  })
+
+  if (result.errors.length > 0) {
+    const errorMessages = result.errors.map((err) => `Row ${err.row}: ${err.message}`).join(', ')
+    return err(new Error(`CSV parsing errors: ${errorMessages}`))
+  }
+
+  return ok(result.data as CSVRow[])
 }
 ```
 
@@ -215,7 +216,7 @@ export function transformFields(rows: CSVRow[], fieldMapping: FieldMapping): CSV
 }
 ```
 
-**The magic**: This function renames "First Name " to "firstName" without losing data. Simple but powerful.
+This function renames "First Name " to "firstName" without losing data.
 
 Add the data cleaning function:
 
@@ -255,43 +256,42 @@ export async function writeOutput(
   outputPath: string,
   format: OutputFormat
 ): Promise<Result<void, Error>> {
-  try {
-    let output: string
+  let output: string
 
-    switch (format) {
-      case 'json':
-        output = JSON.stringify(data, null, 2)
-        break
+  switch (format) {
+    case 'json':
+      output = JSON.stringify(data, null, 2)
+      break
 
-      case 'yaml':
-        output = stringifyYaml(data)
-        break
+    case 'yaml':
+      output = stringifyYaml(data)
+      break
 
-      case 'csv':
-        output = Papa.unparse(data, {
-          header: true,
-          delimiter: ',',
-          quotes: true, // Quote all fields for safety
-        })
-        break
+    case 'csv':
+      output = Papa.unparse(data, {
+        header: true,
+        delimiter: ',',
+        quotes: true, // Quote all fields for safety
+      })
+      break
 
-      case 'tsv':
-        output = Papa.unparse(data, {
-          header: true,
-          delimiter: '\t',
-          quotes: false, // TSV typically doesn't quote
-        })
-        break
+    case 'tsv':
+      output = Papa.unparse(data, {
+        header: true,
+        delimiter: '\t',
+        quotes: false, // TSV typically doesn't quote
+      })
+      break
 
-      default:
-        return Err(new Error(`Unsupported output format: ${format}`))
-    }
-
-    await writeFile(outputPath, output)
-    return Ok(undefined)
-  } catch (error) {
-    return Err(new Error(`Failed to write output: ${(error as Error).message}`))
+    default:
+      return err(new Error(`Unsupported output format: ${format}`))
   }
+
+  const writeResult = await writeFile(outputPath, output)
+    .then(() => ok(undefined))
+    .catch((error) => err(new Error(`Failed to write output: ${error.message}`)))
+
+  return writeResult
 }
 ```
 
@@ -302,11 +302,11 @@ export async function writeOutput(
 Create `src/commands/transform.ts`:
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli';
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command';
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem';
-import { prompt, select } from '@esteban-url/trailhead-cli/prompts';
-import { createTask, createTaskList } from '@esteban-url/trailhead-cli/workflows';
+import { ok, err } from '@esteban-url/cli';
+import { createCommand, type CommandContext } from '@esteban-url/cli/command';
+import { fs } from '@repo/fs';
+import { prompt, select } from '@esteban-url/cli/prompts';
+// Note: Using simpler approach without workflow tasks
 import { parseCSV, transformFields, cleanData, writeOutput } from '../lib/csv-parser.js';
 import type { TransformCommandOptions } from './types.js';
 
@@ -346,7 +346,7 @@ export const transformCommand = createCommand<TransformCommandOptions>({
     const [inputFile] = context.args;
 
     if (!inputFile) {
-      return Err(new Error('Input CSV file is required. Usage: transform <input.csv>'));
+      return err(new Error('Input CSV file is required. Usage: transform <input.csv>'));
     }
 
     const fs = createFileSystem();
@@ -354,7 +354,7 @@ export const transformCommand = createCommand<TransformCommandOptions>({
     // Check if input file exists (fail fast!)
     const fileCheck = await fs.access(inputFile);
     if (!fileCheck.success) {
-      return Err(new Error(`Input file does not exist: ${inputFile}`));
+      return err(new Error(`Input file does not exist: ${inputFile}`));
     }
 ```
 
@@ -440,7 +440,7 @@ Now add the workflow tasks:
 
     context.logger.success(`✅ Successfully transformed ${context_data.totalRows} rows to ${context_data.outputPath}`);
 
-    return Ok(undefined);
+    return ok(undefined);
   },
 });
 ```
@@ -452,43 +452,39 @@ Now add the workflow tasks:
 Create `src/lib/validators.ts`:
 
 ```typescript
-import { Ok, Err, Result } from '@esteban-url/trailhead-cli'
+import { ok, err, Result } from '@esteban-url/cli'
 import type { CSVRow, ValidationResult, ValidationError, ValidationRule } from './types.js'
 
 export function validateData(
   rows: CSVRow[],
   rules: ValidationRule[]
 ): Result<ValidationResult, Error> {
-  try {
-    const errors: ValidationError[] = []
+  const errors: ValidationError[] = []
 
-    rows.forEach((row, rowIndex) => {
-      rules.forEach((rule) => {
-        const value = row[rule.field]
-        const validation = validateField(value, rule, rowIndex + 2) // +2 for header and 1-based
+  rows.forEach((row, rowIndex) => {
+    rules.forEach((rule) => {
+      const value = row[rule.field]
+      const validation = validateField(value, rule, rowIndex + 2) // +2 for header and 1-based
 
-        if (!validation.success && validation.error) {
-          errors.push(validation.error)
-        }
-      })
+      if (!validation.success && validation.error) {
+        errors.push(validation.error)
+      }
     })
+  })
 
-    const summary = {
-      totalRows: rows.length,
-      validRows: rows.length - getUniqueErrorRows(errors).size,
-      errorRows: getUniqueErrorRows(errors).size,
-      warningRows: 0, // We'll add warnings later
-    }
-
-    return Ok({
-      isValid: errors.length === 0,
-      errors,
-      warnings: [], // For now
-      summary,
-    })
-  } catch (error) {
-    return Err(new Error(`Validation failed: ${(error as Error).message}`))
+  const summary = {
+    totalRows: rows.length,
+    validRows: rows.length - getUniqueErrorRows(errors).size,
+    errorRows: getUniqueErrorRows(errors).size,
+    warningRows: 0, // We'll add warnings later
   }
+
+  return ok({
+    isValid: errors.length === 0,
+    errors,
+    warnings: [], // For now
+    summary,
+  })
 }
 
 function validateField(value: any, rule: ValidationRule, rowNumber: number) {
@@ -557,7 +553,7 @@ Create `src/index.ts`:
 ```typescript
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@esteban-url/cli'
 import { transformCommand } from './commands/transform.js'
 
 const cli = createCLI({
@@ -605,7 +601,7 @@ node dist/index.js transform test-data.csv --format json --clean --interactive
 Create `src/commands/validate.ts` (abbreviated for space):
 
 ```typescript
-import { createCommand, type CommandContext } from '@esteban-url/trailhead-cli/command'
+import { createCommand, type CommandContext } from '@esteban-url/cli/command'
 import { validateData } from '../lib/validators.js'
 import type { ValidateCommandOptions } from './types.js'
 
@@ -745,7 +741,7 @@ Through building this CLI, you've used:
 - **`/config`** - Configuration file handling
 - **`/core`** - Result types and error handling
 
-**The beauty**: Each module does one thing well, and you compose them into something powerful.
+Each module does one thing well, and you compose them together.
 
 ## Next Steps (Because You're Hooked Now)
 
@@ -785,7 +781,7 @@ And it does it all with:
 - Clear error messages
 - Progress feedback
 - No mysterious crashes
-- Beautiful, functional code
+- Functional code
 
 **Welcome to Data Paradise.** Population: You. 🏝️
 
@@ -795,6 +791,6 @@ _Now go forth and process some CSVs with confidence. Your colleagues will wonder
 
 ## Complete Example
 
-You now have all the tools to build a robust CSV processor using the CLI framework. Apply these patterns to your own data processing needs.
+You now have the tools to build a CSV processor using the CLI framework. Apply these patterns to your own data processing needs.
 
 **Happy data processing!** 📊✨

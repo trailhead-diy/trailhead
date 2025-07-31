@@ -7,9 +7,9 @@ prerequisites:
   - Basic TypeScript knowledge
   - Familiarity with inquirer/prompts
 related:
-  - ./customize-templates.md
-  - ../reference/schema.md
-  - ../reference/api.md
+  - /packages/create-cli/docs/how-to/customize-templates.md
+  - /packages/cli/docs/reference/config.md
+  - /packages/cli/docs/reference/core.md
 ---
 
 # Add Custom Interactive Prompts
@@ -556,6 +556,6 @@ Some terminals may have issues with Unicode characters or colors.
 
 ## Next Steps
 
-- Learn about [Configuration Defaults](./configure-defaults.md)
-- Explore [Template Customization](./customize-templates.md)
-- Review [API Reference](../reference/api.md)
+- Learn about [Configuration Defaults](/packages/create-cli/docs/how-to/configure-defaults)
+- Explore [Template Customization](/packages/create-cli/docs/how-to/customize-templates)
+- Review [API Reference](/packages/cli/docs/reference/core)

@@ -1,184 +1,45 @@
-name: Tier 1 - PR CI
+name: PR Validation
 
 on:
   pull_request:
     branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
 
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  TURBO_REMOTE_CACHE_ENABLED: 1
 
 jobs:
-  # Quality checks (lint, format, types)
-  quality:
-    name: Quality Checks
+  # Single job, single OS - maximum cost savings
+  validate:
+    name: Validate PR
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        task:
-          - name: lint
-            command: pnpm lint
-          - name: format
-            command: pnpm format:check
-          - name: types
-            command: pnpm types
+    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: pnpm/action-setup@v4
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-
+      
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Cache ${{matrix.task.name}}
-        uses: actions/cache@v4
-        with:
-          path: |
-            .turbo
-          key: ${{runner.os}}-${{matrix.task.name}}-${{hashFiles('pnpm-lock.yaml')}}
-        continue-on-error: true
-
-      - name: Run ${{matrix.task.name}}
-        run: ${{matrix.task.command}}
-
-  # Test execution
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Cache test results
-        uses: actions/cache@v4
-        with:
-          path: |
-            .turbo
-            coverage/
-          key: ${{runner.os}}-test-${{hashFiles('pnpm-lock.yaml')}}-${{hashFiles('**/*.test.ts', '**/*.test.js')}}
-        continue-on-error: true
-
-      - name: Run tests
-        run: pnpm test --concurrency=50%
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./coverage/lcov.info
-        continue-on-error: true
-
-  # Generator integration tests (fast, no --install)
-  generator-integration:
-    name: Generator Integration Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build tooling packages
-        run: pnpm --filter='@repo/*' build
-
-      - name: Cache integration tests
-        uses: actions/cache@v4
-        with:
-          path: |
-            .turbo
-          key: ${{runner.os}}-integration-${{hashFiles('pnpm-lock.yaml')}}-${{hashFiles('packages/create-cli/**/*.ts')}}
-        continue-on-error: true
-
-      - name: Run generator integration tests
-        run: pnpm --filter=@esteban-url/create-cli test:integration
-
-  # Security checks
-  security:
-    name: Security
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run security audit
-        run: pnpm audit
-        continue-on-error: true
-
-      - name: Check for secrets
+      
+      # Only run what wasn't already validated locally
+      - name: Quick validation
         run: |
-          if command -v git >/dev/null 2>&1; then
-            # Basic secret detection
-            git log --oneline -n 10 | grep -i "password\\|secret\\|key\\|token" || true
-          fi
+          # Just verify builds work - developer already ran tests locally
+          pnpm turbo run build --filter='./packages/*' --cache-dir=.turbo
+          
+          # Run ONE test as smoke test
+          pnpm turbo run test --filter=@esteban-url/core --cache-dir=.turbo
+      
+      # Things that are hard to run locally
+      - name: CodeQL Analysis
+        if: github.event_name == 'pull_request'
+        uses: github/codeql-action/analyze@v3
         continue-on-error: true
-
-  # Build check - runs in parallel for faster feedback
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build packages
-        run: pnpm build

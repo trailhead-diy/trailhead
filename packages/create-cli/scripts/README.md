@@ -133,7 +133,7 @@ pnpm test:integration --grep "enterprise.*pnpm"
 
 1. Update test combinations in `integration-matrix.test.ts`
 2. Add corresponding scenarios to `test-generator-full.ts`
-3. Update this documentation
+3. Document the new test scenarios and update examples
 
 ### Debugging Test Failures
 

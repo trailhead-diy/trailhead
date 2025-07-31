@@ -1,12 +1,10 @@
 ---
 type: explanation
-title: # Conceptual title (e.g., "Understanding Result Types")
-description: # One-line summary of the concept being explained
+title: 'Explanation Template'
+description: 'Template for creating explanation documentation following the Diátaxis framework'
 related:
-  # Links to related explanations and practical docs
-  # - /docs/explanation/functional-programming
-  # - /docs/how-to/error-handling
-  # - /docs/reference/api/core
+  - /docs/reference/documentation-standards
+  - /docs/reference/writing-guide
 ---
 
 # Title

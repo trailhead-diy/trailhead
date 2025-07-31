@@ -3,37 +3,19 @@ type: reference
 title: 'Documentation Standards - Diátaxis Framework'
 description: 'Complete specification of documentation standards and Diátaxis framework implementation for Trailhead'
 related:
-  - /docs/reference/writing-guide.md
-  - /docs/reference/review-checklist.md
+  - /docs/explanation/diataxis-framework
   - /docs/reference/templates/
+  - /docs/reference/review-checklist.md
   - /docs/README.md
 ---
 
 # Documentation Standards - Diátaxis Framework
 
-This guide establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these principles to ensure clarity, discoverability, and usefulness.
+This reference establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these standards.
 
-## Overview
+> **Note**: For understanding why we use Diátaxis and how it works, see [Understanding the Diátaxis Framework](/docs/explanation/diataxis-framework).
 
-Diátaxis organizes documentation into four distinct quadrants based on user needs:
-
-```
-       LEARNING                           WORKING
-         ↑                                  ↑
-         |                                  |
-    TUTORIALS ←――――――――――――――――――→ HOW-TO GUIDES
-         |                                  |
-         |        practical                 |
-         |                                  |
-         |        theoretical               |
-         |                                  |
-   EXPLANATION ←――――――――――――――――→ REFERENCE
-         |                                  |
-         ↓                                  ↓
-    UNDERSTANDING                      INFORMATION
-```
-
-## The Four Quadrants
+## Document Categories
 
 ### 1. Tutorials (Learning-Oriented)
 
@@ -203,7 +185,7 @@ prerequisites:
   - Node.js 18+ installed
 related:
   - /docs/reference/api/core # Links to related documentation
-  - /docs/how-to/error-handling
+  - /docs/how-to/contributing/error-handling
 ---
 ```
 
@@ -302,7 +284,7 @@ prerequisites:
   - Basic JavaScript knowledge
 related:
   - /docs/reference/api/cli
-  - /docs/how-to/cli/add-commands
+  - /docs/how-to/contributing/cli/add-commands
 ---
 
 # Build Your First CLI Application
@@ -322,7 +304,7 @@ prerequisites:
   - Familiarity with Result types
 related:
   - /docs/reference/api/validation
-  - /docs/explanation/validation-design
+  - /docs/explanation/functional-architecture/validation-design
 ---
 
 # How to Add Custom Validation Rules
@@ -363,7 +345,7 @@ Documentation standards are enforced through:
 
 - Use `pnpm docs:new` to create documentation from templates
 - Run `pnpm docs:validate` to check your documentation
-- See [WRITING_DOCUMENTATION.md](./WRITING_DOCUMENTATION.md) for quick reference
+- See [Writing Guide](/docs/reference/writing-guide.md)for quick reference
 - Ask in #documentation channel for guidance
 
 Remember: Good documentation serves the user's needs, not the system's structure.

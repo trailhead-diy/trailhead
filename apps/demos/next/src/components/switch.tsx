@@ -10,7 +10,7 @@ export function SwitchGroup({ className, ...props }: React.ComponentPropsWithout
       className={clsx(
         className,
         // Basic groups
-        'space-y-3 **:data-[slot=label]:font-normal',
+        '**:data-[slot=label]:font-normal space-y-3',
         // With descriptions
         'has-data-[slot=description]:space-y-6 has-data-[slot=description]:**:data-[slot=label]:font-medium'
       )}
@@ -153,11 +153,11 @@ export function Switch({
         // Base styles
         'group relative isolate inline-flex h-6 w-10 cursor-default rounded-full p-[3px] sm:h-5 sm:w-8',
         // Transitions
-        'transition duration-0 ease-in-out data-changing:duration-200',
+        'data-changing:duration-200 transition duration-0 ease-in-out',
         // Outline and background color in forced-colors mode so switch is still visible
         'forced-colors:outline forced-colors:[--switch-bg:Highlight] dark:forced-colors:[--switch-bg:Highlight]',
         // Unchecked
-        'bg-zinc-200 ring-1 ring-black/5 ring-inset dark:bg-white/5 dark:ring-white/15',
+        'bg-zinc-200 ring-1 ring-inset ring-black/5 dark:bg-white/5 dark:ring-white/15',
         // Checked
         'data-checked:bg-(--switch-bg) data-checked:ring-(--switch-bg-ring) dark:data-checked:bg-(--switch-bg) dark:data-checked:ring-(--switch-bg-ring)',
         // Focus
@@ -176,7 +176,7 @@ export function Switch({
         aria-hidden="true"
         className={clsx(
           // Basic layout
-          'pointer-events-none relative inline-block size-4.5 rounded-full sm:size-3.5',
+          'size-4.5 pointer-events-none relative inline-block rounded-full sm:size-3.5',
           // Transition
           'translate-x-0 transition duration-200 ease-in-out',
           // Invisible border so the switch is still visible in forced-colors mode

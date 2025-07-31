@@ -7,9 +7,9 @@ prerequisites:
   - Basic knowledge of the module system
   - Familiarity with project structure
 related:
-  - ../reference/templates.md
-  - ../reference/schema.md
-  - ./custom-prompts.md
+  - /packages/create-cli/docs/reference/templates.md
+  - /packages/cli/docs/reference/config.md
+  - /packages/create-cli/docs/how-to/custom-prompts.md
 ---
 
 # Customize Project Templates
@@ -437,6 +437,6 @@ Error: Parse error on line 10
 
 ## Next Steps
 
-- Learn about [Custom Prompts](./custom-prompts.md)
-- Explore [Template Reference](../reference/templates.md)
-- Configure [Default Settings](./configure-defaults.md)
+- Learn about [Custom Prompts](/packages/create-cli/docs/how-to/custom-prompts)
+- Explore [Template Reference](/packages/create-cli/docs/reference/templates)
+- Configure [Default Settings](/packages/create-cli/docs/how-to/configure-defaults)

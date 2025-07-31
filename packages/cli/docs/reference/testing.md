@@ -3,9 +3,8 @@ type: reference
 title: 'Testing Module API Reference'
 description: 'Testing utilities for CLI applications with mocked dependencies and test runners'
 related:
-  - ./command.md
-  - ./utils.md
-  - ../how-to/functional-patterns.md
+  - /packages/cli/docs/reference/filesystem.md
+  - /packages/cli/docs/how-to/test-cli-applications.md
 ---
 
 # Testing Module API Reference
@@ -253,7 +252,7 @@ test('processes files correctly', async () => {
 ```typescript
 test('interactive setup', async () => {
   const prompts = mockPrompts({
-    'Project name:': 'awesome-cli',
+    'Project name:': 'my-cli',
     'Choose template:': 'typescript',
     'Install dependencies?': true,
   })
@@ -271,7 +270,7 @@ test('interactive setup', async () => {
   expectResult(result)
 
   // Verify created files
-  expect(await fs.exists('awesome-cli/package.json')).toEqual({
+  expect(await fs.exists('my-cli/package.json')).toEqual({
     success: true,
     value: true,
   })
@@ -422,6 +421,6 @@ function expectError<E = Error>(result: Result<any>, message?: string): E
 
 ## See Also
 
-- [Testing Guide](../how-to/testing-guide.md) - Testing best practices
-- [Getting Started](../getting-started.md) - Basic testing example
-- [Common Patterns](../how-to/common-patterns.md) - Testing patterns
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing best practices
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Basic testing example
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Testing patterns

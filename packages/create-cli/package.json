@@ -31,8 +31,8 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "types": "tsc --noEmit",
-    "format": "prettier --write . --log-level=error --ignore-path .prettierignore ",
-    "format:check": "prettier --check . --log-level=error --ignore-path .prettierignore",
+    "format": "prettier --write . --log-level=error --ignore-path ../../.prettierignore",
+    "format:check": "prettier --check . --log-level=error --ignore-path ../../.prettierignore",
     "format:templates": "echo 'Note: Templates are formatted during generation via transform-helpers.ts'",
     "clean": "rm -rf dist",
     "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
@@ -50,7 +50,6 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.1.0",

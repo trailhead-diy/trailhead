@@ -6,9 +6,9 @@ prerequisites:
   - Installation of @esteban-url/create-cli
   - Understanding of configuration options
 related:
-  - ../reference/schema.md
-  - ../reference/api.md
-  - ./custom-prompts.md
+  - /packages/cli/docs/reference/config.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/create-cli/docs/how-to/custom-prompts.md
 ---
 
 # Configure Default Settings
@@ -493,6 +493,6 @@ new-package:
 
 ## Next Steps
 
-- Explore [Custom Templates](./customize-templates.md)
-- Learn about [Custom Prompts](./custom-prompts.md)
-- Review [Configuration Schema](../reference/schema.md)
+- Explore [Custom Templates](/packages/create-cli/docs/how-to/customize-templates)
+- Learn about [Custom Prompts](/packages/create-cli/docs/how-to/custom-prompts)
+- Review [Configuration Schema](/packages/cli/docs/reference/config)

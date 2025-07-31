@@ -3,9 +3,9 @@ type: reference
 title: 'Generator API Reference'
 description: 'Programmatic API for @esteban-url/create-cli project generation'
 related:
-  - ./schema.md
-  - ./templates.md
-  - ../how-to/custom-prompts.md
+  - /packages/create-cli/docs/reference/schema.md
+  - /docs/reference/templates/tutorial-template.md
+  - /packages/create-cli/docs/how-to/custom-prompts.md
 ---
 
 # Generator API Reference
@@ -348,6 +348,6 @@ const result = await generateProject(config, {
 
 ## See Also
 
-- [Configuration Schema](./schema.md) - Detailed configuration options
-- [Template System](./templates.md) - Template engine reference
-- [CLI Usage](../tutorials/getting-started.md) - Using via command line
+- [Configuration Schema](/packages/create-cli/docs/reference/schema.md)- Detailed configuration options
+- [Template System](/docs/reference/templates/tutorial-template.md)- Template engine reference
+- [CLI Usage](/packages/cli/docs/tutorials/getting-started.md)- Using via command line

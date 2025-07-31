@@ -7,9 +7,9 @@ prerequisites:
   - Basic command line knowledge
   - npm or pnpm installed
 related:
-  - ../reference/schema.md
-  - ../how-to/customize-templates.md
-  - ../explanation/templates.md
+  - /packages/cli/docs/reference/config.md
+  - /packages/create-cli/docs/how-to/customize-templates.md
+  - /packages/create-cli/docs/explanation/templates.md
 ---
 
 # Generate Your First CLI Application
@@ -280,9 +280,9 @@ my-awesome-cli greet --name "Your Name"
 
 ### Learn More
 
-- [Template Options](../explanation/templates.md) - Understand the different templates
-- [Customize Templates](../how-to/customize-templates.md) - Modify templates for your team
-- [API Reference](../reference/api.md) - Use the generator programmatically
+- [Template Options](/packages/create-cli/docs/explanation/templates.md)- Understand the different templates
+- [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)- Modify templates for your team
+- [API Reference](/packages/cli/docs/reference/core.md)- Use the generator programmatically
 
 ## Troubleshooting
 
@@ -303,5 +303,5 @@ If you see TypeScript errors:
 ### Need Help?
 
 - Check the [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- Read the [@esteban-url/cli documentation](../../cli/docs/)
+- Read the [@esteban-url/cli documentation](/packages/cli/)
 - Ask in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)

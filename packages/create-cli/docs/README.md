@@ -3,9 +3,9 @@ type: explanation
 title: '@esteban-url/create-cli Documentation Overview'
 description: 'Complete documentation hub for the CLI project generator'
 related:
-  - ./tutorials/getting-started.md
-  - ./reference/api.md
-  - ./how-to/customize-templates.md
+  - /packages/create-cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/core
+  - /packages/create-cli/docs/how-to/customize-templates.md
 ---
 
 # @esteban-url/create-cli Documentation
@@ -25,25 +25,25 @@ The create-cli package provides a modern generator for scaffolding CLI applicati
 
 ### Getting Started
 
-- [Quick Start Guide](./tutorials/getting-started.md) - Generate your first CLI in minutes
-- [Template Overview](./explanation/templates.md) - Understanding available templates
-- [Configuration Options](./reference/config.md) - All generation options
+- [Quick Start Guide](/packages/create-cli/docs/tutorials/getting-started.md)- Generate your first CLI in minutes
+- [Template Overview](/packages/create-cli/docs/explanation/templates.md)- Understanding available templates
+- [Configuration Options](/packages/cli/docs/reference/config.md)- All generation options
 
 ### API Reference
 
 Complete API documentation:
 
-- [Generator API](./reference/api.md) - Programmatic project generation
-- [Configuration Schema](./reference/schema.md) - Project configuration options
-- [Template System](./reference/templates.md) - Template engine and customization
+- [Generator API](/packages/cli/docs/reference/core.md)- Programmatic project generation
+- [Configuration Schema](/packages/create-cli/docs/reference/schema.md)- Project configuration options
+- [Template System](/packages/create-cli/docs/reference/templates.md)- Template engine and customization
 
 ### How-To Guides
 
 Task-oriented guides:
 
-- [Customize Templates](./how-to/customize-templates.md) - Modify or create templates
-- [Add Custom Prompts](./how-to/custom-prompts.md) - Extend interactive setup
-- [Configure Defaults](./how-to/configure-defaults.md) - Set personal preferences
+- [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)- Modify or create templates
+- [Add Custom Prompts](/packages/create-cli/docs/how-to/custom-prompts.md)- Extend interactive setup
+- [Configure Defaults](/packages/create-cli/docs/how-to/configure-defaults.md)- Set personal preferences
 
 ## Key Features
 
@@ -227,10 +227,10 @@ Generated `package.json` includes:
 
 ## Next Steps
 
-1. Follow the [Getting Started Guide](./tutorials/getting-started.md) to generate your first CLI
-2. Explore [Template Options](./explanation/templates.md) for different project types
-3. Learn about [Customization](./how-to/customize-templates.md) for team-specific needs
-4. Check the [API Reference](./reference/api.md) for programmatic usage
+1. Follow the [Getting Started Guide](/packages/create-cli/docs/tutorials/getting-started.md)to generate your first CLI
+2. Explore [Template Options](/packages/create-cli/docs/explanation/templates.md)for different project types
+3. Learn about [Customization](/packages/create-cli/docs/how-to/customize-templates.md)for team-specific needs
+4. Check the [API Reference](/packages/cli/docs/reference/core.md)for programmatic usage
 
 ## Support
 
@@ -240,4 +240,4 @@ Generated `package.json` includes:
 
 ## License
 
-MIT - See [LICENSE](../../../LICENSE)
+MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)

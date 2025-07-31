@@ -1,20 +1,24 @@
 ---
 type: explanation
-title: Understanding the CLI Framework Architecture
-description: Deep dive into the architectural principles and design patterns that make @esteban-url/cli lightweight, testable, and maintainable
+title: 'Understanding the CLI Framework Architecture'
+description: 'Deep dive into the architectural principles and design patterns that make @esteban-url/cli lightweight, testable, and maintainable'
+prerequisites:
+  - 'Basic understanding of functional programming'
+  - 'Familiarity with TypeScript'
+  - 'Understanding of Node.js module system'
 related:
-  - ./design-decisions.md
-  - ../how-to/import-patterns.md
-  - ../reference/core.md
+  - /packages/cli/docs/explanation/design-decisions
+  - /packages/cli/docs/reference/core.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Understanding the CLI Framework Architecture
 
-The architecture of @esteban-url/cli is built on fundamental principles that prioritize developer experience, performance, and maintainability. This explanation explores the conceptual foundations and design patterns that shape how the framework operates.
+@esteban-url/cli uses functional programming principles, explicit error handling, and modular organization.
 
 ## Overview
 
-The @esteban-url/cli architecture represents a modern approach to CLI framework design, emphasizing functional programming patterns, explicit error handling, and modular organization. Rather than following traditional object-oriented patterns, the framework adopts a composition-based architecture that enables superior tree-shaking, testing, and maintainability.
+The framework uses composition-based architecture instead of object-oriented patterns, enabling tree-shaking, testing, and maintainability.
 
 ## Background
 
@@ -294,7 +298,7 @@ The architecture evolved from recognizing the limitations of traditional CLI fra
 1. Started with bundle size concerns from subpath exports
 2. Functional patterns emerged to improve tree-shaking
 3. Result types solved error composition problems
-4. Context injection enabled comprehensive testing
+4. Context injection enabled complete testing
 
 ### Current State
 
@@ -313,18 +317,18 @@ Potential areas for enhancement include:
 
 ### Essential Reading
 
-- [Design Decisions](./design-decisions.md) - Detailed rationale for architectural choices
-- [Functional Patterns Guide](../how-to/functional-patterns.md) - Practical functional programming
+- [Design Decisions](/packages/cli/docs/explanation/design-decisions.md)- Detailed rationale for architectural choices
+- [Functional Patterns Guide](/docs/how-to/apply-functional-patterns.md)- Practical functional programming
 
 ### Practical Application
 
-- [Building Your First CLI](../tutorials/getting-started.md) - Hands-on introduction
-- [Import Patterns](../how-to/import-patterns.md) - Using subpath exports effectively
+- [Building Your First CLI](/packages/cli/docs/tutorials/getting-started.md)- Hands-on introduction
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Using subpath exports effectively
 
 ### Technical Details
 
-- [API Reference](../reference/api/core.md) - Complete function documentation
-- [Type Definitions](../reference/types.md) - TypeScript interface specifications
+- [API Reference](/packages/cli/docs/reference/core.md)- Complete function documentation
+- [Type Definitions](/packages/cli/docs/reference/types.md)- TypeScript interface specifications
 
 ## Discussion
 

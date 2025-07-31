@@ -3,13 +3,12 @@ type: how-to
 title: 'How to Optimize CLI Performance'
 description: 'Optimize your @esteban-url/trailhead-cli applications for better performance, smaller bundle size, and improved user experience'
 prerequisites:
-  - '@esteban-url/trailhead-cli application built'
-  - 'Basic understanding of bundlers'
-  - 'Node.js performance concepts'
-  - 'Profiling tools knowledge'
+  - 'Working CLI application'
+  - 'Basic performance profiling knowledge'
+  - 'Understanding of Node.js internals'
 related:
-  - '/docs/how-to/import-patterns'
-  - '/docs/reference/api/utils'
+  - /packages/cli/docs/how-to/import-patterns
+  - /packages/cli/docs/reference/utils.md
 ---
 
 # How to Optimize CLI Performance
@@ -246,7 +245,7 @@ const command: Command = {
     }
 
     spinner.succeed('Complete!')
-    return Ok(undefined)
+    return ok(undefined)
   },
 }
 ```
@@ -294,7 +293,7 @@ const getCachedData = async (key: string, fs: FileSystem): Promise<Result<any>> 
 
     // Use cache if less than 1 hour old
     if (age < 60 * 60 * 1000) {
-      return Ok(data.value)
+      return ok(data.value)
     }
   }
 
@@ -332,7 +331,7 @@ const getCachedInMemory = async (key: string): Promise<any | null> => {
 // tsconfig.json for development
 {
   "compilerOptions": {
-    "target": "ES2022", // Modern target for speed
+    "target": "ES2022", // Latest stable target for speed
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -432,10 +431,10 @@ const command: Command = {
       // Report all errors together
       context.logger.error(`${errors.length} operations failed:`)
       errors.forEach((err) => context.logger.error(`  - ${err.message}`))
-      return Err(new Error(`${errors.length} operations failed`))
+      return err(new Error(`${errors.length} operations failed`))
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 }
 ```
@@ -706,7 +705,7 @@ export async function processCommand(options: any, context: CommandContext) {
   // Get file list
   const filesResult = await fs.glob(`${options.input}/**/*`)
   if (!filesResult.success) {
-    return Err(new Error(`Failed to find files: ${filesResult.error.message}`))
+    return err(new Error(`Failed to find files: ${filesResult.error.message}`))
   }
 
   const files = filesResult.value.filter((f) => f.endsWith('.txt'))
@@ -746,10 +745,10 @@ export async function processCommand(options: any, context: CommandContext) {
       context.logger.info(`Performance: ${JSON.stringify(summary.timers, null, 2)}`)
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   } catch (error) {
     spinner.fail('Processing failed')
-    return Err(new Error(`Processing failed: ${error.message}`))
+    return err(new Error(`Processing failed: ${error.message}`))
   }
 }
 
@@ -821,15 +820,15 @@ Expected results:
 
 ## Related Tasks
 
-- **[Import Optimization](./import-patterns.md)**: Optimize your import patterns for smaller bundles
-- **[Error Handling](./error-handling.md)**: Implement efficient error handling patterns
-- **[Testing Performance](./testing-cli-apps.md)**: Write fast tests for optimized code
+- \*_[Import Optimization](/packages/cli/docs/how-to/import-patterns.md)_: Optimize your import patterns for smaller bundles
+- \*_[Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)_: Implement efficient error handling patterns
+- \*_[Testing Performance](/packages/cli/docs/how-to/test-cli-applications.md)_: Write fast tests for optimized code
 
 ## Reference
 
-- [Utils API Reference](../reference/api/utils.md) - Performance utilities and stats
-- [FileSystem API Reference](../reference/api/filesystem.md) - Efficient file operations
-- [Build Configuration](../reference/build-config.md) - Bundler optimization settings
+- [Utils API Reference](/packages/cli/docs/reference/utils.md)- Performance utilities and stats
+- [FileSystem API Reference](/packages/cli/docs/reference/filesystem.md)- Efficient file operations
+- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler optimization settings
 
 ### Optimization Tools
 
@@ -853,4 +852,4 @@ Expected results:
 
 ---
 
-**See also**: [Architecture Explanation](../explanation/architecture.md) for understanding the design decisions behind these optimizations
+**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding the design decisions behind these optimizations

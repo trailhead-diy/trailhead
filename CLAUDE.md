@@ -102,7 +102,7 @@ Focus on high-ROI (Return on Investment) tests:
 
 **Dependencies**: Automated updates via Renovate. Keep `pnpm-lock.yaml` synced with `package.json`.
 
-**Documentation**: Follow [Diátaxis framework](docs/README.md). See [documentation standards](docs/reference/documentation-standards.md) for complete guidelines.
+**Documentation**: Follow [Diátaxis framework](/docs/README.md). See [documentation standards](/docs/reference/documentation-standards.md)for complete guidelines.
 
 ## Monorepo Overview
 
@@ -120,7 +120,6 @@ trailhead/                            # Root monorepo
 │       ├── next/                    # Next.js demo
 │       └── rwsdk/                   # RedwoodJS SDK demo
 ├── tooling/                         # Internal tooling packages
-│   ├── oxlint-config/              # @repo/oxlint-config - Shared linting
 │   ├── typescript-config/          # @repo/typescript-config - TS configs
 │   ├── prettier-config/            # @repo/prettier-config - Code formatting
 │   └── vitest-config/              # @repo/vitest-config - Test configuration
@@ -239,10 +238,10 @@ pnpm lint                   # Linting
 
 ### Module Exports
 
-- **Core** (`@esteban-url/cli/core`) - Result types and error handling
+- **Core** (`@esteban-url/core`) - Result types and error handling
 - **Command** (`@esteban-url/cli/command`) - Command creation and execution
-- **FileSystem** (`@esteban-url/cli/filesystem`) - Abstract filesystem operations
-- **Configuration** (`@esteban-url/cli/config`) - Type-safe configuration
+- **FileSystem** (`@esteban-url/fs`) - Abstract filesystem operations
+- **Configuration** (`@esteban-url/config`) - Type-safe configuration
 - **Prompts** (`@esteban-url/cli/prompts`) - Interactive user prompts
 - **Testing** (`@esteban-url/cli/testing`) - Test utilities and mocks
 

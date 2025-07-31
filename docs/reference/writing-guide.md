@@ -3,10 +3,8 @@ type: reference
 title: 'Writing Documentation - Quick Reference'
 description: 'Quick reference guide for writing Diátaxis-compliant documentation in Trailhead'
 related:
-  - /docs/reference/documentation-standards.md
-  - /docs/reference/review-checklist.md
   - /docs/reference/templates/
-  - /docs/how-to/contributing.md
+  - /docs/reference/review-checklist.md
 ---
 
 # Writing Documentation - Quick Reference
@@ -19,12 +17,12 @@ Quick reference for writing documentation that follows Diátaxis principles in t
 
 Ask yourself: **What is the user trying to do?**
 
-| User Intent                               | Type            | Template                                                       |
-| ----------------------------------------- | --------------- | -------------------------------------------------------------- |
-| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](./templates/tutorial-template.md)       |
-| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](./templates/howto-template.md)             |
-| "I need to look up information"           | **Reference**   | [reference-template.md](./templates/reference-template.md)     |
-| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](./templates/explanation-template.md) |
+| User Intent                               | Type            | Template                                                                     |
+| ----------------------------------------- | --------------- | ---------------------------------------------------------------------------- |
+| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](/docs/reference/templates/tutorial-template.md)       |
+| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](/docs/reference/templates/howto-template.md)             |
+| "I need to look up information"           | **Reference**   | [reference-template.md](/docs/reference/templates/reference-template.md)     |
+| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](/docs/reference/templates/explanation-template.md) |
 
 ### 2. Quick Type Check
 
@@ -138,7 +136,7 @@ type: reference
 title: FileSystem API Reference
 description: Complete API reference for FileSystem module
 related:
-  - /docs/how-to/file-operations
+  - /docs/how-to/contributing/file-operations
 ---
 ```
 
@@ -170,7 +168,7 @@ type: explanation
 title: Understanding Result Types
 description: Why we use Result types for error handling
 related:
-  - /docs/how-to/error-handling
+  - /docs/how-to/contributing/error-handling
   - /docs/reference/api/core
 ---
 ```
@@ -203,7 +201,7 @@ related:
 
 | Content                                      | Wrong Type | Right Type  |
 | -------------------------------------------- | ---------- | ----------- |
-| "Let's build a todo app step by step"        | How-To     | Tutorial    |
+| "Tutorial: Building a todo app step by step" | How-To     | Tutorial    |
 | "Here's how the validation system works"     | Tutorial   | Explanation |
 | "To configure SSL, edit config.json"         | Reference  | How-To      |
 | "`function validate(input: string): Result`" | How-To     | Reference   |
@@ -288,9 +286,9 @@ Before submitting documentation:
 
 ### Resources
 
-- [Full Standards](./DOCUMENTATION_STANDARDS.md) - Complete guidelines
-- [Review Checklist](./DOCUMENTATION_REVIEW_CHECKLIST.md) - For reviewers
-- [Templates](./templates/) - Starting points for each type
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Complete guidelines
+- [Review Checklist](/docs/reference/review-checklist.md)- For reviewers
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Starting points for each type
 
 ### Still Stuck?
 

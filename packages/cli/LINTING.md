@@ -8,7 +8,7 @@ This package uses a dual linting approach to provide comprehensive code quality 
 
 - **Purpose**: Fast, comprehensive ESLint-compatible linting
 - **Command**: `pnpm lint` or `pnpm lint:fix`
-- **Configuration**: Uses `@repo/oxlint-config` from monorepo tooling
+- **Configuration**: Uses `.oxlintrc.json` from monorepo tooling
 - **Performance**: ~100x faster than ESLint for standard rules
 
 ### 2. ESLint with neverthrow Plugin (Specialized Linting)

@@ -15,10 +15,11 @@ import {
   detectPackageManager,
   getRunCommand,
   execPackageManagerCommand,
-  getPackageManagerInfo,
   clearPackageManagerCache,
   createPackageManagerCache,
-  SemVer,
+  parseSemVer,
+  compareSemVer,
+  isGreaterThanOrEqual,
 } from './package-manager.js'
 
 // Mock execSync to control command execution
@@ -240,7 +241,7 @@ describe('Package Manager Detection - Core Business Logic', () => {
 })
 
 describe('SemVer Version Comparison', () => {
-  describe('SemVer.parse', () => {
+  describe('parseSemVer', () => {
     it('should parse standard version formats', () => {
       const testCases = [
         { input: '1.2.3', expected: { major: 1, minor: 2, patch: 3 } },
@@ -249,7 +250,7 @@ describe('SemVer Version Comparison', () => {
       ]
 
       testCases.forEach(({ input, expected }) => {
-        const result = SemVer.parse(input)
+        const result = parseSemVer(input)
         expect(result.isOk()).toBe(true)
         if (result.isOk()) {
           expect(result.value.major).toBe(expected.major)
@@ -260,7 +261,7 @@ describe('SemVer Version Comparison', () => {
     })
 
     it('should parse versions with prerelease tags', () => {
-      const result = SemVer.parse('1.2.3-beta.1')
+      const result = parseSemVer('1.2.3-beta.1')
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
@@ -275,7 +276,7 @@ describe('SemVer Version Comparison', () => {
       const invalidVersions = ['invalid', 'v1.x.y']
 
       invalidVersions.forEach((version) => {
-        const result = SemVer.parse(version)
+        const result = parseSemVer(version)
         expect(result.isErr()).toBe(true)
         if (result.isErr()) {
           expect(result.error.type).toBe('PACKAGE_MANAGER_ERROR')
@@ -287,44 +288,54 @@ describe('SemVer Version Comparison', () => {
 
   describe('Version Comparison', () => {
     it('should compare major versions correctly', () => {
-      const v1 = new SemVer(2, 0, 0)
-      const v2 = new SemVer(1, 5, 3)
+      const v1 = { major: 2, minor: 0, patch: 0 }
+      const v2 = { major: 1, minor: 5, patch: 3 }
 
-      expect(v1.isGreaterThanOrEqual(v2)).toBe(true)
-      expect(v2.isGreaterThanOrEqual(v1)).toBe(false)
+      expect(isGreaterThanOrEqual(v1, v2)).toBe(true)
+      expect(isGreaterThanOrEqual(v2, v1)).toBe(false)
+      expect(compareSemVer(v1, v2)).toBe(1)
+      expect(compareSemVer(v2, v1)).toBe(-1)
     })
 
     it('should compare minor versions when major is equal', () => {
-      const v1 = new SemVer(1, 5, 0)
-      const v2 = new SemVer(1, 3, 9)
+      const v1 = { major: 1, minor: 5, patch: 0 }
+      const v2 = { major: 1, minor: 3, patch: 9 }
 
-      expect(v1.isGreaterThanOrEqual(v2)).toBe(true)
-      expect(v2.isGreaterThanOrEqual(v1)).toBe(false)
+      expect(isGreaterThanOrEqual(v1, v2)).toBe(true)
+      expect(isGreaterThanOrEqual(v2, v1)).toBe(false)
+      expect(compareSemVer(v1, v2)).toBe(1)
+      expect(compareSemVer(v2, v1)).toBe(-1)
     })
 
     it('should compare patch versions when major and minor are equal', () => {
-      const v1 = new SemVer(1, 2, 5)
-      const v2 = new SemVer(1, 2, 3)
+      const v1 = { major: 1, minor: 2, patch: 5 }
+      const v2 = { major: 1, minor: 2, patch: 3 }
 
-      expect(v1.isGreaterThanOrEqual(v2)).toBe(true)
-      expect(v2.isGreaterThanOrEqual(v1)).toBe(false)
+      expect(isGreaterThanOrEqual(v1, v2)).toBe(true)
+      expect(isGreaterThanOrEqual(v2, v1)).toBe(false)
+      expect(compareSemVer(v1, v2)).toBe(1)
+      expect(compareSemVer(v2, v1)).toBe(-1)
     })
 
     it('should handle equal versions', () => {
-      const v1 = new SemVer(1, 2, 3)
-      const v2 = new SemVer(1, 2, 3)
+      const v1 = { major: 1, minor: 2, patch: 3 }
+      const v2 = { major: 1, minor: 2, patch: 3 }
 
-      expect(v1.isGreaterThanOrEqual(v2)).toBe(true)
-      expect(v2.isGreaterThanOrEqual(v1)).toBe(true)
+      expect(isGreaterThanOrEqual(v1, v2)).toBe(true)
+      expect(isGreaterThanOrEqual(v2, v1)).toBe(true)
+      expect(compareSemVer(v1, v2)).toBe(0)
+      expect(compareSemVer(v2, v1)).toBe(0)
     })
 
     it('should handle prerelease versions correctly', () => {
-      const stable = new SemVer(1, 2, 3)
-      const prerelease = new SemVer(1, 2, 3, 'beta.1')
+      const stable = { major: 1, minor: 2, patch: 3 }
+      const prerelease = { major: 1, minor: 2, patch: 3, prerelease: 'beta.1' }
 
       // Stable version should be greater than prerelease
-      expect(stable.isGreaterThanOrEqual(prerelease)).toBe(true)
-      expect(prerelease.isGreaterThanOrEqual(stable)).toBe(false)
+      expect(isGreaterThanOrEqual(stable, prerelease)).toBe(true)
+      expect(isGreaterThanOrEqual(prerelease, stable)).toBe(false)
+      expect(compareSemVer(stable, prerelease)).toBe(1)
+      expect(compareSemVer(prerelease, stable)).toBe(-1)
     })
   })
 })
@@ -417,24 +428,6 @@ describe('Command Generation and Execution', () => {
         'pnpm install',
         expect.objectContaining({ timeout: 30000 })
       )
-    })
-  })
-
-  describe('getPackageManagerInfo', () => {
-    it('should return package manager information', () => {
-      mockExecSync.mockReturnValueOnce(Buffer.from('8.10.0'))
-
-      const result = getPackageManagerInfo()
-
-      expect(result.isOk()).toBe(true)
-      if (result.isOk()) {
-        const info = result.value
-        expect(info.name).toBe('pnpm')
-        expect(info.version).toBe('8.10.0')
-        expect(info.command).toBe('pnpm')
-        expect(info.runCommand).toBe('pnpm run')
-        expect(info.installCommand).toBe('pnpm install')
-      }
     })
   })
 })

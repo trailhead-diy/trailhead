@@ -1,11 +1,15 @@
 ---
 type: explanation
-title: Understanding Framework Design Decisions
-description: The rationale and trade-offs behind key architectural choices in @esteban-url/cli, from functional programming to Result types
+title: 'Understanding Framework Design Decisions'
+description: 'The rationale and trade-offs behind key architectural choices in @esteban-url/cli, from functional programming to Result types'
+prerequisites:
+  - 'Basic CLI development experience'
+  - 'Understanding of error handling patterns'
+  - 'Familiarity with TypeScript'
 related:
-  - ./architecture.md
-  - ../how-to/functional-patterns.md
-  - ../reference/core.md
+  - /packages/cli/docs/explanation/architecture
+  - /packages/cli/docs/reference/core.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Understanding Framework Design Decisions
@@ -140,7 +144,7 @@ const buildCommand: Command = {
 
 This enables:
 
-- **Superior tree-shaking**: Unused functions are eliminated completely
+- **Better tree-shaking**: Unused functions are eliminated completely
 - **Trivial testing**: Test pure functions without complex mocking
 - **Natural composition**: Combine commands and behaviors easily
 - **Better TypeScript**: Function types are simpler than class hierarchies
@@ -236,7 +240,7 @@ async function processFile(path: string, context: Context) {
 
 This enables:
 
-- **Comprehensive testing**: Inject mocks for all external dependencies
+- **Complete testing**: Inject mocks for all external dependencies
 - **Environmental flexibility**: Different implementations for different contexts
 - **Clear contracts**: All dependencies are visible in function signatures
 - **No global state**: Easier to reason about and debug
@@ -249,7 +253,7 @@ This enables:
 
 1. TypeScript interfaces only - Simple but no runtime safety
 2. Manual validation - Complete control but error-prone
-3. Schema libraries (Zod, Joi, etc.) - Robust but adds dependency
+3. Schema libraries (Zod, Joi, etc.) - Reliable but adds dependency
 
 **Decision**: Zod for schema-first configuration with type inference
 
@@ -395,7 +399,7 @@ This approach catches configuration errors early with clear messages, rather tha
 
 **Disadvantages**: Hidden failure modes, difficult error composition, type safety issues
 
-**When to use**: Simple applications where comprehensive error handling isn't critical
+**When to use**: Simple applications where detailed error handling isn't critical
 
 ### Alternative Approach 3: Barrel Export Package Structure
 
@@ -435,18 +439,18 @@ Potential evolution areas:
 
 ### Essential Reading
 
-- [Architecture Overview](./architecture.md) - How these decisions create system-wide benefits
-- [Functional Programming in Practice](../how-to/functional-patterns.md) - Applying functional concepts
+- [Architecture Overview](/packages/cli/docs/explanation/architecture.md)- How these decisions create system-wide benefits
+- [Functional Programming in Practice](/docs/how-to/apply-functional-patterns.md)- Applying functional concepts
 
 ### Practical Application
 
-- [Building Your First CLI](../tutorials/getting-started.md) - See the decisions in action
-- [Error Handling Patterns](../how-to/error-handling.md) - Working with Result types
+- [Building Your First CLI](/packages/cli/docs/tutorials/getting-started.md)- See the decisions in action
+- [Error Handling Patterns](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Working with Result types
 
 ### Technical Details
 
-- [API Reference](../reference/api/core.md) - Complete function signatures
-- [Type Definitions](../reference/types.md) - TypeScript interfaces and types
+- [API Reference](/packages/cli/docs/reference/core.md)- Complete function signatures
+- [Type Definitions](/packages/cli/docs/reference/types.md)- TypeScript interfaces and types
 
 ## Discussion
 

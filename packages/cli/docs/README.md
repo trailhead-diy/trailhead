@@ -3,51 +3,69 @@ type: explanation
 title: '@esteban-url/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
-  - ./tutorials/getting-started.md
-  - ./reference/command.md
-  - ./explanation/architecture.md
+  - /packages/cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/explanation/architecture.md
 ---
 
 # @esteban-url/cli Documentation
 
-This framework provides a robust foundation for building command-line applications using functional programming principles.
+Functional CLI framework for building command-line applications.
 
-## Framework Philosophy
+## Core Principles
 
-@esteban-url/cli is built around four core principles:
-
-- **Functional programming** - Pure functions, immutability, and composition
+- **Functional programming** - Pure functions, immutability, composition
 - **Explicit error handling** - Result types instead of exceptions
-- **Type safety** - Full TypeScript support with strict types
-- **Testability** - Built-in testing utilities and patterns
+- **Type safety** - Strict TypeScript support
+- **Testability** - Built-in testing utilities
 
 ## Documentation Structure
 
 ### Getting Started
 
-- [Quick Start Guide](./tutorials/getting-started.md) - Get up and running in minutes
-- [Architecture Overview](./explanation/architecture.md) - Understand the fundamental principles
+- [Quick Start Guide](/packages/cli/docs/tutorials/getting-started)
+- [Architecture Overview](/packages/cli/docs/explanation/architecture)
 
 ### API Reference
 
 Complete API documentation for all modules:
 
-- [Core Module](./reference/core.md) - Result types and error handling
-- [Command Module](./reference/command.md) - Command creation and execution
-- [FileSystem Module](./reference/filesystem.md) - File system abstractions
-- [Config Module](./reference/config.md) - Configuration management
-- [Prompts Module](./reference/prompts.md) - Interactive user prompts
-- [Testing Module](./reference/testing.md) - Testing utilities and helpers
-- [Utils Module](./reference/utils.md) - Logger, spinner, and other utilities
-- [Types Reference](./reference/types.md) - TypeScript type definitions
+- [Main Export](/packages/cli/docs/reference/core.md)- CLI creation and basic Result types
+- [Command Module](/packages/cli/docs/reference/command.md)- Command creation and execution
+- [Prompts Module](/packages/cli/docs/reference/prompts.md)- Interactive user prompts
+- [Testing Module](/packages/cli/docs/reference/testing.md)- Testing utilities and helpers
+- [Utils Module](/packages/cli/docs/reference/utils.md)- Logger, spinner, and other utilities
+- [Progress Module](/packages/cli/docs/reference/utils.md)- Progress tracking utilities
+- [Types Reference](/packages/cli/docs/reference/types.md)- TypeScript type definitions
+
+### Related Packages
+
+For extended functionality, see:
+
+- [Core Package](/packages/core/README.md)- Extended Result types and utilities
+- [FileSystem Package](/packages/fs/README.md)- File system operations
+- [Config Package](/packages/config/README.md)- Configuration management
 
 ### How-To Guides
 
-Task-oriented guides for common scenarios:
+Task-specific guides for common CLI operations:
 
-- [Functional Patterns](./how-to/functional-patterns.md) - Apply FP principles effectively
-- [Import Patterns](./how-to/import-patterns.md) - Structure your CLI imports
-- [Optimization Guide](./how-to/optimization-guide.md) - Build fast CLIs
+- [Add File Operations](/packages/cli/docs/how-to/add-file-operations.md)- Read, write, and process files
+- [Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts.md)- User input and selections
+- [Add Configuration](/packages/cli/docs/how-to/add-configuration.md)- Configuration management
+- [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Error handling patterns
+- [Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications.md)- Testing strategies
+- [Use Result Pipelines](/packages/cli/docs/how-to/use-result-pipelines.md)- Chain operations
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Module import best practices
+- [Migrate to Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements.md)- Upgrade guide
+- [Migrate to Pipelines](/packages/cli/docs/how-to/migrate-to-pipelines.md)- Pipeline migration
+- [Optimization Guide](/packages/cli/docs/how-to/optimization-guide.md)- Performance tips
+
+### Tutorials
+
+Learning-oriented guides for getting started:
+
+- [Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started.md)- Complete beginner tutorial
 
 ## Key Features
 
@@ -58,9 +76,9 @@ import { ok, err } from '@esteban-url/core'
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
-    return Err(new Error('Division by zero'))
+    return err(new Error('Division by zero'))
   }
-  return Ok(a / b)
+  return ok(a / b)
 }
 ```
 
@@ -75,7 +93,7 @@ const greetCommand = createCommand({
   options: [{ name: 'name', alias: 'n', type: 'string', required: true }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -110,29 +128,6 @@ const pipeline = createValidationPipeline([
 ])
 ```
 
-## Framework Philosophy
-
-### Functional Programming First
-
-- **Pure Functions**: Side effects are isolated to the edges
-- **Immutability**: Data structures are never mutated
-- **Composition**: Build complex behavior from simple functions
-- **Explicit Types**: Every function has clear input/output types
-
-### No Hidden Magic
-
-- **Explicit Errors**: All errors are returned as values
-- **No Global State**: All dependencies are injected
-- **No Monkey Patching**: Framework doesn't modify prototypes
-- **Predictable Behavior**: Same inputs always produce same outputs
-
-### Developer Experience
-
-- **Comprehensive Types**: Full IntelliSense support
-- **Clear Error Messages**: Helpful errors with recovery suggestions
-- **Testing Utilities**: Mock implementations for all abstractions
-- **Beautiful Output**: Styled terminal output with Chalk and Ora
-
 ## Quick Examples
 
 ### Basic CLI Application
@@ -145,7 +140,7 @@ import { configCommand } from './commands/config'
 const cli = createCLI({
   name: 'my-app',
   version: '1.0.0',
-  description: 'My awesome CLI tool',
+  description: 'My CLI tool',
   commands: [greetCommand, configCommand],
 })
 
@@ -184,14 +179,14 @@ it('should read configuration', async () => {
 
 ## Next Steps
 
-1. Follow the [Getting Started Guide](./tutorials/getting-started.md) to build your first CLI
-2. Read about [Architecture](./explanation/architecture.md) to understand the framework
-3. Explore the [API Reference](./reference/core.md) for detailed documentation
+1. Follow the [Getting Started Guide](/packages/cli/docs/tutorials/getting-started.md)to build your first CLI
+2. Read about [Architecture](/packages/cli/docs/explanation/architecture.md)to understand the framework
+3. Explore the [API Reference](/packages/cli/docs/reference/core.md)for detailed documentation
 4. Review the API documentation for advanced usage patterns
 
 ## Contributing
 
-We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md) for details on:
+We welcome contributions! Please see the [Contributing Guide](https://github.com/esteban-url/trailhead/blob/main/CONTRIBUTING.md) for details on:
 
 - Setting up your development environment
 - Running tests and linting
@@ -202,8 +197,8 @@ We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md
 
 - **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
-- **Documentation**: See the [documentation directory](../docs/)
+- **Documentation**: See the [documentation directory](/packages/cli/)
 
 ## License
 
-MIT - See [LICENSE](../../../LICENSE)
+MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)

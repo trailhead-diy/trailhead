@@ -8,6 +8,7 @@
     "registry": "https://npm.pkg.github.com",
     "@esteban-url:registry": "https://npm.pkg.github.com"
   },
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -42,7 +43,6 @@
     "glob": "^11.0.0"
   },
   "devDependencies": {
-    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",

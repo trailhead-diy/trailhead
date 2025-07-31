@@ -1,15 +1,13 @@
 ---
 type: tutorial
-title: # Clear, action-oriented title (e.g., "Build Your First CLI Application")
-description: # One-line summary of what the user will achieve
+title: 'Tutorial Template'
+description: 'Template for creating tutorials following the Diátaxis framework'
 prerequisites:
-  # List specific requirements, keep minimal
-  # - Node.js 18+ installed
-  # - Basic TypeScript knowledge
+  - Understanding of Diátaxis framework
+  - Familiarity with documentation standards
 related:
-  # Links to related documentation
-  # - /docs/reference/api/core
-  # - /docs/how-to/advanced-usage
+  - /docs/reference/documentation-standards
+  - /docs/reference/writing-guide
 ---
 
 # Title
