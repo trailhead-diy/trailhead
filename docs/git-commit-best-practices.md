@@ -3,7 +3,7 @@ type: reference
 title: 'Git Commit Best Practices'
 description: 'Comprehensive guide to atomic commits, conventional formatting, and modern git workflows for enhanced productivity'
 related:
-  - /docs/reference/documentation-standards.md
+  - /docs/reference/documentation-standards
   - /docs/how-to/contributing.md
 ---
 

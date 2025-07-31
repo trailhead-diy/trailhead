@@ -3,7 +3,7 @@ type: explanation
 title: "Understanding Trailhead's Documentation Philosophy"
 description: 'The principles, structure, and quality standards that make Trailhead documentation exceptional'
 related:
-  - /docs/reference/documentation-standards.md
+  - /docs/reference/documentation-standards
   - /docs/how-to/contributing.md
   - /packages/cli/docs/README.md
   - /packages/create-cli/docs/README.md
@@ -248,21 +248,21 @@ Trailhead started with traditional documentation scattered across README files. 
 
 ### Essential Reading
 
-- [Documentation Standards](./reference/documentation-standards.md) - Complete Diátaxis implementation
-- [Writing Documentation Guide](./reference/writing-guide.md) - Quick reference for contributors
-- [Cross-Reference Style Guide](./reference/cross-reference-style-guide.md) - Standardized linking patterns
-- [Contributing Guidelines](./how-to/contributing.md) - How to contribute to documentation
+- [Documentation Standards](/docs/reference/documentation-standards) - Complete Diátaxis implementation
+- [Writing Documentation Guide](/docs/reference/writing-guide) - Quick reference for contributors
+- [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide) - Standardized linking patterns
+- [Contributing Guidelines](/docs/how-to/contributing) - How to contribute to documentation
 
 ### Templates and Tools
 
-- [Documentation Templates](./reference/templates/) - Official templates for all types
-- [Validation Tools](../tooling/docs-tooling/) - Automated quality checking
-- [Review Checklist](./reference/review-checklist.md) - Manual review standards
+- [Documentation Templates](/docs/reference/templates/tutorial-template) - Official templates for all types
+- [Validation Tools](https://github.com/esteban-url/trailhead/tree/main/tooling/docs-tooling/) - Automated quality checking
+- [Review Checklist](/docs/reference/review-checklist) - Manual review standards
 
 ### Package-Specific Documentation
 
-- [CLI Framework Hub](../packages/cli/docs/) - Functional CLI development
-- [Create CLI Hub](../packages/create-cli/docs/) - CLI project generator
+- [CLI Framework Hub](/packages/cli/) - Functional CLI development
+- [Create CLI Hub](/packages/create-cli/) - CLI project generator
 
 ## Discussion
 
