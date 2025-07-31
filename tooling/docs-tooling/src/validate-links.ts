@@ -38,8 +38,26 @@ interface LinkValidatorContext {
 const extractLinks = (content: string): Array<{ link: string; line: number; text: string }> => {
   const links: Array<{ link: string; line: number; text: string }> = []
   const lines = content.split('\n')
+  let inCodeBlock = false
+  let codeBlockIndent = 0
 
   lines.forEach((line, index) => {
+    // Check for code block markers (``` or indented blocks)
+    if (line.match(/^```/)) {
+      inCodeBlock = !inCodeBlock
+      return
+    }
+
+    // Skip lines inside code blocks
+    if (inCodeBlock) {
+      return
+    }
+
+    // Skip indented code blocks (4+ spaces or tab)
+    if (line.match(/^(\s{4,}|\t)/)) {
+      return
+    }
+
     // Match markdown links: [text](url)
     const linkRegex = /\[([^\]]*)\]\(([^)]+)\)/g
     let match
@@ -136,11 +154,15 @@ const validateFilePath = (
     const currentDir = dirname(currentFile)
     targetPath = resolve(currentDir, link)
 
-    // Check if this should be an absolute path according to style guide
-    if (link.includes('.md') && !currentFile.includes('README.md')) {
+    // Allow relative paths for Docusaurus compatibility
+    // Only warn if it's a cross-package reference
+    const isInDocsApp = currentFile.includes('/apps/docs/')
+    const isCrossPackageLink = link.startsWith('../') && link.includes('/packages/')
+
+    if (!isInDocsApp && isCrossPackageLink) {
       return {
         status: 'warning',
-        message: 'Relative path detected - consider using absolute path per style guide',
+        message: 'Cross-package relative link - consider using absolute path',
       }
     }
   }
@@ -148,11 +170,26 @@ const validateFilePath = (
   // Remove anchor if present
   const [filePath] = targetPath.split('#')
 
+  // Check if file exists as-is
   if (existsSync(filePath)) {
     return { status: 'valid' }
-  } else {
-    return { status: 'broken', message: `File not found: ${filePath}` }
   }
+
+  // For Docusaurus compatibility: if the link doesn't have .md extension,
+  // try adding it to see if the file exists
+  if (!filePath.endsWith('.md') && !filePath.endsWith('.mdx')) {
+    const withMd = `${filePath}.md`
+    if (existsSync(withMd)) {
+      return { status: 'valid' }
+    }
+
+    const withMdx = `${filePath}.mdx`
+    if (existsSync(withMdx)) {
+      return { status: 'valid' }
+    }
+  }
+
+  return { status: 'broken', message: `File not found: ${filePath}` }
 }
 
 /**

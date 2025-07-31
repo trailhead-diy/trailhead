@@ -303,11 +303,10 @@ async function main() {
   process.exit(0)
 }
 
-if (require.main === module) {
-  main().catch((error) => {
-    console.error(chalk.red('❌ Link fixing failed:'), error)
-    process.exit(1)
-  })
-}
+// Run if this is the main module
+main().catch((error) => {
+  console.error(chalk.red('❌ Link fixing failed:'), error)
+  process.exit(1)
+})
 
 export { createLinkFixer, fixAllLinks, generateFixReport, type LinkFix, type LinkFixerContext }
