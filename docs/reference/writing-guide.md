@@ -19,10 +19,10 @@ Ask yourself: **What is the user trying to do?**
 
 | User Intent                               | Type            | Template                                                       |
 | ----------------------------------------- | --------------- | -------------------------------------------------------------- |
-| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](./templates/tutorial-template.md)       |
-| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](./templates/howto-template.md)             |
-| "I need to look up information"           | **Reference**   | [reference-template.md](./templates/reference-template.md)     |
-| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](./templates/explanation-template.md) |
+| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](/docs/reference/templates/tutorial-template)       |
+| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](/docs/reference/templates/howto-template)             |
+| "I need to look up information"           | **Reference**   | [reference-template.md](/docs/reference/templates/reference-template)     |
+| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](/docs/reference/templates/explanation-template) |
 
 ### 2. Quick Type Check
 
@@ -136,7 +136,7 @@ type: reference
 title: FileSystem API Reference
 description: Complete API reference for FileSystem module
 related:
-  - /docs/how-to/file-operations
+  - /docs/how-to/contributing/file-operations
 ---
 ```
 
@@ -168,7 +168,7 @@ type: explanation
 title: Understanding Result Types
 description: Why we use Result types for error handling
 related:
-  - /docs/how-to/error-handling
+  - /docs/how-to/contributing/error-handling
   - /docs/reference/api/core
 ---
 ```
@@ -286,9 +286,9 @@ Before submitting documentation:
 
 ### Resources
 
-- [Documentation Standards](./documentation-standards.md) - Complete guidelines
-- [Review Checklist](./review-checklist.md) - For reviewers
-- [Templates](./templates/) - Starting points for each type
+- [Documentation Standards](/docs/reference/documentation-standards) - Complete guidelines
+- [Review Checklist](/docs/reference/review-checklist) - For reviewers
+- [Templates](/docs/reference/templates/tutorial-template/) - Starting points for each type
 
 ### Still Stuck?
 

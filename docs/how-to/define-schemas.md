@@ -219,6 +219,6 @@ function startServer(config: Config) {
 
 ## See Also
 
-- [Configuration API Reference](/packages/config/docs/reference/api.md)
-- [Getting Started Tutorial](/docs/tutorials/config-getting-started.md)
-- [Understanding Configuration Sources](/docs/explanation/config-sources.md)
+- [Configuration API Reference](/packages/config/docs/reference/api)
+- [Getting Started Tutorial](/docs/tutorials/config-getting-started)
+- [Understanding Configuration Sources](/docs/explanation/config-sources)

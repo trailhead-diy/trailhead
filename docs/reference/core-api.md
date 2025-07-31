@@ -3,9 +3,9 @@ type: reference
 title: 'Core API Reference - Result Types and Error Handling'
 description: 'Complete API reference for Result types, error handling patterns, and core utilities used across all Trailhead packages'
 related:
-  - /docs/explanation/result-types-pattern.md
-  - /docs/how-to/apply-functional-patterns.md
-  - /docs/explanation/functional-architecture.md
+  - /docs/explanation/result-types-pattern
+  - /docs/how-to/apply-functional-patterns
+  - /docs/explanation/functional-architecture
 ---
 
 # Core API Reference - Result Types and Error Handling

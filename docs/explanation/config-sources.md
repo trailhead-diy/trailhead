@@ -298,6 +298,6 @@ if (!validation.ok) {
 
 ## See Also
 
-- [Getting Started Tutorial](/docs/tutorials/config-getting-started.md)
-- [Define Configuration Schemas](/docs/how-to/define-schemas.md)
-- [Configuration API Reference](/packages/config/docs/reference/api.md)
+- [Getting Started Tutorial](/docs/tutorials/config-getting-started)
+- [Define Configuration Schemas](/docs/how-to/define-schemas)
+- [Configuration API Reference](/packages/config/docs/reference/api)

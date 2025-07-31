@@ -7,10 +7,10 @@ prerequisites:
   - 'Understanding of async/await'
   - 'Familiarity with Result types'
 related:
-  - /docs/explanation/functional-architecture.md
-  - /docs/explanation/result-types-pattern.md
-  - /docs/how-to/compose-result-operations.md
-  - /packages/cli/docs/tutorials/getting-started.md
+  - /docs/explanation/functional-architecture
+  - /docs/explanation/result-types-pattern
+  - /docs/how-to/compose-result-operations
+  - /packages/cli/docs/tutorials/config-getting-started/getting-started.md
 ---
 
 # Apply Functional Programming Patterns
@@ -354,6 +354,6 @@ describe('validatePort', () => {
 
 ## Related Documentation
 
-- [Result Types Pattern](../explanation/result-types-pattern.md) - Understanding Result types
-- [Functional Architecture](../explanation/functional-architecture.md) - Why functional programming
-- [Package Ecosystem](../explanation/package-ecosystem.md) - How packages work together
+- [Result Types Pattern](/docs/explanation/result-types-pattern) - Understanding Result types
+- [Functional Architecture](/docs/explanation/functional-architecture) - Why functional programming
+- [Package Ecosystem](/docs/explanation/package-ecosystem) - How packages work together

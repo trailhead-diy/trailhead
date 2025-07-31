@@ -3,8 +3,8 @@ type: how-to
 title: 'How to Convert Data Formats'
 description: 'Convert between CSV, JSON, and Excel formats using @repo/data conversion operations'
 related:
-  - /packages/data/docs/reference/api.md
-  - /docs/tutorials/data-pipeline-processing.md
+  - /packages/data/docs/reference/api
+  - /docs/tutorials/data-pipeline-processing
 ---
 
 # How to Convert Data Formats
@@ -202,6 +202,6 @@ if (result.isErr()) {
 
 ## Related Resources
 
-- [Data Pipeline Processing Tutorial](/docs/tutorials/data-pipeline-processing.md)
-- [@repo/data API Reference](/packages/data/docs/reference/api.md)
-- [Working with Large Files](/docs/how-to/handle-large-files.md)
+- [Data Pipeline Processing Tutorial](/docs/tutorials/data-pipeline-processing)
+- [@repo/data API Reference](/packages/data/docs/reference/api)
+- [Working with Large Files](/docs/how-to/convert-data-formats)

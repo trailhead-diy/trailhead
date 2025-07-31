@@ -7,9 +7,9 @@ prerequisites:
   - Understanding of Result types
   - '@repo/data installed in your project'
 related:
-  - /docs/explanation/result-types-pattern.md
-  - /packages/data/docs/reference/api.md
-  - /docs/how-to/convert-data-formats.md
+  - /docs/explanation/result-types-pattern
+  - /packages/data/docs/reference/api
+  - /docs/how-to/convert-data-formats
 ---
 
 # Tutorial: Building Data Processing Pipelines
@@ -26,7 +26,7 @@ This tutorial will teach you how to build functional data processing pipelines u
 ## Prerequisites
 
 - Basic TypeScript knowledge
-- Understanding of Result types (see [Result Types Pattern](/docs/explanation/result-types-pattern.md))
+- Understanding of Result types (see [Result Types Pattern](/docs/explanation/result-types-pattern))
 - `@repo/data` installed in your project
 
 ## Step 1: Set Up Your Environment
@@ -207,6 +207,6 @@ describe('Data Pipeline', () => {
 
 ## Related Resources
 
-- [How to Convert Data Formats](/docs/how-to/convert-data-formats.md)
-- [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-- [@repo/data API Reference](/packages/data/docs/reference/api.md)
+- [How to Convert Data Formats](/docs/how-to/convert-data-formats)
+- [Result Types Pattern](/docs/explanation/result-types-pattern)
+- [@repo/data API Reference](/packages/data/docs/reference/api)

@@ -3,9 +3,9 @@ type: how-to
 title: 'How to Perform Atomic File Operations'
 description: 'Ensure file operations complete fully or not at all to prevent data corruption'
 related:
-  - /packages/fs/docs/reference/api.md
-  - /docs/tutorials/file-operations-basics.md
-  - /docs/explanation/result-types-pattern.md
+  - /packages/fs/docs/reference/api
+  - /docs/tutorials/file-operations-basics
+  - /docs/explanation/result-types-pattern
 ---
 
 # How to Perform Atomic File Operations
@@ -274,6 +274,6 @@ class ConfigManager {
 
 ## Related Resources
 
-- [File Operations Tutorial](/docs/tutorials/file-operations-basics.md)
-- [@repo/fs API Reference](/packages/fs/docs/reference/api.md)
-- [Error Handling Patterns](/docs/explanation/error-handling.md)
+- [File Operations Tutorial](/docs/tutorials/file-operations-basics)
+- [@repo/fs API Reference](/packages/fs/docs/reference/api)
+- [Error Handling Patterns](/docs/explanation/result-types-pattern)

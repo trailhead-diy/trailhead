@@ -226,6 +226,6 @@ if (!validation.valid) {
 
 ## See Also
 
-- [Define Configuration Schemas](/docs/how-to/define-schemas.md)
-- [Configuration API Reference](/packages/config/docs/reference/api.md)
-- [Understanding Configuration Sources](/docs/explanation/config-sources.md)
+- [Define Configuration Schemas](/docs/how-to/define-schemas)
+- [Configuration API Reference](/packages/config/docs/reference/api)
+- [Understanding Configuration Sources](/docs/explanation/config-sources)

@@ -3,8 +3,8 @@ type: explanation
 title: 'Trailhead Package Ecosystem'
 description: 'Understanding how Trailhead packages work together to provide a cohesive development experience'
 related:
-  - /docs/explanation/functional-architecture.md
-  - /docs/explanation/result-types-pattern.md
+  - /docs/explanation/functional-architecture
+  - /docs/explanation/result-types-pattern
   - /docs/how-to/contributing.md
 ---
 
@@ -289,6 +289,6 @@ import { ok, err, pipe } from '@repo/core'
 
 ## Related Resources
 
-- [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-- [Package Development Guide](/docs/how-to/create-package.md)
+- [Functional Architecture](/docs/explanation/functional-architecture)
+- [Result Types Pattern](/docs/explanation/result-types-pattern)
+- [Package Development Guide](/docs/how-to/contributing)

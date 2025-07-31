@@ -3,10 +3,10 @@ type: explanation
 title: 'Functional Architecture in Trailhead'
 description: 'Understanding the functional programming principles that guide Trailhead design and architecture'
 related:
-  - /docs/explanation/result-types-pattern.md
-  - /docs/how-to/apply-functional-patterns.md
-  - /packages/cli/docs/explanation/architecture.md
-  - /docs/tutorials/data-pipeline-processing.md
+  - /docs/explanation/result-types-pattern
+  - /docs/how-to/apply-functional-patterns
+  - /packages/cli/docs/explanation/functional-architecture/architecture.md
+  - /docs/tutorials/data-pipeline-processing
 ---
 
 # Functional Architecture in Trailhead
@@ -315,6 +315,6 @@ const processAndSave = (data: Data) => {
 
 ## Related Resources
 
-- [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-- [Package Ecosystem](/docs/explanation/package-ecosystem.md)
-- [Testing Best Practices](/docs/how-to/write-tests.md)
+- [Result Types Pattern](/docs/explanation/result-types-pattern)
+- [Package Ecosystem](/docs/explanation/package-ecosystem)
+- [Testing Best Practices](/docs/testing-guide)

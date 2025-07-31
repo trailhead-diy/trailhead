@@ -3,9 +3,9 @@ type: how-to
 title: 'How to Create Custom Validators'
 description: 'Build custom validation logic using @repo/validation functional patterns'
 related:
-  - /packages/validation/docs/reference/api.md
-  - /docs/tutorials/form-validation-guide.md
-  - /docs/explanation/result-types-pattern.md
+  - /packages/validation/docs/reference/api
+  - /docs/tutorials/form-validation-guide
+  - /docs/explanation/result-types-pattern
 ---
 
 # How to Create Custom Validators
@@ -354,6 +354,6 @@ describe('Custom Validators', () => {
 
 ## Related Resources
 
-- [Form Validation Tutorial](/docs/tutorials/form-validation-guide.md)
-- [@repo/validation API Reference](/packages/validation/docs/reference/api.md)
-- [Validation Patterns](/docs/explanation/validation-patterns.md)
+- [Form Validation Tutorial](/docs/tutorials/form-validation-guide)
+- [@repo/validation API Reference](/packages/validation/docs/reference/api)
+- [Validation Patterns](/docs/explanation/result-types-pattern)

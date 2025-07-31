@@ -7,9 +7,9 @@ prerequisites:
   - Basic understanding of Result types
   - Familiarity with form handling
 related:
-  - /packages/validation/docs/reference/api.md
-  - /docs/how-to/create-custom-validators.md
-  - /docs/explanation/result-types-pattern.md
+  - /packages/validation/docs/reference/api
+  - /docs/how-to/create-custom-validators
+  - /docs/explanation/result-types-pattern
 ---
 
 # Tutorial: Form Validation with @repo/validation
@@ -420,6 +420,6 @@ describe('Registration Validation', () => {
 
 ## Related Resources
 
-- [How to Create Custom Validators](/docs/how-to/create-custom-validators.md)
-- [@repo/validation API Reference](/packages/validation/docs/reference/api.md)
-- [Validation Best Practices](/docs/explanation/validation-patterns.md)
+- [How to Create Custom Validators](/docs/how-to/create-custom-validators)
+- [@repo/validation API Reference](/packages/validation/docs/reference/api)
+- [Validation Best Practices](/docs/explanation/result-types-pattern)

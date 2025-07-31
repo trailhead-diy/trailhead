@@ -202,7 +202,7 @@ prerequisites:
   - Node.js 18+ installed
 related:
   - /docs/reference/api/core # Links to related documentation
-  - /docs/how-to/error-handling
+  - /docs/how-to/contributing/error-handling
 ---
 ```
 
@@ -301,7 +301,7 @@ prerequisites:
   - Basic JavaScript knowledge
 related:
   - /docs/reference/api/cli
-  - /docs/how-to/cli/add-commands
+  - /docs/how-to/contributing/cli/add-commands
 ---
 
 # Build Your First CLI Application
@@ -321,7 +321,7 @@ prerequisites:
   - Familiarity with Result types
 related:
   - /docs/reference/api/validation
-  - /docs/explanation/validation-design
+  - /docs/explanation/functional-architecture/validation-design
 ---
 
 # How to Add Custom Validation Rules
@@ -362,7 +362,7 @@ Documentation standards are enforced through:
 
 - Use `pnpm docs:new` to create documentation from templates
 - Run `pnpm docs:validate` to check your documentation
-- See [Writing Guide](./writing-guide.md) for quick reference
+- See [Writing Guide](/docs/reference/writing-guide) for quick reference
 - Ask in #documentation channel for guidance
 
 Remember: Good documentation serves the user's needs, not the system's structure.

@@ -3,10 +3,10 @@ type: explanation
 title: 'Understanding Result Types Pattern'
 description: 'Explicit error handling without exceptions using Result types for safer, more predictable code'
 related:
-  - /docs/explanation/functional-architecture.md
-  - /docs/how-to/compose-result-operations.md
-  - /packages/cli/docs/how-to/handle-errors-in-cli.md
-  - /docs/tutorials/file-operations-basics.md
+  - /docs/explanation/functional-architecture
+  - /docs/how-to/compose-result-operations
+  - /packages/cli/docs/how-to/contributing/handle-errors-in-cli.md
+  - /docs/tutorials/file-operations-basics
 ---
 
 # Understanding Result Types
@@ -218,6 +218,6 @@ This consistency allows seamless composition across packages and predictable err
 
 ## Related Resources
 
-- [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [Error Handling Best Practices](/docs/how-to/handle-errors.md)
-- [@repo/core API Reference](/docs/reference/core-api.md)
+- [Functional Architecture](/docs/explanation/functional-architecture)
+- [Error Handling Best Practices](/docs/how-to/compose-result-operations)
+- [@repo/core API Reference](/docs/reference/core-api)

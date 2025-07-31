@@ -6,8 +6,8 @@ prerequisites:
   - 'Basic understanding of markdown'
   - 'Familiarity with Diátaxis framework'
 related:
-  - /docs/reference/cross-reference-style-guide.md
-  - /docs/reference/documentation-standards.md
+  - /docs/reference/cross-reference-style-guide
+  - /docs/reference/documentation-standards
   - /docs/how-to/contributing.md
 ---
 
@@ -59,10 +59,10 @@ pnpm docs:validate-links packages/cli/docs/
 
 ```markdown
 ✅ Good
-[Result Types Pattern](/docs/explanation/result-types-pattern.md)
+[Result Types Pattern](/docs/explanation/result-types-pattern)
 
 ❌ Avoid
-[Result Types Pattern](../explanation/result-types-pattern.md)
+[Result Types Pattern](/docs/explanation/result-types-pattern)
 ```
 
 ### 2. When Moving or Renaming Files
@@ -101,18 +101,18 @@ pnpm docs:validate-links --verbose
 ```yaml
 # In tutorial
 related:
-  - /docs/how-to/solve-specific-problem.md
+  - /docs/how-to/contributing/solve-specific-problem.md
   - /docs/reference/api-reference.md
 
 # In how-to guide
 related:
-  - /docs/tutorials/learning-guide.md
+  - /docs/tutorials/config-getting-started/learning-guide.md
   - /docs/reference/api-reference.md
 
 # In reference
 related:
-  - /docs/tutorials/learning-guide.md
-  - /docs/explanation/concepts.md
+  - /docs/tutorials/config-getting-started/learning-guide.md
+  - /docs/explanation/functional-architecture/concepts.md
 ```
 
 3. **Verify bidirectional links exist**:
@@ -210,12 +210,12 @@ pnpm docs:validate-links --verbose
 
 ```markdown
 ✅ Good
-[CLI Command API Reference](/packages/cli/docs/reference/command.md)
-[How to Handle Errors in CLI Applications](/docs/how-to/handle-cli-errors.md)
+[CLI Command API Reference](/packages/cli/docs/reference/command)
+[How to Handle Errors in CLI Applications](/docs/how-to/contributing/handle-cli-errors)
 
 ❌ Bad  
-[API docs](/packages/cli/docs/reference/command.md)
-[Click here](/docs/how-to/handle-cli-errors.md)
+[API docs](/packages/cli/docs/reference/command)
+[Click here](/docs/how-to/contributing/handle-cli-errors)
 ```
 
 ### 2. Frontmatter Related Links
@@ -225,11 +225,11 @@ pnpm docs:validate-links --verbose
 ```yaml
 related:
   # Most relevant first
-  - /docs/tutorials/getting-started.md
+  - /docs/tutorials/config-getting-started/getting-started.md
   # Then supporting references
   - /docs/reference/api.md
   # Finally related concepts
-  - /docs/explanation/architecture.md
+  - /docs/explanation/functional-architecture/architecture.md
 ```
 
 ### 3. Cross-Package References
@@ -239,9 +239,9 @@ related:
 ```markdown
 ## Related Packages
 
-- **[@repo/core](/packages/core/README.md)** - Foundation utilities
-- **[@repo/fs](/packages/fs/README.md)** - File system operations
-- **[@esteban-url/cli](/packages/cli/README.md)** - CLI framework
+- **[@repo/core](/packages/core/README)** - Foundation utilities
+- **[@repo/fs](/packages/fs/README)** - File system operations
+- **[@esteban-url/cli](/packages/cli/README)** - CLI framework
 ```
 
 ### 4. Documentation Tables
@@ -251,7 +251,7 @@ related:
 ```markdown
 | Topic              | Tutorial                                     | How-to Guide                                    | Reference                                           |
 | ------------------ | -------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
-| **Error Handling** | [Getting Started](/docs/tutorials/errors.md) | [Handle CLI Errors](/docs/how-to/cli-errors.md) | [Result Types API](/docs/reference/result-types.md) |
+| **Error Handling** | [Getting Started](/docs/tutorials/config-getting-started/errors) | [Handle CLI Errors](/docs/how-to/contributing/cli-errors) | [Result Types API](/docs/reference/result-types) |
 ```
 
 ## Quality Metrics
@@ -305,8 +305,8 @@ pnpm docs:fix-links --dry-run
 
 **For complex reorganization**:
 
-- Review [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide.md)
-- Check [Documentation Standards](/docs/reference/documentation-standards.md)
+- Review [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide)
+- Check [Documentation Standards](/docs/reference/documentation-standards)
 - Ask in GitHub Discussions for architectural guidance
 
 **For tooling issues**:

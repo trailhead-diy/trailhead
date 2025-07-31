@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic async/await knowledge'
   - 'Functional programming basics'
 related:
-  - ../explanation/result-types-pattern.md
-  - ./apply-functional-patterns.md
-  - ./handle-errors.md
+  - /docs/explanation/result-types-pattern
+  - /docs/how-to/apply-functional-patterns
+  - /docs/how-to/compose-result-operations#error-handling.md
 ---
 
 # Compose Result Operations
@@ -366,6 +366,6 @@ function validateUser(data: unknown): Result<User> {
 
 ## Related Documentation
 
-- [Result Types Pattern](../explanation/result-types-pattern.md) - Understanding Result types
-- [Apply Functional Patterns](./apply-functional-patterns.md) - Functional programming techniques
-- [Error Handling](./handle-errors.md) - Error handling strategies
+- [Result Types Pattern](/docs/explanation/result-types-pattern) - Understanding Result types
+- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns) - Functional programming techniques
+- [Error Handling](/docs/how-to/compose-result-operations#error-handling) - Error handling strategies

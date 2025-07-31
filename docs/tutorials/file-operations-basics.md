@@ -7,9 +7,9 @@ prerequisites:
   - Node.js 18+ installed
   - Understanding of async/await
 related:
-  - /packages/fs/docs/reference/api.md
-  - /docs/how-to/perform-atomic-file-operations.md
-  - /docs/explanation/result-types-pattern.md
+  - /packages/fs/docs/reference/api
+  - /docs/how-to/perform-atomic-file-operations
+  - /docs/explanation/result-types-pattern
 ---
 
 # Tutorial: File Operations with @repo/fs
@@ -280,6 +280,6 @@ describe('File Operations', () => {
 
 ## Related Resources
 
-- [How to Perform Atomic File Operations](/docs/how-to/perform-atomic-file-operations.md)
-- [@repo/fs API Reference](/packages/fs/docs/reference/api.md)
-- [Testing File Operations](/docs/how-to/test-file-operations.md)
+- [How to Perform Atomic File Operations](/docs/how-to/perform-atomic-file-operations)
+- [@repo/fs API Reference](/packages/fs/docs/reference/api)
+- [Testing File Operations](/docs/how-to/perform-atomic-file-operations)

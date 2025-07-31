@@ -3,7 +3,7 @@ type: reference
 title: 'Cross-Reference Style Guide'
 description: 'Standardized linking patterns and conventions for all Trailhead documentation'
 related:
-  - /docs/how-to/maintain-cross-references.md
+  - /docs/how-to/contributing/maintain-cross-references.md
   - /docs/reference/templates/
 ---
 
@@ -19,14 +19,14 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Good - Absolute from root
-[Result Types Pattern](/docs/explanation/result-types-pattern.md)
-[CLI API Reference](/packages/cli/docs/reference/command.md)
-[Data Processing Tutorial](/docs/tutorials/data-pipeline-processing.md)
+[Result Types Pattern](/docs/explanation/result-types-pattern)
+[CLI API Reference](/packages/cli/docs/reference/command)
+[Data Processing Tutorial](/docs/tutorials/data-pipeline-processing)
 
 ❌ Bad - Relative paths
-[Result Types Pattern](../explanation/result-types-pattern.md)
-[CLI API Reference](./reference/command.md)
-[Data Processing Tutorial](../../tutorials/data-pipeline-processing.md)
+[Result Types Pattern](/docs/explanation/result-types-pattern)
+[CLI API Reference](/packages/cli/reference/command)
+[Data Processing Tutorial](/docs/tutorials/data-pipeline-processing)
 ```
 
 **Rationale**: Absolute paths work consistently across all documentation locations and are immune to file reorganization.
@@ -37,16 +37,16 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Good
-[Functional Architecture](/docs/explanation/functional-architecture.md)
-[Contributing Guide](/docs/how-to/contributing.md)
+[Functional Architecture](/docs/explanation/functional-architecture)
+[Contributing Guide](/docs/how-to/contributing)
 ```
 
 **From monorepo docs to package docs**:
 
 ```markdown
 ✅ Good
-[CLI Getting Started](/packages/cli/docs/tutorials/getting-started.md)
-[Create CLI Templates](/packages/create-cli/docs/reference/templates.md)
+[CLI Getting Started](/packages/cli/docs/tutorials/config-getting-started/getting-started)
+[Create CLI Templates](/packages/create-cli/docs/reference/templates)
 ```
 
 ### 3. README File Links
@@ -55,16 +55,16 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Acceptable for README.md files
-[CLI Documentation](./docs/README.md)
-[API Reference](./docs/reference/command.md)
+[CLI Documentation](/packages/cli)
+[API Reference](/packages/cli/reference/command)
 ```
 
 **But prefer absolute paths for cross-package references**:
 
 ```markdown
 ✅ Preferred
-[Monorepo Documentation](/docs/README.md)
-[Other Package](/packages/other/README.md)
+[Monorepo Documentation](/docs/README)
+[Other Package](/packages/other/README)
 ```
 
 ### 4. External Links
@@ -94,8 +94,8 @@ title: 'Build Your First CLI'
 description: 'Step-by-step guide to creating a CLI application'
 related:
   - /docs/reference/cli-api.md
-  - /packages/cli/docs/explanation/architecture.md
-  - /docs/how-to/handle-errors-in-cli.md
+  - /packages/cli/docs/explanation/functional-architecture/architecture.md
+  - /docs/how-to/contributing/handle-errors-in-cli.md
 ---
 ```
 
@@ -117,14 +117,14 @@ related:
 
 ```markdown
 ✅ Good
-[CLI Command API Reference](/packages/cli/docs/reference/command.md)
-[How to Handle Errors in CLI Applications](/packages/cli/docs/how-to/handle-errors-in-cli.md)
-[Understanding Functional Architecture](/docs/explanation/functional-architecture.md)
+[CLI Command API Reference](/packages/cli/docs/reference/command)
+[How to Handle Errors in CLI Applications](/packages/cli/docs/how-to/contributing/handle-errors-in-cli)
+[Understanding Functional Architecture](/docs/explanation/functional-architecture)
 
 ❌ Bad
-[API Reference](/packages/cli/docs/reference/command.md)
-[Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)
-[Architecture](/docs/explanation/functional-architecture.md)
+[API Reference](/packages/cli/docs/reference/command)
+[Error Handling](/packages/cli/docs/how-to/contributing/handle-errors-in-cli)
+[Architecture](/docs/explanation/functional-architecture)
 ```
 
 ### Link Text Patterns by Document Type
@@ -132,29 +132,29 @@ related:
 **Tutorials**: Use action-oriented text
 
 ```markdown
-[Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started.md)
-[Create a Data Processing Pipeline](/docs/tutorials/data-pipeline-processing.md)
+[Build Your First CLI Application](/packages/cli/docs/tutorials/config-getting-started/getting-started)
+[Create a Data Processing Pipeline](/docs/tutorials/data-pipeline-processing)
 ```
 
 **How-to Guides**: Use task-oriented text
 
 ```markdown
-[How to Add Custom Validators](/docs/how-to/create-custom-validators.md)
-[How to Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md)
+[How to Add Custom Validators](/docs/how-to/create-custom-validators)
+[How to Handle CLI Errors](/packages/cli/docs/how-to/contributing/handle-errors-in-cli)
 ```
 
 **Reference**: Use specific, technical text
 
 ```markdown
-[FileSystem API Reference](/packages/fs/docs/reference/api.md)
-[Command Module API](/packages/cli/docs/reference/command.md)
+[FileSystem API Reference](/packages/fs/docs/reference/api)
+[Command Module API](/packages/cli/docs/reference/command)
 ```
 
 **Explanation**: Use conceptual text
 
 ```markdown
-[Understanding Result Types Pattern](/docs/explanation/result-types-pattern.md)
-[Package Ecosystem Overview](/docs/explanation/package-ecosystem.md)
+[Understanding Result Types Pattern](/docs/explanation/result-types-pattern)
+[Package Ecosystem Overview](/docs/explanation/package-ecosystem)
 ```
 
 ## Bidirectional Navigation
@@ -174,7 +174,7 @@ related:
 
 related:
 
-- /packages/cli/docs/tutorials/getting-started.md # Links BACK to tutorial
+- /packages/cli/docs/tutorials/config-getting-started/getting-started.md # Links BACK to tutorial
 ```
 
 ### Navigation Hierarchy
@@ -213,11 +213,11 @@ related:
 
 ```markdown
 ✅ Good
-[Error Handling Section](/docs/reference/cli-api.md#error-handling)
-[Installation Steps](/packages/cli/README.md#installation)
+[Error Handling Section](/docs/reference/cli-api#error-handling)
+[Installation Steps](/packages/cli/README#installation)
 
 ❌ Bad (custom anchors may break)
-[Error Handling](/docs/reference/cli-api.md#custom-anchor)
+[Error Handling](/docs/reference/cli-api#custom-anchor)
 ```
 
 ## Directory-Specific Guidelines
@@ -255,10 +255,10 @@ related:
 ```markdown
 ## Quick Navigation
 
-**👋 New to [Package]?** → [Getting Started Guide](/packages/[package]/docs/tutorials/getting-started.md)  
-**🔧 Need to solve a problem?** → [How-to Guides](/packages/[package]/docs/how-to/)  
+**👋 New to [Package]?** → [Getting Started Guide](/packages/[package]/docs/tutorials/config-getting-started/getting-started)  
+**🔧 Need to solve a problem?** → [How-to Guides](/packages/[package]/docs/how-to/contributing/)  
 **📖 Looking up details?** → [API Reference](/packages/[package]/docs/reference/)  
-**🤔 Want to understand?** → [Architecture Overview](/packages/[package]/docs/explanation/architecture.md)
+**🤔 Want to understand?** → [Architecture Overview](/packages/[package]/docs/explanation/functional-architecture/architecture)
 ```
 
 ### Cross-Package References
@@ -268,9 +268,9 @@ related:
 ```markdown
 ## Related Packages
 
-- **[@repo/core](/packages/core/README.md)** - Result types and utilities
-- **[@repo/fs](/packages/fs/README.md)** - File system operations
-- **[@repo/validation](/packages/validation/README.md)** - Data validation
+- **[@repo/core](/packages/core/README)** - Result types and utilities
+- **[@repo/fs](/packages/fs/README)** - File system operations
+- **[@repo/validation](/packages/validation/README)** - Data validation
 ```
 
 ### Documentation Tables
@@ -280,8 +280,8 @@ related:
 ```markdown
 | Package             | Tutorial                                                           | How-to Guide                                                       | API Reference                                          |
 | ------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **CLI Framework**   | [Getting Started](/packages/cli/docs/tutorials/getting-started.md) | [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md) | [Command API](/packages/cli/docs/reference/command.md) |
-| **Data Processing** | [Data Pipeline](/docs/tutorials/data-pipeline-processing.md)       | [Convert Formats](/docs/how-to/convert-data-formats.md)            | [Data API](/packages/data/docs/reference/api.md)       |
+| **CLI Framework**   | [Getting Started](/packages/cli/docs/tutorials/config-getting-started/getting-started) | [Handle Errors](/packages/cli/docs/how-to/contributing/handle-errors-in-cli) | [Command API](/packages/cli/docs/reference/command) |
+| **Data Processing** | [Data Pipeline](/docs/tutorials/data-pipeline-processing)       | [Convert Formats](/docs/how-to/convert-data-formats)            | [Data API](/packages/data/docs/reference/api)       |
 ```
 
 ## Validation and Maintenance
@@ -348,8 +348,8 @@ pnpm docs:fix-links
 grep -r "\]\(\.\." docs/
 
 # Example conversions
-[Guide](../how-to/example.md) → [Guide](/docs/how-to/example.md)
-[API](./reference/api.md) → [API](/packages/[package]/docs/reference/api.md)
+[Guide](/docs/how-to/contributing) → [Guide](/docs/how-to/contributing/example)
+[API](/packages/cli/reference/core) → [API](/packages/[package]/docs/reference/api)
 ```
 
 ### Updating Frontmatter
@@ -365,7 +365,7 @@ related:
 # After
 related:
   - /packages/[package]/docs/reference/api.md
-  - /docs/explanation/concepts.md
+  - /docs/explanation/functional-architecture/concepts.md
 ```
 
 ## Examples
@@ -382,9 +382,9 @@ prerequisites:
   - Basic TypeScript knowledge
 related:
   - /packages/cli/docs/reference/command.md
-  - /packages/cli/docs/how-to/handle-errors-in-cli.md
-  - /docs/explanation/result-types-pattern.md
-  - /packages/cli/docs/tutorials/build-complete-cli.md
+  - /packages/cli/docs/how-to/contributing/handle-errors-in-cli.md
+  - /docs/explanation/result-types-pattern
+  - /packages/cli/docs/tutorials/config-getting-started/build-complete-cli.md
 ---
 
 # Build Your First CLI Application
@@ -393,15 +393,15 @@ This tutorial guides you through creating a complete CLI application using the `
 
 ## Prerequisites
 
-Before starting, ensure you understand [Result Types Pattern](/docs/explanation/result-types-pattern.md) and have reviewed the [CLI Architecture Overview](/packages/cli/docs/explanation/architecture.md).
+Before starting, ensure you understand [Result Types Pattern](/docs/explanation/result-types-pattern) and have reviewed the [CLI Architecture Overview](/packages/cli/docs/explanation/functional-architecture/architecture).
 
 ## Next Steps
 
 After completing this tutorial:
 
-- Learn [How to Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md)
-- Review the [Command API Reference](/packages/cli/docs/reference/command.md)
-- Build a [Complete CLI Application](/packages/cli/docs/tutorials/build-complete-cli.md)
+- Learn [How to Handle CLI Errors](/packages/cli/docs/how-to/contributing/handle-errors-in-cli)
+- Review the [Command API Reference](/packages/cli/docs/reference/command)
+- Build a [Complete CLI Application](/packages/cli/docs/tutorials/config-getting-started/build-complete-cli)
 ```
 
 ## Enforcement

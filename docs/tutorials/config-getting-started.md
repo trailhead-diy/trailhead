@@ -7,8 +7,8 @@ prerequisites:
   - Basic TypeScript knowledge
   - A TypeScript project ready
 related:
-  - /packages/config/docs/reference/api.md
-  - /docs/how-to/define-schemas.md
+  - /packages/config/docs/reference/api
+  - /docs/how-to/define-schemas
   - /docs/explanation/config-sources.md
 ---
 
@@ -150,7 +150,7 @@ You've successfully:
 
 ## Next Steps
 
-- Explore [schema definition techniques](/docs/how-to/define-schemas.md)
-- Learn about [configuration sources](/docs/explanation/config-sources.md)
-- Generate [configuration documentation](/docs/how-to/generate-config-docs.md)
-- Review the [API reference](/packages/config/docs/reference/api.md)
+- Explore [schema definition techniques](/docs/how-to/define-schemas)
+- Learn about [configuration sources](/docs/explanation/config-sources)
+- Generate [configuration documentation](/docs/how-to/generate-config-docs)
+- Review the [API reference](/packages/config/docs/reference/api)
