@@ -21,6 +21,8 @@
     "docs:lint": "vale docs && markdownlint docs/**/*.md",
     "docs:coverage": "tsx tooling/docs-tooling/src/validate-docs.ts --coverage",
     "docs:new": "tsx tooling/docs-tooling/src/create-doc.ts",
+    "docs:validate-links": "tsx tooling/docs-tooling/src/validate-links.ts",
+    "docs:fix-links": "tsx tooling/docs-tooling/src/fix-links.ts",
     "changeset": "changeset",
     "changeset:add": "changeset add",
     "changeset:status": "changeset status --verbose",
