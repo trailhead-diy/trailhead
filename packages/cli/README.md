@@ -441,7 +441,7 @@ pnpm validate
 
 ## Examples
 
-Check out the [documentation](/packages/cli) for comprehensive guides and API references.
+Check out the [documentation](/packages/cli/docs/README.md)for comprehensive guides and API references.
 
 ## Migration Guide
 

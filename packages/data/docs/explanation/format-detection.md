@@ -3,9 +3,9 @@ type: explanation
 title: 'Format Detection System'
 description: 'Understanding how automatic format detection works in @repo/data'
 related:
-  - ../how-to/process-data-files.md
-  - /packages/cli/reference/core.md
-  - /docs/explanation/functional-architecture/architecture.md
+  - /packages/data/docs/how-to/process-data-files.md
+  - /packages/cli/docs/reference/core.md
+  - /docs/explanation/functional-architecture.md
 ---
 
 # Format Detection System
@@ -285,7 +285,7 @@ async function robustParse(filePath: string) {
   const formats = ['csv', 'json', 'xlsx']
   for (const format of formats) {
     try {
-      result = await data[`parse${format.toUpperCase()}`](filePath)
+      result = await data`parse${format.toUpperCase()}`(filePath)
       if (result.success) {
         console.log(`Fallback successful with ${format}`)
         return result
@@ -442,7 +442,7 @@ const processCommand = createCommand({
         context.logger.info(`Detected format: ${result.value.metadata.format}`)
       }
     } else {
-      result = await data[`parse${options.format.toUpperCase()}`](options.input)
+      result = await data`parse${options.format.toUpperCase()}`(options.input)
     }
 
     if (!result.success) {

@@ -7,7 +7,7 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Node.js filesystem concepts'
 related:
-  - /packages/cli/reference/core.md
+  - /packages/cli/docs/reference/core.md
   - /docs/how-to/apply-functional-patterns
   - /packages/data/docs/how-to/process-data-files
 ---
@@ -736,6 +736,6 @@ async function loadUserConfig(configPath: string) {
 
 ## Next Steps
 
-- Review [FileSystem API Reference](/packages/cli/reference/core) for detailed function documentation
-- Learn about [Result Patterns](/packages/fs/explanation/result-patterns) for advanced error handling
-- Explore [Data Processing](/packages/data/docs/how-to/process-data-files) for working with data files
+- Review [FileSystem API Reference](/packages/cli/docs/reference/core.md)for detailed function documentation
+- Learn about [Result Patterns](/packages/fs/docs/explanation/result-patterns.md)for advanced error handling
+- Explore [Data Processing](/packages/data/docs/how-to/process-data-files.md)for working with data files

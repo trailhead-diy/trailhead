@@ -114,6 +114,5 @@ Consider:
 
 ### Related Documentation
 
-- [Release Process](/docs/RELEASE_PROCESS) - How to publish packages
-- [Testing Guidelines](/docs/testing-guide) - Writing high-ROI tests
-- [Documentation Standards](/docs/reference/documentation-standards) - Writing docs
+- [Testing Guidelines](/docs/testing-guide.md)- Writing high-ROI tests
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Writing docs

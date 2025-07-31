@@ -3,8 +3,8 @@ type: reference
 title: 'Prompts Module API Reference'
 description: 'Interactive user input functionality with inquirer prompts integration'
 related:
-  - ./core.md
-  - /packages/cli/tutorials/getting-started
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/tutorials/getting-started
 ---
 
 # Prompts Module API Reference
@@ -375,6 +375,6 @@ interface Choice<T = string> {
 
 ## See Also
 
-- [Getting Started](/packages/cli/tutorials/getting-started) - Interactive CLI example
-- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Prompt patterns
-- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing interactive CLIs
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Interactive CLI example
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Prompt patterns
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing interactive CLIs

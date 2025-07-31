@@ -99,7 +99,7 @@ await converter.convert(source, target, { from: 'csv', to: 'json' })
 - [Explanations](/packages/data/docs/explanation/format-detection.md)
   - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
   - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](/docs/reference/data-api.md)
+- [API Reference](/packages/data/docs/reference/api.md)
 
 ## License
 

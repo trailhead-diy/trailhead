@@ -23,17 +23,17 @@ Functional validation library with Zod integration, providing both simple valida
 
 ### Getting Started
 
-- [Validate Data](/packages/validation/docs/how-to/validate-data) - Common validation tasks
+- [Validate Data](/packages/validation/docs/how-to/validate-data.md)- Common validation tasks
 
 ### API Reference
 
 Complete API documentation is available in the shared documentation:
 
-- [Validation API Reference](/packages/validation/docs/reference/api) - Complete function and type definitions
+- [Validation API Reference](/packages/validation/docs/reference/api.md)- Complete function and type definitions
 
 ### Understanding the Design
 
-- [Composition Patterns](/packages/validation/docs/explanation/composition-patterns) - Validator composition design
+- [Composition Patterns](/packages/validation/docs/explanation/composition-patterns.md)- Validator composition design
 
 ## Key Features
 
@@ -267,9 +267,9 @@ if (!result.success) {
 
 ## Next Steps
 
-1. Start with [Validate Data](/packages/validation/docs/how-to/validate-data) for common validation tasks
-2. Review the [Validation API Reference](/packages/validation/docs/reference/api) for detailed documentation
-3. Understand [Composition Patterns](/packages/validation/docs/explanation/composition-patterns) for advanced usage
+1. Start with [Validate Data](/packages/validation/docs/how-to/validate-data.md)for common validation tasks
+2. Review the [Validation API Reference](/packages/validation/docs/reference/api.md)for detailed documentation
+3. Understand [Composition Patterns](/packages/validation/docs/explanation/composition-patterns.md)for advanced usage
 
 ## Integration Examples
 
@@ -460,7 +460,7 @@ function useValidatedForm() {
 
 ## Contributing
 
-See the [Contributing Guide](/docs/how-to/contributing) for development setup and guidelines.
+See the [Contributing Guide](/docs/how-to/contributing.md)for development setup and guidelines.
 
 ## License
 

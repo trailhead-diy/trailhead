@@ -260,4 +260,4 @@ env:
 
 - [Configuration Sources Explanation](/docs/explanation/config-sources)
 - [Configuration Tutorial](/docs/tutorials/config-getting-started)
-- [Environment Variables Best Practices](/docs/reference/environment-variables)
+- [Configuration API Reference](/packages/config/docs/reference/api.md)

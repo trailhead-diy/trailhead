@@ -23,17 +23,17 @@ Functional data processing library with automatic format detection and Result-ba
 
 ### Getting Started
 
-- [Process Data Files](/packages/data/docs/how-to/process-data-files) - Common data processing tasks
+- [Process Data Files](/packages/data/docs/how-to/process-data-files.md)- Common data processing tasks
 
 ### API Reference
 
 Complete API documentation is available in the shared documentation:
 
-- [Data API Reference](/packages/data/docs/reference/api) - Complete function and type definitions
+- [Data API Reference](/packages/data/docs/reference/api.md)- Complete function and type definitions
 
 ### Understanding the Design
 
-- [Format Detection System](/packages/data/docs/explanation/format-detection) - How auto-detection works
+- [Format Detection System](/packages/data/docs/explanation/format-detection.md)- How auto-detection works
 
 ## Key Features
 
@@ -188,9 +188,9 @@ The library provides specific error types for different scenarios:
 
 ## Next Steps
 
-1. Start with [Process Data Files](/packages/data/docs/how-to/process-data-files) for common tasks
-2. Review the [API Reference](/packages/data/docs/reference/api) for detailed documentation
-3. Understand [Format Detection](/packages/data/docs/explanation/format-detection) for advanced usage
+1. Start with [Process Data Files](/packages/data/docs/how-to/process-data-files.md)for common tasks
+2. Review the [API Reference](/packages/data/docs/reference/api.md)for detailed documentation
+3. Understand [Format Detection](/packages/data/docs/explanation/format-detection.md)for advanced usage
 
 ## Integration Examples
 
@@ -257,7 +257,7 @@ async function processDataDirectory(dirPath: string) {
 
 ## Contributing
 
-See the [Contributing Guide](/docs/how-to/contributing) for development setup and guidelines.
+See the [Contributing Guide](/docs/how-to/contributing.md)for development setup and guidelines.
 
 ## License
 

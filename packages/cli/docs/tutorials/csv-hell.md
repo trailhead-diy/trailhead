@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic understanding of CSV format'
   - 'Familiarity with data transformation concepts'
 related:
-  - ./getting-started.md
-  - /packages/cli/reference/command.md
-  - /packages/cli/reference/flow-control.md
+  - /packages/cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/reference/flow-control.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use

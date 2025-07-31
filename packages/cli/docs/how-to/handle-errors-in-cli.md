@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Familiarity with async/await'
 related:
-  - /packages/cli/reference/core.md
-  - /packages/cli/reference/flow-control.md
-  - /packages/cli/how-to/use-result-pipelines
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/reference/flow-control.md
+  - /packages/cli/docs/how-to/use-result-pipelines
 ---
 
 # Handle Errors in CLI Applications
@@ -29,11 +29,11 @@ This guide shows you how to handle errors consistently in CLI applications using
 
 ```typescript
 import { ok, err, Result } from '@esteban-url/core'
-import { 
+import {
   createFileSystemError,
   createValidationError,
   createDataError,
-  createCliError 
+  createCliError,
 } from '@esteban-url/core'
 ```
 
@@ -89,17 +89,21 @@ function validateOptions(options: Options): Result<Options> {
   }
 
   if (!['json', 'csv', 'yaml'].includes(options.format)) {
-    return err(createValidationError(
-      'invalid_format', 
-      `Invalid format: ${options.format}. Expected: json, csv, or yaml`
-    ))
+    return err(
+      createValidationError(
+        'invalid_format',
+        `Invalid format: ${options.format}. Expected: json, csv, or yaml`
+      )
+    )
   }
 
   if (options.limit < 1 || options.limit > 1000) {
-    return err(createValidationError(
-      'out_of_range',
-      `Limit must be between 1 and 1000, got ${options.limit}`
-    ))
+    return err(
+      createValidationError(
+        'out_of_range',
+        `Limit must be between 1 and 1000, got ${options.limit}`
+      )
+    )
   }
 
   return ok(options)
@@ -132,20 +136,18 @@ async function processFile(path: string): Promise<Result<ProcessedData>> {
   // Read file
   const contentResult = await fs.readFile(path)
   if (contentResult.isErr()) {
-    return err(withContext(
-      contentResult.error,
-      { operation: 'processFile', path }
-    ))
+    return err(withContext(contentResult.error, { operation: 'processFile', path }))
   }
 
   // Parse content
   const dataResult = await parseData(contentResult.value)
   if (dataResult.isErr()) {
-    return err(chainError(
-      'Failed to process file',
-      dataResult.error,
-      { path, size: contentResult.value.length }
-    ))
+    return err(
+      chainError('Failed to process file', dataResult.error, {
+        path,
+        size: contentResult.value.length,
+      })
+    )
   }
 
   return ok(dataResult.value)
@@ -175,10 +177,8 @@ async function loadAndValidateConfig(path: string): Promise<Result<Config>> {
 import { combine } from '@esteban-url/core'
 
 async function loadMultipleConfigs(paths: string[]): Promise<Result<Config[]>> {
-  const results = await Promise.all(
-    paths.map(path => loadConfig(path))
-  )
-  
+  const results = await Promise.all(paths.map((path) => loadConfig(path)))
+
   return combine(results)
 }
 ```
@@ -194,14 +194,14 @@ async function fetchWithRetry<T>(
 ): Promise<Result<T>> {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const result = await operation()
-    
+
     if (result.isOk() || attempt === maxAttempts) {
       return result
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+
+    await new Promise((resolve) => setTimeout(resolve, 1000 * attempt))
   }
-  
+
   return err(createCliError('retry_exhausted', `Failed after ${maxAttempts} attempts`))
 }
 ```
@@ -216,12 +216,12 @@ async function loadConfigWithFallback(
   defaultConfig: Config
 ): Promise<Result<Config>> {
   const result = await loadConfig(path)
-  
+
   if (result.isErr()) {
     console.warn(`Using default config due to: ${result.error.message}`)
     return ok(defaultConfig)
   }
-  
+
   return result
 }
 ```
@@ -235,12 +235,12 @@ async function processFiles(paths: string[]): Promise<Result<ProcessedFile[]>> {
   const results = await Promise.all(
     paths.map(async (path) => {
       const result = await processFile(path)
-      return result.isOk() 
+      return result.isOk()
         ? ok({ path, data: result.value })
         : ok({ path, error: result.error.message })
     })
   )
-  
+
   return combine(results)
 }
 ```
@@ -312,7 +312,7 @@ function formatErrorForUser(error: CoreError): string {
 ```typescript
 function logDetailedError(error: CoreError, context: CommandContext): void {
   context.logger.error(`Error: ${error.message}`)
-  
+
   if (context.debug) {
     context.logger.debug(`Type: ${error.type}`)
     context.logger.debug(`Code: ${error.code}`)
@@ -338,9 +338,7 @@ describe('error handling', () => {
   test('handles missing file gracefully', async () => {
     const mockFs = {
       exists: async () => false,
-      readFile: async () => err(
-        createFileSystemError('read', 'test.json', new Error('ENOENT'))
-      ),
+      readFile: async () => err(createFileSystemError('read', 'test.json', new Error('ENOENT'))),
     }
 
     const context = createTestContext({ fileSystem: mockFs })
@@ -355,6 +353,7 @@ describe('error handling', () => {
 ## Best Practices
 
 1. **Always handle both success and error cases**
+
    ```typescript
    const result = await operation()
    if (result.isErr()) {
@@ -365,34 +364,36 @@ describe('error handling', () => {
    ```
 
 2. **Use specific error factories**
+
    ```typescript
    // Good
    return err(createValidationError('invalid_email', 'Email format is invalid'))
-   
+
    // Avoid
    return err(new Error('Invalid email'))
    ```
 
 3. **Include helpful context**
+
    ```typescript
-   return err(withContext(error, {
-     file: filePath,
-     line: lineNumber,
-     column: columnNumber,
-   }))
+   return err(
+     withContext(error, {
+       file: filePath,
+       line: lineNumber,
+       column: columnNumber,
+     })
+   )
    ```
 
 4. **Chain errors for better traceability**
    ```typescript
-   return err(chainError(
-     'High-level operation failed',
-     lowLevelError,
-     { additionalContext: value }
-   ))
+   return err(
+     chainError('High-level operation failed', lowLevelError, { additionalContext: value })
+   )
    ```
 
 ## Next Steps
 
-- Explore [Command Execution Patterns](/packages/cli/how-to/use-result-pipelines)
-- Review [Core API Reference](/packages/cli/reference/core)
-- Learn about [Testing Errors](/packages/cli/how-to/test-cli-applications)
+- Explore [Command Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines)
+- Review [Core API Reference](/packages/cli/docs/reference/core)
+- Learn about [Testing Errors](/packages/cli/docs/how-to/test-cli-applications)

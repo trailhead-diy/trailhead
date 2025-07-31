@@ -3,9 +3,9 @@ type: explanation
 title: '@esteban-url/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
-  - /packages/cli/tutorials/getting-started.md
-  - /packages/cli/reference/core.md
-  - ./explanation/architecture.md
+  - /packages/cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/explanation/architecture.md
 ---
 
 # @esteban-url/cli Documentation
@@ -23,49 +23,49 @@ Functional CLI framework for building command-line applications.
 
 ### Getting Started
 
-- [Quick Start Guide](/packages/cli/tutorials/getting-started)
-- [Architecture Overview](/packages/cli/explanation/architecture)
+- [Quick Start Guide](/packages/cli/docs/tutorials/getting-started)
+- [Architecture Overview](/packages/cli/docs/explanation/architecture)
 
 ### API Reference
 
 Complete API documentation for all modules:
 
-- [Main Export](/packages/cli/reference/main) - CLI creation and basic Result types
-- [Command Module](/packages/cli/reference/command) - Command creation and execution
-- [Prompts Module](/packages/cli/reference/prompts) - Interactive user prompts
-- [Testing Module](/packages/cli/reference/testing) - Testing utilities and helpers
-- [Utils Module](/packages/cli/reference/utils) - Logger, spinner, and other utilities
-- [Progress Module](/packages/cli/reference/progress) - Progress tracking utilities
-- [Types Reference](/packages/cli/reference/types) - TypeScript type definitions
+- [Main Export](/packages/cli/docs/reference/core.md)- CLI creation and basic Result types
+- [Command Module](/packages/cli/docs/reference/command.md)- Command creation and execution
+- [Prompts Module](/packages/cli/docs/reference/prompts.md)- Interactive user prompts
+- [Testing Module](/packages/cli/docs/reference/testing.md)- Testing utilities and helpers
+- [Utils Module](/packages/cli/docs/reference/utils.md)- Logger, spinner, and other utilities
+- [Progress Module](/packages/cli/docs/reference/utils.md)- Progress tracking utilities
+- [Types Reference](/packages/cli/docs/reference/types.md)- TypeScript type definitions
 
 ### Related Packages
 
 For extended functionality, see:
 
-- [Core Package](/packages/core) - Extended Result types and utilities
-- [FileSystem Package](/packages/fs) - File system operations
-- [Config Package](/packages/config) - Configuration management
+- [Core Package](/packages/core/README.md)- Extended Result types and utilities
+- [FileSystem Package](/packages/fs/README.md)- File system operations
+- [Config Package](/packages/config/README.md)- Configuration management
 
 ### How-To Guides
 
 Task-specific guides for common CLI operations:
 
-- [Add File Operations](/packages/cli/docs/how-to/add-file-operations) - Read, write, and process files
-- [Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts) - User input and selections
-- [Add Configuration](/packages/cli/docs/how-to/add-configuration) - Configuration management
-- [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli) - Error handling patterns
-- [Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications) - Testing strategies
-- [Use Result Pipelines](/packages/cli/docs/how-to/use-result-pipelines) - Chain operations
-- [Import Patterns](/packages/cli/docs/how-to/import-patterns) - Module import best practices
-- [Migrate to Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements) - Upgrade guide
-- [Migrate to Pipelines](/packages/cli/docs/how-to/migrate-to-pipelines) - Pipeline migration
-- [Optimization Guide](/packages/cli/docs/how-to/optimization-guide) - Performance tips
+- [Add File Operations](/packages/cli/docs/how-to/add-file-operations.md)- Read, write, and process files
+- [Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts.md)- User input and selections
+- [Add Configuration](/packages/cli/docs/how-to/add-configuration.md)- Configuration management
+- [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Error handling patterns
+- [Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications.md)- Testing strategies
+- [Use Result Pipelines](/packages/cli/docs/how-to/use-result-pipelines.md)- Chain operations
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Module import best practices
+- [Migrate to Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements.md)- Upgrade guide
+- [Migrate to Pipelines](/packages/cli/docs/how-to/migrate-to-pipelines.md)- Pipeline migration
+- [Optimization Guide](/packages/cli/docs/how-to/optimization-guide.md)- Performance tips
 
 ### Tutorials
 
 Learning-oriented guides for getting started:
 
-- [Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started) - Complete beginner tutorial
+- [Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started.md)- Complete beginner tutorial
 
 ## Key Features
 
@@ -179,9 +179,9 @@ it('should read configuration', async () => {
 
 ## Next Steps
 
-1. Follow the [Getting Started Guide](/packages/cli/tutorials/getting-started) to build your first CLI
-2. Read about [Architecture](/packages/cli/explanation/architecture) to understand the framework
-3. Explore the [API Reference](/packages/cli/reference/core) for detailed documentation
+1. Follow the [Getting Started Guide](/packages/cli/docs/tutorials/getting-started.md)to build your first CLI
+2. Read about [Architecture](/packages/cli/docs/explanation/architecture.md)to understand the framework
+3. Explore the [API Reference](/packages/cli/docs/reference/core.md)for detailed documentation
 4. Review the API documentation for advanced usage patterns
 
 ## Contributing

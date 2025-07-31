@@ -3,9 +3,9 @@ type: reference
 title: 'Template System Reference'
 description: 'Complete guide to the template engine and customization system'
 related:
-  - ./schema.md
-  - ./api.md
-  - ../how-to/customize-templates.md
+  - /packages/create-cli/docs/reference/schema.md
+  - /packages/create-cli/docs/reference/api.md
+  - /packages/create-cli/docs/how-to/customize-templates.md
 ---
 
 # Template System Reference
@@ -350,10 +350,10 @@ Use Handlebars comments for template notes:
 
 ### Custom Templates
 
-See [Customize Templates](/packages/create-cli/how-to/customize-templates) for detailed guide.
+See [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)for detailed guide.
 
 ## See Also
 
-- [Configuration Schema](/packages/create-cli/reference/schema) - Available variables
-- [API Reference](/packages/create-cli/reference/api) - Programmatic usage
-- [Custom Templates Guide](/packages/create-cli/how-to/customize-templates) - Customization
+- [Configuration Schema](/packages/create-cli/docs/reference/schema.md)- Available variables
+- [API Reference](/packages/create-cli/docs/reference/api.md)- Programmatic usage
+- [Custom Templates Guide](/packages/create-cli/docs/how-to/customize-templates.md)- Customization

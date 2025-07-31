@@ -7,9 +7,9 @@ prerequisites:
   - 'Understanding of Result types'
   - 'Familiarity with CLI command structure'
 related:
-  - /packages/cli/reference/testing.md
-  - /packages/cli/reference/command.md
-  - /packages/cli/how-to/handle-errors-in-cli
+  - /packages/cli/docs/reference/testing.md
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/how-to/handle-errors-in-cli
 ---
 
 # Test CLI Applications
@@ -465,6 +465,6 @@ const result = await realCommand.execute(options, context)
 
 ## Next Steps
 
-- Review [Testing API Reference](/packages/cli/reference/testing)
-- Learn about [Error Handling](/packages/cli/how-to/handle-errors-in-cli)
-- Explore [Command Patterns](/packages/cli/reference/command)
+- Review [Testing API Reference](/packages/cli/docs/reference/testing)
+- Learn about [Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli)
+- Explore [Command Patterns](/packages/cli/docs/reference/command)

@@ -7,9 +7,9 @@ prerequisites:
   - Understanding of Result types
   - Basic async/await knowledge
 related:
-  - /packages/cli/reference/flow-control.md
-  - /packages/cli/how-to/use-result-pipelines
-  - /packages/cli/reference/command.md
+  - /packages/cli/docs/reference/flow-control.md
+  - /packages/cli/docs/how-to/use-result-pipelines
+  - /packages/cli/docs/reference/command.md
 ---
 
 # Migrate to Command Execution Patterns
@@ -59,21 +59,21 @@ const merged = { ...config.value, ...options.override }
 ```typescript
 async function processFiles(files: string[]): Promise<Result<ProcessedFile[]>> {
   const results: ProcessedFile[] = []
-  
+
   for (const file of files) {
     const readResult = await fs.readFile(file)
     if (readResult.isErr()) {
       return err(new Error(`Failed to read ${file}: ${readResult.error.message}`))
     }
-    
+
     const processResult = await processContent(readResult.value)
     if (processResult.isErr()) {
       return err(new Error(`Failed to process ${file}: ${processResult.error.message}`))
     }
-    
+
     results.push(processResult.value)
   }
-  
+
   return ok(results)
 }
 ```
@@ -94,7 +94,7 @@ async function processFiles(
       if (readResult.isErr()) {
         return readResult
       }
-      
+
       return processContent(readResult.value)
     },
     {
@@ -115,14 +115,14 @@ async function processFiles(
 ```typescript
 async function buildProject(options: BuildOptions): Promise<Result<void>> {
   console.log('Starting build...')
-  
+
   // Validate
   const validateResult = await validateProject()
   if (validateResult.isErr()) {
     return validateResult
   }
   console.log('Validation complete')
-  
+
   // Run tests
   if (!options.skipTests) {
     const testResult = await runTests()
@@ -131,27 +131,27 @@ async function buildProject(options: BuildOptions): Promise<Result<void>> {
     }
   }
   console.log('Tests passed')
-  
+
   // Build
   const buildResult = await performBuild()
   if (buildResult.isErr()) {
     return err(new Error(`Build failed: ${buildResult.error.message}`))
   }
   console.log('Build complete')
-  
+
   // Deploy
   if (options.deploy) {
     const approved = await confirmDeployment()
     if (!approved) {
       return err(new Error('Deployment not approved'))
     }
-    
+
     const deployResult = await deploy()
     if (deployResult.isErr()) {
       return err(new Error(`Deploy failed: ${deployResult.error.message}`))
     }
   }
-  
+
   return ok(undefined)
 }
 ```
@@ -198,7 +198,7 @@ async function buildProject(
       },
     },
   ]
-  
+
   return executeWithPhases(phases, initialBuildData, context)
 }
 ```
@@ -210,14 +210,14 @@ async function buildProject(
 ```typescript
 async function loadAppConfig(options: ConfigOptions): Promise<Result<AppConfig>> {
   let config: AppConfig = getDefaultConfig()
-  
+
   // Load from file if specified
   if (options.configFile) {
     const fileResult = await fs.readFile(options.configFile)
     if (fileResult.isErr()) {
       return err(new Error(`Failed to load config: ${fileResult.error.message}`))
     }
-    
+
     try {
       const fileConfig = JSON.parse(fileResult.value)
       config = { ...config, ...fileConfig }
@@ -225,7 +225,7 @@ async function loadAppConfig(options: ConfigOptions): Promise<Result<AppConfig>>
       return err(new Error(`Invalid config JSON: ${error.message}`))
     }
   }
-  
+
   // Apply preset
   if (options.preset) {
     const presetConfig = getPreset(options.preset)
@@ -234,12 +234,12 @@ async function loadAppConfig(options: ConfigOptions): Promise<Result<AppConfig>>
     }
     config = { ...config, ...presetConfig }
   }
-  
+
   // Apply overrides
   if (options.override) {
     config = { ...config, ...options.override }
   }
-  
+
   return ok(config)
 }
 ```
@@ -257,10 +257,10 @@ async function runWithConfig(
     options,
     async (path) => {
       if (!path) return ok(getDefaultConfig())
-      
+
       const content = await fs.readFile(path)
       if (content.isErr()) return content
-      
+
       try {
         return ok(JSON.parse(content.value))
       } catch (error) {
@@ -287,13 +287,13 @@ async function deployApplication(options: DeployOptions): Promise<Result<void>> 
     console.log('[DRY RUN] Would update services:', options.services.join(', '))
     return ok(undefined)
   }
-  
+
   // Actual deployment
   const result = await performDeployment(options)
   if (result.isErr()) {
     return err(new Error(`Deployment failed: ${result.error.message}`))
   }
-  
+
   return ok(undefined)
 }
 ```
@@ -336,10 +336,7 @@ async function deployApplication(
 async function myOperation(options: Options): Promise<Result<void>>
 
 // After
-async function myOperation(
-  options: Options,
-  context: CommandContext
-): Promise<Result<void>>
+async function myOperation(options: Options, context: CommandContext): Promise<Result<void>>
 ```
 
 ### 3. Update Error Handling
@@ -375,7 +372,8 @@ context.logger.success('Operation completed')
 ```typescript
 // ❌ Bad: Mixing manual and pattern-based
 const result = await executeBatch(items, processor, options, context)
-if (!result.success) {  // Wrong property!
+if (!result.success) {
+  // Wrong property!
   return err(new Error('Failed'))
 }
 
@@ -398,6 +396,6 @@ await executeWithPhases(phases, data, context)
 
 ## Next Steps
 
-- Review [Command Execution Patterns](/packages/cli/how-to/use-result-pipelines)
-- Study [API Reference](/packages/cli/reference/flow-control)
-- Explore [Command Testing](/packages/cli/how-to/test-cli-applications)
+- Review [Command Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines)
+- Study [API Reference](/packages/cli/docs/reference/flow-control)
+- Explore [Command Testing](/packages/cli/docs/how-to/test-cli-applications)

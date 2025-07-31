@@ -26,7 +26,7 @@ This tutorial will teach you how to build functional data processing pipelines u
 ## Prerequisites
 
 - Basic TypeScript knowledge
-- Understanding of Result types (see [Result Types Pattern](/docs/explanation/result-types-pattern))
+- Understanding of Result types (see [Result Types Pattern](/docs/explanation/result-types-pattern.md)
 - `@repo/data` installed in your project
 
 ## Step 1: Set Up Your Environment

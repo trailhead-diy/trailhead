@@ -366,6 +366,6 @@ function validateUser(data: unknown): Result<User> {
 
 ## Related Documentation
 
-- [Result Types Pattern](/docs/explanation/result-types-pattern) - Understanding Result types
-- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns) - Functional programming techniques
-- [Error Handling](/docs/how-to/compose-result-operations#error-handling) - Error handling strategies
+- [Result Types Pattern](/docs/explanation/result-types-pattern.md)- Understanding Result types
+- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns.md)- Functional programming techniques
+- [Error Handling](/docs/how-to/compose-result-operations#error-handling.md)- Error handling strategies

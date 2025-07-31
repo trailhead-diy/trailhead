@@ -6,8 +6,8 @@ prerequisites:
   - 'Node.js ES modules understanding'
   - 'Basic webpack/bundler knowledge'
 related:
-  - /packages/cli/tutorials/getting-started
-  - /packages/cli/how-to/optimization-guide
+  - /packages/cli/docs/tutorials/getting-started
+  - /packages/cli/docs/how-to/optimization-guide
 ---
 
 # How to Optimize Import Patterns
@@ -455,16 +455,16 @@ Ensure your `tsconfig.json` supports subpath imports:
 
 ## Related Tasks
 
-- **[Performance Optimization](/packages/cli/how-to/optimization-guide)**: Further optimize your CLI performance
-- **[Bundle Analysis](/packages/cli/how-to/optimization-guide)**: Analyze and debug bundle size issues
-- **[Module Loading](/packages/cli/how-to/import-patterns)**: Advanced module loading patterns
+- \*_[Performance Optimization](/packages/cli/docs/how-to/optimization-guide.md)_: Further optimize your CLI performance
+- \*_[Bundle Analysis](/packages/cli/docs/how-to/optimization-guide.md)_: Analyze and debug bundle size issues
+- \*_[Module Loading](/packages/cli/docs/how-to/import-patterns.md)_: Advanced module loading patterns
 
 ## Reference
 
-- [Package Exports Reference](/packages/cli/reference/command) - All available exports
-- [Module Architecture](/packages/cli/explanation/architecture) - How modules are structured
-- [Build Configuration](/packages/cli/reference/build-config) - Bundler configurations
+- [Package Exports Reference](/packages/cli/docs/reference/command.md)- All available exports
+- [Module Architecture](/packages/cli/docs/explanation/architecture.md)- How modules are structured
+- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler configurations
 
 ---
 
-**See also**: [Architecture Explanation](/packages/cli/explanation/architecture) for understanding why subpath exports improve performance
+**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding why subpath exports improve performance

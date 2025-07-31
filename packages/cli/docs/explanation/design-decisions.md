@@ -7,8 +7,8 @@ prerequisites:
   - 'Understanding of error handling patterns'
   - 'Familiarity with TypeScript'
 related:
-  - /packages/cli/explanation/architecture
-  - /packages/cli/reference/core.md
+  - /packages/cli/docs/explanation/architecture
+  - /packages/cli/docs/reference/core.md
   - /docs/how-to/apply-functional-patterns
 ---
 
@@ -439,18 +439,18 @@ Potential evolution areas:
 
 ### Essential Reading
 
-- [Architecture Overview](/packages/cli/explanation/architecture) - How these decisions create system-wide benefits
-- [Functional Programming in Practice](/docs/how-to/apply-functional-patterns) - Applying functional concepts
+- [Architecture Overview](/packages/cli/docs/explanation/architecture.md)- How these decisions create system-wide benefits
+- [Functional Programming in Practice](/docs/how-to/apply-functional-patterns.md)- Applying functional concepts
 
 ### Practical Application
 
-- [Building Your First CLI](/packages/cli/tutorials/getting-started) - See the decisions in action
-- [Error Handling Patterns](/packages/cli/how-to/handle-errors-in-cli) - Working with Result types
+- [Building Your First CLI](/packages/cli/docs/tutorials/getting-started.md)- See the decisions in action
+- [Error Handling Patterns](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Working with Result types
 
 ### Technical Details
 
-- [API Reference](/packages/cli/reference/core) - Complete function signatures
-- [Type Definitions](/packages/cli/reference/types) - TypeScript interfaces and types
+- [API Reference](/packages/cli/docs/reference/core.md)- Complete function signatures
+- [Type Definitions](/packages/cli/docs/reference/types.md)- TypeScript interfaces and types
 
 ## Discussion
 

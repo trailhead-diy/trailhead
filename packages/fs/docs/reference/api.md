@@ -4,7 +4,7 @@ title: 'FileSystem Package API Reference'
 description: 'Complete API reference for filesystem operations with Result-based error handling and functional programming patterns'
 related:
   - /docs/reference/core-api
-  - /packages/fs/docs/explanation/functional-architecture/result-patterns.md
+  - /packages/fs/docs/explanation/result-patterns.md
   - /packages/fs/docs/how-to/file-operations
 ---
 
@@ -687,6 +687,6 @@ if (result.isOk()) {
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api) - Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api) - Data processing operations
-- [Validation API](/packages/validation/docs/reference/api) - Data validation
+- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api.md)- Data processing operations
+- [Validation API](/packages/validation/docs/reference/api.md)- Data validation

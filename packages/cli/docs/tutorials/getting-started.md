@@ -66,7 +66,7 @@ pnpm add @esteban-url/cli --workspace
 - File operations should use `@esteban-url/fs` directly
 - This keeps your bundle size minimal
 
-See the [Import Patterns Guide](/packages/cli/how-to/import-patterns) for complete details.
+See the [Import Patterns Guide](/packages/cli/docs/how-to/import-patterns.md)for complete details.
 
 ## Your First CLI Application
 
@@ -181,10 +181,10 @@ You've successfully built your first CLI application! You now understand:
 
 Now that you've completed this tutorial, explore these guides to extend your CLI:
 
-- [How to Add File Operations](/packages/cli/docs/how-to/add-file-operations) - Read, write, and process files
-- [How to Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts) - Make your CLI interactive
-- [How to Add Configuration](/packages/cli/docs/how-to/add-configuration) - Add configuration management
-- [How to Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications) - Write tests for your CLI
+- [How to Add File Operations](/packages/cli/docs/how-to/add-file-operations.md)- Read, write, and process files
+- [How to Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts.md)- Make your CLI interactive
+- [How to Add Configuration](/packages/cli/docs/how-to/add-configuration.md)- Add configuration management
+- [How to Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications.md)- Write tests for your CLI
 
 ## Complete Example
 
@@ -235,7 +235,7 @@ cli.run(process.argv)
 
 ## Learn More
 
-- [Import Patterns](/packages/cli/how-to/import-patterns) - Master the import system
-- [Command Reference](/packages/cli/reference/command) - All command options
-- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Test your CLI
-- [API Reference](/packages/cli/reference/command/) - Complete API documentation
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Master the import system
+- [Command Reference](/packages/cli/docs/reference/command.md)- All command options
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Test your CLI
+- [API Reference](/packages/cli/docs/reference/command.md)- Complete API documentation

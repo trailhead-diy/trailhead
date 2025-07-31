@@ -98,12 +98,12 @@ const markdown = await generateMarkdown(docs)
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/config-getting-started/)
+- [Tutorials](/docs/tutorials/config-getting-started.md)
   - [Getting Started with Config](/docs/tutorials/config-getting-started)
-- [How-to Guides](/docs/how-to/contributing/)
+- [How-to Guides](/docs/how-to/README.md)
   - [Define Configuration Schemas](/docs/how-to/define-schemas)
   - [Generate Documentation](/docs/how-to/generate-config-docs)
-- [Explanations](/docs/explanation/functional-architecture/)
+- [Explanations](/docs/explanation/README.md)
   - [Configuration Sources](/docs/explanation/config-sources)
 - [API Reference](/packages/config/docs/reference/api)
 

@@ -211,11 +211,11 @@ pnpm docs:validate-links --verbose
 ```markdown
 ✅ Good
 [CLI Command API Reference](/packages/cli/docs/reference/command)
-[How to Handle Errors in CLI Applications](/docs/how-to/contributing/handle-cli-errors)
+[How to Handle Errors in CLI Applications](/packages/cli/docs/how-to/handle-errors-in-cli.md)
 
 ❌ Bad  
 [API docs](/packages/cli/docs/reference/command)
-[Click here](/docs/how-to/contributing/handle-cli-errors)
+[Click here](/packages/cli/docs/how-to/handle-errors-in-cli.md)
 ```
 
 ### 2. Frontmatter Related Links
@@ -225,11 +225,11 @@ pnpm docs:validate-links --verbose
 ```yaml
 related:
   # Most relevant first
-  - /docs/tutorials/config-getting-started/getting-started.md
+  - /docs/tutorials/getting-started.md
   # Then supporting references
   - /docs/reference/api.md
   # Finally related concepts
-  - /docs/explanation/functional-architecture/architecture.md
+  - /docs/explanation/functional-architecture.md
 ```
 
 ### 3. Cross-Package References
@@ -239,9 +239,9 @@ related:
 ```markdown
 ## Related Packages
 
-- **[@repo/core](/packages/core/README)** - Foundation utilities
-- **[@repo/fs](/packages/fs/README)** - File system operations
-- **[@esteban-url/cli](/packages/cli/README)** - CLI framework
+- \*_[@repo/core](/packages/core/README.md)_ - Foundation utilities
+- \*_[@repo/fs](/packages/fs/README.md)_ - File system operations
+- \*_[@esteban-url/cli](/packages/cli/README.md)_ - CLI framework
 ```
 
 ### 4. Documentation Tables
@@ -249,9 +249,9 @@ related:
 **Use tables for systematic navigation**:
 
 ```markdown
-| Topic              | Tutorial                                     | How-to Guide                                    | Reference                                           |
-| ------------------ | -------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
-| **Error Handling** | [Getting Started](/docs/tutorials/config-getting-started/errors) | [Handle CLI Errors](/docs/how-to/contributing/cli-errors) | [Result Types API](/docs/reference/result-types) |
+| Topic              | Tutorial                                                     | How-to Guide                                                           | Reference                                                     |
+| ------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Error Handling** | [Getting Started](/docs/tutorials/config-getting-started.md) | [Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md) | [Result Types API](/docs/explanation/result-types-pattern.md) |
 ```
 
 ## Quality Metrics

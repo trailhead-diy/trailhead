@@ -7,9 +7,9 @@ prerequisites:
   - 'Understanding of Result types'
   - 'Basic file system knowledge'
 related:
-  - ./getting-started.md
-  - /packages/cli/reference/command.md
-  - ../how-to/test-cli-applications.md
+  - /packages/cli/docs/tutorials/getting-started.md
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/how-to/test-cli-applications.md
 ---
 
 # Build a Complete CLI Application
@@ -909,6 +909,6 @@ Key patterns demonstrated:
 
 ## Further Learning
 
-- Review [Command Enhancements](/packages/cli/reference/command-enhancements)
-- Explore [Pipeline Patterns](/packages/cli/how-to/use-result-pipelines)
-- Learn about [Testing Strategies](/packages/cli/how-to/test-cli-applications)
+- Review [Command Enhancements](/packages/cli/docs/reference/command-enhancements)
+- Explore [Pipeline Patterns](/packages/cli/docs/how-to/use-result-pipelines)
+- Learn about [Testing Strategies](/packages/cli/docs/how-to/test-cli-applications)

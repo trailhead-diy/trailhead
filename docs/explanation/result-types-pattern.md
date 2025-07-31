@@ -5,7 +5,7 @@ description: 'Explicit error handling without exceptions using Result types for 
 related:
   - /docs/explanation/functional-architecture
   - /docs/how-to/compose-result-operations
-  - /packages/cli/docs/how-to/contributing/handle-errors-in-cli.md
+  - /packages/cli/docs/how-to/handle-errors-in-cli.md
   - /docs/tutorials/file-operations-basics
 ---
 

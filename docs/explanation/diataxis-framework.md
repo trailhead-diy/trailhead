@@ -166,6 +166,6 @@ We chose Diátaxis because it:
 
 ## See Also
 
-- [Documentation Standards Reference](/docs/reference/documentation-standards) - Implementation rules
-- [Writing Guide](/docs/reference/writing-guide) - Style and tone guidelines
-- [Documentation README](/docs/README.md) - Quick reference for writers
+- [Documentation Standards Reference](/docs/reference/documentation-standards.md)- Implementation rules
+- [Writing Guide](/docs/reference/writing-guide.md)- Style and tone guidelines
+- [Documentation README](/docs/README.md)- Quick reference for writers

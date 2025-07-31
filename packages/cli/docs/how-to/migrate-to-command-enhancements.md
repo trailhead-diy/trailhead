@@ -6,8 +6,8 @@ prerequisites:
   - Basic understanding of @esteban-url/cli commands
   - Existing CLI project using standard commands
 related:
-  - /packages/cli/reference/command-enhancements.md
-  - /packages/cli/reference/command.md
+  - /packages/cli/docs/reference/command-enhancements.md
+  - /packages/cli/docs/reference/command.md
 ---
 
 # Migrate to Command Enhancements
@@ -452,6 +452,6 @@ function runMigratedCommand(command, options) {
 
 ## Next Steps
 
-- Review [Command Enhancements Reference](/packages/cli/reference/command-enhancements)
-- Learn about [Pipeline Utilities](/packages/cli/how-to/use-result-pipelines)
-- Explore [Testing Enhanced Commands](/packages/cli/how-to/test-cli-applications)
+- Review [Command Enhancements Reference](/packages/cli/docs/reference/command-enhancements)
+- Learn about [Pipeline Utilities](/packages/cli/docs/how-to/use-result-pipelines)
+- Explore [Testing Enhanced Commands](/packages/cli/docs/how-to/test-cli-applications)

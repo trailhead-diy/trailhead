@@ -7,9 +7,9 @@ prerequisites:
   - Basic async/await knowledge
   - Familiarity with @esteban-url/cli commands
 related:
-  - /packages/cli/reference/command.md
-  - ./migrate-to-command-enhancements.md
-  - /packages/cli/how-to/handle-errors-in-cli
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/how-to/migrate-to-command-enhancements.md
+  - /packages/cli/docs/how-to/handle-errors-in-cli
   - /docs/how-to/compose-result-operations
 ---
 
@@ -24,13 +24,13 @@ This guide shows you how to use @esteban-url/cli's execution patterns for buildi
 ### Import Command Utilities
 
 ```typescript
-import { 
-  executeWithPhases, 
+import {
+  executeWithPhases,
   executeBatch,
   executeWithConfiguration,
   executeWithDryRun,
   executeWithValidation,
-  executeFileSystemOperations
+  executeFileSystemOperations,
 } from '@esteban-url/cli/command'
 import { ok, err } from '@esteban-url/core'
 ```
@@ -67,7 +67,7 @@ const processFilesCommand = createCommand({
       if (content.isErr()) {
         return err(createFileSystemError('read', file, content.error))
       }
-      
+
       // Transform content
       const transformed = await transformContent(content.value)
       return transformed
@@ -309,7 +309,7 @@ const complexCommand = createCommand({
       async (config) => ok(config),
       context
     )
-    
+
     if (configResult.isErr()) return configResult
 
     // Then execute with dry-run support
@@ -349,6 +349,6 @@ context.logger.success('All phases completed successfully')
 
 ## Next Steps
 
-- Learn about [Command Enhancements](/packages/cli/how-to/migrate-to-command-enhancements)
-- Review [Command API Reference](/packages/cli/reference/command)
-- Explore [Testing Commands](/packages/cli/how-to/test-cli-applications)
+- Learn about [Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements)
+- Review [Command API Reference](/packages/cli/docs/reference/command)
+- Explore [Testing Commands](/packages/cli/docs/how-to/test-cli-applications)

@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Familiarity with data validation concepts'
 related:
-  - /docs/reference/validation-api.md
+  - /packages/validation/docs/reference/api.md
   - /docs/how-to/apply-functional-patterns
-  - ../explanation/composition-patterns.md
+  - /packages/validation/docs/explanation/composition-patterns.md
 ---
 
 # Validate Data
@@ -1030,6 +1030,6 @@ const deployCommand = createCommand({
 
 ## Next Steps
 
-- Review [Validation API Reference](/docs/reference/validation-api.md) for detailed function documentation
-- Learn about [Composition Patterns](/packages/validation/explanation/composition-patterns) for advanced validator composition
-- Explore [Functional Patterns](/docs/how-to/apply-functional-patterns) for Result type usage
+- Review [Validation API Reference](/packages/validation/docs/reference/api.md)for detailed function documentation
+- Learn about [Composition Patterns](/packages/validation/docs/explanation/composition-patterns.md)for advanced validator composition
+- Explore [Functional Patterns](/docs/how-to/apply-functional-patterns.md)for Result type usage

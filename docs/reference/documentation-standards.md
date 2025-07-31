@@ -345,7 +345,7 @@ Documentation standards are enforced through:
 
 - Use `pnpm docs:new` to create documentation from templates
 - Run `pnpm docs:validate` to check your documentation
-- See [Writing Guide](/docs/reference/writing-guide) for quick reference
+- See [Writing Guide](/docs/reference/writing-guide.md)for quick reference
 - Ask in #documentation channel for guidance
 
 Remember: Good documentation serves the user's needs, not the system's structure.

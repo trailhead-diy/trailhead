@@ -3,10 +3,10 @@ type: reference
 title: 'Command Module API Reference'
 description: 'Command creation, execution patterns, and CLI building utilities'
 related:
-  - ./core.md
-  - ./types.md
-  - ./command-enhancements.md
-  - /packages/cli/how-to/migrate-to-command-enhancements
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/reference/types.md
+  - /packages/cli/docs/reference/command-enhancements.md
+  - /packages/cli/docs/how-to/migrate-to-command-enhancements
 ---
 
 # Command Module API Reference
@@ -383,6 +383,6 @@ const command = createCommand({
 
 ## See Also
 
-- [Getting Started](/packages/cli/tutorials/getting-started) - Build your first command
-- [Testing Commands](/packages/cli/how-to/test-cli-applications) - Test command behavior
-- [Command Patterns](/packages/cli/how-to/use-result-pipelines) - Common command patterns
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Build your first command
+- [Testing Commands](/packages/cli/docs/how-to/test-cli-applications.md)- Test command behavior
+- [Command Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Common command patterns

@@ -23,17 +23,17 @@ Functional filesystem operations with Result-based error handling and dependency
 
 ### Getting Started
 
-- [File Operations](/packages/fs/docs/how-to/file-operations) - Common filesystem tasks
+- [File Operations](/packages/fs/docs/how-to/file-operations.md)- Common filesystem tasks
 
 ### API Reference
 
 Complete API documentation is available in the shared documentation:
 
-- [FileSystem API Reference](/packages/fs/docs/reference/api) - Complete function and type definitions
+- [FileSystem API Reference](/packages/fs/docs/reference/api.md)- Complete function and type definitions
 
 ### Understanding the Design
 
-- [Result Patterns](/packages/fs/docs/explanation/result-patterns) - Error handling design
+- [Result Patterns](/packages/fs/docs/explanation/result-patterns.md)- Error handling design
 
 ## Key Features
 
@@ -211,9 +211,9 @@ The library provides specific error types for different scenarios:
 
 ## Next Steps
 
-1. Start with [File Operations](/packages/fs/docs/how-to/file-operations) for common tasks
-2. Review the [FileSystem API Reference](/packages/fs/docs/reference/api) for detailed documentation
-3. Understand [Result Patterns](/packages/fs/docs/explanation/result-patterns) for advanced error handling
+1. Start with [File Operations](/packages/fs/docs/how-to/file-operations.md)for common tasks
+2. Review the [FileSystem API Reference](/packages/fs/docs/reference/api.md)for detailed documentation
+3. Understand [Result Patterns](/packages/fs/docs/explanation/result-patterns.md)for advanced error handling
 
 ## Integration Examples
 
@@ -346,7 +346,7 @@ const copyCommand = createCommand({
 
 ## Contributing
 
-See the [Contributing Guide](/docs/how-to/contributing) for development setup and guidelines.
+See the [Contributing Guide](/docs/how-to/contributing.md)for development setup and guidelines.
 
 ## License
 

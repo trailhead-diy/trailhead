@@ -570,6 +570,6 @@ const result = await manager.load([
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api) - Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api) - Data processing operations
-- [Validation API](/packages/validation/docs/reference/api) - Data validation
+- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api.md)- Data processing operations
+- [Validation API](/packages/validation/docs/reference/api.md)- Data validation

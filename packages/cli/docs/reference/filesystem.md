@@ -3,8 +3,8 @@ type: reference
 title: 'FileSystem Module API Reference'
 description: 'File system abstraction layer from @esteban-url/fs package'
 related:
-  - ./core.md
-  - /packages/cli/reference/testing.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/reference/testing.md
 ---
 
 # FileSystem Module API Reference
@@ -423,6 +423,6 @@ interface FileSystemAdapter {
 
 ## See Also
 
-- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing with memory filesystem
-- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - File operation patterns
-- [Error Handling](/packages/cli/how-to/handle-errors-in-cli) - Handling filesystem errors
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing with memory filesystem
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- File operation patterns
+- [Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Handling filesystem errors

@@ -3,8 +3,8 @@ type: reference
 title: 'Utils Module API Reference'
 description: 'Styling, logging, spinners, and statistics tracking utilities for CLI applications'
 related:
-  - ./core.md
-  - ../how-to/optimization-guide.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/how-to/optimization-guide.md
 ---
 
 # Utils Module API Reference
@@ -426,6 +426,6 @@ type StyleFunction = (text: string) => string
 
 ## See Also
 
-- [Getting Started](/packages/cli/tutorials/getting-started) - Basic styling examples
-- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Progress patterns
-- [Command Reference](/packages/cli/reference/command) - Using utils in commands
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Basic styling examples
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Progress patterns
+- [Command Reference](/packages/cli/docs/reference/command.md)- Using utils in commands

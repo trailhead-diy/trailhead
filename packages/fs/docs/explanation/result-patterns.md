@@ -3,8 +3,8 @@ type: explanation
 title: 'Result Patterns in FileSystem Operations'
 description: 'Understanding the design and benefits of Result-based error handling in filesystem operations'
 related:
-  - ../how-to/file-operations.md
-  - /packages/cli/reference/core.md
+  - /packages/fs/docs/how-to/file-operations.md
+  - /packages/cli/docs/reference/core.md
   - /docs/explanation/result-types-pattern
 ---
 

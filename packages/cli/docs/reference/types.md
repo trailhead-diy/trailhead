@@ -3,8 +3,8 @@ type: reference
 title: 'Type Reference Index'
 description: 'Index of all types exported by @esteban-url/trailhead-cli modules'
 related:
-  - ./core.md
-  - ./command.md
+  - /packages/cli/docs/reference/core.md
+  - /packages/cli/docs/reference/command.md
   - /docs/how-to/apply-functional-patterns
 ---
 
@@ -280,5 +280,5 @@ function isValidationError(error: unknown): error is ValidationError
 
 ## See Also
 
-- [Import Patterns](/packages/cli/how-to/import-patterns) - How to import types
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- How to import types
 - Individual module references for detailed type documentation

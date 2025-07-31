@@ -3,9 +3,9 @@ type: reference
 title: 'Command Execution Patterns API Reference'
 description: 'Execution patterns for batch processing, phased operations, and command enhancements'
 related:
-  - ./command.md
-  - /packages/cli/how-to/use-result-pipelines
-  - /packages/cli/how-to/migrate-to-command-enhancements
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/how-to/use-result-pipelines
+  - /packages/cli/docs/how-to/migrate-to-command-enhancements
 ---
 
 # Command Execution Patterns API Reference
@@ -14,11 +14,11 @@ Execution patterns for building robust CLI commands with progress tracking, vali
 
 ## Overview
 
-| Property    | Value                                                       |
-| ----------- | ----------------------------------------------------------- |
-| **Package** | `@esteban-url/cli`                                          |
-| **Module**  | `@esteban-url/cli/command`                                  |
-| **Since**   | `v0.3.0`                                                    |
+| Property    | Value                      |
+| ----------- | -------------------------- |
+| **Package** | `@esteban-url/cli`         |
+| **Module**  | `@esteban-url/cli/command` |
+| **Since**   | `v0.3.0`                   |
 
 ## Import
 
@@ -144,9 +144,9 @@ function executeWithConfiguration<T extends ConfigurationOptions, R>(
 
 ```typescript
 interface ConfigurationOptions {
-  readonly config?: string      // Path to config file
-  readonly preset?: string      // Configuration preset name
-  readonly override?: Record<string, any>  // Config overrides
+  readonly config?: string // Path to config file
+  readonly preset?: string // Configuration preset name
+  readonly override?: Record<string, any> // Config overrides
 }
 ```
 
@@ -295,6 +295,6 @@ await executeBatch(
 
 ## See Also
 
-- [Command Module](/packages/cli/reference/command) - Command creation and structure
-- [Using Execution Patterns](/packages/cli/how-to/use-result-pipelines) - Practical guide
-- [Core Error Types](/packages/core/docs/reference/errors) - Error handling details
+- [Command Module](/packages/cli/docs/reference/command.md)- Command creation and structure
+- [Using Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Practical guide
+- [Core Error Types](/packages/cli/docs/reference/core.md)- Error handling details

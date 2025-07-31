@@ -7,9 +7,9 @@ prerequisites:
   - Basic command line knowledge
   - npm or pnpm installed
 related:
-  - /packages/cli/reference/config.md
-  - ../how-to/customize-templates.md
-  - ../explanation/templates.md
+  - /packages/cli/docs/reference/config.md
+  - /packages/create-cli/docs/how-to/customize-templates.md
+  - /packages/create-cli/docs/explanation/templates.md
 ---
 
 # Generate Your First CLI Application
@@ -280,9 +280,9 @@ my-awesome-cli greet --name "Your Name"
 
 ### Learn More
 
-- [Template Options](/packages/create-cli/explanation/templates) - Understand the different templates
-- [Customize Templates](/packages/create-cli/how-to/customize-templates) - Modify templates for your team
-- [API Reference](/packages/cli/reference/core) - Use the generator programmatically
+- [Template Options](/packages/create-cli/docs/explanation/templates.md)- Understand the different templates
+- [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)- Modify templates for your team
+- [API Reference](/packages/cli/docs/reference/core.md)- Use the generator programmatically
 
 ## Troubleshooting
 

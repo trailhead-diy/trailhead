@@ -135,7 +135,7 @@ expectValidationError(result, { field: 'email' })
 - [Explanations](/packages/validation/docs/explanation/composition-patterns.md)
   - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
   - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](/docs/reference/validation-api.md)
+- [API Reference](/packages/validation/docs/reference/api.md)
 
 ## License
 

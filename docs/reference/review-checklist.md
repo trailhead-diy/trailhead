@@ -242,7 +242,7 @@ Use this template for review feedback:
 
 ## Resources
 
-- [DOCUMENTATION_STANDARDS.md](/docs/reference/documentation-standards) - Complete guidelines
-- [WRITING_DOCUMENTATION.md](/docs/reference/writing-guide) - Quick reference
-- [Templates](/docs/reference/templates/tutorial-template/) - Starting points for new docs
+- [DOCUMENTATION_STANDARDS.md](/docs/reference/documentation-standards.md)- Complete guidelines
+- [WRITING_DOCUMENTATION.md](/docs/reference/writing-guide.md)- Quick reference
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Starting points for new docs
 - `pnpm docs:validate` - Run automated checks

@@ -7,7 +7,7 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'File system operations'
 related:
-  - /docs/reference/data-api.md
+  - /packages/data/docs/reference/api.md
   - /docs/how-to/apply-functional-patterns
   - /packages/fs/docs/how-to/file-operations
 ---
@@ -633,6 +633,6 @@ async function processWithConfig(config: ProcessingConfig) {
 
 ## Next Steps
 
-- Review [Data API Reference](/docs/reference/data-api.md) for detailed function documentation
-- Learn about [Format Detection](/packages/data/explanation/format-detection) system
-- Explore [File System Operations](/packages/fs/docs/how-to/file-operations) for file handling
+- Review [Data API Reference](/packages/data/docs/reference/api.md)for detailed function documentation
+- Learn about [Format Detection](/packages/data/docs/explanation/format-detection.md)system
+- Explore [File System Operations](/packages/fs/docs/how-to/file-operations.md)for file handling

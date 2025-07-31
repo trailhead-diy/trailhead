@@ -3,8 +3,8 @@ type: reference
 title: 'Testing Module API Reference'
 description: 'Testing utilities for CLI applications with mocked dependencies and test runners'
 related:
-  - ./filesystem.md
-  - ../how-to/test-cli-applications.md
+  - /packages/cli/docs/reference/filesystem.md
+  - /packages/cli/docs/how-to/test-cli-applications.md
 ---
 
 # Testing Module API Reference
@@ -421,6 +421,6 @@ function expectError<E = Error>(result: Result<any>, message?: string): E
 
 ## See Also
 
-- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing best practices
-- [Getting Started](/packages/cli/tutorials/getting-started) - Basic testing example
-- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Testing patterns
+- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing best practices
+- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Basic testing example
+- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Testing patterns

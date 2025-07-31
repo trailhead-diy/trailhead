@@ -398,27 +398,27 @@ pnpm qc
 
 ## Documentation
 
-Complete documentation is available in the [docs directory](/packages/create-cli):
+Complete documentation is available in the [docs directory](/packages/create-cli/docs/README.md)
 
 ### 📚 Tutorials
 
-- [Getting Started](/packages/create-cli/tutorials/getting-started) - Generate your first CLI in 5 minutes
+- [Getting Started](/packages/create-cli/docs/tutorials/getting-started.md)- Generate your first CLI in 5 minutes
 
 ### 📖 How-To Guides
 
-- [Customize Templates](/packages/create-cli/how-to/customize-templates) - Modify or create templates
-- [Add Custom Prompts](/packages/create-cli/how-to/custom-prompts) - Extend interactive setup
-- [Configure Defaults](/packages/create-cli/how-to/configure-defaults) - Set personal preferences
+- [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)- Modify or create templates
+- [Add Custom Prompts](/packages/create-cli/docs/how-to/custom-prompts.md)- Extend interactive setup
+- [Configure Defaults](/packages/create-cli/docs/how-to/configure-defaults.md)- Set personal preferences
 
 ### 📋 Reference
 
-- [API Reference](/packages/create-cli/reference/api) - Programmatic usage
-- [Configuration Schema](/packages/create-cli/reference/schema) - All configuration options
-- [Template System](/packages/create-cli/reference/templates) - Template engine details
+- [API Reference](/packages/create-cli/docs/reference/api.md)- Programmatic usage
+- [Configuration Schema](/packages/create-cli/docs/reference/schema.md)- All configuration options
+- [Template System](/packages/create-cli/docs/reference/templates.md)- Template engine details
 
 ### 💡 Explanation
 
-- [Template Architecture](/packages/create-cli/explanation/templates) - Understanding the design
+- [Template Architecture](/packages/create-cli/docs/explanation/templates.md)- Understanding the design
 
 ## License
 

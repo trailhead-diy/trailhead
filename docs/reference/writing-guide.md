@@ -17,12 +17,12 @@ Quick reference for writing documentation that follows Diátaxis principles in t
 
 Ask yourself: **What is the user trying to do?**
 
-| User Intent                               | Type            | Template                                                       |
-| ----------------------------------------- | --------------- | -------------------------------------------------------------- |
-| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](/docs/reference/templates/tutorial-template)       |
-| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](/docs/reference/templates/howto-template)             |
-| "I need to look up information"           | **Reference**   | [reference-template.md](/docs/reference/templates/reference-template)     |
-| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](/docs/reference/templates/explanation-template) |
+| User Intent                               | Type            | Template                                                                     |
+| ----------------------------------------- | --------------- | ---------------------------------------------------------------------------- |
+| "I want to learn by building something"   | **Tutorial**    | [tutorial-template.md](/docs/reference/templates/tutorial-template.md)       |
+| "I need to solve a specific problem"      | **How-To**      | [howto-template.md](/docs/reference/templates/howto-template.md)             |
+| "I need to look up information"           | **Reference**   | [reference-template.md](/docs/reference/templates/reference-template.md)     |
+| "I want to understand how/why this works" | **Explanation** | [explanation-template.md](/docs/reference/templates/explanation-template.md) |
 
 ### 2. Quick Type Check
 
@@ -286,9 +286,9 @@ Before submitting documentation:
 
 ### Resources
 
-- [Documentation Standards](/docs/reference/documentation-standards) - Complete guidelines
-- [Review Checklist](/docs/reference/review-checklist) - For reviewers
-- [Templates](/docs/reference/templates/tutorial-template/) - Starting points for each type
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Complete guidelines
+- [Review Checklist](/docs/reference/review-checklist.md)- For reviewers
+- [Documentation Standards](/docs/reference/documentation-standards.md)- Starting points for each type
 
 ### Still Stuck?
 

@@ -5,7 +5,7 @@ description: 'Understanding the functional programming principles that guide Tra
 related:
   - /docs/explanation/result-types-pattern
   - /docs/how-to/apply-functional-patterns
-  - /packages/cli/docs/explanation/functional-architecture/architecture.md
+  - /packages/cli/docs/explanation/architecture.md
   - /docs/tutorials/data-pipeline-processing
 ---
 

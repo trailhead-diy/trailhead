@@ -7,8 +7,8 @@ prerequisites:
   - 'Basic performance profiling knowledge'
   - 'Understanding of Node.js internals'
 related:
-  - /packages/cli/how-to/import-patterns
-  - /packages/cli/reference/command/utils.md
+  - /packages/cli/docs/how-to/import-patterns
+  - /packages/cli/docs/reference/utils.md
 ---
 
 # How to Optimize CLI Performance
@@ -820,15 +820,15 @@ Expected results:
 
 ## Related Tasks
 
-- **[Import Optimization](/packages/cli/how-to/import-patterns)**: Optimize your import patterns for smaller bundles
-- **[Error Handling](/packages/cli/how-to/handle-errors-in-cli)**: Implement efficient error handling patterns
-- **[Testing Performance](/packages/cli/how-to/test-cli-applications)**: Write fast tests for optimized code
+- \*_[Import Optimization](/packages/cli/docs/how-to/import-patterns.md)_: Optimize your import patterns for smaller bundles
+- \*_[Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)_: Implement efficient error handling patterns
+- \*_[Testing Performance](/packages/cli/docs/how-to/test-cli-applications.md)_: Write fast tests for optimized code
 
 ## Reference
 
-- [Utils API Reference](/packages/cli/reference/utils) - Performance utilities and stats
-- [FileSystem API Reference](/packages/cli/reference/filesystem) - Efficient file operations
-- [Build Configuration](/packages/cli/reference/build-config) - Bundler optimization settings
+- [Utils API Reference](/packages/cli/docs/reference/utils.md)- Performance utilities and stats
+- [FileSystem API Reference](/packages/cli/docs/reference/filesystem.md)- Efficient file operations
+- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler optimization settings
 
 ### Optimization Tools
 
@@ -852,4 +852,4 @@ Expected results:
 
 ---
 
-**See also**: [Architecture Explanation](/packages/cli/explanation/architecture) for understanding the design decisions behind these optimizations
+**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding the design decisions behind these optimizations

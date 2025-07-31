@@ -130,6 +130,7 @@ node dist/index.js
 ```
 
 You should see output like:
+
 ```
 Starting server on localhost:3000
 Database pool size: 10
@@ -149,7 +150,7 @@ You've successfully:
 
 Now that you understand the basics, explore these guides:
 
-- [How to Override Configuration Sources](/docs/how-to/override-config-sources) - Control precedence and override values
-- [How to Define Schemas](/docs/how-to/define-schemas) - Advanced schema techniques
-- [Configuration Sources Explained](/docs/explanation/config-sources) - Deep dive into how sources work
-- [API Reference](/packages/config/docs/reference/api) - Complete API documentation
+- [How to Override Configuration Sources](/docs/how-to/override-config-sources.md)- Control precedence and override values
+- [How to Define Schemas](/docs/how-to/define-schemas.md)- Advanced schema techniques
+- [Configuration Sources Explained](/docs/explanation/config-sources.md)- Deep dive into how sources work
+- [API Reference](/packages/config/docs/reference/api.md)- Complete API documentation

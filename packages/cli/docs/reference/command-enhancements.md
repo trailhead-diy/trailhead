@@ -3,8 +3,8 @@ type: reference
 title: 'Command Enhancement API Reference'
 description: 'API reference for boilerplate reduction utilities in command creation'
 related:
-  - ./command.md
-  - /packages/cli/how-to/migrate-to-command-enhancements
+  - /packages/cli/docs/reference/command.md
+  - /packages/cli/docs/how-to/migrate-to-command-enhancements
 ---
 
 # Command Enhancement API Reference
@@ -311,6 +311,6 @@ const workflow = [
 
 ## See Also
 
-- [Command API Reference](/packages/cli/reference/command) - Core command creation
-- [Migration Guide](/packages/cli/how-to/migrate-to-command-enhancements) - Upgrading existing commands
-- [Workflow API Reference](/packages/cli/reference/flow-control) - Task orchestration
+- [Command API Reference](/packages/cli/docs/reference/command.md)- Core command creation
+- [Migration Guide](/packages/cli/docs/how-to/migrate-to-command-enhancements.md)- Upgrading existing commands
+- [Workflow API Reference](/packages/cli/docs/reference/flow-control.md)- Task orchestration
