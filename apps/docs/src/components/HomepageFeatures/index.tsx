@@ -83,7 +83,7 @@ function Feature({ title, icon, description, link }: FeatureItem) {
         <div className={styles.featureIcon}>{icon}</div>
       </div>
       <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
+        <h3 className="margin-bottom--sm">{title}</h3>
         <p>{description}</p>
         <Link className="button button--sm button--secondary" to={link}>
           Learn More →
@@ -108,9 +108,7 @@ export default function HomepageFeatures(): ReactNode {
 
       <section className={clsx(styles.packages, 'padding-vert--lg')}>
         <div className="container">
-          <Heading as="h2" className="text--center margin-bottom--lg">
-            Package Ecosystem
-          </Heading>
+          <h2 className="text--center margin-bottom--lg">Package Ecosystem</h2>
           <div className="row">
             {PackageList.map((pkg, idx) => (
               <div key={idx} className="col col--4 margin-bottom--md">
