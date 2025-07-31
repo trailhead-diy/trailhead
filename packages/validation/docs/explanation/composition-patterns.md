@@ -4,7 +4,7 @@ title: 'Validator Composition Patterns'
 description: 'Understanding the design and benefits of composable validation in @repo/validation'
 related:
   - ../how-to/validate-data.md
-  - /packages/cli/reference/core.md
+  - /docs/explanation/result-types-pattern.md
   - /docs/explanation/functional-architecture
 ---
 

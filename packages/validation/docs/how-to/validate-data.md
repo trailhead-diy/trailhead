@@ -7,7 +7,7 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Familiarity with data validation concepts'
 related:
-  - /packages/cli/reference/core.md
+  - /docs/reference/validation-api.md
   - /docs/how-to/apply-functional-patterns
   - ../explanation/composition-patterns.md
 ---
@@ -1030,6 +1030,6 @@ const deployCommand = createCommand({
 
 ## Next Steps
 
-- Review [Validation API Reference](/packages/cli/reference/core) for detailed function documentation
+- Review [Validation API Reference](/docs/reference/validation-api.md) for detailed function documentation
 - Learn about [Composition Patterns](/packages/validation/explanation/composition-patterns) for advanced validator composition
 - Explore [Functional Patterns](/docs/how-to/apply-functional-patterns) for Result type usage

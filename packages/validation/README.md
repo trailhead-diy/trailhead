@@ -128,14 +128,14 @@ expectValidationError(result, { field: 'email' })
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/config-getting-started/)
-  - [Form Validation Guide](/docs/tutorials/form-validation-guide)
-- [How-to Guides](/docs/how-to/contributing/)
-  - [Create Custom Validators](/docs/how-to/create-custom-validators)
-- [Explanations](/docs/explanation/functional-architecture/)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern)
-  - [Functional Architecture](/docs/explanation/functional-architecture)
-- [API Reference](/packages/validation/docs/reference/api)
+- [Tutorials](/packages/validation/docs/README.md)
+  - [Form Validation Guide](/docs/tutorials/form-validation-guide.md)
+- [How-to Guides](/packages/validation/docs/how-to/validate-data.md)
+  - [Create Custom Validators](/docs/how-to/create-custom-validators.md)
+- [Explanations](/packages/validation/docs/explanation/composition-patterns.md)
+  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
+  - [Functional Architecture](/docs/explanation/functional-architecture.md)
+- [API Reference](/docs/reference/validation-api.md)
 
 ## License
 
