@@ -17,6 +17,11 @@
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --log-level=error --ignore-path .gitignore --ignore-pattern \"**/*.hbs\" ",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --log-level=error --ignore-path .gitignore --ignore-pattern \"**/*.hbs\"",
+    "ci:run": "./scripts/ci-optimal.sh",
+    "ci:local": "./scripts/ci-optimal.sh",
+    "ci:affected": "TURBO_ARGS='--affected' ./scripts/ci-optimal.sh",
+    "ci:quick": "turbo lint types test --affected --cache-dir=.turbo --concurrency=100%",
+    "ci:watch": "turbo watch lint types test",
     "docs:validate": "tsx tooling/docs-tooling/src/validate-docs.ts",
     "docs:lint": "vale docs && markdownlint docs/**/*.md",
     "docs:coverage": "tsx tooling/docs-tooling/src/validate-docs.ts --coverage",
@@ -74,6 +79,8 @@
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
+      "core-js",
+      "core-js-pure",
       "esbuild",
       "lefthook"
     ]

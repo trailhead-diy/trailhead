@@ -1,74 +1,71 @@
-name: Tier 1 - Main Branch CI
+name: Main Branch CI
 
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-      - '.github/workflows/pre-release-testing.yml'  # Tier 2 changes don't need Tier 1
-      - 'packages/cli/**'  # CLI changes trigger Tier 2
-      - 'packages/create-trailhead-cli/**'  # CLI changes trigger Tier 2
-  workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  # Smart change detection for main branch
-  detect-strategy:
-    name: Detect CI Strategy
+  # Things that MUST run in GitHub
+  release:
+    name: Release
     runs-on: ubuntu-latest
-    outputs:
-      needs-tier-2: ${{ steps.filter.outputs.cli == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.critical == 'true' }}
-      tier-1-only: ${{ steps.filter.outputs.cli == 'false' && steps.filter.outputs.critical == 'false' }}
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
         with:
-          filters: |
-            cli:
-              - 'packages/cli/**'
-              - 'packages/create-trailhead-cli/**'
-            workflows:
-              - '.github/workflows/**'
-            critical:
-              - 'pnpm-lock.yaml'
-              - 'turbo.json'
-              - 'package.json'
-            web-ui:
-              - 'packages/web-ui/**'
-            demos:
-              - 'apps/demos/**'
+          fetch-depth: 0
+      
+      - uses: pnpm/action-setup@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://npm.pkg.github.com'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build packages
+        run: pnpm turbo run build --filter='./packages/*'
+      
+      # Only on main: publish, security scan, cross-platform
+      - name: Publish to GitHub Packages
+        if: github.event.head_commit.message =~ '^(feat|fix)' 
+        run: pnpm changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
 
-  # Fast Tier 1 CI for all main branch changes
-  tier-1-ci:
-    name: Tier 1 Fast Validation
-    needs: detect-strategy
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      os-matrix: '["ubuntu-latest"]'
-      fast-mode: true
-    secrets: inherit
-
-  # Trigger Tier 2 for critical changes
-  trigger-tier-2:
-    name: Trigger Tier 2 Validation
-    needs: [detect-strategy, tier-1-ci]
-    if: needs.detect-strategy.outputs.needs-tier-2 == 'true' && needs.tier-1-ci.result == 'success'
-    runs-on: ubuntu-latest
+  # Cross-platform smoke test (only on main)
+  compatibility:
+    name: OS Compatibility
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Trigger comprehensive validation
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install and smoke test
         run: |
-          echo "🚀 Critical changes detected - Tier 2 validation will run automatically"
-          echo "Changes requiring comprehensive validation:"
-          if [[ "${{ needs.detect-strategy.outputs.cli }}" == "true" ]]; then
-            echo "  - CLI package changes"
-          fi
-          if [[ "${{ needs.detect-strategy.outputs.workflows }}" == "true" ]]; then
-            echo "  - Workflow changes"
-          fi
-          if [[ "${{ needs.detect-strategy.outputs.critical }}" == "true" ]]; then
-            echo "  - Critical configuration changes"
-          fi
+          pnpm install --frozen-lockfile
+          pnpm turbo run build --filter=@esteban-url/cli
+          pnpm --filter=@esteban-url/cli run test -- --run

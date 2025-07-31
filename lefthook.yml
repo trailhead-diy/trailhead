@@ -282,11 +282,33 @@ commit-msg:
       run: 'first_line=$(head -n1 {1}); if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+$"; then echo "❌ Commit message must follow conventional format:"; echo "   type(scope?): description"; echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"; echo "   Example: feat(cli): add new command"; exit 1; fi'
 
 pre-push:
-  parallel: true
+  parallel: false  # Changed to sequential for better control
   commands:
-    # Validate lockfile is up to date (simplified)
-    lockfile-check:
+    # Run comprehensive local CI before push
+    local-ci-check:
       priority: 1
+      run: |
+        echo "🚀 Running pre-push validation..."
+        echo "⚡ Using optimized Turborepo pipeline..."
+        
+        # Run affected packages only for pre-push (faster)
+        TURBO_ARGS='--affected' ./scripts/ci-optimal.sh || {
+          echo ""
+          echo "❌ Pre-push validation failed!"
+          echo ""
+          echo "💡 Fix issues with:"
+          echo "   pnpm ci:run       # Run full local CI"
+          echo "   pnpm ci:affected  # Run only affected packages"
+          echo ""
+          echo "🚨 To bypass (emergencies only):"
+          echo "   git push --no-verify"
+          echo ""
+          exit 1
+        }
+    
+    # Validate lockfile is up to date
+    lockfile-check:
+      priority: 2
       run: |
         pnpm install --lockfile-only --frozen-lockfile > /dev/null || {
           echo "❌ pnpm-lock.yaml is out of date! Run 'pnpm install' and commit the updated lockfile"
