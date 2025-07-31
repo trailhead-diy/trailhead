@@ -3,9 +3,9 @@ type: reference
 title: 'Configuration Package API Reference'
 description: 'Complete API reference for configuration operations with Zod schemas, documentation generation, and Result-based error handling'
 related:
-  - /docs/reference/core-api.md
+  - /docs/reference/core-api
   - /docs/explanation/config-sources.md
-  - /docs/how-to/define-schemas.md
+  - /docs/how-to/define-schemas
 ---
 
 # Configuration Package API Reference
@@ -570,6 +570,6 @@ const result = await manager.load([
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
-- [Validation API](/packages/validation/docs/reference/api.md) - Data validation
+- [Core API Reference](/docs/reference/core-api) - Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api) - Data processing operations
+- [Validation API](/packages/validation/docs/reference/api) - Data validation

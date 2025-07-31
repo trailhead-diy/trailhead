@@ -3,9 +3,9 @@ type: reference
 title: 'Data Package API Reference'
 description: 'Complete API reference for data processing operations including CSV, JSON, Excel, and format detection'
 related:
-  - /docs/reference/core-api.md
-  - /packages/data/docs/explanation/format-detection.md
-  - /packages/data/docs/how-to/process-data-files.md
+  - /docs/reference/core-api
+  - /packages/data/docs/explanation/functional-architecture/format-detection.md
+  - /packages/data/docs/how-to/process-data-files
 ---
 
 # Data Package API Reference
@@ -622,6 +622,6 @@ if (result.isErr()) {
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
-- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations
-- [Validation API](/packages/validation/docs/reference/api.md) - Data validation
+- [Core API Reference](/docs/reference/core-api) - Base Result types and error handling
+- [FileSystem API](/packages/fs/docs/reference/api) - File operations
+- [Validation API](/packages/validation/docs/reference/api) - Data validation

@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 ## Features
 
@@ -115,14 +115,14 @@ const result = await mockFS.readJson('/app/config.json')
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/)
-  - [File Operations Basics](/docs/tutorials/file-operations-basics.md)
-- [How-to Guides](/docs/how-to/)
-  - [Perform Atomic File Operations](/docs/how-to/perform-atomic-file-operations.md)
-- [Explanations](/docs/explanation/)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](./docs/reference/api.md)
+- [Tutorials](/docs/tutorials/config-getting-started/)
+  - [File Operations Basics](/docs/tutorials/file-operations-basics)
+- [How-to Guides](/docs/how-to/contributing/)
+  - [Perform Atomic File Operations](/docs/how-to/perform-atomic-file-operations)
+- [Explanations](/docs/explanation/functional-architecture/)
+  - [Result Types Pattern](/docs/explanation/result-types-pattern)
+  - [Functional Architecture](/docs/explanation/functional-architecture)
+- [API Reference](/packages/fs/docs/reference/api)
 
 ## License
 

@@ -4,8 +4,8 @@ title: 'Format Detection System'
 description: 'Understanding how automatic format detection works in @repo/data'
 related:
   - ../how-to/process-data-files.md
-  - ../reference/api.md
-  - /docs/explanation/architecture.md
+  - /packages/cli/reference/core.md
+  - /docs/explanation/functional-architecture/architecture.md
 ---
 
 # Format Detection System

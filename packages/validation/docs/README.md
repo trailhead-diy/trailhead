@@ -3,9 +3,9 @@ type: explanation
 title: '@repo/validation Documentation Hub'
 description: 'Functional validation with Zod integration and Result-based error handling'
 related:
-  - ./how-to/validate-data.md
-  - ./explanation/composition-patterns.md
-  - ./reference/api.md
+  - /packages/validation/docs/how-to/validate-data.md
+  - /packages/validation/docs/explanation/composition-patterns.md
+  - /packages/validation/docs/reference/api.md
 ---
 
 # @repo/validation Documentation
@@ -23,17 +23,17 @@ Functional validation library with Zod integration, providing both simple valida
 
 ### Getting Started
 
-- [Validate Data](./how-to/validate-data.md) - Common validation tasks
+- [Validate Data](/packages/validation/docs/how-to/validate-data) - Common validation tasks
 
 ### API Reference
 
 Complete API documentation is available in the shared documentation:
 
-- [Validation API Reference](./reference/api.md) - Complete function and type definitions
+- [Validation API Reference](/packages/validation/docs/reference/api) - Complete function and type definitions
 
 ### Understanding the Design
 
-- [Composition Patterns](./explanation/composition-patterns.md) - Validator composition design
+- [Composition Patterns](/packages/validation/docs/explanation/composition-patterns) - Validator composition design
 
 ## Key Features
 
@@ -267,9 +267,9 @@ if (!result.success) {
 
 ## Next Steps
 
-1. Start with [Validate Data](./how-to/validate-data.md) for common validation tasks
-2. Review the [Validation API Reference](./reference/api.md) for detailed documentation
-3. Understand [Composition Patterns](./explanation/composition-patterns.md) for advanced usage
+1. Start with [Validate Data](/packages/validation/docs/how-to/validate-data) for common validation tasks
+2. Review the [Validation API Reference](/packages/validation/docs/reference/api) for detailed documentation
+3. Understand [Composition Patterns](/packages/validation/docs/explanation/composition-patterns) for advanced usage
 
 ## Integration Examples
 
@@ -460,8 +460,8 @@ function useValidatedForm() {
 
 ## Contributing
 
-See the [Contributing Guide](../../../docs/how-to/contributing.md) for development setup and guidelines.
+See the [Contributing Guide](/docs/how-to/contributing) for development setup and guidelines.
 
 ## License
 
-MIT - See [LICENSE](../../../LICENSE)
+MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)

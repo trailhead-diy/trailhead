@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 ## Features
 
@@ -128,14 +128,14 @@ expectValidationError(result, { field: 'email' })
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/)
-  - [Form Validation Guide](/docs/tutorials/form-validation-guide.md)
-- [How-to Guides](/docs/how-to/)
-  - [Create Custom Validators](/docs/how-to/create-custom-validators.md)
-- [Explanations](/docs/explanation/)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](./docs/reference/api.md)
+- [Tutorials](/docs/tutorials/config-getting-started/)
+  - [Form Validation Guide](/docs/tutorials/form-validation-guide)
+- [How-to Guides](/docs/how-to/contributing/)
+  - [Create Custom Validators](/docs/how-to/create-custom-validators)
+- [Explanations](/docs/explanation/functional-architecture/)
+  - [Result Types Pattern](/docs/explanation/result-types-pattern)
+  - [Functional Architecture](/docs/explanation/functional-architecture)
+- [API Reference](/packages/validation/docs/reference/api)
 
 ## License
 

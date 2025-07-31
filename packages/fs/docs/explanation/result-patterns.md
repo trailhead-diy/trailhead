@@ -4,8 +4,8 @@ title: 'Result Patterns in FileSystem Operations'
 description: 'Understanding the design and benefits of Result-based error handling in filesystem operations'
 related:
   - ../how-to/file-operations.md
-  - ../reference/api.md
-  - /docs/explanation/result-types-pattern.md
+  - /packages/cli/reference/core.md
+  - /docs/explanation/result-types-pattern
 ---
 
 # Result Patterns in FileSystem Operations
@@ -131,7 +131,7 @@ const data = await reader('./data.json')
 
 **Context**: All operations should follow the same error handling pattern
 
-**Decision**: Every operation returns Result<T, FileSystemError>
+**Decision**: Every operation returns `Result<T, FileSystemError>`
 
 **Trade-offs**:
 

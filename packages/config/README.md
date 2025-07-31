@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 ## Features
 
@@ -98,14 +98,14 @@ const markdown = await generateMarkdown(docs)
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/)
-  - [Getting Started with Config](/docs/tutorials/config-getting-started.md)
-- [How-to Guides](/docs/how-to/)
-  - [Define Configuration Schemas](/docs/how-to/define-schemas.md)
-  - [Generate Documentation](/docs/how-to/generate-config-docs.md)
-- [Explanations](/docs/explanation/)
-  - [Configuration Sources](/docs/explanation/config-sources.md)
-- [API Reference](./docs/reference/api.md)
+- [Tutorials](/docs/tutorials/config-getting-started/)
+  - [Getting Started with Config](/docs/tutorials/config-getting-started)
+- [How-to Guides](/docs/how-to/contributing/)
+  - [Define Configuration Schemas](/docs/how-to/define-schemas)
+  - [Generate Documentation](/docs/how-to/generate-config-docs)
+- [Explanations](/docs/explanation/functional-architecture/)
+  - [Configuration Sources](/docs/explanation/config-sources)
+- [API Reference](/packages/config/docs/reference/api)
 
 ## License
 

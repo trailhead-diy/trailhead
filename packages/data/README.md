@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 ## Features
 
@@ -92,14 +92,14 @@ await converter.convert(source, target, { from: 'csv', to: 'json' })
 
 ## Documentation
 
-- [Tutorials](/docs/tutorials/)
-  - [Data Pipeline Processing](/docs/tutorials/data-pipeline-processing.md)
-- [How-to Guides](/docs/how-to/)
-  - [Convert Data Formats](/docs/how-to/convert-data-formats.md)
-- [Explanations](/docs/explanation/)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](./docs/reference/api.md)
+- [Tutorials](/docs/tutorials/config-getting-started/)
+  - [Data Pipeline Processing](/docs/tutorials/data-pipeline-processing)
+- [How-to Guides](/docs/how-to/contributing/)
+  - [Convert Data Formats](/docs/how-to/convert-data-formats)
+- [Explanations](/docs/explanation/functional-architecture/)
+  - [Result Types Pattern](/docs/explanation/result-types-pattern)
+  - [Functional Architecture](/docs/explanation/functional-architecture)
+- [API Reference](/packages/data/docs/reference/api)
 
 ## License
 

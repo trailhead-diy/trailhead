@@ -3,9 +3,9 @@ type: reference
 title: 'Validation Package API Reference'
 description: 'Complete API reference for validation operations with built-in validators, schema composition, and Result-based error handling'
 related:
-  - /docs/reference/core-api.md
-  - /packages/validation/docs/explanation/composition-patterns.md
-  - /packages/validation/docs/how-to/validate-data.md
+  - /docs/reference/core-api
+  - /packages/validation/docs/explanation/functional-architecture/composition-patterns.md
+  - /packages/validation/docs/how-to/contributing/validate-data.md
 ---
 
 # Validation Package API Reference
@@ -751,6 +751,6 @@ const asyncEmailValidator = async (value: unknown): Promise<ValidationResult<str
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
-- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations
+- [Core API Reference](/docs/reference/core-api) - Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api) - Data processing operations
+- [FileSystem API](/packages/fs/docs/reference/api) - File operations
