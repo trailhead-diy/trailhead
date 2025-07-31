@@ -4,7 +4,7 @@ title: 'Configuration Schema Reference'
 description: 'Complete schema documentation for project configuration options'
 related:
   - ./api.md
-  - ./templates.md
+  - /docs/reference/templates/tutorial-template.md
   - ../how-to/configure-defaults.md
 ---
 
@@ -330,6 +330,6 @@ Each feature module includes:
 
 ## See Also
 
-- [API Reference](./api.md) - Programmatic usage
-- [Template System](./templates.md) - Template details
-- [Configure Defaults](../how-to/configure-defaults.md) - Setting personal defaults
+- [API Reference](/packages/create-cli/reference/api) - Programmatic usage
+- [Template System](/docs/reference/templates/tutorial-template) - Template details
+- [Configure Defaults](/packages/create-cli/how-to/configure-defaults) - Setting personal defaults

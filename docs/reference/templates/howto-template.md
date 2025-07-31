@@ -1,15 +1,13 @@
 ---
 type: how-to
-title: # Problem-solving title (e.g., "How to Add Custom Validation Rules")
-description: # One-line summary of the task/problem being solved
+title: 'How-To Guide Template'
+description: 'Template for creating how-to guides following the Diátaxis framework'
 prerequisites:
-  # Assume basic knowledge, list specific requirements
-  # - @esteban-url/trailhead-cli installed
-  # - Familiarity with Result types
+  - Understanding of Diátaxis framework
+  - Familiarity with documentation standards
 related:
-  # Links to reference docs and related guides
-  # - /docs/reference/api/validation
-  # - /docs/explanation/validation-design
+  - /docs/reference/documentation-standards
+  - /docs/reference/writing-guide
 ---
 
 # Title

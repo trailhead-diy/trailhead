@@ -7,7 +7,7 @@ prerequisites:
   - Basic command line knowledge
   - npm or pnpm installed
 related:
-  - ../reference/schema.md
+  - /packages/cli/reference/config.md
   - ../how-to/customize-templates.md
   - ../explanation/templates.md
 ---
@@ -280,9 +280,9 @@ my-awesome-cli greet --name "Your Name"
 
 ### Learn More
 
-- [Template Options](../explanation/templates.md) - Understand the different templates
-- [Customize Templates](../how-to/customize-templates.md) - Modify templates for your team
-- [API Reference](../reference/api.md) - Use the generator programmatically
+- [Template Options](/packages/create-cli/explanation/templates) - Understand the different templates
+- [Customize Templates](/packages/create-cli/how-to/customize-templates) - Modify templates for your team
+- [API Reference](/packages/cli/reference/core) - Use the generator programmatically
 
 ## Troubleshooting
 
@@ -303,5 +303,5 @@ If you see TypeScript errors:
 ### Need Help?
 
 - Check the [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- Read the [@esteban-url/cli documentation](../../cli/docs/)
+- Read the [@esteban-url/cli documentation](/packages/cli/)
 - Ask in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)

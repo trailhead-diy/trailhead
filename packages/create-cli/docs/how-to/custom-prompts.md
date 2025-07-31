@@ -8,8 +8,8 @@ prerequisites:
   - Familiarity with inquirer/prompts
 related:
   - ./customize-templates.md
-  - ../reference/schema.md
-  - ../reference/api.md
+  - /packages/cli/reference/config.md
+  - /packages/cli/reference/core.md
 ---
 
 # Add Custom Interactive Prompts
@@ -556,6 +556,6 @@ Some terminals may have issues with Unicode characters or colors.
 
 ## Next Steps
 
-- Learn about [Configuration Defaults](./configure-defaults.md)
-- Explore [Template Customization](./customize-templates.md)
-- Review [API Reference](../reference/api.md)
+- Learn about [Configuration Defaults](/packages/create-cli/how-to/configure-defaults)
+- Explore [Template Customization](/packages/create-cli/how-to/customize-templates)
+- Review [API Reference](/packages/cli/reference/core)

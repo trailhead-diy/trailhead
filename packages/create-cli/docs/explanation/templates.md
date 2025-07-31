@@ -3,9 +3,9 @@ type: explanation
 title: 'Understanding the Template System'
 description: 'Deep dive into how the template system works and why it is designed this way'
 related:
-  - ../reference/templates.md
+  - /packages/cli/reference/templates.md
   - ../how-to/customize-templates.md
-  - ../reference/schema.md
+  - /packages/cli/reference/config.md
 ---
 
 # Understanding the Template System

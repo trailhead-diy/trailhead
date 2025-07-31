@@ -1,11 +1,10 @@
 ---
 type: reference
-title: # Descriptive title (e.g., "FileSystem API Reference")
-description: # One-line summary of what this reference covers
+title: 'Reference Documentation Template'
+description: 'Template for creating reference documentation following the Diátaxis framework'
 related:
-  # Links to related reference docs
-  # - /docs/reference/api/core
-  # - /docs/reference/config/options
+  - /docs/reference/documentation-standards
+  - /docs/reference/writing-guide
 ---
 
 # Title
