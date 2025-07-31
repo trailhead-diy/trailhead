@@ -48,11 +48,24 @@ For extended functionality, see:
 
 ### How-To Guides
 
-Task-specific guides:
+Task-specific guides for common CLI operations:
 
-- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns)
-- [Import Patterns](/packages/cli/how-to/import-patterns)
-- [Optimization Guide](/packages/cli/how-to/optimization-guide)
+- [Add File Operations](/packages/cli/docs/how-to/add-file-operations) - Read, write, and process files
+- [Add Interactive Prompts](/packages/cli/docs/how-to/add-interactive-prompts) - User input and selections
+- [Add Configuration](/packages/cli/docs/how-to/add-configuration) - Configuration management
+- [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli) - Error handling patterns
+- [Test CLI Applications](/packages/cli/docs/how-to/test-cli-applications) - Testing strategies
+- [Use Result Pipelines](/packages/cli/docs/how-to/use-result-pipelines) - Chain operations
+- [Import Patterns](/packages/cli/docs/how-to/import-patterns) - Module import best practices
+- [Migrate to Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements) - Upgrade guide
+- [Migrate to Pipelines](/packages/cli/docs/how-to/migrate-to-pipelines) - Pipeline migration
+- [Optimization Guide](/packages/cli/docs/how-to/optimization-guide) - Performance tips
+
+### Tutorials
+
+Learning-oriented guides for getting started:
+
+- [Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started) - Complete beginner tutorial
 
 ## Key Features
 

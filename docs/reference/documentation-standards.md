@@ -3,6 +3,7 @@ type: reference
 title: 'Documentation Standards - Diátaxis Framework'
 description: 'Complete specification of documentation standards and Diátaxis framework implementation for Trailhead'
 related:
+  - /docs/explanation/diataxis-framework
   - /docs/reference/templates/
   - /docs/reference/review-checklist.md
   - /docs/README.md
@@ -10,29 +11,11 @@ related:
 
 # Documentation Standards - Diátaxis Framework
 
-This guide establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these principles to ensure clarity, discoverability, and usefulness.
+This reference establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these standards.
 
-## Overview
+> **Note**: For understanding why we use Diátaxis and how it works, see [Understanding the Diátaxis Framework](/docs/explanation/diataxis-framework).
 
-Diátaxis organizes documentation into four distinct quadrants based on user needs:
-
-```
-       LEARNING                           WORKING
-         ↑                                  ↑
-         |                                  |
-    TUTORIALS ←――――――――――――――――――→ HOW-TO GUIDES
-         |                                  |
-         |        practical                 |
-         |                                  |
-         |        theoretical               |
-         |                                  |
-   EXPLANATION ←――――――――――――――――→ REFERENCE
-         |                                  |
-         ↓                                  ↓
-    UNDERSTANDING                      INFORMATION
-```
-
-## The Four Quadrants
+## Document Categories
 
 ### 1. Tutorials (Learning-Oriented)
 
