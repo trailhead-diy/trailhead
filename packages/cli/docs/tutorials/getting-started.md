@@ -52,18 +52,18 @@ npm install @esteban-url/cli
 ### For Monorepo Development
 
 ```bash
-pnpm add @esteban-url/trailhead-cli --workspace
+pnpm add @esteban-url/cli --workspace
 ```
 
 ## Important: Import Strategy
 
-@esteban-url/trailhead-cli uses **subpath exports** for optimal tree-shaking. This means:
+@esteban-url/cli uses **subpath exports** for optimal tree-shaking. This means:
 
-- The main export (`@esteban-url/trailhead-cli`) contains only Result types and `createCLI`
+- The main export (`@esteban-url/cli`) contains only Result types and `createCLI`
 - All other functionality must be imported from specific subpaths
 - This keeps your bundle size minimal
 
-See the [Import Patterns Guide](./how-to/import-patterns.md) for complete details.
+See the [Import Patterns Guide](../how-to/import-patterns.md) for complete details.
 
 ## Your First CLI Application
 
@@ -74,9 +74,9 @@ Let's build a simple greeting CLI that demonstrates core concepts.
 Create `src/commands/greet.ts`:
 
 ```typescript
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { ok } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import type { CommandContext } from '@esteban-url/cli/command'
 
 export const greetCommand = createCommand({
   name: 'greet',
@@ -92,7 +92,7 @@ export const greetCommand = createCommand({
   ],
   action: async (options, context: CommandContext) => {
     context.logger.info(`Hello, ${options.name}!`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -103,7 +103,7 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@esteban-url/cli'
 import { greetCommand } from './commands/greet'
 
 const cli = createCLI({
@@ -134,13 +134,13 @@ node dist/index.js greet --name World
 @esteban-url/trailhead-cli uses Result types for explicit error handling:
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
+import { ok, err } from '@esteban-url/cli'
 
 // Success
-return Ok(data)
+return ok(data)
 
 // Error
-return Err(new Error('Something went wrong'))
+return err(new Error('Something went wrong'))
 ```
 
 ### Command Context
@@ -148,7 +148,7 @@ return Err(new Error('Something went wrong'))
 Every command receives a context with useful utilities:
 
 ```typescript
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import type { CommandContext } from '@esteban-url/cli/command'
 
 async function myAction(options: any, context: CommandContext) {
   // Logger for output
@@ -156,7 +156,8 @@ async function myAction(options: any, context: CommandContext) {
   context.logger.success('Done!')
   context.logger.error('Failed!')
 
-  // File system access
+  // File system access via fs package
+  // Note: Use @repo/fs package for file operations
   const result = await context.fs.readFile('config.json')
 
   // Project root directory
@@ -169,9 +170,9 @@ async function myAction(options: any, context: CommandContext) {
 ### Add File Operations
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { ok, err } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import { fs } from '@repo/fs'
 
 const readCommand = createCommand({
   name: 'read',
@@ -186,15 +187,14 @@ const readCommand = createCommand({
     },
   ],
   action: async (options, context) => {
-    const fs = createFileSystem()
     const result = await fs.readFile(options.file)
 
-    if (!result.success) {
-      return Err(new Error(`Failed to read: ${result.error.message}`))
+    if (result.isErr()) {
+      return err(new Error(`Failed to read: ${result.error.message}`))
     }
 
     context.logger.info(result.value)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -202,9 +202,9 @@ const readCommand = createCommand({
 ### Add Interactive Prompts
 
 ```typescript
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { prompt, select } from '@esteban-url/trailhead-cli/prompts'
+import { ok } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import { prompt, select } from '@esteban-url/cli/prompts'
 
 const initCommand = createCommand({
   name: 'init',
@@ -221,32 +221,46 @@ const initCommand = createCommand({
     })
 
     context.logger.success(`Created ${name} with ${template} template`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
 
-### Use Command Enhancements
+### File Processing with @repo/fs
 
-Reduce boilerplate with command enhancement utilities:
+Use the file system package for file operations:
 
 ```typescript
-import { createFileProcessingCommand, commonOptions } from '@esteban-url/trailhead-cli/command'
+import { ok, err } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import { fs } from '@repo/fs'
 
-const processCommand = createFileProcessingCommand({
+const processCommand = createCommand({
   name: 'process',
   description: 'Process a data file',
-  inputFile: { required: true },
-  commonOptions: ['output', 'format', 'verbose'],
-  action: async (options, context, { inputFile, outputPath, fs }) => {
-    // File validation already done!
-    const data = await parseFile(inputFile, options.format)
-
-    if (outputPath) {
-      await fs.writeFile(outputPath, JSON.stringify(data))
+  options: [
+    { name: 'input', alias: 'i', type: 'string', required: true, description: 'Input file' },
+    { name: 'output', alias: 'o', type: 'string', description: 'Output file' },
+    { name: 'format', alias: 'f', type: 'string', description: 'Output format' },
+  ],
+  action: async (options, context) => {
+    // Validate input file exists
+    const exists = await fs.exists(options.input)
+    if (exists.isErr()) {
+      return err(new Error(`Input file does not exist: ${options.input}`))
     }
 
-    return Ok(undefined)
+    // Read and process file
+    const data = await parseFile(options.input, options.format)
+
+    if (options.output) {
+      const writeResult = await fs.writeFile(options.output, JSON.stringify(data))
+      if (writeResult.isErr()) {
+        return err(new Error(`Failed to write output: ${writeResult.error.message}`))
+      }
+    }
+
+    return ok(undefined)
   },
 })
 ```
@@ -254,7 +268,7 @@ const processCommand = createFileProcessingCommand({
 ### Add Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { createConfigManager } from '@repo/config'
 import { z } from 'zod'
 
 const configSchema = z.object({
@@ -266,11 +280,11 @@ const configSchema = z.object({
   }),
 })
 
-const config = defineConfig(configSchema)
+const config = createConfigManager(configSchema)
 
 // In your command
 const result = await config.load()
-if (result.success) {
+if (result.isOk()) {
   console.log(result.value.name)
 }
 ```
@@ -281,10 +295,10 @@ Here's a minimal but complete CLI application:
 
 ```typescript
 #!/usr/bin/env node
-import { Ok, Err, createCLI } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import { prompt } from '@esteban-url/trailhead-cli/prompts'
+import { ok, err, createCLI } from '@esteban-url/cli'
+import { createCommand } from '@esteban-url/cli/command'
+import { fs } from '@repo/fs'
+import { prompt } from '@esteban-url/cli/prompts'
 
 const mainCommand = createCommand({
   name: 'process',
@@ -297,19 +311,18 @@ const mainCommand = createCommand({
     })
 
     // Read file
-    const fs = createFileSystem()
     const result = await fs.readFile(filename)
 
-    if (!result.success) {
+    if (result.isErr()) {
       context.logger.error(`Failed to read ${filename}`)
-      return result
+      return err(result.error)
     }
 
     // Process content
     const lines = result.value.split('\n').length
     context.logger.success(`Processed ${lines} lines from ${filename}`)
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 

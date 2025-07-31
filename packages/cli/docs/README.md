@@ -43,7 +43,7 @@ Complete API documentation for all modules:
 
 Task-specific guides:
 
-- [Functional Patterns](/docs/how-to/apply-functional-patterns.md)
+- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns.md)
 - [Import Patterns](./how-to/import-patterns.md)
 - [Optimization Guide](./how-to/optimization-guide.md)
 

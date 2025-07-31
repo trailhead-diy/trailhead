@@ -42,7 +42,7 @@ npx create-cli my-cli
 
 ```typescript
 import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/cli/core'
+import { ok, err } from '@esteban-url/cli'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -69,7 +69,7 @@ await greetCommand.execute(['--name', 'World'])
 ### Result Types - No Exceptions
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/cli/core'
+import { Result, ok, err } from '@esteban-url/cli'
 
 // Functions return Results instead of throwing
 async function deployApp(env: string): Promise<Result<string, Error>> {
@@ -137,14 +137,15 @@ const buildCommand = createCommand({
 Result types, error handling, and validation pipelines
 
 ```typescript
-import { Result, ok, err, createValidationPipeline } from '@esteban-url/cli/core'
+import { Result, ok, err } from '@esteban-url/cli'
 
-// Create validation pipeline
-const validateUser = createValidationPipeline([
-  (data) => (data.email ? ok(data) : err(new Error('Email required'))),
-  (data) => (data.email.includes('@') ? ok(data) : err(new Error('Invalid email'))),
-  (data) => (data.age >= 18 ? ok(data) : err(new Error('Must be 18+'))),
-])
+// Functions return Results instead of throwing
+async function validateUser(data: any): Promise<Result<any, Error>> {
+  if (!data.email) return err(new Error('Email required'))
+  if (!data.email.includes('@')) return err(new Error('Invalid email'))
+  if (data.age < 18) return err(new Error('Must be 18+'))
+  return ok(data)
+}
 ```
 
 ### Command (`@esteban-url/cli/command`)
@@ -298,9 +299,9 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { createFileSystem } from '@esteban-url/cli/filesystem'
+import { fs } from '@repo/fs'
 
-const fs = createFileSystem()
+// Use @repo/fs package for file operations
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -311,11 +312,11 @@ if (readResult.isOk()) {
   console.error('Failed to read config:', readResult.error.message)
 }
 
-// Batch operations
-const copyResult = await fs.copyFiles([
-  { from: 'src/template.tsx', to: 'dist/template.tsx' },
-  { from: 'src/styles.css', to: 'dist/styles.css' },
-])
+// File operations with Result types
+const copyResult = await fs.copy('src/template.tsx', 'dist/template.tsx')
+if (copyResult.isErr()) {
+  console.error('Copy failed:', copyResult.error.message)
+}
 ```
 
 ## Testing Best Practices
@@ -442,19 +443,25 @@ Check out the [documentation](./docs/) for comprehensive guides and API referenc
 
 ### From Commander.js
 
+**Before (Legacy Pattern):**
+
 ```typescript
-// Before (Commander.js)
+// Commander.js with exception-based error handling
 program
   .command('deploy')
   .option('-e, --env <env>', 'Environment')
   .action((options) => {
     if (!options.env) {
-      throw new Error('Environment required')
+      throw new Error('Environment required') // ❌ Exception-based
     }
-    deploy(options.env)
+    deploy(options.env) // ❌ No error handling
   })
+```
 
-// After (@esteban-url/cli)
+**After (Modern Pattern):**
+
+```typescript
+// @esteban-url/cli with Result-based error handling
 const deployCommand = createCommand({
   name: 'deploy',
   options: {
@@ -462,35 +469,41 @@ const deployCommand = createCommand({
   },
   action: async ({ env }) => {
     const result = await deploy(env)
-    return result // Returns Result<T, E>
+    return result // ✅ Returns Result<T, E>
   },
 })
 ```
 
 ### From Yargs
 
+**Before (Legacy Pattern):**
+
 ```typescript
-// Before (Yargs)
+// Yargs with try/catch error handling
 yargs.command(
   'build [env]',
   'Build project',
   (yargs) => yargs.positional('env', { type: 'string' }),
   (argv) => {
     try {
-      build(argv.env)
+      build(argv.env) // ❌ Exception-based
     } catch (error) {
-      console.error(error.message)
-      process.exit(1)
+      console.error(error.message) // ❌ Manual error handling
+      process.exit(1) // ❌ Hard exit
     }
   }
 )
+```
 
-// After (@esteban-url/cli)
+**After (Modern Pattern):**
+
+```typescript
+// @esteban-url/cli with Result-based error handling
 const buildCommand = createCommand({
   name: 'build',
   arguments: [{ name: 'env', type: 'string', description: 'Target environment' }],
   action: async ({ env }) => {
-    return build(env) // Returns Result<T, E>
+    return build(env) // ✅ Returns Result<T, E>
   },
 })
 ```
