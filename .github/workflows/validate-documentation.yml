@@ -39,7 +39,7 @@ jobs:
         run: pnpm install --frozen-lockfile
         
       - name: Validate documentation links
-        run: pnpm docs:validate-links --verbose
+        run: pnpm docs:validate-links
         
       - name: Check for broken links
         if: failure()
@@ -48,7 +48,6 @@ jobs:
           echo "Some links are broken or point to non-existent files."
           echo ""
           echo "To fix automatically, run locally:"
-          echo "  pnpm docs:fix-links --dry-run  # Preview fixes"
           echo "  pnpm docs:fix-links            # Apply fixes"
           echo ""
           echo "Or fix manually according to the style guide:"
@@ -72,11 +71,12 @@ jobs:
       - name: Validate documentation structure
         run: pnpm docs:validate
         
+      # Coverage check uses same script with --coverage flag
       - name: Check documentation coverage
-        run: pnpm docs:coverage
+        run: pnpm docs:validate --coverage
 
-  lint-documentation:
-    name: Lint Documentation
+  check-formatting:
+    name: Check Documentation Formatting
     runs-on: ubuntu-latest
     
     steps:
@@ -88,13 +88,6 @@ jobs:
         
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
-      # Note: Vale and markdownlint would need to be set up
-      # This is a placeholder for future implementation
-      - name: Lint markdown files
-        run: |
-          echo "📝 Markdown linting would run here"
-          echo "Future: Install and configure Vale + markdownlint"
           
       - name: Check formatting
         run: pnpm format:check
@@ -103,7 +96,7 @@ jobs:
   documentation-validation:
     name: Documentation Validation Complete
     runs-on: ubuntu-latest
-    needs: [validate-links, validate-standards, lint-documentation]
+    needs: [validate-links, validate-standards, check-formatting]
     if: always()
     
     steps:
@@ -119,8 +112,8 @@ jobs:
             exit 1
           fi
           
-          if [[ "${{ needs.lint-documentation.result }}" == "failure" ]]; then
-            echo "❌ Documentation linting failed"
+          if [[ "${{ needs.check-formatting.result }}" == "failure" ]]; then
+            echo "❌ Documentation formatting check failed"
             exit 1
           fi
           
