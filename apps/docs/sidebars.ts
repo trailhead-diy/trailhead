@@ -75,7 +75,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'DEVELOPMENT_WORKFLOW',
         'RELEASE_PROCESS',
-        'ci-strategy',
+        'explanation/ci-strategy',
         'git-commit-best-practices',
         'testing-guide',
         'PACKAGE_REGISTRY',
