@@ -47,8 +47,8 @@
     "lint:fix": "oxlint --fix",
     "lint:neverthrow": "eslint --config eslint.config.js 'src/**/*.{ts,tsx}'",
     "types": "tsc --noEmit",
-    "format": "prettier --write . --log-level=error --ignore-path .prettierignore",
-    "format:check": "prettier --check . --log-level=error --ignore-path .prettierignore",
+    "format": "prettier --write . --log-level=error --ignore-path ../../.prettierignore",
+    "format:check": "prettier --check . --log-level=error --ignore-path ../../.prettierignore",
     "clean": "rm -rf dist",
     "prepack": "pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test:all"
