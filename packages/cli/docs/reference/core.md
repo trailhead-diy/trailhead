@@ -27,7 +27,7 @@ Fundamental types and utilities for error handling, validation, and logging.
 ### Basic Usage
 
 ```typescript
-import { Ok, Err, isOk, isErr } from '@esteban-url/core'
+import { ok, err, isOk, isErr } from '@esteban-url/core'
 import type { Result } from '@esteban-url/core'
 ```
 
@@ -41,24 +41,24 @@ type Result<T, E = Error> =
 
 ### Creating Results
 
-#### `Ok<T>(value: T): Result<T>`
+#### `ok<T>(value: T): Result<T>`
 
 Creates a successful result.
 
 ```typescript
-const result = Ok(42)
+const result = ok(42)
 // { success: true, value: 42 }
 
-const voidResult = Ok(undefined)
+const voidResult = ok(undefined)
 // { success: true, value: undefined }
 ```
 
-#### `Err<E>(error: E): Result<never, E>`
+#### `err<E>(error: E): Result<never, E>`
 
 Creates an error result.
 
 ```typescript
-const result = Err(new Error('Something went wrong'))
+const result = err(new Error('Something went wrong'))
 // { success: false, error: Error }
 ```
 
@@ -80,32 +80,77 @@ if (isErr(result)) {
 }
 ```
 
-### Result Utilities
+### Result Methods
 
-#### `unwrap<T>(result: Result<T>): T`
+Result objects (from neverthrow) provide methods for transformation and chaining:
 
-Extracts the value or throws the error.
+#### `.map<U>(fn: (value: T) => U): Result<U, E>`
+
+Transform a successful value:
 
 ```typescript
-const value = unwrap(Ok(42)) // 42
-const error = unwrap(Err(new Error('Oops'))) // Throws Error
+const result = ok(21)
+const doubled = result.map((x) => x * 2) // ok(42)
+
+const error = err('error')
+const stillError = error.map((x) => x * 2) // err("error")
 ```
 
-#### `map<T, U>(result: Result<T>, fn: (value: T) => U): Result<U>`
+#### `.andThen<U>(fn: (value: T) => Result<U, E>): Result<U, E>`
 
-Transforms a successful value.
+Chain operations that return Results:
 
 ```typescript
-const doubled = map(Ok(21), (x) => x * 2) // Ok(42)
-const error = map(Err('error'), (x) => x * 2) // Err("error")
+const result = ok(10)
+  .andThen((x) => (x > 0 ? ok(x * 2) : err('negative')))
+  .andThen((x) => ok(x + 2)) // ok(22)
 ```
 
-#### `chain<T, U, E>(result: Result<T, E>, fn: (value: T) => Result<U, E>): Result<U, E>`
+#### `.match<U>(okFn: (value: T) => U, errFn: (error: E) => U): U`
 
-Chains operations that return Results.
+Pattern match on the Result:
 
 ```typescript
-const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err('negative'))) // Ok(20)
+const message = result.match(
+  (value) => `Success: ${value}`,
+  (error) => `Error: ${error.message}`
+)
+```
+
+#### `._unsafeUnwrap(): T`
+
+Extract the value or throw (use sparingly):
+
+```typescript
+const value = ok(42)._unsafeUnwrap() // 42
+const error = err(new Error('Oops'))._unsafeUnwrap() // Throws Error
+```
+
+### Result Utilities from @esteban-url/core
+
+#### `combine(results: Result<T, E>[]): Result<T[], E>`
+
+Combine multiple Results into a single Result:
+
+```typescript
+import { combine } from '@esteban-url/core'
+
+const results = [ok(1), ok(2), ok(3)]
+const combined = combine(results) // ok([1, 2, 3])
+
+const withError = [ok(1), err('failed'), ok(3)]
+const combinedError = combine(withError) // err('failed')
+```
+
+#### `combineWithAllErrors(results: Result<T, E>[]): Result<T[], E[]>`
+
+Combine Results, collecting all errors:
+
+```typescript
+import { combineWithAllErrors } from '@esteban-url/core'
+
+const results = [ok(1), err('error1'), err('error2')]
+const combined = combineWithAllErrors(results) // err(['error1', 'error2'])
 ```
 
 ## Error Handling
@@ -113,14 +158,25 @@ const result = chain(Ok(10), (x) => (x > 0 ? Ok(x * 2) : Err('negative'))) // Ok
 ### Error Creation
 
 ```typescript
-import { createError } from '@esteban-url/trailhead-cli/core'
+import {
+  createCoreError,
+  createFileSystemError,
+  createValidationError,
+  createDataError,
+  createCliError,
+} from '@esteban-url/core'
 
-const error = createError({
-  code: 'FILE_NOT_FOUND',
-  message: 'Config file not found',
-  suggestion: "Run 'init' to create a default config",
-  details: { path: './config.json' },
+// Core error with context
+const error = createCoreError('operation_failed', 'Operation failed', {
+  operation: 'loadConfig',
+  path: './config.json',
 })
+
+// Domain-specific errors
+const fsError = createFileSystemError('read', './config.json', new Error('ENOENT'))
+const validationError = createValidationError('invalid_format', 'Email format invalid')
+const dataError = createDataError('parse', 'Invalid JSON in config file')
+const cliError = createCliError('command_failed', 'Deploy command failed')
 ```
 
 ### Error Types

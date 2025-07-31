@@ -42,7 +42,7 @@ npx create-cli my-cli
 
 ```typescript
 import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/cli'
+import { ok, err } from '@esteban-url/core'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -69,7 +69,7 @@ await greetCommand.execute(['--name', 'World'])
 ### Result Types - No Exceptions
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/cli'
+import { Result, ok, err } from '@esteban-url/core'
 
 // Functions return Results instead of throwing
 async function deployApp(env: string): Promise<Result<string, Error>> {
@@ -87,7 +87,7 @@ async function deployApp(env: string): Promise<Result<string, Error>> {
 
 // Handle results explicitly
 const result = await deployApp('staging')
-if (result.isOk()) {
+if (result.isok()) {
   console.log(result.value)
 } else {
   console.error('Deploy failed:', result.error.message)
@@ -132,21 +132,25 @@ const buildCommand = createCommand({
 
 ## Module Reference
 
-### Core (`@esteban-url/cli/core`)
+### Main Export (`@esteban-url/cli`)
 
-Result types, error handling, and validation pipelines
+The main export provides CLI creation and basic Result types:
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/cli'
+import { createCLI, ok, err } from '@esteban-url/cli'
+import type { Result, CoreError } from '@esteban-url/cli'
 
-// Functions return Results instead of throwing
-async function validateUser(data: any): Promise<Result<any, Error>> {
-  if (!data.email) return err(new Error('Email required'))
-  if (!data.email.includes('@')) return err(new Error('Invalid email'))
-  if (data.age < 18) return err(new Error('Must be 18+'))
-  return ok(data)
-}
+// Create a CLI application
+const cli = createCLI({
+  name: 'my-app',
+  version: '1.0.0',
+  commands: [
+    /* your commands */
+  ],
+})
 ```
+
+**Note**: For extended Result utilities, use `@esteban-url/core` directly.
 
 ### Command (`@esteban-url/cli/command`)
 
@@ -299,9 +303,9 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@esteban-url/fs'
 
-// Use @repo/fs package for file operations
+// Use @esteban-url/fs package for file operations
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -363,7 +367,7 @@ test('processes configuration file', async () => {
   const context = createTestContext({ fileSystem: mockFs })
   const result = await processProject('/project', context)
 
-  expect(result.isOk()).toBe(true)
+  expect(result.isok()).toBe(true)
   expect(mockFs.exists('/project/dist/index.js')).toBe(true)
 })
 ```

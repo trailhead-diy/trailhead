@@ -100,11 +100,9 @@ export interface Config {
 Create `src/lib/storage.ts`:
 
 ```typescript
-import { Ok, Err, Result } from '@esteban-url/cli/core'
-import { createFileSystem } from '@esteban-url/cli/filesystem'
+import { ok, err, Result } from '@esteban-url/core'
+import { fs } from '@esteban-url/fs'
 import type { Task, TaskStore } from './types'
-
-const fs = createFileSystem()
 
 export class TaskStorage {
   constructor(private dataPath: string) {}
@@ -114,29 +112,29 @@ export class TaskStorage {
     if (!exists) {
       // Initialize empty store
       const emptyStore: TaskStore = { tasks: [], lastId: 0 }
-      return Ok(emptyStore)
+      return ok(emptyStore)
     }
 
     const result = await fs.readJSON<TaskStore>(this.dataPath)
-    if (!result.success) {
-      return Err(new Error(`Failed to load tasks: ${result.error.message}`))
+    if (result.isErr()) {
+      return err(new Error(`Failed to load tasks: ${result.error.message}`))
     }
 
-    return Ok(result.value)
+    return ok(result.value)
   }
 
   async save(store: TaskStore): Promise<Result<void>> {
     const result = await fs.writeJSON(this.dataPath, store, { pretty: true })
-    if (!result.success) {
-      return Err(new Error(`Failed to save tasks: ${result.error.message}`))
+    if (result.isErr()) {
+      return err(new Error(`Failed to save tasks: ${result.error.message}`))
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   }
 
   async addTask(task: Omit<Task, 'id'>): Promise<Result<Task>> {
     const storeResult = await this.load()
-    if (!storeResult.success) {
+    if (storeResult.isErr()) {
       return storeResult
     }
 
@@ -149,30 +147,30 @@ export class TaskStorage {
     store.tasks.push(newTask)
 
     const saveResult = await this.save(store)
-    if (!saveResult.success) {
+    if (saveResult.isErr()) {
       return saveResult
     }
 
-    return Ok(newTask)
+    return ok(newTask)
   }
 
   async getTasks(includeCompleted = true): Promise<Result<Task[]>> {
     const storeResult = await this.load()
-    if (!storeResult.success) {
+    if (storeResult.isErr()) {
       return storeResult
     }
 
     const tasks = storeResult.value.tasks
     if (includeCompleted) {
-      return Ok(tasks)
+      return ok(tasks)
     }
 
-    return Ok(tasks.filter((t) => !t.completed))
+    return ok(tasks.filter((t) => !t.completed))
   }
 
   async completeTask(id: string): Promise<Result<Task>> {
     const storeResult = await this.load()
-    if (!storeResult.success) {
+    if (storeResult.isErr()) {
       return storeResult
     }
 
@@ -180,22 +178,22 @@ export class TaskStorage {
     const task = store.tasks.find((t) => t.id === id)
 
     if (!task) {
-      return Err(new Error(`Task not found: ${id}`))
+      return err(new Error(`Task not found: ${id}`))
     }
 
     if (task.completed) {
-      return Err(new Error(`Task already completed: ${id}`))
+      return err(new Error(`Task already completed: ${id}`))
     }
 
     task.completed = true
     task.completedAt = new Date().toISOString()
 
     const saveResult = await this.save(store)
-    if (!saveResult.success) {
+    if (saveResult.isErr()) {
       return saveResult
     }
 
-    return Ok(task)
+    return ok(task)
   }
 }
 ```
@@ -206,7 +204,7 @@ Create `src/config/schema.ts`:
 
 ```typescript
 import { z } from 'zod'
-import { defineConfig } from '@esteban-url/cli/config'
+import { defineConfig } from '@esteban-url/config'
 import type { Config } from '../lib/types'
 
 const configSchema = z.object({
@@ -227,7 +225,7 @@ export const config = defineConfig<Config>(configSchema, {
 Create `src/commands/add.ts`:
 
 ```typescript
-import { Ok, Err } from '@esteban-url/cli/core'
+import { ok, err } from '@esteban-url/core'
 import { createCommand } from '@esteban-url/cli/command'
 import { prompt, select } from '@esteban-url/cli/prompts'
 import { TaskStorage } from '../lib/storage'
@@ -258,7 +256,7 @@ export const addCommand = createCommand({
   action: async (options, context) => {
     // Load configuration
     const configResult = await config.load()
-    if (!configResult.success) {
+    if (configResult.isErr()) {
       context.logger.error('Failed to load config')
       return configResult
     }
@@ -301,13 +299,13 @@ export const addCommand = createCommand({
       tags,
     })
 
-    if (!result.success) {
+    if (result.isErr()) {
       context.logger.error(`Failed to add task: ${result.error.message}`)
       return result
     }
 
-    context.logger.success(`✓ Added task: ${result.value.title} (ID: ${result.value.id})`)
-    return Ok(undefined)
+    context.logger.info(`✓ Added task: ${result.value.title} (ID: ${result.value.id})`)
+    return ok(undefined)
   },
 })
 ```
@@ -317,7 +315,7 @@ export const addCommand = createCommand({
 Create `src/commands/list.ts`:
 
 ```typescript
-import { Ok } from '@esteban-url/cli/core'
+import { ok } from '@esteban-url/core'
 import { createCommand } from '@esteban-url/cli/command'
 import { displaySummary } from '@esteban-url/cli/command'
 import { TaskStorage } from '../lib/storage'
@@ -343,7 +341,7 @@ export const listCommand = createCommand({
   ],
   action: async (options, context) => {
     const configResult = await config.load()
-    if (!configResult.success) {
+    if (configResult.isErr()) {
       context.logger.error('Failed to load config')
       return configResult
     }
@@ -366,7 +364,7 @@ export const listCommand = createCommand({
 
     if (tasks.length === 0) {
       context.logger.info('No tasks found')
-      return Ok(undefined)
+      return ok(undefined)
     }
 
     // Group by status
@@ -407,7 +405,7 @@ export const listCommand = createCommand({
       context
     )
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -417,7 +415,7 @@ export const listCommand = createCommand({
 Create `src/commands/complete.ts`:
 
 ```typescript
-import { Ok, Err } from '@esteban-url/cli/core'
+import { ok, err } from '@esteban-url/core'
 import { createCommand } from '@esteban-url/cli/command'
 import { select } from '@esteban-url/cli/prompts'
 import { TaskStorage } from '../lib/storage'
@@ -435,7 +433,7 @@ export const completeCommand = createCommand({
   ],
   action: async (options, context) => {
     const configResult = await config.load()
-    if (!configResult.success) {
+    if (configResult.isErr()) {
       context.logger.error('Failed to load config')
       return configResult
     }
@@ -455,7 +453,7 @@ export const completeCommand = createCommand({
       const pendingTasks = tasksResult.value
       if (pendingTasks.length === 0) {
         context.logger.info('No pending tasks')
-        return Ok(undefined)
+        return ok(undefined)
       }
 
       const choices = pendingTasks.map((t) => ({
@@ -470,13 +468,13 @@ export const completeCommand = createCommand({
     }
 
     const result = await storage.completeTask(taskId)
-    if (!result.success) {
+    if (result.isErr()) {
       context.logger.error(result.error.message)
       return result
     }
 
-    context.logger.success(`✓ Completed: ${result.value.title}`)
-    return Ok(undefined)
+    context.logger.info(`✓ Completed: ${result.value.title}`)
+    return ok(undefined)
   },
 })
 ```
@@ -486,7 +484,7 @@ export const completeCommand = createCommand({
 Create `src/commands/config.ts`:
 
 ```typescript
-import { Ok } from '@esteban-url/cli/core'
+import { ok } from '@esteban-url/core'
 import { createCommand } from '@esteban-url/cli/command'
 import { prompt, select } from '@esteban-url/cli/prompts'
 import { config } from '../config/schema'
@@ -526,25 +524,25 @@ export const configCommand = createCommand({
       }
 
       const result = await config.save(newConfig)
-      if (!result.success) {
+      if (result.isErr()) {
         context.logger.error('Failed to save config')
         return result
       }
 
-      context.logger.success('Configuration saved!')
-      return Ok(undefined)
+      context.logger.info('Configuration saved!')
+      return ok(undefined)
     }
 
     // Show current config
     const result = await config.load()
-    if (!result.success) {
+    if (result.isErr()) {
       context.logger.info('No configuration found. Run with --init to create one.')
-      return Ok(undefined)
+      return ok(undefined)
     }
 
     context.logger.info('Current configuration:')
     context.logger.info(JSON.stringify(result.value, null, 2))
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -801,34 +799,46 @@ taskly complete
 
 ## Advanced Features
 
-### Add Pipeline Support
+### Add Phased Execution
 
-Enhance the add command with pipelines:
+Enhance commands with phased execution for better progress tracking:
 
-```typescript
-import { pipeline } from '@esteban-url/cli/core'
+````typescript
+import { executeWithPhases } from '@esteban-url/cli/command'
+import type { CommandPhase } from '@esteban-url/cli/command'
 
 action: async (options, context) => {
-  return pipeline({ options, context })
-    .step('Load config', async (ctx) => {
-      const config = await loadConfig()
-      return Ok({ ...ctx, config })
-    })
-    .step('Validate input', async (ctx) => {
-      const validated = await validateTaskInput(ctx.options)
-      return Ok({ ...ctx, validated })
-    })
-    .step('Create task', async (ctx) => {
-      const storage = new TaskStorage(ctx.config.dataPath)
-      return storage.addTask(ctx.validated)
-    })
-    .onError((error, step) => {
-      context.logger.error(`Failed at ${step}: ${error.message}`)
-      return Err(error)
-    })
-    .execute()
+  const phases: CommandPhase<TaskContext>[] = [
+    {
+      name: 'Load config',
+      weight: 10,
+      action: async (data) => {
+        const config = await loadConfig()
+        return ok({ ...data, config })
+      },
+    },
+    {
+      name: 'Validate input',
+      weight: 20,
+      action: async (data) => {
+        const validated = await validateTaskInput(options)
+        if (validated.isErr()) return validated
+        return ok({ ...data, validated: validated.value })
+      },
+    },
+    {
+      name: 'Create task',
+      weight: 70,
+      action: async (data) => {
+        const storage = new TaskStorage(data.config.dataPath)
+        const result = await storage.addTask(data.validated)
+        return result.isOk() ? ok(data) : result
+      },
+    },
+  ]
+
+  return executeWithPhases(phases, { options }, context)
 }
-```
 
 ### Add Export Command
 
@@ -863,11 +873,11 @@ export const exportCommand = createCommand({
       return writeResult
     }
 
-    context.logger.success(`Exported ${tasks.length} tasks to ${options.output}`)
-    return Ok(undefined)
+    context.logger.info(`Exported ${tasks.length} tasks to ${options.output}`)
+    return ok(undefined)
   },
 })
-```
+````
 
 ## Summary
 

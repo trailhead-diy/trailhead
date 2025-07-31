@@ -59,8 +59,10 @@ pnpm add @esteban-url/cli --workspace
 
 @esteban-url/cli uses **subpath exports** for optimal tree-shaking. This means:
 
-- The main export (`@esteban-url/cli`) contains only Result types and `createCLI`
+- The main export (`@esteban-url/cli`) contains only `createCLI` and basic Result types (`ok`, `err`)
 - All other functionality must be imported from specific subpaths
+- Extended Result utilities should be imported from `@esteban-url/core`
+- File operations should use `@esteban-url/fs` directly
 - This keeps your bundle size minimal
 
 See the [Import Patterns Guide](/packages/cli/how-to/import-patterns) for complete details.
