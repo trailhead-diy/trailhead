@@ -206,9 +206,11 @@ Users can:
 ### Automated Validation
 
 ```bash
-pnpm docs:validate    # Check all documentation compliance
-pnpm docs:lint       # Style and formatting validation
-pnpm docs:new        # Create new documentation from templates
+pnpm docs:validate       # Check all documentation compliance
+pnpm docs:validate-links # Validate all cross-references and links
+pnpm docs:fix-links      # Automatically fix common link issues
+pnpm docs:lint          # Style and formatting validation
+pnpm docs:new           # Create new documentation from templates
 ```
 
 ### Quality Metrics
@@ -247,8 +249,9 @@ Trailhead started with traditional documentation scattered across README files. 
 ### Essential Reading
 
 - [Documentation Standards](./reference/documentation-standards.md) - Complete Diátaxis implementation
-- [Contributing Guidelines](./how-to/contributing.md) - How to contribute to documentation
 - [Writing Documentation Guide](./reference/writing-guide.md) - Quick reference for contributors
+- [Cross-Reference Style Guide](./reference/cross-reference-style-guide.md) - Standardized linking patterns
+- [Contributing Guidelines](./how-to/contributing.md) - How to contribute to documentation
 
 ### Templates and Tools
 

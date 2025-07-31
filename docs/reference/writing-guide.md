@@ -3,10 +3,8 @@ type: reference
 title: 'Writing Documentation - Quick Reference'
 description: 'Quick reference guide for writing Diátaxis-compliant documentation in Trailhead'
 related:
-  - /docs/reference/documentation-standards.md
-  - /docs/reference/review-checklist.md
   - /docs/reference/templates/
-  - /docs/how-to/contributing.md
+  - /docs/reference/review-checklist.md
 ---
 
 # Writing Documentation - Quick Reference
@@ -288,8 +286,8 @@ Before submitting documentation:
 
 ### Resources
 
-- [Full Standards](./DOCUMENTATION_STANDARDS.md) - Complete guidelines
-- [Review Checklist](./DOCUMENTATION_REVIEW_CHECKLIST.md) - For reviewers
+- [Documentation Standards](./documentation-standards.md) - Complete guidelines
+- [Review Checklist](./review-checklist.md) - For reviewers
 - [Templates](./templates/) - Starting points for each type
 
 ### Still Stuck?
