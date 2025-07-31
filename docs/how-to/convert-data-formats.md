@@ -1,3 +1,12 @@
+---
+type: how-to
+title: 'How to Convert Data Formats'
+description: 'Convert between CSV, JSON, and Excel formats using @repo/data conversion operations'
+related:
+  - /packages/data/docs/reference/api.md
+  - /docs/tutorials/data-pipeline-processing.md
+---
+
 # How to Convert Data Formats
 
 Convert between CSV, JSON, and Excel formats using @repo/data's conversion operations.
@@ -10,16 +19,16 @@ import { createConversionOperations } from '@repo/data/formats/conversion'
 const converter = createConversionOperations()
 
 // CSV to JSON
-await converter.convert('./data.csv', './data.json', { 
-  from: 'csv', 
-  to: 'json' 
+await converter.convert('./data.csv', './data.json', {
+  from: 'csv',
+  to: 'json',
 })
 
 // Excel to CSV (first sheet)
-await converter.convert('./report.xlsx', './report.csv', { 
-  from: 'excel', 
+await converter.convert('./report.xlsx', './report.csv', {
+  from: 'excel',
   to: 'csv',
-  options: { sheetIndex: 0 }
+  options: { sheetIndex: 0 },
 })
 
 // JSON to Excel with formatting
@@ -29,8 +38,8 @@ await converter.convert('./data.json', './formatted.xlsx', {
   options: {
     sheetName: 'Exported Data',
     autoWidth: true,
-    headerStyle: { bold: true }
-  }
+    headerStyle: { bold: true },
+  },
 })
 ```
 
@@ -39,11 +48,7 @@ await converter.convert('./data.json', './formatted.xlsx', {
 ### CSV to JSON
 
 ```typescript
-const result = await converter.convert(
-  './input.csv',
-  './output.json',
-  { from: 'csv', to: 'json' }
-)
+const result = await converter.convert('./input.csv', './output.json', { from: 'csv', to: 'json' })
 
 if (result.isErr()) {
   console.error('Conversion failed:', result.error.message)
@@ -54,15 +59,11 @@ if (result.isErr()) {
 
 ```typescript
 // Flatten nested JSON objects for CSV
-const result = await converter.convert(
-  './nested.json',
-  './flat.csv',
-  { 
-    from: 'json', 
-    to: 'csv',
-    options: { flatten: true }
-  }
-)
+const result = await converter.convert('./nested.json', './flat.csv', {
+  from: 'json',
+  to: 'csv',
+  options: { flatten: true },
+})
 ```
 
 ### Excel to Multiple Formats
@@ -73,11 +74,7 @@ const workbook = await excel.parseFile('./multi-sheet.xlsx')
 
 if (workbook.isOk()) {
   for (const sheet of workbook.value.sheets) {
-    await converter.convert(
-      sheet.data,
-      `./${sheet.name}.csv`,
-      { from: 'data', to: 'csv' }
-    )
+    await converter.convert(sheet.data, `./${sheet.name}.csv`, { from: 'data', to: 'csv' })
   }
 }
 ```
@@ -98,23 +95,21 @@ async function convertDirectory(
 ) {
   const pattern = `**/*.${fromFormat}`
   const files = await fs.findFiles(pattern, { cwd: inputDir })
-  
+
   if (files.isErr()) return files
-  
+
   await fs.ensureDir(outputDir)
-  
-  const tasks = files.value.map(file => {
+
+  const tasks = files.value.map((file) => {
     const inputPath = join(inputDir, file)
-    const outputPath = join(outputDir, 
-      file.replace(`.${fromFormat}`, `.${toFormat}`)
-    )
-    
+    const outputPath = join(outputDir, file.replace(`.${fromFormat}`, `.${toFormat}`))
+
     return converter.convert(inputPath, outputPath, {
       from: fromFormat,
-      to: toFormat
+      to: toFormat,
     })
   })
-  
+
   return Promise.all(tasks)
 }
 
@@ -133,8 +128,8 @@ await converter.convert('./data.json', './data.csv', {
   options: {
     delimiter: ',',
     headers: true,
-    skipEmptyLines: true
-  }
+    skipEmptyLines: true,
+  },
 })
 ```
 
@@ -147,13 +142,13 @@ await converter.convert('./data.json', './report.xlsx', {
   options: {
     sheetName: 'Monthly Report',
     autoWidth: true,
-    freeze: { row: 1 },  // Freeze header row
+    freeze: { row: 1 }, // Freeze header row
     headerStyle: {
       bold: true,
       fill: { color: '#4472C4' },
-      font: { color: '#FFFFFF' }
-    }
-  }
+      font: { color: '#FFFFFF' },
+    },
+  },
 })
 ```
 
@@ -167,16 +162,12 @@ import { createStreamingConverter } from '@repo/data/formats/streaming'
 const streamConverter = createStreamingConverter()
 
 // Stream CSV to JSON
-await streamConverter.convert(
-  './huge.csv',
-  './huge.json',
-  {
-    from: 'csv',
-    to: 'json',
-    streaming: true,
-    chunkSize: 1000  // Process 1000 rows at a time
-  }
-)
+await streamConverter.convert('./huge.csv', './huge.json', {
+  from: 'csv',
+  to: 'json',
+  streaming: true,
+  chunkSize: 1000, // Process 1000 rows at a time
+})
 ```
 
 ## Error Handling
@@ -184,15 +175,14 @@ await streamConverter.convert(
 Handle conversion errors appropriately:
 
 ```typescript
-const result = await converter.convert(
-  './input.xlsx',
-  './output.json',
-  { from: 'excel', to: 'json' }
-)
+const result = await converter.convert('./input.xlsx', './output.json', {
+  from: 'excel',
+  to: 'json',
+})
 
 if (result.isErr()) {
   const error = result.error
-  
+
   switch (error.code) {
     case 'UNSUPPORTED_FORMAT':
       console.error('Format not supported:', error.context?.format)

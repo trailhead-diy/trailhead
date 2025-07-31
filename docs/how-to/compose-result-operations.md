@@ -63,13 +63,7 @@ async function chain<T, R>(
 
 // Usage
 async function processData(input: string): Promise<Result<ProcessedData>> {
-  return chain(
-    chain(
-      parseJSON(input),
-      validateData
-    ),
-    transformData
-  )
+  return chain(chain(parseJSON(input), validateData), transformData)
 }
 ```
 
@@ -80,16 +74,13 @@ async function processData(input: string): Promise<Result<ProcessedData>> {
 Transform successful values without changing the Result container:
 
 ```typescript
-function map<T, R>(
-  result: Result<T>,
-  fn: (value: T) => R
-): Result<R> {
+function map<T, R>(result: Result<T>, fn: (value: T) => R): Result<R> {
   return result.isOk() ? ok(fn(result.value)) : result
 }
 
 // Usage
 const result = await readFile('data.json')
-const uppercased = map(result, content => content.toUpperCase())
+const uppercased = map(result, (content) => content.toUpperCase())
 ```
 
 ### FlatMap for Operations Returning Results
@@ -105,10 +96,7 @@ async function flatMap<T, R>(
 }
 
 // Usage
-const result = await flatMap(
-  await readFile('config.json'),
-  content => parseJSON(content)
-)
+const result = await flatMap(await readFile('config.json'), (content) => parseJSON(content))
 ```
 
 ## Parallel Operations
@@ -121,19 +109,17 @@ Handle arrays of Results:
 // Check if all operations succeeded
 function allOk<T>(results: Result<T>[]): Result<T[]> {
   const values: T[] = []
-  
+
   for (const result of results) {
     if (result.isErr()) return result
     values.push(result.value)
   }
-  
+
   return ok(values)
 }
 
 // Usage
-const fileResults = await Promise.all(
-  filePaths.map(path => fs.readFile(path))
-)
+const fileResults = await Promise.all(filePaths.map((path) => fs.readFile(path)))
 const allFiles = allOk(fileResults)
 ```
 
@@ -150,7 +136,7 @@ interface SettledResults<T> {
 function settleResults<T>(results: Result<T>[]): Result<SettledResults<T>> {
   const successes: T[] = []
   const failures: Error[] = []
-  
+
   for (const result of results) {
     if (result.isOk()) {
       successes.push(result.value)
@@ -158,7 +144,7 @@ function settleResults<T>(results: Result<T>[]): Result<SettledResults<T>> {
       failures.push(result.error)
     }
   }
-  
+
   return ok({ successes, failures })
 }
 ```
@@ -175,10 +161,7 @@ function withDefault<T>(result: Result<T>, defaultValue: T): T {
 }
 
 // Usage
-const config = withDefault(
-  await loadConfig(),
-  { theme: 'light', language: 'en' }
-)
+const config = withDefault(await loadConfig(), { theme: 'light', language: 'en' })
 ```
 
 ### Try Alternative Operations
@@ -211,17 +194,13 @@ class ResultPipeline<T> {
 
   then<R>(fn: (value: T) => Promise<Result<R>>): ResultPipeline<R> {
     return new ResultPipeline(
-      this.value.then(result =>
-        result.isErr() ? result : fn(result.value)
-      )
+      this.value.then((result) => (result.isErr() ? result : fn(result.value)))
     )
   }
 
   map<R>(fn: (value: T) => R): ResultPipeline<R> {
     return new ResultPipeline(
-      this.value.then(result =>
-        result.isOk() ? ok(fn(result.value)) : result
-      )
+      this.value.then((result) => (result.isOk() ? ok(fn(result.value)) : result))
     )
   }
 
@@ -239,7 +218,7 @@ function pipeline<T>(value: T): ResultPipeline<T> {
 const result = await pipeline('input.json')
   .then(readFile)
   .then(parseJSON)
-  .map(data => ({ ...data, processed: true }))
+  .map((data) => ({ ...data, processed: true }))
   .then(validate)
   .execute()
 ```
@@ -263,8 +242,8 @@ async function processDataFile(inputPath: string): Promise<Result<void>> {
 
   // Transform
   const transformed = dataResult.value.data
-    .filter(row => row.active)
-    .map(row => ({ ...row, processed: true }))
+    .filter((row) => row.active)
+    .map((row) => ({ ...row, processed: true }))
 
   // Save result
   return fs.writeJson(`${inputPath}.processed`, transformed)
@@ -286,7 +265,7 @@ async function fetchUserData(userId: string): Promise<Result<UserData>> {
   // Fetch additional data in parallel
   const [postsResult, friendsResult] = await Promise.all([
     fetchPosts(userId, authResult.value.token),
-    fetchFriends(userId, authResult.value.token)
+    fetchFriends(userId, authResult.value.token),
   ])
 
   // Combine results
@@ -296,7 +275,7 @@ async function fetchUserData(userId: string): Promise<Result<UserData>> {
   return ok({
     user: userResult.value,
     posts: postsResult.value,
-    friends: friendsResult.value
+    friends: friendsResult.value,
   })
 }
 ```
@@ -342,9 +321,7 @@ Add context to errors when propagating:
 ```typescript
 const result = await parseJSON(input)
 if (result.isErr()) {
-  return err(new Error(
-    `Failed to parse config file: ${result.error.message}`
-  ))
+  return err(new Error(`Failed to parse config file: ${result.error.message}`))
 }
 ```
 
@@ -361,7 +338,7 @@ async function updateConfig(updates: any): Promise<Result<void>> {
   if (readResult.isErr()) return readResult
 
   const updated = { ...readResult.value, ...updates }
-  
+
   return fs.writeJson('config.json', updated)
 }
 ```
@@ -382,7 +359,7 @@ function validateUser(data: unknown): Result<User> {
   return ok({
     email: emailResult.value,
     age: ageResult.value,
-    name: data.name
+    name: data.name,
   })
 }
 ```

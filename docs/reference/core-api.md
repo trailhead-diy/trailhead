@@ -23,10 +23,12 @@ type Result<T, E> = Ok<T> | Err<E>
 ```
 
 **Type Parameters**:
+
 - `T` - The success value type
 - `E` - The error type
 
 **Usage**:
+
 ```typescript
 import { Result, ok, err } from '@esteban-url/core'
 
@@ -110,11 +112,13 @@ interface ErrorContext {
 Creates a successful Result.
 
 **Parameters**:
+
 - `value` - The success value
 
 **Returns**: `Ok<T>`
 
 **Example**:
+
 ```typescript
 const result = ok(42)
 // result.isOk() === true
@@ -126,11 +130,13 @@ const result = ok(42)
 Creates a failed Result.
 
 **Parameters**:
+
 - `error` - The error value
 
 **Returns**: `Err<E>`
 
 **Example**:
+
 ```typescript
 const result = err('Something went wrong')
 // result.isErr() === true
@@ -142,6 +148,7 @@ const result = err('Something went wrong')
 Creates a successful asynchronous Result.
 
 **Parameters**:
+
 - `value` - The success value
 
 **Returns**: `ResultAsync<T, never>`
@@ -151,6 +158,7 @@ Creates a successful asynchronous Result.
 Creates a failed asynchronous Result.
 
 **Parameters**:
+
 - `error` - The error value
 
 **Returns**: `ResultAsync<never, E>`
@@ -180,6 +188,7 @@ function createCoreError(
 ```
 
 **Parameters**:
+
 - `type` - Error type classification
 - `code` - Machine-readable error code
 - `message` - Human-readable error message
@@ -188,19 +197,15 @@ function createCoreError(
 **Returns**: `CoreError`
 
 **Example**:
+
 ```typescript
-const error = createCoreError(
-  'ValidationError',
-  'INVALID_INPUT',
-  'Input validation failed',
-  {
-    component: 'user-input',
-    operation: 'validate',
-    severity: 'medium',
-    details: 'Email format is invalid',
-    recoverable: true
-  }
-)
+const error = createCoreError('ValidationError', 'INVALID_INPUT', 'Input validation failed', {
+  component: 'user-input',
+  operation: 'validate',
+  severity: 'medium',
+  details: 'Email format is invalid',
+  recoverable: true,
+})
 ```
 
 ### `createErrorFactory()`
@@ -211,33 +216,25 @@ Creates a domain-specific error factory function.
 function createErrorFactory(
   component: string,
   defaultSeverity?: 'low' | 'medium' | 'high' | 'critical'
-): (
-  type: string,
-  code: string,
-  message: string,
-  options?: ErrorFactoryOptions
-) => CoreError
+): (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
 ```
 
 **Parameters**:
+
 - `component` - Default component name for errors
 - `defaultSeverity` - Default severity level
 
 **Returns**: Error factory function
 
 **Example**:
+
 ```typescript
 const createFileError = createErrorFactory('filesystem', 'high')
 
-const readError = createFileError(
-  'ReadError',
-  'FILE_NOT_FOUND',
-  'Could not read file',
-  {
-    operation: 'read',
-    details: 'File does not exist: /path/to/file.txt'
-  }
-)
+const readError = createFileError('ReadError', 'FILE_NOT_FOUND', 'Could not read file', {
+  operation: 'read',
+  details: 'File does not exist: /path/to/file.txt',
+})
 ```
 
 ## Pre-built Error Factories
@@ -297,13 +294,11 @@ const createCliError: ErrorFactory
 Adds context to an existing error.
 
 ```typescript
-function withContext<E extends CoreError>(
-  error: E,
-  context: Partial<ErrorContext>
-): E
+function withContext<E extends CoreError>(error: E, context: Partial<ErrorContext>): E
 ```
 
 **Parameters**:
+
 - `error` - The error to enhance
 - `context` - Additional context to add
 
@@ -314,13 +309,11 @@ function withContext<E extends CoreError>(
 Chains errors together for error propagation.
 
 ```typescript
-function chainError<E extends CoreError>(
-  error: E,
-  cause: CoreError | Error | unknown
-): E
+function chainError<E extends CoreError>(error: E, cause: CoreError | Error | unknown): E
 ```
 
 **Parameters**:
+
 - `error` - The current error
 - `cause` - The causing error
 
@@ -331,13 +324,11 @@ function chainError<E extends CoreError>(
 Extracts a human-readable message from any error type.
 
 ```typescript
-function getErrorMessage(
-  error: unknown,
-  defaultMessage?: string
-): string
+function getErrorMessage(error: unknown, defaultMessage?: string): string
 ```
 
 **Parameters**:
+
 - `error` - Any error value
 - `defaultMessage` - Fallback message (default: 'Unknown error')
 
@@ -352,6 +343,7 @@ function isRecoverableError(error: { recoverable?: boolean }): boolean
 ```
 
 **Parameters**:
+
 - `error` - Error object to check
 
 **Returns**: `true` if error is recoverable
@@ -365,6 +357,7 @@ function getErrorType(error: { type?: string }): string
 ```
 
 **Parameters**:
+
 - `error` - Error object to check
 
 **Returns**: Error type string or 'unknown'
@@ -380,11 +373,13 @@ const combine: <T, E>(results: Result<T, E>[]) => Result<T[], E>
 ```
 
 **Parameters**:
+
 - `results` - Array of Results to combine
 
 **Returns**: Result containing array of success values or first error
 
 **Example**:
+
 ```typescript
 const results = [ok(1), ok(2), ok(3)]
 const combined = combine(results)
@@ -416,10 +411,7 @@ function fromThrowable<Fn extends (...args: any[]) => any>(
 Converts a Promise into a ResultAsync.
 
 ```typescript
-function fromPromise<T, E>(
-  promise: Promise<T>,
-  errorFn: (error: unknown) => E
-): ResultAsync<T, E>
+function fromPromise<T, E>(promise: Promise<T>, errorFn: (error: unknown) => E): ResultAsync<T, E>
 ```
 
 ### `safeTry()`
@@ -479,12 +471,7 @@ function hasErrorShape(value: unknown): value is { type: string; message: string
 Maps Node.js errors to CoreError format.
 
 ```typescript
-function mapNodeError(
-  component: string,
-  operation: string,
-  path: string,
-  error: unknown
-): CoreError
+function mapNodeError(component: string, operation: string, path: string, error: unknown): CoreError
 ```
 
 ### `mapLibraryError()`
@@ -554,13 +541,9 @@ import { Result, ok, err, CoreError } from '@esteban-url/core'
 
 function processData(input: string): Result<ProcessedData, CoreError> {
   if (!input.trim()) {
-    return err(createDataError(
-      'ValidationError',
-      'EMPTY_INPUT',
-      'Input cannot be empty'
-    ))
+    return err(createDataError('ValidationError', 'EMPTY_INPUT', 'Input cannot be empty'))
   }
-  
+
   try {
     const processed = expensive_operation(input)
     return ok(processed)
@@ -576,19 +559,18 @@ function processData(input: string): Result<ProcessedData, CoreError> {
 const result = await processData(input)
   .andThen(validateData)
   .andThen(transformData)
-  .mapErr(error => withContext(error, { operation: 'full-pipeline' }))
+  .mapErr((error) => withContext(error, { operation: 'full-pipeline' }))
 ```
 
 ### Error Recovery
 
 ```typescript
-const result = riskyOperation()
-  .orElse(error => {
-    if (isRecoverableError(error)) {
-      return fallbackOperation()
-    }
-    return err(error)
-  })
+const result = riskyOperation().orElse((error) => {
+  if (isRecoverableError(error)) {
+    return fallbackOperation()
+  }
+  return err(error)
+})
 ```
 
 ## Related APIs

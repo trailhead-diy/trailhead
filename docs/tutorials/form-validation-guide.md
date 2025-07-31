@@ -1,3 +1,17 @@
+---
+type: tutorial
+title: 'Form Validation Guide'
+description: 'Learn to implement robust form validation using functional patterns and Result types with @repo/validation'
+prerequisites:
+  - TypeScript knowledge
+  - Basic understanding of Result types
+  - Familiarity with form handling
+related:
+  - /packages/validation/docs/reference/api.md
+  - /docs/how-to/create-custom-validators.md
+  - /docs/explanation/result-types-pattern.md
+---
+
 # Tutorial: Form Validation with @repo/validation
 
 Learn how to implement robust form validation using functional patterns and Result types. This tutorial covers schema definition, error handling, and integration with UI frameworks.
@@ -33,38 +47,37 @@ Start by defining a schema for a user registration form:
 import { z, createSchemaValidator, emailSchema } from '@repo/validation'
 
 // Define the form schema
-const registrationSchema = z.object({
-  username: z.string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be at most 20 characters')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, _ and -'),
-  
-  email: emailSchema,
-  
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain an uppercase letter')
-    .regex(/[a-z]/, 'Password must contain a lowercase letter')
-    .regex(/[0-9]/, 'Password must contain a number'),
-  
-  confirmPassword: z.string(),
-  
-  age: z.number()
-    .int('Age must be a whole number')
-    .min(18, 'Must be at least 18 years old')
-    .max(120, 'Invalid age'),
-  
-  agreeToTerms: z.boolean().refine(
-    val => val === true,
-    'You must agree to the terms'
-  )
-}).refine(
-  data => data.password === data.confirmPassword,
-  {
+const registrationSchema = z
+  .object({
+    username: z
+      .string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(20, 'Username must be at most 20 characters')
+      .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, _ and -'),
+
+    email: emailSchema,
+
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+      .regex(/[a-z]/, 'Password must contain a lowercase letter')
+      .regex(/[0-9]/, 'Password must contain a number'),
+
+    confirmPassword: z.string(),
+
+    age: z
+      .number()
+      .int('Age must be a whole number')
+      .min(18, 'Must be at least 18 years old')
+      .max(120, 'Invalid age'),
+
+    agreeToTerms: z.boolean().refine((val) => val === true, 'You must agree to the terms'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword']
-  }
-)
+    path: ['confirmPassword'],
+  })
 
 // Create the validator
 const validateRegistration = createSchemaValidator(registrationSchema)
@@ -81,33 +94,33 @@ type RegistrationForm = z.infer<typeof registrationSchema>
 // Pure function to extract field errors
 const extractFieldErrors = (issues: any[]) => {
   const errors: Record<string, string> = {}
-  
+
   for (const issue of issues) {
     const field = issue.path.join('.')
     if (!errors[field]) {
       errors[field] = issue.message
     }
   }
-  
+
   return errors
 }
 
 // Form handler function
 const handleRegistration = (formData: unknown) => {
   const result = validateRegistration(formData)
-  
+
   if (result.isErr()) {
     return {
       success: false,
       errors: extractFieldErrors(result.error.issues || []),
-      message: 'Please fix the errors below'
+      message: 'Please fix the errors below',
     }
   }
-  
+
   return {
     success: true,
     data: result.value,
-    message: 'Registration successful!'
+    message: 'Registration successful!',
   }
 }
 ```
@@ -120,17 +133,13 @@ Create individual field validators for real-time validation:
 import { validate, createValidator } from '@repo/validation'
 
 // Username validator
-const validateUsername = createValidator(
-  registrationSchema.shape.username
-)
+const validateUsername = createValidator(registrationSchema.shape.username)
 
 // Email validator (using pre-built)
 const validateEmail = validate.email
 
 // Password strength validator
-const validatePassword = createValidator(
-  registrationSchema.shape.password
-)
+const validatePassword = createValidator(registrationSchema.shape.password)
 
 // Real-time field validation
 const validateField = (field: keyof RegistrationForm, value: any) => {
@@ -163,19 +172,19 @@ function RegistrationForm() {
     age: '',
     agreeToTerms: false
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
-  
+
   // Handle field blur for validation
   const handleBlur = (field: string) => {
     setTouched({ ...touched, [field]: true })
-    
+
     const result = validateField(
       field as keyof RegistrationForm,
       formData[field as keyof typeof formData]
     )
-    
+
     if (result.isErr()) {
       setErrors({ ...errors, [field]: result.error.message })
     } else {
@@ -183,19 +192,19 @@ function RegistrationForm() {
       setErrors(rest)
     }
   }
-  
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Convert age to number
     const dataToValidate = {
       ...formData,
       age: parseInt(formData.age, 10)
     }
-    
+
     const result = handleRegistration(dataToValidate)
-    
+
     if (!result.success) {
       setErrors(result.errors)
       setTouched(Object.keys(result.errors).reduce(
@@ -207,7 +216,7 @@ function RegistrationForm() {
       // Handle successful registration
     }
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* Form fields here */}
@@ -225,30 +234,30 @@ import { ok, err, createValidationError } from '@repo/validation'
 import type { ValidationResult } from '@repo/validation'
 
 // Check if username is available (async validation)
-const checkUsernameAvailable = async (
-  username: string
-): Promise<ValidationResult<string>> => {
+const checkUsernameAvailable = async (username: string): Promise<ValidationResult<string>> => {
   // First validate format
   const formatResult = validateUsername(username)
   if (formatResult.isErr()) return formatResult
-  
+
   // Simulate API call
   const unavailableUsernames = ['admin', 'root', 'test']
   const isAvailable = !unavailableUsernames.includes(username.toLowerCase())
-  
+
   return isAvailable
     ? ok(username)
-    : err(createValidationError('Username is already taken', {
-        field: 'username',
-        suggestion: 'Try adding numbers or underscores'
-      }))
+    : err(
+        createValidationError('Username is already taken', {
+          field: 'username',
+          suggestion: 'Try adding numbers or underscores',
+        })
+      )
 }
 
 // Compose validators
 const validateUniqueUsername = async (username: string) => {
   const formatResult = validateUsername(username)
   if (formatResult.isErr()) return formatResult
-  
+
   return checkUsernameAvailable(username)
 }
 ```
@@ -280,12 +289,12 @@ function formReducer(state: FormState, action: FormAction): FormState {
     case 'SET_VALUE':
       return {
         ...state,
-        values: { ...state.values, [action.field]: action.value }
+        values: { ...state.values, [action.field]: action.value },
       }
     case 'SET_ERROR':
       return {
         ...state,
-        errors: { ...state.errors, [action.field]: action.error }
+        errors: { ...state.errors, [action.field]: action.error },
       }
     case 'CLEAR_ERROR':
       const { [action.field]: _, ...errors } = state.errors
@@ -293,7 +302,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
     case 'SET_TOUCHED':
       return {
         ...state,
-        touched: { ...state.touched, [action.field]: true }
+        touched: { ...state.touched, [action.field]: true },
       }
     case 'SET_SUBMITTING':
       return { ...state, isSubmitting: action.isSubmitting }
@@ -309,37 +318,37 @@ function useForm<T>(schema: z.ZodType<T>, onSubmit: (data: T) => void) {
     values: {},
     errors: {},
     touched: {},
-    isSubmitting: false
+    isSubmitting: false,
   })
-  
+
   const validator = createSchemaValidator(schema)
-  
+
   const setValue = (field: string, value: any) => {
     dispatch({ type: 'SET_VALUE', field, value })
   }
-  
+
   const validateField = (field: string) => {
     // Implementation here
   }
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     dispatch({ type: 'SET_SUBMITTING', isSubmitting: true })
-    
+
     const result = validator(state.values)
-    
+
     if (result.isErr()) {
-      dispatch({ 
-        type: 'SET_ERRORS', 
-        errors: extractFieldErrors(result.error.issues || []) 
+      dispatch({
+        type: 'SET_ERRORS',
+        errors: extractFieldErrors(result.error.issues || []),
       })
     } else {
       await onSubmit(result.value)
     }
-    
+
     dispatch({ type: 'SET_SUBMITTING', isSubmitting: false })
   }
-  
+
   return {
     values: state.values,
     errors: state.errors,
@@ -347,7 +356,7 @@ function useForm<T>(schema: z.ZodType<T>, onSubmit: (data: T) => void) {
     isSubmitting: state.isSubmitting,
     setValue,
     validateField,
-    handleSubmit
+    handleSubmit,
   }
 }
 ```
@@ -367,13 +376,13 @@ describe('Registration Validation', () => {
       password: 'SecurePass123',
       confirmPassword: 'SecurePass123',
       age: 25,
-      agreeToTerms: true
+      agreeToTerms: true,
     }
-    
+
     const result = validateRegistration(validData)
     expect(result.isOk()).toBe(true)
   })
-  
+
   it('rejects mismatched passwords', () => {
     const invalidData = {
       username: 'john_doe',
@@ -381,12 +390,12 @@ describe('Registration Validation', () => {
       password: 'SecurePass123',
       confirmPassword: 'DifferentPass123',
       age: 25,
-      agreeToTerms: true
+      agreeToTerms: true,
     }
-    
+
     const result = validateRegistration(invalidData)
     expect(result.isErr()).toBe(true)
-    
+
     const errors = extractFieldErrors(result.error.issues || [])
     expect(errors.confirmPassword).toBe("Passwords don't match")
   })

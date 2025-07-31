@@ -1,3 +1,13 @@
+---
+type: how-to
+title: 'How to Create Custom Validators'
+description: 'Build custom validation logic using @repo/validation functional patterns'
+related:
+  - /packages/validation/docs/reference/api.md
+  - /docs/tutorials/form-validation-guide.md
+  - /docs/explanation/result-types-pattern.md
+---
+
 # How to Create Custom Validators
 
 Build custom validation logic using @repo/validation's functional patterns.
@@ -11,21 +21,25 @@ import type { ValidationResult, ValidatorFn } from '@repo/validation'
 // Simple validator function
 const validateUsername: ValidatorFn<string> = (value: string): ValidationResult<string> => {
   if (value.length < 3) {
-    return err(createValidationError('Username too short', {
-      field: 'username',
-      value,
-      suggestion: 'Use at least 3 characters'
-    }))
+    return err(
+      createValidationError('Username too short', {
+        field: 'username',
+        value,
+        suggestion: 'Use at least 3 characters',
+      })
+    )
   }
-  
+
   if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-    return err(createValidationError('Invalid username format', {
-      field: 'username',
-      value,
-      suggestion: 'Use only letters, numbers, underscores, and hyphens'
-    }))
+    return err(
+      createValidationError('Invalid username format', {
+        field: 'username',
+        value,
+        suggestion: 'Use only letters, numbers, underscores, and hyphens',
+      })
+    )
   }
-  
+
   return ok(value.toLowerCase())
 }
 ```
@@ -38,21 +52,25 @@ Create validators with configurable options:
 const createRangeValidator = (min: number, max: number): ValidatorFn<number> => {
   return (value: number): ValidationResult<number> => {
     if (value < min) {
-      return err(createValidationError(`Value must be at least ${min}`, {
-        field: 'value',
-        value,
-        code: 'MIN_VALUE'
-      }))
+      return err(
+        createValidationError(`Value must be at least ${min}`, {
+          field: 'value',
+          value,
+          code: 'MIN_VALUE',
+        })
+      )
     }
-    
+
     if (value > max) {
-      return err(createValidationError(`Value must be at most ${max}`, {
-        field: 'value',
-        value,
-        code: 'MAX_VALUE'
-      }))
+      return err(
+        createValidationError(`Value must be at most ${max}`, {
+          field: 'value',
+          value,
+          code: 'MAX_VALUE',
+        })
+      )
     }
-    
+
     return ok(value)
   }
 }
@@ -75,21 +93,16 @@ const createUniqueValidator = <T>(
 ): AsyncValidatorFn<T> => {
   return async (value: T): Promise<ValidationResult<T>> => {
     const exists = await checkExists(value)
-    
-    return exists
-      ? err(createValidationError(errorMessage, { value }))
-      : ok(value)
+
+    return exists ? err(createValidationError(errorMessage, { value })) : ok(value)
   }
 }
 
 // Usage
-const validateUniqueEmail = createUniqueValidator(
-  async (email: string) => {
-    // Check database
-    return db.users.exists({ email })
-  },
-  'Email already registered'
-)
+const validateUniqueEmail = createUniqueValidator(async (email: string) => {
+  // Check database
+  return db.users.exists({ email })
+}, 'Email already registered')
 ```
 
 ## Composing Validators
@@ -181,17 +194,13 @@ const createArrayValidator = <T>(
   return (values: T[]): ValidationResult<T[]> => {
     // Check length constraints
     if (options?.minLength && values.length < options.minLength) {
-      return err(createValidationError(
-        `Array must have at least ${options.minLength} items`
-      ))
+      return err(createValidationError(`Array must have at least ${options.minLength} items`))
     }
-    
+
     if (options?.maxLength && values.length > options.maxLength) {
-      return err(createValidationError(
-        `Array must have at most ${options.maxLength} items`
-      ))
+      return err(createValidationError(`Array must have at most ${options.maxLength} items`))
     }
-    
+
     // Check uniqueness
     if (options?.unique) {
       const seen = new Set()
@@ -203,29 +212,32 @@ const createArrayValidator = <T>(
         seen.add(key)
       }
     }
-    
+
     // Validate each item
     const validatedItems: T[] = []
     for (let i = 0; i < values.length; i++) {
       const result = itemValidator(values[i])
       if (result.isErr()) {
-        return err(createValidationError(
-          `Invalid item at index ${i}: ${result.error.message}`,
-          { index: i, value: values[i] }
-        ))
+        return err(
+          createValidationError(`Invalid item at index ${i}: ${result.error.message}`, {
+            index: i,
+            value: values[i],
+          })
+        )
       }
       validatedItems.push(result.value)
     }
-    
+
     return ok(validatedItems)
   }
 }
 
 // Usage
-const validateTags = createArrayValidator(
-  validate.stringLength(2, 20),
-  { minLength: 1, maxLength: 5, unique: true }
-)
+const validateTags = createArrayValidator(validate.stringLength(2, 20), {
+  minLength: 1,
+  maxLength: 5,
+  unique: true,
+})
 ```
 
 ## Transform Validators
@@ -239,25 +251,20 @@ const createTransformValidator = <T, R>(
 ): ValidatorFn<T, R> => {
   return (value: T): ValidationResult<R> => {
     const result = validator(value)
-    return result.isErr() 
-      ? result 
-      : ok(transformer(result.value))
+    return result.isErr() ? result : ok(transformer(result.value))
   }
 }
 
 // Example: Validate and normalize email
-const validateAndNormalizeEmail = createTransformValidator(
-  validate.email,
-  (email: string) => email.toLowerCase().trim()
+const validateAndNormalizeEmail = createTransformValidator(validate.email, (email: string) =>
+  email.toLowerCase().trim()
 )
 
 // Example: Parse and validate number
 const validateNumberString = createTransformValidator(
   (value: string) => {
     const num = parseFloat(value)
-    return isNaN(num)
-      ? err(createValidationError('Invalid number'))
-      : ok(value)
+    return isNaN(num) ? err(createValidationError('Invalid number')) : ok(value)
   },
   (value: string) => parseFloat(value)
 )
@@ -271,35 +278,34 @@ Create validators from Zod schemas:
 import { z, createValidator } from '@repo/validation'
 
 // Custom schema with refinements
-const phoneNumberSchema = z.string().refine(
-  (val) => /^\+?[1-9]\d{1,14}$/.test(val),
-  {
-    message: 'Invalid international phone number',
-    path: ['phoneNumber']
-  }
-)
+const phoneNumberSchema = z.string().refine((val) => /^\+?[1-9]\d{1,14}$/.test(val), {
+  message: 'Invalid international phone number',
+  path: ['phoneNumber'],
+})
 
 const validatePhoneNumber = createValidator(phoneNumberSchema)
 
 // Complex object validator
-const addressSchema = z.object({
-  street: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().length(2),
-  zip: z.string().regex(/^\d{5}(-\d{4})?$/)
-}).refine(
-  (data) => {
-    // Custom cross-field validation
-    if (data.state === 'CA' && !data.zip.startsWith('9')) {
-      return false
+const addressSchema = z
+  .object({
+    street: z.string().min(1),
+    city: z.string().min(1),
+    state: z.string().length(2),
+    zip: z.string().regex(/^\d{5}(-\d{4})?$/),
+  })
+  .refine(
+    (data) => {
+      // Custom cross-field validation
+      if (data.state === 'CA' && !data.zip.startsWith('9')) {
+        return false
+      }
+      return true
+    },
+    {
+      message: 'California ZIP codes must start with 9',
+      path: ['zip'],
     }
-    return true
-  },
-  {
-    message: 'California ZIP codes must start with 9',
-    path: ['zip']
-  }
-)
+  )
 
 const validateAddress = createValidator(addressSchema)
 ```
@@ -317,20 +323,20 @@ describe('Custom Validators', () => {
       expectValidationSuccess(result)
       expect(result.value).toBe('john_doe')
     })
-    
+
     it('rejects short usernames', () => {
       const result = validateUsername('ab')
       expectValidationError(result, {
         message: /too short/i,
-        field: 'username'
+        field: 'username',
       })
     })
-    
+
     it('rejects invalid characters', () => {
       const result = validateUsername('john@doe')
       expectValidationError(result, {
         message: /invalid.*format/i,
-        suggestion: /letters.*numbers/i
+        suggestion: /letters.*numbers/i,
       })
     })
   })

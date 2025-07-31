@@ -1,3 +1,17 @@
+---
+type: tutorial
+title: 'File Operations Basics'
+description: 'Introduction to functional filesystem operations using @repo/fs with Result-based error handling'
+prerequisites:
+  - Basic TypeScript knowledge
+  - Node.js 18+ installed
+  - Understanding of async/await
+related:
+  - /packages/fs/docs/reference/api.md
+  - /docs/how-to/perform-atomic-file-operations.md
+  - /docs/explanation/result-types-pattern.md
+---
+
 # Tutorial: File Operations with @repo/fs
 
 This tutorial introduces you to functional filesystem operations using `@repo/fs`. You'll learn how to perform common file operations with explicit error handling using Result types.
@@ -35,17 +49,18 @@ import { fs } from '@repo/fs'
 // Read a file
 async function readConfig() {
   const result = await fs.readFile('./config.json')
-  
+
   if (result.isErr()) {
     console.error('Failed to read config:', result.error.message)
     return
   }
-  
+
   console.log('Config contents:', result.value)
 }
 ```
 
 Notice how:
+
 - Every operation returns a Result
 - Errors are handled explicitly
 - No try-catch blocks needed
@@ -59,25 +74,21 @@ import { fs } from '@repo/fs'
 import { ok } from '@repo/core'
 
 // Pure transformation
-const mergeConfigs = (current: any, updates: any) => 
-  ({ ...current, ...updates })
+const mergeConfigs = (current: any, updates: any) => ({ ...current, ...updates })
 
 // Load or create config
 const loadConfig = async (path: string) => {
   const result = await fs.readJson(path)
-  return result.isOk() 
+  return result.isOk()
     ? result
-    : fs.writeJson(path, { version: '1.0.0' })
-        .then(() => ok({ version: '1.0.0' }))
+    : fs.writeJson(path, { version: '1.0.0' }).then(() => ok({ version: '1.0.0' }))
 }
 
 // Update config functionally
 const updateConfig = (path: string, updates: any) =>
-  loadConfig(path)
-    .then(result => result.isOk()
-      ? fs.writeJson(path, mergeConfigs(result.value, updates))
-      : result
-    )
+  loadConfig(path).then((result) =>
+    result.isOk() ? fs.writeJson(path, mergeConfigs(result.value, updates)) : result
+  )
 ```
 
 ## Step 4: File Processing Pipeline
@@ -91,15 +102,12 @@ import { ok } from '@repo/core'
 
 // Pure transformations
 const toUpperCase = (text: string) => text.toUpperCase()
-const addExtension = (file: string, ext: string) => 
-  file.replace(/\.[^.]+$/, ext)
+const addExtension = (file: string, ext: string) => file.replace(/\.[^.]+$/, ext)
 
 // Process single file
 const processFile = async (inputPath: string, outputPath: string) => {
   const result = await fs.readFile(inputPath)
-  return result.isErr()
-    ? result
-    : fs.writeFile(outputPath, toUpperCase(result.value))
+  return result.isErr() ? result : fs.writeFile(outputPath, toUpperCase(result.value))
 }
 ```
 
@@ -112,21 +120,18 @@ Process all files in a directory:
 const processDirectory = async (inputDir: string, outputDir: string) => {
   // Find all text files
   const files = await fs.findFiles('**/*.txt', { cwd: inputDir })
-  
+
   if (files.isErr()) return files
-  
+
   // Ensure output directory exists
   await fs.ensureDir(outputDir)
-  
+
   // Process each file
-  const tasks = files.value.map(file => 
-    processFile(
-      join(inputDir, file),
-      join(outputDir, addExtension(file, '.processed'))
-    )
+  const tasks = files.value.map((file) =>
+    processFile(join(inputDir, file), join(outputDir, addExtension(file, '.processed')))
   )
-  
-  return Promise.all(tasks).then(results => ok(results))
+
+  return Promise.all(tasks).then((results) => ok(results))
 }
 ```
 
@@ -144,7 +149,7 @@ const toTempPath = (path: string) => `${path}.tmp`
 // Atomic write with cleanup on failure
 const writeAtomic = async (path: string, content: string) => {
   const tempPath = toTempPath(path)
-  
+
   // Write to temp file first
   const writeResult = await fs.writeFile(tempPath, content)
   if (writeResult.isErr()) {
@@ -174,31 +179,31 @@ import { join } from '@repo/fs/utils'
 async function main() {
   // Ensure working directory
   await fs.ensureDir('./output')
-  
+
   // Process configuration
   const configResult = await updateConfig('./app.config.json', {
     lastRun: new Date().toISOString(),
-    processCount: 0
+    processCount: 0,
   })
-  
+
   if (configResult.isErr()) {
     console.error('Config update failed:', configResult.error)
     return
   }
-  
+
   // Process files
   const processResult = await processDirectory('./input', './output')
-  
+
   if (processResult.isErr()) {
     console.error('Processing failed:', processResult.error)
     return
   }
-  
+
   console.log('Processing completed successfully!')
-  
+
   // Update config with results
   await updateConfig('./app.config.json', {
-    processCount: processResult.value.length
+    processCount: processResult.value.length,
   })
 }
 
@@ -212,25 +217,25 @@ Handle specific error types:
 ```typescript
 const handleFileOperation = async (path: string) => {
   const result = await fs.readFile(path)
-  
+
   if (result.isErr()) {
     const error = result.error
-    
+
     switch (error.code) {
       case 'ENOENT':
         console.log('File not found - creating default')
         return fs.writeFile(path, 'default content')
-        
+
       case 'EACCES':
         console.error('Permission denied - check file permissions')
         return result
-        
+
       default:
         console.error('Unexpected error:', error.message)
         return result
     }
   }
-  
+
   return result
 }
 ```
@@ -246,12 +251,12 @@ import { describe, it, expect } from 'vitest'
 describe('File Operations', () => {
   it('processes files correctly', async () => {
     const mockFS = createMockFS({
-      '/input/test.txt': 'hello world'
+      '/input/test.txt': 'hello world',
     })
-    
+
     const result = await processFile('/input/test.txt', '/output/test.txt')
     expect(result.isOk()).toBe(true)
-    
+
     const content = await mockFS.readFile('/output/test.txt')
     expect(content.value).toBe('HELLO WORLD')
   })

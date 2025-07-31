@@ -1,3 +1,12 @@
+---
+type: explanation
+title: 'Two-Tier CI Strategy'
+description: 'Understanding the two-tier continuous integration strategy for optimizing testing efficiency and developer experience'
+related:
+  - /docs/reference/documentation-standards.md
+  - /docs/how-to/contributing.md
+---
+
 # Two-Tier CI Strategy
 
 ## Overview

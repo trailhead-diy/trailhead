@@ -1,3 +1,13 @@
+---
+type: reference
+title: 'Testing Guide'
+description: 'Comprehensive testing guidelines and best practices for the Trailhead monorepo'
+related:
+  - /docs/how-to/contributing.md
+  - /docs/reference/documentation-standards.md
+  - /packages/cli/docs/how-to/test-cli-applications.md
+---
+
 # Testing Guide
 
 This document provides comprehensive testing guidelines for the Trailhead monorepo.

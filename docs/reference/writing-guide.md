@@ -201,7 +201,7 @@ related:
 
 | Content                                      | Wrong Type | Right Type  |
 | -------------------------------------------- | ---------- | ----------- |
-| "Let's build a todo app step by step"        | How-To     | Tutorial    |
+| "Tutorial: Building a todo app step by step" | How-To     | Tutorial    |
 | "Here's how the validation system works"     | Tutorial   | Explanation |
 | "To configure SSL, edit config.json"         | Reference  | How-To      |
 | "`function validate(input: string): Result`" | How-To     | Reference   |

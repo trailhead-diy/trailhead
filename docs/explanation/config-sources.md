@@ -20,12 +20,14 @@ File sources load configuration from JSON or YAML files:
 ```
 
 **Characteristics:**
+
 - Loaded from disk at runtime
 - Supports JSON and YAML formats
 - Can use absolute or relative paths
 - Missing files return empty configuration (not an error)
 
 **Use cases:**
+
 - Default settings shipped with application
 - Environment-specific configuration files
 - Shared team settings
@@ -39,12 +41,14 @@ Environment sources read from process environment variables:
 ```
 
 **Characteristics:**
+
 - Maps environment variables to configuration paths
 - Converts `APP_SERVER_PORT` to `{ server: { port: value } }`
 - Supports nested paths with underscores
 - Type coercion based on schema
 
 **Use cases:**
+
 - Container deployments (Docker, Kubernetes)
 - CI/CD pipelines
 - Sensitive values (secrets, API keys)
@@ -55,16 +59,20 @@ Environment sources read from process environment variables:
 CLI sources parse command-line arguments:
 
 ```typescript
-{ type: 'cli' }
+{
+  type: 'cli'
+}
 ```
 
 **Characteristics:**
+
 - Uses dot notation: `--server.port=3000`
 - Supports boolean flags: `--features.debug`
 - Arrays: `--allowed-origins=url1 --allowed-origins=url2`
 - Type inference from schema
 
 **Use cases:**
+
 - Development overrides
 - Quick testing
 - Script automation
@@ -78,10 +86,10 @@ Sources merge in order with later sources overriding earlier ones:
 createConfig({
   schema,
   sources: [
-    { type: 'file', path: './defaults.json' },  // Lowest priority
-    { type: 'file', path: './config.json' },   
-    { type: 'env', prefix: 'APP_' },           
-    { type: 'cli' },                           // Highest priority
+    { type: 'file', path: './defaults.json' }, // Lowest priority
+    { type: 'file', path: './config.json' },
+    { type: 'env', prefix: 'APP_' },
+    { type: 'cli' }, // Highest priority
   ],
 })
 ```
@@ -89,6 +97,7 @@ createConfig({
 ### Merge Behavior
 
 Deep merge for objects:
+
 ```javascript
 // defaults.json
 { "server": { "port": 3000, "host": "localhost" } }
@@ -101,6 +110,7 @@ APP_SERVER_PORT=8080
 ```
 
 Complete replacement for arrays:
+
 ```javascript
 // config.json
 { "allowedOrigins": ["http://localhost:3000"] }
@@ -117,6 +127,7 @@ Complete replacement for arrays:
 Sources automatically coerce string values to match schema types:
 
 ### Numbers
+
 ```typescript
 // Schema
 port: z.number()
@@ -128,6 +139,7 @@ Result: { port: 3000 }      // Number 3000
 ```
 
 ### Booleans
+
 ```typescript
 // Schema
 debug: z.boolean()
@@ -140,6 +152,7 @@ Result: { debug: true/false } // Boolean
 ```
 
 ### Arrays
+
 ```typescript
 // Schema
 tags: z.array(z.string())
@@ -155,6 +168,7 @@ Result: { tags: ["web", "api", "v2"] }
 ### Development vs Production
 
 Development:
+
 ```typescript
 sources: [
   { type: 'file', path: './config/defaults.json' },
@@ -165,6 +179,7 @@ sources: [
 ```
 
 Production:
+
 ```typescript
 sources: [
   { type: 'file', path: './config/defaults.json' },
@@ -192,13 +207,13 @@ sources: [
 sources: [
   // Company-wide defaults
   { type: 'file', path: '/etc/company/defaults.json' },
-  
+
   // Application defaults
   { type: 'file', path: './config/defaults.json' },
-  
+
   // User preferences
   { type: 'file', path: '~/.myapp/config.json' },
-  
+
   // Runtime overrides
   { type: 'env', prefix: 'MYAPP_' },
   { type: 'cli' },
@@ -210,6 +225,7 @@ sources: [
 ### Sensitive Values
 
 Mark sensitive fields in schema:
+
 ```typescript
 const schema = createConfigSchema({
   apiKey: z.string(),
@@ -220,6 +236,7 @@ const schema = createConfigSchema({
 ```
 
 Best practices:
+
 - Never commit sensitive values to files
 - Use environment variables for secrets
 - Rotate credentials regularly
@@ -228,12 +245,13 @@ Best practices:
 ### Source Validation
 
 Each source validates against the schema:
+
 ```typescript
 // Schema requires URL
 webhookUrl: z.string().url()
 
 // Invalid environment variable
-APP_WEBHOOK_URL="not-a-url"  // Error: Invalid URL
+APP_WEBHOOK_URL = 'not-a-url' // Error: Invalid URL
 
 // Config loading fails with clear error
 ```

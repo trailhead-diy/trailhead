@@ -96,23 +96,23 @@ mkdirSync(docsDir, { recursive: true })
 
 // Generate multiple formats
 const formats = [
-  { 
-    format: 'markdown' as const, 
+  {
+    format: 'markdown' as const,
     file: 'README.md',
-    options: { 
+    options: {
       title: 'Configuration Reference',
       includeExamples: true,
     },
   },
-  { 
-    format: 'json-schema' as const, 
+  {
+    format: 'json-schema' as const,
     file: 'schema.json',
     options: {},
   },
-  { 
-    format: 'env' as const, 
+  {
+    format: 'env' as const,
     file: 'environment-variables.md',
-    options: { 
+    options: {
       envPrefix: 'APP_',
       title: 'Environment Variables',
     },
@@ -122,13 +122,13 @@ const formats = [
 formats.forEach(({ format, file, options }) => {
   const content = generateDocs(appSchema, { format, ...options })
   const path = join(docsDir, file)
-  
+
   if (format === 'json-schema') {
     writeFileSync(path, JSON.stringify(content, null, 2))
   } else {
     writeFileSync(path, content)
   }
-  
+
   console.log(`Generated ${path}`)
 })
 ```
@@ -166,11 +166,10 @@ environments.forEach((env) => {
     title: `${env} Configuration`,
     filter: (key, field) => {
       // Only include environment-specific fields
-      return !field.metadata?.environments || 
-             field.metadata.environments.includes(env)
+      return !field.metadata?.environments || field.metadata.environments.includes(env)
     },
   })
-  
+
   writeFileSync(`CONFIG.${env}.md`, docs)
 })
 ```
@@ -196,10 +195,10 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      
+
       - run: pnpm install
       - run: pnpm docs:config
-      
+
       - uses: peter-evans/create-pull-request@v5
         with:
           title: 'docs: update configuration documentation'

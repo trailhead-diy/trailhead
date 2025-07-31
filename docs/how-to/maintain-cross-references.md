@@ -104,7 +104,7 @@ related:
   - /docs/how-to/solve-specific-problem.md
   - /docs/reference/api-reference.md
 
-# In how-to guide  
+# In how-to guide
 related:
   - /docs/tutorials/learning-guide.md
   - /docs/reference/api-reference.md
@@ -145,6 +145,7 @@ pnpm docs:validate-links
 ### Scheduled Health Checks
 
 Weekly automated reports identify:
+
 - Broken internal links
 - Missing bidirectional references
 - Style guide violations
@@ -156,6 +157,7 @@ Weekly automated reports identify:
 **Problem**: Links break when files are reorganized
 
 **Solution**:
+
 ```bash
 # Find all references to moved file
 grep -r "old-path" docs/ packages/
@@ -170,6 +172,7 @@ pnpm docs:fix-links
 **Problem**: Document A links to B, but B doesn't link back
 
 **Solution**:
+
 1. Identify the relationship type
 2. Add appropriate `related` entries
 3. Validate the connection makes sense for users
@@ -179,6 +182,7 @@ pnpm docs:fix-links
 **Problem**: Mix of relative and absolute paths causes maintenance issues
 
 **Solution**:
+
 ```bash
 # Convert all relative paths to absolute
 pnpm docs:fix-links
@@ -192,6 +196,7 @@ pnpm docs:validate-links --verbose
 **Problem**: External URLs return 404 errors
 
 **Solution**:
+
 1. Update URLs to current locations
 2. Use archive.org for historical references
 3. Replace with equivalent resources
@@ -244,8 +249,8 @@ related:
 **Use tables for systematic navigation**:
 
 ```markdown
-| Topic | Tutorial | How-to Guide | Reference |
-|-------|----------|--------------|-----------|
+| Topic              | Tutorial                                     | How-to Guide                                    | Reference                                           |
+| ------------------ | -------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
 | **Error Handling** | [Getting Started](/docs/tutorials/errors.md) | [Handle CLI Errors](/docs/how-to/cli-errors.md) | [Result Types API](/docs/reference/result-types.md) |
 ```
 
@@ -254,6 +259,7 @@ related:
 ### Link Health Score
 
 Track these metrics over time:
+
 - **Broken link ratio**: Should be < 1%
 - **External link health**: Check monthly
 - **Bidirectional coverage**: Aim for 80%+ of related docs linking back
@@ -262,6 +268,7 @@ Track these metrics over time:
 ### User Navigation Success
 
 Monitor how users move through documentation:
+
 - **Cross-reference usage**: Are related links clicked?
 - **Task completion**: Do users find what they need?
 - **Documentation gaps**: Missing links to essential information?
@@ -269,16 +276,19 @@ Monitor how users move through documentation:
 ## Maintenance Schedule
 
 ### Daily (Developers)
+
 - Validate links before committing documentation changes
 - Use absolute paths for all new internal links
 - Add bidirectional relationships for new documents
 
 ### Weekly (Automated)
+
 - Full link validation across all documentation
 - External link health check
 - Report on documentation coverage gaps
 
 ### Monthly (Maintainers)
+
 - Review link health metrics
 - Update external links that have moved
 - Audit bidirectional navigation completeness
@@ -287,17 +297,20 @@ Monitor how users move through documentation:
 ## Getting Help
 
 **For immediate issues**:
+
 ```bash
 pnpm docs:validate-links --verbose
 pnpm docs:fix-links --dry-run
 ```
 
 **For complex reorganization**:
+
 - Review [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide.md)
 - Check [Documentation Standards](/docs/reference/documentation-standards.md)
 - Ask in GitHub Discussions for architectural guidance
 
 **For tooling issues**:
+
 - Check `tooling/docs-tooling/` for validator source code
 - File issues with specific error messages
 - Include `--verbose` output in bug reports

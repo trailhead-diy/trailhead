@@ -221,8 +221,7 @@ Create specialized functions by fixing some arguments:
 
 ```typescript
 // Generic file reader
-const readFileWithEncoding = (encoding: string) => (path: string) => 
-  fs.readFile(path, { encoding })
+const readFileWithEncoding = (encoding: string) => (path: string) => fs.readFile(path, { encoding })
 
 // Specialized readers
 const readUTF8 = readFileWithEncoding('utf8')
@@ -296,8 +295,8 @@ import { pipe } from '@repo/core'
 // Functional file processing
 const processConfig = pipe(
   (path: string) => fs.readJson(path),
-  (result) => result.isErr() ? result : validateConfig(result.value),
-  (result) => result.isErr() ? result : fs.writeJson('./processed.json', result.value)
+  (result) => (result.isErr() ? result : validateConfig(result.value)),
+  (result) => (result.isErr() ? result : fs.writeJson('./processed.json', result.value))
 )
 ```
 
@@ -307,12 +306,8 @@ const processConfig = pipe(
 import { validate, composeValidators } from '@repo/validation'
 
 // Compose validators functionally
-const validateUser = composeValidators(
-  validate.required,
-  validate.email,
-  (email: string) => email.endsWith('@company.com')
-    ? ok(email)
-    : err(new Error('Must be company email'))
+const validateUser = composeValidators(validate.required, validate.email, (email: string) =>
+  email.endsWith('@company.com') ? ok(email) : err(new Error('Must be company email'))
 )
 ```
 
@@ -324,13 +319,10 @@ import { data } from '@repo/data'
 // Functional data pipeline
 const processCSV = async (path: string) => {
   const result = await data.parseAuto(path)
-  
+
   return result.isErr()
     ? result
-    : ok(result.value.data
-        .filter(row => row.active)
-        .map(row => ({ ...row, processed: true }))
-      )
+    : ok(result.value.data.filter((row) => row.active).map((row) => ({ ...row, processed: true })))
 }
 ```
 

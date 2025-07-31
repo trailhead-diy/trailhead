@@ -20,11 +20,11 @@ Traditional error handling in JavaScript relies on exceptions:
 ```typescript
 // Traditional approach - errors are invisible
 function parseConfig(json: string): Config {
-  return JSON.parse(json)  // Might throw!
+  return JSON.parse(json) // Might throw!
 }
 
 // Caller has no idea this could fail
-const config = parseConfig(userInput)  // 💥 Runtime error
+const config = parseConfig(userInput) // 💥 Runtime error
 ```
 
 Result types make errors explicit:
@@ -45,7 +45,7 @@ if (result.isErr()) {
   console.error('Parse failed:', result.error)
   return
 }
-const config = result.value  // Safe to use
+const config = result.value // Safe to use
 ```
 
 ## The Result Type
@@ -86,13 +86,10 @@ Chain operations without nested try-catch:
 
 ```typescript
 const processFile = (path: string) =>
-  fs.readFile(path)
-    .then(result => result.isErr() 
-      ? result 
-      : parseJson(result.value))
-    .then(result => result.isErr()
-      ? result
-      : validateConfig(result.value))
+  fs
+    .readFile(path)
+    .then((result) => (result.isErr() ? result : parseJson(result.value)))
+    .then((result) => (result.isErr() ? result : validateConfig(result.value)))
 ```
 
 ### 3. Type Safety
@@ -100,9 +97,7 @@ const processFile = (path: string) =>
 Error types are preserved through transformations:
 
 ```typescript
-function transform(
-  result: Result<string, FileError>
-): Result<Config, FileError | ParseError> {
+function transform(result: Result<string, FileError>): Result<Config, FileError | ParseError> {
   if (result.isErr()) return result
   return parseConfig(result.value)
 }
@@ -128,13 +123,13 @@ it('handles missing file', async () => {
 async function processData(id: string): Promise<Result<ProcessedData>> {
   const fetchResult = await fetchData(id)
   if (fetchResult.isErr()) return fetchResult
-  
+
   const validateResult = validate(fetchResult.value)
   if (validateResult.isErr()) return validateResult
-  
+
   const transformResult = transform(validateResult.value)
   if (transformResult.isErr()) return transformResult
-  
+
   return ok(transformResult.value)
 }
 ```
@@ -142,46 +137,47 @@ async function processData(id: string): Promise<Result<ProcessedData>> {
 ### Collecting Results
 
 ```typescript
-const results = await Promise.all(
-  files.map(file => processFile(file))
-)
+const results = await Promise.all(files.map((file) => processFile(file)))
 
-const errors = results.filter(r => r.isErr())
+const errors = results.filter((r) => r.isErr())
 if (errors.length > 0) {
-  return err(new AggregateError(errors.map(e => e.error)))
+  return err(new AggregateError(errors.map((e) => e.error)))
 }
 
-const values = results.map(r => r.value)
+const values = results.map((r) => r.value)
 ```
 
 ### Default Values
 
 ```typescript
-const config = (await loadConfig('./config.json'))
-  .unwrapOr(defaultConfig)
+const config = (await loadConfig('./config.json')).unwrapOr(defaultConfig)
 ```
 
 ## Comparison with Other Approaches
 
 ### Try-Catch
+
 - ❌ Errors are invisible in function signatures
 - ❌ Easy to forget error handling
 - ❌ Difficult to compose
 - ✅ Familiar to developers
 
 ### Null/Undefined
+
 - ❌ No error information
 - ❌ Ambiguous (null vs undefined)
 - ✅ Simple for optional values
 - ❌ Not suitable for operations that can fail
 
 ### Promises
+
 - ✅ Async error handling
 - ❌ Sync operations need wrapping
 - ❌ catch() loses type information
 - ✅ Built into the language
 
 ### Result Types
+
 - ✅ Explicit error handling
 - ✅ Type-safe error information
 - ✅ Composable operations
@@ -191,12 +187,14 @@ const config = (await loadConfig('./config.json'))
 ## When to Use Result Types
 
 Use Result types when:
+
 - Operations can fail in expected ways
 - Error information needs to be preserved
 - Building composable APIs
 - Type safety is important
 
 Consider alternatives when:
+
 - Errors are truly exceptional
 - Working with existing callback/promise APIs
 - Simple boolean checks suffice
@@ -209,7 +207,7 @@ All Trailhead packages use Result types consistently:
 // @repo/fs
 const result = await fs.readFile('./data.txt')
 
-// @repo/data  
+// @repo/data
 const result = await data.parseAuto('./data.csv')
 
 // @repo/validation

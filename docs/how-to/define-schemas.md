@@ -101,11 +101,13 @@ const schema = createConfigSchema({
 const schema = createConfigSchema({
   allowedOrigins: z.array(z.string().url()),
   featureFlags: z.record(z.boolean()),
-  servers: z.array(z.object({
-    name: z.string(),
-    url: z.string().url(),
-    weight: z.number().min(0).max(100),
-  })),
+  servers: z.array(
+    z.object({
+      name: z.string(),
+      url: z.string().url(),
+      weight: z.number().min(0).max(100),
+    })
+  ),
 })
 ```
 
@@ -150,17 +152,15 @@ const schema = createConfigSchema({
 
 ```typescript
 const schema = createConfigSchema({
-  customField: z.string().refine(
-    (val) => val.startsWith('prefix_'),
-    { message: 'Must start with prefix_' }
-  ),
-  passwordPair: z.object({
-    password: z.string().min(8),
-    confirm: z.string(),
-  }).refine(
-    (data) => data.password === data.confirm,
-    { message: 'Passwords must match' }
-  ),
+  customField: z
+    .string()
+    .refine((val) => val.startsWith('prefix_'), { message: 'Must start with prefix_' }),
+  passwordPair: z
+    .object({
+      password: z.string().min(8),
+      confirm: z.string(),
+    })
+    .refine((data) => data.password === data.confirm, { message: 'Passwords must match' }),
 })
 ```
 

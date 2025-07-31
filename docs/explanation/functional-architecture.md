@@ -24,13 +24,13 @@ Functions that always return the same output for the same input and have no side
 const transformDataRow = (row: DataRow): ProcessedRow => ({
   id: row.id,
   name: row.name.toUpperCase(),
-  value: row.value * 1.1
+  value: row.value * 1.1,
 })
 
 // Impure function - has side effects
 const saveDataRow = async (row: DataRow): Promise<void> => {
-  console.log('Saving row...')  // Side effect
-  await database.save(row)       // Side effect
+  console.log('Saving row...') // Side effect
+  await database.save(row) // Side effect
 }
 ```
 
@@ -41,13 +41,13 @@ Data is never modified in place:
 ```typescript
 // Bad - mutates array
 function addItem(array: string[], item: string) {
-  array.push(item)  // Mutates original
+  array.push(item) // Mutates original
   return array
 }
 
 // Good - returns new array
 function addItem(array: string[], item: string): string[] {
-  return [...array, item]  // Creates new array
+  return [...array, item] // Creates new array
 }
 ```
 
@@ -64,13 +64,9 @@ const toLowerCase = (s: string) => s.toLowerCase()
 const removeSpaces = (s: string) => s.replace(/\s+/g, '-')
 
 // Composed function
-const slugify = pipe(
-  trim,
-  toLowerCase,
-  removeSpaces
-)
+const slugify = pipe(trim, toLowerCase, removeSpaces)
 
-slugify('  Hello World  ')  // 'hello-world'
+slugify('  Hello World  ') // 'hello-world'
 ```
 
 ### 4. Explicit Effects
@@ -80,10 +76,13 @@ Side effects are isolated and made explicit:
 ```typescript
 // Pure core logic
 const calculateTotals = (items: Item[]): Totals => {
-  return items.reduce((acc, item) => ({
-    count: acc.count + 1,
-    sum: acc.sum + item.value
-  }), { count: 0, sum: 0 })
+  return items.reduce(
+    (acc, item) => ({
+      count: acc.count + 1,
+      sum: acc.sum + item.value,
+    }),
+    { count: 0, sum: 0 }
+  )
 }
 
 // Effects at the boundaries
@@ -91,10 +90,10 @@ async function processOrder(orderId: string): Promise<Result<Order>> {
   // Effect: Read from database
   const itemsResult = await db.getOrderItems(orderId)
   if (itemsResult.isErr()) return itemsResult
-  
+
   // Pure: Calculate totals
   const totals = calculateTotals(itemsResult.value)
-  
+
   // Effect: Write to database
   return db.updateOrderTotals(orderId, totals)
 }
@@ -111,11 +110,11 @@ describe('transformDataRow', () => {
   it('transforms row correctly', () => {
     const input = { id: 1, name: 'test', value: 10 }
     const output = transformDataRow(input)
-    
+
     expect(output).toEqual({
       id: 1,
       name: 'TEST',
-      value: 11
+      value: 11,
     })
   })
 })
@@ -136,10 +135,7 @@ const minLength = (n: number) => (s: string) => s.length >= n
 
 // Composed password validator
 const isValidPassword = (password: string) =>
-  minLength(8)(password) &&
-  hasUppercase(password) &&
-  hasLowercase(password) &&
-  hasNumber(password)
+  minLength(8)(password) && hasUppercase(password) && hasLowercase(password) && hasNumber(password)
 ```
 
 ### Predictability
@@ -154,7 +150,7 @@ const updatedConfig = { ...config, port: 4000 }
 
 // Object-oriented approach - surprising
 const server = new Server({ port: 3000 })
-server.port = 4000  // Did this update the file? Database? Memory only?
+server.port = 4000 // Did this update the file? Database? Memory only?
 ```
 
 ### Refactoring Safety
@@ -194,7 +190,7 @@ try {
 parseJson(jsonString)
   .andThen(validateData)
   .andThen(saveData)
-  .mapErr(error => {
+  .mapErr((error) => {
     // Error type tells us exactly what failed
     switch (error.type) {
       case 'ParseError': // ...
@@ -247,7 +243,7 @@ const validatePercentage = createRangeValidator(0, 100)
 let totalProcessed = 0
 
 function processItem(item: Item) {
-  totalProcessed++  // Mutation!
+  totalProcessed++ // Mutation!
   return transform(item)
 }
 
@@ -256,7 +252,7 @@ function processItems(items: Item[]) {
   const processed = items.map(transform)
   return {
     items: processed,
-    total: processed.length
+    total: processed.length,
   }
 }
 ```
@@ -267,7 +263,7 @@ function processItems(items: Item[]) {
 // Bad - hidden side effect
 function getConfig() {
   if (!configCache) {
-    configCache = loadFromDisk()  // Hidden I/O!
+    configCache = loadFromDisk() // Hidden I/O!
   }
   return configCache
 }
@@ -276,7 +272,7 @@ function getConfig() {
 async function getConfig(cache: Cache, fs: FileSystem) {
   const cached = cache.get('config')
   if (cached) return ok(cached)
-  
+
   const result = await fs.readFile('./config.json')
   if (result.isOk()) {
     cache.set('config', result.value)
@@ -290,13 +286,15 @@ async function getConfig(cache: Cache, fs: FileSystem) {
 ```typescript
 // Bad - mixes pure logic with effects
 function processAndSave(data: Data) {
-  const processed = transform(data)  // Pure
-  database.save(processed)           // Effect!
+  const processed = transform(data) // Pure
+  database.save(processed) // Effect!
   return processed
 }
 
 // Good - separate pure from effects
-const transform = (data: Data): ProcessedData => { /* ... */ }
+const transform = (data: Data): ProcessedData => {
+  /* ... */
+}
 const save = (data: ProcessedData) => database.save(data)
 
 // Compose at the boundary

@@ -1,7 +1,15 @@
 ---
-title: Getting Started with Configuration
 type: tutorial
-description: Learn how to use @repo/config for your first configuration setup
+title: 'Getting Started with Configuration'
+description: 'Learn how to use @repo/config for your first configuration setup'
+prerequisites:
+  - Node.js installed
+  - Basic TypeScript knowledge
+  - A TypeScript project ready
+related:
+  - /packages/config/docs/reference/api.md
+  - /docs/how-to/define-schemas.md
+  - /docs/explanation/config-sources.md
 ---
 
 # Getting Started with Configuration
@@ -17,6 +25,7 @@ This tutorial guides you through creating your first configuration system using 
 ## What You'll Build
 
 A configuration system that:
+
 - Validates settings with schemas
 - Loads from multiple sources (file, environment, CLI)
 - Provides type-safe access to values
@@ -96,14 +105,14 @@ import { config } from './config'
 async function startApp() {
   // Load and validate configuration
   const result = await config.load()
-  
+
   if (!result.ok) {
     console.error('Configuration error:', result.error)
     process.exit(1)
   }
-  
+
   const settings = result.value
-  
+
   console.log(`Starting server on ${settings.server.host}:${settings.server.port}`)
   console.log(`Database pool size: ${settings.database.poolSize}`)
   console.log(`Debug mode: ${settings.features.debug}`)
@@ -133,6 +142,7 @@ APP_SERVER_PORT=8080 node dist/index.js --server.port=9000
 ## What You've Learned
 
 You've successfully:
+
 - Created a validated configuration schema
 - Set up multiple configuration sources
 - Loaded configuration with proper error handling

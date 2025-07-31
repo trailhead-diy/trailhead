@@ -1,3 +1,17 @@
+---
+type: tutorial
+title: 'Building Data Processing Pipelines'
+description: 'Learn to build functional data processing pipelines using @repo/data with Result types and pure functions'
+prerequisites:
+  - Basic TypeScript knowledge
+  - Understanding of Result types
+  - '@repo/data installed in your project'
+related:
+  - /docs/explanation/result-types-pattern.md
+  - /packages/data/docs/reference/api.md
+  - /docs/how-to/convert-data-formats.md
+---
+
 # Tutorial: Building Data Processing Pipelines
 
 This tutorial will teach you how to build functional data processing pipelines using `@repo/data`. You'll learn to compose pure functions, handle errors with Result types, and process data across multiple formats.
@@ -40,11 +54,12 @@ const isActive = (row: any) => row.status === 'active'
 const transformDataRow = (row: any) => ({
   id: row.id,
   name: row.name.toUpperCase(),
-  value: parseFloat(row.value) * 1.1
+  value: parseFloat(row.value) * 1.1,
 })
 ```
 
 These functions:
+
 - Take input and return output without side effects
 - Can be tested in isolation
 - Can be composed together
@@ -58,11 +73,12 @@ Define a function that creates output tasks:
 const createOutputWriters = (transformedData: any[]) => [
   data.writeAuto('./output.json', transformedData),
   data.writeAuto('./output.csv', transformedData),
-  data.writeAuto('./output.xlsx', transformedData)
+  data.writeAuto('./output.xlsx', transformedData),
 ]
 ```
 
 This approach:
+
 - Returns an array of promises
 - Allows parallel execution
 - Keeps the function pure
@@ -74,12 +90,9 @@ Create a function to check if all operations succeeded:
 ```typescript
 // Check results and create appropriate response
 const checkAllSucceeded = (results: any[]) => {
-  const failed = results.filter(r => r.isErr())
+  const failed = results.filter((r) => r.isErr())
   return failed.length > 0
-    ? err(createDataError(
-        'WRITE_ERROR',
-        `Failed to write ${failed.length} output files`
-      ))
+    ? err(createDataError('WRITE_ERROR', `Failed to write ${failed.length} output files`))
     : ok({ processed: results.length })
 }
 ```
@@ -92,13 +105,11 @@ Combine everything into a main pipeline function:
 // Main pipeline function using composition
 const processDataPipeline = async (inputFile: string) => {
   const parseResult = await data.parseAuto(inputFile)
-  
+
   if (parseResult.isErr()) return parseResult
 
   // Transform data using pure functions
-  const transformed = parseResult.value.data
-    .filter(isActive)
-    .map(transformDataRow)
+  const transformed = parseResult.value.data.filter(isActive).map(transformDataRow)
 
   // Save in multiple formats
   const outputs = await Promise.all(createOutputWriters(transformed))
@@ -115,7 +126,7 @@ For more complex transformations, use the `pipe` utility:
 // Alternative using pipe for transformations
 const processWithPipe = async (inputFile: string) => {
   const parseResult = await data.parseAuto(inputFile)
-  
+
   if (parseResult.isErr()) return parseResult
 
   const transform = pipe(
@@ -138,12 +149,12 @@ Execute your pipeline and handle the results:
 // Example usage
 async function main() {
   const result = await processDataPipeline('./sales-data.csv')
-  
+
   if (result.isErr()) {
     console.error('Pipeline failed:', result.error.message)
     process.exit(1)
   }
-  
+
   console.log('Pipeline completed successfully!')
   console.log(`Processed ${result.value.processed} output files`)
 }
@@ -162,9 +173,9 @@ describe('Data Pipeline', () => {
   it('filters active records', () => {
     const data = [
       { status: 'active', id: 1 },
-      { status: 'inactive', id: 2 }
+      { status: 'inactive', id: 2 },
     ]
-    
+
     const filtered = data.filter(isActive)
     expect(filtered).toHaveLength(1)
     expect(filtered[0].id).toBe(1)
@@ -173,7 +184,7 @@ describe('Data Pipeline', () => {
   it('transforms data correctly', () => {
     const row = { id: 1, name: 'test', value: '10' }
     const result = transformDataRow(row)
-    
+
     expect(result.name).toBe('TEST')
     expect(result.value).toBe(11)
   })
