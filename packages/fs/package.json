@@ -42,7 +42,6 @@
     "glob": "^11.0.0"
   },
   "devDependencies": {
-    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",

@@ -37,7 +37,6 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@repo/oxlint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.1.0",
