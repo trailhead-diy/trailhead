@@ -35,7 +35,7 @@ export function Avatar({
     >
       {initials && (
         <svg
-          className="size-full fill-current p-[5%] text-[48px] font-medium uppercase select-none"
+          className="size-full select-none fill-current p-[5%] text-[48px] font-medium uppercase"
           viewBox="0 0 100 100"
           aria-hidden={alt ? undefined : 'true'}
         >
@@ -65,7 +65,7 @@ export const AvatarButton = forwardRef(function AvatarButton(
   let classes = clsx(
     className,
     square ? 'rounded-[20%]' : 'rounded-full',
-    'relative inline-grid focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500'
+    'focus:not-data-focus:outline-hidden data-focus:outline-2 data-focus:outline-offset-2 data-focus:outline-blue-500 relative inline-grid'
   )
 
   return 'href' in props ? (

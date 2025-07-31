@@ -31,7 +31,7 @@ export function CheckboxField({
         // Base layout
         'grid grid-cols-[1.125rem_1fr] gap-x-4 gap-y-1 sm:grid-cols-[1rem_1fr]',
         // Control layout
-        '*:data-[slot=control]:col-start-1 *:data-[slot=control]:row-start-1 *:data-[slot=control]:mt-0.75 sm:*:data-[slot=control]:mt-1',
+        '*:data-[slot=control]:mt-0.75 *:data-[slot=control]:col-start-1 *:data-[slot=control]:row-start-1 sm:*:data-[slot=control]:mt-1',
         // Label layout
         '*:data-[slot=label]:col-start-2 *:data-[slot=label]:row-start-1',
         // Description layout
@@ -126,17 +126,17 @@ export function Checkbox({
     <Headless.Checkbox
       data-slot="control"
       {...props}
-      className={clsx(className, 'group inline-flex focus:outline-hidden')}
+      className={clsx(className, 'focus:outline-hidden group inline-flex')}
     >
       <span className={clsx([base, colors[color]])}>
         <svg
-          className="size-4 stroke-(--checkbox-check) opacity-0 group-data-checked:opacity-100 sm:h-3.5 sm:w-3.5"
+          className="stroke-(--checkbox-check) group-data-checked:opacity-100 size-4 opacity-0 sm:h-3.5 sm:w-3.5"
           viewBox="0 0 14 14"
           fill="none"
         >
           {/* Checkmark icon */}
           <path
-            className="opacity-100 group-data-indeterminate:opacity-0"
+            className="group-data-indeterminate:opacity-0 opacity-100"
             d="M3 8L6 11L11 3.5"
             strokeWidth={2}
             strokeLinecap="round"
@@ -144,7 +144,7 @@ export function Checkbox({
           />
           {/* Indeterminate icon */}
           <path
-            className="opacity-0 group-data-indeterminate:opacity-100"
+            className="group-data-indeterminate:opacity-100 opacity-0"
             d="M3 7H11"
             strokeWidth={2}
             strokeLinecap="round"

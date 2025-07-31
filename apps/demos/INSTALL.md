@@ -2,7 +2,7 @@
 
 This directory contains demonstration projects that work independently from the parent workspace.
 
-> **Note**: This documentation is part of the [Trailhead monorepo](../../README.md).
+> **Note**: This documentation is part of the [Trailhead monorepo](/README.md).
 
 ## 🔧 Fixed pnpm Issues
 
