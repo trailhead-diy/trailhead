@@ -40,7 +40,10 @@
     "prepare": "lefthook install",
     "lefthook": "lefthook",
     "lefthook:install": "lefthook install",
-    "lefthook:uninstall": "lefthook uninstall"
+    "lefthook:uninstall": "lefthook uninstall",
+    "docs:dev": "turbo dev --filter=@repo/docs",
+    "docs:build": "turbo build --filter=@repo/docs",
+    "docs:serve": "turbo serve --filter=@repo/docs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
