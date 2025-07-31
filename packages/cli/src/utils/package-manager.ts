@@ -439,12 +439,3 @@ export const execPackageManagerCommand = (
     timeout: execOptions?.timeout ?? detectOptions?.timeout ?? DEFAULT_TIMEOUT_MS,
   })
 }
-
-/**
- * Get information about the detected package manager
- */
-export const getPackageManagerInfo = (
-  options?: DetectOptions
-): Result<PackageManager, CoreError> => {
-  return detectPackageManager(options)
-}

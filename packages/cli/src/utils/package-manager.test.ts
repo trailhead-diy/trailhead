@@ -15,7 +15,6 @@ import {
   detectPackageManager,
   getRunCommand,
   execPackageManagerCommand,
-  getPackageManagerInfo,
   clearPackageManagerCache,
   createPackageManagerCache,
   parseSemVer,
@@ -429,24 +428,6 @@ describe('Command Generation and Execution', () => {
         'pnpm install',
         expect.objectContaining({ timeout: 30000 })
       )
-    })
-  })
-
-  describe('getPackageManagerInfo', () => {
-    it('should return package manager information', () => {
-      mockExecSync.mockReturnValueOnce(Buffer.from('8.10.0'))
-
-      const result = getPackageManagerInfo()
-
-      expect(result.isOk()).toBe(true)
-      if (result.isOk()) {
-        const info = result.value
-        expect(info.name).toBe('pnpm')
-        expect(info.version).toBe('8.10.0')
-        expect(info.command).toBe('pnpm')
-        expect(info.runCommand).toBe('pnpm run')
-        expect(info.installCommand).toBe('pnpm install')
-      }
     })
   })
 })
