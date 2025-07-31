@@ -262,7 +262,7 @@ export const transformCommand = createFileProcessingCommand<TransformOptions>({
       await fs.writeFile(outputPath, transformed)
     }
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```

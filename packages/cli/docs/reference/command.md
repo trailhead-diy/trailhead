@@ -63,7 +63,7 @@ const command = createCommand({
   ],
   action: async (options, context) => {
     context.logger.info(`Deploying to ${options.environment}...`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -133,13 +133,13 @@ const command = createCommand({
   ],
   validate: (options) => {
     if (!/^[a-z0-9-]+$/.test(options.name)) {
-      return Err(new Error('Name must be lowercase with hyphens'))
+      return err(new Error('Name must be lowercase with hyphens'))
     }
-    return Ok(options)
+    return ok(options)
   },
   action: async (options, context) => {
     // Validation has already passed
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -156,7 +156,7 @@ const userCommand = createCommand({
       description: 'List all users',
       action: async (_, context) => {
         context.logger.info('Users: Alice, Bob')
-        return Ok(undefined)
+        return ok(undefined)
       },
     }),
     createCommand({
@@ -165,7 +165,7 @@ const userCommand = createCommand({
       options: [{ name: 'name', required: true, description: 'User name' }],
       action: async (options, context) => {
         context.logger.success(`Added user: ${options.name}`)
-        return Ok(undefined)
+        return ok(undefined)
       },
     }),
   ],
@@ -187,21 +187,21 @@ const phases: CommandPhase<BuildData>[] = [
     name: 'Validate',
     execute: async (data, context) => {
       context.logger.info('Validating configuration...')
-      return Ok({ ...data, validated: true })
+      return ok({ ...data, validated: true })
     },
   },
   {
     name: 'Build',
     execute: async (data, context) => {
       context.logger.info('Building project...')
-      return Ok({ ...data, built: true })
+      return ok({ ...data, built: true })
     },
   },
   {
     name: 'Deploy',
     execute: async (data, context) => {
       context.logger.info('Deploying...')
-      return Ok({ ...data, deployed: true })
+      return ok({ ...data, deployed: true })
     },
   },
 ]
@@ -253,12 +253,12 @@ const command = createCommand<ProcessOptions>({
       async (config) => {
         if (config.dryRun) {
           context.logger.info(`Would transform ${config.input} -> ${config.output}`)
-          return Ok(undefined)
+          return ok(undefined)
         }
 
         // Actual transformation logic
         context.logger.info(`Transforming ${config.input} -> ${config.output}`)
-        return Ok(undefined)
+        return ok(undefined)
       },
       context,
       'This will overwrite the output file. Continue?'
@@ -277,11 +277,11 @@ const result = await executeInteractive({
   confirmMessage: 'This will delete all data. Continue?',
   execute: async () => {
     // Dangerous operation
-    return Ok(undefined)
+    return ok(undefined)
   },
   onCancel: () => {
     context.logger.info('Operation cancelled')
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -316,7 +316,7 @@ const command = createCommand({
       ]
     )
 
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
@@ -365,9 +365,9 @@ const command = createCommand({
   action: async (options, context) => {
     try {
       await riskyOperation()
-      return Ok(undefined)
+      return ok(undefined)
     } catch (error) {
-      return Err(new Error(`Operation failed: ${error.message}`))
+      return err(new Error(`Operation failed: ${error.message}`))
     }
   },
 })

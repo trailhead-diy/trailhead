@@ -30,14 +30,21 @@ Functional CLI framework for building command-line applications.
 
 Complete API documentation for all modules:
 
-- [Core Module](/packages/cli/reference/core) - Result types and error handling
+- [Main Export](/packages/cli/reference/main) - CLI creation and basic Result types
 - [Command Module](/packages/cli/reference/command) - Command creation and execution
-- [FileSystem Module](/packages/cli/reference/filesystem) - File system abstractions
-- [Config Module](/packages/cli/reference/config) - Configuration management
 - [Prompts Module](/packages/cli/reference/prompts) - Interactive user prompts
 - [Testing Module](/packages/cli/reference/testing) - Testing utilities and helpers
 - [Utils Module](/packages/cli/reference/utils) - Logger, spinner, and other utilities
+- [Progress Module](/packages/cli/reference/progress) - Progress tracking utilities
 - [Types Reference](/packages/cli/reference/types) - TypeScript type definitions
+
+### Related Packages
+
+For extended functionality, see:
+
+- [Core Package](/packages/core) - Extended Result types and utilities
+- [FileSystem Package](/packages/fs) - File system operations
+- [Config Package](/packages/config) - Configuration management
 
 ### How-To Guides
 
@@ -56,9 +63,9 @@ import { ok, err } from '@esteban-url/core'
 
 function divide(a: number, b: number): Result<number> {
   if (b === 0) {
-    return Err(new Error('Division by zero'))
+    return err(new Error('Division by zero'))
   }
-  return Ok(a / b)
+  return ok(a / b)
 }
 ```
 
@@ -73,7 +80,7 @@ const greetCommand = createCommand({
   options: [{ name: 'name', alias: 'n', type: 'string', required: true }],
   action: async (options, context) => {
     context.logger.info(`Hello, ${options.name}!`)
-    return Ok(undefined)
+    return ok(undefined)
   },
 })
 ```
