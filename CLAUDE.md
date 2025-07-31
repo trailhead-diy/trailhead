@@ -238,10 +238,10 @@ pnpm lint                   # Linting
 
 ### Module Exports
 
-- **Core** (`@esteban-url/cli/core`) - Result types and error handling
+- **Core** (`@esteban-url/core`) - Result types and error handling
 - **Command** (`@esteban-url/cli/command`) - Command creation and execution
-- **FileSystem** (`@esteban-url/cli/filesystem`) - Abstract filesystem operations
-- **Configuration** (`@esteban-url/cli/config`) - Type-safe configuration
+- **FileSystem** (`@esteban-url/fs`) - Abstract filesystem operations
+- **Configuration** (`@esteban-url/config`) - Type-safe configuration
 - **Prompts** (`@esteban-url/cli/prompts`) - Interactive user prompts
 - **Testing** (`@esteban-url/cli/testing`) - Test utilities and mocks
 

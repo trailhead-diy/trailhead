@@ -248,16 +248,15 @@ Trailhead started with traditional documentation scattered across README files. 
 
 ### Essential Reading
 
-- [Documentation Standards](/docs/reference/documentation-standards) - Complete Diátaxis implementation
-- [Writing Documentation Guide](/docs/reference/writing-guide) - Quick reference for contributors
-- [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide) - Standardized linking patterns
-- [Contributing Guidelines](/docs/how-to/contributing) - How to contribute to documentation
+- [Documentation Standards](/docs/reference/documentation-standards.md) - Complete Diátaxis implementation
+- [Writing Documentation Guide](/docs/reference/writing-guide.md) - Quick reference for contributors
+- [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide.md) - Standardized linking patterns
+- [Contributing Guidelines](/docs/how-to/contributing.md) - How to contribute to documentation
 
 ### Templates and Tools
 
-- [Documentation Templates](/docs/reference/templates/tutorial-template) - Official templates for all types
+- [Documentation Templates](/docs/reference/templates/) - Official templates for all types
 - [Validation Tools](https://github.com/esteban-url/trailhead/tree/main/tooling/docs-tooling/) - Automated quality checking
-- [Review Checklist](/docs/reference/review-checklist) - Manual review standards
 
 ### Package-Specific Documentation
 

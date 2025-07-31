@@ -349,7 +349,7 @@ grep -r "\]\(\.\." docs/
 
 # Example conversions
 [Guide](/docs/how-to/contributing) → [Guide](/docs/how-to/contributing/example)
-[API](/packages/cli/reference/core) → [API](/packages/[package]/docs/reference/api)
+[API](/packages/cli/reference/command) → [API](/packages/[package]/docs/reference/api)
 ```
 
 ### Updating Frontmatter
