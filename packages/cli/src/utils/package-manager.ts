@@ -45,38 +45,49 @@ interface CacheEntry {
 const CACHE_TTL_MS = 5 * 60 * 1000
 
 /**
- * Instance-based cache to avoid global state issues
+ * Package manager cache interface
  */
-class PackageManagerCache {
-  private cache = new Map<string, CacheEntry>()
+export interface PackageManagerCache {
+  get: (key: string) => Result<PackageManager, CoreError> | null
+  set: (key: string, result: Result<PackageManager, CoreError>) => void
+  clear: () => void
+}
 
-  get(key: string): Result<PackageManager, CoreError> | null {
-    const entry = this.cache.get(key)
-    if (!entry) return null
+/**
+ * Create a package manager cache instance using closure pattern
+ */
+export const createPackageManagerCache = (): PackageManagerCache => {
+  const cache = new Map<string, CacheEntry>()
 
-    // Check if cache entry has expired
-    if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-      this.cache.delete(key)
-      return null
-    }
+  return {
+    get: (key: string): Result<PackageManager, CoreError> | null => {
+      const entry = cache.get(key)
+      if (!entry) return null
 
-    return entry.result
-  }
+      // Check if cache entry has expired
+      if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+        cache.delete(key)
+        return null
+      }
 
-  set(key: string, result: Result<PackageManager, CoreError>): void {
-    this.cache.set(key, {
-      result,
-      timestamp: Date.now(),
-    })
-  }
+      return entry.result
+    },
 
-  clear(): void {
-    this.cache.clear()
+    set: (key: string, result: Result<PackageManager, CoreError>): void => {
+      cache.set(key, {
+        result,
+        timestamp: Date.now(),
+      })
+    },
+
+    clear: (): void => {
+      cache.clear()
+    },
   }
 }
 
 // Create a default cache instance
-const defaultCache = new PackageManagerCache()
+const defaultCache = createPackageManagerCache()
 
 /**
  * Options for package manager detection
@@ -96,51 +107,58 @@ export const clearPackageManagerCache = (): void => {
 }
 
 /**
- * Create a new cache instance (useful for isolated testing)
+ * Semantic version data structure
  */
-export const createPackageManagerCache = (): PackageManagerCache => {
-  return new PackageManagerCache()
+export interface SemVer {
+  readonly major: number
+  readonly minor: number
+  readonly patch: number
+  readonly prerelease?: string
 }
 
 /**
- * Semantic version parser with validation
+ * Parse a semantic version string
  */
-export class SemVer {
-  constructor(
-    public readonly major: number,
-    public readonly minor: number,
-    public readonly patch: number,
-    public readonly prerelease?: string
-  ) {}
-
-  static parse(version: string): Result<SemVer, CoreError> {
-    // Handle versions with pre-release tags
-    const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-(.+))?/)
-    if (!match) {
-      return err(
-        createCoreError('PACKAGE_MANAGER_ERROR', 'CLI_ERROR', `Invalid version format: ${version}`)
-      )
-    }
-
-    const [, major, minor, patch, prerelease] = match
-    return ok(new SemVer(parseInt(major, 10), parseInt(minor, 10), parseInt(patch, 10), prerelease))
+export const parseSemVer = (version: string): Result<SemVer, CoreError> => {
+  // Handle versions with pre-release tags
+  const match = version.match(/^v?(\d+)\.(\d+)\.(\d+)(?:-(.+))?/)
+  if (!match) {
+    return err(
+      createCoreError('PACKAGE_MANAGER_ERROR', 'CLI_ERROR', `Invalid version format: ${version}`)
+    )
   }
 
-  isGreaterThanOrEqual(other: SemVer): boolean {
-    if (this.major > other.major) return true
-    if (this.major < other.major) return false
-    if (this.minor > other.minor) return true
-    if (this.minor < other.minor) return false
-    if (this.patch > other.patch) return true
-    if (this.patch < other.patch) return false
+  const [, major, minor, patch, prerelease] = match
+  return ok({
+    major: parseInt(major, 10),
+    minor: parseInt(minor, 10),
+    patch: parseInt(patch, 10),
+    prerelease,
+  })
+}
 
-    // If versions are equal, check pre-release
-    // No pre-release is considered greater than having a pre-release
-    if (!this.prerelease && other.prerelease) return true
-    if (this.prerelease && !other.prerelease) return false
+/**
+ * Compare two semantic versions
+ * Returns: -1 if a < b, 0 if a === b, 1 if a > b
+ */
+export const compareSemVer = (a: SemVer, b: SemVer): -1 | 0 | 1 => {
+  if (a.major !== b.major) return a.major > b.major ? 1 : -1
+  if (a.minor !== b.minor) return a.minor > b.minor ? 1 : -1
+  if (a.patch !== b.patch) return a.patch > b.patch ? 1 : -1
 
-    return true // Equal versions
-  }
+  // If versions are equal, check pre-release
+  // No pre-release is considered greater than having a pre-release
+  if (!a.prerelease && b.prerelease) return 1
+  if (a.prerelease && !b.prerelease) return -1
+
+  return 0 // Equal versions
+}
+
+/**
+ * Check if version a is greater than or equal to version b
+ */
+export const isGreaterThanOrEqual = (a: SemVer, b: SemVer): boolean => {
+  return compareSemVer(a, b) >= 0
 }
 
 /**
@@ -206,17 +224,17 @@ const execWithTimeout = (
  * Check if version meets minimum requirement
  */
 const meetsVersionRequirement = (version: string, required: string): Result<boolean, CoreError> => {
-  const versionResult = SemVer.parse(version)
+  const versionResult = parseSemVer(version)
   if (versionResult.isErr()) {
     return err(versionResult.error)
   }
 
-  const requiredResult = SemVer.parse(required)
+  const requiredResult = parseSemVer(required)
   if (requiredResult.isErr()) {
     return err(requiredResult.error)
   }
 
-  return ok(versionResult.value.isGreaterThanOrEqual(requiredResult.value))
+  return ok(isGreaterThanOrEqual(versionResult.value, requiredResult.value))
 }
 
 /**
