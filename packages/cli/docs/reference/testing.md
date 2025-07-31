@@ -421,6 +421,6 @@ function expectError<E = Error>(result: Result<any>, message?: string): E
 
 ## See Also
 
-- [Testing Guide](../how-to/testing-guide.md) - Testing best practices
-- [Getting Started](../getting-started.md) - Basic testing example
-- [Common Patterns](../how-to/common-patterns.md) - Testing patterns
+- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing best practices
+- [Getting Started](/packages/cli/tutorials/getting-started) - Basic testing example
+- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Testing patterns

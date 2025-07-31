@@ -3,9 +3,9 @@ type: reference
 title: 'CLI Build Configuration Reference'
 description: 'Complete reference for build configuration options, bundler settings, and optimization parameters for CLI applications'
 related:
-  - /docs/reference/core-api.md
-  - /packages/cli/docs/how-to/import-patterns.md
-  - /packages/cli/docs/how-to/optimization-guide.md
+  - /docs/reference/core-api
+  - /packages/cli/docs/how-to/contributing/import-patterns.md
+  - /packages/cli/docs/how-to/contributing/optimization-guide.md
 ---
 
 # CLI Build Configuration Reference

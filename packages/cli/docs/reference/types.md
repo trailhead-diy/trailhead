@@ -5,7 +5,7 @@ description: 'Index of all types exported by @esteban-url/trailhead-cli modules'
 related:
   - ./core.md
   - ./command.md
-  - /docs/how-to/apply-functional-patterns.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Type Reference Index
@@ -280,5 +280,5 @@ function isValidationError(error: unknown): error is ValidationError
 
 ## See Also
 
-- [Import Patterns](../how-to/import-patterns.md) - How to import types
+- [Import Patterns](/packages/cli/how-to/import-patterns) - How to import types
 - Individual module references for detailed type documentation

@@ -8,7 +8,7 @@ prerequisites:
   - 'Basic file system knowledge'
 related:
   - ./getting-started.md
-  - ../reference/command.md
+  - /packages/cli/reference/command.md
   - ../how-to/test-cli-applications.md
 ---
 
@@ -899,6 +899,6 @@ Key patterns demonstrated:
 
 ## Further Learning
 
-- Review [Command Enhancements](../reference/command-enhancements.md)
-- Explore [Pipeline Patterns](../how-to/use-result-pipelines.md)
-- Learn about [Testing Strategies](../how-to/test-cli-applications.md)
+- Review [Command Enhancements](/packages/cli/reference/command-enhancements)
+- Explore [Pipeline Patterns](/packages/cli/how-to/use-result-pipelines)
+- Learn about [Testing Strategies](/packages/cli/how-to/test-cli-applications)

@@ -8,8 +8,8 @@ prerequisites:
   - 'Familiarity with data transformation concepts'
 related:
   - ./getting-started.md
-  - ../reference/command.md
-  - ../reference/flow-control.md
+  - /packages/cli/reference/command.md
+  - /packages/cli/reference/flow-control.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use

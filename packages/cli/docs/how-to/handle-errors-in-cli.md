@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Familiarity with async/await'
 related:
-  - ../reference/core.md
-  - ../reference/flow-control.md
-  - ./use-result-pipelines.md
+  - /packages/cli/reference/core.md
+  - /packages/cli/reference/flow-control.md
+  - /packages/cli/how-to/use-result-pipelines
 ---
 
 # Handle Errors in CLI Applications
@@ -556,6 +556,6 @@ function validateData(rows: DataRow[]): Result<DataRow[]> {
 
 ## Next Steps
 
-- Explore [Pipeline Error Handling](./use-result-pipelines.md)
-- Review [Core API Reference](../reference/core.md)
-- Learn about [Testing Errors](./test-cli-applications.md)
+- Explore [Pipeline Error Handling](/packages/cli/how-to/use-result-pipelines)
+- Review [Core API Reference](/packages/cli/reference/core)
+- Learn about [Testing Errors](/packages/cli/how-to/test-cli-applications)

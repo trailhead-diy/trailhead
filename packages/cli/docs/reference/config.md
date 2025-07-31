@@ -4,7 +4,7 @@ title: 'Config Module API Reference'
 description: 'Type-safe configuration management with schema validation and loading strategies'
 related:
   - ./core.md
-  - /docs/how-to/apply-functional-patterns.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Config Module API Reference
@@ -393,6 +393,6 @@ export { z } from 'zod'
 
 ## See Also
 
-- [Getting Started](../getting-started.md) - Basic config example
-- [Common Patterns](../how-to/common-patterns.md) - Config patterns
-- [Testing Guide](../how-to/testing-guide.md) - Testing with configs
+- [Getting Started](/packages/cli/tutorials/getting-started) - Basic config example
+- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Config patterns
+- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing with configs

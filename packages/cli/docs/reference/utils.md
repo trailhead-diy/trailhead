@@ -426,6 +426,6 @@ type StyleFunction = (text: string) => string
 
 ## See Also
 
-- [Getting Started](../getting-started.md) - Basic styling examples
-- [Common Patterns](../how-to/common-patterns.md) - Progress patterns
-- [Command Reference](./command.md) - Using utils in commands
+- [Getting Started](/packages/cli/tutorials/getting-started) - Basic styling examples
+- [Common Patterns](/packages/cli/how-to/use-result-pipelines) - Progress patterns
+- [Command Reference](/packages/cli/reference/command) - Using utils in commands

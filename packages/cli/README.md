@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
 
 A modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes in public API—just pure functions and immutable data.
 
@@ -437,7 +437,7 @@ pnpm validate
 
 ## Examples
 
-Check out the [documentation](./docs/) for comprehensive guides and API references.
+Check out the [documentation](/packages/cli) for comprehensive guides and API references.
 
 ## Migration Guide
 
@@ -518,4 +518,4 @@ const buildCommand = createCommand({
 
 ## License
 
-MIT - see [LICENSE](../../LICENSE) for details.
+MIT - see [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE) for details.

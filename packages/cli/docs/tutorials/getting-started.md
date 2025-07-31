@@ -7,9 +7,9 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Understanding of async/await'
 related:
-  - ../reference/command.md
-  - ../reference/testing.md
-  - /docs/how-to/apply-functional-patterns.md
+  - /packages/cli/reference/command.md
+  - /packages/cli/reference/testing.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Build Your First CLI Application
@@ -63,7 +63,7 @@ pnpm add @esteban-url/cli --workspace
 - All other functionality must be imported from specific subpaths
 - This keeps your bundle size minimal
 
-See the [Import Patterns Guide](../how-to/import-patterns.md) for complete details.
+See the [Import Patterns Guide](/packages/cli/how-to/import-patterns) for complete details.
 
 ## Your First CLI Application
 
@@ -338,7 +338,7 @@ cli.run(process.argv)
 
 ## Learn More
 
-- [Import Patterns](./how-to/import-patterns.md) - Master the import system
-- [Command Reference](./reference/command.md) - All command options
-- [Testing Guide](./how-to/testing-guide.md) - Test your CLI
-- [API Reference](../reference/) - Complete API documentation
+- [Import Patterns](/packages/cli/how-to/import-patterns) - Master the import system
+- [Command Reference](/packages/cli/reference/command) - All command options
+- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Test your CLI
+- [API Reference](/packages/cli/reference/command/) - Complete API documentation

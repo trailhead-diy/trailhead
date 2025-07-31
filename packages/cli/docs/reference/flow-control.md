@@ -4,8 +4,8 @@ title: 'Flow Control API Reference'
 description: 'Pipeline utilities and error templates for streamlined async operations'
 related:
   - ./core.md
-  - ../how-to/use-result-pipelines.md
-  - ../how-to/migrate-to-pipelines.md
+  - /packages/cli/how-to/use-result-pipelines
+  - /packages/cli/how-to/migrate-to-pipelines
 ---
 
 # Flow Control API Reference
@@ -466,6 +466,6 @@ const error = globalErrorTemplates.get('apiRateLimit')?.create('/api/users', new
 
 ## See Also
 
-- [Core API Reference](./core.md) - Result types and utilities
-- [Using Result Pipelines](../how-to/use-result-pipelines.md) - Practical guide
-- [Migration Guide](../how-to/migrate-to-pipelines.md) - Upgrading existing code
+- [Core API Reference](/packages/cli/reference/core) - Result types and utilities
+- [Using Result Pipelines](/packages/cli/how-to/use-result-pipelines) - Practical guide
+- [Migration Guide](/packages/cli/how-to/migrate-to-pipelines) - Upgrading existing code

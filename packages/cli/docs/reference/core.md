@@ -4,8 +4,8 @@ title: 'Core Module API Reference'
 description: 'Result types, error handling, and validation utilities from @esteban-url/core'
 related:
   - ./flow-control.md
-  - /docs/how-to/apply-functional-patterns.md
-  - ../explanation/design-decisions.md
+  - /docs/how-to/apply-functional-patterns
+  - /packages/cli/explanation/design-decisions
 ---
 
 # Core Module API Reference
@@ -313,6 +313,6 @@ interface ValidationPipeline<T> {
 
 ## See Also
 
-- [Error Handling Guide](../guides/error-handling.md) - Patterns and best practices
-- [Functional Patterns](../guides/functional-patterns.md) - Composition techniques
-- [Testing Guide](../how-to/testing-guide.md) - Testing with Result types
+- [Error Handling Guide](/packages/cli/how-to/handle-errors-in-cli) - Patterns and best practices
+- [Functional Patterns](/docs/how-to/apply-functional-patterns) - Composition techniques
+- [Testing Guide](/packages/cli/how-to/test-cli-applications) - Testing with Result types

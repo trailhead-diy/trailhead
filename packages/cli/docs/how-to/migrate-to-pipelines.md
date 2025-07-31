@@ -7,9 +7,9 @@ prerequisites:
   - Understanding of Result types
   - Basic async/await knowledge
 related:
-  - ../reference/flow-control.md
-  - ./use-result-pipelines.md
-  - ../reference/core.md
+  - /packages/cli/reference/flow-control.md
+  - /packages/cli/how-to/use-result-pipelines
+  - /packages/cli/reference/core.md
 ---
 
 # Migrate to Pipeline Utilities
@@ -512,6 +512,6 @@ Pipelines add minimal overhead:
 
 ## Next Steps
 
-- Explore [Pipeline Features](./use-result-pipelines.md)
-- Learn about [Error Templates](./handle-errors-in-cli.md)
-- Review [Flow Control Reference](../reference/flow-control.md)
+- Explore [Pipeline Features](/packages/cli/how-to/use-result-pipelines)
+- Learn about [Error Templates](/packages/cli/how-to/handle-errors-in-cli)
+- Review [Flow Control Reference](/packages/cli/reference/flow-control)

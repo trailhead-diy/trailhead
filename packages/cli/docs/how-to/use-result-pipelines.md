@@ -7,17 +7,17 @@ prerequisites:
   - Basic async/await knowledge
   - Familiarity with @esteban-url/cli commands
 related:
-  - ../reference/flow-control.md
+  - /packages/cli/reference/flow-control.md
   - ./migrate-to-pipelines.md
-  - ./handle-errors-in-cli.md
-  - ../../../docs/how-to/compose-result-operations.md
+  - /packages/cli/how-to/handle-errors-in-cli
+  - /docs/how-to/compose-result-operations
 ---
 
 # Use CLI Pipeline Utilities
 
 This guide shows you how to use @esteban-url/cli's pipeline utilities for building robust command-line operations with automatic error propagation, progress tracking, and cancellation support.
 
-> **Note**: For general Result composition patterns, see [Compose Result Operations](/docs/how-to/compose-result-operations.md).
+> **Note**: For general Result composition patterns, see [Compose Result Operations](/docs/how-to/compose-result-operations).
 
 ## Basic Pipeline Usage
 
@@ -466,6 +466,6 @@ import { errorTemplates } from '@esteban-url/cli/core'
 
 ## Next Steps
 
-- Learn about [Error Templates](./handle-errors-in-cli.md)
-- Explore [Pipeline Migration](./migrate-to-pipelines.md)
-- Review [Flow Control Reference](../reference/flow-control.md)
+- Learn about [Error Templates](/packages/cli/how-to/handle-errors-in-cli)
+- Explore [Pipeline Migration](/packages/cli/how-to/migrate-to-pipelines)
+- Review [Flow Control Reference](/packages/cli/reference/flow-control)

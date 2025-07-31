@@ -6,7 +6,7 @@ related:
   - ./core.md
   - ./types.md
   - ./command-enhancements.md
-  - ../how-to/migrate-to-command-enhancements.md
+  - /packages/cli/how-to/migrate-to-command-enhancements
 ---
 
 # Command Module API Reference
@@ -383,6 +383,6 @@ const command = createCommand({
 
 ## See Also
 
-- [Getting Started](../getting-started.md) - Build your first command
-- [Testing Commands](../how-to/testing-guide.md) - Test command behavior
-- [Command Patterns](../how-to/common-patterns.md) - Common command patterns
+- [Getting Started](/packages/cli/tutorials/getting-started) - Build your first command
+- [Testing Commands](/packages/cli/how-to/test-cli-applications) - Test command behavior
+- [Command Patterns](/packages/cli/how-to/use-result-pipelines) - Common command patterns

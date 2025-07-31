@@ -3,8 +3,8 @@ type: explanation
 title: '@esteban-url/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
-  - ./tutorials/getting-started.md
-  - ./reference/core.md
+  - /packages/cli/tutorials/getting-started.md
+  - /packages/cli/reference/core.md
   - ./explanation/architecture.md
 ---
 
@@ -23,29 +23,29 @@ Functional CLI framework for building command-line applications.
 
 ### Getting Started
 
-- [Quick Start Guide](./tutorials/getting-started.md)
-- [Architecture Overview](./explanation/architecture.md)
+- [Quick Start Guide](/packages/cli/tutorials/getting-started)
+- [Architecture Overview](/packages/cli/explanation/architecture)
 
 ### API Reference
 
 Complete API documentation for all modules:
 
-- [Core Module](./reference/core.md) - Result types and error handling
-- [Command Module](./reference/command.md) - Command creation and execution
-- [FileSystem Module](./reference/filesystem.md) - File system abstractions
-- [Config Module](./reference/config.md) - Configuration management
-- [Prompts Module](./reference/prompts.md) - Interactive user prompts
-- [Testing Module](./reference/testing.md) - Testing utilities and helpers
-- [Utils Module](./reference/utils.md) - Logger, spinner, and other utilities
-- [Types Reference](./reference/types.md) - TypeScript type definitions
+- [Core Module](/packages/cli/reference/core) - Result types and error handling
+- [Command Module](/packages/cli/reference/command) - Command creation and execution
+- [FileSystem Module](/packages/cli/reference/filesystem) - File system abstractions
+- [Config Module](/packages/cli/reference/config) - Configuration management
+- [Prompts Module](/packages/cli/reference/prompts) - Interactive user prompts
+- [Testing Module](/packages/cli/reference/testing) - Testing utilities and helpers
+- [Utils Module](/packages/cli/reference/utils) - Logger, spinner, and other utilities
+- [Types Reference](/packages/cli/reference/types) - TypeScript type definitions
 
 ### How-To Guides
 
 Task-specific guides:
 
-- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns.md)
-- [Import Patterns](./how-to/import-patterns.md)
-- [Optimization Guide](./how-to/optimization-guide.md)
+- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns)
+- [Import Patterns](/packages/cli/how-to/import-patterns)
+- [Optimization Guide](/packages/cli/how-to/optimization-guide)
 
 ## Key Features
 
@@ -159,14 +159,14 @@ it('should read configuration', async () => {
 
 ## Next Steps
 
-1. Follow the [Getting Started Guide](./tutorials/getting-started.md) to build your first CLI
-2. Read about [Architecture](./explanation/architecture.md) to understand the framework
-3. Explore the [API Reference](./reference/core.md) for detailed documentation
+1. Follow the [Getting Started Guide](/packages/cli/tutorials/getting-started) to build your first CLI
+2. Read about [Architecture](/packages/cli/explanation/architecture) to understand the framework
+3. Explore the [API Reference](/packages/cli/reference/core) for detailed documentation
 4. Review the API documentation for advanced usage patterns
 
 ## Contributing
 
-We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md) for details on:
+We welcome contributions! Please see the [Contributing Guide](https://github.com/esteban-url/trailhead/blob/main/CONTRIBUTING.md) for details on:
 
 - Setting up your development environment
 - Running tests and linting
@@ -177,8 +177,8 @@ We welcome contributions! Please see the [Contributing Guide](../CONTRIBUTING.md
 
 - **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
-- **Documentation**: See the [documentation directory](../docs/)
+- **Documentation**: See the [documentation directory](/packages/cli/)
 
 ## License
 
-MIT - See [LICENSE](../../../LICENSE)
+MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)

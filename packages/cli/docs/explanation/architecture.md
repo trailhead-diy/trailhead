@@ -7,9 +7,9 @@ prerequisites:
   - 'Familiarity with TypeScript'
   - 'Understanding of Node.js module system'
 related:
-  - ./design-decisions.md
-  - ../reference/core.md
-  - /docs/how-to/apply-functional-patterns.md
+  - /packages/cli/explanation/design-decisions
+  - /packages/cli/reference/core.md
+  - /docs/how-to/apply-functional-patterns
 ---
 
 # Understanding the CLI Framework Architecture
@@ -317,18 +317,18 @@ Potential areas for enhancement include:
 
 ### Essential Reading
 
-- [Design Decisions](./design-decisions.md) - Detailed rationale for architectural choices
-- [Functional Patterns Guide](/docs/how-to/apply-functional-patterns.md) - Practical functional programming
+- [Design Decisions](/packages/cli/explanation/design-decisions) - Detailed rationale for architectural choices
+- [Functional Patterns Guide](/docs/how-to/apply-functional-patterns) - Practical functional programming
 
 ### Practical Application
 
-- [Building Your First CLI](../tutorials/getting-started.md) - Hands-on introduction
-- [Import Patterns](../how-to/import-patterns.md) - Using subpath exports effectively
+- [Building Your First CLI](/packages/cli/tutorials/getting-started) - Hands-on introduction
+- [Import Patterns](/packages/cli/how-to/import-patterns) - Using subpath exports effectively
 
 ### Technical Details
 
-- [API Reference](../reference/api/core.md) - Complete function documentation
-- [Type Definitions](../reference/types.md) - TypeScript interface specifications
+- [API Reference](/packages/cli/reference/core) - Complete function documentation
+- [Type Definitions](/packages/cli/reference/types) - TypeScript interface specifications
 
 ## Discussion
 
