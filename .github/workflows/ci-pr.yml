@@ -29,14 +29,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      # Only run what wasn't already validated locally
-      - name: Quick validation
+      # Run full validation to ensure PR safety
+      - name: Full validation
         run: |
-          # Just verify builds work - developer already ran tests locally
-          pnpm turbo run build --filter='./packages/*' --cache-dir=.turbo
+          # Build all packages
+          pnpm turbo run build --filter='./packages/*'
           
-          # Run ONE test as smoke test
-          pnpm turbo run test --filter=@esteban-url/core --cache-dir=.turbo
+          # Run ALL tests to ensure nothing is broken
+          pnpm turbo run test
       
       # Things that are hard to run locally
       - name: CodeQL Analysis
