@@ -66,12 +66,6 @@
       "outputs": [],
       "cache": true
     },
-    "lint": {
-      "outputs": [],
-      "inputs": ["src/**", "tests/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
-      "outputLogs": "errors-only",
-      "cache": true
-    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -94,12 +88,6 @@
       "inputs": ["**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc.*", "prettier.config.*"],
       "outputLogs": "errors-only",
       "cache": true
-    },
-    "lint:fix": {
-      "outputs": [],
-      "inputs": ["src/**", "tests/**", "oxlintrc.*", ".oxlintrc.*", "package.json"],
-      "outputLogs": "errors-only",
-      "cache": false
     }
   }
 }
