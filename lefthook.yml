@@ -289,16 +289,17 @@ pre-push:
       priority: 1
       run: |
         echo "🚀 Running pre-push validation..."
-        echo "⚡ Using optimized Turborepo pipeline..."
+        echo "⚡ Running full test suite to match CI exactly..."
         
-        # Run affected packages only for pre-push (faster)
-        TURBO_ARGS='--affected' ./scripts/ci-optimal.sh || {
+        # Clear cache and run full suite to prevent cache issues
+        rm -rf .turbo
+        ./scripts/ci-optimal.sh || {
           echo ""
           echo "❌ Pre-push validation failed!"
           echo ""
           echo "💡 Fix issues with:"
           echo "   pnpm ci:run       # Run full local CI"
-          echo "   pnpm ci:affected  # Run only affected packages"
+          echo "   pnpm test         # Run tests only"
           echo ""
           echo "🚨 To bypass (emergencies only):"
           echo "   git push --no-verify"
