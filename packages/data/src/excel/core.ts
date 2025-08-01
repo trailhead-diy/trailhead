@@ -2,8 +2,12 @@ import { ok, err } from '@esteban-url/core'
 import { readFile as fsReadFile, writeFile as fsWriteFile } from '@esteban-url/fs'
 import * as XLSX from 'xlsx'
 import type { ExcelProcessingOptions, DataResult, ExcelFormatInfo } from '../types.js'
-import type { CreateExcelOperations, ExcelParseOptions, ExcelWriteOptions } from './types.js'
-import { defaultExcelConfig } from './types.js'
+import {
+  defaultExcelConfig,
+  type CreateExcelOperations,
+  type ExcelParseOptions,
+  type ExcelWriteOptions,
+} from './types.js'
 import { createExcelError, mapLibraryError } from '../errors.js'
 
 // ========================================

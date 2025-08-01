@@ -1,6 +1,5 @@
 import { z } from '@esteban-url/validation'
-import { ok, err, createCoreError, type Result } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { enhanceZodError } from '../validation/errors.js'
 
 // ========================================

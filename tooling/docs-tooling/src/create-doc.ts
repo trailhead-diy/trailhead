@@ -7,8 +7,8 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
-import { join, dirname, relative } from 'path'
-import { input, select, confirm, checkbox } from '@inquirer/prompts'
+import { join, relative } from 'path'
+import { input, select, confirm } from '@inquirer/prompts'
 import chalk from 'chalk'
 
 interface DocMetadata {
@@ -107,7 +107,7 @@ async function getDocumentType(): Promise<DocMetadata['type']> {
 }
 
 async function getBasicInfo(
-  type: DocMetadata['type']
+  _type: DocMetadata['type']
 ): Promise<Pick<DocMetadata, 'title' | 'description'>> {
   const title = await input({
     message: 'Document title:',

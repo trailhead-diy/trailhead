@@ -1,5 +1,4 @@
-import type { Result, CoreError } from '@esteban-url/core'
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import type { CommandConfig, CommandOptions } from './base.js'
 import type { CommandOption } from './types.js'
 

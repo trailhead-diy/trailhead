@@ -1,10 +1,8 @@
-import { ok, err } from '@esteban-url/core'
-import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { resolve, dirname } from 'path'
 import { fs } from '@esteban-url/fs'
 import { chalk, createSpinner } from '@esteban-url/cli/utils'
 import { debugTemplateContext, debugError, debugStats } from '../cli/logger.js'
-import { createCoreError } from '@esteban-url/core'
 import {
   validateProjectName,
   validateProjectPath,

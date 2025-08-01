@@ -1,6 +1,5 @@
 import { z } from 'zod'
-import { ok, err, createCoreError } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result } from '@esteban-url/core'
 import type { ProjectConfig } from './types.js'
 
 /**

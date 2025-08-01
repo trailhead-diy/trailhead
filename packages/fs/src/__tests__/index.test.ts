@@ -3,7 +3,7 @@ import { fs } from '../index.js'
 
 describe('Filesystem Index Exports', () => {
   it('should export convenience fs object with all operations', () => {
-    expect(fs).toBeDefined()
+    // Test that fs object has all expected methods
     expect(typeof fs.readFile).toBe('function')
     expect(typeof fs.writeFile).toBe('function')
     expect(typeof fs.exists).toBe('function')

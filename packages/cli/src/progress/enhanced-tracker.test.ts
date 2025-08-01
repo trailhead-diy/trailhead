@@ -9,8 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createEnhancedProgressTracker } from './enhanced-tracker.js'
-import type { EnhancedProgressStep } from './enhanced-tracker.js'
+import { createEnhancedProgressTracker, type EnhancedProgressStep } from './enhanced-tracker.js'
 
 describe('Enhanced Progress Tracker - Multi-Step Functionality', () => {
   beforeEach(() => {
@@ -152,7 +151,7 @@ describe('Enhanced Progress Tracker - Multi-Step Functionality', () => {
 
       const state = tracker.getEnhancedState()
       expect(state.timeElapsed).toBeGreaterThanOrEqual(0)
-      expect(state.stepStartTime).toBeDefined()
+      expect(typeof state.stepStartTime).toBe('number')
     })
 
     it('should calculate time estimates after step completion', () => {

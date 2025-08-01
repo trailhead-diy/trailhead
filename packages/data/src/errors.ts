@@ -3,8 +3,8 @@ import {
   mapNodeError as coreMapNodeError,
   mapLibraryError as coreMapLibraryError,
   mapValidationError as coreMapValidationError,
+  type CoreError,
 } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
 import type { FileSystemError } from '@esteban-url/fs'
 
 // ========================================

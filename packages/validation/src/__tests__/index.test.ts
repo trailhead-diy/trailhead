@@ -3,7 +3,7 @@ import { validate } from '../index.js'
 
 describe('Validation Index Exports', () => {
   it('should export convenience validate object with all operations', () => {
-    expect(validate).toBeDefined()
+    // Test that validate object has all expected methods
     expect(typeof validate.email).toBe('function')
     expect(typeof validate.url).toBe('function')
     expect(typeof validate.phoneNumber).toBe('function')

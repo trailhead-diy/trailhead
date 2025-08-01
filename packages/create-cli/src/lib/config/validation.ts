@@ -1,7 +1,6 @@
 import { resolve, normalize, isAbsolute, relative } from 'path'
 import { z } from 'zod'
-import { ok, err, createCoreError } from '@esteban-url/core'
-import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 
 /**
  * Validation utilities using Zod schemas for type-safe input validation

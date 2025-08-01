@@ -1,8 +1,7 @@
 import { ok, err } from '@esteban-url/core'
 import * as mimeTypes from 'mime-types'
 import type { MimeConfig, FormatResult, MimeTypeInfo, FileCategory } from '../formats-types.js'
-import type { CreateMimeOperations } from './types.js'
-import { defaultMimeConfig, MIME_TYPE_CATEGORIES } from './types.js'
+import { defaultMimeConfig, MIME_TYPE_CATEGORIES, type CreateMimeOperations } from './types.js'
 import { createMimeError, createInvalidMimeTypeError, mapLibraryError } from '../formats-errors.js'
 
 // ========================================

@@ -1,13 +1,15 @@
-import { ok, err } from '@esteban-url/core'
-import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@esteban-url/core'
 import { z } from '@esteban-url/validation'
 import {
   createValidationError,
   createSchemaValidationError,
   type ValidationError,
 } from '../validation/index.js'
-import { validate as validateWithZodSchema } from '../core/zod-schema.js'
-import type { ConfigValidator, ZodConfigSchema } from '../core/zod-schema.js'
+import {
+  validate as validateWithZodSchema,
+  type ConfigValidator,
+  type ZodConfigSchema,
+} from '../core/zod-schema.js'
 
 // ========================================
 // Enhanced Validator Operations

@@ -31,8 +31,7 @@
  * ```
  */
 
-import { ok, err, type Result } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@esteban-url/core'
 
 // ========================================
 // Data Types and Interfaces

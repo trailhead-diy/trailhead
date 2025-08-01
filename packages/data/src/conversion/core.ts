@@ -5,8 +5,7 @@ import type {
   ConversionQuality,
   FileCategory,
 } from '../formats-types.js'
-import type { CreateConversionOperations } from './types.js'
-import { CONVERSION_CATEGORIES } from './types.js'
+import { CONVERSION_CATEGORIES, type CreateConversionOperations } from './types.js'
 import {
   createConversionError,
   createUnsupportedFormatError,

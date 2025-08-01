@@ -1,5 +1,4 @@
-import { ok, err } from '@esteban-url/core'
-import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@esteban-url/core'
 import type { ProjectConfig } from '../config/types.js'
 import { createArgsParserError, ERROR_CODES, ERROR_SUGGESTIONS } from '../core/errors.js'
 

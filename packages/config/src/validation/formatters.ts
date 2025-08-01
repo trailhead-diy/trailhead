@@ -1,5 +1,4 @@
-import type { ConfigValidationError } from './errors.js'
-import { isConfigValidationError } from './errors.js'
+import { isConfigValidationError, type ConfigValidationError } from './errors.js'
 import { error as errorColor, warning, info, muted, bold } from '@esteban-url/core/utils'
 
 /**

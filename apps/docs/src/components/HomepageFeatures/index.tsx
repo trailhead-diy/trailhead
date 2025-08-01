@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import Heading from '@theme/Heading'
 import Link from '@docusaurus/Link'
 import styles from './styles.module.css'
 

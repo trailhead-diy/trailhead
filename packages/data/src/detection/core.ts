@@ -2,14 +2,13 @@ import { ok, err } from '@esteban-url/core'
 import { readFile } from '@esteban-url/fs'
 import { fileTypeFromBuffer } from 'file-type'
 import path from 'node:path'
-import type { CreateDetectionOperations } from './types.js'
 import type {
   DetectionConfig,
   FormatResult,
   DetectionResult,
   FileFormatInfo,
 } from '../formats-types.js'
-import { defaultDetectionConfig } from './types.js'
+import { defaultDetectionConfig, type CreateDetectionOperations } from './types.js'
 import { FORMAT_DATABASE } from './database.js'
 import {
   createDetectionError,

@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { createDefaultLogger } from '@esteban-url/cli/utils'
-import type { Result, CoreError } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import type { CommandOptions, CommandContext } from '@esteban-url/cli/command'
+import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
 import {
   createConfigContext,
   generateSchemaFile,

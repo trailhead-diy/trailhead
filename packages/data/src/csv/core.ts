@@ -9,8 +9,7 @@ import type {
   ParseMetadata,
   ParseError,
 } from '../types.js'
-import type { CreateCSVOperations } from './types.js'
-import { defaultCSVConfig } from './types.js'
+import { defaultCSVConfig, type CreateCSVOperations } from './types.js'
 import {
   createCSVError,
   createParsingError,
