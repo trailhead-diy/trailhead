@@ -60,7 +60,7 @@ cat > "$SAMPLE_ROOT/turbo.json" << 'EOF'
 EOF
 
 # Create sample packages
-mkdir -p "$SAMPLE_ROOT/packages/utils"
+mkdir -p "$SAMPLE_ROOT/packages/utils/src"
 cat > "$SAMPLE_ROOT/packages/utils/package.json" << 'EOF'
 {
   "name": "@test/utils",
@@ -91,7 +91,7 @@ import { debounce } from 'lodash'; // Another duplicate
 export { debounce, throttle, map };
 EOF
 
-mkdir -p "$SAMPLE_ROOT/packages/core"
+mkdir -p "$SAMPLE_ROOT/packages/core/src"
 cat > "$SAMPLE_ROOT/packages/core/package.json" << 'EOF'
 {
   "name": "@test/core",
@@ -124,7 +124,7 @@ export const helper = () => coreFunction();
 EOF
 
 # Create app
-mkdir -p "$SAMPLE_ROOT/apps/web"
+mkdir -p "$SAMPLE_ROOT/apps/web/src"
 cat > "$SAMPLE_ROOT/apps/web/package.json" << 'EOF'
 {
   "name": "@test/web",
@@ -144,8 +144,9 @@ cat > "$SAMPLE_ROOT/apps/web/package.json" << 'EOF'
 }
 EOF
 
-# Create test files with high-risk patterns (for test-runner testing)
+# Create test files with high-risk patterns (for test-runner testing)  
 mkdir -p "$SAMPLE_ROOT/packages/utils/tests"
+mkdir -p "$SAMPLE_ROOT/packages/core/tests"
 cat > "$SAMPLE_ROOT/packages/utils/tests/slow-test.test.ts" << 'EOF'
 import { describe, it, expect } from 'vitest';
 

@@ -63,21 +63,41 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
       return ok(undefined)
     }
 
-    // Check if .npmrc exists
+    // Check if .npmrc exists and read existing content
+    let existingContent = ''
     const npmrcExists = await context.fs.exists(npmrcPath)
     
-    if (npmrcExists) {
-      // Read existing content to avoid duplicates
+    if (npmrcExists.isOk() && npmrcExists.value) {
       const contentResult = await context.fs.readFile(npmrcPath)
-      if (contentResult.isOk() && contentResult.value.includes('GitHub Packages Authentication')) {
-        context.logger.info(withIcon('info', 'GitHub Packages authentication already configured'))
-        return ok(undefined)
+      if (contentResult.isOk()) {
+        existingContent = contentResult.value
+        // Check if already configured to avoid duplicates
+        if (existingContent.includes('GitHub Packages Authentication')) {
+          context.logger.info(withIcon('info', 'GitHub Packages authentication already configured'))
+          return ok(undefined)
+        }
+      } else {
+        return err(
+          createCoreError(
+            'NPMRC_READ_FAILED',
+            'FILE_SYSTEM_ERROR',
+            'Failed to read existing .npmrc configuration',
+            {
+              recoverable: true,
+              cause: contentResult.error,
+              suggestion: 'Check file permissions and ensure the file is readable'
+            }
+          )
+        )
       }
     }
 
-    // Append to .npmrc
-    const appendResult = await context.fs.appendFile(npmrcPath, npmrcContent)
-    if (appendResult.isErr()) {
+    // Simulate append by combining existing content with new content
+    const finalContent = existingContent ? existingContent + npmrcContent : npmrcContent.trimStart()
+    
+    // Write the combined content
+    const writeResult = await context.fs.writeFile(npmrcPath, finalContent)
+    if (writeResult.isErr()) {
       return err(
         createCoreError(
           'NPMRC_WRITE_FAILED',
@@ -85,7 +105,7 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
           'Failed to write .npmrc configuration',
           {
             recoverable: true,
-            cause: appendResult.error,
+            cause: writeResult.error,
             suggestion: 'Check file permissions and ensure the directory is writable'
           }
         )

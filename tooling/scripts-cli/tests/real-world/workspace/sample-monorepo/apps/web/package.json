@@ -1,0 +1,16 @@
+{
+  "name": "@test/web",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "next build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@test/core": "workspace:*",
+    "@test/utils": "workspace:*",
+    "next": "^14.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}
