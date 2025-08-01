@@ -23,9 +23,17 @@ if ! pnpm install --frozen-lockfile --prefer-offline; then
   exit 1
 fi
 
-# 2. Parallel quality checks with Turborepo
+# 2. Parallel quality checks with Turborepo and oxlint
 echo -e "\n${YELLOW}🔍 Running quality checks...${NC}"
-if ! pnpm turbo run format:check lint types test build \
+
+# Run lint separately since it's now a root command
+if ! pnpm lint; then
+  echo -e "${RED}❌ Linting failed${NC}"
+  exit 1
+fi
+
+# Run other checks through turbo
+if ! pnpm turbo run format:check types test build \
   --cache-dir=.turbo \
   --concurrency=100% \
   ${TURBO_ARGS:-}; then
