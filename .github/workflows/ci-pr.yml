@@ -32,8 +32,8 @@ jobs:
       # Run full validation to ensure PR safety
       - name: Full validation
         run: |
-          # Build all packages
-          pnpm turbo run build --filter='./packages/*'
+          # Build all packages and tooling (ensures all dependencies are built)
+          pnpm turbo run build
           
           # Run ALL tests to ensure nothing is broken
           pnpm turbo run test
