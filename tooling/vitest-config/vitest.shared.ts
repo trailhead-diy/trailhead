@@ -44,6 +44,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
       },
       // Use standard module resolution
       conditions: ['import', 'module', 'default'],
+
     },
     test: {
       globals: true,
