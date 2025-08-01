@@ -18,7 +18,7 @@ export function setupResultMatchers() {
     if (globalThis.expect && globalThis.expect.extend) {
       globalThis.expect.extend(resultMatchers)
     }
-  } catch (error) {
+  } catch {
     // Silently fail if core testing is not available
     // This allows packages to use setup without core dependency
   }
@@ -56,7 +56,7 @@ export function setupTempDirCleanup() {
       try {
         const { cleanup } = require('@esteban-url/fs/testing')
         await cleanup(dir)
-      } catch (error) {
+      } catch {
         // Silently fail if fs testing is not available
       }
     }
@@ -144,7 +144,7 @@ export const standardTestPatterns = {
   /**
    * Test a Result-returning function for error case
    */
-  testResultError: async <E>(
+  testResultError: async (
     fn: () => Promise<any> | any,
     expectedErrorCode?: string,
     description?: string
