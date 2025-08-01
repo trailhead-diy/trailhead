@@ -81,7 +81,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
       expect(appConfigSchema.description).toBe('Complete application configuration schema')
       expect(appConfigSchema.version).toBe('1.0.0')
       expect(appConfigSchema.strict).toBe(true)
-      expect(appConfigSchema.zodSchema).toBeDefined()
+      expect(typeof appConfigSchema.zodSchema).toBe('object')
     })
 
     it('should validate a complete valid configuration', () => {
@@ -142,7 +142,7 @@ describe('Enhanced Configuration System - Integration Tests', () => {
 
       if (result.isErr()) {
         expect(result.error.type).toBe('SCHEMA_VALIDATION_FAILED')
-        expect(result.error.context?.errors).toBeDefined()
+        expect(Array.isArray(result.error.context?.errors)).toBe(true)
         expect(result.error.context?.errors.length).toBeGreaterThan(5)
       }
     })
@@ -328,8 +328,8 @@ describe('Enhanced Configuration System - Integration Tests', () => {
       expect(jsonSchemaResult.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
       expect(jsonSchemaResult.type).toBe('object')
       expect(jsonSchemaResult.title).toBe('Application Configuration')
-      expect(jsonSchemaResult.properties).toBeDefined()
-      expect(jsonSchemaResult.required).toBeDefined()
+      expect(typeof jsonSchemaResult.properties).toBe('object')
+      expect(Array.isArray(jsonSchemaResult.required)).toBe(true)
       expect(jsonSchemaResult.additionalProperties).toBe(false) // strict mode
     })
   })

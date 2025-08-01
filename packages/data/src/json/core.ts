@@ -1,8 +1,7 @@
 import { ok, err } from '@esteban-url/core'
 import { readFile, writeFile } from '@esteban-url/fs'
 import type { JSONProcessingOptions, DataResult } from '../types.js'
-import type { CreateJSONOperations, JSONFormatOptions } from './types.js'
-import { defaultJSONConfig } from './types.js'
+import { defaultJSONConfig, type CreateJSONOperations, type JSONFormatOptions } from './types.js'
 import { createJSONError, createParsingError, mapLibraryError } from '../errors.js'
 
 // ========================================

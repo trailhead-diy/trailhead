@@ -54,7 +54,7 @@ describe('Core Result Testing Verification', () => {
     ]
 
     for (const exportName of expectedExports) {
-      expect(exports[exportName]).toBeDefined()
+      // Test that each export is a function
       expect(typeof exports[exportName]).toBe('function')
     }
   })

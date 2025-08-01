@@ -1,17 +1,12 @@
 import { defineConfig } from 'tsup'
+import { tsupProfiles } from '@repo/tsup-config/shared'
 
-export default defineConfig({
-  entry: {
-    index: 'src/index.ts',
-    'testing/index': 'src/testing/index.ts',
-  },
-  format: ['esm'],
-  dts: true,
-  sourcemap: true,
-  clean: true,
-  splitting: false,
-  treeshake: true,
-  minify: false,
-  target: 'node18',
-  platform: 'node',
-})
+export default defineConfig(
+  tsupProfiles.node({
+    entry: {
+      index: 'src/index.ts',
+      'testing/index': 'src/testing/index.ts',
+    },
+    dts: true,
+  })
+)

@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@esteban-url/core'
+import { err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import type { CommandContext, CommandOption } from './types.js'
 
 // Simple FileSystem interface for file processing
@@ -8,9 +8,7 @@ interface FileSystem {
   exists: (path: string) => Promise<Result<boolean, CoreError>>
   [key: string]: any // Allow additional fs methods
 }
-import type { CommandConfig, CommandOptions } from './base.js'
-import { createCommand } from './base.js'
-import { err, createCoreError } from '@esteban-url/core'
+import { createCommand, type CommandConfig, type CommandOptions } from './base.js'
 
 /**
  * Command Enhancement Suite - addresses GitHub issue #112

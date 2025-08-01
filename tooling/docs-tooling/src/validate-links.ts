@@ -39,7 +39,6 @@ const extractLinks = (content: string): Array<{ link: string; line: number; text
   const links: Array<{ link: string; line: number; text: string }> = []
   const lines = content.split('\n')
   let inCodeBlock = false
-  let codeBlockIndent = 0
 
   lines.forEach((line, index) => {
     // Check for code block markers (``` or indented blocks)

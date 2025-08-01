@@ -1,7 +1,5 @@
 import { z } from '@esteban-url/validation'
-import type { Result } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import type { ZodConfigSchema } from '../core/zod-schema.js'
 
 // ========================================

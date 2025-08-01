@@ -1,5 +1,4 @@
-import { ok, err, createCoreError } from '@esteban-url/core'
-import type { Result, CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { readFile, writeFile, exists, defaultFSConfig } from '@esteban-url/fs'
 import { resolve } from 'path'
 import {

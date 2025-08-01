@@ -1,5 +1,4 @@
-import { ok, err, createCoreError } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result } from '@esteban-url/core'
 import { input, select, confirm, checkbox } from '@esteban-url/cli/prompts'
 import type { ProjectConfig, PackageManager } from '../config/types.js'
 import { createConfigContext } from '../config/manager.js'

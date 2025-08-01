@@ -133,6 +133,9 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config
@@ -170,6 +173,9 @@ importers:
         specifier: workspace:*
         version: link:../validation
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config
@@ -198,6 +204,9 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config
@@ -250,6 +259,9 @@ importers:
         specifier: ^4.0.14
         version: 4.0.14
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config
@@ -345,6 +357,9 @@ importers:
         specifier: ^11.0.0
         version: 11.0.3
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config
@@ -382,6 +397,9 @@ importers:
         specifier: ^4.0.14
         version: 4.0.14
     devDependencies:
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../tooling/typescript-config

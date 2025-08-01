@@ -10,8 +10,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createUnifiedDataOperations, data } from './operations.js'
-import type { UnifiedDataConfig } from './operations.js'
+import { createUnifiedDataOperations, data, type UnifiedDataConfig } from './operations.js'
 
 // Mock the underlying operations
 vi.mock('./csv/index.js', () => ({
@@ -512,7 +511,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
   describe('Default Instance', () => {
     it('should provide default data operations instance', () => {
-      expect(data).toBeDefined()
+      // Test that data object has all expected methods
       expect(typeof data.parseAuto).toBe('function')
       expect(typeof data.parseAutoFromContent).toBe('function')
       expect(typeof data.writeAuto).toBe('function')
@@ -535,18 +534,18 @@ describe('Configuration and Initialization', () => {
       defaultFormat: 'csv',
     }
 
-    const operations = createUnifiedDataOperations(config)
+    const _operations = createUnifiedDataOperations(config)
 
-    expect(operations).toBeDefined()
+    // Verify operations were created with custom config
     expect(mockCSVOps).toHaveBeenCalledWith({ delimiter: ';' })
     expect(mockJSONOps).toHaveBeenCalledWith({ indent: 4 })
     expect(mockExcelOps).toHaveBeenCalledWith({ sheetName: 'CustomSheet' })
   })
 
   it('should create operations with default configuration', () => {
-    const operations = createUnifiedDataOperations()
+    const _operations = createUnifiedDataOperations()
 
-    expect(operations).toBeDefined()
+    // Verify operations were created with default config
     expect(mockCSVOps).toHaveBeenCalledWith(undefined)
     expect(mockJSONOps).toHaveBeenCalledWith(undefined)
     expect(mockExcelOps).toHaveBeenCalledWith(undefined)

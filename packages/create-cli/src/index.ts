@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createCLI } from '@esteban-url/cli'
+import { createDefaultLogger } from '@esteban-url/cli/utils'
 import { generateCommand } from './commands/generate.js'
 import { configCommand } from './commands/config.js'
 
@@ -51,6 +52,7 @@ async function main() {
 
 // Run the CLI
 main().catch((error) => {
-  console.error('Fatal error:', error)
+  const logger = createDefaultLogger()
+  logger.error(`Fatal error: ${error instanceof Error ? error.message : String(error)}`)
   process.exit(1)
 })

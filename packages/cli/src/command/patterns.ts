@@ -1,6 +1,5 @@
 import type { CommandContext, CommandPhase } from './types.js'
-import type { Result, CoreError } from '@esteban-url/core'
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { chalk } from '../utils/chalk.js'
 
 export interface InteractiveCommandOptions {

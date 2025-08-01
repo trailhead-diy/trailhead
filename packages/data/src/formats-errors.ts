@@ -1,5 +1,4 @@
-import { createCoreError } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import { createCoreError, type CoreError } from '@esteban-url/core'
 
 // ========================================
 // Error Factory Functions

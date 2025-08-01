@@ -5,8 +5,7 @@
  * combining format detection with data processing for a seamless experience.
  */
 
-import { ok, err, type Result } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@esteban-url/core'
 
 // Import existing operations
 import { createCSVOperations, type CSVOperations } from './csv/index.js'

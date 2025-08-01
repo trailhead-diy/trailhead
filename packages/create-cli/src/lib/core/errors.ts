@@ -1,5 +1,4 @@
-import { createCoreError } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import { createCoreError, type CoreError } from '@esteban-url/core'
 
 /**
  * Standardized error codes for create-cli package

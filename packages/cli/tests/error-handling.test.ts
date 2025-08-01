@@ -16,14 +16,14 @@ describe('CLI Error Handling', () => {
         }),
     })
 
-    const cli = createCLI({
+    const _cli = createCLI({
       name: 'test-cli',
       version: '1.0.0',
       description: 'CLI with failing command',
       commands: [command],
     })
 
-    expect(cli).toBeDefined()
+    // Test command was created with proper name
     expect(command.name).toBe('failing-command')
   })
 
@@ -65,10 +65,9 @@ describe('CLI Error Handling', () => {
       name: 'dependency-test',
       description: 'Test command dependencies',
       action: async (options, context) => {
-        // Test that context has expected structure even if deps fail
-        expect(context).toBeDefined()
-        expect(context.logger).toBeDefined()
-        expect(context.fs).toBeDefined()
+        // Test that context provides working methods
+        expect(typeof context.logger.info).toBe('function')
+        expect(typeof context.fs.readFile).toBe('function')
 
         return err({
           type: 'DEPENDENCY_ERROR',
@@ -78,7 +77,7 @@ describe('CLI Error Handling', () => {
       },
     })
 
-    expect(command).toBeDefined()
+    // Test command creation succeeded
     expect(command.name).toBe('dependency-test')
   })
 })

@@ -1,40 +1,28 @@
 {
-  "$schema": "https://oxc-project.github.io/oxlint/schema.json",
-  "plugins": ["react", "typescript", "unicorn", "import"],
-  "env": {
-    "node": true,
-    "es2022": true
-  },
-  "categories": {
-    "correctness": "error",
-    "suspicious": "warn"
-  },
+  "$schema": "https://oxc-project.github.io/schemas/oxlintrc.json",
   "rules": {
-    "no-unused-vars": "error",
-    "no-console": "warn",
-    "prefer-const": "error",
-    "eqeqeq": ["error", "always"],
     "no-debugger": "error",
-    "@typescript-eslint/no-explicit-any": "off"
+    "no-duplicate-case": "error",
+    "no-duplicate-imports": "warn",
+    "no-empty": "error",
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "eqeqeq": ["error", "always"],
+    "prefer-const": "error"
   },
   "ignorePatterns": [
-    "dist/**/*",
-    "node_modules/**/*",
-    "coverage/**/*",
-    "*.config.js",
-    "*.config.ts",
-    "*.config.mjs",
-    ".turbo/**/*",
-    "build/**/*"
-  ],
-  "settings": {
-    "react": {
-      "linkComponents": [
-        {
-          "name": "Link",
-          "linkAttribute": "to"
-        }
-      ]
-    }
-  }
+    "node_modules",
+    "dist",
+    "build",
+    ".turbo",
+    "coverage",
+    "**/*.d.ts",
+    "**/*.js",
+    "**/*.mjs",
+    "**/*.cjs",
+    ".next",
+    "templates",
+    "apps/demos/**",
+    "**/scripts/**"
+  ]
 }

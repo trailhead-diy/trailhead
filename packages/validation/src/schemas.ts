@@ -1,7 +1,6 @@
 import { z } from 'zod'
-import type { ValidationConfig } from './types.js'
 import { createValidator } from './core.js'
-import type { ValidatorFn } from './types.js'
+import type { ValidationConfig, ValidatorFn } from './types.js'
 
 /**
  * Reusable schema building blocks to eliminate duplication across packages.

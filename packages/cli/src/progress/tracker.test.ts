@@ -21,7 +21,7 @@ describe('Progress Tracker - Core Functionality', () => {
     it('should create tracker with default configuration', () => {
       const tracker = createProgressTracker({ totalSteps: 100 })
 
-      expect(tracker).toBeDefined()
+      // Test that tracker has all expected methods
       expect(typeof tracker.nextStep).toBe('function')
       expect(typeof tracker.setStep).toBe('function')
       expect(typeof tracker.complete).toBe('function')

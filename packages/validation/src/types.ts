@@ -1,5 +1,4 @@
-import type { Result } from '@esteban-url/core'
-import type { CoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@esteban-url/core'
 import type { z } from 'zod'
 
 export interface ValidationError extends CoreError {

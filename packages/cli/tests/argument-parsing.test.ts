@@ -79,7 +79,7 @@ describe('CLI Argument Parsing and Validation', () => {
 
     if (result.isErr()) {
       expect(result.error.message).toContain('flags')
-      expect(result.error.suggestion).toBeDefined()
+      expect(typeof result.error.suggestion).toBe('string')
     }
   })
 

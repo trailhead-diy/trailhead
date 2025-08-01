@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { createCommand } from '../src/command/index.js'
+import { createCommand, type CommandContext } from '../src/command/index.js'
 import { ok, err } from '@esteban-url/core'
-import type { CommandContext } from '../src/command/index.js'
 import { createDefaultLogger } from '../src/utils/logger.js'
 import { fs } from '@esteban-url/fs'
 

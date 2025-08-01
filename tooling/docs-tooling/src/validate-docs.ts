@@ -100,14 +100,14 @@ function findMarkdownFiles(dir: string): string[] {
         files.push(fullPath)
       }
     }
-  } catch (error) {
+  } catch {
     // Directory doesn't exist, skip
   }
 
   return files
 }
 
-function validateFrontmatter(metadata: any, file: string): string[] {
+function validateFrontmatter(metadata: any, _file: string): string[] {
   const errors: string[] = []
 
   if (!metadata.type) {
@@ -137,7 +137,7 @@ function validateFrontmatter(metadata: any, file: string): string[] {
 function validateContent(
   content: string,
   type: string,
-  file: string
+  _file: string
 ): { errors: string[]; warnings: string[] } {
   const errors: string[] = []
   const warnings: string[] = []
