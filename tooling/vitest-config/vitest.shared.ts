@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { resolve } from 'path'
+import { fileURLToPath } from 'url'
 
 export interface VitestConfigOptions {
   environment?: 'node' | 'jsdom'
@@ -30,6 +31,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   const plugins: PluginOption[] = useTsconfigPaths ? [tsconfigPaths()] : []
 
   // Find monorepo root (where pnpm-workspace.yaml is)
+  const __dirname = fileURLToPath(new URL('.', import.meta.url))
   const monorepoRoot = resolve(__dirname, '../..')
   const packagesDir = resolve(monorepoRoot, 'packages')
 
