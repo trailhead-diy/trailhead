@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "remoteCache": {
-    "enabled": false
+    "enabled": true
   },
   "tasks": {
     "build": {
@@ -10,6 +10,8 @@
       "outputs": ["dist/**", ".next/**"],
       "inputs": [
         "src/**",
+        "*.ts",
+        "*.js",
         "package.json",
         "tsconfig.json",
         "tsconfig.*.json",
@@ -27,7 +29,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "@repo/vitest-config#build"],
       "outputs": [],
       "inputs": [
         "src/**",
@@ -42,7 +44,7 @@
       "outputLogs": "errors-only"
     },
     "test:coverage": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "@repo/vitest-config#build"],
       "outputs": ["coverage/**", "test-results/**"],
       "inputs": [
         "src/**",

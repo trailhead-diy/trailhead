@@ -32,7 +32,11 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
 
   // Find monorepo root (where pnpm-workspace.yaml is)
   const __dirname = fileURLToPath(new URL('.', import.meta.url))
-  const monorepoRoot = resolve(__dirname, '../..')
+  // Account for both source (tooling/vitest-config/) and built (tooling/vitest-config/dist/) contexts
+  const isBuilt = __dirname.includes('/dist/')
+  const monorepoRoot = isBuilt 
+    ? resolve(__dirname, '../../..') // from dist: tooling/vitest-config/dist -> root
+    : resolve(__dirname, '../..')    // from src: tooling/vitest-config -> root
   const packagesDir = resolve(monorepoRoot, 'packages')
 
   return defineConfig({
@@ -45,10 +49,16 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@esteban-url/core/functional': resolve(packagesDir, 'core/src/functional/index.ts'),
         '@esteban-url/core/testing': resolve(packagesDir, 'core/src/testing/index.ts'),
         '@esteban-url/core': resolve(packagesDir, 'core/src/index.ts'),
+        '@esteban-url/validation/testing': resolve(packagesDir, 'validation/src/testing/index.ts'),
         '@esteban-url/validation': resolve(packagesDir, 'validation/src/index.ts'),
+        '@esteban-url/config/testing': resolve(packagesDir, 'config/src/testing/index.ts'),
         '@esteban-url/config': resolve(packagesDir, 'config/src/index.ts'),
+        '@esteban-url/fs/testing': resolve(packagesDir, 'fs/src/testing/index.ts'),
+        '@esteban-url/fs/utils': resolve(packagesDir, 'fs/src/utils/index.ts'),
         '@esteban-url/fs': resolve(packagesDir, 'fs/src/index.ts'),
         '@esteban-url/data': resolve(packagesDir, 'data/src/index.ts'),
+        '@esteban-url/cli/testing': resolve(packagesDir, 'cli/src/testing/index.ts'),
+        '@esteban-url/cli/utils': resolve(packagesDir, 'cli/src/utils/index.ts'),
         '@esteban-url/cli': resolve(packagesDir, 'cli/src/index.ts'),
         ...additionalAliases,
       },
