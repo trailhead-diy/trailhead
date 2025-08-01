@@ -66,11 +66,9 @@ Configuration for validation operations.
 
 ```typescript
 interface ValidationConfig {
-  readonly strict?: boolean
-  readonly coerce?: boolean
-  readonly stripUnknown?: boolean
   readonly abortEarly?: boolean
-  readonly context?: Record<string, unknown>
+  readonly stripUnknown?: boolean
+  readonly allowUnknown?: boolean
 }
 ```
 
@@ -88,10 +86,10 @@ const validate: {
   stringLength: (min: number, max?: number) => ValidatorFn<string>
   numberRange: (min?: number, max?: number) => ValidatorFn<number>
   required: ValidatorFn<any>
-  currency: ValidatorFn<string>
-  date: ValidatorFn<Date>
-  array: <T>(validator: ValidatorFn<T>) => ValidatorFn<T[]>
-  object: <T>(validators: ObjectValidators<T>) => ValidatorFn<T>
+  currency: ValidatorFn<number>
+  date: ValidatorFn<string, Date>
+  array: <T>(validator: (value: T) => any) => ValidatorFn<T[]>
+  object: <T extends Record<string, any>>(validators: any) => ValidatorFn<T>
 }
 ```
 
@@ -197,20 +195,20 @@ function validateRequired<T>(config?: ValidationConfig): ValidatorFn<T>
 Creates a currency validator.
 
 ```typescript
-function validateCurrency(config?: ValidationConfig): ValidatorFn<string>
+function validateCurrency(config?: ValidationConfig): ValidatorFn<number>
 ```
 
-**Returns**: Function that validates currency format
+**Returns**: Function that validates currency values (positive numbers with max 2 decimal places)
 
 ### `validateDate()`
 
 Creates a date validator.
 
 ```typescript
-function validateDate(config?: ValidationConfig): ValidatorFn<Date>
+function validateDate(config?: ValidationConfig): ValidatorFn<string, Date>
 ```
 
-**Returns**: Function that validates dates
+**Returns**: Function that validates date strings and returns Date objects
 
 ### `validateArray()`
 
@@ -304,50 +302,48 @@ function allOf<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 
 ### `createValidator()`
 
-Creates a custom validator function.
+Creates a validator function from a Zod schema.
 
 ```typescript
-function createValidator<T>(
-  predicate: (value: unknown) => boolean,
-  errorMessage: string,
+function createValidator<T, R = T>(
+  schema: z.ZodType<R>,
   config?: ValidationConfig
-): ValidatorFn<T>
+): ValidatorFn<T, R>
 ```
 
 **Parameters**:
 
-- `predicate` - Function that tests the value
-- `errorMessage` - Error message for validation failure
+- `schema` - Zod schema to use for validation
 - `config` - Validation configuration
 
-**Returns**: Custom validator function
+**Returns**: Validator function that uses the schema
 
 ## Schema Validation
 
 ### Pre-built Schemas
 
-#### `emailSchema`
+#### `emailSchema()`
 
-Zod schema for email validation.
+Creates a Zod schema for email validation.
 
 ```typescript
-const emailSchema: z.ZodString
+function emailSchema(): z.ZodString
 ```
 
-#### `urlSchema`
+#### `urlSchema()`
 
-Zod schema for URL validation.
+Creates a Zod schema for URL validation.
 
 ```typescript
-const urlSchema: z.ZodString
+function urlSchema(options?: { requireHttps?: boolean }): z.ZodString
 ```
 
-#### `phoneSchema`
+#### `phoneSchema()`
 
-Zod schema for phone number validation.
+Creates a Zod schema for phone number validation.
 
 ```typescript
-const phoneSchema: z.ZodString
+function phoneSchema(): z.ZodString
 ```
 
 #### `stringLengthSchema()`
@@ -355,83 +351,91 @@ const phoneSchema: z.ZodString
 Creates a string length schema.
 
 ```typescript
-function stringLengthSchema(min: number, max?: number): z.ZodString
+function stringLengthSchema(min: number = 1, max?: number, fieldName: string = 'Value'): z.ZodString
 ```
 
-#### `nonEmptyStringSchema`
+#### `nonEmptyStringSchema()`
 
-Schema for non-empty strings.
+Creates a schema for non-empty strings.
 
 ```typescript
-const nonEmptyStringSchema: z.ZodString
+function nonEmptyStringSchema(fieldName: string = 'Value'): z.ZodString
 ```
 
-#### `trimmedStringSchema`
+#### `trimmedStringSchema()`
 
-Schema that trims whitespace from strings.
+Creates a schema that trims whitespace from strings.
 
 ```typescript
-const trimmedStringSchema: z.ZodString
+function trimmedStringSchema(fieldName: string = 'Value'): z.ZodString
 ```
 
-#### `projectNameSchema`
+#### `projectNameSchema()`
 
-Schema for project names.
+Creates a schema for project names.
 
 ```typescript
-const projectNameSchema: z.ZodString
+function projectNameSchema(): z.ZodString
 ```
 
-#### `packageManagerSchema`
+#### `packageManagerSchema()`
 
-Schema for package manager names.
+Creates a schema for package manager names.
 
 ```typescript
-const packageManagerSchema: z.ZodEnum<['npm', 'yarn', 'pnpm']>
+function packageManagerSchema(): z.ZodEnum<['npm', 'yarn', 'pnpm']>
 ```
 
-#### `filePathSchema`
+#### `filePathSchema()`
 
-Schema for file paths.
+Creates a schema for file paths.
 
 ```typescript
-const filePathSchema: z.ZodString
+function filePathSchema(options?: {
+  allowAbsolute?: boolean
+  allowTraversal?: boolean
+  baseDir?: string
+}): z.ZodString
 ```
 
-#### `authorSchema`
+#### `authorSchema()`
 
-Schema for author information.
+Creates a schema for author information.
 
 ```typescript
-const authorSchema: z.ZodObject<{
+function authorSchema(): z.ZodObject<{
   name: z.ZodString
   email: z.ZodOptional<z.ZodString>
   url: z.ZodOptional<z.ZodString>
 }>
 ```
 
-#### `portSchema`
+#### `portSchema()`
 
-Schema for port numbers.
+Creates a schema for port numbers.
 
 ```typescript
-const portSchema: z.ZodNumber
+function portSchema(): z.ZodNumber
 ```
 
-#### `positiveIntegerSchema`
+#### `positiveIntegerSchema()`
 
-Schema for positive integers.
+Creates a schema for positive integers.
 
 ```typescript
-const positiveIntegerSchema: z.ZodNumber
+function positiveIntegerSchema(fieldName: string = 'Value'): z.ZodNumber
 ```
 
-#### `dateSchema`
+#### `dateSchema()`
 
-Schema for dates.
+Creates a schema for dates.
 
 ```typescript
-const dateSchema: z.ZodDate
+function dateSchema(options?: {
+  allowFuture?: boolean
+  allowPast?: boolean
+  format?: 'iso' | 'date-only' | 'any'
+}): z.ZodDate
 ```
 
 #### `arraySchema()`
@@ -439,7 +443,15 @@ const dateSchema: z.ZodDate
 Creates an array schema.
 
 ```typescript
-function arraySchema<T>(itemSchema: z.ZodType<T>): z.ZodArray<z.ZodType<T>>
+function arraySchema<T>(
+  itemSchema: z.ZodSchema<T>,
+  options?: {
+    minLength?: number
+    maxLength?: number
+    unique?: boolean
+    fieldName?: string
+  }
+): z.ZodArray<z.ZodSchema<T>>
 ```
 
 ### Schema Composition
@@ -506,23 +518,42 @@ Pre-configured validation presets.
 
 ```typescript
 const validationPresets: {
-  strict: ValidationConfig
-  permissive: ValidationConfig
-  coercive: ValidationConfig
+  email: () => ValidatorFn<unknown, string>
+  url: (requireHttps?: boolean) => ValidatorFn<unknown, string>
+  phone: () => ValidatorFn<unknown, string>
+  projectName: () => ValidatorFn<unknown, string>
+  packageManager: () => ValidatorFn<unknown, 'npm' | 'yarn' | 'pnpm'>
+  filePath: (options?: Parameters<typeof filePathSchema>[0]) => ValidatorFn<unknown, string>
+  port: () => ValidatorFn<unknown, number>
+  positiveInteger: (fieldName?: string) => ValidatorFn<unknown, number>
+  date: (options?: Parameters<typeof dateSchema>[0]) => ValidatorFn<unknown, Date>
+  array: <T>(itemSchema: z.ZodSchema<T>, options?: Parameters<typeof arraySchema>[1]) => ValidatorFn<unknown, T[]>
 }
 ```
 
 #### `schemaRegistry`
 
-Registry for storing and retrieving schemas.
+Registry for looking up schema factories.
 
 ```typescript
 const schemaRegistry: {
-  register: <T>(key: string, schema: z.ZodType<T>) => void
-  get: <T>(key: string) => z.ZodType<T> | undefined
-  has: (key: string) => boolean
-  keys: () => string[]
+  email: typeof emailSchema
+  url: typeof urlSchema
+  phone: typeof phoneSchema
+  projectName: typeof projectNameSchema
+  packageManager: typeof packageManagerSchema
+  filePath: typeof filePathSchema
+  author: typeof authorSchema
+  port: typeof portSchema
+  positiveInteger: typeof positiveIntegerSchema
+  date: typeof dateSchema
+  array: typeof arraySchema
+  stringLength: typeof stringLengthSchema
+  nonEmptyString: typeof nonEmptyStringSchema
+  trimmedString: typeof trimmedStringSchema
 }
+
+export type SchemaRegistryKey = keyof typeof schemaRegistry
 ```
 
 ## Error Factories

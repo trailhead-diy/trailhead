@@ -42,17 +42,11 @@ File or directory statistics.
 
 ```typescript
 interface FileStats {
+  readonly size: number
   readonly isFile: boolean
   readonly isDirectory: boolean
   readonly isSymbolicLink: boolean
-  readonly size: number
   readonly mtime: Date
-  readonly atime: Date
-  readonly ctime: Date
-  readonly birthtime: Date
-  readonly mode: number
-  readonly uid: number
-  readonly gid: number
 }
 ```
 
@@ -63,12 +57,8 @@ Configuration for filesystem operations.
 ```typescript
 interface FSConfig {
   readonly encoding?: BufferEncoding
-  readonly recursive?: boolean
-  readonly overwrite?: boolean
-  readonly preserveTimestamps?: boolean
-  readonly dereference?: boolean
-  readonly errorOnExist?: boolean
-  readonly mode?: number
+  readonly defaultMode?: number
+  readonly jsonSpaces?: number
 }
 ```
 
@@ -121,7 +111,7 @@ function readFile(config?: FSConfig): ReadFileOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, options?: ReadFileOptions) => Promise<FSResult<string | Buffer>>
+;(path: string) => Promise<FSResult<string>>
 ```
 
 **Usage**:
@@ -142,7 +132,7 @@ function writeFile(config?: FSConfig): WriteFileOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, data: string | Buffer, options?: WriteFileOptions) => Promise<FSResult<void>>
+;(path: string, content: string) => Promise<FSResult<void>>
 ```
 
 ### `exists()`
@@ -156,7 +146,7 @@ function exists(config?: FSConfig): ExistsOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string) => Promise<FSResult<boolean>>
+;(path: string) => Promise<FSResult<boolean>>
 ```
 
 ### `stat()`
@@ -170,7 +160,7 @@ function stat(config?: FSConfig): StatOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string) => Promise<FSResult<FileStats>>
+;(path: string) => Promise<FSResult<FileStats>>
 ```
 
 ### `mkdir()`
@@ -184,7 +174,7 @@ function mkdir(config?: FSConfig): MkdirOp
 **Returns**: Function with signature:
 
 ```typescript
-;(dirPath: string, options?: MkdirOptions) => Promise<FSResult<void>>
+;(path: string, options?: MkdirOptions) => Promise<FSResult<void>>
 ```
 
 ### `readDir()`
@@ -198,7 +188,7 @@ function readDir(config?: FSConfig): ReadDirOp
 **Returns**: Function with signature:
 
 ```typescript
-;(dirPath: string, options?: ReadDirOptions) => Promise<FSResult<string[]>>
+;(path: string) => Promise<FSResult<string[]>>
 ```
 
 ### `copy()`
@@ -254,7 +244,7 @@ function readJson(config?: FSConfig): ReadJsonOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, options?: ReadJsonOptions) => Promise<FSResult<unknown>>
+;<T = any>(path: string) => Promise<FSResult<T>>
 ```
 
 ### `writeJson()`
@@ -268,7 +258,7 @@ function writeJson(config?: FSConfig): WriteJsonOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, data: unknown, options?: WriteJsonOptions) => Promise<FSResult<void>>
+;<T = any>(path: string, data: T, options?: { spaces?: number }) => Promise<FSResult<void>>
 ```
 
 ## Utility Operations
@@ -333,7 +323,7 @@ function findFiles(config?: FSConfig): FindFilesFunction
 **Returns**: Function with signature:
 
 ```typescript
-;(pattern: string | string[], options?: FindOptions) => Promise<FSResult<string[]>>
+;(pattern: string, options?: { cwd?: string; ignore?: string[] }) => Promise<FSResult<string[]>>
 ```
 
 ### `readIfExists()`
@@ -347,7 +337,7 @@ function readIfExists(config?: FSConfig): ReadIfExistsFunction
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, options?: ReadFileOptions) => Promise<FSResult<string | null>>
+;(path: string) => Promise<FSResult<string | null>>
 ```
 
 ### `copyIfExists()`
@@ -366,29 +356,6 @@ function copyIfExists(config?: FSConfig): CopyIfExistsFunction
 
 ## Options Types
 
-### `ReadFileOptions`
-
-Options for reading files.
-
-```typescript
-interface ReadFileOptions {
-  readonly encoding?: BufferEncoding
-  readonly flag?: string
-}
-```
-
-### `WriteFileOptions`
-
-Options for writing files.
-
-```typescript
-interface WriteFileOptions {
-  readonly encoding?: BufferEncoding
-  readonly mode?: number
-  readonly flag?: string
-}
-```
-
 ### `MkdirOptions`
 
 Options for creating directories.
@@ -396,7 +363,6 @@ Options for creating directories.
 ```typescript
 interface MkdirOptions {
   readonly recursive?: boolean
-  readonly mode?: number
 }
 ```
 
@@ -407,10 +373,7 @@ Options for copying files/directories.
 ```typescript
 interface CopyOptions {
   readonly overwrite?: boolean
-  readonly preserveTimestamps?: boolean
   readonly recursive?: boolean
-  readonly dereference?: boolean
-  readonly filter?: (src: string, dest: string) => boolean
 }
 ```
 
@@ -432,21 +395,6 @@ Options for removing files/directories.
 interface RmOptions {
   readonly recursive?: boolean
   readonly force?: boolean
-}
-```
-
-### `FindOptions`
-
-Options for finding files.
-
-```typescript
-interface FindOptions {
-  readonly cwd?: string
-  readonly ignore?: string[]
-  readonly absolute?: boolean
-  readonly onlyFiles?: boolean
-  readonly onlyDirectories?: boolean
-  readonly followSymbolicLinks?: boolean
 }
 ```
 
@@ -480,69 +428,47 @@ function mapNodeError(operation: string, path: string, error: unknown): FileSyst
 
 ## Path Utilities
 
-### `normalizePath()`
-
-Normalizes file paths for cross-platform compatibility.
+Comprehensive path utilities are available from `@esteban-url/fs/utils`:
 
 ```typescript
-function normalizePath(filePath: string): string
+import {
+  normalizePath,
+  createPath,
+  createAbsolutePath,
+  joinPaths,
+  safeJoin,
+  resolvePath,
+  createRelativePath,
+  getDirectoryName,
+  getBaseName,
+  getExtension,
+  isAbsolutePath,
+  isRelativePath,
+  // Platform utilities
+  isWindows,
+  pathSep,
+  // Path conversion
+  toForwardSlashes,
+  toBackslashes,
+  toPosixPath,
+  toWindowsPath,
+  // Validation
+  isSafePath,
+  isValidName,
+  isAllowedPath,
+  // Path matching
+  createPathRegex,
+  pathMatchers,
+  pathAssertions,
+  // Test utilities
+  createProjectStructure,
+  createTempPath,
+  getTempDir,
+  testPaths,
+} from '@esteban-url/fs/utils'
 ```
 
-### `isAbsolute()`
-
-Checks if path is absolute.
-
-```typescript
-function isAbsolute(filePath: string): boolean
-```
-
-### `resolve()`
-
-Resolves path components to absolute path.
-
-```typescript
-function resolve(...pathSegments: string[]): string
-```
-
-### `join()`
-
-Joins path components.
-
-```typescript
-function join(...pathSegments: string[]): string
-```
-
-### `dirname()`
-
-Gets directory name of path.
-
-```typescript
-function dirname(filePath: string): string
-```
-
-### `basename()`
-
-Gets base name of path.
-
-```typescript
-function basename(filePath: string, ext?: string): string
-```
-
-### `extname()`
-
-Gets file extension.
-
-```typescript
-function extname(filePath: string): string
-```
-
-### `relative()`
-
-Gets relative path from one path to another.
-
-```typescript
-function relative(from: string, to: string): string
-```
+For detailed documentation of path utilities, see the [path utilities guide](/packages/fs/docs/how-to/path-operations.md).
 
 ## Configuration
 

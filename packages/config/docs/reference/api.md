@@ -325,7 +325,7 @@ interface CLISource extends ConfigSource {
 
 ### `generateDocs()`
 
-Generates documentation from schema.
+Generates documentation from schema. (Alias for `generateZodConfigDocs`)
 
 ```typescript
 function generateDocs(schema: ConfigSchema, options?: DocsGeneratorOptions): ConfigDocs
@@ -355,7 +355,7 @@ console.log(docs.examples) // Example configurations
 
 ### `generateJsonSchema()`
 
-Generates JSON Schema from configuration schema.
+Generates JSON Schema from configuration schema. (Alias for `generateZodJsonSchema`)
 
 ```typescript
 function generateJsonSchema(schema: ConfigSchema, options?: JsonSchemaOptions): JsonSchema
