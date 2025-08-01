@@ -38,7 +38,7 @@ jobs:
       
       # Only on main: publish, security scan, cross-platform
       - name: Publish to GitHub Packages
-        if: github.event.head_commit.message =~ '^(feat|fix)' 
+        if: startsWith(github.event.head_commit.message, 'feat') || startsWith(github.event.head_commit.message, 'fix')
         run: pnpm changeset publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
