@@ -8,6 +8,7 @@ import path from 'path'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { fs } from '@esteban-url/fs'
 import chalk from 'chalk'
+import { createDefaultLogger } from '../utils/logger.js'
 
 // Types
 interface GitHooksOptions {
@@ -295,7 +296,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
   // Use fs directly from domain package
 
   try {
-    console.log(chalk.blue('🔧 Installing smart git hooks...'))
+    const logger = createDefaultLogger()
+    logger.info('🔧 Installing smart git hooks...')
 
     // Detect project configuration
     const projectConfigResult = await detectProjectConfig()
@@ -307,13 +309,13 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const vars = generateTemplateVars(config, options)
 
     if (options.dryRun) {
-      console.log(chalk.yellow('📋 DRY RUN - Would install:'))
-      console.log(`  Project type: ${config.isMonorepo ? 'Monorepo' : 'Single package'}`)
-      console.log(`  Package manager: ${config.packageManager}`)
-      console.log(`  Test framework: ${config.testFramework}`)
-      console.log(`  TypeScript: ${config.hasTypeScript ? 'Yes' : 'No'}`)
+      logger.warning('📋 DRY RUN - Would install:')
+      logger.info(`  Project type: ${config.isMonorepo ? 'Monorepo' : 'Single package'}`)
+      logger.info(`  Package manager: ${config.packageManager}`)
+      logger.info(`  Test framework: ${config.testFramework}`)
+      logger.info(`  TypeScript: ${config.hasTypeScript ? 'Yes' : 'No'}`)
       if (config.isMonorepo) {
-        console.log(`  Packages: ${config.packages.join(', ')}`)
+        logger.info(`  Packages: ${config.packages.join(', ')}`)
       }
       return ok(undefined)
     }
@@ -386,7 +388,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const lefthookPath = 'lefthook.yml'
     const lefthookResult = await fs.exists(lefthookPath)
     if (lefthookResult.isOk() && !options.force) {
-      console.log(chalk.yellow(`⚠️  ${lefthookPath} already exists. Use --force to overwrite.`))
+      logger.warning(`${lefthookPath} already exists. Use --force to overwrite.`)
     } else {
       const writeLefthookResult = await fs.writeFile(lefthookPath, lefthookContent)
       if (writeLefthookResult.isErr()) {
@@ -421,7 +423,7 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
     const configPath = '.smart-test-config.json'
     const smartConfigResult = await fs.exists(configPath)
     if (smartConfigResult.isOk() && !options.force) {
-      console.log(chalk.yellow(`⚠️  ${configPath} already exists. Use --force to overwrite.`))
+      logger.warning(`${configPath} already exists. Use --force to overwrite.`)
     } else {
       const writeConfigResult = await fs.writeFile(configPath, configContent)
       if (writeConfigResult.isErr()) {
@@ -465,13 +467,13 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
       }
     }
 
-    console.log(chalk.green('✅ Smart git hooks installed successfully!'))
-    console.log(chalk.blue('📋 Next steps:'))
-    console.log(
-      `   1. Install lefthook: ${config.packageManager === 'pnpm' ? 'pnpm' : 'npm'} install lefthook`
+    logger.success('Smart git hooks installed successfully!')
+    logger.info('📋 Next steps:')
+    logger.step(
+      `Install lefthook: ${config.packageManager === 'pnpm' ? 'pnpm' : 'npm'} install lefthook`
     )
-    console.log(`   2. Install git hooks: ${config.packageManager} lefthook install`)
-    console.log(`   3. Test the setup: ./${scriptsDir}/smart-test-runner.sh --dry-run --verbose`)
+    logger.step(`Install git hooks: ${config.packageManager} lefthook install`)
+    logger.step(`Test the setup: ./${scriptsDir}/smart-test-runner.sh --dry-run --verbose`)
 
     return ok(undefined)
   } catch (error) {
@@ -485,7 +487,8 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
  * Update git hooks
  */
 async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
-  console.log(chalk.blue('🔄 Updating smart git hooks...'))
+  const logger = createDefaultLogger()
+  logger.info('🔄 Updating smart git hooks...')
 
   // For updates, we force overwrite the scripts but preserve config
   const updateOptions = { ...options, force: true }
@@ -501,13 +504,14 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
   // Use fs directly from domain package
 
   try {
-    console.log(chalk.yellow('🗑️  Removing smart git hooks...'))
+    const logger = createDefaultLogger()
+    logger.warning('🗑️  Removing smart git hooks...')
 
     if (options.dryRun) {
-      console.log(chalk.yellow('📋 DRY RUN - Would remove:'))
-      console.log('  scripts/smart-test-runner.sh')
-      console.log('  lefthook.yml')
-      console.log('  .smart-test-config.json')
+      logger.warning('📋 DRY RUN - Would remove:')
+      logger.info('  scripts/smart-test-runner.sh')
+      logger.info('  lefthook.yml')
+      logger.info('  .smart-test-config.json')
       return ok(undefined)
     }
 
@@ -529,7 +533,7 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
           force: true,
         })
         if (removeResult.isOk()) {
-          console.log(chalk.gray(`   Removed ${file}`))
+          logger.debug(`Removed ${file}`)
         }
       }
     }
@@ -543,17 +547,17 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
           force: true,
         })
         if (removeDirResult.isOk()) {
-          console.log(chalk.gray(`   Removed empty directory ${scriptsDir}`))
+          logger.debug(`Removed empty directory ${scriptsDir}`)
         }
       }
     } catch {
       // Ignore errors removing directory
     }
 
-    console.log(chalk.green('✅ Smart git hooks removed successfully!'))
-    console.log(chalk.blue('📋 You may also want to:'))
-    console.log('   1. Uninstall lefthook: npm uninstall lefthook')
-    console.log('   2. Remove git hooks: lefthook uninstall')
+    logger.success('Smart git hooks removed successfully!')
+    logger.info('📋 You may also want to:')
+    logger.step('Uninstall lefthook: npm uninstall lefthook')
+    logger.step('Remove git hooks: lefthook uninstall')
 
     return ok(undefined)
   } catch (error) {
@@ -568,9 +572,10 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
  */
 async function configureGitHooks(): Promise<Result<void, CoreError>> {
   try {
-    console.log(chalk.blue('🔧 Git Hooks Configuration Wizard'))
-    console.log('This wizard will help you configure smart test execution.')
-    console.log('')
+    const logger = createDefaultLogger()
+    logger.info('🔧 Git Hooks Configuration Wizard')
+    logger.info('This wizard will help you configure smart test execution.')
+    logger.info('')
 
     // Detect current configuration
     const configResult = await detectProjectConfig()
@@ -581,27 +586,25 @@ async function configureGitHooks(): Promise<Result<void, CoreError>> {
     const config = configResult.value
 
     // Interactive prompts would go here
-    console.log(chalk.green('Current Configuration:'))
-    console.log(`  Project type: ${config.isMonorepo ? 'Monorepo' : 'Single package'}`)
-    console.log(`  Package manager: ${config.packageManager}`)
-    console.log(`  Test framework: ${config.testFramework}`)
-    console.log(`  TypeScript: ${config.hasTypeScript ? 'Yes' : 'No'}`)
+    logger.success('Current Configuration:')
+    logger.info(`  Project type: ${config.isMonorepo ? 'Monorepo' : 'Single package'}`)
+    logger.info(`  Package manager: ${config.packageManager}`)
+    logger.info(`  Test framework: ${config.testFramework}`)
+    logger.info(`  TypeScript: ${config.hasTypeScript ? 'Yes' : 'No'}`)
 
     if (config.isMonorepo) {
-      console.log(`  Packages: ${config.packages.join(', ')}`)
-      console.log(`  Parallel testing: Enabled`)
+      logger.info(`  Packages: ${config.packages.join(', ')}`)
+      logger.info(`  Parallel testing: Enabled`)
     } else {
-      console.log(`  Parallel testing: Disabled (single package)`)
+      logger.info(`  Parallel testing: Disabled (single package)`)
     }
 
-    console.log(`  Max retries: 2`)
-    console.log(`  Timeout: 120s`)
-    console.log(`  Retry flaky tests: Enabled`)
+    logger.info(`  Max retries: 2`)
+    logger.info(`  Timeout: 120s`)
+    logger.info(`  Retry flaky tests: Enabled`)
 
-    console.log('')
-    console.log(
-      chalk.yellow('💡 Configuration looks good! Run `git-hooks install` to set up hooks.')
-    )
+    logger.info('')
+    logger.warning('💡 Configuration looks good! Run `git-hooks install` to set up hooks.')
 
     return ok(undefined)
   } catch (error) {
@@ -634,7 +637,8 @@ export function createGitHooksCommand(): Command {
     .action(async (options: GitHooksOptions) => {
       const result = await installGitHooks(options)
       if (result.isErr()) {
-        console.error(chalk.red(`❌ ${result.error.message}`))
+        const logger = createDefaultLogger()
+        logger.error(result.error.message)
         process.exit(1)
       }
     })
@@ -648,7 +652,8 @@ export function createGitHooksCommand(): Command {
     .action(async (options: GitHooksOptions) => {
       const result = await updateGitHooks(options)
       if (result.isErr()) {
-        console.error(chalk.red(`❌ ${result.error.message}`))
+        const logger = createDefaultLogger()
+        logger.error(result.error.message)
         process.exit(1)
       }
     })
@@ -662,7 +667,8 @@ export function createGitHooksCommand(): Command {
     .action(async (options: GitHooksOptions) => {
       const result = await removeGitHooks(options)
       if (result.isErr()) {
-        console.error(chalk.red(`❌ ${result.error.message}`))
+        const logger = createDefaultLogger()
+        logger.error(result.error.message)
         process.exit(1)
       }
     })
@@ -674,7 +680,8 @@ export function createGitHooksCommand(): Command {
     .action(async () => {
       const result = await configureGitHooks()
       if (result.isErr()) {
-        console.error(chalk.red(`❌ ${result.error.message}`))
+        const logger = createDefaultLogger()
+        logger.error(result.error.message)
         process.exit(1)
       }
     })
@@ -686,14 +693,15 @@ export function createGitHooksCommand(): Command {
     .action(async () => {
       // Use fs directly from domain package
 
-      console.log(chalk.blue('📊 Git Hooks Status'))
+      const logger = createDefaultLogger()
+      logger.info('📊 Git Hooks Status')
 
       const files = ['scripts/smart-test-runner.sh', 'lefthook.yml', '.smart-test-config.json']
 
       for (const file of files) {
         const fileResult = await fs.exists(file)
         const status = fileResult.isOk() ? chalk.green('✅ Installed') : chalk.red('❌ Missing')
-        console.log(`   ${file}: ${status}`)
+        logger.info(`   ${file}: ${status}`)
       }
 
       // Check if lefthook is installed
@@ -705,9 +713,9 @@ export function createGitHooksCommand(): Command {
           const lefthookStatus = hasLefthook
             ? chalk.green('✅ Installed')
             : chalk.yellow('⚠️  Not installed')
-          console.log(`   lefthook package: ${lefthookStatus}`)
+          logger.info(`   lefthook package: ${lefthookStatus}`)
         } else {
-          console.log(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
+          logger.info(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
         }
       } catch {
         console.log(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)

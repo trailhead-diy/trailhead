@@ -146,12 +146,13 @@ export function createCLI(config: CLIConfig): CLI {
             const validationResult = validateCommandOption(option, i)
             if (validationResult.isErr()) {
               const error = validationResult.error
-              console.error(`\n❌ CLI Configuration Error in command '${command.name}':`)
-              console.error(`   ${error.message}`)
+              const logger = createDefaultLogger()
+              logger.error(`CLI Configuration Error in command '${command.name}':`)
+              logger.error(`   ${error.message}`)
               if (error.suggestion) {
-                console.error(`   💡 Suggestion: ${error.suggestion}`)
+                logger.error(`   💡 Suggestion: ${error.suggestion}`)
               }
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2))
+              logger.error(`   Option configuration: ${JSON.stringify(option, null, 2)}`)
               process.exit(1)
             }
 
@@ -162,15 +163,16 @@ export function createCLI(config: CLIConfig): CLI {
                 cmd.option(processed.flags, option.description, option.default)
               }
             } catch (commanderError) {
-              console.error(
-                `\n❌ Commander.js Error in command '${command.name}', option '${processed.name}':`
+              const logger = createDefaultLogger()
+              logger.error(
+                `Commander.js Error in command '${command.name}', option '${processed.name}':`
               )
-              console.error(
+              logger.error(
                 `   ${commanderError instanceof Error ? commanderError.message : String(commanderError)}`
               )
-              console.error(`   Flags: ${processed.flags}`)
-              console.error(`   Option configuration:`, JSON.stringify(option, null, 2))
-              console.error(
+              logger.error(`   Flags: ${processed.flags}`)
+              logger.error(`   Option configuration: ${JSON.stringify(option, null, 2)}`)
+              logger.error(
                 `   💡 This usually indicates an invalid flags format or conflicting options`
               )
               process.exit(1)

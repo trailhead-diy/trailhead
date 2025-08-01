@@ -1,5 +1,6 @@
 // Re-export all Inquirer.js prompts with enhanced TypeScript support
 export * from '@inquirer/prompts'
+import { createDefaultLogger } from '../utils/logger.js'
 
 // Simple prompt helpers that leverage Inquirer's built-in capabilities
 export function createConfirmationPrompt(
@@ -9,9 +10,10 @@ export function createConfirmationPrompt(
 ) {
   return async () => {
     if (details && details.length > 0) {
-      console.log('\nThis will:')
-      details.forEach((detail) => console.log(`  • ${detail}`))
-      console.log('')
+      const logger = createDefaultLogger()
+      logger.info('This will:')
+      details.forEach((detail) => logger.info(`  • ${detail}`))
+      logger.info('')
     }
 
     const { confirm } = await import('@inquirer/prompts')

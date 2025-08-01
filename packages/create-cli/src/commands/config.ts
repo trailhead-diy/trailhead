@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { ok, err, createCoreError } from '@esteban-url/core'
+import { createDefaultLogger } from '@esteban-url/cli/utils'
 import type { Result, CoreError } from '@esteban-url/core'
 import { createCommand } from '@esteban-url/cli/command'
 import type { CommandOptions, CommandContext } from '@esteban-url/cli/command'
@@ -141,11 +142,13 @@ Configuration Files:
  * Handle listing presets
  */
 async function handleListPresets(configContext: any): Promise<Result<void, CoreError>> {
-  console.log('📋 Listing available presets...\n')
+  const logger = createDefaultLogger()
+  logger.info('📋 Listing available presets...')
+  logger.info('')
 
   const listResult = await listPresetsDetailed(configContext)
   if (listResult.isErr()) {
-    console.error('❌ Failed to list presets:', listResult.error.message)
+    logger.error(`Failed to list presets: ${listResult.error.message}`)
     return listResult
   }
 
@@ -156,16 +159,17 @@ async function handleListPresets(configContext: any): Promise<Result<void, CoreE
  * Handle generating JSON schema
  */
 async function handleGenerateSchema(configContext: any): Promise<Result<void, CoreError>> {
-  console.log('📄 Generating JSON schema...')
+  const logger = createDefaultLogger()
+  logger.info('📄 Generating JSON schema...')
 
   const schemaResult = await generateSchemaFile(configContext)
   if (schemaResult.isErr()) {
-    console.error('❌ Failed to generate schema:', schemaResult.error.message)
+    logger.error(`Failed to generate schema: ${schemaResult.error.message}`)
     return err(schemaResult.error)
   }
 
-  console.log(`✅ JSON schema generated: ${schemaResult.value}`)
-  console.log('\nThis schema file can be used for IDE autocompletion and validation.')
+  logger.success(`JSON schema generated: ${schemaResult.value}`)
+  logger.info('This schema file can be used for IDE autocompletion and validation.')
 
   return ok(undefined)
 }
@@ -177,41 +181,43 @@ async function handleLoadPreset(
   configContext: any,
   presetName: string
 ): Promise<Result<void, CoreError>> {
-  console.log(`📋 Loading preset: ${presetName}`)
+  const logger = createDefaultLogger()
+  logger.info(`📋 Loading preset: ${presetName}`)
 
   const presetResult = await loadPreset(presetName, configContext)
   if (presetResult.isErr()) {
-    console.error(`❌ Failed to load preset '${presetName}':`, presetResult.error.message)
+    logger.error(`Failed to load preset '${presetName}': ${presetResult.error.message}`)
     return err(presetResult.error)
   }
 
   const preset = presetResult.value
 
-  console.log(`\n✅ Preset: ${preset.name}`)
-  console.log(`   Description: ${preset.description}`)
-  console.log(`   Project type: ${preset.projectType}`)
+  logger.info('')
+  logger.success(`Preset: ${preset.name}`)
+  logger.info(`   Description: ${preset.description}`)
+  logger.info(`   Project type: ${preset.projectType}`)
 
   const enabledFeatures = Object.entries(preset.features || {})
     .filter(([, enabled]) => enabled)
     .map(([name]) => name)
 
   if (enabledFeatures.length > 0) {
-    console.log(`   Features: ${enabledFeatures.join(', ')}`)
+    logger.info(`   Features: ${enabledFeatures.join(', ')}`)
   }
 
   if (preset.packageManager) {
-    console.log(`   Package manager: ${preset.packageManager}`)
+    logger.info(`   Package manager: ${preset.packageManager}`)
   }
 
   if (preset.nodeVersion) {
-    console.log(`   Node.js version: ${preset.nodeVersion}`)
+    logger.info(`   Node.js version: ${preset.nodeVersion}`)
   }
 
   if (preset.ide) {
-    console.log(`   IDE: ${preset.ide}`)
+    logger.info(`   IDE: ${preset.ide}`)
   }
 
-  console.log(`   Include docs: ${preset.includeDocs ?? 'default'}`)
+  logger.info(`   Include docs: ${preset.includeDocs ?? 'default'}`)
 
   return ok(undefined)
 }
@@ -220,16 +226,17 @@ async function handleLoadPreset(
  * Handle cleanup
  */
 async function handleCleanup(configContext: any): Promise<Result<void, CoreError>> {
-  console.log('🧹 Cleaning up old configuration files...')
+  const logger = createDefaultLogger()
+  logger.info('🧹 Cleaning up old configuration files...')
 
   const cleanupResult = await cleanupOldConfigs(30, configContext) // 30 days
   if (cleanupResult.isErr()) {
-    console.error('❌ Failed to cleanup:', cleanupResult.error.message)
+    logger.error(`Failed to cleanup: ${cleanupResult.error.message}`)
     return err(cleanupResult.error)
   }
 
   const cleanedCount = cleanupResult.value
-  console.log(`✅ Cleaned up ${cleanedCount} old configuration file(s)`)
+  logger.success(`Cleaned up ${cleanedCount} old configuration file(s)`)
 
   return ok(undefined)
 }
