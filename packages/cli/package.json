@@ -65,6 +65,7 @@
     "yocto-spinner": "^1.0.0"
   },
   "devDependencies": {
+    "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.1.0",

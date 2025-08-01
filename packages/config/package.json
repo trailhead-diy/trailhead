@@ -56,6 +56,7 @@
     "@esteban-url/fs": "workspace:*"
   },
   "devDependencies": {
+    "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "tsup": "^8.5.0",
