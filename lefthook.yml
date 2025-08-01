@@ -70,7 +70,7 @@ pre-commit:
     # 6. Smart test execution (comprehensive validation)
     smart-tests:
       priority: 6
-      run: ./scripts/smart-test-runner.sh
+      run: pnpm scripts-cli test-runner
 
     # 7. Build validation (conditional)
     build-affected:
@@ -293,7 +293,7 @@ pre-push:
         
         # Clear cache and run full suite to prevent cache issues
         rm -rf .turbo
-        ./scripts/ci-optimal.sh || {
+        pnpm scripts-cli ci-optimal || {
           echo ""
           echo "❌ Pre-push validation failed!"
           echo ""
