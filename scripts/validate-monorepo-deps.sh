@@ -18,6 +18,8 @@ echo -e "\n${YELLOW}Checking @repo package imports...${NC}"
 find packages apps tooling -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" 2>/dev/null | \
   grep -v node_modules | \
   grep -v dist | \
+  grep -v build | \
+  grep -v ".next" | \
   xargs grep -l "@repo/" 2>/dev/null | while read file; do
   
   # Extract all @repo packages imported in this file
@@ -27,15 +29,16 @@ find packages apps tooling -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -nam
       continue
     fi
     
-    # Check if the package has a build output
-    package_name="${package#@repo/}"
+    # Extract base package name (handle subpath exports like @repo/tsup-config/shared)
+    base_package="${package#@repo/}"
+    base_package="${base_package%%/*}"  # Remove everything after first slash
     package_dir=""
     
     # Find the package directory
-    if [ -d "tooling/$package_name" ]; then
-      package_dir="tooling/$package_name"
-    elif [ -d "packages/$package_name" ]; then
-      package_dir="packages/$package_name"
+    if [ -d "tooling/$base_package" ]; then
+      package_dir="tooling/$base_package"
+    elif [ -d "packages/$base_package" ]; then
+      package_dir="packages/$base_package"
     fi
     
     if [ -n "$package_dir" ]; then
@@ -43,12 +46,12 @@ find packages apps tooling -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -nam
       if [ -f "$package_dir/package.json" ]; then
         has_build=$(grep -c '"build":' "$package_dir/package.json" || true)
         if [ "$has_build" -eq 0 ]; then
-          echo -e "  ${YELLOW}⚠️  $file imports $package but it has no build script${NC}"
+          echo -e "  ${YELLOW}⚠️  $file imports $package but $base_package has no build script${NC}"
           ((WARNINGS++))
         fi
       fi
     else
-      echo -e "  ${RED}❌ $file imports $package but package not found${NC}"
+      echo -e "  ${RED}❌ $file imports $package but $base_package not found${NC}"
       ((ERRORS++))
     fi
   done
