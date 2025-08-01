@@ -2,19 +2,20 @@ import { defineConfig } from 'tsup'
 import { copyFileSync, existsSync, mkdirSync } from 'fs'
 import { join, dirname } from 'path'
 import fg from 'fast-glob'
+import { tsupProfiles } from '@repo/tsup-config/shared'
 
-export default defineConfig({
+const baseConfig = tsupProfiles.node({
   entry: {
     index: 'src/index.ts',
   },
-  format: ['esm'],
-  dts: true,
-  sourcemap: true,
-  clean: true,
-  splitting: false,
-  minify: false,
+  // Disable DTS for now - having issues with workspace dependencies
+  dts: false,
   bundle: true,
   external: [
+    '@esteban-url/cli',
+    '@esteban-url/core',
+    '@esteban-url/fs',
+    '@esteban-url/validation',
     '@esteban-url/trailhead-cli',
     '@inquirer/prompts',
     'handlebars',
@@ -24,14 +25,14 @@ export default defineConfig({
     'chalk',
     'ora',
   ],
-  target: 'node18',
-  platform: 'node',
-  outDir: 'dist',
-  treeshake: true,
   esbuildOptions: (options) => {
     options.conditions = ['node']
   },
-  onSuccess: async () => {
+})
+
+export default defineConfig({
+  ...baseConfig,
+  async onSuccess() {
     // Copy templates directory to dist
     const templateFiles = await fg('templates/**/*', {
       dot: true,
