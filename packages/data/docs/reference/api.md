@@ -843,7 +843,7 @@ const jsonResult = await jsonOps.parseFile('./data.json')
 await jsonOps.writeFile('./output.json', data)
 ```
 
-### Format Detection
+### Format Detection Examples
 
 ```typescript
 import { createDetectionOperations } from '@esteban-url/data'
@@ -885,7 +885,7 @@ const customError = createCSVError('Invalid delimiter', {
 })
 ```
 
-### Format Conversion
+### Format Conversion Examples
 
 ```typescript
 import { data } from '@esteban-url/data'
