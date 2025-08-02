@@ -5,6 +5,17 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REAL_WORLD_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Cross-platform ISO 8601 timestamp function
+get_iso_timestamp() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        date -u +"%Y-%m-%dT%H:%M:%SZ"
+    else
+        # Linux
+        date -u -Iseconds 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ"
+    fi
+}
+
 # Function to capture complete filesystem state
 capture_state() {
     local name="$1"
@@ -16,7 +27,7 @@ capture_state() {
     # Create JSON structure with file contents, permissions, and metadata
     {
         echo "{"
-        echo "  \"timestamp\": \"$(date -Iso8601)\","
+        echo "  \"timestamp\": \"$(get_iso_timestamp)\","
         echo "  \"directory\": \"$directory\","
         echo "  \"files\": {"
         
@@ -97,7 +108,7 @@ compare_states() {
     {
         echo "{"
         echo "  \"comparison\": \"$before vs $after\","
-        echo "  \"timestamp\": \"$(date -Iso8601)\","
+        echo "  \"timestamp\": \"$(get_iso_timestamp)\","
         echo "  \"before_snapshot\": \"$before_file\","
         echo "  \"after_snapshot\": \"$after_file\","
         echo "  \"file_changes\": {"
@@ -127,7 +138,7 @@ capture_output() {
         echo "{"
         echo "  \"command\": \"$command_name\","
         echo "  \"type\": \"$test_type\","
-        echo "  \"timestamp\": \"$(date -Iso8601)\","
+        echo "  \"timestamp\": \"$(get_iso_timestamp)\","
         echo "  \"exit_code\": $exit_code,"
         echo "  \"stdout\": \"$(base64 -w 0 "$stdout_file" 2>/dev/null || echo "")\","
         echo "  \"stderr\": \"$(base64 -w 0 "$stderr_file" 2>/dev/null || echo "")\","

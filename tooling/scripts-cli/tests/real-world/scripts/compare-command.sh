@@ -7,6 +7,17 @@ REAL_WORLD_DIR="$(dirname "$SCRIPT_DIR")"
 CLI_DIR="$(dirname "$(dirname "$REAL_WORLD_DIR")")"
 PROJECT_ROOT="$(cd "$CLI_DIR/../.." && pwd)"
 
+# Cross-platform timeout function
+get_timeout_cmd() {
+    if command -v timeout >/dev/null 2>&1; then
+        echo "timeout"
+    elif command -v gtimeout >/dev/null 2>&1; then
+        echo "gtimeout"
+    else
+        echo ""
+    fi
+}
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -39,10 +50,8 @@ run_command() {
     if [[ "$command_type" == "shell" ]]; then
         bash -c "$command $args" > "$stdout_file" 2> "$stderr_file" || exit_code=$?
     else
-        # TypeScript CLI
-        cd "$CLI_DIR"
-        pnpm scripts-cli $command $args > "$stdout_file" 2> "$stderr_file" || exit_code=$?
-        cd "$workspace"
+        # TypeScript CLI - run from workspace using the built CLI binary
+        node "$CLI_DIR/bin/scripts-cli.js" $command $args > "$stdout_file" 2> "$stderr_file" || exit_code=$?
     fi
     
     local end_time=$(date +%s.%N)
@@ -192,14 +201,22 @@ run_validate_deps_test() {
 
 run_test_runner_test() {
     local workspace="$REAL_WORLD_DIR/workspace/sample-monorepo"
+    local timeout_cmd=$(get_timeout_cmd)
     
     echo -e "${YELLOW}🧪 Testing test-runner command${NC}"
     
-    # Run shell script (with timeout to prevent hanging)
-    timeout 30s bash -c "$(run_command "test-runner" "shell" "$PROJECT_ROOT/scripts/smart-test-runner.sh" "" "$workspace")" || true
-    
-    # Run TypeScript CLI (with timeout)
-    timeout 30s bash -c "$(run_command "test-runner" "typescript" "test-runner" "" "$workspace")" || true
+    if [[ -n "$timeout_cmd" ]]; then
+        # Run shell script (with timeout to prevent hanging)
+        $timeout_cmd 30s bash -c "$(run_command "test-runner" "shell" "$PROJECT_ROOT/scripts/smart-test-runner.sh" "" "$workspace")" || true
+        
+        # Run TypeScript CLI (with timeout)
+        $timeout_cmd 30s bash -c "$(run_command "test-runner" "typescript" "test-runner" "" "$workspace")" || true
+    else
+        echo -e "${YELLOW}⚠️  No timeout command available, running without timeout${NC}"
+        # Run without timeout - might hang, but that's better than failing
+        run_command "test-runner" "shell" "$PROJECT_ROOT/scripts/smart-test-runner.sh" "" "$workspace" || true
+        run_command "test-runner" "typescript" "test-runner" "" "$workspace" || true
+    fi
     
     # Compare results
     compare_runs "test-runner"
