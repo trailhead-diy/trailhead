@@ -28,37 +28,38 @@ Specialized error type for validation operations.
 
 ```typescript
 interface ValidationError extends CoreError {
-  readonly type: 'ValidationError'
+  readonly type: 'VALIDATION_ERROR'
   readonly field?: string
   readonly value?: unknown
-  readonly expected?: string
-  readonly issues?: ValidationIssue[]
+  readonly constraints?: Record<string, unknown>
 }
 ```
 
-### `ValidatorFn<T>`
+### `ValidatorFn<T, R>`
 
 Function type for synchronous validators.
 
 ```typescript
-type ValidatorFn<T> = (value: unknown) => ValidationResult<T>
+type ValidatorFn<T, R = T> = (value: T) => ValidationResult<R>
 ```
 
-### `AsyncValidatorFn<T>`
+### `AsyncValidatorFn<T, R>`
 
 Function type for asynchronous validators.
 
 ```typescript
-type AsyncValidatorFn<T> = (value: unknown) => Promise<ValidationResult<T>>
+type AsyncValidatorFn<T, R = T> = (value: T) => Promise<ValidationResult<R>>
 ```
 
 ### `SchemaValidator<T>`
 
-Function type for schema-based validators.
+Schema validator type with integrated schema and validate function.
 
 ```typescript
-type SchemaValidator<T> = (value: unknown) => ValidationResult<T>
-```
+type SchemaValidator<T> = {
+  readonly schema: z.ZodType<T>
+  readonly validate: ValidatorFn<unknown, T>
+}
 
 ### `ValidationConfig`
 
@@ -88,7 +89,7 @@ const validate: {
   required: ValidatorFn<any>
   currency: ValidatorFn<number>
   date: ValidatorFn<string, Date>
-  array: <T>(validator: (value: T) => any) => ValidatorFn<T[]>
+  array: <T>(validator: (value: T) => any) => ValidatorFn<T[], T[]>
   object: <T extends Record<string, any>>(validators: any) => ValidatorFn<T>
 }
 ```
@@ -250,15 +251,19 @@ function validateObject<T extends Record<string, any>>(
 
 ### `composeValidators()`
 
-Composes multiple validators into one.
+Composes two validators in sequence.
 
 ```typescript
-function composeValidators<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
+function composeValidators<T, R1, R2>(
+  first: ValidatorFn<T, R1>,
+  second: ValidatorFn<R1, R2>
+): ValidatorFn<T, R2>
 ```
 
 **Parameters**:
 
-- `validators` - Array of validators to compose
+- `first` - First validator in the chain
+- `second` - Second validator that processes the result of the first
 
 **Returns**: Composed validator function
 
@@ -266,7 +271,6 @@ function composeValidators<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 
 ```typescript
 const validator = composeValidators(
-  validateRequired(),
   validateStringLength(3, 50),
   validateEmail()
 )
@@ -282,9 +286,18 @@ function anyOf<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 
 **Parameters**:
 
-- `validators` - Array of validators
+- `validators` - Array of validators to try
 
 **Returns**: Validator that passes if any validator passes
+
+**Usage**:
+
+```typescript
+const flexibleValidator = anyOf(
+  validateEmail(),
+  validatePhoneNumber()
+)
+```
 
 ### `allOf()`
 
@@ -296,9 +309,19 @@ function allOf<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 
 **Parameters**:
 
-- `validators` - Array of validators
+- `validators` - Array of validators that all must pass
 
 **Returns**: Validator that passes only if all validators pass
+
+**Usage**:
+
+```typescript
+const strictValidator = allOf(
+  validateRequired(),
+  validateStringLength(8, 50),
+  validateEmail()
+)
+```
 
 ### `createValidator()`
 
@@ -317,6 +340,17 @@ function createValidator<T, R = T>(
 - `config` - Validation configuration
 
 **Returns**: Validator function that uses the schema
+
+**Usage**:
+
+```typescript
+const userValidator = createValidator(
+  z.object({
+    name: z.string().min(2),
+    email: z.string().email()
+  })
+)
+```
 
 ## Schema Validation
 
@@ -588,7 +622,11 @@ function createRequiredFieldError(field: string): ValidationError
 Creates invalid type errors.
 
 ```typescript
-function createInvalidTypeError(field: string, value: unknown, expected: string): ValidationError
+function createInvalidTypeError(
+  field: string,
+  expectedType: string,
+  actualValue: unknown
+): ValidationError
 ```
 
 ### `zodErrorToValidationError()`
@@ -670,11 +708,12 @@ const result = emailValidator('user@example.com')
 ### Custom Validators
 
 ```typescript
-import { createValidator } from '@esteban-url/validation'
+import { createValidator, z } from '@esteban-url/validation'
 
-const evenNumberValidator = createValidator<number>(
-  (value) => typeof value === 'number' && value % 2 === 0,
-  'Value must be an even number'
+const evenNumberValidator = createValidator(
+  z.number().refine((value) => value % 2 === 0, {
+    message: 'Value must be an even number'
+  })
 )
 
 const result = evenNumberValidator(42)
@@ -742,29 +781,30 @@ if (result.isErr()) {
 ### Schema Registry
 
 ```typescript
-import { schemaRegistry, createSchemaValidator, z } from '@esteban-url/validation'
+import { schemaRegistry, createSchemaValidator } from '@esteban-url/validation'
 
-// Register schema
-const userSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
+// Access schema factory functions
+const emailSchemaFactory = schemaRegistry.email
+const userSchemaFactory = schemaRegistry.author
+
+// Create validators from schema factories
+const emailValidator = createSchemaValidator(emailSchemaFactory())
+const userValidator = createSchemaValidator(userSchemaFactory())
+
+// Use validators
+const emailResult = emailValidator('user@example.com')
+const userResult = userValidator({
+  name: 'John Doe',
+  email: 'john@example.com'
 })
-schemaRegistry.register('user', userSchema)
-
-// Use registered schema
-const registeredSchema = schemaRegistry.get('user')
-if (registeredSchema) {
-  const validator = createSchemaValidator(registeredSchema)
-  const result = validator({ name: 'John', email: 'john@example.com' })
-}
 ```
 
 ### Async Validation
 
 ```typescript
-import { createValidator, ValidationResult } from '@esteban-url/validation'
+import { validate, createValidationError, ValidationResult, ok, err } from '@esteban-url/validation'
 
-const asyncEmailValidator = async (value: unknown): Promise<ValidationResult<string>> => {
+const asyncEmailValidator = async (value: string): Promise<ValidationResult<string>> => {
   const emailResult = validate.email(value)
   if (emailResult.isErr()) {
     return emailResult
@@ -773,11 +813,18 @@ const asyncEmailValidator = async (value: unknown): Promise<ValidationResult<str
   // Simulate async check (e.g., database lookup)
   const exists = await checkEmailExists(emailResult.value)
   if (exists) {
-    return err(createValidationError('email', value, 'Email already exists'))
+    return err(createValidationError('Email already exists', {
+      field: 'email',
+      value,
+      suggestion: 'Use a different email address'
+    }))
   }
 
   return ok(emailResult.value)
 }
+
+// Usage
+const result = await asyncEmailValidator('user@example.com')
 ```
 
 ## Related APIs
