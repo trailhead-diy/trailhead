@@ -827,8 +827,104 @@ const asyncEmailValidator = async (value: string): Promise<ValidationResult<stri
 const result = await asyncEmailValidator('user@example.com')
 ```
 
+## Testing Utilities
+
+The package provides comprehensive testing utilities via `@esteban-url/validation/testing`:
+
+### Mock Validator
+
+```typescript
+import {
+  createMockValidator,
+  validationFixtures,
+  assertValidationSuccess,
+  assertValidationFailure
+} from '@esteban-url/validation/testing'
+
+// Create mock validator
+const validator = createMockValidator()
+
+// Register schema
+validator.registerSchema(validationFixtures.schemas.user)
+
+// Test validation
+const result = validator.validate('user', validationFixtures.valid.user)
+assertValidationSuccess(result, ['name', 'email'])
+```
+
+### Test Fixtures
+
+Pre-built schemas and test data:
+
+```typescript
+import { validationFixtures } from '@esteban-url/validation/testing'
+
+// Access schemas
+const userSchema = validationFixtures.schemas.user
+const productSchema = validationFixtures.schemas.product
+
+// Access test data
+const validUser = validationFixtures.valid.user
+const invalidUser = validationFixtures.invalid.user.missingRequired
+
+// Access Zod schemas
+const zodUserSchema = validationFixtures.zodSchemas.user
+```
+
+### Validation Assertions
+
+```typescript
+import {
+  assertValidationSuccess,
+  assertValidationFailure,
+  assertValidationData,
+  assertValidationErrors
+} from '@esteban-url/validation/testing'
+
+// Assert successful validation
+assertValidationSuccess(result, ['name', 'email'])
+
+// Assert validation failure
+assertValidationFailure(result, ['name'])
+
+// Assert validation data matches expected values
+assertValidationData(validation, { name: 'Alice', email: 'alice@example.com' })
+
+// Assert specific validation errors
+assertValidationErrors(validation, [
+  { field: 'name', rule: 'required' },
+  { field: 'email', rule: 'email' }
+])
+```
+
+### Test Scenarios
+
+```typescript
+import { createValidationTestScenario } from '@esteban-url/validation/testing'
+
+const scenario = createValidationTestScenario({
+  schemas: [validationFixtures.schemas.user],
+  mockResults: [{
+    schemaId: 'user',
+    data: { name: 'Alice' },
+    result: { success: false, errors: [{ field: 'email', message: 'Required', value: undefined, rule: 'required' }] }
+  }]
+})
+
+// Test validation
+const result = scenario.testValidation('user', { name: 'Alice' })
+
+// Test with Zod
+const zodResult = scenario.testZodValidation(z.string().email(), 'user@example.com')
+
+// Cleanup
+scenario.cleanup()
+```
+
+For detailed testing documentation, see [Testing Guide](/packages/validation/docs/how-to/testing.md).
+
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api.md)- Data processing operations
-- [FileSystem API](/packages/fs/docs/reference/api.md)- File operations
+- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
+- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations
