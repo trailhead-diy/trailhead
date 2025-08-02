@@ -8,6 +8,8 @@ import { configCommand } from './commands/config.js'
 // Export utilities for programmatic use
 export { generateProject } from './lib/core/generator.js'
 export { getTemplateFiles } from './lib/templates/loader.js'
+export { validateConfig } from './lib/config/validation.js'
+export { getAvailableTemplates } from './lib/templates/utils.js'
 export type {
   ProjectConfig,
   TemplateContext,
@@ -16,6 +18,7 @@ export type {
   PackageManager,
   GeneratorContext,
 } from './lib/types.js'
+export type { TemplateInfo } from './lib/templates/utils.js'
 
 /**
  * Create Trailhead CLI Generator
