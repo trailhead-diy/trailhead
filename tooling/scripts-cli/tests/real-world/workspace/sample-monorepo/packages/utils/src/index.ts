@@ -1,7 +1,3 @@
-import { debounce } from 'lodash';
-import { throttle } from 'lodash';
-import { debounce } from 'lodash'; // Duplicate import
-import { map } from 'lodash';
-import { debounce } from 'lodash'; // Another duplicate
+import { debounce, throttle, map } from 'lodash'
 
-export { debounce, throttle, map };
+export { debounce, throttle, map }

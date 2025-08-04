@@ -18,25 +18,25 @@ export const fixImportsCommand = createCommand<FixImportsOptions>({
       flags: '--dry-run',
       description: 'Show what would be fixed without making changes',
       type: 'boolean',
-      default: false
+      default: false,
     },
     {
       flags: '-p, --pattern <pattern>',
       description: 'Glob pattern for files to process',
       type: 'string',
-      default: 'packages/**/*.ts'
+      default: 'packages/**/*.ts',
     },
     {
       flags: '--backup',
       description: 'Create backup files before modification',
       type: 'boolean',
-      default: false
-    }
+      default: false,
+    },
   ],
   examples: [
     'fix-imports',
     'fix-imports --dry-run',
-    'fix-imports --pattern "src/**/*.ts" --backup'
+    'fix-imports --pattern "src/**/*.ts" --backup',
   ],
   action: async (options, context): Promise<Result<void, CoreError>> => {
     context.logger.info(colorize('blue', withIcon('progress', 'Scanning for duplicate imports...')))
@@ -44,11 +44,13 @@ export const fixImportsCommand = createCommand<FixImportsOptions>({
     try {
       // Find TypeScript files matching pattern
       const files = await glob(options.pattern || 'packages/**/*.ts', {
-        ignore: ['**/node_modules/**', '**/dist/**', '**/*.d.ts', '**/*.test.ts', '**/*.spec.ts']
+        ignore: ['**/node_modules/**', '**/dist/**', '**/*.d.ts', '**/*.test.ts', '**/*.spec.ts'],
       })
 
       if (files.length === 0) {
-        context.logger.info(colorize('yellow', withIcon('warning', 'No TypeScript files found matching pattern')))
+        context.logger.info(
+          colorize('yellow', withIcon('warning', 'No TypeScript files found matching pattern'))
+        )
         return ok(undefined)
       }
 
@@ -79,7 +81,7 @@ export const fixImportsCommand = createCommand<FixImportsOptions>({
         }
       }
 
-      const summary = options.dryRun 
+      const summary = options.dryRun
         ? `Would fix ${fixedCount} of ${processedCount} files`
         : `Fixed ${fixedCount} of ${processedCount} files`
 
@@ -87,22 +89,16 @@ export const fixImportsCommand = createCommand<FixImportsOptions>({
       context.logger.info(colorize('green', withIcon('success', summary)))
 
       return ok(undefined)
-
     } catch (error) {
       return err(
-        createCoreError(
-          'IMPORT_FIX_FAILED',
-          'FILE_SYSTEM_ERROR',
-          'Failed to fix imports',
-          {
-            recoverable: false,
-            cause: error,
-            suggestion: 'Check file permissions and ensure files are not in use'
-          }
-        )
+        createCoreError('IMPORT_FIX_FAILED', 'FILE_SYSTEM_ERROR', 'Failed to fix imports', {
+          recoverable: false,
+          cause: error,
+          suggestion: 'Check file permissions and ensure files are not in use',
+        })
       )
     }
-  }
+  },
 })
 
 async function processFile(
@@ -113,15 +109,10 @@ async function processFile(
   const contentResult = await context.fs.readFile(filePath)
   if (contentResult.isErr()) {
     return err(
-      createCoreError(
-        'FILE_READ_FAILED',
-        'FILE_SYSTEM_ERROR',
-        `Failed to read file: ${filePath}`,
-        {
-          recoverable: true,
-          cause: contentResult.error
-        }
-      )
+      createCoreError('FILE_READ_FAILED', 'FILE_SYSTEM_ERROR', `Failed to read file: ${filePath}`, {
+        recoverable: true,
+        cause: contentResult.error,
+      })
     )
   }
 
@@ -148,7 +139,7 @@ async function processFile(
           `Failed to create backup for: ${filePath}`,
           {
             recoverable: true,
-            cause: backupResult.error
+            cause: backupResult.error,
           }
         )
       )
@@ -165,7 +156,7 @@ async function processFile(
         `Failed to write file: ${filePath}`,
         {
           recoverable: true,
-          cause: writeResult.error
+          cause: writeResult.error,
         }
       )
     )
@@ -195,9 +186,12 @@ const parseImportLine = (line: string): ImportInfo | null => {
   if (importMatch) {
     const [, imports, module] = importMatch
     return {
-      imports: imports.split(',').map(imp => imp.trim()).filter(Boolean),
+      imports: imports
+        .split(',')
+        .map((imp) => imp.trim())
+        .filter(Boolean),
       module,
-      isTypeImport: false
+      isTypeImport: false,
     }
   }
 
@@ -206,9 +200,12 @@ const parseImportLine = (line: string): ImportInfo | null => {
   if (typeImportMatch) {
     const [, imports, module] = typeImportMatch
     return {
-      imports: imports.split(',').map(imp => imp.trim()).filter(Boolean),
+      imports: imports
+        .split(',')
+        .map((imp) => imp.trim())
+        .filter(Boolean),
       module,
-      isTypeImport: true
+      isTypeImport: true,
     }
   }
 
@@ -226,12 +223,12 @@ const analyzeImports = (content: string): ImportAnalysis => {
     if (importInfo) {
       importLineIndices.push(index)
       const targetMap = importInfo.isTypeImport ? typeImportsMap : regularImportsMap
-      
+
       if (!targetMap.has(importInfo.module)) {
         targetMap.set(importInfo.module, new Set())
       }
-      
-      importInfo.imports.forEach(imp => targetMap.get(importInfo.module)!.add(imp))
+
+      importInfo.imports.forEach((imp) => targetMap.get(importInfo.module)!.add(imp))
     }
   })
 
@@ -239,14 +236,14 @@ const analyzeImports = (content: string): ImportAnalysis => {
   const regularImports = new Map(
     Array.from(regularImportsMap.entries()).map(([module, imports]) => [
       module,
-      Array.from(imports).sort()
+      Array.from(imports).sort(),
     ])
   )
-  
+
   const typeImports = new Map(
     Array.from(typeImportsMap.entries()).map(([module, imports]) => [
       module,
-      Array.from(imports).sort()
+      Array.from(imports).sort(),
     ])
   )
 
@@ -254,7 +251,7 @@ const analyzeImports = (content: string): ImportAnalysis => {
     regularImports,
     typeImports,
     importLineIndices,
-    lines
+    lines,
   }
 }
 
@@ -278,7 +275,7 @@ const rebuildContent = (analysis: ImportAnalysis): string => {
   const { lines, importLineIndices } = analysis
   const importLineSet = new Set(importLineIndices)
   const mergedImportLines = buildMergedImportLines(analysis)
-  
+
   if (mergedImportLines.length === 0) {
     return lines.join('\n') // No imports to merge
   }

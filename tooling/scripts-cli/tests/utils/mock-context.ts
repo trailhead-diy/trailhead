@@ -7,7 +7,7 @@ export function createMockContext(overrides: Partial<CommandContext> = {}): Comm
     info: vi.fn(),
     warning: vi.fn(),
     error: vi.fn(),
-    debug: vi.fn()
+    debug: vi.fn(),
   }
 
   const mockFs = {
@@ -20,35 +20,38 @@ export function createMockContext(overrides: Partial<CommandContext> = {}): Comm
     copyFile: vi.fn().mockResolvedValue(ok(undefined)),
     moveFile: vi.fn().mockResolvedValue(ok(undefined)),
     listDirectory: vi.fn().mockResolvedValue(ok([])),
-    getFileStats: vi.fn().mockResolvedValue(ok({
-      size: 0,
-      isFile: true,
-      isDirectory: false,
-      modifiedTime: new Date(),
-      createdTime: new Date()
-    }))
+    getFileStats: vi.fn().mockResolvedValue(
+      ok({
+        size: 0,
+        isFile: true,
+        isDirectory: false,
+        modifiedTime: new Date(),
+        createdTime: new Date(),
+      })
+    ),
   }
 
   return {
     logger: mockLogger,
     fs: mockFs,
     verbose: false,
-    ...overrides
+    ...overrides,
   }
 }
 
 export function createMockFileSystem(files: Record<string, string>) {
   const mockFs = {
-    exists: vi.fn().mockImplementation((path: string) => 
-      Promise.resolve(path in files)
-    ),
-    readFile: vi.fn().mockImplementation((path: string) => 
-      Promise.resolve(path in files ? ok(files[path]) : err(createCoreError(
-        'FILE_NOT_FOUND',
-        'FILE_SYSTEM_ERROR',
-        `File not found: ${path}`,
-        { recoverable: false }
-      )))
+    exists: vi.fn().mockImplementation((path: string) => Promise.resolve(path in files)),
+    readFile: vi.fn().mockImplementation((path: string) =>
+      Promise.resolve(
+        path in files
+          ? ok(files[path])
+          : err(
+              createCoreError('FILE_NOT_FOUND', 'FILE_SYSTEM_ERROR', `File not found: ${path}`, {
+                recoverable: false,
+              })
+            )
+      )
     ),
     writeFile: vi.fn().mockImplementation((path: string, content: string) => {
       files[path] = content
@@ -66,29 +69,43 @@ export function createMockFileSystem(files: Record<string, string>) {
     copyFile: vi.fn().mockResolvedValue(ok(undefined)),
     moveFile: vi.fn().mockResolvedValue(ok(undefined)),
     listDirectory: vi.fn().mockResolvedValue(ok([])),
-    getFileStats: vi.fn().mockResolvedValue(ok({
-      size: 0,
-      isFile: true,
-      isDirectory: false,
-      modifiedTime: new Date(),
-      createdTime: new Date()
-    }))
+    getFileStats: vi.fn().mockResolvedValue(
+      ok({
+        size: 0,
+        isFile: true,
+        isDirectory: false,
+        modifiedTime: new Date(),
+        createdTime: new Date(),
+      })
+    ),
   }
 
   return mockFs
 }
 
-export function createMockPackageJson(name: string, dependencies: Record<string, string> = {}, scripts: Record<string, string> = {}) {
-  return JSON.stringify({
-    name,
-    version: '1.0.0',
-    dependencies,
-    scripts
-  }, null, 2)
+export function createMockPackageJson(
+  name: string,
+  dependencies: Record<string, string> = {},
+  scripts: Record<string, string> = {}
+) {
+  return JSON.stringify(
+    {
+      name,
+      version: '1.0.0',
+      dependencies,
+      scripts,
+    },
+    null,
+    2
+  )
 }
 
 export function createMockTurboJson(tasks: Record<string, any> = {}) {
-  return JSON.stringify({
-    tasks
-  }, null, 2)
+  return JSON.stringify(
+    {
+      tasks,
+    },
+    null,
+    2
+  )
 }

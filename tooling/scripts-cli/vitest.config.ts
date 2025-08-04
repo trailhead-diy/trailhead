@@ -7,9 +7,9 @@ export default defineConfig({
     hookTimeout: 30000, // Longer timeout for setup/teardown
     setupFiles: ['./tests/setup.ts'],
     env: {
-      NODE_ENV: 'test'
+      NODE_ENV: 'test',
     },
     globals: true,
-    environment: 'node'
-  }
+    environment: 'node',
+  },
 })

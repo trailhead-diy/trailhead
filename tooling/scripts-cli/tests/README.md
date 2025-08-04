@@ -39,28 +39,36 @@ pnpm test:all           # All tests + parity check
 ## Test Categories
 
 ### Unit Tests
+
 Test individual functions and logic in isolation:
+
 - Risk level detection for test-runner
 - Package extraction from file paths
 - Import parsing and circular dependency detection
 - Progress indicator logic
 
 ### Integration Tests
+
 Test complete command behavior end-to-end:
+
 - npm-auth authentication setup
 - validate-deps monorepo validation
 - File system interactions
 - Error handling scenarios
 
 ### Comparison Tests
+
 Compare outputs between shell scripts and TypeScript commands:
+
 - Exit code consistency
 - Output format similarity
 - Performance benchmarks
 - Edge case handling
 
 ### Parity Verification
+
 Quick verification that all shell scripts have TypeScript equivalents:
+
 - Command availability check
 - Help output validation
 - Basic functionality smoke test

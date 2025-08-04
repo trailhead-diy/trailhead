@@ -5,6 +5,7 @@ This directory contains infrastructure for testing actual command execution betw
 ## ⚠️ IMPORTANT: Test Safety
 
 These tests make **real changes** to files and systems. Always:
+
 1. Run in isolated environment only
 2. Backup your work with git stash
 3. Review test scenarios before execution

@@ -18,7 +18,7 @@ This framework makes **REAL CHANGES** to files and systems. It's designed with s
 ./scripts/setup-test-environment.sh
 
 # 2. Run all comparisons (SAFE - includes backups)
-./scripts/run-all-tests.sh  
+./scripts/run-all-tests.sh
 
 # 3. View results
 cat results/comprehensive-report.md
@@ -43,6 +43,7 @@ cat results/comprehensive-report.md
 ## What Gets Tested
 
 ### 🔍 **Complete Comparison**
+
 - **File Changes**: Before/after snapshots of entire filesystem
 - **Command Output**: stdout, stderr, exit codes
 - **Environment Changes**: Variables, working directory
@@ -50,12 +51,14 @@ cat results/comprehensive-report.md
 - **Error Handling**: How each handles edge cases
 
 ### 🧪 **Realistic Scenarios**
+
 - **npm-auth**: Real .npmrc modification with various token formats
-- **fix-imports**: Actual duplicate import removal from TypeScript files  
+- **fix-imports**: Actual duplicate import removal from TypeScript files
 - **validate-deps**: Real monorepo dependency validation
 - **test-runner**: Actual test execution with risk detection
 
 ### 📊 **Evidence-Based Results**
+
 - Detailed diff reports for every change
 - Side-by-side output comparison
 - Performance metrics
@@ -79,6 +82,7 @@ tests/real-world/
 ## Test Scenarios
 
 ### npm-auth
+
 - Fresh system (no .npmrc)
 - Existing .npmrc with other registries
 - Permission issues
@@ -86,6 +90,7 @@ tests/real-world/
 - Various token formats
 
 ### fix-imports
+
 - Basic duplicate imports
 - Mixed import styles (default, named, namespace)
 - Comments and strings with import-like text
@@ -93,6 +98,7 @@ tests/real-world/
 - Backup file creation
 
 ### validate-deps
+
 - Valid monorepo structure
 - Circular dependencies
 - Missing build dependencies
@@ -100,6 +106,7 @@ tests/real-world/
 - --fix and --graph flags
 
 ### test-runner
+
 - Files with high-risk patterns
 - Long-running tests (timeout scenarios)
 - Mixed risk levels
@@ -108,24 +115,28 @@ tests/real-world/
 ## Safety Mechanisms
 
 ### 🔒 **Pre-Test Safety**
+
 - Git stash backup creation
 - Clean working directory verification
 - CLI build status check
 - Permission validation
 
 ### 🏖️ **Isolated Environment**
+
 - All tests run in `workspace/` subdirectory
 - No modifications to real project files
 - Temporary directories for each test
 - Controlled environment variables
 
 ### 📸 **State Management**
+
 - Complete filesystem snapshots before/after
 - JSON-based state capture
 - Rollback capability
 - Change tracking
 
 ### 🧹 **Cleanup**
+
 - Automatic workspace cleanup
 - Optional results preservation
 - Git stash restoration
@@ -134,7 +145,9 @@ tests/real-world/
 ## Understanding Results
 
 ### 📊 **Comprehensive Report**
+
 The main report (`results/comprehensive-report.md`) includes:
+
 - Executive summary with pass/fail counts
 - Detailed analysis for each command
 - Performance comparison
@@ -142,14 +155,18 @@ The main report (`results/comprehensive-report.md`) includes:
 - Migration recommendations
 
 ### 📋 **Individual Reports**
+
 Each command gets a dedicated report:
+
 - Exit code comparison
 - File changes diff
 - Output comparison
 - Specific recommendations
 
 ### 🔍 **Raw Data**
+
 All raw data is preserved:
+
 - `snapshots/`: Complete filesystem states
 - `outputs/`: Command stdout/stderr
 - `results/`: Analysis and diffs
@@ -169,7 +186,7 @@ All raw data is preserved:
 🔍 Testing: npm-auth
 ✅ npm-auth comparison completed
 
-🔍 Testing: fix-imports  
+🔍 Testing: fix-imports
 ✅ fix-imports comparison completed
 
 📊 Test Results Summary
@@ -188,17 +205,20 @@ All raw data is preserved:
 ### Common Issues
 
 **"CLI not built"**
+
 ```bash
 cd ../../../  # Go to CLI directory
 pnpm build
 ```
 
 **"Permission denied"**
+
 ```bash
 chmod +x scripts/*.sh
 ```
 
 **"Git stash issues"**
+
 ```bash
 git stash list  # Check existing stashes
 git stash pop   # Restore if needed
@@ -207,6 +227,7 @@ git stash pop   # Restore if needed
 ### Manual Cleanup
 
 If automated cleanup fails:
+
 ```bash
 rm -rf workspace/
 rm -rf snapshots/
@@ -217,13 +238,17 @@ rm -rf outputs/
 ## Advanced Usage
 
 ### Custom Test Scenarios
+
 Add new scenarios in `test-cases/` directory with:
+
 - Setup instructions
 - Expected behavior
 - Files to compare
 
 ### Extended Analysis
+
 For deeper analysis:
+
 ```bash
 # Compare specific snapshots
 ./scripts/state-capture.sh compare before-test after-test
@@ -234,7 +259,9 @@ cat outputs/npm-auth-typescript-stdout.txt
 ```
 
 ### Performance Testing
+
 Add timing measurements by modifying `compare-command.sh`:
+
 ```bash
 start_time=$(date +%s.%N)
 # ... run command ...
@@ -245,6 +272,7 @@ duration=$(echo "$end_time - $start_time" | bc -l)
 ## Next Steps After Testing
 
 ### ✅ If All Tests Pass
+
 1. Review comprehensive report
 2. Update documentation
 3. Archive shell scripts
@@ -252,12 +280,14 @@ duration=$(echo "$end_time - $start_time" | bc -l)
 5. Announce migration to team
 
 ### ⚠️ If Some Tests Fail
+
 1. Review individual reports
 2. Fix TypeScript CLI discrepancies
 3. Re-run failed tests
 4. Validate fixes
 
 ### ❌ If Many Tests Fail
+
 1. Review fundamental implementation
 2. Debug core issues
 3. Consider incremental migration

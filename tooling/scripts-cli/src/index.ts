@@ -10,13 +10,13 @@ export { default as cli } from './cli.js'
 
 // Export utilities for external use
 export { colorize, withIcon, colors, icons } from './utils/colors.js'
-export { 
-  execCommand, 
-  execSequence, 
-  execParallel, 
-  createTimer, 
-  getElapsedSeconds, 
-  measureExecution 
+export {
+  execCommand,
+  execSequence,
+  execParallel,
+  createTimer,
+  getElapsedSeconds,
+  measureExecution,
 } from './utils/subprocess.js'
 
 // Export CLI creation function from cli.ts

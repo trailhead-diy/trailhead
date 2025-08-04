@@ -1,4 +1,4 @@
-import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
+import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { colorize, withIcon } from '../utils/colors.js'
 
@@ -15,46 +15,53 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
     {
       flags: '-t, --token <token>',
       description: 'GitHub token (defaults to GITHUB_TOKEN env var)',
-      type: 'string'
+      type: 'string',
     },
     {
       flags: '-r, --registry <url>',
       description: 'Registry URL',
       type: 'string',
-      default: 'https://npm.pkg.github.com'
+      default: 'https://npm.pkg.github.com',
     },
     {
       flags: '--dry-run',
       description: 'Show what would be done without executing',
       type: 'boolean',
-      default: false
-    }
+      default: false,
+    },
   ],
   examples: [
     'npm-auth',
     'npm-auth --token ghp_xxx',
-    'npm-auth --registry https://npm.pkg.github.com --dry-run'
+    'npm-auth --registry https://npm.pkg.github.com --dry-run',
   ],
   action: async (options, context): Promise<Result<void, CoreError>> => {
     // Get token from options or environment
     const token = options.token || process.env.GITHUB_TOKEN
-    
+
     if (!token) {
-      context.logger.info(withIcon('info', 'GITHUB_TOKEN not set, skipping GitHub Packages configuration'))
+      context.logger.info(
+        withIcon('info', 'GITHUB_TOKEN not set, skipping GitHub Packages configuration')
+      )
       context.logger.info('   This is normal for public CI builds and local development')
       return ok(undefined)
     }
 
-    context.logger.info(colorize('blue', withIcon('progress', 'Configuring npm authentication for GitHub Packages...')))
+    context.logger.info(
+      colorize(
+        'blue',
+        withIcon('progress', 'Configuring npm authentication for GitHub Packages...')
+      )
+    )
 
     const npmrcPath = '.npmrc'
     const registry = options.registry || 'https://npm.pkg.github.com'
-    
+
     const npmrcContent = [
       '',
       '# GitHub Packages Authentication (added by scripts-cli)',
       `@trailhead:registry=${registry}`,
-      `//${new URL(registry).host}/:_authToken=${token}`
+      `//${new URL(registry).host}/:_authToken=${token}`,
     ].join('\n')
 
     if (options.dryRun) {
@@ -66,7 +73,7 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
     // Check if .npmrc exists and read existing content
     let existingContent = ''
     const npmrcExists = await context.fs.exists(npmrcPath)
-    
+
     if (npmrcExists.isOk() && npmrcExists.value) {
       const contentResult = await context.fs.readFile(npmrcPath)
       if (contentResult.isOk()) {
@@ -85,7 +92,7 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
             {
               recoverable: true,
               cause: contentResult.error,
-              suggestion: 'Check file permissions and ensure the file is readable'
+              suggestion: 'Check file permissions and ensure the file is readable',
             }
           )
         )
@@ -94,7 +101,7 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
 
     // Simulate append by combining existing content with new content
     const finalContent = existingContent ? existingContent + npmrcContent : npmrcContent.trimStart()
-    
+
     // Write the combined content
     const writeResult = await context.fs.writeFile(npmrcPath, finalContent)
     if (writeResult.isErr()) {
@@ -106,13 +113,15 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
           {
             recoverable: true,
             cause: writeResult.error,
-            suggestion: 'Check file permissions and ensure the directory is writable'
+            suggestion: 'Check file permissions and ensure the directory is writable',
           }
         )
       )
     }
-    
-    context.logger.info(colorize('green', withIcon('success', 'GitHub Packages authentication configured')))
+
+    context.logger.info(
+      colorize('green', withIcon('success', 'GitHub Packages authentication configured'))
+    )
     return ok(undefined)
-  }
+  },
 })

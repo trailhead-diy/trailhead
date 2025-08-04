@@ -11,5 +11,5 @@ export default defineConfig({
   shims: false,
   splitting: false,
   treeshake: true,
-  bundle: false
+  bundle: false,
 })

@@ -1,4 +1,8 @@
-import { executeSubprocess, type SubprocessConfig, type CommandContext } from '@esteban-url/cli/command'
+import {
+  executeSubprocess,
+  type SubprocessConfig,
+  type CommandContext,
+} from '@esteban-url/cli/command'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 
 export interface ExecutionOptions {
@@ -21,7 +25,7 @@ export async function execCommand(
     command,
     args,
     cwd: options.cwd,
-    env: options.env
+    env: options.env,
   }
 
   // If timeout is specified, wrap the execution with a timeout check
@@ -36,7 +40,7 @@ export async function execCommand(
               `Command timed out after ${options.timeout}ms: ${command} ${args.join(' ')}`,
               {
                 recoverable: false,
-                suggestion: 'Increase timeout or check if the command is stuck'
+                suggestion: 'Increase timeout or check if the command is stuck',
               }
             )
           )
@@ -45,11 +49,8 @@ export async function execCommand(
     })
 
     try {
-      const result = await Promise.race([
-        executeSubprocess(config, context),
-        timeoutPromise
-      ])
-      
+      const result = await Promise.race([executeSubprocess(config, context), timeoutPromise])
+
       if (result.isErr() && !options.allowFailure) {
         return err(
           createCoreError(
@@ -59,7 +60,7 @@ export async function execCommand(
             {
               recoverable: false,
               cause: result.error,
-              suggestion: 'Check command syntax and ensure all dependencies are installed'
+              suggestion: 'Check command syntax and ensure all dependencies are installed',
             }
           )
         )
@@ -77,7 +78,7 @@ export async function execCommand(
 
   // No timeout specified, execute normally
   const result = await executeSubprocess(config, context)
-  
+
   if (result.isErr() && !options.allowFailure) {
     return err(
       createCoreError(
@@ -87,7 +88,7 @@ export async function execCommand(
         {
           recoverable: false,
           cause: result.error,
-          suggestion: 'Check command syntax and ensure all dependencies are installed'
+          suggestion: 'Check command syntax and ensure all dependencies are installed',
         }
       )
     )
@@ -107,11 +108,11 @@ export async function execSequence(
 
   for (const { command, args, options = {} } of commands) {
     const result = await execCommand(command, args, context, options)
-    
+
     if (result.isErr()) {
       return err(result.error)
     }
-    
+
     results.push(result.value)
   }
 
@@ -131,7 +132,7 @@ export async function execParallel(
 
   const results = await Promise.allSettled(promises)
   const outputs: string[] = []
-  
+
   for (const result of results) {
     if (result.status === 'rejected') {
       return err(
@@ -141,16 +142,16 @@ export async function execParallel(
           'One or more parallel commands failed',
           {
             recoverable: false,
-            cause: result.reason
+            cause: result.reason,
           }
         )
       )
     }
-    
+
     if (result.value.isErr()) {
       return err(result.value.error)
     }
-    
+
     outputs.push(result.value.value)
   }
 
@@ -162,12 +163,10 @@ export async function execParallel(
  */
 export const createTimer = () => Date.now()
 
-export const getElapsedSeconds = (startTime: number): number => 
+export const getElapsedSeconds = (startTime: number): number =>
   Math.floor((Date.now() - startTime) / 1000)
 
-export const measureExecution = async <T>(
-  fn: () => Promise<T>
-): Promise<[T, number]> => {
+export const measureExecution = async <T>(fn: () => Promise<T>): Promise<[T, number]> => {
   const startTime = createTimer()
   const result = await fn()
   const elapsed = getElapsedSeconds(startTime)

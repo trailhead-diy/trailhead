@@ -1,40 +1,40 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createMockContext } from '../utils/mock-context.js'
-import { ok, err } from '@esteban-url/core'
 
 // Import functions to test (would need to be exported from test-runner.ts)
 // For now, we'll test the overall command behavior
 
 describe('test-runner unit tests', () => {
-  let mockContext: any
+  // let mockContext: any
 
   beforeEach(() => {
-    mockContext = createMockContext()
+    // mockContext = createMockContext()
     vi.clearAllMocks()
   })
 
   describe('detectRiskLevel', () => {
     const mockDetectRiskLevel = (files: string[]) => {
       // High risk patterns
-      const highRiskRegex = /\.(ts|tsx|js|jsx)$|tsconfig|package\.json$|turbo\.json$|vitest\.config|vite\.config/
-      const skipRegex = /\.md$|README|CHANGELOG|LICENSE|\.github\/|\.vscode\/|\.gitignore$|\.prettierrc|\.prettierignore|docs\/|\.smart-test-config\.json$|\.mcp\.json$|scripts\/.*\.sh$/
-      
+      const highRiskRegex =
+        /\.(ts|tsx|js|jsx)$|tsconfig|package\.json$|turbo\.json$|vitest\.config|vite\.config/
+      const skipRegex =
+        /\.md$|README|CHANGELOG|LICENSE|\.github\/|\.vscode\/|\.gitignore$|\.prettierrc|\.prettierignore|docs\/|\.smart-test-config\.json$|\.mcp\.json$|scripts\/.*\.sh$/
+
       // Check for high-risk files
-      if (files.some(file => highRiskRegex.test(file))) {
+      if (files.some((file) => highRiskRegex.test(file))) {
         return 'high'
       }
-      
+
       // Check for package-specific changes
-      if (files.some(file => file.startsWith('packages/'))) {
+      if (files.some((file) => file.startsWith('packages/'))) {
         return 'medium'
       }
-      
+
       // Check if all files match skip patterns
-      const nonSkipFiles = files.filter(file => !skipRegex.test(file))
+      const nonSkipFiles = files.filter((file) => !skipRegex.test(file))
       if (nonSkipFiles.length === 0) {
         return 'skip'
       }
-      
+
       return 'medium'
     }
 
@@ -85,7 +85,7 @@ describe('test-runner unit tests', () => {
       const files = [
         'packages/cli/src/index.ts',
         'packages/create-cli/src/main.ts',
-        'packages/cli/README.md'
+        'packages/cli/README.md',
       ]
       const result = mockGetAffectedPackages(files)
       expect(result).toEqual(['cli', 'create-cli'])
@@ -100,7 +100,7 @@ describe('test-runner unit tests', () => {
     it('should handle nested package paths', () => {
       const files = [
         'packages/cli/src/commands/build.ts',
-        'packages/create-cli/templates/basic/package.json'
+        'packages/create-cli/templates/basic/package.json',
       ]
       const result = mockGetAffectedPackages(files)
       expect(result).toEqual(['cli', 'create-cli'])
@@ -138,8 +138,8 @@ describe('test-runner unit tests', () => {
     it('should use config mappings when available', () => {
       const config = {
         packageMappings: {
-          'custom': '@custom/package'
-        }
+          custom: '@custom/package',
+        },
       }
       const result = mockGetPackageFilter('custom', config)
       expect(result).toBe('@custom/package')

@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createMockContext } from '../utils/mock-context.js'
 
 describe('validate-deps unit tests', () => {
-  let mockContext: any
+  // let mockContext: any
 
   beforeEach(() => {
-    mockContext = createMockContext()
+    // mockContext = createMockContext()
     vi.clearAllMocks()
   })
 

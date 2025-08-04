@@ -11,11 +11,11 @@ const cli = createCLI({
   description: 'TypeScript CLI tools for Trailhead monorepo operations',
   commands: [
     npmAuthCommand,
-    ciOptimalCommand, 
+    ciOptimalCommand,
     testRunnerCommand,
     fixImportsCommand,
-    validateDepsCommand
-  ]
+    validateDepsCommand,
+  ],
 })
 
 // Run CLI if this file is executed directly

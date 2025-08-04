@@ -2,8 +2,6 @@ import { createCommand, type CommandOptions, type CommandContext } from '@esteba
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { execCommand } from '../utils/subprocess.js'
 import { colorize, withIcon } from '../utils/colors.js'
-import fastGlob from 'fast-glob'
-const { glob } = fastGlob
 
 interface TestRunnerOptions extends CommandOptions {
   readonly dryRun?: boolean
@@ -42,7 +40,7 @@ const createProgressIndicator = (message: string): (() => void) => {
     process.stdout.write(`\r${colorize('blue', frames[i])} ${message}`)
     i = (i + 1) % frames.length
   }, 100)
-  
+
   return () => {
     clearInterval(interval)
     process.stdout.write('\r' + ' '.repeat(message.length + 3) + '\r') // Clear the line
@@ -56,16 +54,24 @@ const getTimeoutCommand = async (context: CommandContext): Promise<string | null
   if (timeoutResult.isOk()) {
     return 'timeout'
   }
-  
+
   // Check for gtimeout (macOS with coreutils)
   const gtimeoutResult = await execCommand('which', ['gtimeout'], context, { allowFailure: true })
   if (gtimeoutResult.isOk()) {
     return 'gtimeout'
   }
-  
+
   // No timeout command available
   if (context.verbose) {
-    context.logger.warning(colorize('yellow', withIcon('warning', 'Neither timeout nor gtimeout found. Install coreutils for timeout support.')))
+    context.logger.warning(
+      colorize(
+        'yellow',
+        withIcon(
+          'warning',
+          'Neither timeout nor gtimeout found. Install coreutils for timeout support.'
+        )
+      )
+    )
   }
   return null
 }
@@ -78,68 +84,70 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
       flags: '--dry-run',
       description: 'Show what would be executed without running tests',
       type: 'boolean',
-      default: false
+      default: false,
     },
     {
       flags: '--force',
       description: 'Force full test suite execution',
       type: 'boolean',
-      default: false
+      default: false,
     },
     {
       flags: '--skip',
       description: 'Skip all test execution',
       type: 'boolean',
-      default: false
+      default: false,
     },
     {
       flags: '-c, --test-command <command>',
       description: 'Test command to execute',
       type: 'string',
-      default: 'pnpm test'
+      default: 'pnpm test',
     },
     {
       flags: '--config-file <path>',
       description: 'Path to configuration file',
       type: 'string',
-      default: '.smart-test-config.json'
+      default: '.smart-test-config.json',
     },
     {
       flags: '--timeout <seconds>',
       description: 'Test execution timeout in seconds',
       type: 'string',
-      default: '120'
+      default: '120',
     },
     {
       flags: '--retry-flaky',
       description: 'Enable retry for flaky tests',
       type: 'boolean',
-      default: true
+      default: true,
     },
     {
       flags: '--max-retries <number>',
       description: 'Maximum number of retries for flaky tests',
       type: 'string',
-      default: '2'
+      default: '2',
     },
     {
       flags: '--parallel-testing',
       description: 'Enable parallel test execution for affected packages',
       type: 'boolean',
-      default: true
-    }
+      default: true,
+    },
   ],
   examples: [
     'test-runner',
     'test-runner --dry-run',
     'test-runner --force',
     'test-runner --test-command "pnpm test --coverage"',
-    'test-runner --timeout 300 --max-retries 3'
+    'test-runner --timeout 300 --max-retries 3',
   ],
   action: async (options, context): Promise<Result<void, CoreError>> => {
     // Handle skip flag
     if (options.skip || process.env.SKIP_TESTS === '1') {
-      context.logger.warning(colorize('yellow', withIcon('warning', 'Skipping all tests (SKIP_TESTS=1 or --skip)')))
+      context.logger.warning(
+        colorize('yellow', withIcon('warning', 'Skipping all tests (SKIP_TESTS=1 or --skip)'))
+      )
       return ok(undefined)
     }
 
@@ -155,7 +163,9 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
     }
 
     if (context.verbose) {
-      context.logger.info(colorize('blue', withIcon('info', `Found ${stagedFiles.length} staged files`)))
+      context.logger.info(
+        colorize('blue', withIcon('info', `Found ${stagedFiles.length} staged files`))
+      )
     }
 
     // Merge options with config
@@ -165,13 +175,13 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
       timeout: Number(options.timeout || config.timeout || 120),
       retryFlaky: options.retryFlaky ?? config.retryFlaky ?? true,
       maxRetries: Number(options.maxRetries || config.maxRetries || 2),
-      parallelTesting: options.parallelTesting ?? config.parallelTesting ?? true
+      parallelTesting: options.parallelTesting ?? config.parallelTesting ?? true,
     }
 
     // Force full test suite if requested
     if (options.force || process.env.FORCE_TESTS === '1') {
       return executeTests(
-        mergedOptions.testCommand, 
+        mergedOptions.testCommand,
         '🔴 Forced full test suite execution',
         mergedOptions,
         context
@@ -180,7 +190,7 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
 
     // Detect risk level based on file patterns
     const riskLevel = detectRiskLevel(stagedFiles, config, context)
-    
+
     if (context.verbose) {
       context.logger.info(`Detected risk level: ${riskLevel}`)
     }
@@ -194,14 +204,19 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
           mergedOptions,
           context
         )
-      
+
       case 'medium':
         return runAffectedPackageTests(stagedFiles, mergedOptions, config, context)
-      
+
       case 'skip':
-        context.logger.info(colorize('green', withIcon('success', '🟢 Documentation/config changes only - skipping tests')))
+        context.logger.info(
+          colorize(
+            'green',
+            withIcon('success', '🟢 Documentation/config changes only - skipping tests')
+          )
+        )
         return ok(undefined)
-      
+
       default:
         return executeTests(
           mergedOptions.testCommand,
@@ -210,29 +225,24 @@ export const testRunnerCommand = createCommand<TestRunnerOptions>({
           context
         )
     }
-  }
+  },
 })
 
 // Helper functions
 
 async function getStagedFiles(context: CommandContext): Promise<string[]> {
   const now = Date.now()
-  
+
   // Use cache if still valid (5 seconds)
-  if (stagedFilesCache && (now - cacheTimestamp) < 5000) {
+  if (stagedFilesCache && now - cacheTimestamp < 5000) {
     return stagedFilesCache
   }
 
-  const result = await execCommand(
-    'git',
-    ['diff', '--cached', '--name-only'],
-    context,
-    { allowFailure: true }
-  )
+  const result = await execCommand('git', ['diff', '--cached', '--name-only'], context, {
+    allowFailure: true,
+  })
 
-  const files = result.isOk() 
-    ? result.value.trim().split('\n').filter(Boolean)
-    : []
+  const files = result.isOk() ? result.value.trim().split('\n').filter(Boolean) : []
 
   stagedFilesCache = files
   cacheTimestamp = now
@@ -240,10 +250,7 @@ async function getStagedFiles(context: CommandContext): Promise<string[]> {
   return files
 }
 
-async function loadConfiguration(
-  configPath: string,
-  context: CommandContext
-): Promise<TestConfig> {
+async function loadConfiguration(configPath: string, context: CommandContext): Promise<TestConfig> {
   try {
     const configExists = await context.fs.exists(configPath)
     if (!configExists) {
@@ -266,23 +273,29 @@ async function loadConfiguration(
   }
 }
 
-function detectRiskLevel(stagedFiles: string[], config: TestConfig, context?: CommandContext): RiskLevel {
+function detectRiskLevel(
+  stagedFiles: string[],
+  config: TestConfig,
+  context?: CommandContext
+): RiskLevel {
   if (context?.verbose) {
     context.logger.info(`Analyzing ${stagedFiles.length} staged files`)
   }
 
   // Get patterns from config or use defaults
-  const highRiskPatterns = config.highRiskPatterns?.join('|') || 
-    '\.(ts|tsx|js|jsx)$|tsconfig|package\.json$|turbo\.json$|vitest\.config|vite\.config'
-  
-  const skipPatterns = config.skipPatterns?.join('|') ||
-    '\.md$|README|CHANGELOG|LICENSE|\.github/|\.vscode/|\.gitignore$|\.prettierrc|\.prettierignore|docs/|\.smart-test-config\.json$|\.mcp\.json$|scripts/.*\.sh$'
+  const highRiskPatterns =
+    config.highRiskPatterns?.join('|') ||
+    '.(ts|tsx|js|jsx)$|tsconfig|package.json$|turbo.json$|vitest.config|vite.config'
+
+  const skipPatterns =
+    config.skipPatterns?.join('|') ||
+    '.md$|README|CHANGELOG|LICENSE|.github/|.vscode/|.gitignore$|.prettierrc|.prettierignore|docs/|.smart-test-config.json$|.mcp.json$|scripts/.*.sh$'
 
   const highRiskRegex = new RegExp(highRiskPatterns)
   const skipRegex = new RegExp(skipPatterns)
 
   // Check for high-risk files
-  const hasHighRiskFiles = stagedFiles.some(file => highRiskRegex.test(file))
+  const hasHighRiskFiles = stagedFiles.some((file) => highRiskRegex.test(file))
   if (hasHighRiskFiles) {
     if (context?.verbose) {
       context.logger.info('Found high-risk files')
@@ -291,7 +304,7 @@ function detectRiskLevel(stagedFiles: string[], config: TestConfig, context?: Co
   }
 
   // Check for package-specific changes
-  const hasPackageChanges = stagedFiles.some(file => file.startsWith('packages/'))
+  const hasPackageChanges = stagedFiles.some((file) => file.startsWith('packages/'))
   if (hasPackageChanges) {
     if (context?.verbose) {
       context.logger.info('Found package-specific changes')
@@ -300,7 +313,7 @@ function detectRiskLevel(stagedFiles: string[], config: TestConfig, context?: Co
   }
 
   // Check if all files match skip patterns
-  const nonSkipFiles = stagedFiles.filter(file => !skipRegex.test(file))
+  const nonSkipFiles = stagedFiles.filter((file) => !skipRegex.test(file))
   if (nonSkipFiles.length === 0) {
     if (context?.verbose) {
       context.logger.info('All files match skip patterns')
@@ -316,14 +329,14 @@ function detectRiskLevel(stagedFiles: string[], config: TestConfig, context?: Co
 
 function getAffectedPackages(stagedFiles: string[]): string[] {
   const packages = new Set<string>()
-  
+
   for (const file of stagedFiles) {
     const match = file.match(/^packages\/([^/]+)\//)
     if (match) {
       packages.add(match[1])
     }
   }
-  
+
   return Array.from(packages)
 }
 
@@ -368,7 +381,7 @@ async function executeTests(
   }
 
   context.logger.info(colorize('blue', withIcon('info', description)))
-  
+
   const maxRetries = options.retryFlaky ? options.maxRetries : 1
   let attempt = 1
 
@@ -390,7 +403,7 @@ async function executeTests(
     const [baseCommand, ...baseArgs] = testCommand.split(' ')
     let finalCommand = baseCommand
     let finalArgs = baseArgs
-    
+
     // Handle timeout command if available
     const timeoutCommand = await getTimeoutCommand(context)
     if (timeoutCommand && options.timeout > 0) {
@@ -401,7 +414,7 @@ async function executeTests(
     try {
       const result = await execCommand(finalCommand, finalArgs, context, {
         // If we're using external timeout command, don't use internal timeout
-        timeout: timeoutCommand ? undefined : options.timeout * 1000
+        timeout: timeoutCommand ? undefined : options.timeout * 1000,
       })
 
       // Stop progress indicator
@@ -415,18 +428,27 @@ async function executeTests(
       }
 
       const error = result.error
-      
+
       // Check for timeout (exit code 124 for timeout/gtimeout commands)
       if (error.message.includes('timed out') || error.message.includes('exit code 124')) {
-        context.logger.error(colorize('red', withIcon('error', `Tests timed out after ${options.timeout}s`)))
+        context.logger.error(
+          colorize('red', withIcon('error', `Tests timed out after ${options.timeout}s`))
+        )
         return err(error)
       }
 
       if (attempt < maxRetries) {
-        context.logger.warning(colorize('yellow', withIcon('warning', `Tests failed (attempt ${attempt}/${maxRetries}), retrying...`)))
-        await new Promise(resolve => setTimeout(resolve, 2000)) // 2 second pause
+        context.logger.warning(
+          colorize(
+            'yellow',
+            withIcon('warning', `Tests failed (attempt ${attempt}/${maxRetries}), retrying...`)
+          )
+        )
+        await new Promise((resolve) => setTimeout(resolve, 2000)) // 2 second pause
       } else {
-        context.logger.error(colorize('red', withIcon('error', `Tests failed after ${maxRetries} attempts`)))
+        context.logger.error(
+          colorize('red', withIcon('error', `Tests failed after ${maxRetries} attempts`))
+        )
         return err(error)
       }
     } catch (error) {
@@ -447,7 +469,7 @@ async function executeTests(
       'Test execution failed after all retries',
       {
         recoverable: false,
-        suggestion: 'Check test output and fix failing tests'
+        suggestion: 'Check test output and fix failing tests',
       }
     )
   )
@@ -455,7 +477,7 @@ async function executeTests(
 
 async function runAffectedPackageTests(
   stagedFiles: string[],
-  options: TestRunnerOptions & { 
+  options: TestRunnerOptions & {
     testCommand: string
     timeout: number
     maxRetries: number
@@ -465,7 +487,7 @@ async function runAffectedPackageTests(
   context: CommandContext
 ): Promise<Result<void, CoreError>> {
   const affectedPackages = getAffectedPackages(stagedFiles)
-  
+
   if (affectedPackages.length === 0) {
     return executeTests(
       options.testCommand,
@@ -476,13 +498,13 @@ async function runAffectedPackageTests(
   }
 
   const pm = await detectPackageManager(context)
-  
+
   if (options.parallelTesting && pm === 'pnpm') {
     // Parallel execution for pnpm
-    const packageFilters = affectedPackages.map(pkg => getPackageFilter(pkg, config))
+    const packageFilters = affectedPackages.map((pkg) => getPackageFilter(pkg, config))
     const parallelFilter = `{${packageFilters.join(',')}}`
     const parallelTestCommand = `${options.testCommand} --filter=${parallelFilter}`
-    
+
     return executeTests(
       parallelTestCommand,
       `🟡 Testing packages in parallel: ${packageFilters.join(', ')}`,
@@ -492,11 +514,11 @@ async function runAffectedPackageTests(
   } else {
     // Sequential execution
     let overallError: CoreError | null = null
-    
+
     for (const packageName of affectedPackages) {
       const packageFilter = getPackageFilter(packageName, config)
       let packageTestCommand: string
-      
+
       if (pm === 'pnpm') {
         packageTestCommand = `${options.testCommand} --filter=${packageFilter}`
       } else {
@@ -508,19 +530,19 @@ async function runAffectedPackageTests(
           packageTestCommand = options.testCommand
         }
       }
-      
+
       const result = await executeTests(
         packageTestCommand,
         `🟡 Testing package: ${packageName} (${packageFilter})`,
         options,
         context
       )
-      
+
       if (result.isErr() && !overallError) {
         overallError = result.error
       }
     }
-    
+
     return overallError ? err(overallError) : ok(undefined)
   }
 }
