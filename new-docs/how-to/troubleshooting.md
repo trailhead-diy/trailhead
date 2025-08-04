@@ -11,16 +11,19 @@ Solutions to common problems when building CLIs with the Trailhead framework.
 **Solutions**:
 
 1. Ensure Node.js 16+ is installed:
+
 ```bash
 node --version  # Should show v16.0.0 or higher
 ```
 
 2. Try with npx:
+
 ```bash
 npx @esteban-url/create-cli my-project
 ```
 
 3. Check npm registry:
+
 ```bash
 npm config get registry  # Should be https://registry.npmjs.org/
 ```
@@ -32,6 +35,7 @@ npm config get registry  # Should be https://registry.npmjs.org/
 **Solutions**:
 
 1. Clear package manager cache:
+
 ```bash
 pnpm store prune
 # or
@@ -39,6 +43,7 @@ npm cache clean --force
 ```
 
 2. Delete lock file and reinstall:
+
 ```bash
 rm pnpm-lock.yaml
 pnpm install
@@ -53,6 +58,7 @@ pnpm install
 **Common causes and solutions**:
 
 1. **Strict mode issues**:
+
 ```typescript
 // Add type annotations
 const result: Result<string, Error> = await readFile('data.txt')
@@ -66,10 +72,11 @@ if (result.isOk()) {
 ```
 
 2. **Module resolution**:
+
 ```typescript
 // Use .js extension for local imports
-import { myFunction } from './lib/utils.js'  // ✓
-import { myFunction } from './lib/utils'     // ✗
+import { myFunction } from './lib/utils.js' // ✓
+import { myFunction } from './lib/utils' // ✗
 ```
 
 ### Build output missing
@@ -79,6 +86,7 @@ import { myFunction } from './lib/utils'     // ✗
 **Solutions**:
 
 1. Check tsup configuration:
+
 ```typescript
 // tsup.config.ts
 export default {
@@ -90,6 +98,7 @@ export default {
 ```
 
 2. Ensure build script is correct:
+
 ```json
 {
   "scripts": {
@@ -115,37 +124,39 @@ import { myCommand } from './commands/my-command.js'
 
 const cli = createCLI({
   name: 'my-cli',
-  version: '1.0.0'
+  version: '1.0.0',
 })
 
 // Register the command properly
-cli.command(myCommand.name)
+cli
+  .command(myCommand.name)
   .description(myCommand.description)
   .arguments(myCommand.arguments || '')
   .action(async (...args) => {
     const result = await myCommand.execute(args[args.length - 1], {
       args: args.slice(0, -1),
-      logger: console
+      logger: console,
     })
     if (result.isErr()) {
       process.exit(1)
     }
   })
 
-cli.parse()  // Don't forget to parse!
+cli.parse() // Don't forget to parse!
 ```
 
 2. **Verify command export**:
 
 ```typescript
 // src/commands/my-command.ts
-export const myCommand = createCommand({  // Must be exported
+export const myCommand = createCommand({
+  // Must be exported
   name: 'my-command',
   description: 'My command description',
   action: async (options, context) => {
     // Implementation
     return ok(undefined)
-  }
+  },
 })
 ```
 
@@ -157,11 +168,11 @@ export const myCommand = createCommand({  // Must be exported
 
 ```typescript
 // Wrong
-const content = readResult.value  // ✗
+const content = readResult.value // ✗
 
 // Correct
 if (readResult.isOk()) {
-  const content = readResult.value  // ✓
+  const content = readResult.value // ✓
 }
 
 // Or use type guards
@@ -197,15 +208,15 @@ import { config } from './config/index.js'
 
 ```typescript
 // Wrong - these don't exist
-import { defineArgs } from '@esteban-url/cli/args'  // ✗
-import { spinner } from '@esteban-url/cli/progress'  // ✗
+import { defineArgs } from '@esteban-url/cli/args' // ✗
+import { spinner } from '@esteban-url/cli/progress' // ✗
 
-// Wrong - no index exports  
-import { readFile } from '@esteban-url/fs/index'  // ✗
+// Wrong - no index exports
+import { readFile } from '@esteban-url/fs/index' // ✗
 
 // Wrong - missing .js extension for local files
-import { myHelper } from './helpers/util'  // ✗
-import { myHelper } from './helpers/util.js'  // ✓
+import { myHelper } from './helpers/util' // ✗
+import { myHelper } from './helpers/util.js' // ✓
 ```
 
 ## Testing Issues
@@ -243,7 +254,7 @@ import { createTestContextWithFiles } from '@esteban-url/cli/testing'
 // Create a test context with virtual files
 const context = await createTestContextWithFiles({
   'data/test.json': JSON.stringify({ test: true }),
-  'config.yml': 'apiUrl: http://localhost:3000'
+  'config.yml': 'apiUrl: http://localhost:3000',
 })
 
 // The context includes a temp directory with these files
@@ -256,7 +267,7 @@ import * as fs from '@esteban-url/fs'
 vi.mock('@esteban-url/fs', () => ({
   readFile: vi.fn().mockResolvedValue(ok('file content')),
   writeFile: vi.fn().mockResolvedValue(ok(undefined)),
-  exists: vi.fn().mockResolvedValue(ok(true))
+  exists: vi.fn().mockResolvedValue(ok(true)),
 }))
 ```
 
@@ -291,12 +302,12 @@ import { fromThrowableAsync } from '@esteban-url/core'
 
 // Instead of throwing
 async function riskyOperation(): Promise<string> {
-  throw new Error('Failed')  // ✗
+  throw new Error('Failed') // ✗
 }
 
 // Use Result-based file operations
 async function safeFileOperation(path: string): Promise<Result<string, Error>> {
-  return readFile(path, 'utf-8')  // Already returns Result
+  return readFile(path, 'utf-8') // Already returns Result
 }
 
 // Wrap external async functions that might throw
@@ -340,6 +351,7 @@ const result = await readFile(absolutePath)
 **Solutions**:
 
 1. **Lazy load commands**:
+
 ```typescript
 // Instead of importing all commands at top
 const commands = [
@@ -351,6 +363,7 @@ const commands = [
 ```
 
 2. **Optimize dependencies**:
+
 ```bash
 # Check bundle size
 pnpm build
@@ -371,7 +384,7 @@ import { pipeline } from 'stream/promises'
 
 async function processLargeFile(path: string) {
   const stream = createReadStream(path, { encoding: 'utf8' })
-  
+
   // Process in chunks
   for await (const chunk of stream) {
     // Process chunk
@@ -384,11 +397,13 @@ async function processLargeFile(path: string) {
 ### Enable verbose logging
 
 Set environment variable:
+
 ```bash
 DEBUG=* ./bin/cli.js my-command
 ```
 
 Or add debug flag:
+
 ```typescript
 if (flags.verbose) {
   logger.debug('Options:', options)

@@ -19,8 +19,8 @@ Traditional JavaScript/TypeScript code relies on exceptions for error handling:
 ```typescript
 // Traditional approach - errors are hidden
 function readConfig(path: string): Config {
-  const content = fs.readFileSync(path, 'utf8')  // Might throw!
-  return JSON.parse(content)                     // Might throw!
+  const content = fs.readFileSync(path, 'utf8') // Might throw!
+  return JSON.parse(content) // Might throw!
 }
 
 // Calling code must remember to catch
@@ -32,6 +32,7 @@ try {
 ```
 
 This approach has several problems:
+
 - Errors are invisible in the type system
 - Easy to forget error handling
 - Difficult to test error paths
@@ -46,9 +47,9 @@ Trailhead uses Result types to make errors explicit:
 async function readConfig(path: string): Promise<Result<Config, Error>> {
   const readResult = await readFile(path)
   if (readResult.isError()) {
-    return readResult  // Propagate error
+    return readResult // Propagate error
   }
-  
+
   try {
     const config = JSON.parse(readResult.value)
     return ok(config)
@@ -69,6 +70,7 @@ if (result.isError()) {
 ```
 
 Benefits:
+
 - **Type Safety**: TypeScript ensures you handle errors
 - **Explicit Flow**: Error paths are visible
 - **Composable**: Chain operations with `map` and `flatMap`
@@ -107,6 +109,7 @@ graph TD
 ```
 
 Each package has a single responsibility:
+
 - **core**: Provides Result type and utilities
 - **fs**: Wraps Node.js fs with Result types
 - **cli**: Command creation and execution
@@ -163,12 +166,14 @@ sequenceDiagram
 ### Why Functional Commands?
 
 Commands follow functional programming principles:
+
 - Take typed options and context
 - Receive immutable context with logger and args
 - Return Result values for explicit error handling
 - Perform side effects only through provided abstractions (fs, logger)
 
 This makes commands:
+
 - **Testable**: Inject test context with mock logger
 - **Type-safe**: Full TypeScript inference for options
 - **Predictable**: Explicit error handling with Results
@@ -191,6 +196,7 @@ const result = readFileSync('data.txt')
 ```
 
 Why? Async operations:
+
 - Don't block the event loop
 - Allow progress reporting
 - Enable cancellation
@@ -205,6 +211,7 @@ function operation(...args): Promise<Result<T, Error>>
 ```
 
 This consistency means:
+
 - Learn once, use everywhere
 - Predictable error handling
 - Easy to compose operations
@@ -221,17 +228,17 @@ const context = createTestContext()
 const result = await myCommand.execute(options, context)
 
 // Access captured logs
-console.log(context.logs)     // Logged messages
-console.log(context.errors)   // Error messages
+console.log(context.logs) // Logged messages
+console.log(context.errors) // Error messages
 
 // Test with virtual file system
 const context = await createTestContextWithFiles({
   'data/test.json': JSON.stringify({ test: true }),
-  'config.yml': 'apiUrl: http://localhost'
+  'config.yml': 'apiUrl: http://localhost',
 })
 
 // Files are created in a temp directory
-console.log(context.cwd)  // e.g., /tmp/test-xyz/
+console.log(context.cwd) // e.g., /tmp/test-xyz/
 ```
 
 ### Why Built-in Testing?
@@ -253,7 +260,7 @@ import { string, number, boolean } from '@esteban-url/config'
 const schema = defineSchema({
   port: number().min(1).max(65535).default(3000),
   apiUrl: string().url().required(),
-  debug: boolean().default(false)
+  debug: boolean().default(false),
 })
 
 // Create manager with sources
@@ -262,8 +269,8 @@ const configManager = createConfigManager({
   sources: [
     { type: 'file', path: './config.json' },
     { type: 'env', prefix: 'APP_' },
-    { type: 'cli' }
-  ]
+    { type: 'cli' },
+  ],
 })
 
 const result = await configManager.load()
@@ -287,9 +294,9 @@ The framework encourages specific error handling patterns:
 async function process(path: string) {
   const readResult = await readFile(path)
   if (readResult.isError()) {
-    return readResult  // Early return
+    return readResult // Early return
   }
-  
+
   // Continue with readResult.value
 }
 ```
@@ -298,15 +305,14 @@ async function process(path: string) {
 
 ```typescript
 const result = await readFile(path)
-  .map(content => JSON.parse(content))
-  .mapError(error => new Error(`Config error: ${error.message}`))
+  .map((content) => JSON.parse(content))
+  .mapError((error) => new Error(`Config error: ${error.message}`))
 ```
 
 ### Error Recovery
 
 ```typescript
-const config = await loadConfig('app.json')
-  .unwrapOr(defaultConfig)  // Use default on error
+const config = await loadConfig('app.json').unwrapOr(defaultConfig) // Use default on error
 ```
 
 ## Performance Considerations
@@ -319,8 +325,8 @@ Commands can be loaded on demand:
 const commands = [
   {
     name: 'heavy',
-    load: () => import('./commands/heavy.js')
-  }
+    load: () => import('./commands/heavy.js'),
+  },
 ]
 ```
 
@@ -340,14 +346,10 @@ for await (const chunk of stream) {
 Result types work with Promise.all:
 
 ```typescript
-const results = await Promise.all([
-  readFile('a.txt'),
-  readFile('b.txt'),
-  readFile('c.txt'),
-])
+const results = await Promise.all([readFile('a.txt'), readFile('b.txt'), readFile('c.txt')])
 
-const errors = results.filter(r => r.isError())
-const values = results.filter(r => r.isOk())
+const errors = results.filter((r) => r.isError())
+const values = results.filter((r) => r.isOk())
 ```
 
 ## Security Considerations
@@ -379,7 +381,7 @@ const schema = z.object({
 Never log sensitive data:
 
 ```typescript
-logger.info('Connecting to database...')  // Don't log connection string
+logger.info('Connecting to database...') // Don't log connection string
 ```
 
 ## Future Considerations

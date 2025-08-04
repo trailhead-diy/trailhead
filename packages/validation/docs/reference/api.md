@@ -55,7 +55,7 @@ type AsyncValidatorFn<T, R = T> = (value: T) => Promise<ValidationResult<R>>
 
 Schema validator type with integrated schema and validate function.
 
-```typescript
+````typescript
 type SchemaValidator<T> = {
   readonly schema: z.ZodType<T>
   readonly validate: ValidatorFn<unknown, T>
@@ -71,7 +71,7 @@ interface ValidationConfig {
   readonly stripUnknown?: boolean
   readonly allowUnknown?: boolean
 }
-```
+````
 
 ## Main API
 
@@ -270,10 +270,7 @@ function composeValidators<T, R1, R2>(
 **Usage**:
 
 ```typescript
-const validator = composeValidators(
-  validateStringLength(3, 50),
-  validateEmail()
-)
+const validator = composeValidators(validateStringLength(3, 50), validateEmail())
 ```
 
 ### `anyOf()`
@@ -293,10 +290,7 @@ function anyOf<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 **Usage**:
 
 ```typescript
-const flexibleValidator = anyOf(
-  validateEmail(),
-  validatePhoneNumber()
-)
+const flexibleValidator = anyOf(validateEmail(), validatePhoneNumber())
 ```
 
 ### `allOf()`
@@ -316,11 +310,7 @@ function allOf<T>(...validators: ValidatorFn<T>[]): ValidatorFn<T>
 **Usage**:
 
 ```typescript
-const strictValidator = allOf(
-  validateRequired(),
-  validateStringLength(8, 50),
-  validateEmail()
-)
+const strictValidator = allOf(validateRequired(), validateStringLength(8, 50), validateEmail())
 ```
 
 ### `createValidator()`
@@ -347,7 +337,7 @@ function createValidator<T, R = T>(
 const userValidator = createValidator(
   z.object({
     name: z.string().min(2),
-    email: z.string().email()
+    email: z.string().email(),
   })
 )
 ```
@@ -561,7 +551,10 @@ const validationPresets: {
   port: () => ValidatorFn<unknown, number>
   positiveInteger: (fieldName?: string) => ValidatorFn<unknown, number>
   date: (options?: Parameters<typeof dateSchema>[0]) => ValidatorFn<unknown, Date>
-  array: <T>(itemSchema: z.ZodSchema<T>, options?: Parameters<typeof arraySchema>[1]) => ValidatorFn<unknown, T[]>
+  array: <T>(
+    itemSchema: z.ZodSchema<T>,
+    options?: Parameters<typeof arraySchema>[1]
+  ) => ValidatorFn<unknown, T[]>
 }
 ```
 
@@ -712,7 +705,7 @@ import { createValidator, z } from '@esteban-url/validation'
 
 const evenNumberValidator = createValidator(
   z.number().refine((value) => value % 2 === 0, {
-    message: 'Value must be an even number'
+    message: 'Value must be an even number',
   })
 )
 
@@ -795,7 +788,7 @@ const userValidator = createSchemaValidator(userSchemaFactory())
 const emailResult = emailValidator('user@example.com')
 const userResult = userValidator({
   name: 'John Doe',
-  email: 'john@example.com'
+  email: 'john@example.com',
 })
 ```
 
@@ -813,11 +806,13 @@ const asyncEmailValidator = async (value: string): Promise<ValidationResult<stri
   // Simulate async check (e.g., database lookup)
   const exists = await checkEmailExists(emailResult.value)
   if (exists) {
-    return err(createValidationError('Email already exists', {
-      field: 'email',
-      value,
-      suggestion: 'Use a different email address'
-    }))
+    return err(
+      createValidationError('Email already exists', {
+        field: 'email',
+        value,
+        suggestion: 'Use a different email address',
+      })
+    )
   }
 
   return ok(emailResult.value)
@@ -838,7 +833,7 @@ import {
   createMockValidator,
   validationFixtures,
   assertValidationSuccess,
-  assertValidationFailure
+  assertValidationFailure,
 } from '@esteban-url/validation/testing'
 
 // Create mock validator
@@ -878,7 +873,7 @@ import {
   assertValidationSuccess,
   assertValidationFailure,
   assertValidationData,
-  assertValidationErrors
+  assertValidationErrors,
 } from '@esteban-url/validation/testing'
 
 // Assert successful validation
@@ -893,7 +888,7 @@ assertValidationData(validation, { name: 'Alice', email: 'alice@example.com' })
 // Assert specific validation errors
 assertValidationErrors(validation, [
   { field: 'name', rule: 'required' },
-  { field: 'email', rule: 'email' }
+  { field: 'email', rule: 'email' },
 ])
 ```
 
@@ -904,11 +899,16 @@ import { createValidationTestScenario } from '@esteban-url/validation/testing'
 
 const scenario = createValidationTestScenario({
   schemas: [validationFixtures.schemas.user],
-  mockResults: [{
-    schemaId: 'user',
-    data: { name: 'Alice' },
-    result: { success: false, errors: [{ field: 'email', message: 'Required', value: undefined, rule: 'required' }] }
-  }]
+  mockResults: [
+    {
+      schemaId: 'user',
+      data: { name: 'Alice' },
+      result: {
+        success: false,
+        errors: [{ field: 'email', message: 'Required', value: undefined, rule: 'required' }],
+      },
+    },
+  ],
 })
 
 // Test validation

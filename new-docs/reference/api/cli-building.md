@@ -34,8 +34,8 @@ const cli = createCLI({
 })
 
 // Run the CLI
-await cli.run()             // Uses process.argv
-await cli.run(['build'])    // Custom args
+await cli.run() // Uses process.argv
+await cli.run(['build']) // Custom args
 ```
 
 ## Command Creation
@@ -63,28 +63,20 @@ export const deployCommand = createCommand({
   name: 'deploy',
   description: 'Deploy application to server',
   alias: ['d', 'publish'],
-  
+
   args: defineArgs({
-    positional: z.tuple([
-      z.enum(['staging', 'production']).describe('Target environment'),
-    ]),
+    positional: z.tuple([z.enum(['staging', 'production']).describe('Target environment')]),
     flags: z.object({
-      force: z.boolean()
-        .optional()
-        .describe('Skip confirmation'),
-      tag: z.string()
-        .optional()
-        .describe('Deployment tag'),
-      verbose: z.boolean()
-        .optional()
-        .describe('Verbose output'),
+      force: z.boolean().optional().describe('Skip confirmation'),
+      tag: z.string().optional().describe('Deployment tag'),
+      verbose: z.boolean().optional().describe('Verbose output'),
     }),
   }),
-  
+
   action: async ({ positional, flags }, context) => {
     const [environment] = positional
     const { logger } = context
-    
+
     if (!flags.force) {
       const confirmed = await confirm({
         message: `Deploy to ${environment}?`,
@@ -93,12 +85,12 @@ export const deployCommand = createCommand({
         return err(new Error('Deployment cancelled'))
       }
     }
-    
+
     logger.info(`Deploying to ${environment}...`)
     // Deployment logic
-    
+
     return ok({ environment, tag: flags.tag })
-  }
+  },
 })
 ```
 
@@ -122,15 +114,10 @@ const args = defineArgs({
 
 ```typescript
 // Fixed number of arguments
-positional: z.tuple([
-  z.string().describe('Source file'),
-  z.string().describe('Destination'),
-])
+positional: z.tuple([z.string().describe('Source file'), z.string().describe('Destination')])
 
 // Variable arguments
-positional: z.array(
-  z.string().describe('Files to process')
-)
+positional: z.array(z.string().describe('Files to process'))
 
 // Optional positional
 positional: z.tuple([
@@ -144,31 +131,19 @@ positional: z.tuple([
 ```typescript
 flags: z.object({
   // Boolean flags
-  verbose: z.boolean()
-    .optional()
-    .describe('Verbose output'),
-  
+  verbose: z.boolean().optional().describe('Verbose output'),
+
   // String flags with validation
-  output: z.string()
-    .optional()
-    .describe('Output file path'),
-  
+  output: z.string().optional().describe('Output file path'),
+
   // Enum flags
-  format: z.enum(['json', 'yaml', 'xml'])
-    .default('json')
-    .describe('Output format'),
-  
+  format: z.enum(['json', 'yaml', 'xml']).default('json').describe('Output format'),
+
   // Number flags with constraints
-  limit: z.number()
-    .min(1)
-    .max(1000)
-    .default(10)
-    .describe('Result limit'),
-  
+  limit: z.number().min(1).max(1000).default(10).describe('Result limit'),
+
   // Array flags (can be used multiple times)
-  include: z.array(z.string())
-    .optional()
-    .describe('Files to include'),
+  include: z.array(z.string()).optional().describe('Files to include'),
 })
 ```
 
@@ -180,12 +155,12 @@ Context provided to command actions.
 
 ```typescript
 interface CommandContext {
-  logger: Logger           // Logging utilities
-  cwd: string             // Current working directory
-  env: Record<string, string>  // Environment variables
-  stdin?: Readable        // Standard input stream
-  stdout?: Writable       // Standard output stream
-  stderr?: Writable       // Standard error stream
+  logger: Logger // Logging utilities
+  cwd: string // Current working directory
+  env: Record<string, string> // Environment variables
+  stdin?: Readable // Standard input stream
+  stdout?: Writable // Standard output stream
+  stderr?: Writable // Standard error stream
 }
 ```
 
@@ -194,10 +169,10 @@ interface CommandContext {
 ```typescript
 action: async (args, context) => {
   const { logger, cwd, env } = context
-  
+
   logger.info(`Working directory: ${cwd}`)
   logger.debug(`Node env: ${env.NODE_ENV}`)
-  
+
   if (env.CI) {
     logger.info('Running in CI environment')
   }
@@ -243,10 +218,10 @@ const withValidation = (command: Command) => ({
     if (validationResult.isError()) {
       return validationResult
     }
-    
+
     // Call original action
     return command.action(args, context)
-  }
+  },
 })
 
 // Apply to commands
@@ -288,16 +263,14 @@ Handle global flags:
 const cli = createCLI({
   name: 'my-cli',
   version: '1.0.0',
-  commands: [/* ... */],
+  commands: [
+    /* ... */
+  ],
   globalArgs: defineArgs({
     flags: z.object({
-      config: z.string()
-        .optional()
-        .describe('Config file path'),
-      quiet: z.boolean()
-        .optional()
-        .describe('Suppress output'),
-    })
+      config: z.string().optional().describe('Config file path'),
+      quiet: z.boolean().optional().describe('Suppress output'),
+    }),
   }),
   beforeAction: async (globalArgs, context) => {
     if (globalArgs.flags.config) {
@@ -305,11 +278,11 @@ const cli = createCLI({
       const config = await loadConfig(globalArgs.flags.config)
       context.config = config
     }
-    
+
     if (globalArgs.flags.quiet) {
       context.logger.setLevel('error')
     }
-  }
+  },
 })
 ```
 
@@ -341,7 +314,7 @@ const cli = createCLI({
   // ...
   onError: (error: Error, context: CommandContext) => {
     const { logger } = context
-    
+
     if (error.name === 'ValidationError') {
       logger.error('Validation failed:')
       logger.error(error.message)
@@ -354,7 +327,7 @@ const cli = createCLI({
         logger.error(error.stack)
       }
     }
-  }
+  },
 })
 ```
 

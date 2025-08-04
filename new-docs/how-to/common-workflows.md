@@ -23,25 +23,25 @@ interface GreetOptions extends CommandOptions {
 export const greetCommand = createCommand<GreetOptions>({
   name: 'greet',
   description: 'Greet someone by name',
-  arguments: '<name>',  // Required positional argument
-  
+  arguments: '<name>', // Required positional argument
+
   options: [
     {
       flags: '--shout',
       description: 'Shout the greeting',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
-  
+
   action: async (options, context) => {
     const { logger } = context
     // Arguments are passed through context
     const name = context.args[0] || 'World'
     const greeting = `Hello, ${name}!`
-    
+
     logger.info(options.shout ? greeting.toUpperCase() : greeting)
     return ok(undefined)
-  }
+  },
 })
 ```
 
@@ -55,17 +55,18 @@ import { greetCommand } from './commands/greet.js'
 const cli = createCLI({
   name: 'my-cli',
   version: '1.0.0',
-  description: 'My CLI tool'
+  description: 'My CLI tool',
 })
 
 // Register commands
-cli.command(greetCommand.name)
+cli
+  .command(greetCommand.name)
   .description(greetCommand.description)
   .arguments(greetCommand.arguments || '')
   .action(async (...args) => {
     const result = await greetCommand.execute(args[args.length - 1], {
       args: args.slice(0, -1),
-      logger: console
+      logger: console,
     })
     if (result.isErr()) {
       console.error(result.error.message)
@@ -125,7 +126,7 @@ async function safePrompt<T>(promptFn: () => Promise<T>): Promise<Result<T, Erro
 }
 
 // Text input
-const nameResult = await safePrompt(() => 
+const nameResult = await safePrompt(() =>
   input({
     message: 'What is your name?',
     default: 'Anonymous',
@@ -195,8 +196,8 @@ export const configManager = createConfigManager({
   sources: [
     { type: 'file', path: './config.json' },
     { type: 'env', prefix: 'APP_' },
-    { type: 'cli' }
-  ]
+    { type: 'cli' },
+  ],
 })
 
 // Load configuration in your command
@@ -233,24 +234,18 @@ import { greetCommand } from '../commands/greet.js'
 describe('greet command', () => {
   it('should greet by name', async () => {
     const context = createTestContext()
-    
-    const result = await greetCommand.execute(
-      { verbose: false },
-      { ...context, args: ['Alice'] }
-    )
-    
+
+    const result = await greetCommand.execute({ verbose: false }, { ...context, args: ['Alice'] })
+
     expect(result.isOk()).toBe(true)
     expect(context.logs).toContain('Hello, Alice!')
   })
 
   it('should shout when flag is set', async () => {
     const context = createTestContext()
-    
-    const result = await greetCommand.execute(
-      { shout: true },
-      { ...context, args: ['Bob'] }
-    )
-    
+
+    const result = await greetCommand.execute({ shout: true }, { ...context, args: ['Bob'] })
+
     expect(result.isOk()).toBe(true)
     expect(context.logs).toContain('HELLO, BOB!')
   })
@@ -261,9 +256,9 @@ import { createTestContextWithFiles } from '@esteban-url/cli/testing'
 
 it('should process files', async () => {
   const context = await createTestContextWithFiles({
-    'test.json': JSON.stringify({ name: 'test' })
+    'test.json': JSON.stringify({ name: 'test' }),
   })
-  
+
   const result = await myCommand.execute({}, context)
   expect(result.isOk()).toBe(true)
 })
@@ -301,11 +296,11 @@ async function processData(filePath: string): Promise<Result<string, Error>> {
 
   // Transform data
   const data = parseResult.value
-  const transformed = data.map(item => ({
+  const transformed = data.map((item) => ({
     ...item,
     processed: true,
   }))
-  
+
   return ok(JSON.stringify(transformed, null, 2))
 }
 
@@ -313,7 +308,7 @@ async function processData(filePath: string): Promise<Result<string, Error>> {
 const processDataAsync = fromThrowableAsync(async (filePath: string) => {
   const content = await fs.promises.readFile(filePath, 'utf-8')
   const data = JSON.parse(content)
-  const transformed = data.map(item => ({ ...item, processed: true }))
+  const transformed = data.map((item) => ({ ...item, processed: true }))
   return JSON.stringify(transformed, null, 2)
 })
 
@@ -328,7 +323,7 @@ if (result.isError()) {
 
 ```typescript
 // Transform success values
-const upperResult = readResult.map(text => text.toUpperCase())
+const upperResult = readResult.map((text) => text.toUpperCase())
 
 // Chain operations that return Results
 const finalResult = await readResult.flatMap(async (text) => {
@@ -346,16 +341,19 @@ import { createProgressTracker, updateProgress } from '@esteban-url/cli/progress
 import { SingleBar, Presets } from '@esteban-url/cli/progress'
 
 // Simple progress bar
-const progressBar = new SingleBar({
-  format: 'Progress |{bar}| {percentage}% | {value}/{total}',
-  barCompleteChar: '\u2588',
-  barIncompleteChar: '\u2591',
-}, Presets.shades_classic)
+const progressBar = new SingleBar(
+  {
+    format: 'Progress |{bar}| {percentage}% | {value}/{total}',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  },
+  Presets.shades_classic
+)
 
 progressBar.start(100, 0)
 for (let i = 0; i <= 100; i++) {
   progressBar.update(i)
-  await new Promise(resolve => setTimeout(resolve, 50))
+  await new Promise((resolve) => setTimeout(resolve, 50))
 }
 progressBar.stop()
 
@@ -416,10 +414,7 @@ if (debug) {
   "bin": {
     "my-cli": "./bin/cli.js"
   },
-  "files": [
-    "dist",
-    "bin"
-  ],
+  "files": ["dist", "bin"],
   "keywords": ["cli", "tool", "awesome"],
   "engines": {
     "node": ">=16"
@@ -470,12 +465,12 @@ async function processBatch<T>(
   options: { concurrency: number } = { concurrency: 5 }
 ): Promise<Result<void, Error>> {
   const errors: Error[] = []
-  
+
   // Process in chunks
   for (let i = 0; i < items.length; i += options.concurrency) {
     const chunk = items.slice(i, i + options.concurrency)
     const results = await Promise.all(chunk.map(processor))
-    
+
     // Collect errors
     results.forEach((result, index) => {
       if (result.isError()) {
@@ -483,11 +478,11 @@ async function processBatch<T>(
       }
     })
   }
-  
+
   if (errors.length > 0) {
     return err(new Error(`${errors.length} items failed: ${errors[0].message}`))
   }
-  
+
   return ok(undefined)
 }
 ```
@@ -502,18 +497,18 @@ async function withRetry<T>(
 ): Promise<Result<T, Error>> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const result = await operation()
-    
+
     if (result.isOk()) {
       return result
     }
-    
+
     if (attempt < maxRetries) {
       logger.warn(`Attempt ${attempt} failed, retrying in ${delay}ms...`)
-      await new Promise(resolve => setTimeout(resolve, delay))
+      await new Promise((resolve) => setTimeout(resolve, delay))
       delay *= 2 // Exponential backoff
     }
   }
-  
+
   return err(new Error(`Failed after ${maxRetries} attempts`))
 }
 ```

@@ -75,7 +75,7 @@ const cli = createCLI({
   name: 'my-cli',
   version: '1.0.0',
   description: 'My awesome CLI tool',
-  commands: [buildCommand, testCommand]
+  commands: [buildCommand, testCommand],
 })
 
 await cli.run()
@@ -222,24 +222,20 @@ const buildCommand = createCommand<BuildOptions>({
     {
       flags: '-o, --output <dir>',
       description: 'Output directory',
-      type: 'string'
+      type: 'string',
     },
     {
       flags: '-w, --watch',
       description: 'Watch for changes',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
-  examples: [
-    'build src',
-    'build src -o dist',
-    'build --watch'
-  ],
+  examples: ['build src', 'build src -o dist', 'build --watch'],
   action: async (options, context) => {
     context.logger.info(`Building project...`)
     // Implementation
     return ok(undefined)
-  }
+  },
 })
 ```
 
@@ -309,7 +305,9 @@ function validateCommandConfig<T>(config: CommandConfig<T>): Result<CommandConfi
 Validates command configuration with caching.
 
 ```typescript
-function validateCommandConfigWithCache<T>(config: CommandConfig<T>): Result<CommandConfig<T>, CoreError>
+function validateCommandConfigWithCache<T>(
+  config: CommandConfig<T>
+): Result<CommandConfig<T>, CoreError>
 ```
 
 #### Command Performance
@@ -327,7 +325,9 @@ function processOptionWithCache(option: CommandOption): Result<ProcessedOption, 
 Processes all command options with caching.
 
 ```typescript
-function processCommandOptionsWithCache(options: CommandOption[]): Result<ProcessedOption[], CoreError>
+function processCommandOptionsWithCache(
+  options: CommandOption[]
+): Result<ProcessedOption[], CoreError>
 ```
 
 #### Command Patterns
@@ -477,10 +477,7 @@ function executeWithDryRun<T>(
 Formatted configuration/result display.
 
 ```typescript
-function displaySummary(
-  data: Record<string, any>,
-  options?: SummaryOptions
-): void
+function displaySummary(data: Record<string, any>, options?: SummaryOptions): void
 ```
 
 #### Command Builders
@@ -563,10 +560,7 @@ function createConfirmationPrompt(
 Creates a directory path input prompt with validation.
 
 ```typescript
-function createDirectoryPrompt(
-  message: string,
-  defaultPath?: string
-): () => Promise<string>
+function createDirectoryPrompt(message: string, defaultPath?: string): () => Promise<string>
 ```
 
 **Parameters**:
@@ -851,7 +845,10 @@ function createTestContext(options?: TestContextOptions): TestContext
 Creates a test context with predefined files.
 
 ```typescript
-function createTestContextWithFiles(files: Record<string, string>, options?: TestContextOptions): TestContext
+function createTestContextWithFiles(
+  files: Record<string, string>,
+  options?: TestContextOptions
+): TestContext
 ```
 
 **Types**:
@@ -1399,32 +1396,32 @@ const buildCommand = createCommand<BuildOptions>({
       flags: '-o, --output <dir>',
       description: 'Output directory',
       type: 'string',
-      default: 'dist'
+      default: 'dist',
     },
     {
       flags: '--minify',
       description: 'Minify output',
       type: 'boolean',
-      default: false
-    }
+      default: false,
+    },
   ],
   action: async (options, context) => {
     context.logger.info(`Building to ${options.output}...`)
-    
+
     if (options.minify) {
       context.logger.info('Minifying output...')
     }
-    
+
     // Build implementation
     return ok(undefined)
-  }
+  },
 })
 
 const cli = createCLI({
   name: 'my-build-tool',
   version: '1.0.0',
   description: 'A modern build tool',
-  commands: [buildCommand]
+  commands: [buildCommand],
 })
 
 // Run the CLI
@@ -1445,18 +1442,18 @@ const deployCommand = createCommand({
       async (opts, ctx) => {
         const environment = await input({
           message: 'Target environment:',
-          default: 'staging'
+          default: 'staging',
         })
-        
+
         const confirmed = await confirm({
           message: `Deploy to ${environment}?`,
-          default: false
+          default: false,
         })
-        
+
         if (!confirmed) {
           return ok(undefined)
         }
-        
+
         ctx.logger.info(`Deploying to ${environment}...`)
         // Deploy implementation
         return ok(undefined)
@@ -1464,7 +1461,7 @@ const deployCommand = createCommand({
       options,
       context
     )
-  }
+  },
 })
 ```
 
@@ -1479,44 +1476,52 @@ const convertCommand = createFileProcessingCommand({
   supportedFormats: ['json', 'yaml', 'toml'],
   action: async (options, context) => {
     const { inputPath, outputPath, format } = context
-    
+
     // Convert file implementation
     return ok(undefined)
-  }
+  },
 })
 ```
 
 ### Testing CLI Commands
 
 ```typescript
-import { createTestContext, createTestCLI, expectSuccess, expectOutput } from '@esteban-url/cli/testing'
+import {
+  createTestContext,
+  createTestCLI,
+  expectSuccess,
+  expectOutput,
+} from '@esteban-url/cli/testing'
 
 describe('build command', () => {
   let context: TestContext
   let testCLI: TestCLI
-  
+
   beforeEach(async () => {
     context = createTestContext({
       fixtures: {
-        'src/index.js': 'console.log("Hello")'
-      }
+        'src/index.js': 'console.log("Hello")',
+      },
     })
-    
-    testCLI = createTestCLI({
-      name: 'test-cli',
-      version: '1.0.0',
-      description: 'Test CLI',
-      commands: [buildCommand]
-    }, context)
+
+    testCLI = createTestCLI(
+      {
+        name: 'test-cli',
+        version: '1.0.0',
+        description: 'Test CLI',
+        commands: [buildCommand],
+      },
+      context
+    )
   })
-  
+
   afterEach(async () => {
     await context.cleanup()
   })
-  
+
   it('should build successfully', async () => {
     const result = await testCLI.run(['build', '--output', 'dist'])
-    
+
     expectSuccess(result)
     expectOutput(result, /Building to dist/)
   })
@@ -1532,17 +1537,17 @@ const processFiles = async (files: string[]) => {
   const progress = createProgressTracker({
     total: files.length,
     title: 'Processing files',
-    showETA: true
+    showETA: true,
   })
-  
+
   progress.start()
-  
+
   for (let i = 0; i < files.length; i++) {
     // Process file
     await processFile(files[i])
     progress.update(i + 1)
   }
-  
+
   progress.stop()
 }
 ```

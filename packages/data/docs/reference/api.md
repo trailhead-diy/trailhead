@@ -190,8 +190,9 @@ function convertFormat(data: any, targetFormat: 'csv' | 'json' | 'excel'): Resul
 ```
 
 **Supported conversions**:
+
 - `json`: Any data → JSON string
-- `csv`: Array of objects → CSV string  
+- `csv`: Array of objects → CSV string
 - `excel`: Not supported (returns error)
 
 ### `createUnifiedDataOperations()`
@@ -244,31 +245,43 @@ interface CSVOperations {
     data: string,
     options?: CSVProcessingOptions
   ) => DataResult<ParsedData<T>>
-  
+
   readonly parseFile: <T = Record<string, unknown>>(
     filePath: string,
     options?: CSVProcessingOptions
   ) => Promise<DataResult<ParsedData<T>>>
-  
+
   readonly stringify: <T = Record<string, unknown>>(
     data: readonly T[],
     options?: CSVProcessingOptions
   ) => DataResult<string>
-  
+
   readonly writeFile: <T = Record<string, unknown>>(
     data: readonly T[],
     filePath: string,
     options?: CSVProcessingOptions
   ) => Promise<DataResult<void>>
-  
+
   readonly validate: (data: string) => DataResult<boolean>
   readonly detectFormat: (data: string) => DataResult<CSVFormatInfo>
-  
+
   // Additional parsing modes
-  readonly parseToObjects: (data: string, options?: CSVProcessingOptions) => DataResult<ParsedData<Record<string, unknown>>>
-  readonly parseToArrays: (data: string, options?: CSVProcessingOptions) => DataResult<ParsedData<readonly string[]>>
-  readonly fromObjects: (data: readonly Record<string, unknown>[], options?: CSVProcessingOptions) => DataResult<string>
-  readonly fromArrays: (data: readonly (readonly string[])[], options?: CSVProcessingOptions) => DataResult<string>
+  readonly parseToObjects: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<Record<string, unknown>>>
+  readonly parseToArrays: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<readonly string[]>>
+  readonly fromObjects: (
+    data: readonly Record<string, unknown>[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
+  readonly fromArrays: (
+    data: readonly (readonly string[])[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
 }
 ```
 
@@ -329,12 +342,22 @@ JSON processing operations interface.
 ```typescript
 interface JSONOperations {
   readonly parseString: (data: string, options?: JSONProcessingOptions) => DataResult<any>
-  readonly parseFile: (filePath: string, options?: JSONProcessingOptions) => Promise<DataResult<any>>
+  readonly parseFile: (
+    filePath: string,
+    options?: JSONProcessingOptions
+  ) => Promise<DataResult<any>>
   readonly stringify: (data: any, options?: JSONProcessingOptions) => DataResult<string>
-  readonly writeFile: (data: any, filePath: string, options?: JSONProcessingOptions) => Promise<DataResult<void>>
+  readonly writeFile: (
+    data: any,
+    filePath: string,
+    options?: JSONProcessingOptions
+  ) => Promise<DataResult<void>>
   readonly validate: (data: string) => DataResult<boolean>
   readonly minify: (data: string) => DataResult<string>
-  readonly format: (data: string, options?: { indent?: number; sortKeys?: boolean }) => DataResult<string>
+  readonly format: (
+    data: string,
+    options?: { indent?: number; sortKeys?: boolean }
+  ) => DataResult<string>
 }
 ```
 
@@ -379,19 +402,45 @@ Excel processing operations interface.
 ```typescript
 interface ExcelOperations {
   readonly parseBuffer: (buffer: Buffer, options?: ExcelProcessingOptions) => DataResult<any[]>
-  readonly parseFile: (filePath: string, options?: ExcelProcessingOptions) => Promise<DataResult<any[]>>
-  readonly parseWorksheet: (buffer: Buffer, worksheetName: string, options?: ExcelProcessingOptions) => DataResult<any[]>
-  readonly parseWorksheetByIndex: (buffer: Buffer, worksheetIndex: number, options?: ExcelProcessingOptions) => DataResult<any[]>
+  readonly parseFile: (
+    filePath: string,
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<any[]>>
+  readonly parseWorksheet: (
+    buffer: Buffer,
+    worksheetName: string,
+    options?: ExcelProcessingOptions
+  ) => DataResult<any[]>
+  readonly parseWorksheetByIndex: (
+    buffer: Buffer,
+    worksheetIndex: number,
+    options?: ExcelProcessingOptions
+  ) => DataResult<any[]>
   readonly stringify: (data: any[], options?: ExcelProcessingOptions) => Promise<DataResult<Buffer>>
-  readonly writeFile: (data: any[], filePath: string, options?: ExcelProcessingOptions) => Promise<DataResult<void>>
+  readonly writeFile: (
+    data: any[],
+    filePath: string,
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<void>>
   readonly validate: (buffer: Buffer) => DataResult<boolean>
   readonly detectFormat: (buffer: Buffer) => DataResult<ExcelFormatInfo>
-  readonly parseToObjects: (buffer: Buffer, options?: ExcelProcessingOptions) => DataResult<Record<string, any>[]>
+  readonly parseToObjects: (
+    buffer: Buffer,
+    options?: ExcelProcessingOptions
+  ) => DataResult<Record<string, any>[]>
   readonly parseToArrays: (buffer: Buffer, options?: ExcelProcessingOptions) => DataResult<any[][]>
-  readonly fromObjects: (objects: Record<string, any>[], options?: ExcelProcessingOptions) => Promise<DataResult<Buffer>>
-  readonly fromArrays: (arrays: any[][], options?: ExcelProcessingOptions) => Promise<DataResult<Buffer>>
+  readonly fromObjects: (
+    objects: Record<string, any>[],
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<Buffer>>
+  readonly fromArrays: (
+    arrays: any[][],
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<Buffer>>
   readonly getWorksheetNames: (buffer: Buffer) => DataResult<string[]>
-  readonly createWorkbook: (worksheets: { name: string; data: any[][] }[]) => Promise<DataResult<Buffer>>
+  readonly createWorkbook: (
+    worksheets: { name: string; data: any[][] }[]
+  ) => Promise<DataResult<Buffer>>
 }
 ```
 
@@ -539,18 +588,58 @@ Data processing error factory functions using `@esteban-url/core` error system.
 
 ```typescript
 // General data errors
-function createDataError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
+function createDataError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
 
-// Format-specific errors  
-function createCSVError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
-function createJSONError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
-function createExcelError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
+// Format-specific errors
+function createCSVError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createJSONError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createExcelError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
 
 // Operation-specific errors
-function createParsingError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
-function createValidationError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
-function createFormatDetectionError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
-function createConversionError(type: string, code: string, message: string, options?: ErrorOptions): CoreError
+function createParsingError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createValidationError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createFormatDetectionError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createConversionError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
 ```
 
 ### Error Mapping Utilities
@@ -559,7 +648,7 @@ function createConversionError(type: string, code: string, message: string, opti
 // Node.js error mapping
 function mapNodeError(operation: string, path: string, error: unknown): CoreError
 
-// Library error mapping  
+// Library error mapping
 function mapLibraryError(library: string, operation: string, error: unknown): CoreError
 
 // Validation error mapping
@@ -613,7 +702,7 @@ const jsonOps = createJSONOperations()
 const jsonResult = await jsonOps.parseFile('/path/to/data.json')
 const stringifyResult = jsonOps.stringify({ name: 'test' })
 
-// Excel operations  
+// Excel operations
 const excelOps = createExcelOperations()
 const excelResult = await excelOps.parseFile('/path/to/data.xlsx')
 if (excelResult.isOk()) {
@@ -628,7 +717,7 @@ import { data } from '@esteban-url/data'
 
 const csvData = [
   { name: 'John', age: 30 },
-  { name: 'Jane', age: 25 }
+  { name: 'Jane', age: 25 },
 ]
 
 // Convert to JSON
@@ -654,11 +743,11 @@ const customData = createUnifiedDataOperations({
   defaultFormat: 'json',
   csv: {
     encoding: 'utf8',
-    timeout: 5000
+    timeout: 5000,
   },
   json: {
-    encoding: 'utf8'
-  }
+    encoding: 'utf8',
+  },
 })
 
 const result = await customData.parseAuto('/path/to/file.unknown')

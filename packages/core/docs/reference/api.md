@@ -219,7 +219,12 @@ const readError = createFileError('ReadError', 'FILE_NOT_FOUND', 'Could not read
 Factory for data processing errors.
 
 ```typescript
-const createDataError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createDataError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ### `createFileSystemError()`
@@ -227,7 +232,12 @@ const createDataError: (type: string, code: string, message: string, options?: E
 Factory for filesystem operation errors.
 
 ```typescript
-const createFileSystemError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createFileSystemError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ### `createValidationError()`
@@ -235,7 +245,12 @@ const createFileSystemError: (type: string, code: string, message: string, optio
 Factory for validation errors.
 
 ```typescript
-const createValidationError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createValidationError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ### `createConfigError()`
@@ -243,7 +258,12 @@ const createValidationError: (type: string, code: string, message: string, optio
 Factory for configuration errors.
 
 ```typescript
-const createConfigError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createConfigError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ### `createGitError()`
@@ -251,7 +271,12 @@ const createConfigError: (type: string, code: string, message: string, options?:
 Factory for Git operation errors.
 
 ```typescript
-const createGitError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createGitError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ### `createCliError()`
@@ -259,7 +284,12 @@ const createGitError: (type: string, code: string, message: string, options?: Er
 Factory for CLI-related errors.
 
 ```typescript
-const createCliError: (type: string, code: string, message: string, options?: ErrorFactoryOptions) => CoreError
+const createCliError: (
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorFactoryOptions
+) => CoreError
 ```
 
 ## Error Utility Functions
@@ -659,23 +689,27 @@ import { Result, ok, err, CoreError, createCoreError } from '@esteban-url/core'
 
 function processData(input: string): Result<ProcessedData, CoreError> {
   if (!input.trim()) {
-    return err(createCoreError('ValidationError', 'EMPTY_INPUT', 'Input cannot be empty', {
-      component: 'data-processor',
-      operation: 'validate',
-      severity: 'medium'
-    }))
+    return err(
+      createCoreError('ValidationError', 'EMPTY_INPUT', 'Input cannot be empty', {
+        component: 'data-processor',
+        operation: 'validate',
+        severity: 'medium',
+      })
+    )
   }
 
   try {
     const processed = expensiveOperation(input)
     return ok(processed)
   } catch (error) {
-    return err(createCoreError('ProcessingError', 'PROCESS_FAILED', 'Processing failed', {
-      component: 'data-processor',
-      operation: 'process',
-      cause: error,
-      severity: 'high'
-    }))
+    return err(
+      createCoreError('ProcessingError', 'PROCESS_FAILED', 'Processing failed', {
+        component: 'data-processor',
+        operation: 'process',
+        cause: error,
+        severity: 'high',
+      })
+    )
   }
 }
 ```
@@ -685,12 +719,7 @@ function processData(input: string): Result<ProcessedData, CoreError> {
 ```typescript
 import { pipe } from '@esteban-url/core'
 
-const result = pipe(
-  input,
-  validateInput,
-  processData,
-  transformResult
-)
+const result = pipe(input, validateInput, processData, transformResult)
 ```
 
 ### Error Recovery
@@ -714,7 +743,7 @@ const createMyModuleError = createErrorFactory('my-module', 'high')
 const error = createMyModuleError('ProcessingError', 'INVALID_FORMAT', 'Invalid data format', {
   operation: 'parse',
   details: 'Expected JSON, received XML',
-  recoverable: true
+  recoverable: true,
 })
 ```
 

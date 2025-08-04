@@ -133,13 +133,15 @@ const schema = defineSchema<{
     host: string
     ssl: boolean
   }
-}>().object({
-  server: object({
-    port: number().int().min(1024).max(65535).default(3000).description('Server port number'),
-    host: string().default('localhost').description('Server host address'),
-    ssl: boolean().default(false).description('Enable SSL/TLS'),
-  }),
-}).build()
+}>()
+  .object({
+    server: object({
+      port: number().int().min(1024).max(65535).default(3000).description('Server port number'),
+      host: string().default('localhost').description('Server host address'),
+      ssl: boolean().default(false).description('Enable SSL/TLS'),
+    }),
+  })
+  .build()
 ```
 
 ### `createSchema()`
@@ -206,16 +208,9 @@ function string(): ZodStringFieldBuilder
 **Usage**:
 
 ```typescript
-const nameField = string()
-  .minLength(2)
-  .maxLength(50)
-  .trim()
-  .description('User full name')
+const nameField = string().minLength(2).maxLength(50).trim().description('User full name')
 
-const emailField = string()
-  .email()
-  .toLowerCase()
-  .description('User email address')
+const emailField = string().email().toLowerCase().description('User email address')
 ```
 
 ### `number()`
@@ -248,17 +243,9 @@ function number(): ZodNumberFieldBuilder
 **Usage**:
 
 ```typescript
-const portField = number()
-  .int()
-  .min(1024)
-  .max(65535)
-  .default(3000)
-  .description('Server port')
+const portField = number().int().min(1024).max(65535).default(3000).description('Server port')
 
-const ratioField = number()
-  .min(0)
-  .max(1)
-  .description('Scaling ratio')
+const ratioField = number().min(0).max(1).description('Scaling ratio')
 ```
 
 ### `boolean()`
@@ -280,9 +267,7 @@ function boolean(): ZodBooleanFieldBuilder
 **Usage**:
 
 ```typescript
-const debugField = boolean()
-  .default(false)
-  .description('Enable debug mode')
+const debugField = boolean().default(false).description('Enable debug mode')
 ```
 
 ### `array()`
@@ -308,12 +293,9 @@ function array<T>(itemBuilder: ZodFieldBuilder<T>): ZodArrayFieldBuilder<T>
 **Usage**:
 
 ```typescript
-const tagsField = array(string())
-  .minLength(1)
-  .description('Content tags')
+const tagsField = array(string()).minLength(1).description('Content tags')
 
-const portsField = array(number().int().positive())
-  .description('Available ports')
+const portsField = array(number().int().positive()).description('Available ports')
 ```
 
 ### `object()`
@@ -387,7 +369,7 @@ function create<T>(definition: ConfigDefinition<T>): ConfigResult<ConfigManager<
 
 Loads configuration from all sources in definition.
 
-```typescript  
+```typescript
 function load<T>(definition: ConfigDefinition<T>): Promise<ConfigResult<ConfigState<T>>>
 ```
 
@@ -442,12 +424,14 @@ const schema = defineSchema<{
     baseUrl: string
     timeout: number
   }
-}>().object({
-  api: object({
-    baseUrl: string().url().description('API base URL'),
-    timeout: number().int().min(1000).default(5000).description('Request timeout'),
-  }),
-}).build()
+}>()
+  .object({
+    api: object({
+      baseUrl: string().url().description('API base URL'),
+      timeout: number().int().min(1000).default(5000).description('Request timeout'),
+    }),
+  })
+  .build()
 
 const definition: ConfigDefinition = {
   name: 'app-config',
@@ -465,7 +449,7 @@ const managerResult = configOps.create(definition)
 if (managerResult.isOk()) {
   const manager = managerResult.value
   const stateResult = await manager.load()
-  
+
   if (stateResult.isOk()) {
     const config = stateResult.value.resolved
     console.log('API URL:', config.api.baseUrl)
@@ -575,10 +559,7 @@ Validator operations interface.
 interface ValidatorOperations {
   readonly register: <T>(validator: ConfigValidator<T>) => void
   readonly unregister: (name: string) => void
-  readonly validate: <T>(
-    config: T,
-    validators: readonly ConfigValidator<T>[]
-  ) => ConfigResult<void>
+  readonly validate: <T>(config: T, validators: readonly ConfigValidator<T>[]) => ConfigResult<void>
   readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>
 }
 ```
@@ -615,10 +596,7 @@ interface TransformerOperations {
 Generates documentation from Zod schema.
 
 ```typescript
-function generateDocs(
-  schema: ZodConfigSchema, 
-  options?: ZodDocsGeneratorOptions
-): ZodConfigDocs
+function generateDocs(schema: ZodConfigSchema, options?: ZodDocsGeneratorOptions): ZodConfigDocs
 ```
 
 **Parameters**:
@@ -648,10 +626,7 @@ console.log(docs.sections) // Documentation sections
 Generates JSON Schema from Zod configuration schema.
 
 ```typescript
-function generateJsonSchema(
-  schema: ZodConfigSchema, 
-  options?: ZodJsonSchemaOptions
-): ZodJsonSchema
+function generateJsonSchema(schema: ZodConfigSchema, options?: ZodJsonSchemaOptions): ZodJsonSchema
 ```
 
 **Parameters**:
@@ -723,9 +698,7 @@ interface ConfigValidationError extends BaseValidationError {
 Creates configuration validation errors.
 
 ```typescript
-function createConfigValidationError(
-  context: ConfigValidationContext
-): ConfigValidationError
+function createConfigValidationError(context: ConfigValidationContext): ConfigValidationError
 ```
 
 ### `enhanceZodError()`
@@ -734,7 +707,7 @@ Enhances Zod errors with additional context.
 
 ```typescript
 function enhanceZodError(
-  error: z.ZodError, 
+  error: z.ZodError,
   context?: ConfigValidationContext
 ): ConfigValidationError
 ```
@@ -744,10 +717,7 @@ function enhanceZodError(
 Formats validation error for display.
 
 ```typescript
-function formatValidationError(
-  error: ConfigValidationError, 
-  options?: FormatOptions
-): string
+function formatValidationError(error: ConfigValidationError, options?: FormatOptions): string
 ```
 
 ### `formatValidationErrors()`
@@ -756,7 +726,7 @@ Formats multiple validation errors.
 
 ```typescript
 function formatValidationErrors(
-  errors: readonly ConfigValidationError[], 
+  errors: readonly ConfigValidationError[],
   options?: FormatOptions
 ): string
 ```
@@ -766,14 +736,14 @@ function formatValidationErrors(
 ### Basic Configuration
 
 ```typescript
-import { 
-  defineSchema, 
-  string, 
-  number, 
-  boolean, 
+import {
+  defineSchema,
+  string,
+  number,
+  boolean,
   object,
   createConfigOperations,
-  type ConfigDefinition 
+  type ConfigDefinition,
 } from '@esteban-url/config'
 
 // Define schema
@@ -787,17 +757,19 @@ const schema = defineSchema<{
     url: string
     maxConnections: number
   }
-}>().object({
-  server: object({
-    host: string().default('localhost').description('Server host'),
-    port: number().int().min(1024).default(3000).description('Server port'),
-    ssl: boolean().default(false).description('Enable SSL'),
-  }),
-  database: object({
-    url: string().url().description('Database connection URL'),
-    maxConnections: number().int().min(1).default(10).description('Max connections'),
-  }),
-}).build()
+}>()
+  .object({
+    server: object({
+      host: string().default('localhost').description('Server host'),
+      port: number().int().min(1024).default(3000).description('Server port'),
+      ssl: boolean().default(false).description('Enable SSL'),
+    }),
+    database: object({
+      url: string().url().description('Database connection URL'),
+      maxConnections: number().int().min(1).default(10).description('Max connections'),
+    }),
+  })
+  .build()
 
 // Create definition
 const definition: ConfigDefinition = {
@@ -815,7 +787,7 @@ const managerResult = configOps.create(definition)
 
 if (managerResult.isOk()) {
   const manager = managerResult.value
-  
+
   // Load configuration
   const stateResult = await manager.load()
   if (stateResult.isOk()) {
@@ -852,14 +824,14 @@ await fs.writeFile('config-schema.json', JSON.stringify(jsonSchema, null, 2))
 ```typescript
 const watcher = await manager.watch((newConfig, oldConfig, changes) => {
   console.log('Configuration changed!')
-  changes.forEach(change => {
+  changes.forEach((change) => {
     console.log(`${change.path}: ${change.oldValue} → ${change.newValue}`)
   })
 })
 
 // Stop watching later
 if (watcher.isOk()) {
-  await Promise.all(watcher.value.map(w => w.stop()))
+  await Promise.all(watcher.value.map((w) => w.stop()))
 }
 ```
 
@@ -872,10 +844,10 @@ const stateResult = await manager.load()
 if (stateResult.isErr()) {
   const error = stateResult.error
   console.error('Configuration error:', error.message)
-  
+
   if (error.type === 'SCHEMA_VALIDATION_FAILED' && error.context?.errors) {
     const validationErrors = error.context.errors as ConfigValidationError[]
-    validationErrors.forEach(err => {
+    validationErrors.forEach((err) => {
       const formatted = formatValidationError(err)
       console.error(formatted)
     })

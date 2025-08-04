@@ -70,14 +70,11 @@ const result = await writeFile('output.txt', 'Hello, world!')
 
 // Write JSON
 const data = { name: 'test', version: '1.0.0' }
-const result = await writeFile(
-  'package.json',
-  JSON.stringify(data, null, 2)
-)
+const result = await writeFile('package.json', JSON.stringify(data, null, 2))
 
 // Write with options
 const result = await writeFile('script.sh', '#!/bin/bash\necho "Hello"', {
-  mode: 0o755,  // Make executable
+  mode: 0o755, // Make executable
 })
 ```
 
@@ -144,7 +141,7 @@ const result = await readdir(
 // Get file names
 const result = await readdir('src')
 if (result.isOk()) {
-  console.log(result.value)  // ['index.ts', 'utils.ts']
+  console.log(result.value) // ['index.ts', 'utils.ts']
 }
 
 // Get detailed entries
@@ -320,8 +317,8 @@ Get directory name.
 ```typescript
 import { dirname } from '@esteban-url/fs'
 
-dirname('/src/utils/index.ts')  // '/src/utils'
-dirname('file.txt')             // '.'
+dirname('/src/utils/index.ts') // '/src/utils'
+dirname('file.txt') // '.'
 ```
 
 ### basename(path, ext?)
@@ -331,7 +328,7 @@ Get file name.
 ```typescript
 import { basename } from '@esteban-url/fs'
 
-basename('/src/utils/index.ts')       // 'index.ts'
+basename('/src/utils/index.ts') // 'index.ts'
 basename('/src/utils/index.ts', '.ts') // 'index'
 ```
 
@@ -342,8 +339,8 @@ Get file extension.
 ```typescript
 import { extname } from '@esteban-url/fs'
 
-extname('file.txt')     // '.txt'
-extname('image.png')    // '.png'
+extname('file.txt') // '.txt'
+extname('image.png') // '.png'
 extname('archive.tar.gz') // '.gz'
 ```
 
@@ -402,7 +399,7 @@ async function safeUpdate(path: string, content: string) {
   if (copyResult.isError()) {
     return copyResult
   }
-  
+
   // Write new content
   const writeResult = await writeFile(path, content)
   if (writeResult.isError()) {
@@ -410,7 +407,7 @@ async function safeUpdate(path: string, content: string) {
     await rename(backupPath, path)
     return writeResult
   }
-  
+
   // Clean up backup
   await unlink(backupPath)
   return ok(undefined)
@@ -425,10 +422,10 @@ Recursively process directory:
 async function* walkDirectory(dir: string): AsyncGenerator<string> {
   const result = await readdir(dir, { withFileTypes: true })
   if (result.isError()) return
-  
+
   for (const entry of result.value) {
     const path = join(dir, entry.name)
-    
+
     if (entry.isDirectory()) {
       yield* walkDirectory(path)
     } else {
@@ -450,14 +447,14 @@ Write with temporary file:
 ```typescript
 async function atomicWrite(path: string, content: string) {
   const tmpPath = `${path}.tmp.${Date.now()}`
-  
+
   // Write to temporary file
   const writeResult = await writeFile(tmpPath, content)
   if (writeResult.isError()) {
-    await unlink(tmpPath)  // Clean up
+    await unlink(tmpPath) // Clean up
     return writeResult
   }
-  
+
   // Atomically rename
   return rename(tmpPath, path)
 }

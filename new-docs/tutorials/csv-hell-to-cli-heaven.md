@@ -2,7 +2,8 @@
 
 Build a production-ready CSV processing CLI tool using the Trailhead framework.
 
-**Time to complete**: 
+**Time to complete**:
+
 - ⏱️ Basic Path (Phases 0-3): 30 minutes → Working CSV processor
 - ⏱️ Full Path (Phases 0-5): 60 minutes → Production-ready tool
 
@@ -24,6 +25,7 @@ Picture this: Your team lead just sent you a CSV export from the legacy system. 
 ```
 
 ### Common Issues in This Data:
+
 - **Whitespace chaos**: Leading/trailing spaces everywhere
 - **Invalid data types**: "thirty" instead of 30
 - **Empty rows**: Completely blank lines
@@ -55,6 +57,7 @@ cd csv-processor
 ### What Just Happened?
 
 The `create-cli` tool generated a complete TypeScript CLI project with:
+
 - ✅ TypeScript configuration for type safety
 - ✅ Testing setup with Vitest
 - ✅ Build tooling with tsup
@@ -72,6 +75,7 @@ pnpm test
 ```
 
 You should see:
+
 ```
 csv-processor v1.0.0
 
@@ -123,7 +127,7 @@ const versionCommand = createCommand({
   action: async (options, context) => {
     context.logger.info('csv-processor v1.0.0')
     return ok(undefined)
-  }
+  },
 })
 
 // Create help command
@@ -141,25 +145,27 @@ Commands:
 Run 'csv-processor <command> --help' for command details
 `)
     return ok(undefined)
-  }
+  },
 })
 
 // Create and configure CLI
 const cli = createCLI({
   name: 'csv-processor',
   version: '1.0.0',
-  description: 'Transform messy CSV data into clean output'
+  description: 'Transform messy CSV data into clean output',
 })
 
 // Register commands with Commander
-cli.command('version')
+cli
+  .command('version')
   .description(versionCommand.description)
   .action(async () => {
     const result = await versionCommand.execute({}, { logger: console, args: [] })
     if (result.isErr()) process.exit(1)
   })
 
-cli.command('help')
+cli
+  .command('help')
   .description(helpCommand.description)
   .action(async () => {
     const result = await helpCommand.execute({}, { logger: console, args: [] })
@@ -185,7 +191,7 @@ export const versionCommand = createCommand({
     const { logger } = context
     logger.info('csv-processor v1.0.0')
     return ok(undefined)
-  }
+  },
 })
 ```
 
@@ -194,6 +200,7 @@ export const versionCommand = createCommand({
 ### Why Result Types?
 
 Traditional approach (with exceptions):
+
 ```typescript
 // Unpredictable - might throw anywhere
 function readFile(path: string): string {
@@ -203,6 +210,7 @@ function readFile(path: string): string {
 ```
 
 Trailhead approach (with Results):
+
 ```typescript
 // Explicit - errors are values
 function readFile(path: string): Result<string, Error> {
@@ -212,6 +220,7 @@ function readFile(path: string): Result<string, Error> {
 ```
 
 This pattern makes your CLI more reliable because:
+
 - Errors can't be accidentally ignored
 - The type system forces you to handle failures
 - Testing is simpler (no try/catch needed)
@@ -258,7 +267,7 @@ export async function parseCSVFile(
 ): Promise<Result<CSVRow[], Error>> {
   // Read the file using Trailhead's file system utilities
   const fileResult = await readFile(filePath, 'utf-8')
-  
+
   if (fileResult.isError()) {
     return err(new Error(`Failed to read file: ${fileResult.error.message}`))
   }
@@ -273,16 +282,12 @@ export function parseCSVContent(
   const parseResult = Papa.parse<CSVRow>(content, {
     header: true,
     skipEmptyLines: options.skipEmptyLines ?? true,
-    transformHeader: (header) => 
-      options.trimHeaders ? header.trim() : header,
-    transform: (value) => 
-      options.trimValues ? value.trim() : value,
+    transformHeader: (header) => (options.trimHeaders ? header.trim() : header),
+    transform: (value) => (options.trimValues ? value.trim() : value),
   })
 
   if (parseResult.errors.length > 0) {
-    const errorMessages = parseResult.errors
-      .map(e => `Row ${e.row}: ${e.message}`)
-      .join(', ')
+    const errorMessages = parseResult.errors.map((e) => `Row ${e.row}: ${e.message}`).join(', ')
     return err(new Error(`CSV parsing failed: ${errorMessages}`))
   }
 
@@ -310,19 +315,19 @@ interface ParseOptions extends CommandOptions {
 export const parseCommand = createCommand<ParseOptions>({
   name: 'parse',
   description: 'Parse and display CSV file contents',
-  arguments: '<file>',  // Required positional argument
-  
+  arguments: '<file>', // Required positional argument
+
   options: [
     {
       flags: '-j, --json',
       description: 'Output as JSON',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       flags: '-l, --limit <number>',
       description: 'Limit number of rows to display',
-      type: 'number'
-    }
+      type: 'number',
+    },
   ],
 
   action: async (options, context) => {
@@ -348,7 +353,7 @@ export const parseCommand = createCommand<ParseOptions>({
     }
 
     const rows = limit ? result.value.slice(0, limit) : result.value
-    
+
     if (json) {
       logger.info(JSON.stringify(rows, null, 2))
     } else {
@@ -359,7 +364,7 @@ export const parseCommand = createCommand<ParseOptions>({
     }
 
     return ok({ rowCount: result.value.length })
-  }
+  },
 })
 ```
 
@@ -398,9 +403,9 @@ cli.command('help')
 +   .option('-j, --json', 'Output as JSON')
 +   .option('-l, --limit <number>', 'Limit number of rows', parseInt)
 +   .action(async (file, options) => {
-+     const result = await parseCommand.execute(options, { 
-+       logger: console, 
-+       args: [file] 
++     const result = await parseCommand.execute(options, {
++       logger: console,
++       args: [file]
 +     })
 +     if (result.isErr()) {
 +       console.error(result.error.message)
@@ -436,6 +441,7 @@ Run your new command:
 ```
 
 Expected output:
+
 ```
 Parsing CSV file: test-data.csv
 Found 2 rows
@@ -455,6 +461,7 @@ Row 2: {"First Name":"Jane","Last Name":"Smith","Email":"jane@email.com","Age":"
 ## 🎉 Basic Path Complete!
 
 Congratulations! You now have a functional CSV processing CLI that can:
+
 - Read CSV files from the command line
 - Parse them with proper error handling
 - Display contents in multiple formats
@@ -472,6 +479,7 @@ Congratulations! You now have a functional CSV processing CLI that can:
 ### Try It Out
 
 Test with the messy data from Phase 0:
+
 ```bash
 # Save the messy data as messy.csv, then:
 ./bin/cli.js parse messy.csv --json
@@ -545,40 +553,35 @@ async function safePrompt<T>(promptFn: () => Promise<T>): Promise<Result<T, Erro
 export const transformCommand = createCommand<TransformOptions>({
   name: 'transform',
   description: 'Transform CSV data with field mapping and cleaning',
-  arguments: '<input>',  // Required positional argument
-  
+  arguments: '<input>', // Required positional argument
+
   options: [
     {
       flags: '-o, --output <path>',
       description: 'Output file path',
-      type: 'string'
+      type: 'string',
     },
     {
       flags: '-f, --format <format>',
       description: 'Output format (json, csv, yaml)',
-      type: 'string'
+      type: 'string',
     },
     {
       flags: '-i, --interactive',
       description: 'Interactive field mapping',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       flags: '--no-clean',
       description: 'Disable whitespace cleaning',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
 
   action: async (options, context) => {
     const { logger, args } = context
     const [inputPath] = args
-    const { 
-      output, 
-      format = 'json', 
-      interactive = false, 
-      clean = true 
-    } = options
+    const { output, format = 'json', interactive = false, clean = true } = options
 
     if (!inputPath) {
       return err(new Error('Please provide an input CSV file path'))
@@ -602,11 +605,11 @@ export const transformCommand = createCommand<TransformOptions>({
 
     // Get field mapping
     let rules: TransformRule[] = []
-    
+
     if (interactive) {
-      logger.info('Let\'s map your CSV fields to clean names:')
+      logger.info("Let's map your CSV fields to clean names:")
       const headers = Object.keys(data[0])
-      
+
       for (const header of headers) {
         const result = await safePrompt(() =>
           input({
@@ -614,11 +617,11 @@ export const transformCommand = createCommand<TransformOptions>({
             default: header.trim().toLowerCase().replace(/\s+/g, '_'),
           })
         )
-        
+
         if (result.isError()) {
           return result
         }
-        
+
         rules.push({
           from: header,
           to: result.value,
@@ -626,29 +629,29 @@ export const transformCommand = createCommand<TransformOptions>({
       }
     } else {
       // Default transformation: lowercase and underscore
-      rules = Object.keys(data[0]).map(header => ({
+      rules = Object.keys(data[0]).map((header) => ({
         from: header,
         to: header.trim().toLowerCase().replace(/\s+/g, '_'),
       }))
     }
 
     // Transform the data
-    const transformed = data.map(row => {
+    const transformed = data.map((row) => {
       const newRow: Record<string, any> = {}
-      
+
       for (const rule of rules) {
         let value = row[rule.from]
-        
+
         if (clean && value) {
           // Clean common data issues
           value = value.trim()
-          
+
           // Normalize status values
           if (rule.to === 'status') {
             value = value.toLowerCase()
             if (value === 'unknown_status') value = 'unknown'
           }
-          
+
           // Parse age to number if possible
           if (rule.to === 'age' && value) {
             const num = parseInt(value, 10)
@@ -657,16 +660,16 @@ export const transformCommand = createCommand<TransformOptions>({
             }
           }
         }
-        
+
         newRow[rule.to] = value
       }
-      
+
       return newRow
     })
 
     // Output the transformed data
     let outputContent: string
-    
+
     switch (format) {
       case 'json':
         outputContent = JSON.stringify(transformed, null, 2)
@@ -695,20 +698,18 @@ export const transformCommand = createCommand<TransformOptions>({
       rowsTransformed: transformed.length,
       outputPath: output,
     })
-  }
+  },
 })
 
 async function generateCSV(data: any[]): Promise<string> {
   if (data.length === 0) return ''
-  
+
   const headers = Object.keys(data[0])
   const lines = [
     headers.join(','),
-    ...data.map(row => 
-      headers.map(h => JSON.stringify(row[h] || '')).join(',')
-    )
+    ...data.map((row) => headers.map((h) => JSON.stringify(row[h] || '')).join(',')),
   ]
-  
+
   return lines.join('\n')
 }
 ```
@@ -736,9 +737,9 @@ cli.command('parse')
   .option('-j, --json', 'Output as JSON')
   .option('-l, --limit <number>', 'Limit number of rows', parseInt)
   .action(async (file, options) => {
-    const result = await parseCommand.execute(options, { 
-      logger: console, 
-      args: [file] 
+    const result = await parseCommand.execute(options, {
+      logger: console,
+      args: [file]
     })
     if (result.isErr()) {
       console.error(result.error.message)
@@ -755,9 +756,9 @@ cli.command('parse')
 +   .option('-i, --interactive', 'Interactive field mapping')
 +   .option('--no-clean', 'Disable whitespace cleaning')
 +   .action(async (input, options) => {
-+     const result = await transformCommand.execute(options, { 
-+       logger: console, 
-+       args: [input] 
++     const result = await transformCommand.execute(options, {
++       logger: console,
++       args: [input]
 +     })
 +     if (result.isErr()) {
 +       console.error(result.error.message)
@@ -829,23 +830,20 @@ import { z } from 'zod'
 // Define common validation schemas
 export const emailSchema = z.string().email('Invalid email format')
 
-export const ageSchema = z.coerce.number()
+export const ageSchema = z.coerce
+  .number()
   .int('Age must be a whole number')
   .min(0, 'Age cannot be negative')
   .max(150, 'Age seems unrealistic')
 
 export const statusSchema = z.enum(['active', 'pending', 'inactive', 'unknown'], {
-  errorMap: () => ({ message: 'Status must be active, pending, inactive, or unknown' })
+  errorMap: () => ({ message: 'Status must be active, pending, inactive, or unknown' }),
 })
 
 export const dateSchema = z.string().refine((val) => {
   // Accept multiple date formats
-  const formats = [
-    /^\d{4}-\d{2}-\d{2}$/,
-    /^\d{2}\/\d{2}\/\d{4}$/,
-    /^\w+ \d{1,2}, \d{4}$/,
-  ]
-  return formats.some(format => format.test(val))
+  const formats = [/^\d{4}-\d{2}-\d{2}$/, /^\d{2}\/\d{2}\/\d{4}$/, /^\w+ \d{1,2}, \d{4}$/]
+  return formats.some((format) => format.test(val))
 }, 'Invalid date format')
 
 // Complete row schema
@@ -911,34 +909,30 @@ function validateRow(data: any): Result<any, z.ZodError> {
 export const validateCommand = createCommand<ValidateOptions>({
   name: 'validate',
   description: 'Validate CSV data and generate quality report',
-  arguments: '<file>',  // Required positional argument
-  
+  arguments: '<file>', // Required positional argument
+
   options: [
     {
       flags: '-r, --report <path>',
       description: 'Save validation report to file',
-      type: 'string'
+      type: 'string',
     },
     {
       flags: '-s, --stop-on-error',
       description: 'Stop validation on first error',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       flags: '-v, --verbose',
       description: 'Show detailed error information',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
 
   action: async (options, context) => {
     const { logger, args } = context
     const [filePath] = args
-    const { 
-      report: reportPath, 
-      stopOnError = false, 
-      verbose = false 
-    } = options
+    const { report: reportPath, stopOnError = false, verbose = false } = options
 
     if (!filePath) {
       return err(new Error('Please provide a CSV file path to validate'))
@@ -971,7 +965,7 @@ export const validateCommand = createCommand<ValidateOptions>({
     for (let i = 0; i < data.length; i++) {
       const row = data[i]
       const rowNumber = i + 1
-      
+
       // Transform to expected format first
       const transformed = {
         first_name: row['First Name'] || row.first_name || '',
@@ -984,16 +978,16 @@ export const validateCommand = createCommand<ValidateOptions>({
 
       // Validate with schema using our Result-based helper
       const validationResult = validateRow(transformed)
-      
+
       if (validationResult.isOk()) {
         validationReport.validRows++
       } else {
         validationReport.invalidRows++
         const zodError = validationResult.error
-        
+
         for (const issue of zodError.issues) {
           const field = issue.path.join('.')
-          
+
           // Track error
           validationReport.errors.push({
             row: rowNumber,
@@ -1006,7 +1000,7 @@ export const validateCommand = createCommand<ValidateOptions>({
           if (!validationReport.summary[field]) {
             validationReport.summary[field] = { missing: 0, invalid: 0 }
           }
-          
+
           if (!row[field]) {
             validationReport.summary[field].missing++
           } else {
@@ -1022,27 +1016,27 @@ export const validateCommand = createCommand<ValidateOptions>({
     }
 
     // Display results
-    const successRate = (validationReport.validRows / validationReport.totalRows * 100).toFixed(1)
-    
+    const successRate = ((validationReport.validRows / validationReport.totalRows) * 100).toFixed(1)
+
     logger.info('\n📊 Validation Report')
     logger.info('─'.repeat(40))
     logger.info(`Total rows: ${validationReport.totalRows}`)
     logger.info(`Valid rows: ${validationReport.validRows} (${successRate}%)`)
     logger.info(`Invalid rows: ${validationReport.invalidRows}`)
-    
+
     if (validationReport.errors.length > 0) {
       logger.info('\n❌ Issues by Field:')
       for (const [field, stats] of Object.entries(validationReport.summary)) {
         logger.info(`  ${field}: ${stats.missing} missing, ${stats.invalid} invalid`)
       }
-      
+
       if (verbose) {
         logger.info('\n❌ Detailed Errors:')
         const errorSample = validationReport.errors.slice(0, 10)
         for (const error of errorSample) {
           logger.info(`  Row ${error.row}, ${error.field}: ${error.error}`)
         }
-        
+
         if (validationReport.errors.length > 10) {
           logger.info(`  ... and ${validationReport.errors.length - 10} more errors`)
         }
@@ -1053,7 +1047,7 @@ export const validateCommand = createCommand<ValidateOptions>({
     if (reportPath) {
       const reportJson = JSON.stringify(validationReport, null, 2)
       const writeResult = await writeFile(reportPath, reportJson)
-      
+
       if (writeResult.isError()) {
         logger.error(`Failed to save report: ${writeResult.error.message}`)
       } else {
@@ -1067,7 +1061,7 @@ export const validateCommand = createCommand<ValidateOptions>({
     } else {
       return err(new Error('No valid rows found in CSV'))
     }
-  }
+  },
 })
 ```
 
@@ -1090,9 +1084,9 @@ import { transformCommand } from './commands/transform.js'
 +   .option('-s, --stop-on-error', 'Stop validation on first error')
 +   .option('-v, --verbose', 'Show detailed error information')
 +   .action(async (file, options) => {
-+     const result = await validateCommand.execute(options, { 
-+       logger: console, 
-+       args: [file] 
++     const result = await validateCommand.execute(options, {
++       logger: console,
++       args: [file]
 +     })
 +     if (result.isErr()) {
 +       console.error(result.error.message)
@@ -1150,7 +1144,7 @@ Congratulations! You've built a production-ready CSV processing CLI with:
 ✅ **Data transformation** with interactive field mapping  
 ✅ **Multiple output formats** (JSON, YAML, CSV)  
 ✅ **Data validation** with detailed error reporting  
-✅ **Quality analysis** with field-level statistics  
+✅ **Quality analysis** with field-level statistics
 
 ### Framework Features Mastered
 
@@ -1158,7 +1152,7 @@ Congratulations! You've built a production-ready CSV processing CLI with:
 ✅ **Command pattern** for modular CLI design  
 ✅ **Interactive prompts** for user-friendly interfaces  
 ✅ **Schema validation** with Zod integration  
-✅ **File operations** with proper error handling  
+✅ **File operations** with proper error handling
 
 ### Your Complete CLI Workflow
 

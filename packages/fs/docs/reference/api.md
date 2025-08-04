@@ -109,7 +109,10 @@ const fs: {
   ensureDir: (path: string) => Promise<FSResult<void>>
   outputFile: (path: string, content: string) => Promise<FSResult<void>>
   emptyDir: (path: string) => Promise<FSResult<void>>
-  findFiles: (pattern: string, options?: { cwd?: string; ignore?: string[] }) => Promise<FSResult<string[]>>
+  findFiles: (
+    pattern: string,
+    options?: { cwd?: string; ignore?: string[] }
+  ) => Promise<FSResult<string[]>>
   readIfExists: (path: string) => Promise<FSResult<string | null>>
   copyIfExists: (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<boolean>>
 }
@@ -353,10 +356,9 @@ const result = await fs.emptyDir('./temp-directory')
 Creates a function to find files matching glob patterns.
 
 ```typescript
-function findFiles(config?: FSConfig): (
-  pattern: string,
-  options?: { cwd?: string; ignore?: string[] }
-) => Promise<FSResult<string[]>>
+function findFiles(
+  config?: FSConfig
+): (pattern: string, options?: { cwd?: string; ignore?: string[] }) => Promise<FSResult<string[]>>
 ```
 
 **Returns**: Function that finds files matching glob patterns.
@@ -367,13 +369,13 @@ function findFiles(config?: FSConfig): (
 const findFilesOp = findFiles()
 const result = await findFilesOp('**/*.ts', {
   cwd: './src',
-  ignore: ['**/*.test.ts']
+  ignore: ['**/*.test.ts'],
 })
 
 // Or use the pre-configured instance
 const result = await fs.findFiles('**/*.ts', {
   cwd: './src',
-  ignore: ['**/*.test.ts']
+  ignore: ['**/*.test.ts'],
 })
 ```
 
@@ -407,11 +409,9 @@ const result = await fs.readIfExists('./optional-config.json')
 Creates a function to copy file only if source exists (returns boolean indicating if copy occurred).
 
 ```typescript
-function copyIfExists(config?: FSConfig): (
-  src: string,
-  dest: string,
-  options?: CopyOptions
-) => Promise<FSResult<boolean>>
+function copyIfExists(
+  config?: FSConfig
+): (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<boolean>>
 ```
 
 **Returns**: Function that copies file if source exists, returns boolean indicating success.
@@ -500,16 +500,12 @@ function createFileSystemError(
 **Usage**:
 
 ```typescript
-const error = createFileSystemError(
-  'Read file',
-  'Failed to read configuration file',
-  {
-    path: './config.json',
-    code: 'CONFIG_READ_ERROR',
-    recoverable: true,
-    suggestion: 'Check if the file exists and has proper permissions'
-  }
-)
+const error = createFileSystemError('Read file', 'Failed to read configuration file', {
+  path: './config.json',
+  code: 'CONFIG_READ_ERROR',
+  recoverable: true,
+  suggestion: 'Check if the file exists and has proper permissions',
+})
 ```
 
 ### `mapNodeError()`
@@ -730,17 +726,13 @@ The package provides comprehensive testing utilities via `@esteban-url/fs/testin
 ### Mock Filesystem
 
 ```typescript
-import {
-  createMockFileSystem,
-  createTestFileSystem,
-  MockFileSystem
-} from '@esteban-url/fs/testing'
+import { createMockFileSystem, createTestFileSystem, MockFileSystem } from '@esteban-url/fs/testing'
 
 // Create mock filesystem with initial structure
 const mockFs = createMockFileSystem({
   'package.json': JSON.stringify({ name: 'test' }),
   'src/index.ts': 'export const hello = "world"',
-  'README.md': '# Test Project'
+  'README.md': '# Test Project',
 })
 
 // Use mock filesystem with fs operations
@@ -786,7 +778,7 @@ import {
   createProjectStructure,
   createTempPath,
   getTempDir,
-  testPaths
+  testPaths,
 } from '@esteban-url/fs/testing'
 ```
 
@@ -795,11 +787,7 @@ import {
 Pre-built project structures for testing:
 
 ```typescript
-import {
-  basicProject,
-  configFiles,
-  monorepoStructure
-} from '@esteban-url/fs/testing'
+import { basicProject, configFiles, monorepoStructure } from '@esteban-url/fs/testing'
 
 // Use fixtures with mock filesystem
 const projectFs = createMockFileSystem(basicProject)

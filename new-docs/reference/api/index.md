@@ -118,17 +118,17 @@ result.match({ ok, err })      // Pattern matching
 ```typescript
 // Chaining operations
 const result = await readFile('data.json')
-  .map(content => JSON.parse(content))
-  .map(data => data.users)
-  .flatMap(users => validateUsers(users))
+  .map((content) => JSON.parse(content))
+  .map((data) => data.users)
+  .flatMap((users) => validateUsers(users))
 
 // Error propagation
 async function processFile(path: string): Promise<Result<Data, Error>> {
   const readResult = await readFile(path)
   if (readResult.isError()) {
-    return readResult  // Propagate error
+    return readResult // Propagate error
   }
-  
+
   // Process readResult.value
   return ok(processedData)
 }
@@ -157,7 +157,7 @@ Write content to file.
 import { writeFile } from '@esteban-url/fs'
 
 const result = await writeFile(
-  path: string, 
+  path: string,
   content: string | Buffer,
   options?: WriteOptions
 )
@@ -235,7 +235,7 @@ const name = await input({
 })
 
 // Safe usage with Result
-const result = await safePrompt(() => 
+const result = await safePrompt(() =>
   input({ message: 'Enter name:' })
 )
 if (result.isError()) {
@@ -273,9 +273,9 @@ import { select } from '@esteban-url/cli/prompts'
 const choice = await select({
   message: string,
   choices: Array<{
-    name: string,           // Display text
-    value: T,               // Return value
-    disabled?: boolean,
+    name: string // Display text
+    value: T // Return value
+    disabled?: boolean
   }>,
 })
 
@@ -285,8 +285,8 @@ const result = await safePrompt(() =>
     message: 'Pick a color',
     choices: [
       { name: 'Red', value: 'red' },
-      { name: 'Blue', value: 'blue' }
-    ]
+      { name: 'Blue', value: 'blue' },
+    ],
   })
 )
 ```
@@ -302,9 +302,9 @@ import { checkbox } from '@esteban-url/cli/prompts'
 const choices = await checkbox({
   message: string,
   choices: Array<{
-    name: string,
-    value: T,
-    checked?: boolean,
+    name: string
+    value: T
+    checked?: boolean
   }>,
 })
 
@@ -314,8 +314,8 @@ const result = await safePrompt(() =>
     message: 'Select features',
     choices: [
       { name: 'TypeScript', value: 'ts' },
-      { name: 'ESLint', value: 'lint' }
-    ]
+      { name: 'ESLint', value: 'lint' },
+    ],
   })
 )
 ```
@@ -332,21 +332,27 @@ Use cli-progress directly for progress indication.
 import { SingleBar, MultiBar, Presets } from '@esteban-url/cli/progress'
 
 // Single progress bar
-const progressBar = new SingleBar({
-  format: 'Progress |{bar}| {percentage}% | {value}/{total}',
-  barCompleteChar: '\u2588',
-  barIncompleteChar: '\u2591',
-}, Presets.shades_classic)
+const progressBar = new SingleBar(
+  {
+    format: 'Progress |{bar}| {percentage}% | {value}/{total}',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  },
+  Presets.shades_classic
+)
 
-progressBar.start(100, 0)    // Start with total 100, current 0
-progressBar.update(50)       // Update to 50%
-progressBar.stop()           // Complete
+progressBar.start(100, 0) // Start with total 100, current 0
+progressBar.update(50) // Update to 50%
+progressBar.stop() // Complete
 
 // Multiple progress bars
-const multiBar = new MultiBar({
-  clearOnComplete: false,
-  hideCursor: true,
-}, Presets.shades_grey)
+const multiBar = new MultiBar(
+  {
+    clearOnComplete: false,
+    hideCursor: true,
+  },
+  Presets.shades_grey
+)
 
 const bar1 = multiBar.create(100, 0)
 const bar2 = multiBar.create(200, 0)
@@ -371,8 +377,8 @@ const tracker = createProgressTracker({
 })
 
 // Update progress
-updateProgress(tracker, 10)  // Increment by 10
-updateProgress(tracker, 20)  // Increment by 20
+updateProgress(tracker, 10) // Increment by 10
+updateProgress(tracker, 20) // Increment by 20
 
 // Access state
 console.log(tracker.getState())
@@ -412,31 +418,30 @@ Available on command context. By default, this is the console object.
 
 ```typescript
 interface Logger {
-  debug(...args: any[]): void    // Debug messages
-  info(...args: any[]): void     // Information
-  warn(...args: any[]): void     // Warnings
-  error(...args: any[]): void    // Errors
+  debug(...args: any[]): void // Debug messages
+  info(...args: any[]): void // Information
+  warn(...args: any[]): void // Warnings
+  error(...args: any[]): void // Errors
 }
 
 // In command action
 action: async (options, context) => {
   const { logger } = context
-  
+
   logger.debug('Debug info')
   logger.info('Processing...')
-  logger.info('✓ Complete')     // Use info for success
+  logger.info('✓ Complete') // Use info for success
   logger.error('✗ Failed')
   logger.warn('⚠️  Warning')
 }
 
 // When registering with Commander
-cli.command('mycommand')
-  .action(async (...args) => {
-    const result = await myCommand.execute(options, {
-      logger: console,  // Default logger
-      args: args.slice(0, -1)
-    })
+cli.command('mycommand').action(async (...args) => {
+  const result = await myCommand.execute(options, {
+    logger: console, // Default logger
+    args: args.slice(0, -1),
   })
+})
 ```
 
 ## Testing Utilities
@@ -456,8 +461,8 @@ const context = createTestContext()
 const result = await myCommand.execute(options, context)
 
 // Access captured logs
-console.log(context.logs)     // Array of logged messages
-console.log(context.errors)   // Array of error messages
+console.log(context.logs) // Array of logged messages
+console.log(context.errors) // Array of error messages
 console.log(context.warnings) // Array of warnings
 ```
 
@@ -476,7 +481,7 @@ const context = await createTestContextWithFiles({
 
 // The context includes a temp directory with these files
 // Access the temp directory path
-console.log(context.cwd)  // e.g., /tmp/test-xyz/
+console.log(context.cwd) // e.g., /tmp/test-xyz/
 
 // Use in command
 const result = await myCommand.execute(options, context)
@@ -492,7 +497,7 @@ import { runCommand } from '@esteban-url/cli/testing'
 // Simple execution
 const result = await runCommand(myCommand, {
   args: ['file.csv'],
-  options: { verbose: true }
+  options: { verbose: true },
 })
 
 // With custom context
@@ -501,8 +506,8 @@ const result = await runCommand(myCommand, {
   options: { verbose: true },
   context: {
     logger: customLogger,
-    env: { NODE_ENV: 'test' }
-  }
+    env: { NODE_ENV: 'test' },
+  },
 })
 ```
 
@@ -516,12 +521,9 @@ import { myCommand } from '../src/commands/my-command.js'
 describe('my command', () => {
   it('should process files', async () => {
     const context = createTestContext()
-    
-    const result = await myCommand.execute(
-      { verbose: true },
-      { ...context, args: ['test.txt'] }
-    )
-    
+
+    const result = await myCommand.execute({ verbose: true }, { ...context, args: ['test.txt'] })
+
     expect(result.isOk()).toBe(true)
     expect(context.logs).toContain('Processing test.txt')
   })
@@ -555,10 +557,10 @@ const configSchema = defineSchema({
 const configManager = createConfigManager({
   schema: configSchema,
   sources: [
-    { type: 'file', path: './config.json' },     // JSON/YAML files
-    { type: 'env', prefix: 'APP_' },            // Environment variables
-    { type: 'cli' }                             // CLI arguments
-  ]
+    { type: 'file', path: './config.json' }, // JSON/YAML files
+    { type: 'env', prefix: 'APP_' }, // Environment variables
+    { type: 'cli' }, // CLI arguments
+  ],
 })
 
 // Load configuration
@@ -570,8 +572,8 @@ if (loadResult.isError()) {
 
 const config = loadResult.value
 // Type-safe access
-console.log(config.apiUrl)     // string
-console.log(config.timeout)    // number
+console.log(config.apiUrl) // string
+console.log(config.timeout) // number
 console.log(config.features.debug) // boolean
 ```
 
@@ -583,20 +585,13 @@ Built-in type builders for configuration schemas.
 import { string, number, boolean, object, array } from '@esteban-url/config'
 
 // String with validations
-const urlConfig = string()
-  .url()
-  .required()
-  .default('http://localhost:3000')
+const urlConfig = string().url().required().default('http://localhost:3000')
 
 // Number with constraints
-const portConfig = number()
-  .min(1)
-  .max(65535)
-  .default(3000)
+const portConfig = number().min(1).max(65535).default(3000)
 
 // Boolean flags
-const debugConfig = boolean()
-  .default(false)
+const debugConfig = boolean().default(false)
 
 // Nested objects
 const serverConfig = object({
@@ -606,8 +601,7 @@ const serverConfig = object({
 })
 
 // Arrays
-const allowedOrigins = array(string().url())
-  .default(['http://localhost:3000'])
+const allowedOrigins = array(string().url()).default(['http://localhost:3000'])
 ```
 
 ### Configuration Sources
@@ -655,16 +649,16 @@ interface CommandOptions {
 }
 
 interface CommandContext {
-  logger: Logger            // Logging interface (console by default)
-  args: string[]           // Positional arguments
+  logger: Logger // Logging interface (console by default)
+  args: string[] // Positional arguments
 }
 
 interface Command<T extends CommandOptions = CommandOptions> {
   name: string
   description?: string
-  arguments?: string       // e.g., '<file>' or '[options...]'
+  arguments?: string // e.g., '<file>' or '[options...]'
   options?: Array<{
-    flags: string          // e.g., '-v, --verbose'
+    flags: string // e.g., '-v, --verbose'
     description: string
     type?: 'boolean' | 'string' | 'number'
   }>
@@ -689,7 +683,7 @@ interface Ok<T> {
   map<U>(fn: (value: T) => U): Result<U, E>
   flatMap<U>(fn: (value: T) => Result<U, E>): Result<U, E>
   unwrapOr(defaultValue: T): T
-  match<U>(patterns: { ok: (value: T) => U, err: (error: E) => U }): U
+  match<U>(patterns: { ok: (value: T) => U; err: (error: E) => U }): U
 }
 
 interface Err<E> {
@@ -699,7 +693,7 @@ interface Err<E> {
   map<U>(fn: (value: T) => U): Result<U, E>
   flatMap<U>(fn: (value: T) => Result<U, E>): Result<U, E>
   unwrapOr<T>(defaultValue: T): T
-  match<U>(patterns: { ok: (value: T) => U, err: (error: E) => U }): U
+  match<U>(patterns: { ok: (value: T) => U; err: (error: E) => U }): U
 }
 ```
 
@@ -721,11 +715,13 @@ Complete list of package exports and their import paths.
 ### @esteban-url/cli
 
 Main exports:
+
 ```typescript
 import { createCLI } from '@esteban-url/cli'
 ```
 
 Subpath exports:
+
 ```typescript
 // Command creation
 import { createCommand } from '@esteban-url/cli/command'
@@ -745,12 +741,14 @@ import { createTestContext, createTestContextWithFiles, runCommand } from '@este
 ### @esteban-url/core
 
 Result types and utilities:
+
 ```typescript
 import { Result, ok, err } from '@esteban-url/core'
 import { fromThrowable, fromThrowableAsync } from '@esteban-url/core'
 ```
 
 Color utilities:
+
 ```typescript
 import { chalk } from '@esteban-url/core/utils'
 ```
@@ -758,29 +756,23 @@ import { chalk } from '@esteban-url/core/utils'
 ### @esteban-url/fs
 
 File system operations with Result types:
+
 ```typescript
-import { 
-  readFile, 
-  writeFile, 
-  exists, 
-  mkdir, 
-  readdir,
-  unlink,
-  rmdir
-} from '@esteban-url/fs'
+import { readFile, writeFile, exists, mkdir, readdir, unlink, rmdir } from '@esteban-url/fs'
 ```
 
 ### @esteban-url/config
 
 Configuration management:
+
 ```typescript
-import { 
-  createConfigManager, 
+import {
+  createConfigManager,
   defineSchema,
   string,
   number,
   boolean,
   object,
-  array
+  array,
 } from '@esteban-url/config'
 ```

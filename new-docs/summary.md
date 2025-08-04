@@ -5,18 +5,23 @@ This directory contains the new unified documentation for the Trailhead CLI fram
 ## What Was Created
 
 ### 1. Main Tutorial (✅ Complete)
+
 **File**: `tutorials/csv-hell-to-cli-heaven.md`
+
 - Comprehensive progressive tutorial teaching ALL packages
 - Phase 0-3: Basic path (30 minutes) - working CSV processor
 - Phase 4-5: Advanced path (30 minutes) - production features
 - Teaches by building a real-world CSV processing CLI
 
 ### 2. How-To Guides (✅ Complete)
-**Files**: 
+
+**Files**:
+
 - `how-to/common-workflows.md` - Task-oriented guides for common problems
 - `how-to/troubleshooting.md` - Solutions to common issues
 
 Content includes:
+
 - Adding new commands
 - File operations with Result types
 - Interactive prompts
@@ -26,12 +31,15 @@ Content includes:
 - Distribution and publishing
 
 ### 3. API Reference (✅ Complete)
+
 **Files**:
+
 - `reference/api/index.md` - Complete API overview
 - `reference/api/cli-building.md` - Command creation APIs
 - `reference/api/file-operations.md` - File system APIs
 
 Organized by capability rather than package:
+
 - Command building
 - Error handling
 - File operations
@@ -40,7 +48,9 @@ Organized by capability rather than package:
 - Testing utilities
 
 ### 4. Architecture Explanation (✅ Complete)
+
 **File**: `explanation/architecture.md`
+
 - Why Result types over exceptions
 - Package architecture and relationships
 - Command execution flow
@@ -50,12 +60,14 @@ Organized by capability rather than package:
 ## Documentation Reduction Achieved
 
 ### Before (Estimated)
+
 - 87 files across packages
 - ~28,000 words total
 - Extensive meta-documentation
 - Redundant package-specific docs
 
 ### After
+
 - 9 core documentation files
 - ~12,000 words (57% reduction)
 - Focused on practical usage
