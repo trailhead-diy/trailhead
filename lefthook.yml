@@ -67,10 +67,10 @@ pre-commit:
           fi
         fi
 
-    # 6. Smart test execution (comprehensive validation)
+    # 6. Run all tests (comprehensive validation)
     smart-tests:
       priority: 6
-      run: pnpm scripts-cli test-runner
+      run: pnpm test
 
     # 7. Build validation (conditional)
     build-affected:
