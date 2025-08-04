@@ -29,7 +29,7 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^build", "@repo/vitest-config#build"],
+      "dependsOn": ["^build", "@repo/vitest-config#build", "build"],
       "outputs": [],
       "inputs": [
         "src/**",
@@ -88,6 +88,18 @@
     "format:check": {
       "outputs": [],
       "inputs": ["**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc.*", "prettier.config.*"],
+      "outputLogs": "errors-only",
+      "cache": true
+    },
+    "lint": {
+      "outputs": [],
+      "inputs": [
+        "src/**/*.{ts,tsx,js,jsx}",
+        "*.{ts,tsx,js,jsx}",
+        ".oxlintrc.json",
+        "oxlint.json",
+        "package.json"
+      ],
       "outputLogs": "errors-only",
       "cache": true
     }
