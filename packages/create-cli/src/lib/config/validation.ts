@@ -257,7 +257,7 @@ export function sanitizeText(
 
 /**
  * Validate and normalize project configuration with defaults
- * 
+ *
  * Takes a partial project configuration and returns a complete ProjectConfig
  * with validated values and sensible defaults applied.
  */

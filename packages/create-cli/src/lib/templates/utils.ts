@@ -76,16 +76,16 @@ const BUILTIN_TEMPLATES: TemplateInfo[] = [
 
 /**
  * Get information about all available project templates
- * 
+ *
  * Returns metadata about built-in templates that can be used for project generation.
  * This includes template names, descriptions, and feature lists.
- * 
+ *
  * @returns Array of template information objects
- * 
+ *
  * @example
  * ```typescript
  * import { getAvailableTemplates } from '@esteban-url/create-cli'
- * 
+ *
  * const templates = getAvailableTemplates()
  * templates.forEach((template) => {
  *   console.log(`${template.name}: ${template.description}`)
@@ -101,7 +101,7 @@ export function getAvailableTemplates(): TemplateInfo[] {
 
 /**
  * Get information about a specific template by name
- * 
+ *
  * @param templateName - Name of the template to get information for
  * @returns Template information if found, undefined otherwise
  */
@@ -111,7 +111,7 @@ export function getTemplateInfo(templateName: string): TemplateInfo | undefined 
 
 /**
  * Check if a template name is valid/available
- * 
+ *
  * @param templateName - Name of the template to check
  * @returns True if template is available, false otherwise
  */

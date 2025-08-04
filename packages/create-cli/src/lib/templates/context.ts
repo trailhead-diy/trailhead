@@ -4,7 +4,7 @@ import type { TemplateContext } from './types.js'
 /**
  * Create template context for Handlebars processing
  */
-export async function createTemplateContext(config: ProjectConfig): Promise<TemplateContext> {
+export function createTemplateContext(config: ProjectConfig): TemplateContext {
   const isMonorepo = false // No monorepo templates in simplified CLI generator
   const hasTypeScript = true // All templates use TypeScript
   const _isAdvanced = config.features?.testing || config.features?.docs || config.features?.cicd
@@ -35,7 +35,6 @@ export async function createTemplateContext(config: ProjectConfig): Promise<Temp
     PROJECT_NAME: config.projectName,
     IS_MONOREPO: isMonorepo,
     PACKAGE_MANAGER: config.packageManager,
-    PACKAGE_MANAGER_VERSION: '10.13.1',
     PACKAGES_DIR: 'packages',
     PACKAGES_PATTERN: '^packages/([^/]+)/',
     TEST_COMMAND: `${config.packageManager} test`,
