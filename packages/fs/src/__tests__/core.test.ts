@@ -252,6 +252,89 @@ describe('Filesystem Core Operations', () => {
         expect(result.error.code).toBe('ENOENT')
       }
     })
+
+    it('should sort directory contents by name', async () => {
+      const dirPath = join(testDir, 'sorted-dir')
+      await fs.mkdir(dirPath)
+      await fs.writeFile(join(dirPath, 'zebra.txt'), 'content')
+      await fs.writeFile(join(dirPath, 'apple.txt'), 'content')
+      await fs.writeFile(join(dirPath, 'banana.txt'), 'content')
+
+      const result = await readDir()(dirPath, { sort: 'name' })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['apple.txt', 'banana.txt', 'zebra.txt'])
+      }
+    })
+
+    it('should sort directory contents by extension', async () => {
+      const dirPath = join(testDir, 'ext-sorted-dir')
+      await fs.mkdir(dirPath)
+      await fs.writeFile(join(dirPath, 'doc.pdf'), 'content')
+      await fs.writeFile(join(dirPath, 'image.jpg'), 'content')
+      await fs.writeFile(join(dirPath, 'text.txt'), 'content')
+      await fs.writeFile(join(dirPath, 'script.js'), 'content')
+
+      const result = await readDir()(dirPath, { sort: 'extension' })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['image.jpg', 'script.js', 'doc.pdf', 'text.txt'])
+      }
+    })
+
+    it('should sort directory contents by size', async () => {
+      const dirPath = join(testDir, 'size-sorted-dir')
+      await fs.mkdir(dirPath)
+      await fs.writeFile(join(dirPath, 'small.txt'), 'a')
+      await fs.writeFile(join(dirPath, 'medium.txt'), 'hello world')
+      await fs.writeFile(join(dirPath, 'large.txt'), 'a'.repeat(100))
+
+      const result = await readDir()(dirPath, { sort: 'size' })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['small.txt', 'medium.txt', 'large.txt'])
+      }
+    })
+
+    it('should sort with descending order', async () => {
+      const dirPath = join(testDir, 'desc-sorted-dir')
+      await fs.mkdir(dirPath)
+      await fs.writeFile(join(dirPath, 'a.txt'), 'content')
+      await fs.writeFile(join(dirPath, 'b.txt'), 'content')
+      await fs.writeFile(join(dirPath, 'c.txt'), 'content')
+
+      const result = await readDir()(dirPath, {
+        sort: { by: 'name', order: 'desc' },
+      })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['c.txt', 'b.txt', 'a.txt'])
+      }
+    })
+
+    it('should handle stat errors gracefully when sorting by size', async () => {
+      const dirPath = join(testDir, 'stat-error-dir')
+      await fs.mkdir(dirPath)
+      await fs.writeFile(join(dirPath, 'normal.txt'), 'content')
+
+      // Mock console.warn to verify warnings
+      const originalWarn = console.warn
+      const warnings: string[] = []
+      console.warn = (...args: any[]) => warnings.push(args.join(' '))
+
+      const result = await readDir()(dirPath, { sort: 'size' })
+
+      console.warn = originalWarn
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toContain('normal.txt')
+      }
+    })
   })
 
   describe('copy', () => {
@@ -490,6 +573,83 @@ describe('Filesystem Core Operations', () => {
         expect(result.value).toHaveLength(2)
         expect(result.value).toContain('test1.txt')
         expect(result.value).toContain('test2.txt')
+      }
+    })
+
+    it('should sort found files by name', async () => {
+      const searchDir = join(testDir, 'search-sorted')
+      await fs.mkdir(searchDir)
+      await fs.writeFile(join(searchDir, 'zebra.txt'), 'content')
+      await fs.writeFile(join(searchDir, 'apple.txt'), 'content')
+      await fs.writeFile(join(searchDir, 'banana.txt'), 'content')
+
+      const result = await findFiles()('*.txt', {
+        cwd: searchDir,
+        sort: 'name',
+      })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['apple.txt', 'banana.txt', 'zebra.txt'])
+      }
+    })
+
+    it('should sort found files by extension', async () => {
+      const searchDir = join(testDir, 'search-ext-sorted')
+      await fs.mkdir(searchDir)
+      await fs.writeFile(join(searchDir, 'doc.pdf'), 'content')
+      await fs.writeFile(join(searchDir, 'script.js'), 'content')
+      await fs.writeFile(join(searchDir, 'text.txt'), 'content')
+
+      const result = await findFiles()('*', {
+        cwd: searchDir,
+        sort: 'extension',
+      })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['script.js', 'doc.pdf', 'text.txt'])
+      }
+    })
+
+    it('should sort found files by size', async () => {
+      const searchDir = join(testDir, 'search-size-sorted')
+      await fs.mkdir(searchDir)
+      await fs.writeFile(join(searchDir, 'small.txt'), 'a')
+      await fs.writeFile(join(searchDir, 'large.txt'), 'a'.repeat(100))
+      await fs.writeFile(join(searchDir, 'medium.txt'), 'hello world')
+
+      const result = await findFiles()('*.txt', {
+        cwd: searchDir,
+        sort: 'size',
+      })
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(['small.txt', 'medium.txt', 'large.txt'])
+      }
+    })
+
+    it('should handle sorting with stat errors gracefully', async () => {
+      const searchDir = join(testDir, 'search-stat-error')
+      await fs.mkdir(searchDir)
+      await fs.writeFile(join(searchDir, 'normal.txt'), 'content')
+
+      // Mock console.warn to capture warnings
+      const originalWarn = console.warn
+      const warnings: string[] = []
+      console.warn = (...args: any[]) => warnings.push(args.join(' '))
+
+      const result = await findFiles()('*.txt', {
+        cwd: searchDir,
+        sort: 'size',
+      })
+
+      console.warn = originalWarn
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toContain('normal.txt')
       }
     })
   })
