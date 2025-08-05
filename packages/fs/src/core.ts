@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path'
 import { ok, err } from '@esteban-url/core'
 import { glob } from 'glob'
 import { mapNodeError, createFileSystemError } from './errors.js'
+import { sortFileEntries, needsFileStats, applySortingWithStats } from './utils/sorting.js'
 import type {
   FSConfig,
   FSResult,
@@ -18,6 +19,9 @@ import type {
   MkdirOp,
   ReadDirOp,
   CopyOp,
+  SortOptions,
+  FindFilesOp,
+  FindFilesOptions,
   MoveOp,
   RemoveOp,
   ReadJsonOp,
@@ -79,6 +83,8 @@ export const stat =
         isDirectory: stats.isDirectory(),
         isSymbolicLink: stats.isSymbolicLink(),
         mtime: stats.mtime,
+        atime: stats.atime,
+        ctime: stats.ctime,
       }
       return ok(fileStats)
     } catch (error) {
@@ -99,9 +105,29 @@ export const mkdir =
 
 export const readDir =
   (_config: FSConfig = defaultFSConfig): ReadDirOp =>
-  async (path: string): Promise<FSResult<string[]>> => {
+  async (path: string, options?: SortOptions): Promise<FSResult<string[]>> => {
     try {
       const entries = await fs.readdir(path)
+
+      // Apply sorting if requested
+      if (options?.sort) {
+        if (needsFileStats(options)) {
+          // Use shared utility for stat-based sorting
+          const sortedNames = await applySortingWithStats(
+            entries,
+            path,
+            options,
+            stat(_config),
+            `reading directory ${path}`
+          )
+          return ok(sortedNames)
+        } else {
+          // Simple string sorting (name or extension)
+          const sorted = sortFileEntries(entries, options)
+          return ok(sorted)
+        }
+      }
+
       return ok(entries)
     } catch (error) {
       return err(mapNodeError('Read directory', path, error))
@@ -243,16 +269,35 @@ export const emptyDir =
   }
 
 export const findFiles =
-  (_config: FSConfig = defaultFSConfig) =>
-  async (
-    pattern: string,
-    options?: { cwd?: string; ignore?: string[] }
-  ): Promise<FSResult<string[]>> => {
+  (_config: FSConfig = defaultFSConfig): FindFilesOp =>
+  async (pattern: string, options?: FindFilesOptions): Promise<FSResult<string[]>> => {
     try {
       const files = await glob(pattern, {
         cwd: options?.cwd,
         ignore: options?.ignore,
       })
+
+      // Apply sorting if requested
+      if (options?.sort && files.length > 0) {
+        if (needsFileStats(options)) {
+          // Use shared utility for stat-based sorting
+          const cwd = options.cwd || process.cwd()
+          const sortedNames = await applySortingWithStats(
+            files,
+            cwd,
+            options,
+            stat(_config),
+            `finding files with pattern ${pattern}`,
+            true // preserve full paths for findFiles
+          )
+          return ok(sortedNames)
+        } else {
+          // Simple string sorting (name or extension)
+          const sorted = sortFileEntries(files, options)
+          return ok(sorted)
+        }
+      }
+
       return ok(files)
     } catch (error) {
       return err(
