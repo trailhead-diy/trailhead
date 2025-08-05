@@ -278,7 +278,7 @@ export const detectPackageManager = (
     }
 
     const version = versionResult.value
-    const minVersion = VERSION_REQUIREMENTS[managerName]
+    const minVersion = VERSION_REQUIREMENTS[managerName as keyof typeof VERSION_REQUIREMENTS]
     const meetsReqResult = meetsVersionRequirement(version, minVersion)
 
     if (meetsReqResult.isErr()) {
