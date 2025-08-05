@@ -43,6 +43,7 @@
     "@esteban-url/cli": "workspace:*",
     "@esteban-url/core": "workspace:*",
     "@esteban-url/fs": "workspace:*",
+    "@esteban-url/sort": "workspace:*",
     "@esteban-url/validation": "workspace:*",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",

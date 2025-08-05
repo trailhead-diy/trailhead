@@ -114,6 +114,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       '@inquirer/prompts':
         specifier: ^7.8.0
         version: 7.8.0(@types/node@24.1.0)
@@ -246,6 +249,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       '@esteban-url/validation':
         specifier: workspace:*
         version: link:../validation
@@ -301,6 +307,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       file-type:
         specifier: ^21.0.0
         version: 21.0.0
@@ -353,6 +362,9 @@ importers:
       '@esteban-url/core':
         specifier: workspace:*
         version: link:../core
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.0
