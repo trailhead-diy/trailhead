@@ -60,6 +60,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@esteban-url/cli/testing': resolve(packagesDir, 'cli/src/testing/index.ts'),
         '@esteban-url/cli/utils': resolve(packagesDir, 'cli/src/utils/index.ts'),
         '@esteban-url/cli': resolve(packagesDir, 'cli/src/index.ts'),
+        '@esteban-url/sort': resolve(packagesDir, 'sort/src/index.ts'),
         ...additionalAliases,
       },
       // Ensure we use source files in tests, not dist
