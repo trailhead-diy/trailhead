@@ -66,46 +66,6 @@ export type PropFn<T, K> = (item: T) => K
 export type SortDirection = 'asc' | 'desc'
 
 /**
- * Configuration for sorting operations
- */
-export interface SortConfig<T> {
-  /**
-   * Custom comparison function
-   */
-  compareFn?: CompareFn<T>
-
-  /**
-   * Sort direction (default: 'asc')
-   */
-  direction?: SortDirection
-
-  /**
-   * Whether to perform stable sort (default: true)
-   */
-  stable?: boolean
-}
-
-/**
- * Multi-criteria sort configuration
- */
-export interface SortByConfig<T, K> {
-  /**
-   * Property selector function
-   */
-  selector: PropFn<T, K>
-
-  /**
-   * Sort direction for this property
-   */
-  direction?: SortDirection
-
-  /**
-   * Custom comparator for the selected property
-   */
-  compareFn?: CompareFn<K>
-}
-
-/**
  * Type guard to check if a value is an array
  */
 export const isArray = <T>(value: unknown): value is T[] => Array.isArray(value)
@@ -114,3 +74,33 @@ export const isArray = <T>(value: unknown): value is T[] => Array.isArray(value)
  * Type guard to check if a value is a readonly array
  */
 export const isReadonlyArray = <T>(value: unknown): value is readonly T[] => Array.isArray(value)
+
+/**
+ * Common sorting options interface for consistent API across packages
+ */
+export interface SortOptions<T = any> {
+  /**
+   * Field(s) to sort by - can be a single field or array of fields
+   */
+  by?: string | string[] | PropFn<T, any> | Array<PropFn<T, any>>
+
+  /**
+   * Sort order(s) - can be a single order or array matching the fields
+   */
+  order?: SortDirection | SortDirection[]
+
+  /**
+   * Optional custom comparison function
+   */
+  compareFn?: CompareFn<T>
+
+  /**
+   * Whether to perform case-insensitive string comparison
+   */
+  caseInsensitive?: boolean
+
+  /**
+   * Maximum number of items to return (for topN/bottomN operations)
+   */
+  limit?: number
+}

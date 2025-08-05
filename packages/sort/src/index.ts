@@ -96,6 +96,9 @@ export { orderBy } from 'es-toolkit'
 // Performance utilities
 export { topN, bottomN, partition } from './native'
 
+// String and array utilities
+export { sortStrings, sortArray, orderStrings, sortMultiple } from './strings'
+
 // Types
 
 /**
@@ -105,4 +108,4 @@ export { topN, bottomN, partition } from './native'
  */
 export type Order = 'asc' | 'desc'
 
-export type { CompareFn, PropFn } from './types'
+export type { CompareFn, PropFn, SortDirection, SortOptions } from './types'
