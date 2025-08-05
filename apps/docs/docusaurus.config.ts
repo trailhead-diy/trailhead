@@ -93,6 +93,19 @@ const config: Config = {
         include: ['README.md'],
       },
     ],
+    // Temporarily disabled due to MDX compilation error
+    // [
+    //   '@docusaurus/plugin-content-docs',
+    //   {
+    //     id: 'core-api',
+    //     path: '../../docs/core/api',
+    //     routeBasePath: 'packages/core/api',
+    //     sidebarPath: './sidebars-core-api.ts',
+    //     editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
+    //     showLastUpdateTime: true,
+    //     showLastUpdateAuthor: true,
+    //   },
+    // ],
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -254,7 +267,7 @@ const config: Config = {
             },
             {
               label: 'API Reference',
-              to: '/docs/reference/core-api',
+              to: '/docs/packages/core/api',
             },
             {
               label: 'Contributing',
