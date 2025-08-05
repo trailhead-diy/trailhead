@@ -295,6 +295,6 @@ await executeBatch(
 
 ## See Also
 
-- [Command Module](/packages/cli/docs/reference/command.md)- Command creation and structure
-- [Using Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Practical guide
-- [Core Error Types](/packages/cli/docs/reference/core.md)- Error handling details
+- [Command Module](../../reference/command.md)- Command creation and structure
+- [Using Execution Patterns](../../how-to/use-result-pipelines.md)- Practical guide
+- [Core Error Types](../../reference/core.md)- Error handling details

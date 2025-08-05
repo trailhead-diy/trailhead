@@ -114,5 +114,5 @@ Consider:
 
 ### Related Documentation
 
-- [Testing Guidelines](/docs/testing-guide.md)- Writing high-ROI tests
-- [Documentation Standards](/docs/reference/documentation-standards.md)- Writing docs
+- [Testing Guidelines](./testing-guide.md)- Writing high-ROI tests
+- [Documentation Standards](./reference/documentation-standards.md)- Writing docs

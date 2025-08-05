@@ -117,7 +117,7 @@ const rowSchema = z.object({
 const validateRow = createSchemaValidator(rowSchema)
 
 // Compose pipeline
-async function processDataFile(inputPath: string) {
+async const processDataFile = async (inputPath: string) => {
   // 1. Check file exists (@repo/fs)
   const exists = await fs.exists(inputPath)
   if (!exists.value) {
@@ -211,7 +211,7 @@ const configSchema = z.object({
 
 const validateConfig = createSchemaValidator(configSchema)
 
-async function loadConfig(path: string) {
+async const loadConfig = async (path: string) => {
   const result = await fs.readJson(path)
   return result.isErr() ? result : validateConfig(result.value)
 }
@@ -220,7 +220,7 @@ async function loadConfig(path: string) {
 ### Data Import Pipeline
 
 ```typescript
-async function importUserData(csvPath: string) {
+async const importUserData = async (csvPath: string) => {
   // Parse CSV
   const parseResult = await data.parseAuto(csvPath)
   if (parseResult.isErr()) return parseResult
@@ -237,7 +237,7 @@ async function importUserData(csvPath: string) {
 ### File Processing
 
 ```typescript
-async function processDirectory(dir: string) {
+async const processDirectory = async (dir: string) => {
   // Find all data files
   const files = await fs.findFiles('**/*.{csv,json,xlsx}', { cwd: dir })
   if (files.isErr()) return files
@@ -289,6 +289,6 @@ import { ok, err, pipe } from '@repo/core'
 
 ## Related Resources
 
-- [Functional Architecture](/docs/explanation/functional-architecture)
-- [Result Types Pattern](/docs/explanation/result-types-pattern)
-- [Package Development Guide](/docs/how-to/contributing)
+- [Functional Architecture](./functional-architecture)
+- [Result Types Pattern](./result-types-pattern)
+- [Package Development Guide](../how-to/contributing)

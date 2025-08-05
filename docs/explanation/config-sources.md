@@ -298,7 +298,7 @@ if (!validation.ok) {
 
 ## See Also
 
-- [Getting Started Tutorial](/docs/tutorials/config-getting-started)
-- [How to Override Configuration Sources](/docs/how-to/override-config-sources)
-- [How to Define Schemas](/docs/how-to/define-schemas)
-- [Configuration API Reference](/packages/config/docs/reference/api)
+- [Getting Started Tutorial](../tutorials/config-getting-started)
+- [How to Override Configuration Sources](../how-to/override-config-sources)
+- [How to Define Schemas](../how-to/define-schemas)
+- [Configuration API Reference](../../packages/config/docs/reference/api)

@@ -92,7 +92,7 @@ Rather than using exceptions, the framework makes error handling visible in the 
 
 ```typescript
 // Errors become part of the function signature
-async function readConfig(path: string): Promise<Result<Config>> {
+async const readConfig = async (path: string): Promise<Result<Config>> => {
   // The return type tells you this function can fail
 }
 ```
@@ -167,12 +167,12 @@ Result types make errors explicit:
 
 ```typescript
 // ❌ Hidden errors
-async function readConfig(path: string): Promise<Config> {
+async const readConfig = async (path: string): Promise<Config> => {
   // Might throw! But signature doesn't show it
 }
 
 // ✅ Explicit errors
-async function readConfig(path: string): Promise<Result<Config>> {
+async const readConfig = async (path: string): Promise<Result<Config>> => {
   // Return type shows this can fail
 }
 ```
@@ -233,7 +233,7 @@ interface Context {
   logger: Logger
 }
 
-async function processFile(path: string, context: Context) {
+async const processFile = async (path: string, context: Context) => {
   // Easy to test, configure, and reason about
 }
 ```
@@ -439,18 +439,18 @@ Potential evolution areas:
 
 ### Essential Reading
 
-- [Architecture Overview](/packages/cli/docs/explanation/architecture.md)- How these decisions create system-wide benefits
-- [Functional Programming in Practice](/docs/how-to/apply-functional-patterns.md)- Applying functional concepts
+- [Architecture Overview](../../explanation/architecture.md)- How these decisions create system-wide benefits
+- [Functional Programming in Practice](../how-to/apply-functional-patterns.md)- Applying functional concepts
 
 ### Practical Application
 
-- [Building Your First CLI](/packages/cli/docs/tutorials/getting-started.md)- See the decisions in action
-- [Error Handling Patterns](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Working with Result types
+- [Building Your First CLI](../../tutorials/getting-started.md)- See the decisions in action
+- [Error Handling Patterns](../../how-to/handle-errors-in-cli.md)- Working with Result types
 
 ### Technical Details
 
-- [API Reference](/packages/cli/docs/reference/core.md)- Complete function signatures
-- [Type Definitions](/packages/cli/docs/reference/types.md)- TypeScript interfaces and types
+- [API Reference](../../reference/core.md)- Complete function signatures
+- [Type Definitions](../../reference/types.md)- TypeScript interfaces and types
 
 ## Discussion
 

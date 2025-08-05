@@ -399,10 +399,10 @@ const areEqual = await compareFiles(fs, '/file1.txt', '/file2.txt')
 
 ```typescript
 // FileSystem factory
-function createFileSystem(adapter?: FileSystemAdapter): FileSystem
+const createFileSystem = (adapter?: FileSystemAdapter): FileSystem => {
 
 // Memory filesystem factory
-function createMemoryFileSystem(initialFiles?: Record<string, string>): FileSystem & {
+const createMemoryFileSystem = (initialFiles?: Record<string, string>): FileSystem & => {
   getFiles(): Map<string, string>
   getDirectories(): Set<string>
   clear(): void
@@ -423,6 +423,6 @@ interface FileSystemAdapter {
 
 ## See Also
 
-- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing with memory filesystem
-- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- File operation patterns
-- [Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Handling filesystem errors
+- [Testing Guide](../../how-to/test-cli-applications.md)- Testing with memory filesystem
+- [Common Patterns](../../how-to/use-result-pipelines.md)- File operation patterns
+- [Error Handling](../../how-to/handle-errors-in-cli.md)- Handling filesystem errors

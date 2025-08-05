@@ -32,7 +32,7 @@ type Result<T, E> = Ok<T> | Err<E>
 ```typescript
 import { Result, ok, err } from '@esteban-url/core'
 
-function divide(a: number, b: number): Result<number, string> {
+const divide = (a: number, b: number): Result<number, string> => {
   if (b === 0) return err('Division by zero')
   return ok(a / b)
 }
@@ -324,7 +324,7 @@ function chainError<E extends CoreError>(error: E, cause: CoreError | Error | un
 Extracts a human-readable message from any error type.
 
 ```typescript
-function getErrorMessage(error: unknown, defaultMessage?: string): string
+const getErrorMessage = (error: unknown, defaultMessage?: string): string => {
 ```
 
 **Parameters**:
@@ -339,7 +339,7 @@ function getErrorMessage(error: unknown, defaultMessage?: string): string
 Checks if an error is recoverable.
 
 ```typescript
-function isRecoverableError(error: { recoverable?: boolean }): boolean
+const isRecoverableError = (error: { recoverable?: boolean }): boolean => {
 ```
 
 **Parameters**:
@@ -353,7 +353,7 @@ function isRecoverableError(error: { recoverable?: boolean }): boolean
 Extracts error type for pattern matching.
 
 ```typescript
-function getErrorType(error: { type?: string }): string
+const getErrorType = (error: { type?: string }): string => {
 ```
 
 **Parameters**:
@@ -437,7 +437,7 @@ function isDefined<T>(value: T | null | undefined): value is T
 Type guard for non-empty strings.
 
 ```typescript
-function isNonEmptyString(value: unknown): value is string
+const isNonEmptyString = (value: unknown): value is string => {
 ```
 
 ### `isObject()`
@@ -445,7 +445,7 @@ function isNonEmptyString(value: unknown): value is string
 Type guard for objects (excluding arrays and null).
 
 ```typescript
-function isObject(value: unknown): value is Record<string, unknown>
+const isObject = (value: unknown): value is Record<string, unknown> => {
 ```
 
 ### `isNonEmptyArray()`
@@ -461,7 +461,7 @@ function isNonEmptyArray<T>(value: unknown): value is T[]
 Type guard for error-like objects.
 
 ```typescript
-function hasErrorShape(value: unknown): value is { type: string; message: string }
+const hasErrorShape = (value: unknown): value is { type: string; message: string } => {
 ```
 
 ## Error Mapping Utilities
@@ -471,7 +471,7 @@ function hasErrorShape(value: unknown): value is { type: string; message: string
 Maps Node.js errors to CoreError format.
 
 ```typescript
-function mapNodeError(component: string, operation: string, path: string, error: unknown): CoreError
+const mapNodeError = (component: string, operation: string, path: string, error: unknown): CoreError => {
 ```
 
 ### `mapLibraryError()`
@@ -539,7 +539,7 @@ const fromThrowableAsyncFunc: <Fn extends (...args: any[]) => Promise<any>>(
 ```typescript
 import { Result, ok, err, CoreError } from '@esteban-url/core'
 
-function processData(input: string): Result<ProcessedData, CoreError> {
+const processData = (input: string): Result<ProcessedData, CoreError> => {
   if (!input.trim()) {
     return err(createDataError('ValidationError', 'EMPTY_INPUT', 'Input cannot be empty'))
   }

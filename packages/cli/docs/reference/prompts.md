@@ -375,6 +375,6 @@ interface Choice<T = string> {
 
 ## See Also
 
-- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Interactive CLI example
-- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Prompt patterns
-- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing interactive CLIs
+- [Getting Started](../../tutorials/getting-started.md)- Interactive CLI example
+- [Common Patterns](../../how-to/use-result-pipelines.md)- Prompt patterns
+- [Testing Guide](../../how-to/test-cli-applications.md)- Testing interactive CLIs

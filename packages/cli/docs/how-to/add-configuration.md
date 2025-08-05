@@ -237,7 +237,7 @@ Reload configuration on demand:
 ```typescript
 let configCache = null
 
-async function getConfig() {
+async const getConfig = async () => {
   if (!configCache) {
     const result = await config.load()
     if (result.isErr()) {
@@ -249,7 +249,7 @@ async function getConfig() {
 }
 
 // Reload configuration
-function reloadConfig() {
+const reloadConfig = () => {
   configCache = null
 }
 ```
@@ -295,6 +295,6 @@ const schema = z.object({
 
 ## See Also
 
-- [Configuration API Reference](/packages/config/docs/reference/api)
-- [Schema Definition Guide](/docs/how-to/define-schemas)
-- [Configuration Sources Explanation](/docs/explanation/config-sources)
+- [Configuration API Reference](../../../config/reference/api)
+- [Schema Definition Guide](./define-schemas)
+- [Configuration Sources Explanation](../explanation/config-sources)

@@ -40,7 +40,7 @@ import {
 ### Simple Error Handling
 
 ```typescript
-async function readConfig(path: string): Promise<Result<Config>> {
+async const readConfig = async (path: string): Promise<Result<Config>> => {
   const fileResult = await fs.readFile(path)
   if (fileResult.isErr()) {
     return err(createFileSystemError('read', path, fileResult.error))
@@ -63,7 +63,7 @@ async function readConfig(path: string): Promise<Result<Config>> {
 import { createFileSystemError } from '@esteban-url/core'
 import { fs } from '@esteban-url/fs'
 
-async function loadData(filePath: string): Promise<Result<string>> {
+async const loadData = async (filePath: string): Promise<Result<string>> => {
   const exists = await fs.exists(filePath)
   if (!exists) {
     return err(createFileSystemError('read', filePath, new Error('File not found')))
@@ -83,7 +83,7 @@ async function loadData(filePath: string): Promise<Result<string>> {
 ```typescript
 import { createValidationError } from '@esteban-url/core'
 
-function validateOptions(options: Options): Result<Options> {
+const validateOptions = (options: Options): Result<Options> => {
   if (!options.input) {
     return err(createValidationError('missing_field', 'input field is required'))
   }
@@ -115,7 +115,7 @@ function validateOptions(options: Options): Result<Options> {
 ```typescript
 import { createDataError } from '@esteban-url/core'
 
-async function parseCSV(content: string): Promise<Result<Row[]>> {
+async const parseCSV = async (content: string): Promise<Result<Row[]>> => {
   try {
     const rows = await csvParser.parse(content)
     return ok(rows)
@@ -132,7 +132,7 @@ async function parseCSV(content: string): Promise<Result<Row[]>> {
 ```typescript
 import { withContext, chainError } from '@esteban-url/core'
 
-async function processFile(path: string): Promise<Result<ProcessedData>> {
+async const processFile = async (path: string): Promise<Result<ProcessedData>> => {
   // Read file
   const contentResult = await fs.readFile(path)
   if (contentResult.isErr()) {
@@ -161,7 +161,7 @@ async function processFile(path: string): Promise<Result<ProcessedData>> {
 ```typescript
 import { composeResult } from '@esteban-url/core'
 
-async function loadAndValidateConfig(path: string): Promise<Result<Config>> {
+async const loadAndValidateConfig = async (path: string): Promise<Result<Config>> => {
   return composeResult(
     await fs.readFile(path),
     (content) => parseJSON<Config>(content),
@@ -176,7 +176,7 @@ async function loadAndValidateConfig(path: string): Promise<Result<Config>> {
 ```typescript
 import { combine } from '@esteban-url/core'
 
-async function loadMultipleConfigs(paths: string[]): Promise<Result<Config[]>> {
+async const loadMultipleConfigs = async (paths: string[]): Promise<Result<Config[]>> => {
   const results = await Promise.all(paths.map((path) => loadConfig(path)))
 
   return combine(results)
@@ -231,7 +231,7 @@ async function loadConfigWithFallback(
 ```typescript
 import { combineWithAllErrors } from '@esteban-url/core'
 
-async function processFiles(paths: string[]): Promise<Result<ProcessedFile[]>> {
+async const processFiles = async (paths: string[]): Promise<Result<ProcessedFile[]>> => {
   const results = await Promise.all(
     paths.map(async (path) => {
       const result = await processFile(path)
@@ -291,7 +291,7 @@ const processCommand = createCommand({
 ### User-Friendly Messages
 
 ```typescript
-function formatErrorForUser(error: CoreError): string {
+const formatErrorForUser = (error: CoreError): string => {
   const baseMessage = error.message
 
   // Add suggestions based on error type
@@ -310,7 +310,7 @@ function formatErrorForUser(error: CoreError): string {
 ### Detailed Error Logging
 
 ```typescript
-function logDetailedError(error: CoreError, context: CommandContext): void {
+const logDetailedError = (error: CoreError, context: CommandContext): void => {
   context.logger.error(`Error: ${error.message}`)
 
   if (context.debug) {
@@ -394,6 +394,6 @@ describe('error handling', () => {
 
 ## Next Steps
 
-- Explore [Command Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines)
-- Review [Core API Reference](/packages/cli/docs/reference/core)
-- Learn about [Testing Errors](/packages/cli/docs/how-to/test-cli-applications)
+- Explore [Command Execution Patterns](../../how-to/use-result-pipelines)
+- Review [Core API Reference](../../reference/core)
+- Learn about [Testing Errors](../../how-to/test-cli-applications)

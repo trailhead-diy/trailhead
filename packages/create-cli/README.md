@@ -83,7 +83,7 @@ const cli = createCLI({
 ```typescript
 import { ok, err, Result, CoreError } from '@esteban-url/core'
 
-function processData(input: string): Result<string, CoreError> {
+const processData = (input: string): Result<string, CoreError> => {
   if (!input) {
     return err(createError('INPUT_REQUIRED', 'Input is required'))
   }
@@ -398,27 +398,27 @@ pnpm qc
 
 ## Documentation
 
-Complete documentation is available in the [docs directory](/packages/create-cli/docs/README.md)
+Complete documentation is available in the [docs directory](./docs/README.md)
 
 ### 📚 Tutorials
 
-- [Getting Started](/packages/create-cli/docs/tutorials/getting-started.md)- Generate your first CLI in 5 minutes
+- [Getting Started](./docs/tutorials/getting-started.md)- Generate your first CLI in 5 minutes
 
 ### 📖 How-To Guides
 
-- [Customize Templates](/packages/create-cli/docs/how-to/customize-templates.md)- Modify or create templates
-- [Add Custom Prompts](/packages/create-cli/docs/how-to/custom-prompts.md)- Extend interactive setup
-- [Configure Defaults](/packages/create-cli/docs/how-to/configure-defaults.md)- Set personal preferences
+- [Customize Templates](./docs/how-to/customize-templates.md)- Modify or create templates
+- [Add Custom Prompts](./docs/how-to/custom-prompts.md)- Extend interactive setup
+- [Configure Defaults](./docs/how-to/configure-defaults.md)- Set personal preferences
 
 ### 📋 Reference
 
-- [API Reference](/packages/create-cli/docs/reference/api.md)- Programmatic usage
-- [Configuration Schema](/packages/create-cli/docs/reference/schema.md)- All configuration options
-- [Template System](/packages/create-cli/docs/reference/templates.md)- Template engine details
+- [API Reference](./docs/reference/api.md)- Programmatic usage
+- [Configuration Schema](./docs/reference/schema.md)- All configuration options
+- [Template System](./docs/reference/templates.md)- Template engine details
 
 ### 💡 Explanation
 
-- [Template Architecture](/packages/create-cli/docs/explanation/templates.md)- Understanding the design
+- [Template Architecture](./docs/explanation/templates.md)- Understanding the design
 
 ## License
 

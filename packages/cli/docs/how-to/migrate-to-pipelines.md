@@ -57,7 +57,7 @@ const merged = { ...config.value, ...options.override }
 #### Before: Manual Iteration
 
 ```typescript
-async function processFiles(files: string[]): Promise<Result<ProcessedFile[]>> {
+async const processFiles = async (files: string[]): Promise<Result<ProcessedFile[]>> => {
   const results: ProcessedFile[] = []
 
   for (const file of files) {
@@ -113,7 +113,7 @@ async function processFiles(
 #### Before: Manual Phase Management
 
 ```typescript
-async function buildProject(options: BuildOptions): Promise<Result<void>> {
+async const buildProject = async (options: BuildOptions): Promise<Result<void>> => {
   console.log('Starting build...')
 
   // Validate
@@ -208,7 +208,7 @@ async function buildProject(
 #### Before: Manual Config Loading
 
 ```typescript
-async function loadAppConfig(options: ConfigOptions): Promise<Result<AppConfig>> {
+async const loadAppConfig = async (options: ConfigOptions): Promise<Result<AppConfig>> => {
   let config: AppConfig = getDefaultConfig()
 
   // Load from file if specified
@@ -281,7 +281,7 @@ async function runWithConfig(
 #### Before: Manual Dry Run Handling
 
 ```typescript
-async function deployApplication(options: DeployOptions): Promise<Result<void>> {
+async const deployApplication = async (options: DeployOptions): Promise<Result<void>> => {
   if (options.dryRun) {
     console.log('[DRY RUN] Would deploy to:', options.environment)
     console.log('[DRY RUN] Would update services:', options.services.join(', '))
@@ -333,10 +333,10 @@ async function deployApplication(
 
 ```typescript
 // Before
-async function myOperation(options: Options): Promise<Result<void>>
+async const myOperation = async (options: Options): Promise<Result<void>> => {
 
 // After
-async function myOperation(options: Options, context: CommandContext): Promise<Result<void>>
+async const myOperation = async (options: Options, context: CommandContext): Promise<Result<void>> => {
 ```
 
 ### 3. Update Error Handling
@@ -396,6 +396,6 @@ await executeWithPhases(phases, data, context)
 
 ## Next Steps
 
-- Review [Command Execution Patterns](/packages/cli/docs/how-to/use-result-pipelines)
-- Study [API Reference](/packages/cli/docs/reference/flow-control)
-- Explore [Command Testing](/packages/cli/docs/how-to/test-cli-applications)
+- Review [Command Execution Patterns](../../how-to/use-result-pipelines)
+- Study [API Reference](../../reference/flow-control)
+- Explore [Command Testing](../../how-to/test-cli-applications)

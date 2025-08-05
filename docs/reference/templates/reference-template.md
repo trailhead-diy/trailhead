@@ -36,7 +36,7 @@ import { [exports] } from '@esteban-url/trailhead-[package]/[module]';
 <!-- Each function/method gets its own section -->
 
 ```typescript
-function functionName(param1: Type1, param2: Type2): ReturnType
+const functionName = (param1: Type1, param2: Type2): ReturnType => {
 ```
 
 [Brief description of what the function does]

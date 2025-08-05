@@ -17,7 +17,7 @@ related:
 
 This guide shows you how to use @esteban-url/cli's execution patterns for building robust command-line operations with progress tracking, batch processing, and phased execution.
 
-> **Note**: For general Result composition patterns, see [Compose Result Operations](/docs/how-to/compose-result-operations).
+> **Note**: For general Result composition patterns, see [Compose Result Operations](./compose-result-operations).
 
 ## Available Execution Patterns
 
@@ -349,6 +349,6 @@ context.logger.success('All phases completed successfully')
 
 ## Next Steps
 
-- Learn about [Command Enhancements](/packages/cli/docs/how-to/migrate-to-command-enhancements)
-- Review [Command API Reference](/packages/cli/docs/reference/command)
-- Explore [Testing Commands](/packages/cli/docs/how-to/test-cli-applications)
+- Learn about [Command Enhancements](../../how-to/migrate-to-command-enhancements)
+- Review [Command API Reference](../../reference/command)
+- Explore [Testing Commands](../../how-to/test-cli-applications)

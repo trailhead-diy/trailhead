@@ -273,12 +273,12 @@ function isOk<T, E>(result: Result<T, E>): result is Ok<T>
 function isErr<T, E>(result: Result<T, E>): result is Err<E>
 
 // Error type guards
-function isCLIError(error: unknown): error is CLIError
-function isFileSystemError(error: unknown): error is FileSystemError
-function isValidationError(error: unknown): error is ValidationError
+const isCLIError = (error: unknown): error is CLIError => {
+const isFileSystemError = (error: unknown): error is FileSystemError => {
+const isValidationError = (error: unknown): error is ValidationError => {
 ```
 
 ## See Also
 
-- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- How to import types
+- [Import Patterns](../../how-to/import-patterns.md)- How to import types
 - Individual module references for detailed type documentation

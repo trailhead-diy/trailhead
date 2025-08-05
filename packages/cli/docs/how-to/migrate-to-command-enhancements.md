@@ -422,7 +422,7 @@ Ensure tests still work:
 
 ```typescript
 // Wrap existing test utilities
-function runMigratedCommand(command, options) {
+const runMigratedCommand = (command, options) => {
   return createFileProcessingCommand.testHelper(command, {
     ...options,
     inputFile: options.args[0],
@@ -452,6 +452,6 @@ function runMigratedCommand(command, options) {
 
 ## Next Steps
 
-- Review [Command Enhancements Reference](/packages/cli/docs/reference/command-enhancements)
-- Learn about [Pipeline Utilities](/packages/cli/docs/how-to/use-result-pipelines)
-- Explore [Testing Enhanced Commands](/packages/cli/docs/how-to/test-cli-applications)
+- Review [Command Enhancements Reference](../../reference/command-enhancements)
+- Learn about [Pipeline Utilities](../../how-to/use-result-pipelines)
+- Explore [Testing Enhanced Commands](../../how-to/test-cli-applications)

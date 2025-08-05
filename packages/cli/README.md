@@ -72,7 +72,7 @@ await greetCommand.execute(['--name', 'World'])
 import { Result, ok, err } from '@esteban-url/core'
 
 // Functions return Results instead of throwing
-async function deployApp(env: string): Promise<Result<string, Error>> {
+async const deployApp = async (env: string): Promise<Result<string, Error>> => {
   if (!env) {
     return err(new Error('Environment required'))
   }
@@ -441,7 +441,7 @@ pnpm validate
 
 ## Examples
 
-Check out the [documentation](/packages/cli/docs/README.md)for comprehensive guides and API references.
+Check out the [documentation](./docs/README.md)for comprehensive guides and API references.
 
 ## Migration Guide
 

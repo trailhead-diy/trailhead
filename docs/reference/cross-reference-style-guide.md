@@ -19,12 +19,12 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Good - Absolute from root
-[Result Types Pattern](/docs/explanation/result-types-pattern.md)
-[CLI API Reference](/packages/cli/docs/reference/command.md)
-[Data Processing Tutorial](/docs/tutorials/data-pipeline-processing.md)
+[Result Types Pattern](../explanation/result-types-pattern.md)
+[CLI API Reference](../../packages/cli/docs/reference/command.md)
+[Data Processing Tutorial](../tutorials/data-pipeline-processing.md)
 
 ❌ Bad - Relative paths (except for Docusaurus)
-[Result Types Pattern](/docs/explanation/result-types-pattern.md)
+[Result Types Pattern](../explanation/result-types-pattern.md)
 [CLI API Reference](../packages/cli/docs/reference/command.md)
 ```
 
@@ -38,16 +38,16 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Good
-[Functional Architecture](/docs/explanation/functional-architecture)
-[Contributing Guide](/docs/how-to/contributing)
+[Functional Architecture](../explanation/functional-architecture)
+[Contributing Guide](../how-to/contributing)
 ```
 
 **From monorepo docs to package docs**:
 
 ```markdown
 ✅ Good
-[CLI Getting Started](/packages/cli/docs/tutorials/getting-started)
-[Create CLI Templates](/packages/create-cli/docs/reference/templates)
+[CLI Getting Started](../../packages/cli/docs/tutorials/getting-started)
+[Create CLI Templates](../../packages/create-cli/docs/reference/templates)
 ```
 
 ### 3. README File Links
@@ -56,16 +56,16 @@ This guide establishes standardized cross-reference patterns for all Trailhead d
 
 ```markdown
 ✅ Acceptable for README.md files
-[CLI Documentation](/packages/cli)
-[API Reference](/packages/cli/docs/reference/command)
+[CLI Documentation](../../packages/cli)
+[API Reference](../../packages/cli/docs/reference/command)
 ```
 
 **But prefer absolute paths for cross-package references**:
 
 ```markdown
 ✅ Preferred
-[Monorepo Documentation](/docs/README)
-[Core Package](/packages/core/README.md)
+[Monorepo Documentation](../README)
+[Core Package](../../packages/core/README.md)
 ```
 
 ### 4. External Links
@@ -118,14 +118,14 @@ related:
 
 ```markdown
 ✅ Good
-[CLI Command API Reference](/packages/cli/docs/reference/command)
-[How to Handle Errors in CLI Applications](/packages/cli/docs/how-to/handle-errors-in-cli)
-[Understanding Functional Architecture](/docs/explanation/functional-architecture)
+[CLI Command API Reference](../../packages/cli/docs/reference/command)
+[How to Handle Errors in CLI Applications](../../packages/cli/docs/how-to/handle-errors-in-cli)
+[Understanding Functional Architecture](../explanation/functional-architecture)
 
 ❌ Bad
-[API Reference](/packages/cli/docs/reference/command)
-[Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli)
-[Architecture](/docs/explanation/functional-architecture)
+[API Reference](../../packages/cli/docs/reference/command)
+[Error Handling](../../packages/cli/docs/how-to/handle-errors-in-cli)
+[Architecture](../explanation/functional-architecture)
 ```
 
 ### Link Text Patterns by Document Type
@@ -133,29 +133,29 @@ related:
 **Tutorials**: Use action-oriented text
 
 ```markdown
-[Build Your First CLI Application](/packages/cli/docs/tutorials/getting-started)
-[Create a Data Processing Pipeline](/docs/tutorials/data-pipeline-processing)
+[Build Your First CLI Application](../../packages/cli/docs/tutorials/getting-started)
+[Create a Data Processing Pipeline](../tutorials/data-pipeline-processing)
 ```
 
 **How-to Guides**: Use task-oriented text
 
 ```markdown
-[How to Add Custom Validators](/docs/how-to/create-custom-validators)
-[How to Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli)
+[How to Add Custom Validators](../how-to/create-custom-validators)
+[How to Handle CLI Errors](../../packages/cli/docs/how-to/handle-errors-in-cli)
 ```
 
 **Reference**: Use specific, technical text
 
 ```markdown
-[FileSystem API Reference](/packages/fs/docs/reference/api)
-[Command Module API](/packages/cli/docs/reference/command)
+[FileSystem API Reference](../../packages/fs/docs/reference/api)
+[Command Module API](../../packages/cli/docs/reference/command)
 ```
 
 **Explanation**: Use conceptual text
 
 ```markdown
-[Understanding Result Types Pattern](/docs/explanation/result-types-pattern)
-[Package Ecosystem Overview](/docs/explanation/package-ecosystem)
+[Understanding Result Types Pattern](../explanation/result-types-pattern)
+[Package Ecosystem Overview](../explanation/package-ecosystem)
 ```
 
 ## Bidirectional Navigation
@@ -214,11 +214,11 @@ related:
 
 ```markdown
 ✅ Good
-[Error Handling Section](/packages/cli/docs/reference/command.md#error-handling)
-[Installation Steps](/packages/cli/README#installation)
+[Error Handling Section](../../packages/cli/docs/reference/command.md#error-handling)
+[Installation Steps](../../packages/cli/README#installation)
 
 ❌ Bad (custom anchors may break)
-[Error Handling](/packages/cli/docs/reference/command.md#custom-anchor)
+[Error Handling](../../packages/cli/docs/reference/command.md#custom-anchor)
 ```
 
 ## Directory-Specific Guidelines
@@ -256,10 +256,10 @@ related:
 ```markdown
 ## Quick Navigation
 
-**👋 New to [Package]?** → [Getting Started Guide](/packages/PACKAGE_NAME/docs/tutorials/getting-started.md)
-**🔧 Need to solve a problem?** → [How-to Guides](/packages/PACKAGE_NAME/docs/how-to/README.md)
-**📖 Looking up details?** → [API Reference](/packages/PACKAGE_NAME/docs/reference/README.md)
-**🤔 Want to understand?** → [Architecture Overview](/packages/PACKAGE_NAME/docs/explanation/architecture.md)
+**👋 New to [Package]?** → [Getting Started Guide](../../packages/PACKAGE_NAME/docs/tutorials/getting-started.md)
+**🔧 Need to solve a problem?** → [How-to Guides](../../packages/PACKAGE_NAME/docs/how-to/README.md)
+**📖 Looking up details?** → [API Reference](../../packages/PACKAGE_NAME/docs/reference/README.md)
+**🤔 Want to understand?** → [Architecture Overview](../../packages/PACKAGE_NAME/docs/explanation/architecture.md)
 ```
 
 ### Cross-Package References
@@ -269,9 +269,9 @@ related:
 ```markdown
 ## Related Packages
 
-- \*_[@repo/core](/packages/core/README.md)_ - Result types and utilities
-- \*_[@repo/fs](/packages/fs/README.md)_ - File system operations
-- \*_[@repo/validation](/packages/validation/README.md)_ - Data validation
+- \*_[@repo/core](../../packages/core/README.md)_ - Result types and utilities
+- \*_[@repo/fs](../../packages/fs/README.md)_ - File system operations
+- \*_[@repo/validation](../../packages/validation/README.md)_ - Data validation
 ```
 
 ### Documentation Tables
@@ -279,10 +279,10 @@ related:
 **Use tables for systematic navigation**:
 
 ```markdown
-| Package             | Tutorial                                                           | How-to Guide                                                       | API Reference                                          |
-| ------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **CLI Framework**   | [Getting Started](/packages/cli/docs/tutorials/getting-started.md) | [Handle Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md) | [Command API](/packages/cli/docs/reference/command.md) |
-| **Data Processing** | [Data Pipeline](/docs/tutorials/data-pipeline-processing.md)       | [Convert Formats](/docs/how-to/convert-data-formats.md)            | [Data API](/packages/data/docs/reference/api.md)       |
+| Package             | Tutorial                                                                | How-to Guide                                                            | API Reference                                               |
+| ------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **CLI Framework**   | [Getting Started](../../packages/cli/docs/tutorials/getting-started.md) | [Handle Errors](../../packages/cli/docs/how-to/handle-errors-in-cli.md) | [Command API](../../packages/cli/docs/reference/command.md) |
+| **Data Processing** | [Data Pipeline](../tutorials/data-pipeline-processing.md)               | [Convert Formats](../how-to/convert-data-formats.md)                    | [Data API](../../packages/data/docs/reference/api.md)       |
 ```
 
 ## Validation and Maintenance
@@ -349,8 +349,8 @@ pnpm docs:fix-links
 grep -r "\]\(\.\." docs/
 
 # Example conversions
-[Guide](/docs/how-to/contributing.md)→ [Guide](/docs/how-to/contributing.md)
-[API](/packages/cli/docs/reference/command.md)→ [API](/packages/PACKAGE_NAME/docs/reference/api.md)
+[Guide](../how-to/contributing.md)→ [Guide](../how-to/contributing.md)
+[API](../../packages/cli/docs/reference/command.md)→ [API](../../packages/PACKAGE_NAME/docs/reference/api.md)
 ```
 
 ### Updating Frontmatter
@@ -394,15 +394,15 @@ This tutorial guides you through creating a complete CLI application using the `
 
 ## Prerequisites
 
-Before starting, ensure you understand [Result Types Pattern](/docs/explanation/result-types-pattern.md)and have reviewed the [CLI Architecture Overview](/packages/cli/docs/explanation/architecture.md).
+Before starting, ensure you understand [Result Types Pattern](../explanation/result-types-pattern.md)and have reviewed the [CLI Architecture Overview](../../packages/cli/docs/explanation/architecture.md).
 
 ## Next Steps
 
 After completing this tutorial:
 
-- Learn [How to Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli)
-- Review the [Command API Reference](/packages/cli/docs/reference/command)
-- Build a [Complete CLI Application](/packages/cli/docs/tutorials/build-complete-cli)
+- Learn [How to Handle CLI Errors](../../packages/cli/docs/how-to/handle-errors-in-cli)
+- Review the [Command API Reference](../../packages/cli/docs/reference/command)
+- Build a [Complete CLI Application](../../packages/cli/docs/tutorials/build-complete-cli)
 ```
 
 ## Enforcement

@@ -455,16 +455,16 @@ Ensure your `tsconfig.json` supports subpath imports:
 
 ## Related Tasks
 
-- \*_[Performance Optimization](/packages/cli/docs/how-to/optimization-guide.md)_: Further optimize your CLI performance
-- \*_[Bundle Analysis](/packages/cli/docs/how-to/optimization-guide.md)_: Analyze and debug bundle size issues
-- \*_[Module Loading](/packages/cli/docs/how-to/import-patterns.md)_: Advanced module loading patterns
+- \*_[Performance Optimization](../../how-to/optimization-guide.md)_: Further optimize your CLI performance
+- \*_[Bundle Analysis](../../how-to/optimization-guide.md)_: Analyze and debug bundle size issues
+- \*_[Module Loading](../../how-to/import-patterns.md)_: Advanced module loading patterns
 
 ## Reference
 
-- [Package Exports Reference](/packages/cli/docs/reference/command.md)- All available exports
-- [Module Architecture](/packages/cli/docs/explanation/architecture.md)- How modules are structured
-- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler configurations
+- [Package Exports Reference](../../reference/command.md)- All available exports
+- [Module Architecture](../../explanation/architecture.md)- How modules are structured
+- [Build Configuration](../../reference/build-config.md)- Bundler configurations
 
 ---
 
-**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding why subpath exports improve performance
+**See also**: [Architecture Explanation](../../explanation/architecture.md)for understanding why subpath exports improve performance

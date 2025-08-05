@@ -103,7 +103,7 @@ To process multiple files:
 import { fs } from '@repo/fs'
 import { combineWithAllErrors } from '@esteban-url/core'
 
-async function processMultipleFiles(patterns: string[]) {
+async const processMultipleFiles = async (patterns: string[]) => {
   const results = await Promise.all(patterns.map((pattern) => fs.glob(pattern)))
 
   const combined = combineWithAllErrors(results)
@@ -121,7 +121,7 @@ async function processMultipleFiles(patterns: string[]) {
 Access file system through command context:
 
 ```typescript
-async function myAction(options: any, context: CommandContext) {
+async const myAction = async (options: any, context: CommandContext) => {
   // File system is available in context
   const result = await context.fs.readFile('config.json')
 
@@ -176,6 +176,6 @@ const readJson = async (path: string) => {
 
 ## See Also
 
-- [File System API Reference](/packages/fs/docs/reference/api)
-- [Command API Reference](/packages/cli/docs/reference/command)
-- [Error Handling Patterns](/packages/cli/docs/how-to/handle-errors-in-cli)
+- [File System API Reference](../../../fs/reference/api)
+- [Command API Reference](../../reference/command)
+- [Error Handling Patterns](../../how-to/handle-errors-in-cli)

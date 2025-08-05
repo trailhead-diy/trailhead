@@ -13,7 +13,7 @@ related:
 
 This reference establishes documentation standards for the Trailhead monorepo using the [Diátaxis framework](https://diataxis.fr/). All documentation must follow these standards.
 
-> **Note**: For understanding why we use Diátaxis and how it works, see [Understanding the Diátaxis Framework](/docs/explanation/diataxis-framework).
+> **Note**: For understanding why we use Diátaxis and how it works, see [Understanding the Diátaxis Framework](../explanation/diataxis-framework).
 
 ## Document Categories
 
@@ -345,7 +345,7 @@ Documentation standards are enforced through:
 
 - Use `pnpm docs:new` to create documentation from templates
 - Run `pnpm docs:validate` to check your documentation
-- See [Writing Guide](/docs/reference/writing-guide.md)for quick reference
+- See [Writing Guide](./writing-guide.md)for quick reference
 - Ask in #documentation channel for guidance
 
 Remember: Good documentation serves the user's needs, not the system's structure.

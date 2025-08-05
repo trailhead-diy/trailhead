@@ -61,7 +61,7 @@ const getId = (): number => ++count
 ```typescript
 import { ok, err } from '@repo/core'
 
-async function readConfig(path: string): Promise<Result<Config>> {
+async const readConfig = async (path: string): Promise<Result<Config>> => {
   const result = await fs.readFile(path)
   if (result.isErr()) {
     return result // Propagate error
@@ -81,7 +81,7 @@ async function readConfig(path: string): Promise<Result<Config>> {
 Exit early on errors:
 
 ```typescript
-async function processFile(path: string): Promise<Result<void>> {
+async const processFile = async (path: string): Promise<Result<void>> => {
   // Read file
   const readResult = await fs.readFile(path)
   if (readResult.isErr()) return readResult
@@ -182,7 +182,7 @@ const withLogging = <T, R>(fn: (arg: T) => Promise<Result<R>>, logger: Logger) =
 
 ```typescript
 // Process array of Results
-async function processFiles(paths: string[]): Promise<Result<string[]>> {
+async const processFiles = async (paths: string[]): Promise<Result<string[]>> => {
   const results = await Promise.all(paths.map((path) => fs.readFile(path)))
 
   // Check if all succeeded
@@ -241,7 +241,7 @@ const content = await readUTF8('config.json')
 
 ```typescript
 // ❌ Mixed styles
-function processData(data: any[]) {
+const processData = (data: any[]) => {
   let results = []
   for (let item of data) {
     try {
@@ -255,7 +255,7 @@ function processData(data: any[]) {
 }
 
 // ✅ Consistent functional style
-function processData(data: any[]): Result<TransformedData[]> {
+const processData = (data: any[]): Result<TransformedData[]> => {
   const results = data.map((item) => transform(item))
   return collectResults(results)
 }
@@ -354,6 +354,6 @@ describe('validatePort', () => {
 
 ## Related Documentation
 
-- [Result Types Pattern](/docs/explanation/result-types-pattern.md)- Understanding Result types
-- [Functional Architecture](/docs/explanation/functional-architecture.md)- Why functional programming
-- [Package Ecosystem](/docs/explanation/package-ecosystem.md)- How packages work together
+- [Result Types Pattern](../explanation/result-types-pattern.md)- Understanding Result types
+- [Functional Architecture](../explanation/functional-architecture.md)- Why functional programming
+- [Package Ecosystem](../explanation/package-ecosystem.md)- How packages work together

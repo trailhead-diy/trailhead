@@ -909,6 +909,6 @@ Key patterns demonstrated:
 
 ## Further Learning
 
-- Review [Command Enhancements](/packages/cli/docs/reference/command-enhancements)
-- Explore [Pipeline Patterns](/packages/cli/docs/how-to/use-result-pipelines)
-- Learn about [Testing Strategies](/packages/cli/docs/how-to/test-cli-applications)
+- Review [Command Enhancements](../../reference/command-enhancements)
+- Explore [Pipeline Patterns](../../how-to/use-result-pipelines)
+- Learn about [Testing Strategies](../../how-to/test-cli-applications)

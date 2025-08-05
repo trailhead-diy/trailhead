@@ -239,6 +239,6 @@ try {
 
 ## See Also
 
-- [Prompts API Reference](/packages/cli/docs/reference/prompts)
-- [Command Patterns](/packages/cli/docs/reference/command)
-- [Error Handling Guide](/packages/cli/docs/how-to/handle-errors-in-cli)
+- [Prompts API Reference](../../reference/prompts)
+- [Command Patterns](../../reference/command)
+- [Error Handling Guide](../../how-to/handle-errors-in-cli)

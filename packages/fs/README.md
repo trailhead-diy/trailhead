@@ -115,14 +115,14 @@ const result = await mockFS.readJson('/app/config.json')
 
 ## Documentation
 
-- [Tutorials](/packages/fs/docs/README.md)
-  - [File Operations Basics](/docs/tutorials/file-operations-basics.md)
-- [How-to Guides](/packages/fs/docs/how-to/file-operations.md)
-  - [Perform Atomic File Operations](/docs/how-to/perform-atomic-file-operations.md)
-- [Explanations](/packages/fs/docs/explanation/result-patterns.md)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](/packages/fs/docs/reference/api.md)
+- [Tutorials](./docs/README.md)
+  - [File Operations Basics](../../docs/tutorials/file-operations-basics.md)
+- [How-to Guides](./docs/how-to/file-operations.md)
+  - [Perform Atomic File Operations](../../docs/how-to/perform-atomic-file-operations.md)
+- [Explanations](./docs/explanation/result-patterns.md)
+  - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
+  - [Functional Architecture](../../docs/explanation/functional-architecture.md)
+- [API Reference](./docs/reference/api.md)
 
 ## License
 

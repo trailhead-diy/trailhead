@@ -393,6 +393,6 @@ export { z } from 'zod'
 
 ## See Also
 
-- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Basic config example
-- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Config patterns
-- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing with configs
+- [Getting Started](../../tutorials/getting-started.md)- Basic config example
+- [Common Patterns](../../how-to/use-result-pipelines.md)- Config patterns
+- [Testing Guide](../../how-to/test-cli-applications.md)- Testing with configs
