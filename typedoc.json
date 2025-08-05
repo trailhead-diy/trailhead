@@ -1,0 +1,125 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/*"],
+  "plugin": ["typedoc-plugin-markdown"],
+  
+  "name": "Trailhead API Documentation",
+  "includeVersion": true,
+  "readme": "README.md",
+  
+  "packageOptions": {
+    "entryPoints": ["src/index.ts"]
+  },
+  
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false,
+    "rewrittenLink": true,
+    "unusedMergeModuleWith": true
+  },
+  
+  "requiredToBeDocumented": [
+    "Class",
+    "Interface",
+    "Function",
+    "Method"
+  ],
+  
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true,
+    "compactFolders": true,
+    "excludeReferences": false
+  },
+  
+  "categorizeByGroup": false,
+  "defaultCategory": "API",
+  
+  "hideGenerator": true,
+  "githubPages": false,
+  "skipErrorChecking": false,
+  "treatWarningsAsErrors": false,
+  "treatValidationWarningsAsErrors": false,
+  
+  "sort": ["source-order"],
+  
+  "blockTags": [
+    "@alpha",
+    "@beta",
+    "@defaultValue",
+    "@decorator", 
+    "@deprecated",
+    "@eventProperty",
+    "@example",
+    "@experimental",
+    "@inheritDoc",
+    "@internal",
+    "@label",
+    "@override",
+    "@packageDocumentation",
+    "@param",
+    "@privateRemarks",
+    "@public",
+    "@readonly",
+    "@remarks",
+    "@returns",
+    "@sealed",
+    "@see",
+    "@since",
+    "@throws",
+    "@typeParam",
+    "@virtual"
+  ],
+  
+  "inlineTags": [
+    "@link",
+    "@inheritDoc", 
+    "@label"
+  ],
+  
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "excludeNotDocumented": false,
+  "excludeCategories": [],
+  
+  "visibilityFilters": {
+    "protected": true,
+    "private": false,
+    "inherited": true,
+    "external": false,
+    "@alpha": false,
+    "@beta": true
+  },
+  
+  "externalSymbolLinkMappings": {
+    "typescript": {
+      "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+      "Partial": "https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype",
+      "Required": "https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype",
+      "Readonly": "https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype"
+    },
+    "global": {
+      "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+      "Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+      "Object": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object"
+    }
+  },
+  
+  "searchCategoryBoosts": {
+    "Classes": 1.5,
+    "Interfaces": 1.5,
+    "Functions": 1.3
+  },
+  
+  "customCss": "./docs/assets/typedoc-custom.css",
+  "markdownItOptions": {
+    "html": true,
+    "linkify": true
+  },
+  
+  "preserveWatchOutput": true
+}

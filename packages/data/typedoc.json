@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@esteban-url/data",
+  "readme": "./README.md",
+  "entryPoints": ["src/index.ts"],
+  "categorizeByGroup": true,
+  "defaultCategory": "Data Processing",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeNotDocumented": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/esteban-url/trailhead",
+    "Data Package": "../data/README.md"
+  },
+  "customCss": null,
+  "customJs": null,
+  "gitRevision": "main",
+  "gitRemote": "origin",
+  "sourceLinkExternal": true
+}
