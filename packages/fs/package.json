@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",
+    "@esteban-url/sort": "workspace:*",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0"
   },

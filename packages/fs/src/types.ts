@@ -1,4 +1,5 @@
 import type { Result, CoreError } from '@esteban-url/core'
+import type { Order } from '@esteban-url/sort'
 
 export interface FileStats {
   readonly size: number
@@ -6,6 +7,20 @@ export interface FileStats {
   readonly isDirectory: boolean
   readonly isSymbolicLink: boolean
   readonly mtime: Date
+  readonly atime: Date
+  readonly ctime: Date
+  readonly name?: string
+}
+
+export type FileSortField = 'name' | 'size' | 'mtime' | 'atime' | 'ctime' | 'extension'
+
+export interface FileSortOptions {
+  readonly by: FileSortField
+  readonly order?: Order
+}
+
+export interface SortOptions {
+  readonly sort?: FileSortField | FileSortOptions | FileSortOptions[]
 }
 
 export interface FileSystemError extends CoreError {
@@ -51,7 +66,7 @@ export type WriteFileOp = (path: string, content: string) => Promise<FSResult<vo
 export type ExistsOp = (path: string) => Promise<FSResult<boolean>>
 export type StatOp = (path: string) => Promise<FSResult<FileStats>>
 export type MkdirOp = (path: string, options?: MkdirOptions) => Promise<FSResult<void>>
-export type ReadDirOp = (path: string) => Promise<FSResult<string[]>>
+export type ReadDirOp = (path: string, options?: SortOptions) => Promise<FSResult<string[]>>
 export type CopyOp = (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<void>>
 export type MoveOp = (src: string, dest: string, options?: MoveOptions) => Promise<FSResult<void>>
 export type RemoveOp = (path: string, options?: RmOptions) => Promise<FSResult<void>>
@@ -61,3 +76,13 @@ export type WriteJsonOp = <T = any>(
   data: T,
   options?: { spaces?: number }
 ) => Promise<FSResult<void>>
+
+export interface FindFilesOptions extends SortOptions {
+  readonly cwd?: string
+  readonly ignore?: string[]
+}
+
+export type FindFilesOp = (
+  pattern: string,
+  options?: FindFilesOptions
+) => Promise<FSResult<string[]>>

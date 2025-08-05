@@ -28,11 +28,14 @@ Specialized error type for filesystem operations.
 
 ```typescript
 interface FileSystemError extends CoreError {
-  readonly type: 'FileSystemError'
+  readonly type: 'FILESYSTEM_ERROR'
+  readonly code: string
   readonly path?: string
+  readonly component: 'filesystem'
   readonly operation: string
-  readonly syscall?: string
-  readonly errno?: number
+  readonly severity: 'low' | 'medium' | 'high' | 'critical'
+  readonly recoverable: boolean
+  readonly timestamp: Date
 }
 ```
 
@@ -42,17 +45,11 @@ File or directory statistics.
 
 ```typescript
 interface FileStats {
+  readonly size: number
   readonly isFile: boolean
   readonly isDirectory: boolean
   readonly isSymbolicLink: boolean
-  readonly size: number
   readonly mtime: Date
-  readonly atime: Date
-  readonly ctime: Date
-  readonly birthtime: Date
-  readonly mode: number
-  readonly uid: number
-  readonly gid: number
 }
 ```
 
@@ -63,13 +60,31 @@ Configuration for filesystem operations.
 ```typescript
 interface FSConfig {
   readonly encoding?: BufferEncoding
-  readonly recursive?: boolean
-  readonly overwrite?: boolean
-  readonly preserveTimestamps?: boolean
-  readonly dereference?: boolean
-  readonly errorOnExist?: boolean
-  readonly mode?: number
+  readonly defaultMode?: number
+  readonly jsonSpaces?: number
 }
+```
+
+## Function Types
+
+The package exports operation type definitions for functional composition:
+
+```typescript
+export type ReadFileOp = (path: string) => Promise<FSResult<string>>
+export type WriteFileOp = (path: string, content: string) => Promise<FSResult<void>>
+export type ExistsOp = (path: string) => Promise<FSResult<boolean>>
+export type StatOp = (path: string) => Promise<FSResult<FileStats>>
+export type MkdirOp = (path: string, options?: MkdirOptions) => Promise<FSResult<void>>
+export type ReadDirOp = (path: string) => Promise<FSResult<string[]>>
+export type CopyOp = (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<void>>
+export type MoveOp = (src: string, dest: string, options?: MoveOptions) => Promise<FSResult<void>>
+export type RemoveOp = (path: string, options?: RmOptions) => Promise<FSResult<void>>
+export type ReadJsonOp = <T = any>(path: string) => Promise<FSResult<T>>
+export type WriteJsonOp = <T = any>(
+  path: string,
+  data: T,
+  options?: { spaces?: number }
+) => Promise<FSResult<void>>
 ```
 
 ## Main API
@@ -80,23 +95,26 @@ Pre-configured filesystem operations instance.
 
 ```typescript
 const fs: {
-  readFile: ReadFileFunction
-  writeFile: WriteFileFunction
-  exists: ExistsFunction
-  stat: StatFunction
-  mkdir: MkdirFunction
-  readDir: ReadDirFunction
-  copy: CopyFunction
-  move: MoveFunction
-  remove: RemoveFunction
-  readJson: ReadJsonFunction
-  writeJson: WriteJsonFunction
-  ensureDir: EnsureDirFunction
-  outputFile: OutputFileFunction
-  emptyDir: EmptyDirFunction
-  findFiles: FindFilesFunction
-  readIfExists: ReadIfExistsFunction
-  copyIfExists: CopyIfExistsFunction
+  readFile: ReadFileOp
+  writeFile: WriteFileOp
+  exists: ExistsOp
+  stat: StatOp
+  mkdir: MkdirOp
+  readDir: ReadDirOp
+  copy: CopyOp
+  move: MoveOp
+  remove: RemoveOp
+  readJson: ReadJsonOp
+  writeJson: WriteJsonOp
+  ensureDir: (path: string) => Promise<FSResult<void>>
+  outputFile: (path: string, content: string) => Promise<FSResult<void>>
+  emptyDir: (path: string) => Promise<FSResult<void>>
+  findFiles: (
+    pattern: string,
+    options?: { cwd?: string; ignore?: string[] }
+  ) => Promise<FSResult<string[]>>
+  readIfExists: (path: string) => Promise<FSResult<string | null>>
+  copyIfExists: (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<boolean>>
 }
 ```
 
@@ -121,7 +139,7 @@ function readFile(config?: FSConfig): ReadFileOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, options?: ReadFileOptions) => Promise<FSResult<string | Buffer>>
+;(path: string) => Promise<FSResult<string>>
 ```
 
 **Usage**:
@@ -142,7 +160,7 @@ function writeFile(config?: FSConfig): WriteFileOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, data: string | Buffer, options?: WriteFileOptions) => Promise<FSResult<void>>
+;(path: string, content: string) => Promise<FSResult<void>>
 ```
 
 ### `exists()`
@@ -156,7 +174,7 @@ function exists(config?: FSConfig): ExistsOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string) => Promise<FSResult<boolean>>
+;(path: string) => Promise<FSResult<boolean>>
 ```
 
 ### `stat()`
@@ -170,7 +188,7 @@ function stat(config?: FSConfig): StatOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string) => Promise<FSResult<FileStats>>
+;(path: string) => Promise<FSResult<FileStats>>
 ```
 
 ### `mkdir()`
@@ -184,7 +202,7 @@ function mkdir(config?: FSConfig): MkdirOp
 **Returns**: Function with signature:
 
 ```typescript
-;(dirPath: string, options?: MkdirOptions) => Promise<FSResult<void>>
+;(path: string, options?: MkdirOptions) => Promise<FSResult<void>>
 ```
 
 ### `readDir()`
@@ -198,7 +216,7 @@ function readDir(config?: FSConfig): ReadDirOp
 **Returns**: Function with signature:
 
 ```typescript
-;(dirPath: string, options?: ReadDirOptions) => Promise<FSResult<string[]>>
+;(path: string) => Promise<FSResult<string[]>>
 ```
 
 ### `copy()`
@@ -254,7 +272,7 @@ function readJson(config?: FSConfig): ReadJsonOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, options?: ReadJsonOptions) => Promise<FSResult<unknown>>
+;<T = any>(path: string) => Promise<FSResult<T>>
 ```
 
 ### `writeJson()`
@@ -268,30 +286,29 @@ function writeJson(config?: FSConfig): WriteJsonOp
 **Returns**: Function with signature:
 
 ```typescript
-;(filePath: string, data: unknown, options?: WriteJsonOptions) => Promise<FSResult<void>>
+;<T = any>(path: string, data: T, options?: { spaces?: number }) => Promise<FSResult<void>>
 ```
 
 ## Utility Operations
 
 ### `ensureDir()`
 
-Creates a function to ensure directory exists.
+Creates a function to ensure directory exists (creates directory recursively).
 
 ```typescript
-function ensureDir(config?: FSConfig): EnsureDirFunction
+function ensureDir(config?: FSConfig): (path: string) => Promise<FSResult<void>>
 ```
 
-**Returns**: Function with signature:
-
-```typescript
-;(dirPath: string) => Promise<FSResult<void>>
-```
+**Returns**: Function that creates directories recursively.
 
 **Usage**:
 
 ```typescript
 const ensureDirOp = ensureDir()
 const result = await ensureDirOp('./new/nested/directory')
+
+// Or use the pre-configured instance
+const result = await fs.ensureDir('./new/nested/directory')
 ```
 
 ### `outputFile()`
@@ -299,95 +316,122 @@ const result = await ensureDirOp('./new/nested/directory')
 Creates a function to write file, ensuring parent directories exist.
 
 ```typescript
-function outputFile(config?: FSConfig): OutputFileFunction
+function outputFile(config?: FSConfig): (path: string, content: string) => Promise<FSResult<void>>
 ```
 
-**Returns**: Function with signature:
+**Returns**: Function that writes content to file, creating directories as needed.
+
+**Usage**:
 
 ```typescript
-;(filePath: string, data: string | Buffer) => Promise<FSResult<void>>
+const outputFileOp = outputFile()
+const result = await outputFileOp('./nested/path/file.txt', 'content')
+
+// Or use the pre-configured instance
+const result = await fs.outputFile('./nested/path/file.txt', 'content')
 ```
 
 ### `emptyDir()`
 
-Creates a function to empty directory contents.
+Creates a function to empty directory contents (removes all files and subdirectories).
 
 ```typescript
-function emptyDir(config?: FSConfig): EmptyDirFunction
+function emptyDir(config?: FSConfig): (path: string) => Promise<FSResult<void>>
 ```
 
-**Returns**: Function with signature:
+**Returns**: Function that removes all contents from a directory.
+
+**Usage**:
 
 ```typescript
-;(dirPath: string) => Promise<FSResult<void>>
+const emptyDirOp = emptyDir()
+const result = await emptyDirOp('./temp-directory')
+
+// Or use the pre-configured instance
+const result = await fs.emptyDir('./temp-directory')
 ```
 
 ### `findFiles()`
 
-Creates a function to find files matching patterns.
+Creates a function to find files matching glob patterns.
 
 ```typescript
-function findFiles(config?: FSConfig): FindFilesFunction
+function findFiles(
+  config?: FSConfig
+): (pattern: string, options?: { cwd?: string; ignore?: string[] }) => Promise<FSResult<string[]>>
 ```
 
-**Returns**: Function with signature:
+**Returns**: Function that finds files matching glob patterns.
+
+**Usage**:
 
 ```typescript
-;(pattern: string | string[], options?: FindOptions) => Promise<FSResult<string[]>>
+const findFilesOp = findFiles()
+const result = await findFilesOp('**/*.ts', {
+  cwd: './src',
+  ignore: ['**/*.test.ts'],
+})
+
+// Or use the pre-configured instance
+const result = await fs.findFiles('**/*.ts', {
+  cwd: './src',
+  ignore: ['**/*.test.ts'],
+})
 ```
 
 ### `readIfExists()`
 
-Creates a function to read file only if it exists.
+Creates a function to read file only if it exists (returns null if not found).
 
 ```typescript
-function readIfExists(config?: FSConfig): ReadIfExistsFunction
+function readIfExists(config?: FSConfig): (path: string) => Promise<FSResult<string | null>>
 ```
 
-**Returns**: Function with signature:
+**Returns**: Function that reads file content or returns null if file doesn't exist.
+
+**Usage**:
 
 ```typescript
-;(filePath: string, options?: ReadFileOptions) => Promise<FSResult<string | null>>
+const readIfExistsOp = readIfExists()
+const result = await readIfExistsOp('./optional-config.json')
+if (result.isOk() && result.value !== null) {
+  console.log('File content:', result.value)
+} else if (result.isOk() && result.value === null) {
+  console.log('File does not exist')
+}
+
+// Or use the pre-configured instance
+const result = await fs.readIfExists('./optional-config.json')
 ```
 
 ### `copyIfExists()`
 
-Creates a function to copy file only if source exists.
+Creates a function to copy file only if source exists (returns boolean indicating if copy occurred).
 
 ```typescript
-function copyIfExists(config?: FSConfig): CopyIfExistsFunction
+function copyIfExists(
+  config?: FSConfig
+): (src: string, dest: string, options?: CopyOptions) => Promise<FSResult<boolean>>
 ```
 
-**Returns**: Function with signature:
+**Returns**: Function that copies file if source exists, returns boolean indicating success.
+
+**Usage**:
 
 ```typescript
-;(src: string, dest: string, options?: CopyOptions) => Promise<FSResult<boolean>>
+const copyIfExistsOp = copyIfExists()
+const result = await copyIfExistsOp('./optional-file.txt', './backup.txt')
+if (result.isOk() && result.value) {
+  console.log('File copied successfully')
+} else if (result.isOk() && !result.value) {
+  console.log('Source file does not exist')
+}
+
+// Or use the pre-configured instance
+const result = await fs.copyIfExists('./optional-file.txt', './backup.txt')
 ```
 
 ## Options Types
-
-### `ReadFileOptions`
-
-Options for reading files.
-
-```typescript
-interface ReadFileOptions {
-  readonly encoding?: BufferEncoding
-  readonly flag?: string
-}
-```
-
-### `WriteFileOptions`
-
-Options for writing files.
-
-```typescript
-interface WriteFileOptions {
-  readonly encoding?: BufferEncoding
-  readonly mode?: number
-  readonly flag?: string
-}
-```
 
 ### `MkdirOptions`
 
@@ -396,7 +440,6 @@ Options for creating directories.
 ```typescript
 interface MkdirOptions {
   readonly recursive?: boolean
-  readonly mode?: number
 }
 ```
 
@@ -407,10 +450,7 @@ Options for copying files/directories.
 ```typescript
 interface CopyOptions {
   readonly overwrite?: boolean
-  readonly preserveTimestamps?: boolean
   readonly recursive?: boolean
-  readonly dereference?: boolean
-  readonly filter?: (src: string, dest: string) => boolean
 }
 ```
 
@@ -435,39 +475,37 @@ interface RmOptions {
 }
 ```
 
-### `FindOptions`
-
-Options for finding files.
-
-```typescript
-interface FindOptions {
-  readonly cwd?: string
-  readonly ignore?: string[]
-  readonly absolute?: boolean
-  readonly onlyFiles?: boolean
-  readonly onlyDirectories?: boolean
-  readonly followSymbolicLinks?: boolean
-}
-```
-
 ## Error Handling
 
 ### `createFileSystemError()`
 
-Creates filesystem-specific errors.
+Creates filesystem-specific errors with structured metadata.
 
 ```typescript
 function createFileSystemError(
   operation: string,
-  path: string,
   message: string,
   options?: {
+    path?: string
+    code?: string
     cause?: unknown
-    syscall?: string
-    errno?: number
-    details?: string
+    suggestion?: string
+    recoverable?: boolean
+    severity?: 'low' | 'medium' | 'high' | 'critical'
+    context?: Record<string, unknown>
   }
 ): FileSystemError
+```
+
+**Usage**:
+
+```typescript
+const error = createFileSystemError('Read file', 'Failed to read configuration file', {
+  path: './config.json',
+  code: 'CONFIG_READ_ERROR',
+  recoverable: true,
+  suggestion: 'Check if the file exists and has proper permissions',
+})
 ```
 
 ### `mapNodeError()`
@@ -480,69 +518,54 @@ function mapNodeError(operation: string, path: string, error: unknown): FileSyst
 
 ## Path Utilities
 
-### `normalizePath()`
-
-Normalizes file paths for cross-platform compatibility.
+Comprehensive path utilities are available from `@esteban-url/fs/utils`:
 
 ```typescript
-function normalizePath(filePath: string): string
+import {
+  // Basic path operations
+  normalizePath,
+  createPath,
+  createTestPath,
+  createAbsolutePath,
+  joinPaths,
+  safeJoin,
+  resolvePath,
+  createRelativePath,
+  safeRelative,
+  // Path information
+  getDirectoryName,
+  getBaseName,
+  getExtension,
+  isAbsolutePath,
+  isRelativePath,
+  // Platform utilities
+  isWindows,
+  pathSep,
+  // Path conversion
+  toForwardSlashes,
+  toBackslashes,
+  toPosixPath,
+  toWindowsPath,
+  normalizeMockPath,
+  // Temporary paths
+  getTempDir,
+  createTempPath,
+  // Validation
+  isSafePath,
+  isValidName,
+  isAllowedPath,
+  // Path matching
+  createPathRegex,
+  pathMatchers,
+  pathAssertions,
+  // Project structure utilities
+  createProjectStructure,
+  createTestConfig,
+  testPaths,
+} from '@esteban-url/fs/utils'
 ```
 
-### `isAbsolute()`
-
-Checks if path is absolute.
-
-```typescript
-function isAbsolute(filePath: string): boolean
-```
-
-### `resolve()`
-
-Resolves path components to absolute path.
-
-```typescript
-function resolve(...pathSegments: string[]): string
-```
-
-### `join()`
-
-Joins path components.
-
-```typescript
-function join(...pathSegments: string[]): string
-```
-
-### `dirname()`
-
-Gets directory name of path.
-
-```typescript
-function dirname(filePath: string): string
-```
-
-### `basename()`
-
-Gets base name of path.
-
-```typescript
-function basename(filePath: string, ext?: string): string
-```
-
-### `extname()`
-
-Gets file extension.
-
-```typescript
-function extname(filePath: string): string
-```
-
-### `relative()`
-
-Gets relative path from one path to another.
-
-```typescript
-function relative(from: string, to: string): string
-```
+For detailed documentation of path utilities, see the [path utilities guide](/packages/fs/docs/how-to/path-operations.md).
 
 ## Configuration
 
@@ -625,7 +648,7 @@ import { fs } from '@esteban-url/fs'
 // Copy with options
 const copyResult = await fs.copy('./src', './backup', {
   recursive: true,
-  preserveTimestamps: true,
+  overwrite: true,
 })
 
 // Find files
@@ -669,24 +692,112 @@ if (result.isErr()) {
 
 ```typescript
 import { fs } from '@esteban-url/fs'
+import { ok, err } from '@esteban-url/core'
 
-// Chain filesystem operations
-const result = await fs
-  .readJson('./input.json')
-  .andThen((data) => {
-    // Process data
-    const processed = { ...data, processed: true }
-    return fs.writeJson('./output.json', processed)
-  })
-  .andThen(() => fs.copy('./output.json', './backup.json'))
+// Chain filesystem operations using Result methods
+const processConfig = async () => {
+  const readResult = await fs.readJson('./input.json')
+  if (readResult.isErr()) {
+    return err(readResult.error)
+  }
 
+  // Process data
+  const processed = { ...readResult.value, processed: true }
+  const writeResult = await fs.writeJson('./output.json', processed)
+  if (writeResult.isErr()) {
+    return err(writeResult.error)
+  }
+
+  // Create backup
+  const backupResult = await fs.copy('./output.json', './backup.json')
+  return backupResult
+}
+
+const result = await processConfig()
 if (result.isOk()) {
   console.log('All operations completed successfully')
 }
 ```
 
+## Testing Utilities
+
+The package provides comprehensive testing utilities via `@esteban-url/fs/testing`:
+
+### Mock Filesystem
+
+```typescript
+import { createMockFileSystem, createTestFileSystem, MockFileSystem } from '@esteban-url/fs/testing'
+
+// Create mock filesystem with initial structure
+const mockFs = createMockFileSystem({
+  'package.json': JSON.stringify({ name: 'test' }),
+  'src/index.ts': 'export const hello = "world"',
+  'README.md': '# Test Project',
+})
+
+// Use mock filesystem with fs operations
+const content = await mockFs.readFile('package.json')
+const exists = await mockFs.exists('src/index.ts')
+```
+
+### Path Testing Utilities
+
+All path utilities from `@esteban-url/fs/utils` are re-exported for testing:
+
+```typescript
+import {
+  normalizePath,
+  createPath,
+  createAbsolutePath,
+  joinPaths,
+  safeJoin,
+  resolvePath,
+  createRelativePath,
+  getDirectoryName,
+  getBaseName,
+  getExtension,
+  isAbsolutePath,
+  isRelativePath,
+  // Platform utilities
+  isWindows,
+  pathSep,
+  // Path conversion
+  toForwardSlashes,
+  toBackslashes,
+  toPosixPath,
+  toWindowsPath,
+  // Validation
+  isSafePath,
+  isValidName,
+  isAllowedPath,
+  // Path matching
+  createPathRegex,
+  pathMatchers,
+  pathAssertions,
+  // Test utilities
+  createProjectStructure,
+  createTempPath,
+  getTempDir,
+  testPaths,
+} from '@esteban-url/fs/testing'
+```
+
+### Test Fixtures
+
+Pre-built project structures for testing:
+
+```typescript
+import { basicProject, configFiles, monorepoStructure } from '@esteban-url/fs/testing'
+
+// Use fixtures with mock filesystem
+const projectFs = createMockFileSystem(basicProject)
+const configFs = createMockFileSystem(configFiles)
+```
+
+For detailed testing documentation, see [Testing Guide](/packages/fs/docs/how-to/testing.md).
+
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api.md)- Data processing operations
-- [Validation API](/packages/validation/docs/reference/api.md)- Data validation
+- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
+- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
+- [Validation API](/packages/validation/docs/reference/api.md) - Data validation

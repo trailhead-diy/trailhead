@@ -6,9 +6,8 @@ inputs:
     required: false
     default: '20.11.0'
   pnpm-version:
-    description: 'pnpm version to use'
+    description: 'pnpm version to use (will use packageManager field from package.json if not specified)'
     required: false
-    default: '10.13.1'
 
 runs:
   using: 'composite'

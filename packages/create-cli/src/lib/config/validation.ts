@@ -1,6 +1,7 @@
 import { resolve, normalize, isAbsolute, relative } from 'path'
 import { z } from 'zod'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import type { ProjectConfig, PackageManager } from './types.js'
 
 /**
  * Validation utilities using Zod schemas for type-safe input validation
@@ -252,4 +253,82 @@ export function sanitizeText(
   }
 
   return zodResultToResult(textSchema, input, 'Text input')
+}
+
+/**
+ * Validate and normalize project configuration with defaults
+ *
+ * Takes a partial project configuration and returns a complete ProjectConfig
+ * with validated values and sensible defaults applied.
+ */
+export function validateConfig(config: Partial<ProjectConfig>): Result<ProjectConfig, CoreError> {
+  try {
+    // Validate required fields
+    if (!config.projectName) {
+      return err(
+        createCoreError('MISSING_PROJECT_NAME', 'CLI_ERROR', 'Project name is required', {
+          component: 'ConfigValidator',
+          operation: 'validateConfig',
+          recoverable: true,
+          severity: 'high',
+          suggestion: 'Provide a project name',
+        })
+      )
+    }
+
+    // Validate project name
+    const nameValidation = validateProjectName(config.projectName)
+    if (nameValidation.isErr()) {
+      return err(nameValidation.error)
+    }
+
+    // Validate and set project path
+    const projectPath = config.projectPath || resolve(process.cwd(), config.projectName)
+    const pathValidation = validateProjectPath(projectPath, process.cwd())
+    if (pathValidation.isErr()) {
+      return err(pathValidation.error)
+    }
+
+    // Validate package manager
+    const packageManager = (config.packageManager || 'pnpm') as PackageManager
+    const pmValidation = validatePackageManager(packageManager)
+    if (pmValidation.isErr()) {
+      return err(pmValidation.error)
+    }
+
+    // Create complete configuration with defaults
+    const validatedConfig: ProjectConfig = {
+      projectName: nameValidation.value,
+      projectPath: pathValidation.value,
+      packageManager: pmValidation.value as PackageManager,
+      features: {
+        core: true, // Always required
+        config: config.features?.config ?? false,
+        validation: config.features?.validation ?? false,
+        testing: config.features?.testing ?? true,
+        docs: config.features?.docs ?? false,
+        cicd: config.features?.cicd ?? false,
+      },
+      projectType: config.projectType || 'standalone-cli',
+      nodeVersion: config.nodeVersion || '18',
+      typescript: config.typescript ?? true, // Always true for this generator
+      ide: config.ide || 'none',
+      includeDocs: config.includeDocs ?? false,
+      dryRun: config.dryRun ?? false,
+      force: config.force ?? false,
+      verbose: config.verbose ?? false,
+    }
+
+    return ok(validatedConfig)
+  } catch (error) {
+    return err(
+      createCoreError('CONFIG_VALIDATION_ERROR', 'CLI_ERROR', 'Configuration validation failed', {
+        component: 'ConfigValidator',
+        operation: 'validateConfig',
+        cause: error,
+        recoverable: false,
+        severity: 'high',
+      })
+    )
+  }
 }

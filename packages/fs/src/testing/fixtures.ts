@@ -4,6 +4,8 @@
  * Predefined file structures and content for testing.
  */
 
+import { join } from 'node:path'
+
 /**
  * Basic project structure fixture
  */
@@ -335,7 +337,7 @@ export const performanceFixtures = {
       const dirIndex = Math.floor(i / 50)
       const fileName = `file${i}.txt`
       const content = `This is file ${i} with some content to make it realistic. `.repeat(10)
-      structure[`dir${dirIndex}/${fileName}`] = content
+      structure[join(`dir${dirIndex}`, fileName)] = content
     }
 
     return structure
@@ -349,7 +351,7 @@ export const performanceFixtures = {
     let currentPath = ''
 
     for (let i = 0; i < depth; i++) {
-      currentPath += `level${i}/`
+      currentPath = join(currentPath, `level${i}`)
       structure[`${currentPath}file.txt`] = `Content at depth ${i}`
     }
 
@@ -414,9 +416,9 @@ export const tempFixtures = {
   createTempStructure: (prefix: string = 'temp'): Record<string, string> => {
     const timestamp = Date.now()
     return {
-      [`${prefix}-${timestamp}/file1.txt`]: 'Temporary file 1',
-      [`${prefix}-${timestamp}/file2.txt`]: 'Temporary file 2',
-      [`${prefix}-${timestamp}/subdir/file3.txt`]: 'Temporary file 3',
+      [join(`${prefix}-${timestamp}`, 'file1.txt')]: 'Temporary file 1',
+      [join(`${prefix}-${timestamp}`, 'file2.txt')]: 'Temporary file 2',
+      [join(`${prefix}-${timestamp}`, 'subdir', 'file3.txt')]: 'Temporary file 3',
     }
   },
 
@@ -481,6 +483,6 @@ export const fixtureUtils = {
    * Adds prefix to all fixture paths
    */
   prefix: (fixture: Record<string, string>, prefix: string): Record<string, string> => {
-    return fixtureUtils.transform(fixture, (path) => `${prefix}/${path}`)
+    return fixtureUtils.transform(fixture, (path) => join(prefix, path))
   },
 }

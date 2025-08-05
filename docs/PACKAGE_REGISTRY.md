@@ -38,7 +38,7 @@ The base `.npmrc` configuration will work for all development tasks.
 2. **Use the setup script** (recommended):
 
    ```bash
-   ./scripts/setup-npm-auth.sh
+   pnpm scripts-cli npm-auth
    ```
 
 3. **Or manually configure**:
@@ -80,4 +80,4 @@ If you need to install published @trailhead packages:
 
 1. Create a GitHub personal access token with `read:packages` scope
 2. Set GITHUB_TOKEN environment variable
-3. Run `./scripts/setup-npm-auth.sh`
+3. Run `pnpm scripts-cli npm-auth`

@@ -34,9 +34,9 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   const __dirname = fileURLToPath(new URL('.', import.meta.url))
   // Account for both source (tooling/vitest-config/) and built (tooling/vitest-config/dist/) contexts
   const isBuilt = __dirname.includes('/dist/')
-  const monorepoRoot = isBuilt 
+  const monorepoRoot = isBuilt
     ? resolve(__dirname, '../../..') // from dist: tooling/vitest-config/dist -> root
-    : resolve(__dirname, '../..')    // from src: tooling/vitest-config -> root
+    : resolve(__dirname, '../..') // from src: tooling/vitest-config -> root
   const packagesDir = resolve(monorepoRoot, 'packages')
 
   return defineConfig({
@@ -60,6 +60,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@esteban-url/cli/testing': resolve(packagesDir, 'cli/src/testing/index.ts'),
         '@esteban-url/cli/utils': resolve(packagesDir, 'cli/src/utils/index.ts'),
         '@esteban-url/cli': resolve(packagesDir, 'cli/src/index.ts'),
+        '@esteban-url/sort': resolve(packagesDir, 'sort/src/index.ts'),
         ...additionalAliases,
       },
       // Ensure we use source files in tests, not dist

@@ -30,7 +30,8 @@ export interface JSONStringifyOptions {
 
 export interface JSONFormatOptions {
   readonly indent?: number
-  readonly sortKeys?: boolean
+  readonly sortKeys?: boolean | 'asc' | 'desc' | ((a: string, b: string) => number)
+  readonly sortArrays?: boolean | ((a: any, b: any) => number)
   readonly preserveArrays?: boolean
   readonly maxLineLength?: number
 }

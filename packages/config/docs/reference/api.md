@@ -16,33 +16,97 @@ Complete API reference for `@esteban-url/config` package providing configuration
 
 ### `ConfigResult<T>`
 
-Result type for configuration operations.
+Result type for configuration operations using CoreError.
 
 ```typescript
-type ConfigResult<T> = Result<T, ValidationError>
+type ConfigResult<T> = Result<T, CoreError>
 ```
 
-### `ConfigSchema`
+### `ZodConfigSchema<T>`
 
-Schema definition interface.
+Schema definition interface powered by Zod.
 
 ```typescript
-interface ConfigSchema {
-  readonly fields: Record<string, FieldBuilder>
-  readonly metadata?: ConfigMetadata
+interface ZodConfigSchema<T = Record<string, unknown>> {
+  readonly name?: string
+  readonly description?: string
+  readonly version?: string
+  readonly zodSchema: z.ZodSchema<T>
+  readonly strict?: boolean
 }
 ```
 
-### `ConfigManager`
+### `ConfigDefinition<T>`
+
+Configuration definition with sources and options.
+
+```typescript
+interface ConfigDefinition<T = Record<string, unknown>> {
+  readonly name: string
+  readonly version?: string
+  readonly description?: string
+  readonly schema?: ZodConfigSchema<T>
+  readonly sources: readonly ConfigSource[]
+  readonly defaults?: Partial<T>
+  readonly transformers?: readonly ConfigTransformer<T>[]
+  readonly validators?: readonly ConfigValidator<T>[]
+}
+```
+
+### `ConfigSource`
+
+Configuration source specification.
+
+```typescript
+interface ConfigSource {
+  readonly type: ConfigSourceType
+  readonly path?: string
+  readonly data?: Record<string, unknown>
+  readonly priority: number
+  readonly optional?: boolean
+  readonly watch?: boolean
+  readonly env?: string
+}
+```
+
+### `ConfigSourceType`
+
+Available configuration source types.
+
+```typescript
+type ConfigSourceType = 'file' | 'env' | 'cli' | 'object' | 'remote' | 'vault'
+```
+
+### `ConfigState<T>`
+
+Current configuration state.
+
+```typescript
+interface ConfigState<T = Record<string, unknown>> {
+  readonly definition: ConfigDefinition<T>
+  readonly raw: Record<string, unknown>
+  readonly resolved: T
+  readonly sources: readonly ResolvedSource[]
+  readonly metadata: ConfigMetadata
+}
+```
+
+### `ConfigManager<T>`
 
 Main configuration manager interface.
 
 ```typescript
-interface ConfigManager {
-  load: (sources: ConfigSource[]) => Promise<ConfigResult<unknown>>
-  validate: (config: unknown) => ConfigResult<unknown>
-  watch: (callback: ConfigChangeCallback) => ConfigWatcher
-  generateDocs: () => ConfigDocs
+interface ConfigManager<T = Record<string, unknown>> {
+  readonly definition: ConfigDefinition<T>
+  readonly load: () => Promise<ConfigResult<ConfigState<T>>>
+  readonly reload: () => Promise<ConfigResult<ConfigState<T>>>
+  readonly get: <K extends keyof T>(key: K) => T[K] | undefined
+  readonly set: <K extends keyof T>(key: K, value: T[K]) => ConfigResult<void>
+  readonly has: (key: keyof T) => boolean
+  readonly watch: (callback: ConfigChangeCallback<T>) => Promise<ConfigResult<ConfigWatcher[]>>
+  readonly validate: () => Promise<ConfigResult<void>>
+  readonly getState: () => ConfigState<T> | undefined
+  readonly getMetadata: () => ConfigMetadata | undefined
 }
 ```
 
@@ -50,46 +114,58 @@ interface ConfigManager {
 
 ### `defineSchema()`
 
-Creates a configuration schema with validation and documentation.
+Creates a configuration schema with Zod-powered validation.
 
 ```typescript
-function defineSchema(definition: SchemaDefinition): ConfigSchema
+function defineSchema<T extends Record<string, unknown>>(): {
+  object: <K extends Record<string, any>>(shape: K) => ZodSchemaBuilder<z.infer<z.ZodObject<any>>>
+}
 ```
-
-**Parameters**:
-
-- `definition` - Schema definition object
-
-**Returns**: `ConfigSchema` instance
 
 **Usage**:
 
 ```typescript
 import { defineSchema, string, number, boolean } from '@esteban-url/config'
 
-const schema = defineSchema({
+const schema = defineSchema<{
   server: {
-    port: number().min(1024).max(65535).default(3000).describe('Server port number'),
-    host: string().default('localhost').describe('Server host address'),
-    ssl: boolean().default(false).describe('Enable SSL/TLS'),
-  },
-})
+    port: number
+    host: string
+    ssl: boolean
+  }
+}>()
+  .object({
+    server: object({
+      port: number().int().min(1024).max(65535).default(3000).description('Server port number'),
+      host: string().default('localhost').description('Server host address'),
+      ssl: boolean().default(false).description('Enable SSL/TLS'),
+    }),
+  })
+  .build()
 ```
 
 ### `createSchema()`
 
-Alternative schema creation function.
+Alternative schema creation using Zod schema directly.
 
 ```typescript
-function createSchema(fields: Record<string, FieldBuilder>): ConfigSchema
+function createSchema<T>(zodSchema: z.ZodSchema<T>): ZodSchemaBuilder<T>
+```
+
+### `createZodSchema()`
+
+Creates a ZodConfigSchema from a Zod schema.
+
+```typescript
+function createZodSchema<T>(zodSchema: z.ZodSchema<T>): ZodConfigSchema<T>
 ```
 
 ### `validate()`
 
-Validates configuration against schema.
+Validates configuration against Zod schema.
 
 ```typescript
-function validate<T>(schema: ConfigSchema, config: unknown): ConfigResult<T>
+function validate<T>(config: unknown, schema: ZodConfigSchema<T>): ConfigResult<T>
 ```
 
 ### `validateAsync()`
@@ -97,121 +173,149 @@ function validate<T>(schema: ConfigSchema, config: unknown): ConfigResult<T>
 Asynchronous configuration validation.
 
 ```typescript
-function validateAsync<T>(schema: ConfigSchema, config: unknown): Promise<ConfigResult<T>>
+function validateAsync<T>(config: unknown, schema: ZodConfigSchema<T>): Promise<ConfigResult<T>>
 ```
 
-## Field Builders
+## Zod Field Builders
 
 ### `string()`
 
-Creates a string field builder.
+Creates a Zod string field builder.
 
 ```typescript
-function string(): StringFieldBuilder
+function string(): ZodStringFieldBuilder
 ```
 
 **Methods**:
 
-- `min(length: number)` - Minimum length
-- `max(length: number)` - Maximum length
-- `regex(pattern: RegExp)` - Pattern validation
-- `email()` - Email format validation
-- `url()` - URL format validation
-- `default(value: string)` - Default value
-- `describe(text: string)` - Field description
+- `description(description: string)` - Field description
 - `optional()` - Mark as optional
+- `default(defaultValue: string)` - Default value
+- `examples(...examples: string[])` - Usage examples
+- `enum(...values: readonly [string, ...string[]])` - Enum validation
+- `pattern(pattern: RegExp, message?: string)` - Regex validation
+- `minLength(min: number, message?: string)` - Minimum length
+- `maxLength(max: number, message?: string)` - Maximum length
+- `length(min: number, max: number)` - Length range
+- `email(message?: string)` - Email format validation
+- `url(message?: string)` - URL format validation
+- `uuid(message?: string)` - UUID format validation
+- `trim()` - Trim whitespace
+- `toLowerCase()` - Convert to lowercase
+- `toUpperCase()` - Convert to uppercase
+- `build()` - Build Zod schema
 
 **Usage**:
 
 ```typescript
-const nameField = string().min(2).max(50).describe('User full name')
+const nameField = string().minLength(2).maxLength(50).trim().description('User full name')
 
-const emailField = string().email().describe('User email address')
+const emailField = string().email().toLowerCase().description('User email address')
 ```
 
 ### `number()`
 
-Creates a number field builder.
+Creates a Zod number field builder.
 
 ```typescript
-function number(): NumberFieldBuilder
+function number(): ZodNumberFieldBuilder
 ```
 
 **Methods**:
 
-- `min(value: number)` - Minimum value
-- `max(value: number)` - Maximum value
-- `int()` - Integer validation
-- `positive()` - Positive number validation
-- `default(value: number)` - Default value
-- `describe(text: string)` - Field description
+- `description(description: string)` - Field description
 - `optional()` - Mark as optional
+- `default(defaultValue: number)` - Default value
+- `examples(...examples: number[])` - Usage examples
+- `enum(...values: readonly [number, ...number[]])` - Enum validation
+- `min(min: number, message?: string)` - Minimum value
+- `max(max: number, message?: string)` - Maximum value
+- `range(min: number, max: number)` - Value range
+- `int(message?: string)` - Integer validation
+- `positive(message?: string)` - Positive number validation
+- `negative(message?: string)` - Negative number validation
+- `nonNegative(message?: string)` - Non-negative validation
+- `nonPositive(message?: string)` - Non-positive validation
+- `finite(message?: string)` - Finite number validation
+- `multipleOf(divisor: number, message?: string)` - Multiple validation
+- `build()` - Build Zod schema
 
 **Usage**:
 
 ```typescript
-const portField = number().int().min(1024).max(65535).default(3000).describe('Server port')
+const portField = number().int().min(1024).max(65535).default(3000).description('Server port')
 
-const ratioField = number().min(0).max(1).describe('Scaling ratio')
+const ratioField = number().min(0).max(1).description('Scaling ratio')
 ```
 
 ### `boolean()`
 
-Creates a boolean field builder.
+Creates a Zod boolean field builder.
 
 ```typescript
-function boolean(): BooleanFieldBuilder
+function boolean(): ZodBooleanFieldBuilder
 ```
 
 **Methods**:
 
-- `default(value: boolean)` - Default value
-- `describe(text: string)` - Field description
+- `description(description: string)` - Field description
 - `optional()` - Mark as optional
+- `default(defaultValue: boolean)` - Default value
+- `examples(...examples: boolean[])` - Usage examples
+- `build()` - Build Zod schema
 
 **Usage**:
 
 ```typescript
-const debugField = boolean().default(false).describe('Enable debug mode')
+const debugField = boolean().default(false).description('Enable debug mode')
 ```
 
 ### `array()`
 
-Creates an array field builder.
+Creates a Zod array field builder.
 
 ```typescript
-function array<T>(itemBuilder: FieldBuilder<T>): ArrayFieldBuilder<T>
+function array<T>(itemBuilder: ZodFieldBuilder<T>): ZodArrayFieldBuilder<T>
 ```
 
 **Methods**:
 
-- `min(length: number)` - Minimum array length
-- `max(length: number)` - Maximum array length
-- `default(value: T[])` - Default value
-- `describe(text: string)` - Field description
+- `description(description: string)` - Field description
 - `optional()` - Mark as optional
+- `default(defaultValue: T[])` - Default value
+- `examples(...examples: T[][])` - Usage examples
+- `minLength(min: number, message?: string)` - Minimum array length
+- `maxLength(max: number, message?: string)` - Maximum array length
+- `length(length: number, message?: string)` - Exact array length
+- `nonempty(message?: string)` - Non-empty array validation
+- `build()` - Build Zod schema
 
 **Usage**:
 
 ```typescript
-const tagsField = array(string()).min(1).describe('Content tags')
+const tagsField = array(string()).minLength(1).description('Content tags')
 
-const portsField = array(number().int().positive()).describe('Available ports')
+const portsField = array(number().int().positive()).description('Available ports')
 ```
 
 ### `object()`
 
-Creates an object field builder.
+Creates a Zod object field builder.
 
 ```typescript
-function object<T>(fields: Record<string, FieldBuilder>): ObjectFieldBuilder<T>
+function object<T>(fields: Record<string, any>): ZodObjectFieldBuilder<T>
 ```
 
 **Methods**:
 
-- `default(value: T)` - Default value
-- `describe(text: string)` - Field description
+- `description(description: string)` - Field description
 - `optional()` - Mark as optional
+- `default(defaultValue: T)` - Default value
+- `examples(...examples: T[])` - Usage examples
+- `strict()` - Strict object validation
+- `passthrough()` - Allow additional properties
+- `strip()` - Strip additional properties
+- `build()` - Build Zod schema
 
 **Usage**:
 
@@ -220,7 +324,7 @@ const serverField = object({
   host: string().default('localhost'),
   port: number().int().default(3000),
   ssl: boolean().default(false),
-}).describe('Server configuration')
+}).description('Server configuration')
 ```
 
 ## Configuration Operations
@@ -230,66 +334,130 @@ const serverField = object({
 Creates configuration operations instance.
 
 ```typescript
-function createConfigOperations(schema: ConfigSchema): ConfigOperations
+function createConfigOperations(): ConfigOperations
 ```
 
-**Returns**: `ConfigOperations` instance with methods:
+### `ConfigOperations`
 
-- `load()` - Load configuration from sources
-- `validate()` - Validate configuration
-- `transform()` - Transform configuration
-- `watch()` - Watch for changes
+Configuration operations interface.
+
+```typescript
+interface ConfigOperations {
+  readonly create: <T>(definition: ConfigDefinition<T>) => ConfigResult<ConfigManager<T>>
+  readonly load: <T>(definition: ConfigDefinition<T>) => Promise<ConfigResult<ConfigState<T>>>
+  readonly watch: <T>(
+    definition: ConfigDefinition<T>,
+    callback: ConfigChangeCallback<T>
+  ) => Promise<ConfigResult<ConfigWatcher[]>>
+  readonly validate: <T>(config: T, schema: ZodConfigSchema<T>) => ConfigResult<void>
+  readonly transform: <T>(
+    config: Record<string, unknown>,
+    transformers: readonly ConfigTransformer<T>[]
+  ) => ConfigResult<T>
+}
+```
+
+#### `create()`
+
+Creates a configuration manager from definition.
+
+```typescript
+function create<T>(definition: ConfigDefinition<T>): ConfigResult<ConfigManager<T>>
+```
+
+#### `load()`
+
+Loads configuration from all sources in definition.
+
+```typescript
+function load<T>(definition: ConfigDefinition<T>): Promise<ConfigResult<ConfigState<T>>>
+```
+
+#### `watch()`
+
+Sets up configuration watching for changes.
+
+```typescript
+function watch<T>(
+  definition: ConfigDefinition<T>,
+  callback: ConfigChangeCallback<T>
+): Promise<ConfigResult<ConfigWatcher[]>>
+```
+
+#### `validateConfig()`
+
+Validates configuration against Zod schema.
+
+```typescript
+function validate<T>(config: T, schema: ZodConfigSchema<T>): ConfigResult<void>
+```
+
+#### `transform()`
+
+Transforms configuration using transformers.
+
+```typescript
+function transform<T>(
+  config: Record<string, unknown>,
+  transformers: readonly ConfigTransformer<T>[]
+): ConfigResult<T>
+```
 
 ### `createConfigManager()`
 
-Creates a configuration manager.
+Creates a configuration manager with dependencies.
 
 ```typescript
-function createConfigManager(schema: ConfigSchema, options?: ConfigManagerOptions): ConfigManager
+function createConfigManager<T>(
+  definition: ConfigDefinition<T>,
+  dependencies: ManagerDependencies
+): ConfigManager<T>
 ```
-
-**Parameters**:
-
-- `schema` - Configuration schema
-- `options` - Manager options
-
-**Returns**: `ConfigManager` instance
 
 **Usage**:
 
 ```typescript
 import { createConfigManager, defineSchema, string, number } from '@esteban-url/config'
 
-const schema = defineSchema({
+const schema = defineSchema<{
   api: {
-    baseUrl: string().url().describe('API base URL'),
-    timeout: number().int().min(1000).default(5000).describe('Request timeout'),
-  },
-})
+    baseUrl: string
+    timeout: number
+  }
+}>()
+  .object({
+    api: object({
+      baseUrl: string().url().description('API base URL'),
+      timeout: number().int().min(1000).default(5000).description('Request timeout'),
+    }),
+  })
+  .build()
 
-const manager = createConfigManager(schema)
+const definition: ConfigDefinition = {
+  name: 'app-config',
+  schema,
+  sources: [
+    { type: 'file', path: './config.json', priority: 1 },
+    { type: 'env', env: 'APP_', priority: 2 },
+    { type: 'cli', priority: 3 },
+  ],
+}
 
-// Load from multiple sources
-const result = await manager.load([
-  { type: 'file', path: './config.json' },
-  { type: 'env', prefix: 'APP_' },
-  { type: 'args' },
-])
+const configOps = createConfigOperations()
+const managerResult = configOps.create(definition)
+
+if (managerResult.isOk()) {
+  const manager = managerResult.value
+  const stateResult = await manager.load()
+
+  if (stateResult.isOk()) {
+    const config = stateResult.value.resolved
+    console.log('API URL:', config.api.baseUrl)
+  }
+}
 ```
 
 ## Configuration Sources
-
-### `ConfigSource`
-
-Configuration source interface.
-
-```typescript
-interface ConfigSource {
-  readonly type: ConfigSourceType
-  readonly priority?: number
-  readonly watch?: boolean
-}
-```
 
 ### File Source
 
@@ -297,7 +465,9 @@ interface ConfigSource {
 interface FileSource extends ConfigSource {
   type: 'file'
   path: string
-  format?: 'json' | 'yaml' | 'toml'
+  priority: number
+  optional?: boolean
+  watch?: boolean
 }
 ```
 
@@ -306,18 +476,116 @@ interface FileSource extends ConfigSource {
 ```typescript
 interface EnvSource extends ConfigSource {
   type: 'env'
-  prefix?: string
-  transform?: (key: string, value: string) => [string, unknown]
+  env?: string
+  priority: number
+  optional?: boolean
 }
 ```
 
-### Command Line Source
+### CLI Source
 
 ```typescript
 interface CLISource extends ConfigSource {
-  type: 'args'
-  parser?: 'yargs' | 'commander'
-  mapping?: Record<string, string>
+  type: 'cli'
+  priority: number
+  optional?: boolean
+}
+```
+
+### Object Source
+
+```typescript
+interface ObjectSource extends ConfigSource {
+  type: 'object'
+  data: Record<string, unknown>
+  priority: number
+  optional?: boolean
+}
+```
+
+## Loader Operations
+
+### `createLoaderOperations()`
+
+Creates configuration loader operations.
+
+```typescript
+function createLoaderOperations(): LoaderOperations
+```
+
+### `LoaderOperations`
+
+Loader operations interface.
+
+```typescript
+interface LoaderOperations {
+  readonly register: (loader: ConfigLoader) => void
+  readonly unregister: (type: ConfigSourceType) => void
+  readonly getLoader: (source: ConfigSource) => ConfigLoader | undefined
+  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
+}
+```
+
+### `ConfigLoader`
+
+Configuration loader interface.
+
+```typescript
+interface ConfigLoader {
+  readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
+  readonly watch?: (
+    source: ConfigSource,
+    callback: ConfigWatchCallback
+  ) => Promise<ConfigResult<ConfigWatcher>>
+  readonly supports: (source: ConfigSource) => boolean
+}
+```
+
+## Validator Operations
+
+### `createValidatorOperations()`
+
+Creates validation operations.
+
+```typescript
+function createValidatorOperations(): ValidatorOperations
+```
+
+### `ValidatorOperations`
+
+Validator operations interface.
+
+```typescript
+interface ValidatorOperations {
+  readonly register: <T>(validator: ConfigValidator<T>) => void
+  readonly unregister: (name: string) => void
+  readonly validate: <T>(config: T, validators: readonly ConfigValidator<T>[]) => ConfigResult<void>
+  readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>
+}
+```
+
+## Transformer Operations
+
+### `createTransformerOperations()`
+
+Creates transformation operations.
+
+```typescript
+function createTransformerOperations(): TransformerOperations
+```
+
+### `TransformerOperations`
+
+Transformer operations interface.
+
+```typescript
+interface TransformerOperations {
+  readonly register: <T>(transformer: ConfigTransformer<T>) => void
+  readonly unregister: (name: string) => void
+  readonly transform: <T>(
+    config: Record<string, unknown>,
+    transformers: readonly ConfigTransformer<T>[]
+  ) => ConfigResult<T>
 }
 ```
 
@@ -325,18 +593,18 @@ interface CLISource extends ConfigSource {
 
 ### `generateDocs()`
 
-Generates documentation from schema.
+Generates documentation from Zod schema.
 
 ```typescript
-function generateDocs(schema: ConfigSchema, options?: DocsGeneratorOptions): ConfigDocs
+function generateDocs(schema: ZodConfigSchema, options?: ZodDocsGeneratorOptions): ZodConfigDocs
 ```
 
 **Parameters**:
 
-- `schema` - Configuration schema
+- `schema` - Zod configuration schema
 - `options` - Generation options
 
-**Returns**: `ConfigDocs` object
+**Returns**: `ZodConfigDocs` object
 
 **Usage**:
 
@@ -344,26 +612,26 @@ function generateDocs(schema: ConfigSchema, options?: DocsGeneratorOptions): Con
 import { generateDocs } from '@esteban-url/config'
 
 const docs = generateDocs(schema, {
-  format: 'markdown',
   includeExamples: true,
-  groupBySection: true,
+  includeDefaults: true,
+  format: 'markdown',
 })
 
 console.log(docs.markdown) // Generated markdown documentation
-console.log(docs.examples) // Example configurations
+console.log(docs.sections) // Documentation sections
 ```
 
 ### `generateJsonSchema()`
 
-Generates JSON Schema from configuration schema.
+Generates JSON Schema from Zod configuration schema.
 
 ```typescript
-function generateJsonSchema(schema: ConfigSchema, options?: JsonSchemaOptions): JsonSchema
+function generateJsonSchema(schema: ZodConfigSchema, options?: ZodJsonSchemaOptions): ZodJsonSchema
 ```
 
 **Parameters**:
 
-- `schema` - Configuration schema
+- `schema` - Zod configuration schema
 - `options` - Generation options
 
 **Returns**: JSON Schema object
@@ -377,19 +645,60 @@ const jsonSchema = generateJsonSchema(schema, {
 })
 ```
 
+### `ZodConfigDocs`
+
+Documentation output interface.
+
+```typescript
+interface ZodConfigDocs {
+  readonly metadata: ZodDocsMetadata
+  readonly sections: readonly ZodDocumentationSection[]
+  readonly examples: readonly ZodExampleConfig[]
+  readonly markdown: string
+  readonly json: string
+}
+```
+
+### `ZodJsonSchema`
+
+JSON Schema output interface.
+
+```typescript
+interface ZodJsonSchema {
+  readonly $schema: string
+  readonly title?: string
+  readonly description?: string
+  readonly type: string
+  readonly properties: Record<string, ZodJsonSchemaProperty>
+  readonly required?: readonly string[]
+  readonly additionalProperties?: boolean
+}
+```
+
 ## Validation and Errors
 
-### `createValidationError()`
+### `ConfigValidationError`
+
+Enhanced configuration validation error.
+
+```typescript
+interface ConfigValidationError extends BaseValidationError {
+  readonly suggestion: string
+  readonly examples: readonly unknown[]
+  readonly fixCommand?: string
+  readonly learnMoreUrl?: string
+  readonly expectedType: string
+  readonly path: readonly string[]
+  readonly data?: Record<string, unknown>
+}
+```
+
+### `createConfigValidationError()`
 
 Creates configuration validation errors.
 
 ```typescript
-function createValidationError(
-  field: string,
-  value: unknown,
-  message: string,
-  options?: ValidationErrorOptions
-): ValidationError
+function createConfigValidationError(context: ConfigValidationContext): ConfigValidationError
 ```
 
 ### `enhanceZodError()`
@@ -397,7 +706,10 @@ function createValidationError(
 Enhances Zod errors with additional context.
 
 ```typescript
-function enhanceZodError(error: z.ZodError, context?: ValidationContext): ValidationError
+function enhanceZodError(
+  error: z.ZodError,
+  context?: ConfigValidationContext
+): ConfigValidationError
 ```
 
 ### `formatValidationError()`
@@ -405,7 +717,7 @@ function enhanceZodError(error: z.ZodError, context?: ValidationContext): Valida
 Formats validation error for display.
 
 ```typescript
-function formatValidationError(error: ValidationError, options?: FormatOptions): string
+function formatValidationError(error: ConfigValidationError, options?: FormatOptions): string
 ```
 
 ### `formatValidationErrors()`
@@ -413,71 +725,10 @@ function formatValidationError(error: ValidationError, options?: FormatOptions):
 Formats multiple validation errors.
 
 ```typescript
-function formatValidationErrors(errors: ValidationError[], options?: FormatOptions): string
-```
-
-## Configuration Loading
-
-### `createLoaderOperations()`
-
-Creates configuration loader operations.
-
-```typescript
-function createLoaderOperations(): LoaderOperations
-```
-
-**Methods**:
-
-- `loadFile()` - Load from file
-- `loadEnv()` - Load from environment
-- `loadArgs()` - Load from command line
-- `loadRemote()` - Load from remote source
-
-### `createValidatorOperations()`
-
-Creates validation operations.
-
-```typescript
-function createValidatorOperations(schema: ConfigSchema): ValidatorOperations
-```
-
-### `createTransformerOperations()`
-
-Creates transformation operations.
-
-```typescript
-function createTransformerOperations(): TransformerOperations
-```
-
-## Advanced Features
-
-### Configuration Watching
-
-```typescript
-const watcher = manager.watch((change) => {
-  console.log(`Configuration changed: ${change.path}`)
-  console.log(`Old value: ${change.oldValue}`)
-  console.log(`New value: ${change.newValue}`)
-})
-
-// Stop watching
-watcher.stop()
-```
-
-### Zod Integration
-
-```typescript
-import { z } from 'zod'
-import { createZodSchema } from '@esteban-url/config'
-
-// Direct Zod schema
-const zodSchema = z.object({
-  name: z.string().min(1),
-  port: z.number().int().min(1024).max(65535),
-})
-
-// Convert to config schema
-const configSchema = createZodSchema(zodSchema)
+function formatValidationErrors(
+  errors: readonly ConfigValidationError[],
+  options?: FormatOptions
+): string
 ```
 
 ## Usage Examples
@@ -485,45 +736,77 @@ const configSchema = createZodSchema(zodSchema)
 ### Basic Configuration
 
 ```typescript
-import { defineSchema, string, number, boolean, createConfigManager } from '@esteban-url/config'
+import {
+  defineSchema,
+  string,
+  number,
+  boolean,
+  object,
+  createConfigOperations,
+  type ConfigDefinition,
+} from '@esteban-url/config'
 
 // Define schema
-const schema = defineSchema({
+const schema = defineSchema<{
   server: {
-    host: string().default('localhost').describe('Server host'),
-    port: number().int().min(1024).default(3000).describe('Server port'),
-    ssl: boolean().default(false).describe('Enable SSL'),
-  },
+    host: string
+    port: number
+    ssl: boolean
+  }
   database: {
-    url: string().url().describe('Database connection URL'),
-    maxConnections: number().int().min(1).default(10).describe('Max connections'),
-  },
-})
+    url: string
+    maxConnections: number
+  }
+}>()
+  .object({
+    server: object({
+      host: string().default('localhost').description('Server host'),
+      port: number().int().min(1024).default(3000).description('Server port'),
+      ssl: boolean().default(false).description('Enable SSL'),
+    }),
+    database: object({
+      url: string().url().description('Database connection URL'),
+      maxConnections: number().int().min(1).default(10).description('Max connections'),
+    }),
+  })
+  .build()
+
+// Create definition
+const definition: ConfigDefinition = {
+  name: 'app-config',
+  schema,
+  sources: [
+    { type: 'file', path: './config.json', priority: 1 },
+    { type: 'env', env: 'APP_', priority: 2 },
+  ],
+}
 
 // Create manager
-const config = createConfigManager(schema)
+const configOps = createConfigOperations()
+const managerResult = configOps.create(definition)
 
-// Load configuration
-const result = await config.load([
-  { type: 'file', path: './config.json' },
-  { type: 'env', prefix: 'APP_' },
-])
+if (managerResult.isOk()) {
+  const manager = managerResult.value
 
-if (result.isOk()) {
-  const { server, database } = result.value
-  console.log(`Server: ${server.host}:${server.port}`)
+  // Load configuration
+  const stateResult = await manager.load()
+  if (stateResult.isOk()) {
+    const { server, database } = stateResult.value.resolved
+    console.log(`Server: ${server.host}:${server.port}`)
+    console.log(`Database: ${database.url}`)
+  }
 }
 ```
 
-### Documentation Generation
+### Documentation Generation Examples
 
 ```typescript
 import { generateDocs, generateJsonSchema } from '@esteban-url/config'
 
 // Generate markdown docs
 const docs = generateDocs(schema, {
-  format: 'markdown',
   includeExamples: true,
+  includeDefaults: true,
 })
 
 // Generate JSON Schema
@@ -536,40 +819,86 @@ await fs.writeFile('config-docs.md', docs.markdown)
 await fs.writeFile('config-schema.json', JSON.stringify(jsonSchema, null, 2))
 ```
 
-### Complex Validation
+### Configuration Watching
 
 ```typescript
-const schema = defineSchema({
-  features: array(string()).min(1).describe('Enabled features'),
-  limits: object({
-    requests: number().int().min(1).describe('Request limit'),
-    users: number().int().min(1).describe('User limit'),
-  }).describe('System limits'),
-  environment: string()
-    .regex(/^(dev|staging|prod)$/)
-    .describe('Environment'),
+const watcher = await manager.watch((newConfig, oldConfig, changes) => {
+  console.log('Configuration changed!')
+  changes.forEach((change) => {
+    console.log(`${change.path}: ${change.oldValue} → ${change.newValue}`)
+  })
 })
 
-const result = await config.validate(userInput)
-if (result.isErr()) {
-  const formatted = formatValidationErrors(result.error.issues)
-  console.error('Validation failed:', formatted)
+// Stop watching later
+if (watcher.isOk()) {
+  await Promise.all(watcher.value.map((w) => w.stop()))
+}
+```
+
+### Error Handling
+
+```typescript
+import { createConfigValidationError, formatValidationError } from '@esteban-url/config'
+
+const stateResult = await manager.load()
+if (stateResult.isErr()) {
+  const error = stateResult.error
+  console.error('Configuration error:', error.message)
+
+  if (error.type === 'SCHEMA_VALIDATION_FAILED' && error.context?.errors) {
+    const validationErrors = error.context.errors as ConfigValidationError[]
+    validationErrors.forEach((err) => {
+      const formatted = formatValidationError(err)
+      console.error(formatted)
+    })
+  }
 }
 ```
 
 ### Configuration Sources Priority
 
 ```typescript
-const result = await manager.load([
-  { type: 'file', path: './defaults.json', priority: 1 },
-  { type: 'file', path: './config.json', priority: 2 },
-  { type: 'env', prefix: 'APP_', priority: 3 },
-  { type: 'args', priority: 4 },
-])
+const definition: ConfigDefinition = {
+  name: 'app-config',
+  schema,
+  sources: [
+    { type: 'file', path: './defaults.json', priority: 1 },
+    { type: 'file', path: './config.json', priority: 2 },
+    { type: 'env', env: 'APP_', priority: 3 },
+    { type: 'cli', priority: 4 },
+  ],
+}
+```
+
+### Custom Validators and Transformers
+
+```typescript
+const customValidator: ConfigValidator<MyConfig> = {
+  name: 'business-rules',
+  async validate(config) {
+    if (config.server.port === config.database.port) {
+      return err(createConfigValidationError({
+        field: 'server.port',
+        value: config.server.port,
+        expectedType: 'number',
+        suggestion: 'Server and database ports must be different',
+        examples: [3000, 5432],
+      }))
+    }
+    return ok(undefined)
+  },
+}
+
+const definition: ConfigDefinition = {
+  name: 'app-config',
+  schema,
+  sources: [...],
+  validators: [customValidator],
+}
 ```
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
-- [Data API](/packages/data/docs/reference/api.md)- Data processing operations
-- [Validation API](/packages/validation/docs/reference/api.md)- Data validation
+- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
+- [Validation API](/packages/validation/docs/reference/api.md) - Zod validation utilities
+- [Data API](/packages/data/docs/reference/api.md) - Data processing operations

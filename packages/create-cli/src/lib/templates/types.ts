@@ -66,8 +66,6 @@ export interface TemplateContext {
   IS_MONOREPO: boolean
   /** Package manager command */
   PACKAGE_MANAGER: string
-  /** Package manager version */
-  PACKAGE_MANAGER_VERSION: string
   /** Directory containing packages (for monorepos) */
   PACKAGES_DIR: string
   /** Regex pattern to match package files */

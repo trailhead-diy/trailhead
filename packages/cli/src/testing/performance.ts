@@ -2,6 +2,8 @@
  * Performance monitoring utilities for CLI testing
  */
 
+import { topN, bottomN, sortBy, orderBy } from '@esteban-url/sort'
+
 export interface PerformanceMetrics {
   executionTime: number
   memoryUsage: {
@@ -130,11 +132,11 @@ export function getPerformanceSummary(state: PerformanceMonitorState) {
       executionTimes.length > 0
         ? executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length
         : 0,
-    maxExecutionTime: Math.max(...executionTimes, 0),
-    minExecutionTime: Math.min(...executionTimes, 0),
+    maxExecutionTime: executionTimes.length > 0 ? Math.max(...executionTimes) : 0,
+    minExecutionTime: executionTimes.length > 0 ? Math.min(...executionTimes) : 0,
     averageMemoryUsage:
       memoryUsages.length > 0 ? memoryUsages.reduce((a, b) => a + b, 0) / memoryUsages.length : 0,
-    maxMemoryUsage: Math.max(...memoryUsages, 0),
+    maxMemoryUsage: memoryUsages.length > 0 ? Math.max(...memoryUsages) : 0,
   }
 }
 
@@ -229,4 +231,120 @@ export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<
  */
 export function createCLIPerformanceMonitor(): PerformanceMonitorState {
   return createPerformanceMonitorState()
+}
+
+/**
+ * Get the N slowest performance reports
+ * @param state - Performance monitor state
+ * @param n - Number of reports to return
+ * @returns Array of slowest performance reports, sorted by execution time descending
+ * @example
+ * ```typescript
+ * const monitor = createCLIPerformanceMonitor();
+ * // ... run tests ...
+ * const slowest = getSlowestReports(monitor, 5);
+ * slowest.forEach(report => {
+ *   console.log(`${report.testName}: ${report.metrics.executionTime}ms`);
+ * });
+ * ```
+ */
+export function getSlowestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
+  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+}
+
+/**
+ * Get the N fastest performance reports
+ * @param state - Performance monitor state
+ * @param n - Number of reports to return
+ * @returns Array of fastest performance reports, sorted by execution time ascending
+ * @example
+ * ```typescript
+ * const monitor = createCLIPerformanceMonitor();
+ * // ... run tests ...
+ * const fastest = getFastestReports(monitor, 5);
+ * ```
+ */
+export function getFastestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
+  return bottomN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+}
+
+/**
+ * Get the N reports with highest memory usage
+ * @param state - Performance monitor state
+ * @param n - Number of reports to return
+ * @returns Array of performance reports with highest memory usage
+ * @example
+ * ```typescript
+ * const monitor = createCLIPerformanceMonitor();
+ * // ... run tests ...
+ * const memoryHogs = getHighestMemoryReports(monitor, 3);
+ * ```
+ */
+export function getHighestMemoryReports(
+  state: PerformanceMonitorState,
+  n: number
+): PerformanceReport[] {
+  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.memoryUsage.heapUsed)
+}
+
+/**
+ * Get performance reports sorted by specified metric
+ * @param state - Performance monitor state
+ * @param metric - Metric to sort by
+ * @param order - Sort order (default: 'desc')
+ * @returns Sorted array of performance reports
+ * @example
+ * ```typescript
+ * const monitor = createCLIPerformanceMonitor();
+ * // ... run tests ...
+ * const sortedByMemory = getReportsSortedBy(monitor, 'memory', 'desc');
+ * const sortedByTime = getReportsSortedBy(monitor, 'time', 'asc');
+ * ```
+ */
+export function getReportsSortedBy(
+  state: PerformanceMonitorState,
+  metric: 'time' | 'memory' | 'cpu',
+  order: 'asc' | 'desc' = 'desc'
+): PerformanceReport[] {
+  const accessor =
+    metric === 'time'
+      ? (report: PerformanceReport) => report.metrics.executionTime
+      : metric === 'memory'
+        ? (report: PerformanceReport) => report.metrics.memoryUsage.heapUsed
+        : (report: PerformanceReport) =>
+            report.metrics.cpuUsage.user + report.metrics.cpuUsage.system
+
+  return order === 'desc'
+    ? orderBy(state.reports, [accessor], ['desc'])
+    : sortBy(state.reports, [accessor])
+}
+
+/**
+ * Get performance outliers (reports significantly slower than average)
+ * @param state - Performance monitor state
+ * @param threshold - Standard deviations from mean to consider outlier (default: 2)
+ * @returns Array of outlier performance reports
+ * @example
+ * ```typescript
+ * const monitor = createCLIPerformanceMonitor();
+ * // ... run tests ...
+ * const outliers = getPerformanceOutliers(monitor, 2);
+ * console.log(`Found ${outliers.length} performance outliers`);
+ * ```
+ */
+export function getPerformanceOutliers(
+  state: PerformanceMonitorState,
+  threshold: number = 2
+): PerformanceReport[] {
+  const successfulReports = state.reports.filter((r) => r.status === 'success')
+  if (successfulReports.length < 3) return []
+
+  const times = successfulReports.map((r) => r.metrics.executionTime)
+  const mean = times.reduce((a, b) => a + b, 0) / times.length
+  const variance = times.reduce((sum, time) => sum + Math.pow(time - mean, 2), 0) / times.length
+  const stdDev = Math.sqrt(variance)
+
+  const outlierThreshold = mean + stdDev * threshold
+
+  return successfulReports.filter((r) => r.metrics.executionTime > outlierThreshold)
 }

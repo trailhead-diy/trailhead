@@ -1,18 +1,67 @@
 ---
 type: reference
 title: 'Data Package API Reference'
-description: 'Complete API reference for data processing operations including CSV, JSON, Excel, and format detection'
+description: 'Complete API reference for data processing operations including CSV, JSON, Excel with auto-detection and format-specific operations'
 related:
   - /docs/reference/core-api
-  - /packages/data/docs/explanation/format-detection.md
-  - /packages/data/docs/how-to/process-data-files
+  - /packages/core/docs/reference/api
 ---
 
 # Data Package API Reference
 
-Complete API reference for `@esteban-url/data` package providing data processing operations for CSV, JSON, Excel, and format detection.
+Complete API reference for `@esteban-url/data` package providing data processing operations for CSV, JSON, Excel with unified auto-detection interface and format-specific operations.
 
 ## Core Types
+
+### `DataResult<T>`
+
+Result type for data operations using CoreError from `@esteban-url/core`.
+
+```typescript
+import type { Result, CoreError } from '@esteban-url/core'
+type DataResult<T> = Result<T, CoreError>
+```
+
+### `ParsedData<T>`
+
+Enhanced parsed data structure with metadata and error tracking.
+
+```typescript
+interface ParsedData<T = Record<string, unknown>> {
+  readonly data: readonly T[]
+  readonly metadata: ParseMetadata
+  readonly errors: readonly ParseError[]
+}
+```
+
+### `ParseMetadata`
+
+Metadata about parsed data.
+
+```typescript
+interface ParseMetadata {
+  readonly totalRows: number
+  readonly format: string
+  readonly hasHeaders: boolean
+  readonly encoding?: string
+  readonly processingTime?: number
+}
+```
+
+### `ParseError`
+
+Individual parsing error information.
+
+```typescript
+interface ParseError {
+  readonly type: string
+  readonly code: string
+  readonly message: string
+  readonly row?: number
+  readonly column?: number
+  readonly field?: string
+}
+```
 
 ### `DataConfig`
 
@@ -21,50 +70,130 @@ Base configuration for data operations.
 ```typescript
 interface DataConfig {
   readonly encoding?: BufferEncoding
-  readonly validate?: boolean
-  readonly transform?: boolean
-  readonly outputFormat?: 'objects' | 'arrays'
+  readonly timeout?: number
+  readonly maxSize?: number
 }
 ```
 
 ### `ProcessingOptions`
 
-General options for data processing operations.
+Base processing options for data operations.
 
 ```typescript
 interface ProcessingOptions {
-  readonly encoding?: BufferEncoding
-  readonly validate?: boolean
-  readonly preserveOrder?: boolean
-  readonly strict?: boolean
+  readonly autoTrim?: boolean
+  readonly skipEmptyLines?: boolean
+  readonly errorTolerant?: boolean
+  readonly maxRows?: number
+  readonly onError?: (error: CoreError, context?: Record<string, unknown>) => void
 }
-```
-
-### `DataResult<T>`
-
-Result type for data operations.
-
-```typescript
-type DataResult<T> = Result<T, CoreError>
 ```
 
 ## Main API
 
 ### `data`
 
-Pre-configured unified data operations instance.
+Pre-configured unified data operations instance with auto-detection enabled.
 
 ```typescript
 const data: UnifiedDataOperations
 ```
 
-**Usage**:
+### `UnifiedDataOperations`
+
+Main interface providing auto-detection and format-specific operations.
+
+```typescript
+interface UnifiedDataOperations {
+  // Auto-detection + processing (main API)
+  parseAuto: (filePath: string) => Promise<DataResult<any>>
+  parseAutoFromContent: (content: string, fileName?: string) => Promise<DataResult<any>>
+  writeAuto: (filePath: string, data: any) => Promise<Result<void, CoreError>>
+
+  // Format-specific operations (direct access)
+  parseCSV: CSVOperations['parseFile']
+  parseJSON: JSONOperations['parseFile']
+  parseExcel: ExcelOperations['parseFile']
+
+  parseCSVFromContent: CSVOperations['parseString']
+  parseJSONFromContent: JSONOperations['parseString']
+  parseExcelFromContent: ExcelOperations['parseBuffer']
+
+  // Format detection (standalone)
+  detectFormat: (filePath: string) => Promise<Result<string, CoreError>>
+  detectFormatFromContent: (content: string, fileName?: string) => Result<string, CoreError>
+
+  // Format conversion (basic)
+  convertFormat: (data: any, targetFormat: 'csv' | 'json' | 'excel') => Result<string, CoreError>
+}
+```
+
+#### `parseAuto()`
+
+Auto-detects format and parses file using format detection.
+
+```typescript
+function parseAuto(filePath: string): Promise<DataResult<any>>
+```
+
+**Example**:
 
 ```typescript
 import { data } from '@esteban-url/data'
 
-const result = await data.csv.parseFile('/path/to/file.csv')
+const result = await data.parseAuto('/path/to/file.csv')
+if (result.isOk()) {
+  console.log('Parsed data:', result.value)
+}
 ```
+
+#### `parseAutoFromContent()`
+
+Auto-detects format and parses content string. Note: Excel content parsing not supported.
+
+```typescript
+function parseAutoFromContent(content: string, fileName?: string): Promise<DataResult<any>>
+```
+
+#### `writeAuto()`
+
+Auto-detects format from file extension and writes data.
+
+```typescript
+function writeAuto(filePath: string, data: any): Promise<Result<void, CoreError>>
+```
+
+**Note**: CSV and Excel require array data. JSON files default if no extension provided.
+
+#### `detectFormat()`
+
+Detect MIME type from file path.
+
+```typescript
+function detectFormat(filePath: string): Promise<Result<string, CoreError>>
+```
+
+#### `detectFormatFromContent()`
+
+Simple format detection from content (csv, json, excel).
+
+```typescript
+function detectFormatFromContent(content: string, fileName?: string): Result<string, CoreError>
+```
+
+#### `convertFormat()`
+
+Basic format conversion. Excel conversion not supported.
+
+```typescript
+function convertFormat(data: any, targetFormat: 'csv' | 'json' | 'excel'): Result<string, CoreError>
+```
+
+**Supported conversions**:
+
+- `json`: Any data → JSON string
+- `csv`: Array of objects → CSV string
+- `excel`: Not supported (returns error)
 
 ### `createUnifiedDataOperations()`
 
@@ -80,6 +209,22 @@ function createUnifiedDataOperations(config?: UnifiedDataConfig): UnifiedDataOpe
 
 **Returns**: `UnifiedDataOperations` instance
 
+### `UnifiedDataConfig`
+
+Configuration for unified data operations.
+
+```typescript
+interface UnifiedDataConfig {
+  csv?: DataConfig
+  json?: DataConfig
+  excel?: DataConfig
+  detection?: FormatConfig
+  mime?: FormatConfig
+  autoDetect?: boolean
+  defaultFormat?: 'csv' | 'json' | 'excel'
+}
+```
+
 ## CSV Operations
 
 ### `createCSVOperations()`
@@ -87,89 +232,97 @@ function createUnifiedDataOperations(config?: UnifiedDataConfig): UnifiedDataOpe
 Creates CSV processing operations.
 
 ```typescript
-function createCSVOperations(config?: CSVConfig): CSVOperations
-```
-
-### `CSVConfig`
-
-Configuration for CSV operations.
-
-```typescript
-interface CSVConfig extends DataConfig {
-  readonly delimiter?: string
-  readonly quote?: string
-  readonly escape?: string
-  readonly headers?: boolean | string[]
-  readonly skipEmptyLines?: boolean
-  readonly comment?: string
-}
+function createCSVOperations(config?: DataConfig): CSVOperations
 ```
 
 ### `CSVOperations`
 
-CSV processing operations interface.
+CSV processing operations interface. All operations return `ParsedData<T>` with metadata and errors.
 
 ```typescript
 interface CSVOperations {
-  parse: CSVParseFunction
-  parseFile: CSVParseFileFunction
-  stringify: CSVStringifyFunction
-  writeFile: CSVWriteFileFunction
-  validate: CSVValidateFunction
-  detectFormat: CSVDetectFormatFunction
+  readonly parseString: <T = Record<string, unknown>>(
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<T>>
+
+  readonly parseFile: <T = Record<string, unknown>>(
+    filePath: string,
+    options?: CSVProcessingOptions
+  ) => Promise<DataResult<ParsedData<T>>>
+
+  readonly stringify: <T = Record<string, unknown>>(
+    data: readonly T[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
+
+  readonly writeFile: <T = Record<string, unknown>>(
+    data: readonly T[],
+    filePath: string,
+    options?: CSVProcessingOptions
+  ) => Promise<DataResult<void>>
+
+  readonly validate: (data: string) => DataResult<boolean>
+  readonly detectFormat: (data: string) => DataResult<CSVFormatInfo>
+
+  // Additional parsing modes
+  readonly parseToObjects: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<Record<string, unknown>>>
+  readonly parseToArrays: (
+    data: string,
+    options?: CSVProcessingOptions
+  ) => DataResult<ParsedData<readonly string[]>>
+  readonly fromObjects: (
+    data: readonly Record<string, unknown>[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
+  readonly fromArrays: (
+    data: readonly (readonly string[])[],
+    options?: CSVProcessingOptions
+  ) => DataResult<string>
 }
 ```
 
-#### `parse()`
+### `CSVProcessingOptions`
 
-Parses CSV string data.
+Options for CSV processing operations.
 
 ```typescript
-function parse(input: string, options?: CSVParseOptions): DataResult<unknown[]>
+interface CSVProcessingOptions extends ProcessingOptions {
+  readonly delimiter?: string
+  readonly quoteChar?: string
+  readonly escapeChar?: string
+  readonly hasHeader?: boolean
+  readonly dynamicTyping?: boolean
+  readonly transformHeader?: (header: string) => string
+  readonly detectDelimiter?: boolean
+  readonly comments?: string
+  readonly transform?: (value: string, field: string) => any
+}
 ```
 
-#### `parseFile()`
+### `CSVFormatInfo`
 
-Parses CSV file from filesystem.
+CSV format detection information.
 
 ```typescript
-function parseFile(filePath: string, options?: CSVParseOptions): Promise<DataResult<unknown[]>>
+interface CSVFormatInfo {
+  readonly delimiter: string
+  readonly quoteChar: string
+  readonly hasHeader: boolean
+  readonly rowCount: number
+  readonly columnCount: number
+}
 ```
 
-#### `stringify()`
+### `defaultCSVConfig`
 
-Converts data to CSV string.
-
-```typescript
-function stringify(data: unknown[], options?: CSVStringifyOptions): DataResult<string>
-```
-
-#### `writeFile()`
-
-Writes data to CSV file.
+Default CSV configuration.
 
 ```typescript
-function writeFile(
-  filePath: string,
-  data: unknown[],
-  options?: CSVStringifyOptions
-): Promise<DataResult<void>>
-```
-
-#### `validate()`
-
-Validates CSV data structure.
-
-```typescript
-function validate(data: unknown): DataResult<boolean>
-```
-
-#### `detectFormat()`
-
-Detects CSV format information.
-
-```typescript
-function detectFormat(input: string | Buffer): DataResult<CSVFormatInfo>
+const defaultCSVConfig: DataConfig
 ```
 
 ## JSON Operations
@@ -179,21 +332,7 @@ function detectFormat(input: string | Buffer): DataResult<CSVFormatInfo>
 Creates JSON processing operations.
 
 ```typescript
-function createJSONOperations(config?: JSONConfig): JSONOperations
-```
-
-### `JSONConfig`
-
-Configuration for JSON operations.
-
-```typescript
-interface JSONConfig extends DataConfig {
-  readonly indent?: number | string
-  readonly replacer?: (key: string, value: any) => any
-  readonly reviver?: (key: string, value: any) => any
-  readonly allowComments?: boolean
-  readonly trailingCommas?: boolean
-}
+function createJSONOperations(config?: DataConfig): JSONOperations
 ```
 
 ### `JSONOperations`
@@ -202,74 +341,48 @@ JSON processing operations interface.
 
 ```typescript
 interface JSONOperations {
-  parse: JSONParseFunction
-  parseFile: JSONParseFileFunction
-  stringify: JSONStringifyFunction
-  writeFile: JSONWriteFileFunction
-  validate: JSONValidateFunction
-  minify: JSONMinifyFunction
-  format: JSONFormatFunction
+  readonly parseString: (data: string, options?: JSONProcessingOptions) => DataResult<any>
+  readonly parseFile: (
+    filePath: string,
+    options?: JSONProcessingOptions
+  ) => Promise<DataResult<any>>
+  readonly stringify: (data: any, options?: JSONProcessingOptions) => DataResult<string>
+  readonly writeFile: (
+    data: any,
+    filePath: string,
+    options?: JSONProcessingOptions
+  ) => Promise<DataResult<void>>
+  readonly validate: (data: string) => DataResult<boolean>
+  readonly minify: (data: string) => DataResult<string>
+  readonly format: (
+    data: string,
+    options?: { indent?: number; sortKeys?: boolean }
+  ) => DataResult<string>
 }
 ```
 
-#### `parse()`
+### `JSONProcessingOptions`
 
-Parses JSON string data.
+Options for JSON processing operations.
 
 ```typescript
-function parse(input: string, options?: JSONParseOptions): DataResult<unknown>
+interface JSONProcessingOptions extends ProcessingOptions {
+  readonly allowTrailingCommas?: boolean
+  readonly allowComments?: boolean
+  readonly allowSingleQuotes?: boolean
+  readonly allowUnquotedKeys?: boolean
+  readonly reviver?: (key: string, value: any) => any
+  readonly replacer?: (key: string, value: any) => any
+  readonly space?: string | number
+}
 ```
 
-#### `parseFile()`
+### `defaultJSONConfig`
 
-Parses JSON file from filesystem.
-
-```typescript
-function parseFile(filePath: string, options?: JSONParseOptions): Promise<DataResult<unknown>>
-```
-
-#### `stringify()`
-
-Converts data to JSON string.
+Default JSON configuration.
 
 ```typescript
-function stringify(data: unknown, options?: JSONStringifyOptions): DataResult<string>
-```
-
-#### `writeFile()`
-
-Writes data to JSON file.
-
-```typescript
-function writeFile(
-  filePath: string,
-  data: unknown,
-  options?: JSONStringifyOptions
-): Promise<DataResult<void>>
-```
-
-#### `validate()`
-
-Validates JSON data structure.
-
-```typescript
-function validate(data: unknown): DataResult<boolean>
-```
-
-#### `minify()`
-
-Minifies JSON by removing whitespace.
-
-```typescript
-function minify(input: string, options?: JSONMinifyOptions): DataResult<string>
-```
-
-#### `format()`
-
-Formats JSON with proper indentation.
-
-```typescript
-function format(input: string, options?: JSONFormatOptions): DataResult<string>
+const defaultJSONConfig: DataConfig
 ```
 
 ## Excel Operations
@@ -279,22 +392,7 @@ function format(input: string, options?: JSONFormatOptions): DataResult<string>
 Creates Excel processing operations.
 
 ```typescript
-function createExcelOperations(config?: ExcelConfig): ExcelOperations
-```
-
-### `ExcelConfig`
-
-Configuration for Excel operations.
-
-```typescript
-interface ExcelConfig extends DataConfig {
-  readonly sheetName?: string
-  readonly range?: string
-  readonly headers?: boolean
-  readonly dateNF?: string
-  readonly cellText?: boolean
-  readonly cellDates?: boolean
-}
+function createExcelOperations(config?: DataConfig): ExcelOperations
 ```
 
 ### `ExcelOperations`
@@ -303,68 +401,93 @@ Excel processing operations interface.
 
 ```typescript
 interface ExcelOperations {
-  parseBuffer: ExcelParseBufferFunction
-  parseFile: ExcelParseFileFunction
-  stringify: ExcelStringifyFunction
-  writeFile: ExcelWriteFileFunction
-  validate: ExcelValidateFunction
-  detectFormat: ExcelDetectFormatFunction
+  readonly parseBuffer: (buffer: Buffer, options?: ExcelProcessingOptions) => DataResult<any[]>
+  readonly parseFile: (
+    filePath: string,
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<any[]>>
+  readonly parseWorksheet: (
+    buffer: Buffer,
+    worksheetName: string,
+    options?: ExcelProcessingOptions
+  ) => DataResult<any[]>
+  readonly parseWorksheetByIndex: (
+    buffer: Buffer,
+    worksheetIndex: number,
+    options?: ExcelProcessingOptions
+  ) => DataResult<any[]>
+  readonly stringify: (data: any[], options?: ExcelProcessingOptions) => Promise<DataResult<Buffer>>
+  readonly writeFile: (
+    data: any[],
+    filePath: string,
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<void>>
+  readonly validate: (buffer: Buffer) => DataResult<boolean>
+  readonly detectFormat: (buffer: Buffer) => DataResult<ExcelFormatInfo>
+  readonly parseToObjects: (
+    buffer: Buffer,
+    options?: ExcelProcessingOptions
+  ) => DataResult<Record<string, any>[]>
+  readonly parseToArrays: (buffer: Buffer, options?: ExcelProcessingOptions) => DataResult<any[][]>
+  readonly fromObjects: (
+    objects: Record<string, any>[],
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<Buffer>>
+  readonly fromArrays: (
+    arrays: any[][],
+    options?: ExcelProcessingOptions
+  ) => Promise<DataResult<Buffer>>
+  readonly getWorksheetNames: (buffer: Buffer) => DataResult<string[]>
+  readonly createWorkbook: (
+    worksheets: { name: string; data: any[][] }[]
+  ) => Promise<DataResult<Buffer>>
 }
 ```
 
-#### `parseBuffer()`
+### `ExcelProcessingOptions`
 
-Parses Excel data from buffer.
+Options for Excel processing operations.
 
 ```typescript
-function parseBuffer(buffer: Buffer, options?: ExcelParseOptions): DataResult<ExcelWorksheet[]>
+interface ExcelProcessingOptions extends ProcessingOptions {
+  readonly worksheetName?: string
+  readonly worksheetIndex?: number
+  readonly hasHeader?: boolean
+  readonly dynamicTyping?: boolean
+  readonly dateNF?: string
+  readonly cellNF?: boolean
+  readonly defval?: any
+  readonly range?: string
+  readonly header?: number
+  readonly password?: string
+  readonly bookSST?: boolean
+  readonly cellHTML?: boolean
+  readonly cellStyles?: boolean
+  readonly cellDates?: boolean
+  readonly sheetStubs?: boolean
+  readonly blankrows?: boolean
+  readonly bookVBA?: boolean
+}
 ```
 
-#### `parseFile()`
+### `ExcelFormatInfo`
 
-Parses Excel file from filesystem.
+Excel format detection information.
 
 ```typescript
-function parseFile(
-  filePath: string,
-  options?: ExcelParseOptions
-): Promise<DataResult<ExcelWorksheet[]>>
+interface ExcelFormatInfo {
+  readonly worksheetNames: string[]
+  readonly worksheetCount: number
+  readonly hasData: boolean
+}
 ```
 
-#### `stringify()`
+### `defaultExcelConfig`
 
-Converts data to Excel buffer.
-
-```typescript
-function stringify(data: ExcelWorksheet[], options?: ExcelWriteOptions): DataResult<Buffer>
-```
-
-#### `writeFile()`
-
-Writes data to Excel file.
+Default Excel configuration.
 
 ```typescript
-function writeFile(
-  filePath: string,
-  data: ExcelWorksheet[],
-  options?: ExcelWriteOptions
-): Promise<DataResult<void>>
-```
-
-#### `validate()`
-
-Validates Excel data structure.
-
-```typescript
-function validate(data: unknown): DataResult<boolean>
-```
-
-#### `detectFormat()`
-
-Detects Excel format information.
-
-```typescript
-function detectFormat(input: Buffer): DataResult<ExcelFormatInfo>
+const defaultExcelConfig: DataConfig
 ```
 
 ## Format Detection
@@ -374,7 +497,7 @@ function detectFormat(input: Buffer): DataResult<ExcelFormatInfo>
 Creates format detection operations.
 
 ```typescript
-function createDetectionOperations(config?: DetectionConfig): DetectionOperations
+function createDetectionOperations(config?: FormatConfig): DetectionOperations
 ```
 
 ### `DetectionOperations`
@@ -383,151 +506,37 @@ Format detection operations interface.
 
 ```typescript
 interface DetectionOperations {
-  detectByContent: (content: string | Buffer) => DataResult<FormatResult>
-  detectByExtension: (filePath: string) => DataResult<FormatResult>
-  detectByMimeType: (mimeType: string) => DataResult<FormatResult>
-  detectMultiple: (input: DetectionInput) => DataResult<FormatResult[]>
+  readonly detectFromFile: (filePath: string) => Promise<Result<DetectionResult, CoreError>>
 }
 ```
+
+### `DetectionResult`
+
+Result of format detection.
+
+```typescript
+interface DetectionResult {
+  readonly format: {
+    readonly mime: string
+  }
+}
+```
+
+**Note**: The detection system is primarily used internally by the unified operations for auto-detection. External usage is limited to file-based detection.
+
+## MIME Operations
 
 ### `createMimeOperations()`
 
 Creates MIME type operations.
 
 ```typescript
-function createMimeOperations(config?: MimeConfig): MimeOperations
+function createMimeOperations(config?: FormatConfig): MimeOperations
 ```
-
-### `MimeOperations`
-
-MIME type operations interface.
-
-```typescript
-interface MimeOperations {
-  getMimeType: (filePath: string) => DataResult<string>
-  getExtensions: (mimeType: string) => DataResult<string[]>
-  isSupported: (mimeType: string) => boolean
-  getCategory: (mimeType: string) => DataResult<string>
-}
-```
-
-### `createConversionOperations()`
-
-Creates format conversion operations.
-
-```typescript
-function createConversionOperations(config?: ConversionConfig): ConversionOperations
-```
-
-### `ConversionOperations`
-
-Format conversion operations interface.
-
-```typescript
-interface ConversionOperations {
-  convert: (input: ConversionInput) => Promise<DataResult<ConversionOutput>>
-  canConvert: (from: string, to: string) => boolean
-  getAvailableConversions: (format: string) => string[]
-  getBestQuality: (from: string, to: string) => DataResult<ConversionInfo>
-}
-```
-
-## Error Factories
-
-### `createDataError()`
-
-Creates data processing errors.
-
-```typescript
-function createDataError(
-  type: string,
-  code: string,
-  message: string,
-  options?: ErrorOptions
-): CoreError
-```
-
-### `createCSVError()`
-
-Creates CSV-specific errors.
-
-```typescript
-function createCSVError(
-  type: string,
-  code: string,
-  message: string,
-  options?: ErrorOptions
-): CoreError
-```
-
-### `createJSONError()`
-
-Creates JSON-specific errors.
-
-```typescript
-function createJSONError(
-  type: string,
-  code: string,
-  message: string,
-  options?: ErrorOptions
-): CoreError
-```
-
-### `createExcelError()`
-
-Creates Excel-specific errors.
-
-```typescript
-function createExcelError(
-  type: string,
-  code: string,
-  message: string,
-  options?: ErrorOptions
-): CoreError
-```
-
-### `createParsingError()`
-
-Creates parsing errors.
-
-```typescript
-function createParsingError(format: string, details?: string, cause?: unknown): CoreError
-```
-
-### `createValidationError()`
-
-Creates validation errors.
-
-```typescript
-function createValidationError(field: string, value: unknown, details?: string): CoreError
-```
-
-### `createFormatDetectionError()`
-
-Creates format detection errors.
-
-```typescript
-function createFormatDetectionError(input: string, details?: string): CoreError
-```
-
-### `createConversionError()`
-
-Creates format conversion errors.
-
-```typescript
-function createConversionError(
-  from: string,
-  to: string,
-  details?: string,
-  cause?: unknown
-): CoreError
-```
-
-## Constants
 
 ### `COMMON_MIME_TYPES`
 
-Map of common file extensions to MIME types.
+Common MIME type mappings.
 
 ```typescript
 const COMMON_MIME_TYPES: Record<string, string>
@@ -535,15 +544,27 @@ const COMMON_MIME_TYPES: Record<string, string>
 
 ### `MIME_TYPE_CATEGORIES`
 
-Categorization of MIME types.
+MIME type categorization.
 
 ```typescript
 const MIME_TYPE_CATEGORIES: Record<string, string[]>
 ```
 
+**Note**: MIME operations are primarily used internally by the detection system.
+
+## Advanced Operations
+
+### `createConversionOperations()`
+
+Creates format conversion operations.
+
+```typescript
+function createConversionOperations(config?: FormatConfig): ConversionOperations
+```
+
 ### `CONVERSION_CATEGORIES`
 
-Supported conversion paths between formats.
+Supported conversion categories.
 
 ```typescript
 const CONVERSION_CATEGORIES: Record<string, string[]>
@@ -551,77 +572,188 @@ const CONVERSION_CATEGORIES: Record<string, string[]>
 
 ### `QUALITY_DEFINITIONS`
 
-Quality metrics for format conversions.
+Quality definitions for conversions.
 
 ```typescript
 const QUALITY_DEFINITIONS: Record<string, ConversionQuality>
 ```
 
+**Note**: Advanced conversion operations are available but primarily used internally. Use the `convertFormat` method on `UnifiedDataOperations` for basic conversions.
+
+## Error Handling
+
+### Error Factory Functions
+
+Data processing error factory functions using `@esteban-url/core` error system.
+
+```typescript
+// General data errors
+function createDataError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+
+// Format-specific errors
+function createCSVError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createJSONError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createExcelError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+
+// Operation-specific errors
+function createParsingError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createValidationError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createFormatDetectionError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+function createConversionError(
+  type: string,
+  code: string,
+  message: string,
+  options?: ErrorOptions
+): CoreError
+```
+
+### Error Mapping Utilities
+
+```typescript
+// Node.js error mapping
+function mapNodeError(operation: string, path: string, error: unknown): CoreError
+
+// Library error mapping
+function mapLibraryError(library: string, operation: string, error: unknown): CoreError
+
+// Validation error mapping
+function mapValidationError(field: string, value: unknown, error: unknown): CoreError
+```
+
 ## Usage Examples
 
-### Basic CSV Processing
+### Auto-Detection (Recommended)
 
 ```typescript
 import { data } from '@esteban-url/data'
 
-// Parse CSV file
-const result = await data.csv.parseFile('./data.csv')
+// Auto-detect format and parse any supported file
+const result = await data.parseAuto('/path/to/data.csv')
 if (result.isOk()) {
-  const rows = result.value
-  console.log(`Parsed ${rows.length} rows`)
+  console.log('Parsed data:', result.value)
+} else {
+  console.error('Parse error:', result.error.message)
 }
 
-// Write CSV file
-const writeResult = await data.csv.writeFile('./output.csv', [
+// Parse content with format detection
+const contentResult = await data.parseAutoFromContent('{"name": "test"}', 'data.json')
+if (contentResult.isOk()) {
+  console.log('JSON data:', contentResult.value)
+}
+
+// Auto-write with format detection from extension
+const writeResult = await data.writeAuto('/path/to/output.json', { name: 'test' })
+if (writeResult.isErr()) {
+  console.error('Write error:', writeResult.error.message)
+}
+```
+
+### Format-Specific Operations
+
+```typescript
+import { createCSVOperations, createJSONOperations, createExcelOperations } from '@esteban-url/data'
+
+// CSV operations
+const csvOps = createCSVOperations()
+const csvResult = await csvOps.parseFile('/path/to/data.csv')
+if (csvResult.isOk()) {
+  const parsedData = csvResult.value
+  console.log('Rows:', parsedData.metadata.totalRows)
+  console.log('Data:', parsedData.data)
+}
+
+// JSON operations
+const jsonOps = createJSONOperations()
+const jsonResult = await jsonOps.parseFile('/path/to/data.json')
+const stringifyResult = jsonOps.stringify({ name: 'test' })
+
+// Excel operations
+const excelOps = createExcelOperations()
+const excelResult = await excelOps.parseFile('/path/to/data.xlsx')
+if (excelResult.isOk()) {
+  console.log('Excel data:', excelResult.value)
+}
+```
+
+### Basic Format Conversion
+
+```typescript
+import { data } from '@esteban-url/data'
+
+const csvData = [
   { name: 'John', age: 30 },
   { name: 'Jane', age: 25 },
-])
-```
+]
 
-### JSON Operations
+// Convert to JSON
+const jsonResult = data.convertFormat(csvData, 'json')
+if (jsonResult.isOk()) {
+  console.log('JSON:', jsonResult.value)
+}
 
-```typescript
-import { data } from '@esteban-url/data'
-
-// Parse and format JSON
-const parseResult = data.json.parse(jsonString)
-const formatResult = data.json.format(jsonString, { indent: 2 })
-
-// Minify JSON
-const minifyResult = data.json.minify(jsonString)
-```
-
-### Format Detection
-
-```typescript
-import { createDetectionOperations } from '@esteban-url/data'
-
-const detection = createDetectionOperations()
-
-// Detect format by content
-const result = detection.detectByContent(fileContent)
-if (result.isOk()) {
-  const format = result.value
-  console.log(`Detected format: ${format.format}`)
+// Convert to CSV
+const csvResult = data.convertFormat(csvData, 'csv')
+if (csvResult.isOk()) {
+  console.log('CSV:', csvResult.value)
 }
 ```
 
-### Error Handling
+### Configuration
 
 ```typescript
-import { data, createDataError } from '@esteban-url/data'
+import { createUnifiedDataOperations } from '@esteban-url/data'
 
-const result = await data.csv.parseFile('./nonexistent.csv')
-if (result.isErr()) {
-  const error = result.error
-  console.error(`Error: ${error.message}`)
-  console.error(`Component: ${error.component}`)
-  console.error(`Operation: ${error.operation}`)
-}
+const customData = createUnifiedDataOperations({
+  autoDetect: true,
+  defaultFormat: 'json',
+  csv: {
+    encoding: 'utf8',
+    timeout: 5000,
+  },
+  json: {
+    encoding: 'utf8',
+  },
+})
+
+const result = await customData.parseAuto('/path/to/file.unknown')
 ```
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md)- Base Result types and error handling
-- [FileSystem API](/packages/fs/docs/reference/api.md)- File operations
-- [Validation API](/packages/validation/docs/reference/api.md)- Data validation
+- [Core API Reference](/packages/core/docs/reference/api.md) - Result types and error handling
+- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations used internally
