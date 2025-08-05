@@ -138,9 +138,9 @@ const validateFilePath = (
     return { status: 'external' }
   }
 
-  // Fragment-only links (anchors in same document)
+  // Fragment-only links (anchors in same document) - these are valid
   if (link.startsWith('#')) {
-    return { status: 'warning', message: 'Fragment-only link - cannot validate anchor' }
+    return { status: 'valid' }
   }
 
   let targetPath: string
@@ -283,7 +283,9 @@ const generateValidationReport = (
   lines.push(`✅ Valid links:      ${chalk.green(summary.validLinks)}`)
   lines.push(`❌ Broken links:     ${chalk.red(summary.brokenLinks)}`)
   lines.push(`🌐 External links:   ${chalk.blue(summary.externalLinks)}`)
-  lines.push(`⚠️  Warnings:        ${chalk.yellow(summary.warnings)}`)
+  if (summary.warnings > 0) {
+    lines.push(`⚠️  Warnings:        ${chalk.yellow(summary.warnings)}`)
+  }
 
   // Detailed results
   if (verbose || summary.brokenLinks > 0 || summary.warnings > 0) {
@@ -291,7 +293,7 @@ const generateValidationReport = (
     lines.push('─'.repeat(50))
 
     const issueResults = summary.results.filter(
-      (r) => r.status === 'broken' || r.status === 'warning'
+      (r) => r.status === 'broken' || (verbose && r.status === 'warning')
     )
 
     if (issueResults.length === 0) {
