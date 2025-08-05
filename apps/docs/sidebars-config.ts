@@ -13,6 +13,11 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: ['docs/reference/api'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/config/api',
+    },
   ],
 }
 

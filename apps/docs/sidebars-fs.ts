@@ -25,6 +25,11 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: ['docs/explanation/result-patterns'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/fs/api',
+    },
   ],
 }
 

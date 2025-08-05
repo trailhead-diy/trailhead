@@ -25,6 +25,11 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: ['docs/explanation/composition-patterns'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/validation/api',
+    },
   ],
 }
 

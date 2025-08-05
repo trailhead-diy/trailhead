@@ -51,6 +51,11 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: ['explanation/architecture', 'explanation/design-decisions'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/cli/api',
+    },
   ],
 }
 

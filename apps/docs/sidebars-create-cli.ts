@@ -31,6 +31,11 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: ['explanation/templates'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/create-cli/api',
+    },
   ],
 }
 
