@@ -239,11 +239,6 @@ const convertCommand = createCommand({
 })
 ```
 
-### 🚀 Demo Applications
-
-- **[Next.js Demo](./apps/demos/next)** - Example Next.js application structure
-- **[RedwoodJS SDK Demo](./apps/demos/rwsdk)** - Edge-ready deployment with Waku SSR
-
 ### 📦 Package Details
 
 #### 🛠️ [@esteban-url/cli](./packages/cli) - Functional CLI Framework
