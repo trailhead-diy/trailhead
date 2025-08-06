@@ -1,3 +1,8 @@
+/**
+ * @module csv/types
+ * @description Type definitions and defaults for CSV operations
+ */
+
 import type {
   CSVConfig,
   CSVProcessingOptions,
@@ -11,6 +16,26 @@ import type {
 // CSV Configuration Defaults
 // ========================================
 
+/**
+ * Default configuration for CSV operations
+ *
+ * @constant
+ * @type {Required<CSVConfig>}
+ *
+ * @property {string} delimiter - Field delimiter (default: ',')
+ * @property {string} quoteChar - Quote character (default: '"')
+ * @property {string} escapeChar - Escape character (default: '"')
+ * @property {boolean} hasHeader - First row contains headers (default: true)
+ * @property {boolean} dynamicTyping - Auto-convert types (default: false)
+ * @property {string} comments - Comment character (default: '')
+ * @property {boolean} skipEmptyLines - Skip empty lines (default: true)
+ * @property {string} encoding - File encoding (default: 'utf8')
+ * @property {number} timeout - Operation timeout (default: 30000ms)
+ * @property {number} maxSize - Max file size (default: 50MB)
+ * @property {Function} transform - Value transformer
+ * @property {Function} transformHeader - Header transformer
+ * @property {boolean} detectDelimiter - Auto-detect delimiter (default: false)
+ */
 export const defaultCSVConfig: Required<CSVConfig> = {
   delimiter: ',',
   quoteChar: '"',

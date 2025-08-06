@@ -1,8 +1,38 @@
 /**
- * Unified Data Operations - Clean API for data processing with auto-detection
+ * @module operations
+ * @description Unified Data Operations - Clean API for data processing with auto-detection
  *
  * This module provides the main entry point for all data operations,
  * combining format detection with data processing for a seamless experience.
+ *
+ * Key features:
+ * - Automatic format detection for CSV, JSON, and Excel files
+ * - Unified API with consistent Result-based error handling
+ * - Format-specific operations still available for fine control
+ * - Type-safe configuration and operations
+ *
+ * @example Basic auto-detection usage
+ * ```typescript
+ * import { data } from '@esteban-url/data'
+ *
+ * // Parse any supported format automatically
+ * const result = await data.parseAuto('report.xlsx')
+ * if (result.isOk()) {
+ *   const { data: rows, format } = result.value
+ *   console.log(`Parsed ${rows.length} rows from ${format.type}`)
+ * }
+ * ```
+ *
+ * @example Custom configuration
+ * ```typescript
+ * import { createUnifiedDataOperations } from '@esteban-url/data'
+ *
+ * const customData = createUnifiedDataOperations({
+ *   csv: { delimiter: ';', header: true },
+ *   excel: { sheet: 'Data' },
+ *   autoDetect: true
+ * })
+ * ```
  */
 
 import { ok, err, type Result, type CoreError } from '@esteban-url/core'
@@ -25,6 +55,28 @@ import { createDataError } from './errors.js'
 // Unified Configuration
 // ========================================
 
+/**
+ * Configuration for unified data operations
+ * @interface UnifiedDataConfig
+ *
+ * @property {DataConfig} [csv] - CSV-specific configuration options
+ * @property {DataConfig} [json] - JSON-specific configuration options
+ * @property {DataConfig} [excel] - Excel-specific configuration options
+ * @property {FormatConfig} [detection] - Format detection configuration
+ * @property {FormatConfig} [mime] - MIME type detection configuration
+ * @property {boolean} [autoDetect=true] - Enable automatic format detection
+ * @property {'csv' | 'json' | 'excel'} [defaultFormat='json'] - Default format when detection fails
+ *
+ * @example
+ * ```typescript
+ * const config: UnifiedDataConfig = {
+ *   csv: { delimiter: ',', header: true },
+ *   excel: { sheet: 0, raw: false },
+ *   autoDetect: true,
+ *   defaultFormat: 'json'
+ * }
+ * ```
+ */
 export interface UnifiedDataConfig {
   csv?: DataConfig
   json?: DataConfig
@@ -39,26 +91,77 @@ export interface UnifiedDataConfig {
 // Unified Data Operations Interface
 // ========================================
 
+/**
+ * Unified interface for all data operations with automatic format detection
+ * @interface UnifiedDataOperations
+ */
 export interface UnifiedDataOperations {
-  // Auto-detection + processing (main API)
+  /**
+   * Parse a file with automatic format detection
+   * @param {string} filePath - Path to the file to parse
+   * @returns {Promise<DataResult<any>>} Parsed data with format information
+   * @example
+   * ```typescript
+   * const result = await data.parseAuto('data.csv')
+   * if (result.isOk()) {
+   *   console.log(result.value.data) // Parsed data array
+   * }
+   * ```
+   */
   parseAuto: (filePath: string) => Promise<DataResult<any>>
+
+  /**
+   * Parse content string with automatic format detection
+   * @param {string} content - Content to parse
+   * @param {string} [fileName] - Optional filename hint for format detection
+   * @returns {Promise<DataResult<any>>} Parsed data with format information
+   */
   parseAutoFromContent: (content: string, fileName?: string) => Promise<DataResult<any>>
+
+  /**
+   * Write data to file with format determined by file extension
+   * @param {string} filePath - Output file path
+   * @param {any} data - Data to write (arrays for CSV/Excel, any for JSON)
+   * @returns {Promise<Result<void, CoreError>>} Success or error result
+   */
   writeAuto: (filePath: string, data: any) => Promise<Result<void, CoreError>>
 
   // Format-specific operations (still available)
+  /** Parse CSV file directly */
   parseCSV: CSVOperations['parseFile']
+  /** Parse JSON file directly */
   parseJSON: JSONOperations['parseFile']
+  /** Parse Excel file directly */
   parseExcel: ExcelOperations['parseFile']
 
+  /** Parse CSV from string content */
   parseCSVFromContent: CSVOperations['parseString']
+  /** Parse JSON from string content */
   parseJSONFromContent: JSONOperations['parseString']
+  /** Parse Excel from buffer content */
   parseExcelFromContent: ExcelOperations['parseBuffer']
 
-  // Format detection (when needed separately)
+  /**
+   * Detect file format without parsing
+   * @param {string} filePath - Path to file
+   * @returns {Promise<Result<string, CoreError>>} Detected MIME type
+   */
   detectFormat: (filePath: string) => Promise<Result<string, CoreError>>
+
+  /**
+   * Detect format from content without parsing
+   * @param {string} content - Content to analyze
+   * @param {string} [fileName] - Optional filename hint
+   * @returns {Result<string, CoreError>} Detected format type
+   */
   detectFormatFromContent: (content: string, fileName?: string) => Result<string, CoreError>
 
-  // Conversion utilities
+  /**
+   * Convert data to specified format
+   * @param {any} data - Data to convert
+   * @param {'csv' | 'json' | 'excel'} targetFormat - Target format
+   * @returns {Result<string, CoreError>} Converted content string
+   */
   convertFormat: (data: any, targetFormat: 'csv' | 'json' | 'excel') => Result<string, CoreError>
 }
 
@@ -66,6 +169,13 @@ export interface UnifiedDataOperations {
 // Auto-Detection Helpers
 // ========================================
 
+/**
+ * Detect file format from file path using detection operations
+ * @private
+ * @param {string} filePath - Path to file to analyze
+ * @param {DetectionOperations} detection - Detection operations instance
+ * @returns {Promise<Result<'csv' | 'json' | 'excel', CoreError>>} Detected format type
+ */
 async function detectFileFormat(
   filePath: string,
   detection: DetectionOperations
@@ -110,6 +220,13 @@ async function detectFileFormat(
   }
 }
 
+/**
+ * Detect format from content string using heuristics
+ * @private
+ * @param {string} content - Content to analyze
+ * @param {string} [fileName] - Optional filename for extension-based detection
+ * @returns {Result<'csv' | 'json' | 'excel', CoreError>} Detected format type
+ */
 function detectContentFormat(
   content: string,
   fileName?: string
@@ -159,6 +276,27 @@ function detectContentFormat(
 // Unified Operations Factory
 // ========================================
 
+/**
+ * Create a unified data operations instance with custom configuration
+ * @param {UnifiedDataConfig} [config={}] - Configuration options
+ * @returns {UnifiedDataOperations} Configured data operations instance
+ *
+ * @example Basic usage with defaults
+ * ```typescript
+ * const data = createUnifiedDataOperations()
+ * const result = await data.parseAuto('report.csv')
+ * ```
+ *
+ * @example Custom configuration
+ * ```typescript
+ * const data = createUnifiedDataOperations({
+ *   csv: { delimiter: ';', header: true },
+ *   excel: { sheet: 'Summary', raw: false },
+ *   autoDetect: true,
+ *   defaultFormat: 'json'
+ * })
+ * ```
+ */
 export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): UnifiedDataOperations {
   const csvOps = createCSVOperations(config.csv)
   const jsonOps = createJSONOperations(config.json)
@@ -439,6 +577,22 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
 
 /**
  * Default data operations instance with standard configuration
+ *
+ * Pre-configured with:
+ * - Auto-detection enabled
+ * - JSON as default format
+ * - Standard CSV/JSON/Excel settings
+ *
+ * @example Basic usage
+ * ```typescript
+ * import { data } from '@esteban-url/data'
+ *
+ * // Parse any supported format
+ * const result = await data.parseAuto('report.xlsx')
+ *
+ * // Write with auto-format detection
+ * await data.writeAuto('output.json', processedData)
+ * ```
  */
 export const data = createUnifiedDataOperations({
   autoDetect: true,

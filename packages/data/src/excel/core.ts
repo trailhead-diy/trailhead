@@ -14,6 +14,26 @@ import { createExcelError, mapLibraryError } from '../errors.js'
 // Excel Core Operations
 // ========================================
 
+/**
+ * Create Excel operations with custom configuration
+ * @param {ExcelConfig} [config={}] - Excel configuration options
+ * @returns {ExcelOperations} Configured Excel operations object
+ *
+ * @example Basic usage
+ * ```typescript
+ * const excelOps = createExcelOperations()
+ * const result = await excelOps.parseFile('data.xlsx')
+ * ```
+ *
+ * @example Read specific worksheet
+ * ```typescript
+ * const excelOps = createExcelOperations({
+ *   worksheetName: 'Summary',
+ *   hasHeader: true,
+ *   cellDates: true
+ * })
+ * ```
+ */
 export const createExcelOperations: CreateExcelOperations = (config = {}) => {
   const excelConfig = { ...defaultExcelConfig, ...config }
 
