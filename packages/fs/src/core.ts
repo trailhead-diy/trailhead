@@ -51,6 +51,9 @@ export const defaultFSConfig: FSConfig = {
  *
  * @param _config Optional filesystem configuration
  * @returns Configured file reader function
+ * @throws {FileSystemError} FILE_NOT_FOUND - When file does not exist
+ * @throws {FileSystemError} PERMISSION_DENIED - When file cannot be accessed due to permissions
+ * @throws {FileSystemError} READ_ERROR - When file cannot be read due to I/O errors
  *
  * @example
  * ```typescript
@@ -62,10 +65,19 @@ export const defaultFSConfig: FSConfig = {
  * const utf16Reader = readFile({ encoding: 'utf16le' })
  * const result = await utf16Reader('unicode.txt')
  *
- * // Error handling
+ * // Error handling with specific error codes
  * const result = await reader('missing.txt')
  * if (result.isErr()) {
- *   console.error(`Failed: ${result.error.message}`)
+ *   switch (result.error.code) {
+ *     case 'FILE_NOT_FOUND':
+ *       console.error('File does not exist');
+ *       break;
+ *     case 'PERMISSION_DENIED':
+ *       console.error('Cannot access file');
+ *       break;
+ *     default:
+ *       console.error(`Failed: ${result.error.message}`);
+ *   }
  * }
  * ```
  */
@@ -86,6 +98,10 @@ export const readFile =
  *
  * @param _config Optional filesystem configuration
  * @returns Configured file writer function
+ * @throws {FileSystemError} PERMISSION_DENIED - When directory is not writable
+ * @throws {FileSystemError} NO_SPACE - When disk is full
+ * @throws {FileSystemError} WRITE_ERROR - When write operation fails
+ * @throws {FileSystemError} DIRECTORY_NOT_FOUND - When parent directory doesn't exist
  *
  * @example
  * ```typescript
@@ -98,6 +114,14 @@ export const readFile =
  * // Custom encoding
  * const utf16Writer = writeFile({ encoding: 'utf16le' })
  * await utf16Writer('unicode.txt', '日本語')
+ *
+ * // Error handling
+ * const result = await writer('/restricted/file.txt', 'data')
+ * if (result.isErr()) {
+ *   if (result.error.code === 'PERMISSION_DENIED') {
+ *     console.error('Cannot write to restricted directory');
+ *   }
+ * }
  * ```
  */
 export const writeFile =
@@ -187,6 +211,9 @@ export const stat =
  *
  * @param _config Optional filesystem configuration
  * @returns Configured directory creator function
+ * @throws {FileSystemError} DIRECTORY_EXISTS - When directory already exists (non-recursive mode)
+ * @throws {FileSystemError} PERMISSION_DENIED - When parent directory is not writable
+ * @throws {FileSystemError} INVALID_PATH - When path contains invalid characters
  *
  * @example
  * ```typescript
@@ -197,6 +224,12 @@ export const stat =
  *
  * // Create nested directories
  * await creator('path/to/nested/dir', { recursive: true })
+ *
+ * // Error handling
+ * const result = await creator('existing-dir')
+ * if (result.isErr() && result.error.code === 'DIRECTORY_EXISTS') {
+ *   console.log('Directory already exists');
+ * }
  * ```
  */
 export const mkdir =

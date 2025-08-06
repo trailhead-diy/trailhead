@@ -152,6 +152,22 @@ export const createConversionOperations: CreateConversionOperations = (_config =
 // Helper Functions
 // ========================================
 
+/**
+ * Normalize format string for consistent comparison
+ *
+ * Converts format strings to lowercase and removes leading dots
+ * to ensure consistent format matching across the system.
+ *
+ * @param format - Format string to normalize (e.g., '.JPG', 'PNG', '.json')
+ * @returns Normalized format string in lowercase without dots
+ *
+ * @example
+ * ```typescript
+ * normalizeFormat('.JPG')  // returns 'jpg'
+ * normalizeFormat('PNG')   // returns 'png'
+ * normalizeFormat('.json') // returns 'json'
+ * ```
+ */
 const normalizeFormat = (format: string): string => {
   return format.toLowerCase().replace(/^\./, '')
 }
@@ -257,6 +273,23 @@ const getCommonIntermediateFormats = (fromFormat: string, toFormat: string): str
   return []
 }
 
+/**
+ * Determine the category of a file format
+ *
+ * Maps file formats to their respective categories (image, video, audio, etc.)
+ * for conversion rule determination and quality estimation.
+ *
+ * @param format - Normalized format string to categorize
+ * @returns Category name or 'unknown' if format is not recognized
+ *
+ * @example
+ * ```typescript
+ * getFormatCategory('jpg')  // returns 'image'
+ * getFormatCategory('mp4')  // returns 'video'
+ * getFormatCategory('json') // returns 'data'
+ * getFormatCategory('xyz')  // returns 'unknown'
+ * ```
+ */
 const getFormatCategory = (format: string): string => {
   for (const [category, formats] of Object.entries(CONVERSION_CATEGORIES)) {
     if ((formats as readonly string[]).includes(format)) {

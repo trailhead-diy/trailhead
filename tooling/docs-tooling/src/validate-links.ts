@@ -1,4 +1,22 @@
 #!/usr/bin/env node
+/**
+ * @module validate-links
+ * @description Markdown link validator for documentation integrity
+ * 
+ * Validates all internal links in markdown documentation to ensure they point
+ * to existing files. Checks both inline markdown links and frontmatter references.
+ * 
+ * @example
+ * ```bash
+ * # Validate all markdown links
+ * pnpm docs:validate-links
+ * 
+ * # Run from project root
+ * node tooling/docs-tooling/src/validate-links.js
+ * ```
+ * 
+ * @since 1.0.0
+ */
 
 import { readFileSync, existsSync } from 'fs'
 import { join, resolve, dirname } from 'path'
@@ -34,6 +52,19 @@ interface LinkValidatorContext {
 
 /**
  * Extract markdown links from file content
+ * 
+ * Parses markdown content to find all inline links [text](url) while
+ * skipping code blocks and indented code to avoid false positives.
+ * 
+ * @param content - Raw markdown content to parse
+ * @returns Array of link objects with URL, line number, and link text
+ * 
+ * @example
+ * ```typescript
+ * const content = '# Title\n[Click here](./guide.md)\n```\n[ignored](./code.md)\n```';
+ * const links = extractLinks(content);
+ * // Returns: [{ link: './guide.md', line: 2, text: 'Click here' }]
+ * ```
  */
 const extractLinks = (content: string): Array<{ link: string; line: number; text: string }> => {
   const links: Array<{ link: string; line: number; text: string }> = []

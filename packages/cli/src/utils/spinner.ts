@@ -1,6 +1,11 @@
 /**
- * Spinner utilities for CLI loading indicators
- * Built on yocto-spinner for minimal bundle size
+ * @module cli/utils/spinner
+ * @description Spinner utilities for CLI loading indicators built on yocto-spinner.
+ *
+ * Provides lightweight spinner utilities for CLI applications with minimal bundle size.
+ * Built on top of yocto-spinner for cross-platform compatibility and modern terminal support.
+ *
+ * @since 0.1.0
  */
 import yoctoSpinner from 'yocto-spinner'
 
@@ -24,9 +29,17 @@ export function createSpinner(text: string) {
 
 /**
  * Execute an async function with a spinner
+ *
+ * Wraps an async function with a spinner that automatically starts before execution
+ * and stops with success/error status based on the function result. Provides visual
+ * feedback for long-running operations.
+ *
+ * @template T - Return type of the async function
  * @param text - Text to display during execution
  * @param fn - Async function to execute
- * @returns Promise that resolves to the function result
+ * @returns Promise that resolves to the function result or rejects with the error
+ * @throws Re-throws any error from the wrapped function after updating spinner
+ *
  * @example
  * ```typescript
  * const result = await withSpinner('Fetching data...', async () => {

@@ -20,8 +20,21 @@ export interface Logger {
 
 /**
  * Create default console logger with colored output
- * @param verbose - Whether to show debug messages
- * @returns Logger instance that outputs to console
+ *
+ * Creates a logger instance that outputs to console with colored formatting
+ * and optional debug message support. Uses chalk for cross-platform color support.
+ *
+ * @param verbose - Whether to show debug messages (defaults to false)
+ * @returns Logger instance that outputs to console with colored formatting
+ *
+ * @example
+ * ```typescript
+ * const logger = createDefaultLogger(true);
+ * logger.info('Starting application...');
+ * logger.success('Build completed successfully');
+ * logger.error('Build failed');
+ * logger.debug('Debug info'); // Only shown if verbose=true
+ * ```
  */
 export function createDefaultLogger(verbose = false): Logger {
   return {

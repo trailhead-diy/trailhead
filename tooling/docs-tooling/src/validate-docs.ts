@@ -1,12 +1,24 @@
 #!/usr/bin/env node
 /**
- * Diátaxis documentation validator for Trailhead monorepo
+ * @module validate-docs
+ * @description Diátaxis documentation validator for Trailhead monorepo
  *
- * Validates that all documentation follows Diátaxis principles:
- * - Correct frontmatter with required fields
- * - Content matches declared type
- * - Proper file organization
- * - No mixed content types
+ * Validates that all documentation follows Diátaxis principles by checking:
+ * - Correct frontmatter with required fields (type, title, description)
+ * - Content matches declared type using pattern analysis
+ * - Proper file organization and naming conventions
+ * - No mixed content types (anti-patterns detection)
+ *
+ * @example
+ * ```bash
+ * # Validate all documentation
+ * pnpm docs:validate
+ *
+ * # Run from project root
+ * node tooling/docs-tooling/src/validate-docs.js
+ * ```
+ *
+ * @since 1.0.0
  */
 
 import { readFileSync, readdirSync, statSync } from 'fs'

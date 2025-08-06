@@ -50,6 +50,32 @@ export interface MockFormatDetector {
 
 /**
  * Creates a mock format detector for testing
+ *
+ * Provides a configurable format detector for unit testing that can detect
+ * file formats by extension or content patterns, with support for custom detectors.
+ *
+ * @returns MockFormatDetector instance with detection capabilities
+ *
+ * @example
+ * ```typescript
+ * const detector = createMockFormatDetector();
+ *
+ * // Detect by file extension
+ * const result = await detector.detectFormat('data.json');
+ * if (result.isOk()) {
+ *   console.log(result.value.format); // 'json'
+ *   console.log(result.value.confidence); // 0.9
+ * }
+ *
+ * // Detect from content
+ * const contentResult = detector.detectFormatFromContent('{"key": "value"}');
+ * if (contentResult.isOk()) {
+ *   console.log(contentResult.value.format); // 'json'
+ * }
+ *
+ * // Add custom detector
+ * detector.addCustomDetector('toml', content => content.includes('[section]'));
+ * ```
  */
 export function createMockFormatDetector(): MockFormatDetector {
   const customDetectors = new Map<SupportedFormat, (content: string) => boolean>()
@@ -259,6 +285,36 @@ This API provides access to user data.
 
 /**
  * Test format conversion between two formats
+ *
+ * Converts content from one format to another using mock converters
+ * for testing purposes. Supports conversions between JSON, YAML, CSV,
+ * XML, and TOML formats with configurable options.
+ *
+ * @param sourceContent - Content to convert
+ * @param sourceFormat - Source format type
+ * @param targetFormat - Target format type
+ * @param options - Conversion options (indent, delimiter, etc.)
+ * @returns Result containing converted content or error
+ *
+ * @example
+ * ```typescript
+ * // Convert JSON to YAML
+ * const jsonData = '{"name": "test", "value": 42}';
+ * const result = await testFormatConversion(jsonData, 'json', 'yaml');
+ * if (result.isOk()) {
+ *   console.log(result.value);
+ *   // name: test
+ *   // value: 42
+ * }
+ *
+ * // Convert CSV to JSON with custom indent
+ * const csvData = 'name,age\nAlice,30\nBob,25';
+ * const result2 = await testFormatConversion(csvData, 'csv', 'json', { indent: 4 });
+ * if (result2.isOk()) {
+ *   console.log(result2.value);
+ *   // [{"name": "Alice", "age": "30"}, {"name": "Bob", "age": "25"}]
+ * }
+ * ```
  */
 export async function testFormatConversion(
   sourceContent: string,
