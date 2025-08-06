@@ -102,7 +102,7 @@ Focus on high-ROI (Return on Investment) tests:
 
 **Dependencies**: Automated updates via Renovate. Keep `pnpm-lock.yaml` synced with `package.json`.
 
-**Documentation**: Follow [Diátaxis framework](/docs/README.md). See [documentation standards](/docs/reference/documentation-standards.md)for complete guidelines.
+**Documentation**: Follow [Diátaxis framework](../../docs/README.md). See [documentation standards](../../docs/reference/documentation-standards.md)for complete guidelines.
 
 ## Monorepo Overview
 
