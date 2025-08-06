@@ -2,6 +2,21 @@ import type { Result, CoreError } from '@esteban-url/core'
 
 /**
  * Assert that a Result is successful
+ *
+ * Type assertion that narrows Result type to success case.
+ * Throws descriptive error if Result contains an error.
+ *
+ * @template T - Success value type
+ * @param result - Result to check
+ * @throws {Error} When result is an error
+ *
+ * @example
+ * ```typescript
+ * const result = await parseConfig(data);
+ * expectResult(result);
+ * // TypeScript now knows result.value is accessible
+ * console.log(result.value.name);
+ * ```
  */
 export function expectResult<T>(
   result: Result<T, CoreError>
@@ -13,6 +28,21 @@ export function expectResult<T>(
 
 /**
  * Assert that a Result is an error
+ *
+ * Type assertion that narrows Result type to error case.
+ * Throws if Result contains a success value.
+ *
+ * @template E - Error type (default: CoreError)
+ * @param result - Result to check
+ * @throws {Error} When result is successful
+ *
+ * @example
+ * ```typescript
+ * const result = await validateInput(invalid);
+ * expectError(result);
+ * // TypeScript now knows result.error is accessible
+ * console.log(result.error.message);
+ * ```
  */
 export function expectError<E = CoreError>(
   result: Result<any, E>
@@ -23,8 +53,25 @@ export function expectError<E = CoreError>(
 }
 
 /**
- * Combined assertion and value extraction for successful Results
- * Reduces boilerplate from 3 lines to 1 line
+ * Assert success and extract value in one call
+ *
+ * Combines assertion and value extraction for cleaner test code.
+ * Throws descriptive error if Result contains an error.
+ *
+ * @template T - Success value type
+ * @param result - Result to check and extract
+ * @returns The success value
+ * @throws {Error} When result is an error
+ *
+ * @example
+ * ```typescript
+ * // Instead of:
+ * // expectResult(result);
+ * // const config = result.value;
+ *
+ * // Use:
+ * const config = expectSuccess(result);
+ * ```
  */
 export function expectSuccess<T>(result: Result<T, CoreError>): T {
   if (result.isErr()) {
@@ -34,8 +81,26 @@ export function expectSuccess<T>(result: Result<T, CoreError>): T {
 }
 
 /**
- * Combined assertion and error extraction for failed Results
- * Reduces boilerplate from 3 lines to 1 line
+ * Assert error and extract error in one call
+ *
+ * Combines assertion and error extraction for cleaner test code.
+ * Throws if Result contains a success value.
+ *
+ * @template E - Error type (default: CoreError)
+ * @param result - Result to check and extract
+ * @returns The error value
+ * @throws {Error} When result is successful
+ *
+ * @example
+ * ```typescript
+ * // Instead of:
+ * // expectError(result);
+ * // const error = result.error;
+ *
+ * // Use:
+ * const error = expectFailure(result);
+ * expect(error.code).toBe('VALIDATION_ERROR');
+ * ```
  */
 export function expectFailure<E = CoreError>(result: Result<any, E>): E {
   if (result.isOk()) {
@@ -45,7 +110,22 @@ export function expectFailure<E = CoreError>(result: Result<any, E>): E {
 }
 
 /**
- * Convenient assertion for specific error codes
+ * Assert error with specific error code
+ *
+ * Verifies Result is an error with the expected code property.
+ * Useful for testing specific error conditions.
+ *
+ * @template E - Error type with code property
+ * @param result - Result to check
+ * @param expectedCode - Expected error code
+ * @returns The error value
+ * @throws {Error} When result is successful or code doesn't match
+ *
+ * @example
+ * ```typescript
+ * const error = expectErrorCode(result, 'FILE_NOT_FOUND');
+ * // Guaranteed to have error with code 'FILE_NOT_FOUND'
+ * ```
  */
 export function expectErrorCode<E extends { code: string }>(
   result: Result<any, E>,
@@ -61,7 +141,25 @@ export function expectErrorCode<E extends { code: string }>(
 }
 
 /**
- * Convenient assertion for error messages containing specific text
+ * Assert error with message matching pattern
+ *
+ * Verifies Result is an error with message containing text
+ * or matching regex pattern. Useful for testing error descriptions.
+ *
+ * @template E - Error type with message property
+ * @param result - Result to check
+ * @param expectedMessage - String to find or regex to match
+ * @returns The error value
+ * @throws {Error} When result is successful or message doesn't match
+ *
+ * @example
+ * ```typescript
+ * // String contains
+ * expectErrorMessage(result, 'file not found');
+ *
+ * // Regex match
+ * expectErrorMessage(result, /invalid.*format/i);
+ * ```
  */
 export function expectErrorMessage<E extends { message: string }>(
   result: Result<any, E>,
