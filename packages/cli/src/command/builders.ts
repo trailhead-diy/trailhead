@@ -20,7 +20,22 @@ import { createCommand, type CommandConfig, type CommandOptions } from './base.j
  * Reduces CLI command boilerplate by 60-70% while maintaining type safety.
  */
 
-// Common option definitions with consistent behavior
+/**
+ * Pre-configured common command options with consistent behavior
+ *
+ * Provides factory functions for frequently used options to ensure
+ * consistency across commands. Each function returns a properly
+ * configured CommandOption with standard flags and descriptions.
+ *
+ * @example
+ * ```typescript
+ * const options = [
+ *   commonOptions.output('Write results to file'),
+ *   commonOptions.format(['json', 'yaml'], 'json'),
+ *   commonOptions.verbose()
+ * ];
+ * ```
+ */
 export const commonOptions = {
   output: (description?: string): CommandOption => ({
     name: 'output',
@@ -75,7 +90,13 @@ export const commonOptions = {
   }),
 }
 
-// Fluent API for building option sets
+/**
+ * Fluent API for composing command option sets
+ *
+ * Provides a builder pattern for creating option arrays with
+ * common options, custom options, and format configuration.
+ * Reduces boilerplate when defining command options.
+ */
 export interface OptionsBuilder {
   common(names: (keyof typeof commonOptions)[]): OptionsBuilder
   format(choices: string[], defaultValue?: string): OptionsBuilder
@@ -83,6 +104,29 @@ export interface OptionsBuilder {
   build(): CommandOption[]
 }
 
+/**
+ * Create a fluent options builder for command configuration
+ *
+ * Simplifies option definition through method chaining, reducing
+ * boilerplate by up to 70% for commands with standard options.
+ *
+ * @param initialOptions - Starting options array (optional)
+ * @returns OptionsBuilder instance for method chaining
+ *
+ * @example
+ * ```typescript
+ * const options = defineOptions()
+ *   .common(['output', 'verbose', 'dryRun'])
+ *   .format(['json', 'csv', 'xml'], 'json')
+ *   .custom([{
+ *     name: 'timeout',
+ *     flags: '--timeout <ms>',
+ *     description: 'Operation timeout',
+ *     type: 'number'
+ *   }])
+ *   .build();
+ * ```
+ */
 export function defineOptions(initialOptions: CommandOption[] = []): OptionsBuilder {
   return {
     common: (names: (keyof typeof commonOptions)[]): OptionsBuilder => {
@@ -107,7 +151,12 @@ export function defineOptions(initialOptions: CommandOption[] = []): OptionsBuil
   }
 }
 
-// File processing command builder types
+/**
+ * Standard options for file processing commands
+ *
+ * Extends base CommandOptions with commonly needed file operation
+ * flags. Used as base type for file processing command options.
+ */
 export interface FileProcessingOptions extends CommandOptions {
   output?: string
   format?: string
@@ -116,21 +165,47 @@ export interface FileProcessingOptions extends CommandOptions {
   force?: boolean
 }
 
+/**
+ * Runtime context for file processing operations
+ *
+ * Provides validated file paths and filesystem access to command
+ * implementations. Created after input validation succeeds.
+ */
 export interface FileProcessingContext {
+  /** Validated input file path from command arguments */
   inputFile: string
+  /** Resolved output path from --output option */
   outputPath?: string
+  /** Filesystem abstraction for file operations */
   fs: FileSystem
 }
 
+/**
+ * Configuration for creating file processing commands
+ *
+ * Defines structure for commands that operate on files with automatic
+ * validation, common options, and enhanced context. Reduces boilerplate
+ * by handling file validation and option setup.
+ *
+ * @template T - Command options type extending FileProcessingOptions
+ */
 export interface FileProcessingConfig<T extends FileProcessingOptions> {
+  /** Command name for CLI invocation */
   name: string
+  /** Command description for help text */
   description: string
+  /** Input file argument configuration */
   inputFile: {
+    /** Whether input file is required (default: true) */
     required?: boolean
+    /** Custom description for input argument */
     description?: string
   }
+  /** Array of common option names to include */
   commonOptions?: (keyof typeof commonOptions)[]
+  /** Additional custom options beyond common ones */
   customOptions?: CommandOption[]
+  /** Command implementation with enhanced context */
   action: (
     options: T,
     context: CommandContext,
