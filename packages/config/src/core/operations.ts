@@ -45,6 +45,15 @@ export type ConfigResult<T> = Result<T, CoreError>
 // Enhanced Configuration Operations
 // ========================================
 
+/**
+ * Configuration operations interface providing core functionality for
+ * configuration management including creation, loading, watching, and validation.
+ *
+ * This interface defines the main API for working with configurations,
+ * supporting multiple sources, validation, transformation, and real-time updates.
+ *
+ * @see {@link createConfigOperations} - Factory function for creating operations
+ */
 export interface ConfigOperations {
   readonly create: <T>(definition: ConfigDefinition<T>) => ConfigResult<ConfigManager<T>>
   readonly load: <T>(definition: ConfigDefinition<T>) => Promise<ConfigResult<ConfigState<T>>>
@@ -59,6 +68,12 @@ export interface ConfigOperations {
   ) => ConfigResult<T>
 }
 
+/**
+ * Loader operations interface for managing configuration source loaders.
+ *
+ * Provides registration and management of loaders that can fetch configuration
+ * data from various sources like files, environment variables, remote APIs, etc.
+ */
 export interface LoaderOperations {
   readonly register: (loader: ConfigLoader) => void
   readonly unregister: (type: ConfigSourceType) => void
@@ -66,6 +81,12 @@ export interface LoaderOperations {
   readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
 }
 
+/**
+ * Validator operations interface for managing configuration validators.
+ *
+ * Provides registration and management of custom validators that can perform
+ * business logic validation beyond basic schema validation.
+ */
 export interface ValidatorOperations {
   readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void
   readonly unregister: (name: string) => void
@@ -76,6 +97,12 @@ export interface ValidatorOperations {
   readonly validateSchema: <T>(config: T, schema: unknown) => ConfigResult<void>
 }
 
+/**
+ * Transformer operations interface for managing configuration transformers.
+ *
+ * Provides registration and management of transformers that can modify
+ * configuration data during the loading process.
+ */
 export interface TransformerOperations {
   readonly register: <T>(transformer: ConfigTransformer<T>) => void
   readonly unregister: (name: string) => void
@@ -85,6 +112,23 @@ export interface TransformerOperations {
   ) => ConfigResult<T>
 }
 
+/**
+ * Configuration loader interface for implementing custom source loaders.
+ *
+ * Loaders are responsible for fetching configuration data from specific
+ * source types and optionally watching for changes.
+ *
+ * @example
+ * ```typescript
+ * const s3Loader: ConfigLoader = {
+ *   load: async (source) => {
+ *     const data = await s3.getObject(source.path)
+ *     return ok(JSON.parse(data))
+ *   },
+ *   supports: (source) => source.type === 's3'
+ * }
+ * ```
+ */
 export interface ConfigLoader {
   readonly load: (source: ConfigSource) => Promise<ConfigResult<Record<string, unknown>>>
   readonly watch?: (
@@ -98,6 +142,38 @@ export interface ConfigLoader {
 // Enhanced Operations Implementation
 // ========================================
 
+/**
+ * Creates configuration operations with integrated loader, validator, and transformer operations.
+ *
+ * This is the main factory function for creating a complete configuration management system.
+ * It provides a unified API for all configuration operations with proper error handling,
+ * validation, and type safety.
+ *
+ * @returns Complete configuration operations interface
+ *
+ * @example
+ * ```typescript
+ * const ops = createConfigOperations()
+ *
+ * // Create a configuration manager
+ * const managerResult = ops.create({
+ *   name: 'app-config',
+ *   sources: [
+ *     { type: 'env', env: 'APP_', priority: 1 },
+ *     { type: 'file', path: './config.json', priority: 2, optional: true }
+ *   ],
+ *   schema: myConfigSchema
+ * })
+ *
+ * if (managerResult.isOk()) {
+ *   const manager = managerResult.value
+ *   const state = await manager.load()
+ * }
+ * ```
+ *
+ * @see {@link ConfigOperations} - Operations interface definition
+ * @see {@link ConfigDefinition} - Configuration definition structure
+ */
 export const createConfigOperations = (): ConfigOperations => {
   const loaderOps = createLoaderOperations()
   const validatorOps = createValidatorOperations()
@@ -352,6 +428,12 @@ export const createConfigOperations = (): ConfigOperations => {
 // Enhanced Validation Functions
 // ========================================
 
+/**
+ * Validates a configuration definition for correctness and completeness.
+ *
+ * @param definition - Configuration definition to validate
+ * @returns Result indicating validation success or errors found
+ */
 const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<void> => {
   const errors: ConfigValidationError[] = []
 
@@ -433,6 +515,16 @@ const validateDefinition = <T>(definition: ConfigDefinition<T>): ConfigResult<vo
 // Utility Functions
 // ========================================
 
+/**
+ * Merges configuration data from multiple resolved sources based on priority.
+ *
+ * Sources with higher priority values override those with lower priority.
+ * Defaults are applied first, then sources are merged in priority order.
+ *
+ * @param sources - Array of resolved configuration sources
+ * @param defaults - Optional default values to apply first
+ * @returns Merged configuration object
+ */
 const mergeSourceData = (
   sources: readonly ResolvedSource[],
   defaults?: Record<string, unknown>
@@ -451,6 +543,16 @@ const mergeSourceData = (
   return merged
 }
 
+/**
+ * Performs deep merge of two configuration objects.
+ *
+ * Recursively merges nested objects while preserving type safety.
+ * Arrays and primitive values are replaced rather than merged.
+ *
+ * @param target - Target object to merge into
+ * @param source - Source object to merge from
+ * @returns New merged object
+ */
 const deepMerge = (
   target: Record<string, unknown>,
   source: Record<string, unknown>
@@ -477,6 +579,12 @@ const deepMerge = (
   return result
 }
 
+/**
+ * Generates a checksum for configuration data to detect changes.
+ *
+ * @param config - Configuration object to generate checksum for
+ * @returns Hexadecimal checksum string
+ */
 const generateChecksum = (config: unknown): string => {
   try {
     const json = JSON.stringify(config, Object.keys(config as any).sort())
@@ -532,8 +640,24 @@ const isConfigValidationError = (error: unknown): error is ConfigValidationError
 }
 
 // Export missing functions that are used by manager
+/**
+ * Alias for deepMerge function for external use.
+ *
+ * @see {@link deepMerge} - Deep merge implementation
+ */
 export const mergeConfigs = deepMerge
 
+/**
+ * Creates configuration metadata object with loading and validation information.
+ *
+ * @param loadTime - Time taken to load configuration in milliseconds
+ * @param sourceCount - Number of configuration sources processed
+ * @param validationErrors - Array of validation errors encountered
+ * @param transformationErrors - Array of transformation errors encountered
+ * @param version - Optional configuration version
+ * @param checksum - Optional configuration checksum
+ * @returns Configuration metadata object
+ */
 export const createConfigMetadata = (
   loadTime: number,
   sourceCount: number,

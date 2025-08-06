@@ -5,6 +5,45 @@ import type { TransformerOperations, ConfigTransformer, ConfigResult } from '../
 // Transformer Operations
 // ========================================
 
+/**
+ * Creates transformer operations for managing configuration transformers.
+ *
+ * Provides a registry system for configuration transformers that can modify
+ * and normalize configuration data during the loading process. Transformers
+ * are applied in priority order and can perform operations like environment
+ * variable expansion, format conversion, and data normalization.
+ *
+ * @returns Transformer operations interface with registration and transformation capabilities
+ *
+ * @example
+ * ```typescript
+ * const transformerOps = createTransformerOperations()
+ *
+ * // Register a custom transformer
+ * const envExpansionTransformer: ConfigTransformer<any> = {
+ *   name: 'environment-expansion',
+ *   priority: 1,
+ *   transform: (config) => {
+ *     // Expand ${ENV_VAR} placeholders
+ *     const expanded = JSON.parse(
+ *       JSON.stringify(config).replace(
+ *         /\$\{([^}]+)\}/g,
+ *         (_, varName) => process.env[varName] || ''
+ *       )
+ *     )
+ *     return ok(expanded)
+ *   }
+ * }
+ *
+ * transformerOps.register(envExpansionTransformer)
+ *
+ * // Transform configuration
+ * const result = transformerOps.transform(rawConfig, [envExpansionTransformer])
+ * ```
+ *
+ * @see {@link TransformerOperations} - Operations interface definition
+ * @see {@link ConfigTransformer} - Transformer interface for custom implementations
+ */
 export const createTransformerOperations = (): TransformerOperations => {
   const transformers = new Map<string, ConfigTransformer<any>>()
 
