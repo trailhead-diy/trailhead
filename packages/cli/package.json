@@ -5,8 +5,8 @@
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "@esteban-url:registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "types": "./dist/index.d.ts",
   "exports": {

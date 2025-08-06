@@ -5,8 +5,8 @@
   "private": false,
   "description": "Foundation package for Trailhead System - CoreError interface, Result types, and functional programming utilities",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "@esteban-url:registry": "https://npm.pkg.github.com"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

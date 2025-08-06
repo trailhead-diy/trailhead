@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -76,7 +81,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/esteban-url/trailhead-cli.git",
+    "url": "git+https://github.com/esteban-url/trailhead.git",
     "directory": "packages/config"
   }
 }
