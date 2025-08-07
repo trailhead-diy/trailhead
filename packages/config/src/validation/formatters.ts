@@ -1,5 +1,4 @@
 import { isConfigValidationError, type ConfigValidationError } from './errors.js'
-import { consola } from 'consola'
 import { colors } from 'consola/utils'
 
 const { red: errorColor, yellow: warning, blue: info, gray: muted, bold } = colors

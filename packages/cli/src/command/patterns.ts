@@ -1,6 +1,6 @@
 import type { CommandContext, CommandPhase } from './types.js'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
-import { colors, consola } from '../utils/chalk.js'
+import { colors } from '../utils/chalk.js'
 
 /**
  * Configuration options for commands that support interactive mode

@@ -7,7 +7,7 @@ import { Command } from 'commander'
 import path from 'path'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { fs } from '@esteban-url/fs'
-import { colors, consola } from '../utils/chalk.js'
+import { colors } from '../utils/chalk.js'
 import { createDefaultLogger } from '../utils/logger.js'
 
 /**

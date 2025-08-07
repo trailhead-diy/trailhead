@@ -1,4 +1,5 @@
 import type { Result, CoreError } from '@esteban-url/core'
+import type { Order } from '@esteban-url/sort'
 
 /**
  * File statistics information returned by stat operations.
@@ -24,6 +25,23 @@ export interface FileStats {
   readonly isSymbolicLink: boolean
   /** Last modification time */
   readonly mtime: Date
+  /** Last access time */
+  readonly atime: Date
+  /** Creation time */
+  readonly ctime: Date
+  /** Optional file name */
+  readonly name?: string
+}
+
+export type FileSortField = 'name' | 'size' | 'mtime' | 'atime' | 'ctime' | 'extension'
+
+export interface FileSortOptions {
+  readonly by: FileSortField
+  readonly order?: Order
+}
+
+export interface SortOptions {
+  readonly sort?: FileSortField | FileSortOptions | FileSortOptions[]
 }
 
 /**
@@ -268,3 +286,32 @@ export type WriteJsonOp = <T = any>(
   data: T,
   options?: { spaces?: number }
 ) => Promise<FSResult<void>>
+
+/**
+ * Options for finding files with patterns
+ */
+export interface FindFilesOptions {
+  /** Working directory for the glob operation */
+  readonly cwd?: string
+  /** Patterns to ignore */
+  readonly ignore?: string[]
+  /** File patterns to match */
+  readonly patterns?: string[]
+  /** Whether to include directories in results */
+  readonly includeDirs?: boolean
+  /** Maximum depth to search */
+  readonly maxDepth?: number
+  /** Sorting options for results */
+  readonly sort?: FileSortField | FileSortOptions | FileSortOptions[]
+}
+
+/**
+ * Function type for finding files with glob patterns
+ * @param pattern Glob pattern to match
+ * @param options Find options with patterns and sorting
+ * @returns Promise resolving to array of file paths or error
+ */
+export type FindFilesOp = (
+  pattern: string,
+  options?: FindFilesOptions
+) => Promise<FSResult<string[]>>

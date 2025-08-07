@@ -1,4 +1,4 @@
-import { consola, createConsola, type ConsolaInstance } from 'consola'
+import { createConsola, type ConsolaInstance } from 'consola'
 
 /**
  * Logger interface for consistent CLI output
