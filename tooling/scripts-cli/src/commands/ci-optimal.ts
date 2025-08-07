@@ -9,6 +9,7 @@ interface CiOptimalOptions extends CommandOptions {
   readonly skipSecurity?: boolean
   readonly concurrency?: number
   readonly turboArgs?: string
+  readonly coverage?: boolean
 }
 
 export const ciOptimalCommand = createCommand<CiOptimalOptions>({
@@ -43,6 +44,12 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
       flags: '--turbo-args <args>',
       description: 'Additional arguments for turbo commands',
       type: 'string',
+    },
+    {
+      flags: '--coverage',
+      description: 'Run tests with coverage reporting',
+      type: 'boolean',
+      default: false,
     },
   ],
   examples: [
@@ -88,7 +95,16 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
       }
 
       // Build turbo command with options
-      const turboArgs = ['turbo', 'run', 'format:check', 'types', 'test', 'build']
+      const turboArgs = ['turbo', 'run', 'format:check', 'types']
+      
+      // Add test or test:coverage based on coverage flag
+      if (options.coverage) {
+        turboArgs.push('test:coverage')
+      } else {
+        turboArgs.push('test')
+      }
+      
+      turboArgs.push('build')
       turboArgs.push('--cache-dir=.turbo')
       turboArgs.push(`--concurrency=${options.concurrency || '100%'}`)
 
@@ -98,7 +114,20 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
         turboArgs.push('--affected')
       }
 
-      const turboResult = await execCommand('pnpm', turboArgs, context)
+      // Create execution options with proper env handling
+      const execOptions: any = {}
+      if (options.coverage) {
+        const cleanEnv: Record<string, string> = {}
+        for (const [key, value] of Object.entries(process.env)) {
+          if (value !== undefined) {
+            cleanEnv[key] = value
+          }
+        }
+        cleanEnv.COVERAGE = 'true'
+        execOptions.env = cleanEnv
+      }
+      
+      const turboResult = await execCommand('pnpm', turboArgs, context, execOptions)
       if (turboResult.isErr()) {
         context.logger.error(colorize('red', withIcon('error', 'Quality checks failed')))
         return err(turboResult.error)
@@ -123,20 +152,23 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
         }
       }
 
-      // 4. Coverage check (if exists)
-      try {
-        const coverageExists = await context.fs.exists('coverage/coverage-summary.json')
-        if (coverageExists) {
-          const coverageResult = await context.fs.readFile('coverage/coverage-summary.json')
-          if (coverageResult.isOk()) {
-            const coverage = JSON.parse(coverageResult.value)
-            const pct = coverage.total?.lines?.pct || 0
-            context.logger.info('')
-            context.logger.info(colorize('yellow', withIcon('stats', `Test coverage: ${pct}%`)))
-          }
+      // 4. Coverage report (if coverage was enabled)
+      if (options.coverage) {
+        context.logger.info('')
+        context.logger.info(colorize('yellow', withIcon('stats', 'Generating coverage report...')))
+        
+        const coverageResult = await execCommand(
+          'pnpm',
+          ['scripts-cli', 'coverage-check', '--report-only'],
+          context,
+          { allowFailure: true }
+        )
+        
+        if (coverageResult.isErr()) {
+          context.logger.warning(
+            colorize('yellow', withIcon('warning', 'Coverage report generation failed'))
+          )
         }
-      } catch {
-        // Coverage file parsing failed, skip silently
       }
 
       // 5. Security audit (optional)

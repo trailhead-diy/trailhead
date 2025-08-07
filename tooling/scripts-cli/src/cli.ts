@@ -4,6 +4,7 @@ import { ciOptimalCommand } from './commands/ci-optimal.js'
 import { testRunnerCommand } from './commands/test-runner.js'
 import { fixImportsCommand } from './commands/fix-imports.js'
 import { validateDepsCommand } from './commands/validate-deps.js'
+import { coverageCheckCommand } from './commands/coverage-check.js'
 
 const cli = createCLI({
   name: 'scripts-cli',
@@ -15,6 +16,7 @@ const cli = createCLI({
     testRunnerCommand,
     fixImportsCommand,
     validateDepsCommand,
+    coverageCheckCommand,
   ],
 })
 

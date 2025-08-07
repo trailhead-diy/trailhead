@@ -122,6 +122,34 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
               },
             }
           : undefined,
+      coverage: {
+        enabled: process.env.COVERAGE === 'true',
+        provider: 'v8',
+        reporter: ['text', 'json-summary', 'html'],
+        reportsDirectory: './coverage',
+        thresholds: process.env.COVERAGE_ENFORCE === 'true' ? {
+          lines: 70,
+          functions: 70,
+          branches: 60,
+          statements: 70,
+        } : undefined,
+        exclude: [
+          '**/*.test.ts',
+          '**/*.test.tsx',
+          '**/*.spec.ts',
+          '**/*.spec.tsx',
+          '**/testing/**',
+          '**/*.d.ts',
+          '**/bin/**',
+          '**/dist/**',
+          '**/node_modules/**',
+          '**/coverage/**',
+          '**/*.config.ts',
+          '**/*.config.js',
+          '**/types.ts',
+          '**/index.ts',
+        ],
+      },
     },
   })
 }

@@ -57,13 +57,14 @@
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",
-    "@esteban-url/validation": "workspace:*",
-    "@esteban-url/fs": "workspace:*"
+    "@esteban-url/fs": "workspace:*",
+    "@esteban-url/validation": "workspace:*"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@vitest/coverage-v8": "^3.2.4",
     "tsup": "^8.5.0",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"
