@@ -6,7 +6,7 @@
   "description": "CLI generator for creating projects with @esteban-url/cli",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "bin": {
     "create-cli": "./bin/cli.js",

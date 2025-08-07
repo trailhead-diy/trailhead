@@ -6,7 +6,7 @@
   "description": "Unified data processing and format detection (CSV, JSON, Excel) with Result types for Trailhead System",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "types": "./dist/index.d.ts",
   "exports": {
