@@ -465,6 +465,6 @@ const result = await realCommand.execute(options, context)
 
 ## Next Steps
 
-- Review [Testing API Reference](/packages/cli/docs/reference/testing)
-- Learn about [Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli)
-- Explore [Command Patterns](/packages/cli/docs/reference/command)
+- Review [Testing API Reference](../../reference/testing)
+- Learn about [Error Handling](../../how-to/handle-errors-in-cli)
+- Explore [Command Patterns](../../reference/command)

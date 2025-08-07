@@ -22,7 +22,7 @@ npm install @trailhead/core
 ```typescript
 import { ok, err, type Result } from '@trailhead/core'
 
-function divide(a: number, b: number): Result<number, Error> {
+const divide = (a: number, b: number): Result<number, Error> => {
   if (b === 0) {
     return err(new Error('Division by zero'))
   }

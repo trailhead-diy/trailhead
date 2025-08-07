@@ -34,7 +34,39 @@ export const createSchemaValidator = <T>(
   validate: createValidator(schema, _config),
 })
 
-// Common validation functions
+/**
+ * Creates an email validator function with configurable validation rules.
+ *
+ * Validates email addresses according to standard RFC 5322 format
+ * with user-friendly error messages and suggestions.
+ *
+ * @param _config Optional validation configuration
+ * @returns Email validator function
+ *
+ * @example
+ * ```typescript
+ * const emailValidator = validateEmail();
+ *
+ * // Valid email
+ * const result = emailValidator('user@example.com');
+ * if (result.isOk()) {
+ *   console.log('Valid email:', result.value);
+ * }
+ *
+ * // Invalid email
+ * const result2 = emailValidator('invalid-email');
+ * if (result2.isErr()) {
+ *   console.log(result2.error.message); // "Invalid email format..."
+ *   console.log(result2.error.suggestion); // "Provide a valid email address..."
+ * }
+ *
+ * // Empty email
+ * const result3 = emailValidator('');
+ * if (result3.isErr()) {
+ *   console.log(result3.error.message); // "Email is required"
+ * }
+ * ```
+ */
 export const validateEmail =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (email: string): ValidationResult<string> => {
@@ -60,6 +92,38 @@ export const validateEmail =
     return ok(result.data)
   }
 
+/**
+ * Creates a URL validator function with configurable validation rules.
+ *
+ * Validates URLs to ensure they have proper protocol and format,
+ * supporting both HTTP and HTTPS URLs with user-friendly error messages.
+ *
+ * @param _config Optional validation configuration
+ * @returns URL validator function
+ *
+ * @example
+ * ```typescript
+ * const urlValidator = validateUrl();
+ *
+ * // Valid URLs
+ * urlValidator('https://example.com').isOk(); // true
+ * urlValidator('http://sub.example.com/path').isOk(); // true
+ * urlValidator('https://example.com:8080').isOk(); // true
+ *
+ * // Invalid URLs
+ * const result = urlValidator('example.com'); // Missing protocol
+ * if (result.isErr()) {
+ *   console.log(result.error.message); // "Invalid URL format..."
+ * }
+ *
+ * // Use in form validation
+ * const websiteField = document.querySelector('#website');
+ * const validation = urlValidator(websiteField.value);
+ * if (validation.isErr()) {
+ *   showError(validation.error.message);
+ * }
+ * ```
+ */
 export const validateUrl =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (url: string): ValidationResult<string> => {

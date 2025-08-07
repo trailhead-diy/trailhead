@@ -1,5 +1,6 @@
 import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
 import { ok, err, createCoreError } from '@esteban-url/core'
+import { consola } from 'consola'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { resolve } from 'path'
 import { configSchema, type Config } from '../lib/config-schema.js'
@@ -53,7 +54,7 @@ export const configCommand = createCommand<ConfigCommandOptions>({
 function initConfig(configPath: string) {
   try {
     if (existsSync(configPath)) {
-      console.log('Configuration file already exists. Use --validate to check it.')
+      consola.info('Configuration file already exists. Use --validate to check it.')
       return ok(undefined)
     }
 
@@ -68,7 +69,7 @@ function initConfig(configPath: string) {
     }
 
     writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2))
-    console.log(`Configuration file created at ${configPath}`)
+    consola.success(`Configuration file created at ${configPath}`)
     return ok(undefined)
   } catch (_error) {
     return err(createCoreError('CONFIG_INIT_FAILED', 'CLI_ERROR', 'Failed to initialize configuration', { recoverable: true }))
@@ -86,14 +87,14 @@ function validateConfig(configPath: string) {
     const result = configSchema.safeParse(config)
 
     if (!result.success) {
-      console.error('Configuration validation failed:')
+      consola.error('Configuration validation failed:')
       result.error.errors.forEach(error => {
-        console.error(`  ${error.path.join('.')}: ${error.message}`)
+        consola.error(`  ${error.path.join('.')}: ${error.message}`)
       })
       return err(createCoreError('CONFIG_INVALID', 'CLI_ERROR', 'Configuration validation failed', { recoverable: true }))
     }
 
-    console.log('Configuration is valid ✓')
+    consola.success('Configuration is valid ✓')
     return ok(undefined)
   } catch (_error) {
     return err(createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', 'Failed to validate configuration', { recoverable: true }))
@@ -108,8 +109,8 @@ function showConfig(configPath: string) {
 
     const configData = readFileSync(configPath, 'utf-8')
     const config = JSON.parse(configData)
-    console.log('Current configuration:')
-    console.log(JSON.stringify(config, null, 2))
+    consola.info('Current configuration:')
+    consola.box(JSON.stringify(config, null, 2))
     return ok(undefined)
   } catch (_error) {
     return err(createCoreError('CONFIG_SHOW_FAILED', 'CLI_ERROR', 'Failed to show configuration', { recoverable: true }))

@@ -3,6 +3,9 @@ import type { CommandOption } from './types.js'
 /**
  * Processed option configuration for Commander.js registration
  */
+/**
+ * @internal
+ */
 interface ProcessedOption {
   /** Commander.js compatible flags string */
   flags: string
@@ -14,6 +17,10 @@ interface ProcessedOption {
   required: boolean
 }
 
+/**
+ * Cache for processed command options to improve performance
+ * @internal
+ */
 const optionProcessingCache = new WeakMap<CommandOption, ProcessedOption>()
 
 /**

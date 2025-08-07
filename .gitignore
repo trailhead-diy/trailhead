@@ -18,6 +18,7 @@ build/
 *.bundled_*.cjs
 tsup.config.bundled_*.mjs
 tsup.config.bundled_*.cjs
+.docusaurus/
 
 # Misc
 .DS_Store
@@ -63,6 +64,3 @@ temp/
 packages/create-trailhead-cli/test-temp/
 packages/create-trailhead-cli/test-debug/
 hhh.html
-tooling/scripts-cli/tests/real-world/snapshots/**.*
-tooling/scripts-cli/tests/real-world/outputs/**.*
-tooling/scripts-cli/tests/real-world/results/**.*

@@ -239,11 +239,6 @@ const convertCommand = createCommand({
 })
 ```
 
-### 🚀 Demo Applications
-
-- **[Next.js Demo](./apps/demos/next)** - Example Next.js application structure
-- **[RedwoodJS SDK Demo](./apps/demos/rwsdk)** - Edge-ready deployment with Waku SSR
-
 ### 📦 Package Details
 
 #### 🛠️ [@esteban-url/cli](./packages/cli) - Functional CLI Framework
@@ -323,6 +318,15 @@ pnpm build
 
 # Run tests across packages
 pnpm test
+
+# Run tests with coverage (opt-in)
+pnpm coverage
+
+# Run local CI without coverage
+pnpm ci:run
+
+# Run local CI with coverage (opt-in)
+pnpm ci:coverage
 
 # Lint and type check
 pnpm lint && pnpm types

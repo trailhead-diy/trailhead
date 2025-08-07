@@ -25,6 +25,11 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: ['docs/explanation/format-detection'],
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/data/api',
+    },
   ],
 }
 

@@ -487,7 +487,7 @@ export function validateData(
   })
 }
 
-function validateField(value: any, rule: ValidationRule, rowNumber: number) {
+const validateField = (value: any, rule: ValidationRule, rowNumber: number) => {
   switch (rule.type) {
     case 'required':
       if (value === null || value === undefined || String(value).trim() === '') {
@@ -538,7 +538,7 @@ function validateField(value: any, rule: ValidationRule, rowNumber: number) {
   return { success: true }
 }
 
-function isValidEmail(email: string): boolean {
+const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }

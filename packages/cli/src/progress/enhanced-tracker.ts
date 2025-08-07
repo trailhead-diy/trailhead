@@ -77,7 +77,35 @@ const DEFAULT_ENHANCED_OPTIONS: Partial<EnhancedProgressOptions> = {
 }
 
 /**
- * Create enhanced progress tracker with multi-step progress and time estimates
+ * Create an enhanced progress tracker with multi-step progress and time estimates
+ *
+ * Provides advanced progress tracking with weighted steps, time estimates,
+ * and per-step progress updates. Ideal for complex operations with
+ * varying step durations.
+ *
+ * @param options - Enhanced progress configuration
+ * @param options.steps - Array of step configurations with names and weights
+ * @param options.showTimeEstimates - Whether to display ETA (default: true)
+ * @param options.enhancedFormat - Custom format with {eta} support
+ * @returns Enhanced progress tracker with time estimation capabilities
+ *
+ * @example
+ * ```typescript
+ * const tracker = createEnhancedProgressTracker({
+ *   steps: [
+ *     { name: 'Download files', weight: 3 },
+ *     { name: 'Process data', weight: 5 },
+ *     { name: 'Upload results', weight: 2 }
+ *   ],
+ *   showTimeEstimates: true
+ * });
+ *
+ * tracker.startNextStep();
+ * tracker.updateStepProgress(50); // 50% through download
+ * tracker.completeStep();
+ *
+ * const { remaining, elapsed } = tracker.getTimeEstimate();
+ * ```
  */
 export function createEnhancedProgressTracker(
   options: EnhancedProgressOptions

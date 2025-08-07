@@ -4,6 +4,40 @@ import type { FileSystemError } from './types.js'
 // Use standardized error factory from core
 const createFSError = createErrorFactory('filesystem', 'high')
 
+/**
+ * Creates a structured FileSystemError with comprehensive context.
+ * Used for custom error scenarios not covered by system errors.
+ *
+ * @param operation The filesystem operation that failed
+ * @param message Human-readable error message
+ * @param options Additional error context and metadata
+ * @returns Structured FileSystemError
+ *
+ * @example
+ * ```typescript
+ * // Custom validation error
+ * if (!isValidPath(path)) {
+ *   return err(
+ *     createFileSystemError('Validate path', 'Invalid characters in path', {
+ *       path,
+ *       code: 'INVALID_PATH',
+ *       suggestion: 'Remove special characters from the path',
+ *       recoverable: true
+ *     })
+ *   )
+ * }
+ *
+ * // Permission check failure
+ * return err(
+ *   createFileSystemError('Check permissions', 'Insufficient permissions', {
+ *     path: '/etc/passwd',
+ *     code: 'EPERM',
+ *     severity: 'critical',
+ *     recoverable: false
+ *   })
+ * )
+ * ```
+ */
 export const createFileSystemError = (
   operation: string,
   message: string,
@@ -39,6 +73,41 @@ export const createFileSystemError = (
   } as FileSystemError
 }
 
+/**
+ * Maps Node.js system errors to structured FileSystemError instances.
+ * Provides user-friendly messages and recovery suggestions for common errors.
+ *
+ * @param operation The filesystem operation that failed
+ * @param path The file/directory path involved in the error
+ * @param error The original Node.js error object
+ * @returns Structured FileSystemError with context
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await fs.readFile(path)
+ * } catch (error) {
+ *   // Maps ENOENT to user-friendly error
+ *   return err(mapNodeError('Read file', path, error))
+ *   // Returns: {
+ *   //   message: "Read file failed: File or directory '/path' does not exist",
+ *   //   code: 'ENOENT',
+ *   //   suggestion: 'Check if the path is correct and the file exists',
+ *   //   recoverable: true
+ *   // }
+ * }
+ * ```
+ *
+ * @remarks
+ * Handles common Node.js error codes:
+ * - ENOENT: File/directory not found
+ * - EEXIST: File/directory already exists
+ * - EACCES: Permission denied
+ * - EISDIR: Expected file but found directory
+ * - ENOTDIR: Expected directory but found file
+ * - EMFILE: Too many open files
+ * - ENOSPC: No space left on device
+ */
 export const mapNodeError = (operation: string, path: string, error: any): FileSystemError => {
   const errorCode = error.code || 'FS_ERROR'
   let message: string

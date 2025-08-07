@@ -311,6 +311,6 @@ const workflow = [
 
 ## See Also
 
-- [Command API Reference](/packages/cli/docs/reference/command.md)- Core command creation
-- [Migration Guide](/packages/cli/docs/how-to/migrate-to-command-enhancements.md)- Upgrading existing commands
-- [Workflow API Reference](/packages/cli/docs/reference/flow-control.md)- Task orchestration
+- [Command API Reference](../../reference/command.md)- Core command creation
+- [Migration Guide](../../how-to/migrate-to-command-enhancements.md)- Upgrading existing commands
+- [Workflow API Reference](../../reference/flow-control.md)- Task orchestration

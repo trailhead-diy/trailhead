@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@esteban-url/fs",
+  "readme": "./README.md",
+  "entryPoints": ["src/index.ts"],
+  "categorizeByGroup": true,
+  "defaultCategory": "File System Operations",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeNotDocumented": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/esteban-url/trailhead",
+    "FS Package": "../fs/README.md"
+  },
+  "gitRevision": "main",
+  "gitRemote": "origin",
+  "sourceLinkExternal": true
+}

@@ -93,7 +93,7 @@ The framework treats errors as values rather than exceptions, making error handl
 
 ```typescript
 // Errors are part of the contract
-async function readConfig(path: string): Promise<Result<Config>> {
+async const readConfig = async (path: string): Promise<Result<Config>> => {
   // Function signature declares it can fail
 }
 ```
@@ -317,18 +317,18 @@ Potential areas for enhancement include:
 
 ### Essential Reading
 
-- [Design Decisions](/packages/cli/docs/explanation/design-decisions.md)- Detailed rationale for architectural choices
-- [Functional Patterns Guide](/docs/how-to/apply-functional-patterns.md)- Practical functional programming
+- [Design Decisions](../../explanation/design-decisions.md)- Detailed rationale for architectural choices
+- [Functional Patterns Guide](../how-to/apply-functional-patterns.md)- Practical functional programming
 
 ### Practical Application
 
-- [Building Your First CLI](/packages/cli/docs/tutorials/getting-started.md)- Hands-on introduction
-- [Import Patterns](/packages/cli/docs/how-to/import-patterns.md)- Using subpath exports effectively
+- [Building Your First CLI](../../tutorials/getting-started.md)- Hands-on introduction
+- [Import Patterns](../../how-to/import-patterns.md)- Using subpath exports effectively
 
 ### Technical Details
 
-- [API Reference](/packages/cli/docs/reference/core.md)- Complete function documentation
-- [Type Definitions](/packages/cli/docs/reference/types.md)- TypeScript interface specifications
+- [API Reference](../../reference/core.md)- Complete function documentation
+- [Type Definitions](../../reference/types.md)- TypeScript interface specifications
 
 ## Discussion
 

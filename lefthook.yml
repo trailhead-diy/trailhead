@@ -293,7 +293,7 @@ pre-push:
         
         # Clear cache and run full suite to prevent cache issues
         rm -rf .turbo
-        pnpm scripts-cli ci-optimal || {
+        pnpm dev-cli ci || {
           echo ""
           echo "❌ Pre-push validation failed!"
           echo ""
@@ -315,6 +315,23 @@ pre-push:
           echo "❌ pnpm-lock.yaml is out of date! Run 'pnpm install' and commit the updated lockfile"
           exit 1
         }
+    
+    # Optional coverage check for changed packages (opt-in only)
+    coverage-check:
+      priority: 3
+      run: |
+        if [ "$RUN_COVERAGE" = "1" ]; then
+          echo "📊 Running coverage check for changed packages..."
+          COVERAGE=true pnpm test --affected > /dev/null 2>&1 || true
+          pnpm dev-cli coverage-check --changed --report-only || {
+            echo ""
+            echo "⚠️  Coverage check completed (non-blocking)"
+            echo "💡 Run 'pnpm coverage' to see detailed report"
+            echo ""
+          }
+        else
+          echo "⚡ Coverage check skipped (opt-in with RUN_COVERAGE=1)"
+        fi
 
     # Check branch sync status (warning only)
     branch-sync-check:

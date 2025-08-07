@@ -57,7 +57,7 @@ interface CLIConfig {
 Creates a CLI application instance.
 
 ```typescript
-function createCLI(config: CLIConfig): CLI
+const createCLI = (config: CLIConfig): CLI => {
 ```
 
 **Parameters**:
@@ -246,7 +246,7 @@ const buildCommand = createCommand<BuildOptions>({
 Creates a Git hooks management command.
 
 ```typescript
-function createGitHooksCommand(config?: GitHooksConfig): Command
+const createGitHooksCommand = (config?: GitHooksConfig): Command => {
 ```
 
 ##### `createFileProcessingCommand()`
@@ -289,7 +289,7 @@ interface FileProcessingConfig<T extends FileProcessingOptions> {
 Validates a single command option.
 
 ```typescript
-function validateCommandOption(option: CommandOption): Result<CommandOption, CoreError>
+const validateCommandOption = (option: CommandOption): Result<CommandOption, CoreError> => {
 ```
 
 ##### `validateCommandConfig()`
@@ -317,7 +317,7 @@ function validateCommandConfigWithCache<T>(
 Processes command option with caching for performance.
 
 ```typescript
-function processOptionWithCache(option: CommandOption): Result<ProcessedOption, CoreError>
+const processOptionWithCache = (option: CommandOption): Result<ProcessedOption, CoreError> => {
 ```
 
 ##### `processCommandOptionsWithCache()`
@@ -477,7 +477,7 @@ function executeWithDryRun<T>(
 Formatted configuration/result display.
 
 ```typescript
-function displaySummary(data: Record<string, any>, options?: SummaryOptions): void
+const displaySummary = (data: Record<string, any>, options?: SummaryOptions): void => {
 ```
 
 #### Command Builders
@@ -501,7 +501,7 @@ const commonOptions: {
 Utility for defining command options.
 
 ```typescript
-function defineOptions(definitions: OptionDefinition[]): CommandOption[]
+const defineOptions = (definitions: OptionDefinition[]): CommandOption[] => {
 ```
 
 **Types**:
@@ -560,7 +560,7 @@ function createConfirmationPrompt(
 Creates a directory path input prompt with validation.
 
 ```typescript
-function createDirectoryPrompt(message: string, defaultPath?: string): () => Promise<string>
+const createDirectoryPrompt = (message: string, defaultPath?: string): () => Promise<string> => {
 ```
 
 **Parameters**:
@@ -581,7 +581,7 @@ Comprehensive testing utilities for CLI applications including command execution
 Executes a command for testing.
 
 ```typescript
-function runCommand(command: Command, args: string[]): Promise<TestResult>
+const runCommand = (command: Command, args: string[]): Promise<TestResult> => {
 ```
 
 ##### `createCommandTestRunner()`
@@ -589,7 +589,7 @@ function runCommand(command: Command, args: string[]): Promise<TestResult>
 Creates a command test runner.
 
 ```typescript
-function createCommandTestRunner(): CommandTestRunner
+const createCommandTestRunner = (): CommandTestRunner => {
 ```
 
 ##### `runTestCommand()`
@@ -597,7 +597,7 @@ function createCommandTestRunner(): CommandTestRunner
 Runs a test command.
 
 ```typescript
-function runTestCommand(command: Command, args: string[]): Promise<TestResult>
+const runTestCommand = (command: Command, args: string[]): Promise<TestResult> => {
 ```
 
 ##### `runTestCommandExpectSuccess()`
@@ -605,7 +605,7 @@ function runTestCommand(command: Command, args: string[]): Promise<TestResult>
 Runs a test command expecting success.
 
 ```typescript
-function runTestCommandExpectSuccess(command: Command, args: string[]): Promise<TestResult>
+const runTestCommandExpectSuccess = (command: Command, args: string[]): Promise<TestResult> => {
 ```
 
 ##### `runTestCommandExpectError()`
@@ -613,7 +613,7 @@ function runTestCommandExpectSuccess(command: Command, args: string[]): Promise<
 Runs a test command expecting an error.
 
 ```typescript
-function runTestCommandExpectError(command: Command, args: string[]): Promise<TestResult>
+const runTestCommandExpectError = (command: Command, args: string[]): Promise<TestResult> => {
 ```
 
 ##### `getTestContext()`
@@ -621,7 +621,7 @@ function runTestCommandExpectError(command: Command, args: string[]): Promise<Te
 Gets the current test context.
 
 ```typescript
-function getTestContext(): TestContext
+const getTestContext = (): TestContext => {
 ```
 
 ##### `getTestFiles()`
@@ -629,7 +629,7 @@ function getTestContext(): TestContext
 Gets test files from context.
 
 ```typescript
-function getTestFiles(): Record<string, string>
+const getTestFiles = (): Record<string, string> => {
 ```
 
 ##### `getTestLogs()`
@@ -637,7 +637,7 @@ function getTestFiles(): Record<string, string>
 Gets test logs from context.
 
 ```typescript
-function getTestLogs(): LogMessage[]
+const getTestLogs = (): LogMessage[] => {
 ```
 
 **Types**:
@@ -657,7 +657,7 @@ interface CommandTestRunnerState {
 Creates a CLI test runner.
 
 ```typescript
-function createCLITestRunner(config: CLIConfig): CLITestRunner
+const createCLITestRunner = (config: CLIConfig): CLITestRunner => {
 ```
 
 ##### `expectCLISnapshot()`
@@ -665,7 +665,7 @@ function createCLITestRunner(config: CLIConfig): CLITestRunner
 Asserts CLI output matches snapshot.
 
 ```typescript
-function expectCLISnapshot(result: TestResult, options?: CLISnapshotOptions): void
+const expectCLISnapshot = (result: TestResult, options?: CLISnapshotOptions): void => {
 ```
 
 ##### `createWorkflowTest()`
@@ -673,7 +673,7 @@ function expectCLISnapshot(result: TestResult, options?: CLISnapshotOptions): vo
 Creates a workflow test.
 
 ```typescript
-function createWorkflowTest(steps: WorkflowStep[]): WorkflowTest
+const createWorkflowTest = (steps: WorkflowStep[]): WorkflowTest => {
 ```
 
 ##### `createCommandTestSuite()`
@@ -681,7 +681,7 @@ function createWorkflowTest(steps: WorkflowStep[]): WorkflowTest
 Creates a command test suite.
 
 ```typescript
-function createCommandTestSuite(cases: CommandTestCase[]): CommandTestSuite
+const createCommandTestSuite = (cases: CommandTestCase[]): CommandTestSuite => {
 ```
 
 ##### `createInteractiveTest()`
@@ -689,7 +689,7 @@ function createCommandTestSuite(cases: CommandTestCase[]): CommandTestSuite
 Creates an interactive test.
 
 ```typescript
-function createInteractiveTest(steps: InteractiveTestStep[]): InteractiveTest
+const createInteractiveTest = (steps: InteractiveTestStep[]): InteractiveTest => {
 ```
 
 **Types**:
@@ -734,7 +734,7 @@ interface InteractiveTestStep {
 Creates an interactive test runner.
 
 ```typescript
-function createInteractiveTestRunner(config: InteractiveTestConfig): InteractiveTestRunner
+const createInteractiveTestRunner = (config: InteractiveTestConfig): InteractiveTestRunner => {
 ```
 
 ##### `addResponse()`
@@ -742,7 +742,7 @@ function createInteractiveTestRunner(config: InteractiveTestConfig): Interactive
 Adds a response to interactive test.
 
 ```typescript
-function addResponse(runner: InteractiveTestRunner, response: PromptResponse): void
+const addResponse = (runner: InteractiveTestRunner, response: PromptResponse): void => {
 ```
 
 ##### `addResponses()`
@@ -750,7 +750,7 @@ function addResponse(runner: InteractiveTestRunner, response: PromptResponse): v
 Adds multiple responses to interactive test.
 
 ```typescript
-function addResponses(runner: InteractiveTestRunner, responses: PromptResponse[]): void
+const addResponses = (runner: InteractiveTestRunner, responses: PromptResponse[]): void => {
 ```
 
 ##### `runInteractiveTestRunner()`
@@ -758,7 +758,7 @@ function addResponses(runner: InteractiveTestRunner, responses: PromptResponse[]
 Runs an interactive test runner.
 
 ```typescript
-function runInteractiveTestRunner(runner: InteractiveTestRunner): Promise<InteractiveTestResult>
+const runInteractiveTestRunner = (runner: InteractiveTestRunner): Promise<InteractiveTestResult> => {
 ```
 
 ##### `runInteractiveTest()`
@@ -766,7 +766,7 @@ function runInteractiveTestRunner(runner: InteractiveTestRunner): Promise<Intera
 Runs an interactive test.
 
 ```typescript
-function runInteractiveTest(config: InteractiveTestConfig): Promise<InteractiveTestResult>
+const runInteractiveTest = (config: InteractiveTestConfig): Promise<InteractiveTestResult> => {
 ```
 
 ##### `sendInput()`
@@ -774,7 +774,7 @@ function runInteractiveTest(config: InteractiveTestConfig): Promise<InteractiveT
 Sends input to interactive process.
 
 ```typescript
-function sendInput(process: ChildProcess, input: string): void
+const sendInput = (process: ChildProcess, input: string): void => {
 ```
 
 ##### `sendRaw()`
@@ -782,7 +782,7 @@ function sendInput(process: ChildProcess, input: string): void
 Sends raw input to interactive process.
 
 ```typescript
-function sendRaw(process: ChildProcess, data: Buffer): void
+const sendRaw = (process: ChildProcess, data: Buffer): void => {
 ```
 
 ##### `killProcess()`
@@ -790,7 +790,7 @@ function sendRaw(process: ChildProcess, data: Buffer): void
 Kills an interactive process.
 
 ```typescript
-function killProcess(process: ChildProcess): void
+const killProcess = (process: ChildProcess): void => {
 ```
 
 ##### `createInteractiveTestHelper()`
@@ -798,7 +798,7 @@ function killProcess(process: ChildProcess): void
 Creates an interactive test helper.
 
 ```typescript
-function createInteractiveTestHelper(): InteractiveTestHelper
+const createInteractiveTestHelper = (): InteractiveTestHelper => {
 ```
 
 **Types**:
@@ -837,7 +837,7 @@ interface InteractiveTestRunnerState {
 Creates a test context for CLI testing.
 
 ```typescript
-function createTestContext(options?: TestContextOptions): TestContext
+const createTestContext = (options?: TestContextOptions): TestContext => {
 ```
 
 ##### `createTestContextWithFiles()`
@@ -892,7 +892,7 @@ function expectSuccess<T, E>(result: Result<T, E>): void
 Asserts that CLI execution failed.
 
 ```typescript
-function expectFailure(result: TestResult): void
+const expectFailure = (result: TestResult): void => {
 ```
 
 ##### `expectErrorCode()`
@@ -900,7 +900,7 @@ function expectFailure(result: TestResult): void
 Asserts specific error code.
 
 ```typescript
-function expectErrorCode(error: CoreError, expectedCode: string): void
+const expectErrorCode = (error: CoreError, expectedCode: string): void => {
 ```
 
 ##### `expectErrorMessage()`
@@ -908,7 +908,7 @@ function expectErrorCode(error: CoreError, expectedCode: string): void
 Asserts error message matches expected.
 
 ```typescript
-function expectErrorMessage(error: CoreError, expected: string | RegExp): void
+const expectErrorMessage = (error: CoreError, expected: string | RegExp): void => {
 ```
 
 #### CLI Performance Monitoring
@@ -918,7 +918,7 @@ function expectErrorMessage(error: CoreError, expected: string | RegExp): void
 Creates performance monitor state.
 
 ```typescript
-function createPerformanceMonitorState(): PerformanceMonitorState
+const createPerformanceMonitorState = (): PerformanceMonitorState => {
 ```
 
 ##### `monitorPerformance()`
@@ -934,7 +934,7 @@ function monitorPerformance<T>(operation: () => Promise<T>): Promise<Performance
 Gets performance reports.
 
 ```typescript
-function getPerformanceReports(): PerformanceReport[]
+const getPerformanceReports = (): PerformanceReport[] => {
 ```
 
 ##### `getPerformanceSummary()`
@@ -942,7 +942,7 @@ function getPerformanceReports(): PerformanceReport[]
 Gets performance summary.
 
 ```typescript
-function getPerformanceSummary(): PerformanceSummary
+const getPerformanceSummary = (): PerformanceSummary => {
 ```
 
 ##### `exportPerformanceReportsToJson()`
@@ -950,7 +950,7 @@ function getPerformanceSummary(): PerformanceSummary
 Exports performance reports to JSON.
 
 ```typescript
-function exportPerformanceReportsToJson(path: string): Promise<void>
+const exportPerformanceReportsToJson = (path: string): Promise<void> => {
 ```
 
 ##### `clearPerformanceReports()`
@@ -958,7 +958,7 @@ function exportPerformanceReportsToJson(path: string): Promise<void>
 Clears performance reports.
 
 ```typescript
-function clearPerformanceReports(): void
+const clearPerformanceReports = (): void => {
 ```
 
 ##### `checkPerformanceThresholds()`
@@ -966,7 +966,7 @@ function clearPerformanceReports(): void
 Checks performance against thresholds.
 
 ```typescript
-function checkPerformanceThresholds(thresholds: PerformanceThresholds): boolean
+const checkPerformanceThresholds = (thresholds: PerformanceThresholds): boolean => {
 ```
 
 ##### `withPerformanceMonitoring()`
@@ -982,7 +982,7 @@ function withPerformanceMonitoring<T>(operation: () => Promise<T>): Promise<Perf
 Creates a CLI performance monitor.
 
 ```typescript
-function createCLIPerformanceMonitor(): CLIPerformanceMonitor
+const createCLIPerformanceMonitor = (): CLIPerformanceMonitor => {
 ```
 
 **Types**:
@@ -1033,7 +1033,7 @@ const underline: (text: string) => string
 Creates a spinner for long operations.
 
 ```typescript
-function createSpinner(text: string, options?: SpinnerOptions): Spinner
+const createSpinner = (text: string, options?: SpinnerOptions): Spinner => {
 ```
 
 ##### `withSpinner()`
@@ -1071,7 +1071,7 @@ interface SpinnerOptions {
 Creates a default console logger.
 
 ```typescript
-function createDefaultLogger(verbose?: boolean): Logger
+const createDefaultLogger = (verbose?: boolean): Logger => {
 ```
 
 **Types**:
@@ -1093,7 +1093,7 @@ interface Logger {
 Creates a statistics tracker.
 
 ```typescript
-function createStats(): StatsTracker
+const createStats = (): StatsTracker => {
 ```
 
 ##### `updateStats()`
@@ -1101,7 +1101,7 @@ function createStats(): StatsTracker
 Updates statistics.
 
 ```typescript
-function updateStats(stats: StatsTracker, operation: string, duration: number): void
+const updateStats = (stats: StatsTracker, operation: string, duration: number): void => {
 ```
 
 ##### `getElapsedTime()`
@@ -1109,7 +1109,7 @@ function updateStats(stats: StatsTracker, operation: string, duration: number): 
 Gets elapsed time from start time.
 
 ```typescript
-function getElapsedTime(startTime: number): number
+const getElapsedTime = (startTime: number): number => {
 ```
 
 ##### `formatStats()`
@@ -1117,7 +1117,7 @@ function getElapsedTime(startTime: number): number
 Formats statistics for display.
 
 ```typescript
-function formatStats(stats: StatsTracker): string
+const formatStats = (stats: StatsTracker): string => {
 ```
 
 **Types**:
@@ -1153,7 +1153,7 @@ function mergeOptionsWithDefaults<T>(options: Partial<T>, defaults: T): T
 Coerces option to correct type.
 
 ```typescript
-function coerceOptionType(value: any, type: 'string' | 'boolean' | 'number'): any
+const coerceOptionType = (value: any, type: 'string' | 'boolean' | 'number'): any => {
 ```
 
 ##### `processCommandOptions()`
@@ -1161,7 +1161,7 @@ function coerceOptionType(value: any, type: 'string' | 'boolean' | 'number'): an
 Processes command options.
 
 ```typescript
-function processCommandOptions(options: CommandOption[]): ProcessedOption[]
+const processCommandOptions = (options: CommandOption[]): ProcessedOption[] => {
 ```
 
 #### Package Manager Utilities
@@ -1171,7 +1171,7 @@ function processCommandOptions(options: CommandOption[]): ProcessedOption[]
 Detects the package manager in use.
 
 ```typescript
-function detectPackageManager(options?: DetectOptions): Promise<PackageManager>
+const detectPackageManager = (options?: DetectOptions): Promise<PackageManager> => {
 ```
 
 ##### `getRunCommand()`
@@ -1179,7 +1179,7 @@ function detectPackageManager(options?: DetectOptions): Promise<PackageManager>
 Gets the run command for a package manager.
 
 ```typescript
-function getRunCommand(packageManager: PackageManager): string
+const getRunCommand = (packageManager: PackageManager): string => {
 ```
 
 ##### `execPackageManagerCommand()`
@@ -1199,7 +1199,7 @@ function execPackageManagerCommand(
 Clears package manager cache.
 
 ```typescript
-function clearPackageManagerCache(): void
+const clearPackageManagerCache = (): void => {
 ```
 
 ##### `createPackageManagerCache()`
@@ -1207,7 +1207,7 @@ function clearPackageManagerCache(): void
 Creates package manager cache.
 
 ```typescript
-function createPackageManagerCache(): PackageManagerCache
+const createPackageManagerCache = (): PackageManagerCache => {
 ```
 
 ##### `parseSemVer()`
@@ -1215,7 +1215,7 @@ function createPackageManagerCache(): PackageManagerCache
 Parses semantic version string.
 
 ```typescript
-function parseSemVer(version: string): SemVer | null
+const parseSemVer = (version: string): SemVer | null => {
 ```
 
 ##### `compareSemVer()`
@@ -1223,7 +1223,7 @@ function parseSemVer(version: string): SemVer | null
 Compares two semantic versions.
 
 ```typescript
-function compareSemVer(a: SemVer, b: SemVer): number
+const compareSemVer = (a: SemVer, b: SemVer): number => {
 ```
 
 ##### `isGreaterThanOrEqual()`
@@ -1231,7 +1231,7 @@ function compareSemVer(a: SemVer, b: SemVer): number
 Checks if version is greater than or equal to another.
 
 ```typescript
-function isGreaterThanOrEqual(a: SemVer, b: SemVer): boolean
+const isGreaterThanOrEqual = (a: SemVer, b: SemVer): boolean => {
 ```
 
 **Types**:
@@ -1268,7 +1268,7 @@ Progress tracking for CLI operations with basic and enhanced progress trackers.
 Creates a basic progress tracker.
 
 ```typescript
-function createProgressTracker(options: ProgressOptions): ProgressTracker
+const createProgressTracker = (options: ProgressOptions): ProgressTracker => {
 ```
 
 ##### `updateProgress()`
@@ -1276,7 +1276,7 @@ function createProgressTracker(options: ProgressOptions): ProgressTracker
 Updates progress state.
 
 ```typescript
-function updateProgress(tracker: ProgressTracker, current: number): void
+const updateProgress = (tracker: ProgressTracker, current: number): void => {
 ```
 
 ##### `calculateWeightedProgress()`
@@ -1284,7 +1284,7 @@ function updateProgress(tracker: ProgressTracker, current: number): void
 Calculates weighted progress across multiple operations.
 
 ```typescript
-function calculateWeightedProgress(steps: WeightedStep[]): number
+const calculateWeightedProgress = (steps: WeightedStep[]): number => {
 ```
 
 **Types**:
@@ -1326,7 +1326,7 @@ interface WeightedStep {
 Creates an enhanced progress tracker with multiple bars and advanced features.
 
 ```typescript
-function createEnhancedProgressTracker(options: EnhancedProgressOptions): EnhancedProgressTracker
+const createEnhancedProgressTracker = (options: EnhancedProgressOptions): EnhancedProgressTracker => {
 ```
 
 **Types**:
@@ -1554,7 +1554,7 @@ const processFiles = async (files: string[]) => {
 
 ## Related APIs
 
-- [Core API Reference](/packages/core/docs/reference/api.md) - Result types and error handling
-- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations
-- [Validation API](/packages/validation/docs/reference/api.md) - Data validation
-- [Configuration API](/packages/config/docs/reference/api.md) - Configuration management
+- [Core API Reference](../../../core/reference/api.md) - Result types and error handling
+- [FileSystem API](../../../fs/reference/api.md) - File operations
+- [Validation API](../../../validation/reference/api.md) - Data validation
+- [Configuration API](../../../config/reference/api.md) - Configuration management

@@ -329,7 +329,7 @@ function chainError<E extends CoreError>(error: E, cause: CoreError | Error | un
 Extracts a human-readable message from any error type.
 
 ```typescript
-function getErrorMessage(error: unknown, defaultMessage?: string): string
+const getErrorMessage = (error: unknown, defaultMessage?: string): string => {
 ```
 
 **Parameters**:
@@ -344,7 +344,7 @@ function getErrorMessage(error: unknown, defaultMessage?: string): string
 Checks if an error is recoverable.
 
 ```typescript
-function isRecoverableError(error: { recoverable?: boolean }): boolean
+const isRecoverableError = (error: { recoverable?: boolean }): boolean => {
 ```
 
 **Parameters**:
@@ -358,7 +358,7 @@ function isRecoverableError(error: { recoverable?: boolean }): boolean
 Extracts error type for pattern matching.
 
 ```typescript
-function getErrorType(error: { type?: string }): string
+const getErrorType = (error: { type?: string }): string => {
 ```
 
 **Parameters**:
@@ -372,7 +372,7 @@ function getErrorType(error: { type?: string }): string
 Extracts error category for categorization.
 
 ```typescript
-function getErrorCategory(error: { category?: string }): string
+const getErrorCategory = (error: { category?: string }): string => {
 ```
 
 **Parameters**:
@@ -456,7 +456,7 @@ function isDefined<T>(value: T | null | undefined): value is T
 **⚠️ Performance-Optimized**: Type guard for non-empty strings with zero-overhead validation.
 
 ```typescript
-function isNonEmptyString(value: unknown): value is string
+const isNonEmptyString = (value: unknown): value is string => {
 ```
 
 ### `isObject()`
@@ -464,7 +464,7 @@ function isNonEmptyString(value: unknown): value is string
 **⚠️ Performance-Optimized**: Type guard for objects (excluding arrays and null) with V8 optimizations.
 
 ```typescript
-function isObject(value: unknown): value is Record<string, unknown>
+const isObject = (value: unknown): value is Record<string, unknown> => {
 ```
 
 ### `isNonEmptyArray()`
@@ -480,7 +480,7 @@ function isNonEmptyArray<T>(value: unknown): value is T[]
 **⚠️ Performance-Optimized**: Type guard for error-like objects with production-optimized error checking.
 
 ```typescript
-function hasErrorShape(value: unknown): value is { type: string; message: string }
+const hasErrorShape = (value: unknown): value is { type: string; message: string } => {
 ```
 
 ## Advanced Type Utilities
@@ -510,7 +510,7 @@ export type IsValidInput<T> = T extends string
 Maps Node.js errors to CoreError format.
 
 ```typescript
-function mapNodeError(component: string, operation: string, path: string, error: unknown): CoreError
+const mapNodeError = (component: string, operation: string, path: string, error: unknown): CoreError => {
 ```
 
 ### `mapLibraryError()`
@@ -687,7 +687,7 @@ const underline: (text: string) => string
 ```typescript
 import { Result, ok, err, CoreError, createCoreError } from '@esteban-url/core'
 
-function processData(input: string): Result<ProcessedData, CoreError> {
+const processData = (input: string): Result<ProcessedData, CoreError> => {
   if (!input.trim()) {
     return err(
       createCoreError('ValidationError', 'EMPTY_INPUT', 'Input cannot be empty', {
@@ -749,7 +749,7 @@ const error = createMyModuleError('ProcessingError', 'INVALID_FORMAT', 'Invalid 
 
 ## Related APIs
 
-- [FileSystem API](/packages/fs/docs/reference/api.md) - File operations with Result types
-- [Validation API](/packages/validation/docs/reference/api.md) - Data validation
-- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
-- [CLI API](/packages/cli/docs/reference/api.md) - CLI framework utilities
+- [FileSystem API](../../../fs/reference/api.md) - File operations with Result types
+- [Validation API](../../../validation/reference/api.md) - Data validation
+- [Data API](../../../data/reference/api.md) - Data processing operations
+- [CLI API](../../../cli/reference/api.md) - CLI framework utilities

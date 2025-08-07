@@ -1,3 +1,8 @@
+/**
+ * @module excel/types
+ * @description Type definitions and defaults for Excel operations
+ */
+
 import type {
   ExcelConfig,
   ExcelProcessingOptions,
@@ -10,6 +15,25 @@ import type {
 // Excel Configuration Defaults
 // ========================================
 
+/**
+ * Default configuration for Excel operations
+ *
+ * @constant
+ * @type {ExcelConfig}
+ *
+ * @property {string} encoding - File encoding (default: 'utf8')
+ * @property {number} timeout - Operation timeout (default: 30000ms)
+ * @property {number} maxSize - Max file size (default: 100MB)
+ * @property {string} [worksheetName] - Specific worksheet to read
+ * @property {number} worksheetIndex - Worksheet index (default: 0)
+ * @property {boolean} hasHeader - First row contains headers (default: true)
+ * @property {boolean} dynamicTyping - Auto-convert types (default: false)
+ * @property {string} dateNF - Date format (default: 'yyyy-mm-dd')
+ * @property {string} [range] - Cell range to read (e.g., 'A1:D10')
+ * @property {number} header - Header row index (default: 0)
+ * @property {boolean} cellDates - Parse dates to Date objects (default: true)
+ * @property {any} defval - Default value for empty cells (default: '')
+ */
 export const defaultExcelConfig: Required<Omit<ExcelConfig, 'worksheetName' | 'range'>> &
   Pick<ExcelConfig, 'worksheetName' | 'range'> = {
   encoding: 'utf8',

@@ -45,7 +45,7 @@
     },
     "test:coverage": {
       "dependsOn": ["^build", "@repo/vitest-config#build"],
-      "outputs": ["coverage/**", "test-results/**"],
+      "outputs": ["coverage/**", "test-results/**", "**/coverage-summary.json"],
       "inputs": [
         "src/**",
         "tests/**",
@@ -55,7 +55,7 @@
         "tsconfig.json"
       ],
       "cache": true,
-      "env": ["NODE_ENV", "VITEST_CONSOLE_DEBUG"],
+      "env": ["NODE_ENV", "VITEST_CONSOLE_DEBUG", "COVERAGE"],
       "outputLogs": "errors-only"
     },
     "test:watch": {

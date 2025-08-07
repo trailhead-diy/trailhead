@@ -183,7 +183,7 @@ function validateAsync<T>(config: unknown, schema: ZodConfigSchema<T>): Promise<
 Creates a Zod string field builder.
 
 ```typescript
-function string(): ZodStringFieldBuilder
+const string = (): ZodStringFieldBuilder => {
 ```
 
 **Methods**:
@@ -218,7 +218,7 @@ const emailField = string().email().toLowerCase().description('User email addres
 Creates a Zod number field builder.
 
 ```typescript
-function number(): ZodNumberFieldBuilder
+const number = (): ZodNumberFieldBuilder => {
 ```
 
 **Methods**:
@@ -253,7 +253,7 @@ const ratioField = number().min(0).max(1).description('Scaling ratio')
 Creates a Zod boolean field builder.
 
 ```typescript
-function boolean(): ZodBooleanFieldBuilder
+const boolean = (): ZodBooleanFieldBuilder => {
 ```
 
 **Methods**:
@@ -334,7 +334,7 @@ const serverField = object({
 Creates configuration operations instance.
 
 ```typescript
-function createConfigOperations(): ConfigOperations
+const createConfigOperations = (): ConfigOperations => {
 ```
 
 ### `ConfigOperations`
@@ -510,7 +510,7 @@ interface ObjectSource extends ConfigSource {
 Creates configuration loader operations.
 
 ```typescript
-function createLoaderOperations(): LoaderOperations
+const createLoaderOperations = (): LoaderOperations => {
 ```
 
 ### `LoaderOperations`
@@ -548,7 +548,7 @@ interface ConfigLoader {
 Creates validation operations.
 
 ```typescript
-function createValidatorOperations(): ValidatorOperations
+const createValidatorOperations = (): ValidatorOperations => {
 ```
 
 ### `ValidatorOperations`
@@ -571,7 +571,7 @@ interface ValidatorOperations {
 Creates transformation operations.
 
 ```typescript
-function createTransformerOperations(): TransformerOperations
+const createTransformerOperations = (): TransformerOperations => {
 ```
 
 ### `TransformerOperations`
@@ -596,7 +596,7 @@ interface TransformerOperations {
 Generates documentation from Zod schema.
 
 ```typescript
-function generateDocs(schema: ZodConfigSchema, options?: ZodDocsGeneratorOptions): ZodConfigDocs
+const generateDocs = (schema: ZodConfigSchema, options?: ZodDocsGeneratorOptions): ZodConfigDocs => {
 ```
 
 **Parameters**:
@@ -626,7 +626,7 @@ console.log(docs.sections) // Documentation sections
 Generates JSON Schema from Zod configuration schema.
 
 ```typescript
-function generateJsonSchema(schema: ZodConfigSchema, options?: ZodJsonSchemaOptions): ZodJsonSchema
+const generateJsonSchema = (schema: ZodConfigSchema, options?: ZodJsonSchemaOptions): ZodJsonSchema => {
 ```
 
 **Parameters**:
@@ -698,7 +698,7 @@ interface ConfigValidationError extends BaseValidationError {
 Creates configuration validation errors.
 
 ```typescript
-function createConfigValidationError(context: ConfigValidationContext): ConfigValidationError
+const createConfigValidationError = (context: ConfigValidationContext): ConfigValidationError => {
 ```
 
 ### `enhanceZodError()`
@@ -717,7 +717,7 @@ function enhanceZodError(
 Formats validation error for display.
 
 ```typescript
-function formatValidationError(error: ConfigValidationError, options?: FormatOptions): string
+const formatValidationError = (error: ConfigValidationError, options?: FormatOptions): string => {
 ```
 
 ### `formatValidationErrors()`
@@ -899,6 +899,6 @@ const definition: ConfigDefinition = {
 
 ## Related APIs
 
-- [Core API Reference](/docs/reference/core-api.md) - Base Result types and error handling
-- [Validation API](/packages/validation/docs/reference/api.md) - Zod validation utilities
-- [Data API](/packages/data/docs/reference/api.md) - Data processing operations
+- [Core API Reference](./core-api.md) - Base Result types and error handling
+- [Validation API](../../../validation/reference/api.md) - Zod validation utilities
+- [Data API](../../../data/reference/api.md) - Data processing operations

@@ -11,6 +11,40 @@ import type {
 // Loader Operations
 // ========================================
 
+/**
+ * Creates loader operations for managing configuration source loaders.
+ *
+ * Provides a registry system for configuration loaders that can fetch data
+ * from various sources like files, environment variables, CLI arguments,
+ * remote APIs, and more. Includes built-in loaders for common source types.
+ *
+ * @returns Loader operations interface with registration and loading capabilities
+ *
+ * @example
+ * ```typescript
+ * const loaderOps = createLoaderOperations()
+ *
+ * // Register a custom loader
+ * const s3Loader: ConfigLoader = {
+ *   load: async (source) => {
+ *     const data = await s3.getObject({ Bucket: 'config', Key: source.path })
+ *     return ok(JSON.parse(data.Body.toString()))
+ *   },
+ *   supports: (source) => source.type === 's3'
+ * }
+ * loaderOps.register(s3Loader)
+ *
+ * // Load configuration
+ * const result = await loaderOps.load({
+ *   type: 's3',
+ *   path: 'production/config.json',
+ *   priority: 1
+ * })
+ * ```
+ *
+ * @see {@link LoaderOperations} - Operations interface definition
+ * @see {@link ConfigLoader} - Loader interface for custom implementations
+ */
 export const createLoaderOperations = (): LoaderOperations => {
   const loaders = new Map<ConfigSourceType, ConfigLoader>()
 

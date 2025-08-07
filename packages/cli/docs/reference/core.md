@@ -369,6 +369,6 @@ interface ValidationPipeline<T> {
 
 ## See Also
 
-- [Error Handling Guide](/packages/cli/docs/how-to/handle-errors-in-cli.md)- Patterns and best practices
-- [Functional Patterns](/docs/how-to/apply-functional-patterns.md)- Composition techniques
-- [Testing Guide](/packages/cli/docs/how-to/test-cli-applications.md)- Testing with Result types
+- [Error Handling Guide](../../how-to/handle-errors-in-cli.md)- Patterns and best practices
+- [Functional Patterns](../how-to/apply-functional-patterns.md)- Composition techniques
+- [Testing Guide](../../how-to/test-cli-applications.md)- Testing with Result types

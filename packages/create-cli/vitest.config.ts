@@ -10,6 +10,9 @@ const packageSpecificConfig = defineConfig({
   test: {
     include: ['src/**/*.test.ts'],
     exclude: ['node_modules', 'dist', 'test-temp*', 'temp-*', '**/test-temp*/**', '**/temp-*/**'],
+    deps: {
+      inline: ['consola'],
+    },
     coverage: {
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/**/*.d.ts', 'src/testing/**/*'],

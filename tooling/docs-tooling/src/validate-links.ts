@@ -1,9 +1,28 @@
 #!/usr/bin/env node
+/**
+ * @module validate-links
+ * @description Markdown link validator for documentation integrity
+ *
+ * Validates all internal links in markdown documentation to ensure they point
+ * to existing files. Checks both inline markdown links and frontmatter references.
+ *
+ * @example
+ * ```bash
+ * # Validate all markdown links
+ * pnpm docs:validate-links
+ *
+ * # Run from project root
+ * node tooling/docs-tooling/src/validate-links.js
+ * ```
+ *
+ * @since 1.0.0
+ */
 
 import { readFileSync, existsSync } from 'fs'
 import { join, resolve, dirname } from 'path'
 import { glob } from 'glob'
-import chalk from 'chalk'
+import { consola } from 'consola'
+import { colors } from 'consola/utils'
 
 interface LinkValidationResult {
   file: string
@@ -34,6 +53,19 @@ interface LinkValidatorContext {
 
 /**
  * Extract markdown links from file content
+ *
+ * Parses markdown content to find all inline links [text](url) while
+ * skipping code blocks and indented code to avoid false positives.
+ *
+ * @param content - Raw markdown content to parse
+ * @returns Array of link objects with URL, line number, and link text
+ *
+ * @example
+ * ```typescript
+ * const content = '# Title\n[Click here](./guide.md)\n```\n[ignored](./code.md)\n```';
+ * const links = extractLinks(content);
+ * // Returns: [{ link: './guide.md', line: 2, text: 'Click here' }]
+ * ```
  */
 const extractLinks = (content: string): Array<{ link: string; line: number; text: string }> => {
   const links: Array<{ link: string; line: number; text: string }> = []
@@ -138,9 +170,9 @@ const validateFilePath = (
     return { status: 'external' }
   }
 
-  // Fragment-only links (anchors in same document)
+  // Fragment-only links (anchors in same document) - these are valid
   if (link.startsWith('#')) {
-    return { status: 'warning', message: 'Fragment-only link - cannot validate anchor' }
+    return { status: 'valid' }
   }
 
   let targetPath: string
@@ -274,16 +306,18 @@ const generateValidationReport = (
 ): string => {
   const lines: string[] = []
 
-  lines.push(chalk.bold('\n📋 Link Validation Report'))
+  lines.push('\n📋 Link Validation Report')
   lines.push('═'.repeat(50))
 
   // Summary statistics
   lines.push(`📁 Files scanned:     ${summary.totalFiles}`)
   lines.push(`🔗 Total links:      ${summary.totalLinks}`)
-  lines.push(`✅ Valid links:      ${chalk.green(summary.validLinks)}`)
-  lines.push(`❌ Broken links:     ${chalk.red(summary.brokenLinks)}`)
-  lines.push(`🌐 External links:   ${chalk.blue(summary.externalLinks)}`)
-  lines.push(`⚠️  Warnings:        ${chalk.yellow(summary.warnings)}`)
+  lines.push(`✅ Valid links:      ${colors.green(summary.validLinks.toString())}`)
+  lines.push(`❌ Broken links:     ${colors.red(summary.brokenLinks.toString())}`)
+  lines.push(`🌐 External links:   ${colors.blue(summary.externalLinks.toString())}`)
+  if (summary.warnings > 0) {
+    lines.push(`⚠️  Warnings:        ${colors.yellow(summary.warnings.toString())}`)
+  }
 
   // Detailed results
   if (verbose || summary.brokenLinks > 0 || summary.warnings > 0) {
@@ -291,11 +325,11 @@ const generateValidationReport = (
     lines.push('─'.repeat(50))
 
     const issueResults = summary.results.filter(
-      (r) => r.status === 'broken' || r.status === 'warning'
+      (r) => r.status === 'broken' || (verbose && r.status === 'warning')
     )
 
     if (issueResults.length === 0) {
-      lines.push(chalk.green('✅ All links are valid!'))
+      lines.push('✅ All links are valid!')
     } else {
       // Group by file
       const byFile = issueResults.reduce(
@@ -313,11 +347,11 @@ const generateValidationReport = (
 
         results.forEach((result) => {
           const status =
-            result.status === 'broken' ? chalk.red('❌ BROKEN') : chalk.yellow('⚠️  WARNING')
+            result.status === 'broken' ? colors.red('❌ BROKEN') : colors.yellow('⚠️  WARNING')
 
           lines.push(`   ${status} Line ${result.line}: ${result.link}`)
           if (result.message) {
-            lines.push(`      ${chalk.gray(result.message)}`)
+            lines.push(`      ${colors.gray(result.message || '')}`)
           }
         })
       })
@@ -327,9 +361,9 @@ const generateValidationReport = (
   // Success/failure status
   lines.push('\n' + '═'.repeat(50))
   if (summary.brokenLinks === 0) {
-    lines.push(chalk.green('✅ Link validation passed!'))
+    lines.push('✅ Link validation passed!')
   } else {
-    lines.push(chalk.red(`❌ Link validation failed: ${summary.brokenLinks} broken links found`))
+    lines.push(`❌ Link validation failed: ${summary.brokenLinks} broken links found`)
   }
 
   return lines.join('\n')
@@ -350,7 +384,7 @@ async function main() {
   const verbose = args.includes('--verbose') || args.includes('-v')
   const directory = args.find((arg) => !arg.startsWith('--') && !arg.startsWith('-'))
 
-  console.log(chalk.blue('🔍 Starting link validation...'))
+  consola.info('🔍 Starting link validation...')
 
   const context = createLinkValidator()
   const summary = await validateAllLinks(context, directory)
@@ -364,7 +398,7 @@ async function main() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
-    console.error(chalk.red('❌ Link validation failed:'), error)
+    consola.error('❌ Link validation failed:', error)
     process.exit(1)
   })
 }

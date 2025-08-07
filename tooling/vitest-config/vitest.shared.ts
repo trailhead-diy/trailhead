@@ -1,3 +1,16 @@
+/**
+ * @module vitest-config
+ * @description Shared Vitest configuration for Trailhead monorepo packages
+ *
+ * Provides a centralized Vitest configuration factory that handles:
+ * - TypeScript path mapping and module resolution
+ * - Monorepo package aliasing for testing
+ * - Environment configuration (Node.js or jsdom)
+ * - Plugin management and setup files
+ *
+ * @since 1.0.0
+ */
+
 import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -19,6 +32,36 @@ export interface VitestConfigOptions {
   useTsconfigPaths?: boolean
 }
 
+/**
+ * Creates a Vitest configuration tailored for monorepo packages
+ *
+ * Generates a Vitest configuration with proper module resolution for
+ * internal packages, TypeScript path mapping, and environment setup.
+ * Automatically detects the monorepo root and maps package imports
+ * to their source files for accurate testing.
+ *
+ * @param options - Configuration options
+ * @returns Vitest configuration object
+ *
+ * @example
+ * ```typescript
+ * // In a package's vitest.config.ts
+ * import { createVitestConfig } from '@repo/vitest-config'
+ *
+ * export default createVitestConfig({
+ *   environment: 'node',
+ *   setupFiles: ['./test/setup.ts']
+ * })
+ *
+ * // For browser/DOM testing
+ * export default createVitestConfig({
+ *   environment: 'jsdom',
+ *   additionalAliases: {
+ *     '@/components': './src/components'
+ *   }
+ * })
+ * ```
+ */
 export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   const {
     environment = 'node',
@@ -57,6 +100,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@esteban-url/fs/utils': resolve(packagesDir, 'fs/src/utils/index.ts'),
         '@esteban-url/fs': resolve(packagesDir, 'fs/src/index.ts'),
         '@esteban-url/data': resolve(packagesDir, 'data/src/index.ts'),
+        '@esteban-url/cli/command': resolve(packagesDir, 'cli/src/command/index.ts'),
         '@esteban-url/cli/testing': resolve(packagesDir, 'cli/src/testing/index.ts'),
         '@esteban-url/cli/utils': resolve(packagesDir, 'cli/src/utils/index.ts'),
         '@esteban-url/cli': resolve(packagesDir, 'cli/src/index.ts'),
@@ -80,6 +124,37 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
               },
             }
           : undefined,
+      coverage: {
+        enabled: process.env.COVERAGE === 'true',
+        provider: 'v8',
+        reporter: ['text', 'json-summary', 'html'],
+        reportsDirectory: './coverage',
+        thresholds:
+          process.env.COVERAGE_ENFORCE === 'true'
+            ? {
+                lines: 70,
+                functions: 70,
+                branches: 60,
+                statements: 70,
+              }
+            : undefined,
+        exclude: [
+          '**/*.test.ts',
+          '**/*.test.tsx',
+          '**/*.spec.ts',
+          '**/*.spec.tsx',
+          '**/testing/**',
+          '**/*.d.ts',
+          '**/bin/**',
+          '**/dist/**',
+          '**/node_modules/**',
+          '**/coverage/**',
+          '**/*.config.ts',
+          '**/*.config.js',
+          '**/types.ts',
+          '**/index.ts',
+        ],
+      },
     },
   })
 }

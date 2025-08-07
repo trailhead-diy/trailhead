@@ -2,6 +2,7 @@ import { createCommand } from '@esteban-url/cli/command'
 import { ok, err, createCoreError } from '@esteban-url/core'
 import { input, confirm } from '@esteban-url/cli/prompts'
 import { spawn } from 'child_process'
+import { consola } from 'consola'
 
 export const devCommand = createCommand({
   name: 'dev',
@@ -23,13 +24,13 @@ export const devCommand = createCommand({
     }
   },
   async handler(args) {
-    console.log('🚀 Starting {{projectName}} in development mode...')
+    consola.start('🚀 Starting {{projectName}} in development mode...')
 
     try {
       const { port, hot, debug } = args.flags
 
       if (debug) {
-        console.log('🐛 Debug mode enabled')
+        consola.info('🐛 Debug mode enabled')
       }
 
       // Interactive setup for advanced features
@@ -44,11 +45,11 @@ export const devCommand = createCommand({
           default: hot
         })
 
-        console.log(`Configuration: port=${customPort}, hot-reload=${useHotReload}`)
+        consola.info(`Configuration: port=${customPort}, hot-reload=${useHotReload}`)
       }
 
       // Start the development server
-      console.log(`📡 Starting server on port ${port}...`)
+      consola.info(`📡 Starting server on port ${port}...`)
       
       const devArgs = ['--watch']
       if (hot) {
@@ -97,7 +98,7 @@ async function shouldSetupAdvanced(): Promise<boolean> {
 
 async function runDevServer(command: string, args: string[] = []): Promise<{code: number}> {
   return new Promise((resolve) => {
-    console.log(`Running: ${command} ${args.join(' ')}`)
+    consola.debug(`Running: ${command} ${args.join(' ')}`)
     
     const child = spawn(command, args, { 
       stdio: 'inherit',
@@ -106,7 +107,7 @@ async function runDevServer(command: string, args: string[] = []): Promise<{code
 
     // Handle graceful shutdown
     process.on('SIGINT', () => {
-      console.log('\n👋 Shutting down development server...')
+      consola.info('\n👋 Shutting down development server...')
       child.kill('SIGINT')
     })
 
@@ -119,7 +120,7 @@ async function runDevServer(command: string, args: string[] = []): Promise<{code
     })
 
     child.on('error', (error) => {
-      console.error('Failed to start development server:', error)
+      consola.error('Failed to start development server:', error)
       resolve({ code: 1 })
     })
   })

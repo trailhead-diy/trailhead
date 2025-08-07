@@ -9,6 +9,29 @@ import { createJSONError, createParsingError, mapLibraryError } from '../errors.
 // JSON Core Operations
 // ========================================
 
+/**
+ * Create JSON operations with custom configuration
+ * @param {JSONConfig} [config={}] - JSON configuration options
+ * @returns {JSONOperations} Configured JSON operations object
+ *
+ * @example Basic usage
+ * ```typescript
+ * const jsonOps = createJSONOperations()
+ * const result = await jsonOps.parseFile('config.json')
+ * ```
+ *
+ * @example With custom reviver
+ * ```typescript
+ * const jsonOps = createJSONOperations({
+ *   reviver: (key, value) => {
+ *     if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+ *       return new Date(value)
+ *     }
+ *     return value
+ *   }
+ * })
+ * ```
+ */
 export const createJSONOperations: CreateJSONOperations = (config = {}) => {
   const jsonConfig = { ...defaultJSONConfig, ...config }
 

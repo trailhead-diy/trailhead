@@ -7,6 +7,11 @@ const sidebars: SidebarsConfig = {
       id: 'README',
       label: 'Overview',
     },
+    {
+      type: 'link',
+      label: 'API Reference',
+      href: '/packages/core/api',
+    },
   ],
 }
 

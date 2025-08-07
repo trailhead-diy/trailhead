@@ -18,12 +18,62 @@ import { mergeConfigs, createConfigMetadata } from './operations.js'
 // Configuration Manager
 // ========================================
 
+/**
+ * Dependencies required by the configuration manager.
+ *
+ * These operations provide the core functionality for loading, validating,
+ * and transforming configuration data from various sources.
+ */
 interface ManagerDependencies {
   readonly loaderOps: LoaderOperations
   readonly validatorOps: ValidatorOperations
   readonly transformerOps: TransformerOperations
 }
 
+/**
+ * Creates a configuration manager instance for managing configuration lifecycle.
+ *
+ * The manager provides methods for loading, watching, validating, and accessing
+ * configuration values with automatic change detection and error handling.
+ * It maintains internal state and provides a clean API for configuration management.
+ *
+ * @param definition - Configuration definition including sources, schema, and validation rules
+ * @param deps - Required dependencies for loader, validator, and transformer operations
+ * @returns Configuration manager instance with full lifecycle management
+ *
+ * @example
+ * ```typescript
+ * const manager = createConfigManager({
+ *   name: 'api-config',
+ *   sources: [
+ *     { type: 'env', env: 'API_', priority: 1 },
+ *     { type: 'file', path: './api.json', priority: 2, optional: true }
+ *   ],
+ *   schema: apiConfigSchema,
+ *   validators: [connectivityValidator]
+ * }, {
+ *   loaderOps: createLoaderOperations(),
+ *   validatorOps: createValidatorOperations(),
+ *   transformerOps: createTransformerOperations()
+ * })
+ *
+ * // Load configuration
+ * const state = await manager.load()
+ * if (state.isOk()) {
+ *   const apiUrl = manager.get('url')
+ *   const timeout = manager.get('timeout')
+ * }
+ *
+ * // Watch for changes
+ * await manager.watch((newConfig, oldConfig, changes) => {
+ *   console.log('Configuration changed:', changes)
+ * })
+ * ```
+ *
+ * @see {@link ConfigManager} - Manager interface definition
+ * @see {@link ConfigDefinition} - Definition structure and options
+ * @see {@link ManagerDependencies} - Required dependencies
+ */
 export const createConfigManager = <T>(
   definition: ConfigDefinition<T>,
   deps: ManagerDependencies
@@ -284,6 +334,16 @@ export const createConfigManager = <T>(
 // Helper Functions
 // ========================================
 
+/**
+ * Detects changes between old and new configuration objects.
+ *
+ * Performs shallow comparison to identify changed values and generates
+ * change records for configuration change callbacks.
+ *
+ * @param oldConfig - Previous configuration state
+ * @param newConfig - New configuration state
+ * @returns Array of detected changes with paths and values
+ */
 const detectChanges = <T>(oldConfig: T, newConfig: T): any[] => {
   const changes: any[] = []
 

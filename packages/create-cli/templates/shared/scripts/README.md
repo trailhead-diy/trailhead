@@ -35,14 +35,14 @@ The smart test runner analyzes your staged files and determines the appropriate 
 
 ## Files
 
-### `smart-test-runner.sh`
+### TypeScript CLI Test Runner
 
-The main script that analyzes staged files and executes appropriate tests.
+Intelligent test runner with git integration and risk analysis, now implemented as TypeScript CLI commands.
 
 **Usage:**
 
 ```bash
-./scripts/smart-test-runner.sh [options]
+pnpm scripts-cli test-runner [options]
 
 Options:
   --dry-run    Show what would be executed without running tests
@@ -161,7 +161,7 @@ docs/getting-started.md
 Check if tests are being skipped:
 
 ```bash
-./scripts/smart-test-runner.sh --verbose --dry-run
+pnpm scripts-cli test-runner --verbose --dry-run
 ```
 
 ### jq Not Available

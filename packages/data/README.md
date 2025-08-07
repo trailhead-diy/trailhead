@@ -92,14 +92,14 @@ await converter.convert(source, target, { from: 'csv', to: 'json' })
 
 ## Documentation
 
-- [Tutorials](/packages/data/docs/README.md)
-  - [Data Pipeline Processing](/docs/tutorials/data-pipeline-processing.md)
-- [How-to Guides](/packages/data/docs/how-to/process-data-files.md)
-  - [Convert Data Formats](/docs/how-to/convert-data-formats.md)
-- [Explanations](/packages/data/docs/explanation/format-detection.md)
-  - [Result Types Pattern](/docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](/docs/explanation/functional-architecture.md)
-- [API Reference](/packages/data/docs/reference/api.md)
+- [Tutorials](./docs/README.md)
+  - [Data Pipeline Processing](../../docs/tutorials/data-pipeline-processing.md)
+- [How-to Guides](./docs/how-to/process-data-files.md)
+  - [Convert Data Formats](../../docs/how-to/convert-data-formats.md)
+- [Explanations](./docs/explanation/format-detection.md)
+  - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
+  - [Functional Architecture](../../docs/explanation/functional-architecture.md)
+- [API Reference](./docs/reference/api.md)
 
 ## License
 

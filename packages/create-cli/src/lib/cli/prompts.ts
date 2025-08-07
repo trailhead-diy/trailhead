@@ -1,5 +1,6 @@
 import { ok, err, createCoreError, type Result } from '@esteban-url/core'
 import { input, select, confirm, checkbox } from '@esteban-url/cli/prompts'
+import { consola } from 'consola'
 import type { ProjectConfig, PackageManager } from '../config/types.js'
 import { createConfigContext } from '../config/manager.js'
 import { selectPreset, configureWithPreset, createInteractivePreset } from '../config/presets.js'
@@ -199,7 +200,7 @@ export async function gatherProjectConfig(
       if (saveAsPreset) {
         const presetResult = await createInteractivePreset(config, configContext)
         if (presetResult.isErr()) {
-          console.warn('Failed to save preset, but continuing with project generation')
+          consola.warn('Failed to save preset, but continuing with project generation')
         }
       }
     }

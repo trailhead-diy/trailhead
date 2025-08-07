@@ -11,7 +11,30 @@ const DEFAULT_OPTIONS: Required<Omit<ProgressOptions, 'stepWeights' | 'barOption
 }
 
 /**
- * Create progress tracker with cli-progress backend
+ * Create a progress tracker for long-running operations
+ *
+ * Provides visual progress feedback using cli-progress with support
+ * for step names, weighted progress, and custom formatting.
+ *
+ * @param options - Progress tracker configuration
+ * @param options.totalSteps - Total number of steps in operation
+ * @param options.stepWeights - Optional weights for weighted progress
+ * @param options.format - Custom progress bar format string
+ * @param options.showStepNames - Whether to display step names
+ * @param options.barOptions - Additional cli-progress options
+ * @returns Progress tracker instance for managing progress state
+ *
+ * @example
+ * ```typescript
+ * const tracker = createProgressTracker({
+ *   totalSteps: 5,
+ *   format: 'Building [{bar}] {percentage}% | {stepName}'
+ * });
+ *
+ * tracker.nextStep('Compiling TypeScript');
+ * tracker.nextStep('Running tests');
+ * tracker.complete();
+ * ```
  */
 export function createProgressTracker(options: ProgressOptions): ProgressTracker {
   const config = { ...DEFAULT_OPTIONS, ...options }
@@ -100,6 +123,21 @@ export function createProgressTracker(options: ProgressOptions): ProgressTracker
 
 /**
  * Update progress state immutably
+ *
+ * Creates a new progress state with the provided updates while
+ * automatically calculating percentage and completion status.
+ *
+ * @param currentState - Current progress state
+ * @param updates - Partial state updates to apply
+ * @returns New progress state with updates applied
+ *
+ * @example
+ * ```typescript
+ * const newState = updateProgress(state, {
+ *   currentStep: 3,
+ *   stepName: 'Processing files'
+ * });
+ * ```
  */
 export function updateProgress(
   currentState: ProgressState,
@@ -156,6 +194,22 @@ function updateProgressBar(
 
 /**
  * Calculate weighted progress percentage
+ *
+ * Computes progress percentage based on step weights, allowing
+ * more accurate progress for operations where steps take
+ * different amounts of time.
+ *
+ * @param currentStep - Current step number (0-based)
+ * @param totalSteps - Total number of steps
+ * @param weights - Array of weights for each step
+ * @returns Progress percentage (0-100)
+ *
+ * @example
+ * ```typescript
+ * // Step 1 takes 50% of time, steps 2-3 take 25% each
+ * const weights = [50, 25, 25];
+ * const progress = calculateWeightedProgress(1, 3, weights); // Returns 50
+ * ```
  */
 export function calculateWeightedProgress(
   currentStep: number,

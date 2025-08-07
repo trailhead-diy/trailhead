@@ -3,7 +3,8 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { join, resolve, dirname, relative } from 'path'
 import { glob } from 'glob'
-import chalk from 'chalk'
+import { consola } from 'consola'
+import { colors } from 'consola/utils'
 
 interface LinkFix {
   file: string
@@ -186,7 +187,7 @@ const fixFileLinks = (filePath: string, repoRoot: string, dryRun = false): LinkF
 
     return allFixes
   } catch (error) {
-    console.error(chalk.red(`❌ Failed to fix links in ${filePath}:`), error)
+    consola.error(`❌ Failed to fix links in ${filePath}:`, error)
     return []
   }
 }
@@ -223,20 +224,20 @@ const fixAllLinks = async (
 const generateFixReport = (fixes: LinkFix[], repoRoot: string, dryRun = false): string => {
   const lines: string[] = []
 
-  lines.push(chalk.bold(`\n🔧 Link Fix Report ${dryRun ? '(DRY RUN)' : ''}`))
+  lines.push(`\n🔧 Link Fix Report ${dryRun ? '(DRY RUN)' : ''}`)
   lines.push('═'.repeat(50))
 
   if (fixes.length === 0) {
-    lines.push(chalk.green('✅ No links needed fixing!'))
+    lines.push('✅ No links needed fixing!')
     return lines.join('\n')
   }
 
   lines.push(`🔗 Total fixes: ${fixes.length}`)
 
   if (dryRun) {
-    lines.push(chalk.yellow('⚠️  DRY RUN - No files were modified'))
+    lines.push('⚠️  DRY RUN - No files were modified')
   } else {
-    lines.push(chalk.green('✅ Files have been updated'))
+    lines.push('✅ Files have been updated')
   }
 
   lines.push('\n📋 Fix Details')
@@ -258,16 +259,16 @@ const generateFixReport = (fixes: LinkFix[], repoRoot: string, dryRun = false): 
 
     fileFixes.forEach((fix) => {
       lines.push(`   Line ${fix.line}: ${fix.reason}`)
-      lines.push(`     ${chalk.red('- ' + fix.originalLink)}`)
-      lines.push(`     ${chalk.green('+ ' + fix.fixedLink)}`)
+      lines.push(`     ${colors.red('- ' + fix.originalLink)}`)
+      lines.push(`     ${colors.green('+ ' + fix.fixedLink)}`)
     })
   })
 
   lines.push('\n' + '═'.repeat(50))
   if (dryRun) {
-    lines.push(chalk.yellow('⚠️  Run without --dry-run to apply fixes'))
+    lines.push('⚠️  Run without --dry-run to apply fixes')
   } else {
-    lines.push(chalk.green('✅ Link fixes applied successfully!'))
+    lines.push('✅ Link fixes applied successfully!')
   }
 
   return lines.join('\n')
@@ -288,10 +289,10 @@ async function main() {
   const dryRun = args.includes('--dry-run')
   const directory = args.find((arg) => !arg.startsWith('--') && !arg.startsWith('-'))
 
-  console.log(chalk.blue(`🔧 Starting link fixing${dryRun ? ' (dry run)' : ''}...`))
+  consola.info(`🔧 Starting link fixing${dryRun ? ' (dry run)' : ''}...`)
 
   if (dryRun) {
-    console.log(chalk.yellow('⚠️  DRY RUN MODE: No files will be modified'))
+    consola.warn('⚠️  DRY RUN MODE: No files will be modified')
   }
 
   const context = createLinkFixer()
@@ -305,7 +306,7 @@ async function main() {
 
 // Run if this is the main module
 main().catch((error) => {
-  console.error(chalk.red('❌ Link fixing failed:'), error)
+  consola.error('❌ Link fixing failed:', error)
   process.exit(1)
 })
 

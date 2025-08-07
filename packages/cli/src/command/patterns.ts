@@ -1,12 +1,51 @@
 import type { CommandContext, CommandPhase } from './types.js'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
-import { chalk } from '../utils/chalk.js'
+import { colors } from '../utils/chalk.js'
 
+/**
+ * Configuration options for commands that support interactive mode
+ *
+ * Enables commands to run with user prompts for missing options or
+ * skip prompts entirely for automated workflows.
+ */
 export interface InteractiveCommandOptions {
+  /** Enable interactive mode with user prompts for missing options */
   readonly interactive?: boolean
+  /** Skip prompts even in interactive mode (for testing/automation) */
   readonly skipPrompts?: boolean
 }
 
+/**
+ * Execute a command with interactive prompt support
+ *
+ * Enables commands to run interactively by prompting users for missing options.
+ * CLI arguments take precedence over prompted values. Useful for creating
+ * user-friendly commands that guide users through configuration.
+ *
+ * @template T - Command options type extending InteractiveCommandOptions
+ * @template R - Result type from command execution
+ * @param options - Initial options from CLI arguments
+ * @param promptFn - Async function that returns prompted option values
+ * @param executeFn - Main command execution function with final options
+ * @param context - Command execution context
+ * @returns Result of command execution or error
+ *
+ * @example
+ * ```typescript
+ * const result = await executeInteractiveCommand(
+ *   options,
+ *   async () => {
+ *     const name = await input({ message: 'Project name?' });
+ *     return { name };
+ *   },
+ *   async (finalOptions) => {
+ *     // Execute with merged CLI + prompted options
+ *     return createProject(finalOptions);
+ *   },
+ *   context
+ * );
+ * ```
+ */
 export async function executeInteractiveCommand<T extends InteractiveCommandOptions, R>(
   options: T,
   promptFn: () => Promise<Partial<T>>,
@@ -38,12 +77,54 @@ export async function executeInteractiveCommand<T extends InteractiveCommandOpti
   return executeFn(finalOptions)
 }
 
+/**
+ * Validation rule for command data
+ *
+ * Defines a named validation that can transform or reject data.
+ * Validators can modify data during validation for normalization.
+ *
+ * @template T - Type of data being validated
+ */
 export interface ValidationRule<T> {
+  /** Human-readable name for error messages */
   readonly name: string
+  /** Validation function that can transform or reject data */
   readonly validate: (value: T) => Result<T, CoreError>
+  /** Whether this validation must pass (future use) */
   readonly required?: boolean
 }
 
+/**
+ * Execute a function with data validation
+ *
+ * Runs validation rules sequentially before executing main function.
+ * Validators can transform data, making this useful for normalization
+ * and ensuring data integrity before processing.
+ *
+ * @template T - Type of data to validate
+ * @template R - Result type from execution
+ * @param data - Data to validate
+ * @param rules - Array of validation rules to apply in order
+ * @param executeFn - Function to execute with validated data
+ * @param context - Command execution context
+ * @returns Result of execution or validation error
+ *
+ * @example
+ * ```typescript
+ * const rules = [
+ *   {
+ *     name: 'valid-path',
+ *     validate: (data) => validatePath(data.path)
+ *   },
+ *   {
+ *     name: 'normalize-options',
+ *     validate: (data) => ok({ ...data, path: resolve(data.path) })
+ *   }
+ * ];
+ *
+ * await executeWithValidation(data, rules, processFiles, context);
+ * ```
+ */
 export async function executeWithValidation<T, R>(
   data: T,
   rules: ValidationRule<T>[],
@@ -67,12 +148,53 @@ export async function executeWithValidation<T, R>(
   return executeFn(data)
 }
 
+/**
+ * Transactional file system operation
+ *
+ * Represents an atomic operation with optional rollback support.
+ * Operations are executed sequentially with automatic rollback on failure.
+ *
+ * @template T - Result type of the operation
+ */
 export interface FileSystemOperation<T> {
+  /** Operation name for logging and error messages */
   readonly name: string
+  /** Function that performs the operation */
   readonly execute: () => Promise<Result<T, CoreError>>
+  /** Optional rollback function called on failure */
   readonly rollback?: () => Promise<void>
 }
 
+/**
+ * Execute file system operations with transactional rollback
+ *
+ * Executes operations sequentially, automatically rolling back completed
+ * operations if any operation fails. Provides atomic-like behavior for
+ * file system changes.
+ *
+ * @template T - Result type of operations
+ * @param operations - Array of operations to execute in order
+ * @param context - Command execution context
+ * @returns Array of operation results or error with rollback
+ *
+ * @example
+ * ```typescript
+ * const operations = [
+ *   {
+ *     name: 'create-directory',
+ *     execute: () => fs.mkdir(dir),
+ *     rollback: () => fs.rmdir(dir)
+ *   },
+ *   {
+ *     name: 'write-config',
+ *     execute: () => fs.writeFile(configPath, data),
+ *     rollback: () => fs.unlink(configPath)
+ *   }
+ * ];
+ *
+ * const results = await executeFileSystemOperations(operations, context);
+ * ```
+ */
 export async function executeFileSystemOperations<T>(
   operations: FileSystemOperation<T>[],
   context: CommandContext
@@ -121,13 +243,42 @@ export async function executeFileSystemOperations<T>(
   return ok(results)
 }
 
+/**
+ * Configuration for spawning subprocesses
+ *
+ * Defines command execution parameters with support for custom
+ * environment and working directory.
+ */
 export interface SubprocessConfig {
+  /** Command to execute (must be in PATH or absolute) */
   readonly command: string
+  /** Array of command arguments */
   readonly args: string[]
+  /** Working directory for command execution */
   readonly cwd?: string
+  /** Environment variables to merge with process.env */
   readonly env?: Record<string, string>
 }
 
+/**
+ * Execute a subprocess with proper error handling
+ *
+ * Spawns a child process and captures output. In verbose mode, inherits
+ * stdio for real-time output. Otherwise, captures and returns stdout.
+ *
+ * @param config - Subprocess configuration
+ * @param context - Command execution context
+ * @returns Stdout output on success or error with details
+ *
+ * @example
+ * ```typescript
+ * const result = await executeSubprocess({
+ *   command: 'npm',
+ *   args: ['install', '--save-dev', 'typescript'],
+ *   cwd: projectPath
+ * }, context);
+ * ```
+ */
 export async function executeSubprocess(
   config: SubprocessConfig,
   context: CommandContext
@@ -191,6 +342,35 @@ export async function executeSubprocess(
 
 /**
  * Execute operations in batches with concurrency control
+ *
+ * Processes items in parallel batches to optimize performance while
+ * controlling resource usage. Useful for file processing, API calls,
+ * or any operation that benefits from parallelization.
+ *
+ * @template T - Input item type
+ * @template R - Result type per item
+ * @param items - Array of items to process
+ * @param processor - Async function to process each item
+ * @param options - Batch configuration
+ * @param options.batchSize - Number of items to process in parallel
+ * @param options.onProgress - Optional progress callback
+ * @param context - Command execution context (unused but required for consistency)
+ * @returns Array of processed results or first error encountered
+ *
+ * @example
+ * ```typescript
+ * const results = await executeBatch(
+ *   files,
+ *   async (file) => processFile(file),
+ *   {
+ *     batchSize: 5,
+ *     onProgress: (done, total) => {
+ *       console.log(`Processed ${done}/${total}`);
+ *     }
+ *   },
+ *   context
+ * );
+ * ```
  */
 export async function executeBatch<T, R>(
   items: T[],
@@ -228,12 +408,46 @@ export async function executeBatch<T, R>(
   return ok(results)
 }
 
+/**
+ * Options for configuration-based command execution
+ *
+ * Supports loading base config, applying presets, and runtime overrides
+ * for flexible command configuration.
+ */
 export interface ConfigurationOptions {
+  /** Path to configuration file */
   readonly config?: string
+  /** Named preset to apply */
   readonly preset?: string
+  /** Runtime configuration overrides */
   readonly override?: Record<string, any>
 }
 
+/**
+ * Execute a command with layered configuration
+ *
+ * Loads configuration from file, applies presets, and merges runtime
+ * overrides. Provides flexible configuration management for commands
+ * that support multiple configuration sources.
+ *
+ * @template T - Options type extending ConfigurationOptions
+ * @template R - Result type from execution
+ * @param options - Configuration options with paths and overrides
+ * @param loadConfigFn - Function to load configuration from path
+ * @param executeFn - Function to execute with final configuration
+ * @param context - Command execution context
+ * @returns Result of execution with merged configuration
+ *
+ * @example
+ * ```typescript
+ * await executeWithConfiguration(
+ *   options,
+ *   async (path) => loadJsonConfig(path || '.config.json'),
+ *   async (config) => buildProject(config),
+ *   context
+ * );
+ * ```
+ */
 export async function executeWithConfiguration<T extends ConfigurationOptions, R>(
   options: T,
   loadConfigFn: (path?: string) => Promise<Result<Record<string, any>, CoreError>>,
@@ -410,31 +624,29 @@ export function displaySummary(
   stats?: Array<{ label: string; value: string | number }>
 ): void {
   context.logger.info('')
-  context.logger.info(chalk.bold.blue(`📋 ${title}`))
-  context.logger.info(chalk.blue('═'.repeat(title.length + 4)))
+  context.logger.info(colors.bold(colors.blue(`📋 ${title}`)))
+  context.logger.info(colors.blue('═'.repeat(title.length + 4)))
 
   // Display main items
   for (const item of items) {
     const formattedValue =
       typeof item.value === 'boolean'
         ? item.value
-          ? chalk.green('✓ Yes')
-          : chalk.red('✗ No')
-        : chalk.cyan(String(item.value))
+          ? colors.green('✓ Yes')
+          : colors.red('✗ No')
+        : colors.cyan(String(item.value))
 
-    context.logger.info(`${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`)
+    context.logger.info(`${colors.gray('▸')} ${item.label}: ${formattedValue}`)
   }
 
   // Display statistics if provided
   if (stats && stats.length > 0) {
     context.logger.info('')
-    context.logger.info(chalk.bold.yellow('📊 Statistics'))
-    context.logger.info(chalk.yellow('─'.repeat(12)))
+    context.logger.info(colors.bold(colors.yellow('📊 Statistics')))
+    context.logger.info(colors.yellow('─'.repeat(12)))
 
     for (const stat of stats) {
-      context.logger.info(
-        `${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`
-      )
+      context.logger.info(`${colors.gray('▸')} ${stat.label}: ${colors.green(String(stat.value))}`)
     }
   }
 

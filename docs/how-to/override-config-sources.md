@@ -258,6 +258,6 @@ env:
 
 ## See Also
 
-- [Configuration Sources Explanation](/docs/explanation/config-sources)
-- [Configuration Tutorial](/docs/tutorials/config-getting-started)
-- [Configuration API Reference](/packages/config/docs/reference/api.md)
+- [Configuration Sources Explanation](../explanation/config-sources)
+- [Configuration Tutorial](../tutorials/config-getting-started)
+- [Configuration API Reference](../../packages/config/docs/reference/api.md)

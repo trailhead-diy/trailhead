@@ -1,9 +1,29 @@
+/**
+ * @module json/types
+ * @description Type definitions and defaults for JSON operations
+ */
+
 import type { JSONConfig, JSONProcessingOptions, JSONOperations, DataResult } from '../types.js'
 
 // ========================================
 // JSON Configuration Defaults
 // ========================================
 
+/**
+ * Default configuration for JSON operations
+ *
+ * @constant
+ * @type {JSONConfig}
+ *
+ * @property {string} encoding - File encoding (default: 'utf8')
+ * @property {number} timeout - Operation timeout (default: 30000ms)
+ * @property {number} maxSize - Max file size (default: 50MB)
+ * @property {Function} [reviver] - JSON.parse reviver function
+ * @property {Function} [replacer] - JSON.stringify replacer function
+ * @property {string|number} [space] - Indentation for formatting
+ * @property {boolean} allowTrailingCommas - Allow trailing commas (default: false)
+ * @property {boolean} allowComments - Allow comments (default: false)
+ */
 export const defaultJSONConfig: Required<Omit<JSONConfig, 'reviver' | 'replacer' | 'space'>> &
   Pick<JSONConfig, 'reviver' | 'replacer' | 'space'> = {
   encoding: 'utf8',

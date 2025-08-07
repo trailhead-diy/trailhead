@@ -212,13 +212,13 @@ const schema = createConfigSchema({
 type Config = z.infer<typeof schema>
 
 // Use in your application
-function startServer(config: Config) {
+const startServer = (config: Config) => {
   console.log(`Starting on ${config.server.host}:${config.server.port}`)
 }
 ```
 
 ## See Also
 
-- [Configuration API Reference](/packages/config/docs/reference/api)
-- [Getting Started Tutorial](/docs/tutorials/config-getting-started)
-- [Understanding Configuration Sources](/docs/explanation/config-sources)
+- [Configuration API Reference](../../packages/config/docs/reference/api)
+- [Getting Started Tutorial](../tutorials/config-getting-started)
+- [Understanding Configuration Sources](../explanation/config-sources)

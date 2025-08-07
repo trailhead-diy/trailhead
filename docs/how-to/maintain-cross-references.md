@@ -59,10 +59,10 @@ pnpm docs:validate-links packages/cli/docs/
 
 ```markdown
 ✅ Good
-[Result Types Pattern](/docs/explanation/result-types-pattern)
+[Result Types Pattern](../explanation/result-types-pattern)
 
 ❌ Avoid
-[Result Types Pattern](/docs/explanation/result-types-pattern)
+[Result Types Pattern](../explanation/result-types-pattern)
 ```
 
 ### 2. When Moving or Renaming Files
@@ -210,12 +210,12 @@ pnpm docs:validate-links --verbose
 
 ```markdown
 ✅ Good
-[CLI Command API Reference](/packages/cli/docs/reference/command)
-[How to Handle Errors in CLI Applications](/packages/cli/docs/how-to/handle-errors-in-cli.md)
+[CLI Command API Reference](../../packages/cli/docs/reference/command)
+[How to Handle Errors in CLI Applications](../../packages/cli/docs/how-to/handle-errors-in-cli.md)
 
 ❌ Bad  
-[API docs](/packages/cli/docs/reference/command)
-[Click here](/packages/cli/docs/how-to/handle-errors-in-cli.md)
+[API docs](../../packages/cli/docs/reference/command)
+[Click here](../../packages/cli/docs/how-to/handle-errors-in-cli.md)
 ```
 
 ### 2. Frontmatter Related Links
@@ -239,9 +239,9 @@ related:
 ```markdown
 ## Related Packages
 
-- \*_[@repo/core](/packages/core/README.md)_ - Foundation utilities
-- \*_[@repo/fs](/packages/fs/README.md)_ - File system operations
-- \*_[@esteban-url/cli](/packages/cli/README.md)_ - CLI framework
+- \*_[@repo/core](../../packages/core/README.md)_ - Foundation utilities
+- \*_[@repo/fs](../../packages/fs/README.md)_ - File system operations
+- \*_[@esteban-url/cli](../../packages/cli/README.md)_ - CLI framework
 ```
 
 ### 4. Documentation Tables
@@ -249,9 +249,9 @@ related:
 **Use tables for systematic navigation**:
 
 ```markdown
-| Topic              | Tutorial                                                     | How-to Guide                                                           | Reference                                                     |
-| ------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Error Handling** | [Getting Started](/docs/tutorials/config-getting-started.md) | [Handle CLI Errors](/packages/cli/docs/how-to/handle-errors-in-cli.md) | [Result Types API](/docs/explanation/result-types-pattern.md) |
+| Topic              | Tutorial                                                  | How-to Guide                                                                | Reference                                                  |
+| ------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Error Handling** | [Getting Started](../tutorials/config-getting-started.md) | [Handle CLI Errors](../../packages/cli/docs/how-to/handle-errors-in-cli.md) | [Result Types API](../explanation/result-types-pattern.md) |
 ```
 
 ## Quality Metrics
@@ -305,8 +305,8 @@ pnpm docs:fix-links --dry-run
 
 **For complex reorganization**:
 
-- Review [Cross-Reference Style Guide](/docs/reference/cross-reference-style-guide)
-- Check [Documentation Standards](/docs/reference/documentation-standards)
+- Review [Cross-Reference Style Guide](../reference/cross-reference-style-guide)
+- Check [Documentation Standards](../reference/documentation-standards)
 - Ask in GitHub Discussions for architectural guidance
 
 **For tooling issues**:

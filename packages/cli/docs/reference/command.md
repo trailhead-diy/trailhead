@@ -383,6 +383,6 @@ const command = createCommand({
 
 ## See Also
 
-- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Build your first command
-- [Testing Commands](/packages/cli/docs/how-to/test-cli-applications.md)- Test command behavior
-- [Command Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Common command patterns
+- [Getting Started](../../tutorials/getting-started.md)- Build your first command
+- [Testing Commands](../../how-to/test-cli-applications.md)- Test command behavior
+- [Command Patterns](../../how-to/use-result-pipelines.md)- Common command patterns

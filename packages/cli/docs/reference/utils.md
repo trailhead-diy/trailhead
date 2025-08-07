@@ -348,7 +348,7 @@ console.log(formatStats(stats.getSummary()))
 ### Styled Output with Options
 
 ```typescript
-function displayResults(results: any[], options: DisplayOptions) {
+const displayResults = (results: any[], options: DisplayOptions) => {
   const processed = processCommandOptions(options, [
     { name: 'color', type: 'boolean', default: true },
     { name: 'verbose', type: 'boolean', default: false },
@@ -426,6 +426,6 @@ type StyleFunction = (text: string) => string
 
 ## See Also
 
-- [Getting Started](/packages/cli/docs/tutorials/getting-started.md)- Basic styling examples
-- [Common Patterns](/packages/cli/docs/how-to/use-result-pipelines.md)- Progress patterns
-- [Command Reference](/packages/cli/docs/reference/command.md)- Using utils in commands
+- [Getting Started](../../tutorials/getting-started.md)- Basic styling examples
+- [Common Patterns](../../how-to/use-result-pipelines.md)- Progress patterns
+- [Command Reference](../../reference/command.md)- Using utils in commands

@@ -15,6 +15,13 @@ import {
 // Enhanced Validator Operations
 // ========================================
 
+/**
+ * Validator operations interface for managing configuration validators.
+ *
+ * Provides registration and management of custom validators that perform
+ * business logic validation beyond basic schema validation, such as
+ * environment-specific rules, connectivity checks, and custom constraints.
+ */
 export interface ValidatorOperations {
   readonly register: <T>(validator: import('../types.js').ConfigValidator<T>) => void
   readonly unregister: (name: string) => void
@@ -27,6 +34,46 @@ export interface ValidatorOperations {
   readonly hasValidator: (name: string) => boolean
 }
 
+/**
+ * Creates validator operations for managing configuration validators.
+ *
+ * Provides a registry system for custom validators that can perform complex
+ * business logic validation beyond what schema validation provides. Useful for
+ * environment-specific validation, connectivity checks, and custom constraints.
+ *
+ * @returns Validator operations interface with registration and validation capabilities
+ *
+ * @example
+ * ```typescript
+ * const validatorOps = createValidatorOperations()
+ *
+ * // Register a custom validator
+ * const dbConnectivityValidator: ConfigValidator<DatabaseConfig> = {
+ *   name: 'database-connectivity',
+ *   validate: async (config) => {
+ *     try {
+ *       await testDatabaseConnection(config.host, config.port)
+ *       return ok(config)
+ *     } catch (error) {
+ *       return err(createValidationError({
+ *         field: 'database',
+ *         value: config,
+ *         expectedType: 'valid database configuration',
+ *         suggestion: 'Check database host and port are accessible'
+ *       }))
+ *     }
+ *   }
+ * }
+ *
+ * validatorOps.register(dbConnectivityValidator)
+ *
+ * // Validate configuration
+ * const result = await validatorOps.validate(config, [dbConnectivityValidator])
+ * ```
+ *
+ * @see {@link ValidatorOperations} - Operations interface definition
+ * @see {@link ConfigValidator} - Validator interface for custom implementations
+ */
 export const createValidatorOperations = (): ValidatorOperations => {
   const validators = new Map<string, import('../types.js').ConfigValidator<any>>()
 
@@ -103,6 +150,21 @@ export const createValidatorOperations = (): ValidatorOperations => {
 // Built-in Validators
 // ========================================
 
+/**
+ * Creates a built-in validator for environment field validation.
+ *
+ * Validates that the application environment is set to one of the standard
+ * values: development, staging, production, or test.
+ *
+ * @returns Environment validator instance
+ *
+ * @example
+ * ```typescript
+ * const envValidator = createEnvironmentValidator()
+ * const validatorOps = createValidatorOperations()
+ * validatorOps.register(envValidator)
+ * ```
+ */
 export const createEnvironmentValidator = (): ConfigValidator<any> => ({
   name: 'environment',
   schema: {
@@ -133,6 +195,21 @@ export const createEnvironmentValidator = (): ConfigValidator<any> => ({
   },
 })
 
+/**
+ * Creates a built-in validator for port number validation.
+ *
+ * Validates that server port numbers are within the valid range (1-65535)
+ * and are properly configured for the application environment.
+ *
+ * @returns Port validator instance
+ *
+ * @example
+ * ```typescript
+ * const portValidator = createPortValidator()
+ * const validatorOps = createValidatorOperations()
+ * validatorOps.register(portValidator)
+ * ```
+ */
 export const createPortValidator = (): ConfigValidator<any> => ({
   name: 'port',
   schema: {

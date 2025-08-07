@@ -26,7 +26,7 @@ Chain operations where each depends on the previous:
 import { ok, err } from '@repo/core'
 
 // Manual error checking (verbose)
-async function processData(input: string): Promise<Result<ProcessedData>> {
+async const processData = async (input: string): Promise<Result<ProcessedData>> => {
   const parseResult = await parseJSON(input)
   if (parseResult.isErr()) {
     return err(new Error(`Parse failed: ${parseResult.error.message}`))
@@ -62,7 +62,7 @@ async function chain<T, R>(
 }
 
 // Usage
-async function processData(input: string): Promise<Result<ProcessedData>> {
+async const processData = async (input: string): Promise<Result<ProcessedData>> => {
   return chain(chain(parseJSON(input), validateData), transformData)
 }
 ```
@@ -231,7 +231,7 @@ const result = await pipeline('input.json')
 import { fs } from '@repo/fs'
 import { data } from '@repo/data'
 
-async function processDataFile(inputPath: string): Promise<Result<void>> {
+async const processDataFile = async (inputPath: string): Promise<Result<void>> => {
   // Read file
   const contentResult = await fs.readFile(inputPath)
   if (contentResult.isErr()) return contentResult
@@ -253,7 +253,7 @@ async function processDataFile(inputPath: string): Promise<Result<void>> {
 ### API Request Chain
 
 ```typescript
-async function fetchUserData(userId: string): Promise<Result<UserData>> {
+async const fetchUserData = async (userId: string): Promise<Result<UserData>> => {
   // Authenticate
   const authResult = await authenticate()
   if (authResult.isErr()) return authResult
@@ -287,7 +287,7 @@ async function fetchUserData(userId: string): Promise<Result<UserData>> {
 Exit as soon as an error occurs:
 
 ```typescript
-async function process(input: string): Promise<Result<Output>> {
+async const process = async (input: string): Promise<Result<Output>> => {
   const step1 = await operation1(input)
   if (step1.isErr()) return step1
 
@@ -333,7 +333,7 @@ if (result.isErr()) {
 import { fs } from '@repo/fs'
 
 // Chain file operations
-async function updateConfig(updates: any): Promise<Result<void>> {
+async const updateConfig = async (updates: any): Promise<Result<void>> => {
   const readResult = await fs.readJson('config.json')
   if (readResult.isErr()) return readResult
 
@@ -349,7 +349,7 @@ async function updateConfig(updates: any): Promise<Result<void>> {
 import { validate } from '@repo/validation'
 
 // Compose validation steps
-function validateUser(data: unknown): Result<User> {
+const validateUser = (data: unknown): Result<User> => {
   const emailResult = validate.email(data.email)
   if (emailResult.isErr()) return emailResult
 
@@ -366,6 +366,6 @@ function validateUser(data: unknown): Result<User> {
 
 ## Related Documentation
 
-- [Result Types Pattern](/docs/explanation/result-types-pattern.md)- Understanding Result types
-- [Apply Functional Patterns](/docs/how-to/apply-functional-patterns.md)- Functional programming techniques
-- [Error Handling](/docs/how-to/compose-result-operations#error-handling.md)- Error handling strategies
+- [Result Types Pattern](../explanation/result-types-pattern.md)- Understanding Result types
+- [Apply Functional Patterns](./apply-functional-patterns.md)- Functional programming techniques
+- [Error Handling](./compose-result-operations#error-handling.md)- Error handling strategies

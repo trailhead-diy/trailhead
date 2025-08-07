@@ -11,6 +11,31 @@ import type { ValidationConfig, ValidatorFn } from './types.js'
 
 /**
  * Email validation schema with consistent error messaging
+ *
+ * Creates a Zod schema for email validation with RFC 5321 compliance,
+ * including length limits and user-friendly error messages.
+ *
+ * @returns Zod email schema
+ *
+ * @example
+ * ```typescript
+ * // Direct schema usage
+ * const schema = emailSchema();
+ * const result = schema.safeParse('user@example.com');
+ *
+ * // In a user registration form
+ * const userSchema = z.object({
+ *   email: emailSchema(),
+ *   password: passwordSchema()
+ * });
+ *
+ * // With custom validator
+ * const emailValidator = createValidator(emailSchema());
+ * const validation = emailValidator('invalid.email');
+ * if (validation.isErr()) {
+ *   console.log(validation.error.message);
+ * }
+ * ```
  */
 export const emailSchema = () =>
   z
@@ -143,6 +168,33 @@ export const trimmedStringSchema = (fieldName: string = 'Value') =>
 
 /**
  * Project name validation schema with npm package name rules
+ *
+ * Validates project names according to npm package naming conventions:
+ * lowercase letters, numbers, hyphens, starting with letter, max 214 chars.
+ *
+ * @returns Zod schema for project name validation
+ *
+ * @example
+ * ```typescript
+ * // Validate CLI project name
+ * const schema = projectNameSchema();
+ *
+ * // Valid names
+ * schema.safeParse('my-awesome-cli').success; // true
+ * schema.safeParse('cli-tool-2024').success; // true
+ *
+ * // Invalid names
+ * schema.safeParse('MyProject').success; // false (uppercase)
+ * schema.safeParse('_private').success; // false (starts with underscore)
+ * schema.safeParse('@scoped/package').success; // false (contains @/)
+ *
+ * // In project configuration
+ * const configSchema = z.object({
+ *   name: projectNameSchema(),
+ *   version: semverSchema(),
+ *   description: nonEmptyStringSchema('Description')
+ * });
+ * ```
  */
 export const projectNameSchema = () =>
   z

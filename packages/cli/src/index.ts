@@ -1,5 +1,36 @@
-// Foundation CLI orchestrator for the Trailhead System
-// Uses domain packages for all functionality - acts as a focused CLI framework
+/**
+ * @module @esteban-url/cli
+ * @description Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.
+ *
+ * This package provides a modern foundation for CLI applications using functional programming patterns,
+ * explicit error handling with Result types, and comprehensive command management. Built on top of
+ * Commander.js with enhanced type safety and validation.
+ *
+ * @example
+ * ```typescript
+ * import { createCLI, createCommand } from '@esteban-url/cli'
+ *
+ * const testCommand = createCommand({
+ *   name: 'test',
+ *   description: 'Run tests',
+ *   action: async (options, context) => {
+ *     context.logger.info('Running tests...');
+ *     return ok(undefined);
+ *   }
+ * });
+ *
+ * const cli = createCLI({
+ *   name: 'my-cli',
+ *   version: '1.0.0',
+ *   description: 'My CLI application',
+ *   commands: [testCommand]
+ * });
+ *
+ * await cli.run();
+ * ```
+ *
+ * @since 0.1.0
+ */
 
 // Core Result types from foundation package
 export { ok, err } from '@esteban-url/core'

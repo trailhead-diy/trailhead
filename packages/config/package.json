@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -52,13 +57,15 @@
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",
+    "@esteban-url/fs": "workspace:*",
     "@esteban-url/validation": "workspace:*",
-    "@esteban-url/fs": "workspace:*"
+    "consola": "^3.4.2"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@vitest/coverage-v8": "^3.2.4",
     "tsup": "^8.5.0",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"
@@ -76,7 +83,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/esteban-url/trailhead-cli.git",
+    "url": "git+https://github.com/esteban-url/trailhead.git",
     "directory": "packages/config"
   }
 }

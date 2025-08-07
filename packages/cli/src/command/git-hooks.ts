@@ -7,10 +7,15 @@ import { Command } from 'commander'
 import path from 'path'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { fs } from '@esteban-url/fs'
-import chalk from 'chalk'
+import { colors } from '../utils/chalk.js'
 import { createDefaultLogger } from '../utils/logger.js'
 
-// Types
+/**
+ * Configuration options for git hooks commands
+ *
+ * Controls hook installation type, framework detection, and
+ * command behavior for git hooks management.
+ */
 interface GitHooksOptions {
   type?: 'smart-aggressive' | 'conservative' | 'basic'
   framework?: 'vitest' | 'jest' | 'auto'
@@ -20,12 +25,24 @@ interface GitHooksOptions {
   destination?: string
 }
 
+/**
+ * Detected project configuration
+ *
+ * Contains auto-detected information about the project structure,
+ * tools, and setup used to configure git hooks appropriately.
+ */
 interface ProjectConfig {
+  /** Whether project is a monorepo (turbo, lerna, pnpm workspace) */
   isMonorepo: boolean
+  /** Detected package manager (pnpm, npm, yarn) */
   packageManager: string
+  /** Detected test framework (vitest, jest) */
   testFramework: string
+  /** Whether TypeScript is configured */
   hasTypeScript: boolean
+  /** Directory containing packages in monorepo */
   packagesDir: string
+  /** List of package names in monorepo */
   packages: string[]
 }
 
@@ -34,7 +51,13 @@ const TEMPLATES_DIR = '../templates/git-hooks'
 const DEFAULT_SCRIPTS_DIR = 'scripts'
 
 /**
- * Detect project configuration
+ * Detect project configuration automatically
+ *
+ * Analyzes the project structure to determine monorepo setup,
+ * package manager, test framework, and other configuration details
+ * needed to generate appropriate git hooks.
+ *
+ * @returns Detected project configuration or error
  */
 async function detectProjectConfig(): Promise<Result<ProjectConfig, CoreError>> {
   // Use fs directly from domain package
@@ -126,7 +149,14 @@ async function detectProjectConfig(): Promise<Result<ProjectConfig, CoreError>> 
 }
 
 /**
- * Generate template variables from project config
+ * Generate template variables from project configuration
+ *
+ * Transforms detected project configuration into template variables
+ * used for rendering git hook templates with project-specific values.
+ *
+ * @param config - Detected project configuration
+ * @param options - Git hooks command options
+ * @returns Template variables for rendering
  */
 function generateTemplateVars(
   config: ProjectConfig,
@@ -228,7 +258,15 @@ function generateTemplateVars(
 }
 
 /**
- * Render template with variables
+ * Render template string with variable substitution
+ *
+ * Supports variable replacement ({{VAR}}), conditionals ({{#if}}),
+ * and iteration over arrays/objects ({{#each}}). Used to generate
+ * project-specific configuration files from templates.
+ *
+ * @param template - Template string with placeholders
+ * @param vars - Variables to substitute into template
+ * @returns Rendered template with variables replaced
  */
 function renderTemplate(template: string, vars: Record<string, any>): string {
   let result = template
@@ -290,7 +328,14 @@ function renderTemplate(template: string, vars: Record<string, any>): string {
 }
 
 /**
- * Install git hooks
+ * Install smart git hooks for the project
+ *
+ * Detects project configuration and installs appropriate git hooks
+ * including test runner scripts, lefthook configuration, and smart
+ * test configuration. Supports dry-run mode for preview.
+ *
+ * @param options - Installation options
+ * @returns Success or error with details
  */
 async function installGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   // Use fs directly from domain package
@@ -484,7 +529,14 @@ async function installGitHooks(options: GitHooksOptions): Promise<Result<void, C
 }
 
 /**
- * Update git hooks
+ * Update existing git hooks to latest version
+ *
+ * Updates hook scripts while preserving configuration files.
+ * Useful for applying improvements to hook logic without
+ * losing project-specific settings.
+ *
+ * @param options - Update options
+ * @returns Success or error with details
  */
 async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   const logger = createDefaultLogger()
@@ -498,7 +550,13 @@ async function updateGitHooks(options: GitHooksOptions): Promise<Result<void, Co
 }
 
 /**
- * Remove git hooks
+ * Remove installed git hooks from the project
+ *
+ * Removes all git hook files including scripts, configuration,
+ * and lefthook setup. Supports dry-run mode to preview changes.
+ *
+ * @param options - Removal options
+ * @returns Success or error with details
  */
 async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, CoreError>> {
   // Use fs directly from domain package
@@ -569,6 +627,12 @@ async function removeGitHooks(options: GitHooksOptions): Promise<Result<void, Co
 
 /**
  * Interactive configuration wizard for git hooks
+ *
+ * Guides users through git hooks configuration by detecting
+ * current project setup and suggesting appropriate settings.
+ * Currently shows detected configuration for review.
+ *
+ * @returns Success or error with details
  */
 async function configureGitHooks(): Promise<Result<void, CoreError>> {
   try {
@@ -615,7 +679,13 @@ async function configureGitHooks(): Promise<Result<void, CoreError>> {
 }
 
 /**
- * Create git-hooks command
+ * Create git-hooks command with subcommands
+ *
+ * Provides a complete git hooks management CLI with install,
+ * update, remove, configure, and status subcommands for
+ * managing smart git hooks in projects.
+ *
+ * @returns Commander command instance ready for registration
  */
 export function createGitHooksCommand(): Command {
   const command = new Command('git-hooks').description('Manage smart git hooks for your project')
@@ -700,7 +770,7 @@ export function createGitHooksCommand(): Command {
 
       for (const file of files) {
         const fileResult = await fs.exists(file)
-        const status = fileResult.isOk() ? chalk.green('✅ Installed') : chalk.red('❌ Missing')
+        const status = fileResult.isOk() ? colors.green('✅ Installed') : colors.red('❌ Missing')
         logger.info(`   ${file}: ${status}`)
       }
 
@@ -711,14 +781,14 @@ export function createGitHooksCommand(): Command {
           const pkg = JSON.parse(packageJsonResult.value)
           const hasLefthook = pkg.devDependencies?.lefthook || pkg.dependencies?.lefthook
           const lefthookStatus = hasLefthook
-            ? chalk.green('✅ Installed')
-            : chalk.yellow('⚠️  Not installed')
+            ? colors.green('✅ Installed')
+            : colors.yellow('⚠️  Not installed')
           logger.info(`   lefthook package: ${lefthookStatus}`)
         } else {
-          logger.info(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
+          logger.info(`   lefthook package: ${colors.cyan('❓ Cannot determine')}`)
         }
       } catch {
-        console.log(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
+        console.log(`   lefthook package: ${colors.cyan('❓ Cannot determine')}`)
       }
     })
 

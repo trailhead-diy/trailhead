@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "@esteban-url/validation",
+  "readme": "./README.md",
+  "entryPoints": ["src/index.ts"],
+  "categorizeByGroup": true,
+  "defaultCategory": "Data Validation",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeNotDocumented": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/esteban-url/trailhead",
+    "Validation Package": "../validation/README.md"
+  },
+  "gitRevision": "main",
+  "gitRemote": "origin",
+  "sourceLinkExternal": true
+}

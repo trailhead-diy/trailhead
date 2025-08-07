@@ -22,7 +22,6 @@
     "**/*.cjs",
     ".next",
     "templates",
-    "apps/demos/**",
-    "**/scripts/**"
+    "apps/demos/**"
   ]
 }

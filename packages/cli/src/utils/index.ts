@@ -1,15 +1,4 @@
-export {
-  chalk,
-  success,
-  error,
-  warning,
-  info,
-  muted,
-  bold,
-  dim,
-  italic,
-  underline,
-} from './chalk.js'
+export { consola, colors, logSuccess, logError, logWarning, logInfo, log } from './chalk.js'
 export { createSpinner, withSpinner } from './spinner.js'
 export { createDefaultLogger, type Logger } from './logger.js'
 

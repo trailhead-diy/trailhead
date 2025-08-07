@@ -14,7 +14,7 @@
 
 # CLI system
 /src/cli/ @esteban-url
-/scripts/ @esteban-url
+/tooling/dev-cli/ @esteban-url
 
 # Transform system
 /src/transforms/ @esteban-url

@@ -11,7 +11,7 @@ related:
 
 # Documentation Review Checklist
 
-Use this checklist when reviewing documentation changes in the Trailhead monorepo. All documentation must follow [Diátaxis principles](/docs/reference/documentation-standards).
+Use this checklist when reviewing documentation changes in the Trailhead monorepo. All documentation must follow [Diátaxis principles](./documentation-standards).
 
 ## Pre-Review: Automated Checks
 
@@ -242,7 +242,7 @@ Use this template for review feedback:
 
 ## Resources
 
-- [DOCUMENTATION_STANDARDS.md](/docs/reference/documentation-standards.md)- Complete guidelines
-- [WRITING_DOCUMENTATION.md](/docs/reference/writing-guide.md)- Quick reference
-- [Documentation Standards](/docs/reference/documentation-standards.md)- Starting points for new docs
+- [DOCUMENTATION_STANDARDS.md](./documentation-standards.md)- Complete guidelines
+- [WRITING_DOCUMENTATION.md](./writing-guide.md)- Quick reference
+- [Documentation Standards](./documentation-standards.md)- Starting points for new docs
 - `pnpm docs:validate` - Run automated checks

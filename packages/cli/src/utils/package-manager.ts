@@ -3,6 +3,9 @@ import { Result, ok, err, createCoreError, type CoreError } from '@esteban-url/c
 
 /**
  * Package manager configuration
+ *
+ * Contains information about a detected package manager including
+ * its commands and version.
  */
 export interface PackageManager {
   name: 'pnpm' | 'npm'
@@ -45,6 +48,9 @@ const CACHE_TTL_MS = 5 * 60 * 1000
 
 /**
  * Package manager cache interface
+ *
+ * Provides methods for caching package manager detection results
+ * with TTL support to improve performance.
  */
 export interface PackageManagerCache {
   get: (key: string) => Result<PackageManager, CoreError> | null
@@ -53,7 +59,20 @@ export interface PackageManagerCache {
 }
 
 /**
- * Create a package manager cache instance using closure pattern
+ * Create a package manager cache instance
+ *
+ * Creates a cache for storing package manager detection results
+ * with automatic TTL expiration (5 minutes). Uses closure pattern
+ * for encapsulation.
+ *
+ * @returns Package manager cache instance
+ *
+ * @example
+ * ```typescript
+ * const cache = createPackageManagerCache();
+ * const result = detectPackageManager({ cache });
+ * // Subsequent calls use cached result for 5 minutes
+ * ```
  */
 export const createPackageManagerCache = (): PackageManagerCache => {
   const cache = new Map<string, CacheEntry>()
@@ -90,6 +109,9 @@ const defaultCache = createPackageManagerCache()
 
 /**
  * Options for package manager detection
+ *
+ * Allows customization of detection behavior including
+ * custom cache instances and command timeouts.
  */
 export interface DetectOptions {
   /** Custom cache instance (useful for testing) */
@@ -99,7 +121,16 @@ export interface DetectOptions {
 }
 
 /**
- * Clear the package manager cache (useful for testing)
+ * Clear the default package manager cache
+ *
+ * Removes all cached detection results. Useful for testing
+ * or when package managers are installed/updated.
+ *
+ * @example
+ * ```typescript
+ * clearPackageManagerCache();
+ * // Next detection will check fresh
+ * ```
  */
 export const clearPackageManagerCache = (): void => {
   defaultCache.clear()
@@ -107,6 +138,9 @@ export const clearPackageManagerCache = (): void => {
 
 /**
  * Semantic version data structure
+ *
+ * Represents a parsed semantic version with major, minor,
+ * patch, and optional prerelease components.
  */
 export interface SemVer {
   readonly major: number
@@ -117,6 +151,20 @@ export interface SemVer {
 
 /**
  * Parse a semantic version string
+ *
+ * Extracts major, minor, patch, and prerelease components from
+ * a version string. Handles optional 'v' prefix.
+ *
+ * @param version - Version string to parse (e.g., '1.2.3', 'v2.0.0-beta')
+ * @returns Parsed semantic version or error
+ *
+ * @example
+ * ```typescript
+ * const result = parseSemVer('v1.2.3-beta');
+ * if (result.isOk()) {
+ *   console.log(result.value); // { major: 1, minor: 2, patch: 3, prerelease: 'beta' }
+ * }
+ * ```
  */
 export const parseSemVer = (version: string): Result<SemVer, CoreError> => {
   // Handle versions with pre-release tags
@@ -138,7 +186,21 @@ export const parseSemVer = (version: string): Result<SemVer, CoreError> => {
 
 /**
  * Compare two semantic versions
- * Returns: -1 if a < b, 0 if a === b, 1 if a > b
+ *
+ * Compares versions using standard semver ordering rules.
+ * Versions without prerelease are considered greater than
+ * versions with prerelease when major.minor.patch are equal.
+ *
+ * @param a - First version to compare
+ * @param b - Second version to compare
+ * @returns -1 if a < b, 0 if a === b, 1 if a > b
+ *
+ * @example
+ * ```typescript
+ * const v1 = { major: 1, minor: 0, patch: 0 };
+ * const v2 = { major: 2, minor: 0, patch: 0 };
+ * compareSemVer(v1, v2); // Returns -1
+ * ```
  */
 export const compareSemVer = (a: SemVer, b: SemVer): -1 | 0 | 1 => {
   if (a.major !== b.major) return a.major > b.major ? 1 : -1
@@ -155,6 +217,21 @@ export const compareSemVer = (a: SemVer, b: SemVer): -1 | 0 | 1 => {
 
 /**
  * Check if version a is greater than or equal to version b
+ *
+ * Convenience function for version comparison checks.
+ *
+ * @param a - Version to check
+ * @param b - Minimum required version
+ * @returns True if a >= b
+ *
+ * @example
+ * ```typescript
+ * const current = { major: 2, minor: 0, patch: 0 };
+ * const required = { major: 1, minor: 5, patch: 0 };
+ * if (isGreaterThanOrEqual(current, required)) {
+ *   // Version meets requirement
+ * }
+ * ```
  */
 export const isGreaterThanOrEqual = (a: SemVer, b: SemVer): boolean => {
   return compareSemVer(a, b) >= 0
@@ -237,8 +314,26 @@ const meetsVersionRequirement = (version: string, required: string): Result<bool
 }
 
 /**
- * Detect available package manager with preference order: pnpm > npm
- * Results are cached for performance. Use FORCE_PACKAGE_MANAGER env var to override.
+ * Detect available package manager
+ *
+ * Detects installed package managers with preference order: pnpm > npm.
+ * Results are cached for 5 minutes to improve performance. Checks version
+ * requirements and can be overridden with FORCE_PACKAGE_MANAGER env var.
+ *
+ * @param options - Detection options including custom cache and timeout
+ * @returns Detected package manager configuration or error
+ *
+ * @example
+ * ```typescript
+ * const result = detectPackageManager();
+ * if (result.isOk()) {
+ *   console.log(`Using ${result.value.name} v${result.value.version}`);
+ * }
+ *
+ * // Force specific manager
+ * process.env.FORCE_PACKAGE_MANAGER = 'pnpm';
+ * const forced = detectPackageManager();
+ * ```
  */
 export const detectPackageManager = (
   options?: DetectOptions
@@ -278,7 +373,7 @@ export const detectPackageManager = (
     }
 
     const version = versionResult.value
-    const minVersion = VERSION_REQUIREMENTS[managerName]
+    const minVersion = VERSION_REQUIREMENTS[managerName as keyof typeof VERSION_REQUIREMENTS]
     const meetsReqResult = meetsVersionRequirement(version, minVersion)
 
     if (meetsReqResult.isErr()) {
@@ -402,7 +497,23 @@ const getManagerConfig = (
 }
 
 /**
- * Get the command to run a script with the detected package manager
+ * Get the command to run a script with detected package manager
+ *
+ * Constructs the appropriate run command for the detected package
+ * manager, including script name and optional arguments.
+ *
+ * @param scriptName - Name of the script to run
+ * @param args - Optional arguments to pass to the script
+ * @param options - Detection options
+ * @returns Complete run command or error
+ *
+ * @example
+ * ```typescript
+ * const result = getRunCommand('build', ['--watch']);
+ * if (result.isOk()) {
+ *   console.log(result.value); // 'pnpm run build -- --watch'
+ * }
+ * ```
  */
 export const getRunCommand = (
   scriptName: string,
@@ -421,6 +532,22 @@ export const getRunCommand = (
 
 /**
  * Execute a package manager command with automatic detection
+ *
+ * Detects the available package manager and executes a command
+ * with it. Handles timeouts and proper error reporting.
+ *
+ * @param command - Command to execute
+ * @param execOptions - Node.js exec options
+ * @param detectOptions - Package manager detection options
+ * @returns Command output or error
+ *
+ * @example
+ * ```typescript
+ * const result = execPackageManagerCommand('install express');
+ * if (result.isOk()) {
+ *   console.log('Package installed successfully');
+ * }
+ * ```
  */
 export const execPackageManagerCommand = (
   command: string,

@@ -753,7 +753,7 @@ export async function processCommand(options: any, context: CommandContext) {
 }
 
 // Pure function for content processing
-function processContent(content: string): string {
+const processContent = (content: string): string => {
   return content
     .split('\n')
     .map((line) => line.trim())
@@ -820,15 +820,15 @@ Expected results:
 
 ## Related Tasks
 
-- \*_[Import Optimization](/packages/cli/docs/how-to/import-patterns.md)_: Optimize your import patterns for smaller bundles
-- \*_[Error Handling](/packages/cli/docs/how-to/handle-errors-in-cli.md)_: Implement efficient error handling patterns
-- \*_[Testing Performance](/packages/cli/docs/how-to/test-cli-applications.md)_: Write fast tests for optimized code
+- \*_[Import Optimization](../../how-to/import-patterns.md)_: Optimize your import patterns for smaller bundles
+- \*_[Error Handling](../../how-to/handle-errors-in-cli.md)_: Implement efficient error handling patterns
+- \*_[Testing Performance](../../how-to/test-cli-applications.md)_: Write fast tests for optimized code
 
 ## Reference
 
-- [Utils API Reference](/packages/cli/docs/reference/utils.md)- Performance utilities and stats
-- [FileSystem API Reference](/packages/cli/docs/reference/filesystem.md)- Efficient file operations
-- [Build Configuration](/packages/cli/docs/reference/build-config.md)- Bundler optimization settings
+- [Utils API Reference](../../reference/utils.md)- Performance utilities and stats
+- [FileSystem API Reference](../../reference/filesystem.md)- Efficient file operations
+- [Build Configuration](../../reference/build-config.md)- Bundler optimization settings
 
 ### Optimization Tools
 
@@ -852,4 +852,4 @@ Expected results:
 
 ---
 
-**See also**: [Architecture Explanation](/packages/cli/docs/explanation/architecture.md)for understanding the design decisions behind these optimizations
+**See also**: [Architecture Explanation](../../explanation/architecture.md)for understanding the design decisions behind these optimizations

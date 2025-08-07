@@ -1,7 +1,7 @@
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { resolve, dirname } from 'path'
 import { fs } from '@esteban-url/fs'
-import { chalk, createSpinner } from '@esteban-url/cli/utils'
+import { colors, createSpinner } from '@esteban-url/cli/utils'
 import { debugTemplateContext, debugError, debugStats } from '../cli/logger.js'
 import {
   validateProjectName,
@@ -80,10 +80,10 @@ export async function generateProject(
       return validationResult
     }
 
-    logger.info(`Generating CLI project: ${chalk.cyan(config.projectName)}`)
+    logger.info(`Generating CLI project: ${colors.cyan(config.projectName)}`)
 
     if (config.dryRun) {
-      logger.info(chalk.yellow('DRY RUN MODE - No files will be created'))
+      logger.info(colors.yellow('DRY RUN MODE - No files will be created'))
     }
 
     // Phase 1: Prepare template context

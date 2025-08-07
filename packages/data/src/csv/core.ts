@@ -21,6 +21,26 @@ import {
 // CSV Core Operations
 // ========================================
 
+/**
+ * Create CSV operations with custom configuration
+ * @param {CSVConfig} [config={}] - CSV configuration options
+ * @returns {CSVOperations} Configured CSV operations object
+ *
+ * @example Basic usage
+ * ```typescript
+ * const csvOps = createCSVOperations()
+ * const result = await csvOps.parseFile('data.csv')
+ * ```
+ *
+ * @example Custom configuration
+ * ```typescript
+ * const csvOps = createCSVOperations({
+ *   delimiter: ';',
+ *   hasHeader: true,
+ *   dynamicTyping: true
+ * })
+ * ```
+ */
 export const createCSVOperations: CreateCSVOperations = (config = {}) => {
   const csvConfig = { ...defaultCSVConfig, ...config }
 
