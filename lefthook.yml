@@ -316,22 +316,21 @@ pre-push:
           exit 1
         }
     
-    # Optional coverage check for changed packages
+    # Optional coverage check for changed packages (opt-in only)
     coverage-check:
       priority: 3
       run: |
-        if [ "$SKIP_COVERAGE" = "1" ]; then
-          echo "⚡ Coverage check skipped"
-        else
-          echo "📊 Checking coverage for changed packages..."
+        if [ "$RUN_COVERAGE" = "1" ]; then
+          echo "📊 Running coverage check for changed packages..."
           COVERAGE=true pnpm test --affected > /dev/null 2>&1 || true
           pnpm scripts-cli coverage-check --changed --report-only || {
             echo ""
             echo "⚠️  Coverage check completed (non-blocking)"
             echo "💡 Run 'pnpm coverage' to see detailed report"
-            echo "💡 Skip with: SKIP_COVERAGE=1 git push"
             echo ""
           }
+        else
+          echo "⚡ Coverage check skipped (opt-in with RUN_COVERAGE=1)"
         fi
 
     # Check branch sync status (warning only)
