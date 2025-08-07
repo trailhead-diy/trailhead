@@ -293,7 +293,7 @@ pre-push:
         
         # Clear cache and run full suite to prevent cache issues
         rm -rf .turbo
-        pnpm scripts-cli ci || {
+        pnpm dev-cli ci || {
           echo ""
           echo "❌ Pre-push validation failed!"
           echo ""
@@ -323,7 +323,7 @@ pre-push:
         if [ "$RUN_COVERAGE" = "1" ]; then
           echo "📊 Running coverage check for changed packages..."
           COVERAGE=true pnpm test --affected > /dev/null 2>&1 || true
-          pnpm scripts-cli coverage-check --changed --report-only || {
+          pnpm dev-cli coverage-check --changed --report-only || {
             echo ""
             echo "⚠️  Coverage check completed (non-blocking)"
             echo "💡 Run 'pnpm coverage' to see detailed report"

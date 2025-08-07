@@ -59,7 +59,7 @@ export const npmAuthCommand = createCommand<NpmAuthOptions>({
 
     const npmrcContent = [
       '',
-      '# GitHub Packages Authentication (added by scripts-cli)',
+      '# GitHub Packages Authentication (added by dev-cli)',
       `@trailhead:registry=${registry}`,
       `//${new URL(registry).host}/:_authToken=${token}`,
     ].join('\n')

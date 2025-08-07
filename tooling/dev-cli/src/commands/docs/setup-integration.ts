@@ -52,7 +52,7 @@ export const setupIntegrationCommand = createCommand<SetupIntegrationOptions>({
       context.logger.info('      └── create-cli/')
       context.logger.info('')
       context.logger.info(colorize('blue', 'Next steps:'))
-      context.logger.info('1. Run `scripts-cli docs generate-api` to generate documentation')
+      context.logger.info('1. Run `dev-cli generate-api` to generate documentation')
       context.logger.info('2. Configure your documentation site to include the API docs')
 
       return ok(undefined)

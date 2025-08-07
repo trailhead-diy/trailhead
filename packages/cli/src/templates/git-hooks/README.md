@@ -59,10 +59,10 @@ SKIP_HOOKS=1 git commit -m "emergency commit"
 ### Command Line Flags
 
 ```bash
-pnpm scripts-cli test-runner --skip
-pnpm scripts-cli test-runner --force
-pnpm scripts-cli test-runner --dry-run
-pnpm scripts-cli test-runner --verbose
+pnpm dev-cli test-runner --skip
+pnpm dev-cli test-runner --force
+pnpm dev-cli test-runner --dry-run
+pnpm dev-cli test-runner --verbose
 ```
 
 ## Configuration
@@ -109,7 +109,7 @@ Edit `.smart-test-config.json` to customize:
 To update the smart test runner:
 
 ```bash
-pnpm scripts-cli test-runner --help
+pnpm dev-cli test-runner --help
 ```
 
 This will download the latest version while preserving your configuration.
