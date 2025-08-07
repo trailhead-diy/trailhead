@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       - name: Build packages
-        run: pnpm turbo run build --force --force
+        run: pnpm turbo run build --force
       
       # Only on main: publish, security scan, cross-platform
       - name: Publish to GitHub Packages
