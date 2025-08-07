@@ -14,7 +14,7 @@
 import { defineConfig } from 'vitest/config'
 import type { PluginOption } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { resolve } from 'path'
+import { resolve, sep as pathSep } from 'path'
 import { fileURLToPath } from 'url'
 
 export interface VitestConfigOptions {
@@ -76,10 +76,11 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
   // Find monorepo root (where pnpm-workspace.yaml is)
   const __dirname = fileURLToPath(new URL('.', import.meta.url))
   // Account for both source (tooling/vitest-config/) and built (tooling/vitest-config/dist/) contexts
-  const isBuilt = __dirname.includes('/dist/')
+  // Use pathSep to handle both Windows (\) and Unix (/) path separators
+  const isBuilt = __dirname.includes(`${pathSep}dist${pathSep}`)
   const monorepoRoot = isBuilt
-    ? resolve(__dirname, '../../..') // from dist: tooling/vitest-config/dist -> root
-    : resolve(__dirname, '../..') // from src: tooling/vitest-config -> root
+    ? resolve(__dirname, '..', '..', '..') // from dist: tooling/vitest-config/dist -> root
+    : resolve(__dirname, '..', '..') // from src: tooling/vitest-config -> root
   const packagesDir = resolve(monorepoRoot, 'packages')
 
   return defineConfig({
