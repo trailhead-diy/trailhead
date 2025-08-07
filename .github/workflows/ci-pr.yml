@@ -38,15 +38,3 @@ jobs:
           # Run ALL tests to ensure nothing is broken
           pnpm turbo run test
       
-      # Things that are hard to run locally
-      - name: Initialize CodeQL
-        if: github.event_name == 'pull_request'
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript-typescript
-        continue-on-error: true
-      
-      - name: CodeQL Analysis
-        if: github.event_name == 'pull_request'
-        uses: github/codeql-action/analyze@v3
-        continue-on-error: true
