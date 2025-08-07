@@ -13,6 +13,14 @@ import type { CoreError, ErrorContext } from './types.js'
  * @param code - Unique error code (e.g., 'INVALID_INPUT')
  * @param message - Human-readable error message
  * @param options - Additional error properties
+ * @param options.component - Component where error occurred
+ * @param options.operation - Operation being performed
+ * @param options.severity - Error severity level
+ * @param options.recoverable - Whether error is recoverable
+ * @default options.component - 'unknown'
+ * @default options.operation - 'unknown'
+ * @default options.severity - 'medium'
+ * @default options.recoverable - false
  * @returns Fully formed CoreError object
  *
  * @example
@@ -133,6 +141,7 @@ export const chainError = <E extends CoreError>(
  *
  * @param component - The component name to use for all errors
  * @param defaultSeverity - Default severity level if not specified
+ * @default defaultSeverity - 'medium'
  * @returns Error factory function for the component
  *
  * @example
@@ -153,6 +162,16 @@ export const createErrorFactory = (
   component: string,
   defaultSeverity: 'low' | 'medium' | 'high' | 'critical' = 'medium'
 ) => {
+  /**
+   * @param type - Error type for categorization
+   * @param code - Unique error code
+   * @param message - Human-readable error message
+   * @param options - Additional error properties
+   * @default options.operation - 'process'
+   * @default options.severity - defaultSeverity parameter value
+   * @default options.recoverable - true
+   * @returns Fully formed CoreError object
+   */
   return (
     type: string,
     code: string,

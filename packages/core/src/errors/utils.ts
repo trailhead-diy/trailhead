@@ -73,6 +73,7 @@ export const combineWithAllErrors = Result.combineWithAllErrors
  *
  * @param error - The error to extract message from
  * @param defaultMessage - Message to use if extraction fails
+ * @default defaultMessage - 'Unknown error'
  * @returns Human-readable error message
  *
  * @example
