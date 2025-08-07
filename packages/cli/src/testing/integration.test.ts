@@ -92,7 +92,18 @@ describe('Cross-Package Testing Composition', () => {
 
     // 4. Verify complete workflow
     const allFiles = mockFs.getAllFiles()
-    expect(Object.keys(allFiles)).toContain('/workspace/package.json')
-    expect(Object.keys(allFiles)).toContain('/workspace/src/index.ts')
+    const filePaths = Object.keys(allFiles)
+
+    // Normalize paths to handle both Unix and Windows formats
+    // On Windows, paths may have backslashes and drive letters
+    const hasPackageJson = filePaths.some((path) =>
+      path.replace(/\\/g, '/').endsWith('/workspace/package.json')
+    )
+    const hasIndexTs = filePaths.some((path) =>
+      path.replace(/\\/g, '/').endsWith('/workspace/src/index.ts')
+    )
+
+    expect(hasPackageJson).toBe(true)
+    expect(hasIndexTs).toBe(true)
   })
 })
