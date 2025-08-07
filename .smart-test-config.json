@@ -22,7 +22,6 @@
     "docs/",
     "\\.smart-test-config\\.json$",
     "\\.mcp\\.json$",
-    "scripts/.*\\.sh$",
     ".*\\.test\\.(ts|tsx|js|jsx)$",
     ".*/__tests__/.*$",
     "tests/.*$",
