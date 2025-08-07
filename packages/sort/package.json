@@ -37,11 +37,11 @@
     "format": "prettier --write . --log-level=error --ignore-path .prettierignore",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "prepack": "pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
     "es-toolkit": "^1.39.8"
