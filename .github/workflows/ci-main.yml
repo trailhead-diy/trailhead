@@ -9,9 +9,56 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  # Things that MUST run in GitHub
+  # Build once and share artifacts
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: pnpm/action-setup@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build all packages
+        run: pnpm turbo run build --force
+      
+      # Upload build artifacts for other jobs
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            packages/*/dist
+            apps/*/dist
+            apps/*/.next
+            tooling/*/dist
+          retention-days: 1
+      
+      # Also upload node_modules for faster installs in other jobs
+      - name: Upload dependencies
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-modules
+          path: |
+            node_modules
+            packages/*/node_modules
+            apps/*/node_modules
+            tooling/*/node_modules
+          retention-days: 1
+
+  # Release job depends on build
   release:
     name: Release
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,16 +74,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
           registry-url: 'https://npm.pkg.github.com'
       
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      # Download pre-built artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
       
-      - name: Build packages
-        run: pnpm turbo run build --force
+      - name: Download dependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: node-modules
       
-      # Only on main: publish, security scan, cross-platform
+      # Only on main: publish, security scan
       - name: Publish to GitHub Packages
         if: startsWith(github.event.head_commit.message, 'feat') || startsWith(github.event.head_commit.message, 'fix')
         run: |
@@ -75,9 +126,10 @@ jobs:
   #     - name: Perform CodeQL Analysis
   #       uses: github/codeql-action/analyze@v3
 
-  # Cross-platform smoke test (only on main)
+  # Cross-platform smoke test depends on build
   compatibility:
     name: OS Compatibility
+    needs: build
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
@@ -88,10 +140,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
       
-      - name: Install and smoke test
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm turbo run build --filter=@esteban-url/cli
-          pnpm --filter=@esteban-url/cli run test -- --run
+      # Download pre-built CLI package
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+      
+      # Install only runtime dependencies (dev deps not needed for smoke test)
+      - name: Install runtime dependencies
+        run: pnpm install --frozen-lockfile --prod
+      
+      # Run smoke test on pre-built CLI
+      - name: Smoke test
+        run: pnpm --filter=@esteban-url/cli run test -- --run
