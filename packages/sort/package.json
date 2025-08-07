@@ -1,0 +1,69 @@
+{
+  "name": "@esteban-url/sort",
+  "version": "0.0.0",
+  "description": "Fast, type-safe sorting utilities powered by es-toolkit",
+  "keywords": [
+    "sort",
+    "es-toolkit",
+    "typescript",
+    "performance"
+  ],
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esteban-url/trailhead",
+    "directory": "packages/sort"
+  },
+  "license": "MIT",
+  "author": "Esteban Url",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch",
+    "format": "prettier --write . --log-level=error --ignore-path .prettierignore",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "prepack": "pnpm build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "es-toolkit": "^1.39.8"
+  },
+  "devDependencies": {
+    "@repo/prettier-config": "workspace:*",
+    "@repo/tsup-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^24.1.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "oxlint": "^1.9.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "prettier": "@repo/prettier-config",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

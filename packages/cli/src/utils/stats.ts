@@ -1,3 +1,5 @@
+import { topN, bottomN, sortBy, orderBy } from '@esteban-url/sort'
+
 /**
  * Statistics tracking interface for CLI operations
  * @template T - Type for custom data
@@ -141,6 +143,163 @@ export function formatStats(stats: StatsTracker): string {
   if (stats.operationsByType.size > 0) {
     lines.push('\nOperations by type:')
     stats.operationsByType.forEach((count, type) => {
+      lines.push(`  ${type}: ${count}`)
+    })
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * Get the top N operation types by count
+ * @param stats - Stats tracker containing operation counts
+ * @param n - Number of top operations to return
+ * @returns Array of top operation types with counts, sorted by count descending
+ * @example
+ * ```typescript
+ * const stats = updateStats(createStats(), {
+ *   operationTypes: [
+ *     { type: 'read', count: 10 },
+ *     { type: 'write', count: 5 },
+ *     { type: 'delete', count: 2 }
+ *   ]
+ * });
+ * const top2 = getTopOperations(stats, 2);
+ * // [{ type: 'read', count: 10 }, { type: 'write', count: 5 }]
+ * ```
+ */
+export function getTopOperations(
+  stats: StatsTracker,
+  n: number
+): Array<{ type: string; count: number }> {
+  const operations = Array.from(stats.operationsByType.entries()).map(([type, count]) => ({
+    type,
+    count,
+  }))
+
+  return topN(n, operations, (item: { type: string; count: number }) => item.count)
+}
+
+/**
+ * Get the bottom N operation types by count (least frequent)
+ * @param stats - Stats tracker containing operation counts
+ * @param n - Number of bottom operations to return
+ * @returns Array of bottom operation types with counts, sorted by count ascending
+ * @example
+ * ```typescript
+ * const stats = updateStats(createStats(), {
+ *   operationTypes: [
+ *     { type: 'read', count: 10 },
+ *     { type: 'write', count: 5 },
+ *     { type: 'delete', count: 2 }
+ *   ]
+ * });
+ * const bottom2 = getBottomOperations(stats, 2);
+ * // [{ type: 'delete', count: 2 }, { type: 'write', count: 5 }]
+ * ```
+ */
+export function getBottomOperations(
+  stats: StatsTracker,
+  n: number
+): Array<{ type: string; count: number }> {
+  const operations = Array.from(stats.operationsByType.entries()).map(([type, count]) => ({
+    type,
+    count,
+  }))
+
+  return bottomN(n, operations, (item: { type: string; count: number }) => item.count)
+}
+
+/**
+ * Get all operations sorted alphabetically by type
+ * @param stats - Stats tracker containing operation counts
+ * @returns Array of operations sorted by type name
+ * @example
+ * ```typescript
+ * const stats = updateStats(createStats(), {
+ *   operationTypes: [
+ *     { type: 'write', count: 5 },
+ *     { type: 'delete', count: 2 },
+ *     { type: 'read', count: 10 }
+ *   ]
+ * });
+ * const sorted = getOperationsSortedByType(stats);
+ * // [{ type: 'delete', count: 2 }, { type: 'read', count: 10 }, { type: 'write', count: 5 }]
+ * ```
+ */
+export function getOperationsSortedByType(
+  stats: StatsTracker
+): Array<{ type: string; count: number }> {
+  const operations = Array.from(stats.operationsByType.entries()).map(([type, count]) => ({
+    type,
+    count,
+  }))
+
+  return sortBy(operations, [(item) => item.type])
+}
+
+/**
+ * Format statistics with sorted operations
+ * @param stats - Stats tracker to format
+ * @param options - Formatting options
+ * @returns Formatted stats string with sorted operations
+ * @example
+ * ```typescript
+ * const stats = updateStats(createStats(), {
+ *   filesProcessed: 10,
+ *   operationTypes: [
+ *     { type: 'read', count: 10 },
+ *     { type: 'write', count: 5 }
+ *   ]
+ * });
+ * console.log(formatStatsSorted(stats, { sortBy: 'count', limit: 5 }));
+ * ```
+ */
+export function formatStatsSorted(
+  stats: StatsTracker,
+  options?: {
+    sortBy?: 'count' | 'type'
+    order?: 'asc' | 'desc'
+    limit?: number
+  }
+): string {
+  const elapsed = getElapsedTime(stats)
+  const seconds = (elapsed / 1000).toFixed(2)
+
+  const lines = [
+    `Files processed: ${stats.filesProcessed}`,
+    `Files modified: ${stats.filesModified}`,
+    `Total operations: ${stats.totalOperations}`,
+    `Time elapsed: ${seconds}s`,
+  ]
+
+  if (stats.operationsByType.size > 0) {
+    lines.push('\nOperations by type:')
+
+    let operations = Array.from(stats.operationsByType.entries()).map(([type, count]) => ({
+      type,
+      count,
+    }))
+
+    // Apply sorting
+    if (options?.sortBy === 'count') {
+      operations =
+        options.order === 'desc'
+          ? orderBy(operations, [(item) => item.count], ['desc'])
+          : sortBy(operations, [(item) => item.count])
+    } else if (options?.sortBy === 'type') {
+      operations =
+        options.order === 'desc'
+          ? orderBy(operations, [(item) => item.type], ['desc'])
+          : sortBy(operations, [(item) => item.type])
+    }
+
+    // Apply limit if specified
+    if (options?.limit && options.limit > 0) {
+      operations = operations.slice(0, options.limit)
+    }
+
+    operations.forEach(({ type, count }) => {
       lines.push(`  ${type}: ${count}`)
     })
   }

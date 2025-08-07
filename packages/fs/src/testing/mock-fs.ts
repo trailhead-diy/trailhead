@@ -28,7 +28,7 @@
 import { ok, err, type Result } from '@esteban-url/core'
 import type { FileStats, FileSystemError, MkdirOptions } from '../types.js'
 import { createFileSystemError } from '../errors.js'
-import { dirname, resolve } from 'path'
+import { dirname, resolve, join } from 'path'
 
 /**
  * In-memory file system node
@@ -70,6 +70,8 @@ export class MockFileSystem {
         isSymbolicLink: false,
         size: 0,
         mtime: new Date(),
+        atime: new Date(),
+        ctime: new Date(),
       },
     }
   }
@@ -87,6 +89,8 @@ export class MockFileSystem {
         isSymbolicLink: false,
         size: content.length,
         mtime: new Date(),
+        atime: new Date(),
+        ctime: new Date(),
       },
     }
   }
@@ -352,7 +356,8 @@ export class MockFileSystem {
         files[path] = node.content || ''
       } else if (node.type === 'directory' && node.children) {
         for (const [name, child] of node.children) {
-          traverse(child, path === '/' ? `/${name}` : `${path}/${name}`)
+          const childPath = path === '' ? `/${name}` : join(path, name)
+          traverse(child, childPath)
         }
       }
     }

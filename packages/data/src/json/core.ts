@@ -1,5 +1,6 @@
 import { ok, err } from '@esteban-url/core'
 import { readFile, writeFile } from '@esteban-url/fs'
+import { sortStrings, sortArray, sortMultiple } from '@esteban-url/sort'
 import type { JSONProcessingOptions, DataResult } from '../types.js'
 import { defaultJSONConfig, type CreateJSONOperations, type JSONFormatOptions } from './types.js'
 import { createJSONError, createParsingError, mapLibraryError } from '../errors.js'
@@ -163,8 +164,8 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
       space: options.indent ?? 2,
     }
 
-    if (options.sortKeys) {
-      formatOptions = { ...formatOptions, replacer: sortKeysReplacer }
+    if (options.sortKeys || options.sortArrays) {
+      formatOptions = { ...formatOptions, replacer: createAdvancedReplacer(options) }
     }
 
     return stringify(parseResult.value, formatOptions)
@@ -185,15 +186,222 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
 // Helper Functions
 // ========================================
 
-const sortKeysReplacer = (key: string, value: any) => {
-  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-    const sortedObject: Record<string, any> = {}
-    Object.keys(value)
-      .sort()
-      .forEach((sortedKey) => {
+/**
+ * Creates an advanced replacer function that handles sorting
+ */
+const createAdvancedReplacer = (options: JSONFormatOptions) => {
+  return (key: string, value: any) => {
+    // Handle object key sorting
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      const sortedObject: Record<string, any> = {}
+      let keys = Object.keys(value)
+
+      if (options.sortKeys) {
+        if (typeof options.sortKeys === 'function') {
+          keys = keys.sort(options.sortKeys)
+        } else if (options.sortKeys === 'desc') {
+          keys = sortStrings(keys, 'desc')
+        } else {
+          // Default ascending sort
+          keys = sortStrings(keys, 'asc')
+        }
+      }
+
+      keys.forEach((sortedKey) => {
         sortedObject[sortedKey] = value[sortedKey]
       })
-    return sortedObject
+      return sortedObject
+    }
+
+    // Handle array sorting
+    if (Array.isArray(value) && options.sortArrays) {
+      if (typeof options.sortArrays === 'function') {
+        return [...value].sort(options.sortArrays)
+      } else {
+        // Default sort for arrays of primitives
+        if (value.every((item) => typeof item === 'string' || typeof item === 'number')) {
+          return sortArray(value)
+        }
+      }
+    }
+
+    return value
   }
-  return value
+}
+
+/**
+ * Sort an array of objects by multiple fields
+ */
+export const sortJSONArray = <T>(
+  array: T[],
+  sortFields: Array<{
+    field: keyof T | ((item: T) => any)
+    order?: 'asc' | 'desc'
+  }>
+): DataResult<T[]> => {
+  try {
+    // Validate inputs
+    if (!Array.isArray(array)) {
+      return err(
+        createJSONError('Invalid input for sorting. Expected an array', {
+          details: 'Expected an array but received ' + typeof array,
+          context: { providedType: typeof array },
+        })
+      )
+    }
+
+    if (!sortFields || sortFields.length === 0) {
+      return err(
+        createJSONError('No sort fields specified', {
+          details: 'At least one sort field must be provided',
+          context: { sortFields },
+        })
+      )
+    }
+
+    const accessors = sortFields.map(({ field }, index) => {
+      if (typeof field === 'function') {
+        return field
+      } else if (typeof field === 'string' || typeof field === 'symbol') {
+        return (item: T) => {
+          if (item === null || item === undefined) {
+            console.warn(`Warning: Cannot access field '${String(field)}' on null/undefined item`)
+            return undefined
+          }
+          return item[field]
+        }
+      } else {
+        throw new Error(
+          `Invalid sort field at index ${index}: expected string, symbol, or function`
+        )
+      }
+    })
+
+    // Use our sort package's multi-field sort
+    const sortCriteria = sortFields.map(({ order }, index) => ({
+      accessor: accessors[index],
+      order: order || 'asc',
+    }))
+
+    const sorted = sortMultiple(array, sortCriteria)
+
+    return ok(sorted)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const isFieldError = errorMessage.includes('Invalid sort field')
+    return err(
+      createJSONError(
+        isFieldError
+          ? 'Failed to sort JSON array. Invalid sort field'
+          : 'Failed to sort JSON array',
+        {
+          details: errorMessage,
+          cause: error,
+          context: {
+            arrayLength: array.length,
+            sortFieldCount: sortFields.length,
+            sortFields: sortFields.map(({ field, order }) => ({
+              fieldType: typeof field,
+              order: order || 'asc',
+            })),
+          },
+        }
+      )
+    )
+  }
+}
+
+/**
+ * Extract and sort unique values from a JSON array
+ */
+export const extractUniqueSorted = <T>(
+  array: T[],
+  accessor?: (item: T) => any,
+  order: 'asc' | 'desc' = 'asc'
+): DataResult<any[]> => {
+  try {
+    // Validate inputs
+    if (!Array.isArray(array)) {
+      return err(
+        createJSONError('Invalid input for unique extraction. Expected an array', {
+          details: 'Expected an array but received ' + typeof array,
+          context: { providedType: typeof array },
+        })
+      )
+    }
+
+    if (order !== 'asc' && order !== 'desc') {
+      return err(
+        createJSONError(`Invalid sort order. Expected 'asc' or 'desc'`, {
+          details: `Expected 'asc' or 'desc' but received '${order}'`,
+          context: { providedOrder: order },
+        })
+      )
+    }
+
+    // Extract values with error handling for accessor
+    let values: any[]
+    let failureCount = 0
+
+    try {
+      values = accessor
+        ? array.map((item, index) => {
+            try {
+              return accessor(item)
+            } catch (accessorError) {
+              console.warn(`Warning: Accessor failed for item at index ${index}:`, accessorError)
+              failureCount++
+              return undefined
+            }
+          })
+        : array
+    } catch (mappingError) {
+      return err(
+        createJSONError('Failed to extract values using accessor', {
+          details:
+            mappingError instanceof Error
+              ? mappingError.message
+              : 'Accessor function threw an error',
+          cause: mappingError,
+          context: { arrayLength: array.length, hasAccessor: !!accessor },
+        })
+      )
+    }
+
+    // If accessor failed for all items, treat as complete failure
+    if (accessor && failureCount === array.length && array.length > 0) {
+      return err(
+        createJSONError('Failed to extract values using accessor', {
+          details: 'Accessor function failed for all items',
+          context: { arrayLength: array.length, hasAccessor: !!accessor },
+        })
+      )
+    }
+
+    // Filter out undefined values from failed accessor calls
+    const validValues = values.filter((v) => v !== undefined)
+    if (validValues.length < values.length) {
+      console.warn(
+        `Note: ${values.length - validValues.length} items were excluded due to accessor failures`
+      )
+    }
+
+    const unique = [...new Set(validValues)]
+    const sorted = sortArray(unique, order)
+
+    return ok(sorted)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return err(
+      createJSONError('Failed to extract unique sorted values', {
+        details: errorMessage,
+        cause: error,
+        context: {
+          arrayLength: array.length,
+          hasAccessor: !!accessor,
+          sortOrder: order,
+        },
+      })
+    )
+  }
 }

@@ -1,6 +1,7 @@
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { select, confirm, input } from '@inquirer/prompts'
 import { consola } from 'consola'
+import { sortStrings, sortBy } from '@esteban-url/sort'
 import {
   BUILT_IN_PRESETS,
   type PresetConfig,
@@ -57,8 +58,11 @@ export async function selectPreset(
       }
     }
 
+    // Sort presets by name for consistent display
+    const sortedPresets = sortBy(presetDetails, [(preset) => preset.name])
+
     // Show preset options
-    const choices = presetDetails.map((preset: PresetConfig) => ({
+    const choices = sortedPresets.map((preset: PresetConfig) => ({
       name: `${preset.name} - ${preset.description}`,
       value: preset.name,
     }))
@@ -300,9 +304,12 @@ export async function listPresetsDetailed(
       return ok(undefined)
     }
 
+    // Sort preset names alphabetically
+    const sortedNames = sortStrings(presetNames)
+
     consola.info('\\nAvailable presets:\\n')
 
-    for (const name of presetNames) {
+    for (const name of sortedNames) {
       const presetResult = await loadPreset(name, context)
       if (presetResult.isOk()) {
         const preset = presetResult.value

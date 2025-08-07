@@ -25,7 +25,7 @@
  */
 
 /** Factory function to create JSON operations */
-export { createJSONOperations } from './core.js'
+export { createJSONOperations, sortJSONArray, extractUniqueSorted } from './core.js'
 
 /** Default JSON configuration settings */
 export { defaultJSONConfig } from './types.js'

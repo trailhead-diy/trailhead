@@ -1,4 +1,5 @@
 import { ok, err, createCoreError, type Result } from '@esteban-url/core'
+import { sortBy, sortStrings } from '@esteban-url/sort'
 import type { ProjectConfig } from '../config/types.js'
 import type { TemplateFile } from './types.js'
 
@@ -243,11 +244,16 @@ export function composeTemplate(config: ProjectConfig): Result<ComposedTemplate,
       )
     }
 
+    // Sort modules by name and files by destination
+    const sortedModules = sortBy(selectedModules, [(module) => module.name])
+    const sortedFiles = sortTemplateFiles(allFiles)
+    const sortedDependencies = sortStrings(Array.from(allDependencies))
+
     return ok({
       name: `${config.projectType}`,
-      modules: selectedModules,
-      files: allFiles,
-      packageDependencies: Array.from(allDependencies),
+      modules: sortedModules,
+      files: sortedFiles,
+      packageDependencies: sortedDependencies,
       scripts: allScripts,
     })
   } catch (error) {
@@ -337,4 +343,27 @@ export function getRecommendedModules(projectType: string): string[] {
     default:
       return base
   }
+}
+
+/**
+ * Get all available feature modules sorted by name
+ */
+export function getSortedFeatureModules(): FeatureModule[] {
+  const modules = Object.values(FEATURE_MODULES)
+  return sortBy(modules, [(module) => module.name])
+}
+
+/**
+ * Get module names sorted alphabetically
+ */
+export function getSortedModuleNames(): string[] {
+  const names = Object.keys(FEATURE_MODULES)
+  return sortStrings(names)
+}
+
+/**
+ * Sort template files by destination path
+ */
+export function sortTemplateFiles(files: TemplateFile[]): TemplateFile[] {
+  return sortBy(files, [(file) => file.destination])
 }

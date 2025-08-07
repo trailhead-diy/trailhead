@@ -120,6 +120,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       '@inquirer/prompts':
         specifier: ^7.8.0
         version: 7.8.0(@types/node@24.1.0)
@@ -255,6 +258,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       '@esteban-url/validation':
         specifier: workspace:*
         version: link:../validation
@@ -313,6 +319,9 @@ importers:
       '@esteban-url/fs':
         specifier: workspace:*
         version: link:../fs
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       file-type:
         specifier: ^21.0.0
         version: 21.0.0
@@ -365,6 +374,9 @@ importers:
       '@esteban-url/core':
         specifier: workspace:*
         version: link:../core
+      '@esteban-url/sort':
+        specifier: workspace:*
+        version: link:../sort
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.0
@@ -384,6 +396,43 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
+      '@types/node':
+        specifier: ^24.1.0
+        version: 24.1.0
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.1.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))
+      oxlint:
+        specifier: ^1.9.0
+        version: 1.9.0
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.1.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/sort:
+    dependencies:
+      es-toolkit:
+        specifier: ^1.39.8
+        version: 1.39.8
+    devDependencies:
+      '@repo/prettier-config':
+        specifier: workspace:*
+        version: link:../../tooling/prettier-config
+      '@repo/tsup-config':
+        specifier: workspace:*
+        version: link:../../tooling/tsup-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../tooling/typescript-config
+      '@repo/vitest-config':
+        specifier: workspace:*
+        version: link:../../tooling/vitest-config
       '@types/node':
         specifier: ^24.1.0
         version: 24.1.0
@@ -3964,6 +4013,9 @@ packages:
   es-object-atoms@1.1.1:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
+
+  es-toolkit@1.39.8:
+    resolution: {integrity: sha512-A8QO9TfF+rltS8BXpdu8OS+rpGgEdnRhqIVxO/ZmNvnXBYgOdSsxukT55ELyP94gZIntWJ+Li9QRrT2u1Kitpg==}
 
   esast-util-from-estree@2.0.0:
     resolution: {integrity: sha512-4CyanoAudUSBAn5K13H4JhsMH6L9ZP7XbLVe/dKybkxMO7eDyLsT8UHl9TRNrU2Gr9nz+FovfSIjuXWJ81uVwQ==}
@@ -11831,6 +11883,8 @@ snapshots:
   es-object-atoms@1.1.1:
     dependencies:
       es-errors: 1.3.0
+
+  es-toolkit@1.39.8: {}
 
   esast-util-from-estree@2.0.0:
     dependencies:
