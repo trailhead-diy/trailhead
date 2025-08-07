@@ -1,6 +1,6 @@
 // Export all commands for programmatic use
 export { npmAuthCommand } from './commands/npm-auth.js'
-export { ciOptimalCommand } from './commands/ci-optimal.js'
+export { ciCommand } from './commands/ci.js'
 export { testRunnerCommand } from './commands/test-runner.js'
 export { fixImportsCommand } from './commands/fix-imports.js'
 export { validateDepsCommand } from './commands/validate-deps.js'

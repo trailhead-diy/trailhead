@@ -3,7 +3,7 @@ import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-
 import { execCommand, createTimer, getElapsedSeconds } from '../utils/subprocess.js'
 import { colorize, withIcon } from '../utils/colors.js'
 
-interface CiOptimalOptions extends CommandOptions {
+interface CiOptions extends CommandOptions {
   readonly affected?: boolean
   readonly skipDocs?: boolean
   readonly skipSecurity?: boolean
@@ -12,9 +12,9 @@ interface CiOptimalOptions extends CommandOptions {
   readonly coverage?: boolean
 }
 
-export const ciOptimalCommand = createCommand<CiOptimalOptions>({
-  name: 'ci-optimal',
-  description: 'Run comprehensive CI pipeline with optimal performance',
+export const ciCommand = createCommand<CiOptions>({
+  name: 'ci',
+  description: 'Run comprehensive CI pipeline',
   options: [
     {
       flags: '--affected',
@@ -53,10 +53,10 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
     },
   ],
   examples: [
-    'ci-optimal',
-    'ci-optimal --affected',
-    'ci-optimal --skip-docs --concurrency 4',
-    'ci-optimal --turbo-args "--affected"',
+    'ci',
+    'ci --affected',
+    'ci --skip-docs --concurrency 4',
+    'ci --turbo-args "--affected"',
   ],
   action: async (options, context): Promise<Result<void, CoreError>> => {
     const startTime = createTimer()

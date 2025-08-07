@@ -15,7 +15,7 @@ echo "✅ Testing help output..."
 pnpm scripts-cli --help >/dev/null 2>&1 && echo "  CLI help works"
 
 # Test 2: Each command has help
-commands=("npm-auth" "ci-optimal" "test-runner" "fix-imports" "validate-deps")
+commands=("npm-auth" "ci" "test-runner" "fix-imports" "validate-deps")
 for cmd in "${commands[@]}"; do
   pnpm scripts-cli "$cmd" --help >/dev/null 2>&1 && echo "  $cmd --help works"
 done
@@ -42,7 +42,7 @@ echo
 echo "🎉 All TypeScript CLI commands are functional!"
 echo "💡 They provide equivalent or enhanced functionality compared to shell scripts:"
 echo "  • npm-auth       ↔ setup-npm-auth.sh"
-echo "  • ci-optimal     ↔ ci-optimal.sh"  
+echo "  • ci             ↔ ci-optimal.sh"  
 echo "  • test-runner    ↔ smart-test-runner.sh"
 echo "  • fix-imports    ↔ fix-duplicate-imports.sh"
 echo "  • validate-deps  ↔ validate-monorepo-deps.sh"

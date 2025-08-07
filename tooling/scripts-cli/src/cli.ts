@@ -1,6 +1,6 @@
 import { createCLI } from '@esteban-url/cli'
 import { npmAuthCommand } from './commands/npm-auth.js'
-import { ciOptimalCommand } from './commands/ci-optimal.js'
+import { ciCommand } from './commands/ci.js'
 import { testRunnerCommand } from './commands/test-runner.js'
 import { fixImportsCommand } from './commands/fix-imports.js'
 import { validateDepsCommand } from './commands/validate-deps.js'
@@ -12,7 +12,7 @@ const cli = createCLI({
   description: 'TypeScript CLI tools for Trailhead monorepo operations',
   commands: [
     npmAuthCommand,
-    ciOptimalCommand,
+    ciCommand,
     testRunnerCommand,
     fixImportsCommand,
     validateDepsCommand,
