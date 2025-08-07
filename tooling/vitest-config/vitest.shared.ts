@@ -100,6 +100,7 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@esteban-url/fs/utils': resolve(packagesDir, 'fs/src/utils/index.ts'),
         '@esteban-url/fs': resolve(packagesDir, 'fs/src/index.ts'),
         '@esteban-url/data': resolve(packagesDir, 'data/src/index.ts'),
+        '@esteban-url/cli/command': resolve(packagesDir, 'cli/src/command/index.ts'),
         '@esteban-url/cli/testing': resolve(packagesDir, 'cli/src/testing/index.ts'),
         '@esteban-url/cli/utils': resolve(packagesDir, 'cli/src/utils/index.ts'),
         '@esteban-url/cli': resolve(packagesDir, 'cli/src/index.ts'),
