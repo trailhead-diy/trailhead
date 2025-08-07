@@ -1,5 +1,6 @@
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { select, confirm, input } from '@inquirer/prompts'
+import { consola } from 'consola'
 import {
   BUILT_IN_PRESETS,
   type PresetConfig,
@@ -33,7 +34,7 @@ export async function selectPreset(
     const presetNames = availablePresetsResult.value
 
     if (presetNames.length === 0) {
-      console.log('No presets available. Using default configuration.')
+      consola.info('No presets available. Using default configuration.')
       return ok(null)
     }
 
@@ -112,15 +113,15 @@ export async function configureWithPreset(
     }
 
     // Show preset details
-    console.log(`\\nUsing preset: ${selectedPreset.name}`)
-    console.log(`Description: ${selectedPreset.description}`)
+    consola.info(`\\nUsing preset: ${selectedPreset.name}`)
+    consola.info(`Description: ${selectedPreset.description}`)
 
     const enabledFeatures = Object.entries(selectedPreset.features || {})
       .filter(([, enabled]) => enabled)
       .map(([name]) => name)
 
     if (enabledFeatures.length > 0) {
-      console.log(`Features: ${enabledFeatures.join(', ')}`)
+      consola.info(`Features: ${enabledFeatures.join(', ')}`)
     }
 
     // Ask for confirmation
@@ -198,7 +199,7 @@ export async function createInteractivePreset(
   _context: ConfigContext
 ): Promise<Result<PresetConfig, CoreError>> {
   try {
-    console.log('\\nCreating a new preset from current configuration...')
+    consola.info('\\nCreating a new preset from current configuration...')
 
     // Get preset details
     const presetName = await input({
@@ -230,17 +231,17 @@ export async function createInteractivePreset(
     }
 
     // Show preview
-    console.log('\\nPreset preview:')
-    console.log(`Name: ${preset.name}`)
-    console.log(`Description: ${preset.description}`)
-    console.log(`Project Type: ${preset.projectType}`)
+    consola.info('\\nPreset preview:')
+    consola.info(`Name: ${preset.name}`)
+    consola.info(`Description: ${preset.description}`)
+    consola.info(`Project Type: ${preset.projectType}`)
 
     const enabledFeatures = Object.entries(preset.features || {})
       .filter(([, enabled]) => enabled)
       .map(([name]) => name)
 
     if (enabledFeatures.length > 0) {
-      console.log(`Features: ${enabledFeatures.join(', ')}`)
+      consola.info(`Features: ${enabledFeatures.join(', ')}`)
     }
 
     // Confirm creation
@@ -295,11 +296,11 @@ export async function listPresetsDetailed(
     const presetNames = presetNamesResult.value
 
     if (presetNames.length === 0) {
-      console.log('No presets available.')
+      consola.info('No presets available.')
       return ok(undefined)
     }
 
-    console.log('\\nAvailable presets:\\n')
+    consola.info('\\nAvailable presets:\\n')
 
     for (const name of presetNames) {
       const presetResult = await loadPreset(name, context)
@@ -307,9 +308,9 @@ export async function listPresetsDetailed(
         const preset = presetResult.value
         const isBuiltIn = BUILT_IN_PRESETS.some((p) => p.name === preset.name)
 
-        console.log(`📋 ${preset.name}${isBuiltIn ? ' (built-in)' : ' (custom)'}`)
-        console.log(`   ${preset.description}`)
-        console.log(`   Project Type: ${preset.projectType}`)
+        consola.info(`📋 ${preset.name}${isBuiltIn ? ' (built-in)' : ' (custom)'}`)
+        consola.info(`   ${preset.description}`)
+        consola.info(`   Project Type: ${preset.projectType}`)
 
         const enabledFeatures = Object.entries(preset.features || {})
           .filter(([, enabled]) => enabled)
@@ -320,14 +321,14 @@ export async function listPresetsDetailed(
         }
 
         if (preset.packageManager) {
-          console.log(`   Package Manager: ${preset.packageManager}`)
+          consola.info(`   Package Manager: ${preset.packageManager}`)
         }
 
         if (preset.nodeVersion) {
-          console.log(`   Node.js: ${preset.nodeVersion}`)
+          consola.info(`   Node.js: ${preset.nodeVersion}`)
         }
 
-        console.log('') // Empty line for spacing
+        consola.log('') // Empty line for spacing
       }
     }
 

@@ -1,9 +1,11 @@
-// Color utilities for console output (similar to shell script color codes)
+// Color utilities for console output using consola
+import { colors as consolaColors } from 'consola/utils'
+
 export const colors = {
-  green: (text: string) => `\x1b[0;32m${text}\x1b[0m`,
-  yellow: (text: string) => `\x1b[1;33m${text}\x1b[0m`,
-  red: (text: string) => `\x1b[0;31m${text}\x1b[0m`,
-  blue: (text: string) => `\x1b[0;34m${text}\x1b[0m`,
+  green: consolaColors.green,
+  yellow: consolaColors.yellow,
+  red: consolaColors.red,
+  blue: consolaColors.blue,
 } as const
 
 export const icons = {

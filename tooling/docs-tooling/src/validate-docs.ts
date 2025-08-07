@@ -24,7 +24,8 @@
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join, extname, relative, basename } from 'path'
 import matter from 'gray-matter'
-import chalk from 'chalk'
+import { consola } from 'consola'
+import { colors } from 'consola/utils'
 
 interface DocMetadata {
   type: 'tutorial' | 'how-to' | 'reference' | 'explanation'
@@ -247,31 +248,31 @@ function generateCoverageReport(results: ValidationResult[]): void {
     }
   }
 
-  console.log(chalk.bold('\n📊 Documentation Coverage Report\n'))
-  console.log(`Total files: ${summary.totalFiles}`)
-  console.log(`${chalk.green('✓')} Valid: ${summary.validFiles}`)
-  console.log(`${chalk.yellow('⚠')} Warnings: ${summary.warningFiles}`)
-  console.log(`${chalk.red('✗')} Errors: ${summary.errorFiles}`)
+  consola.box('📊 Documentation Coverage Report')
+  consola.info(`Total files: ${summary.totalFiles}`)
+  consola.info(`${colors.green('✓')} Valid: ${summary.validFiles}`)
+  consola.info(`${colors.yellow('⚠')} Warnings: ${summary.warningFiles}`)
+  consola.info(`${colors.red('✗')} Errors: ${summary.errorFiles}`)
 
-  console.log(chalk.bold('\nBy Type:'))
+  consola.info(colors.bold('\nBy Type:'))
   for (const [type, count] of Object.entries(summary.byType)) {
-    console.log(`  ${type}: ${count}`)
+    consola.info(`  ${type}: ${count}`)
   }
 
   const coverage = (summary.validFiles / summary.totalFiles) * 100
-  console.log(chalk.bold(`\nOverall Quality: ${coverage.toFixed(1)}%`))
+  consola.info(colors.bold(`\nOverall Quality: ${coverage.toFixed(1)}%`))
 
   if (coverage < 80) {
-    console.log(chalk.red('📉 Documentation quality is below 80%. Consider improving compliance.'))
+    consola.error('📉 Documentation quality is below 80%. Consider improving compliance.')
   } else if (coverage < 95) {
-    console.log(chalk.yellow('📈 Good documentation quality. A few improvements needed.'))
+    consola.warn('📈 Good documentation quality. A few improvements needed.')
   } else {
-    console.log(chalk.green('🎉 Excellent documentation quality!'))
+    consola.success('🎉 Excellent documentation quality!')
   }
 }
 
 function main(): void {
-  console.log(chalk.bold('🔍 Validating Diátaxis Documentation Standards\n'))
+  consola.start('🔍 Validating Diátaxis Documentation Standards')
 
   // Find all markdown files
   const allFiles = [
@@ -297,7 +298,7 @@ function main(): void {
     )
   })
 
-  console.log(`Found ${docFiles.length} documentation files\n`)
+  consola.info(`Found ${docFiles.length} documentation files\n`)
 
   // Validate each file
   const results: ValidationResult[] = []
@@ -307,17 +308,17 @@ function main(): void {
 
     // Print results for this file
     if (result.errors.length > 0 || result.warnings.length > 0) {
-      console.log(chalk.bold(result.file))
+      consola.info(colors.bold(result.file))
 
       for (const error of result.errors) {
-        console.log(`  ${chalk.red('✗')} ${error}`)
+        consola.error(`  ✗ ${error}`)
       }
 
       for (const warning of result.warnings) {
-        console.log(`  ${chalk.yellow('⚠')} ${warning}`)
+        consola.warn(`  ⚠ ${warning}`)
       }
 
-      console.log()
+      consola.info('')
     }
   }
 
@@ -327,10 +328,10 @@ function main(): void {
   // Exit with error code if there are validation errors
   const hasErrors = results.some((r) => r.errors.length > 0)
   if (hasErrors) {
-    console.log(chalk.red('\n❌ Documentation validation failed. Please fix the errors above.'))
+    consola.error('❌ Documentation validation failed. Please fix the errors above.')
     process.exit(1)
   } else {
-    console.log(chalk.green('\n✅ All documentation follows Diátaxis standards!'))
+    consola.success('✅ All documentation follows Diátaxis standards!')
   }
 }
 

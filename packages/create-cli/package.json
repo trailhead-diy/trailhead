@@ -44,6 +44,7 @@
     "@esteban-url/core": "workspace:*",
     "@esteban-url/fs": "workspace:*",
     "@esteban-url/validation": "workspace:*",
+    "consola": "^3.4.2",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",

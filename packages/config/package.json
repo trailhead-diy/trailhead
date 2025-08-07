@@ -58,7 +58,8 @@
   "dependencies": {
     "@esteban-url/core": "workspace:*",
     "@esteban-url/fs": "workspace:*",
-    "@esteban-url/validation": "workspace:*"
+    "@esteban-url/validation": "workspace:*",
+    "consola": "^3.4.2"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",

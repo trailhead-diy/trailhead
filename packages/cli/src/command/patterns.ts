@@ -1,6 +1,6 @@
 import type { CommandContext, CommandPhase } from './types.js'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
-import { chalk } from '../utils/chalk.js'
+import { colors, consola } from '../utils/chalk.js'
 
 /**
  * Configuration options for commands that support interactive mode
@@ -624,31 +624,29 @@ export function displaySummary(
   stats?: Array<{ label: string; value: string | number }>
 ): void {
   context.logger.info('')
-  context.logger.info(chalk.bold.blue(`📋 ${title}`))
-  context.logger.info(chalk.blue('═'.repeat(title.length + 4)))
+  context.logger.info(colors.bold(colors.blue(`📋 ${title}`)))
+  context.logger.info(colors.blue('═'.repeat(title.length + 4)))
 
   // Display main items
   for (const item of items) {
     const formattedValue =
       typeof item.value === 'boolean'
         ? item.value
-          ? chalk.green('✓ Yes')
-          : chalk.red('✗ No')
-        : chalk.cyan(String(item.value))
+          ? colors.green('✓ Yes')
+          : colors.red('✗ No')
+        : colors.cyan(String(item.value))
 
-    context.logger.info(`${chalk.gray('▸')} ${chalk.white(item.label)}: ${formattedValue}`)
+    context.logger.info(`${colors.gray('▸')} ${item.label}: ${formattedValue}`)
   }
 
   // Display statistics if provided
   if (stats && stats.length > 0) {
     context.logger.info('')
-    context.logger.info(chalk.bold.yellow('📊 Statistics'))
-    context.logger.info(chalk.yellow('─'.repeat(12)))
+    context.logger.info(colors.bold(colors.yellow('📊 Statistics')))
+    context.logger.info(colors.yellow('─'.repeat(12)))
 
     for (const stat of stats) {
-      context.logger.info(
-        `${chalk.gray('▸')} ${chalk.white(stat.label)}: ${chalk.green(String(stat.value))}`
-      )
+      context.logger.info(`${colors.gray('▸')} ${stat.label}: ${colors.green(String(stat.value))}`)
     }
   }
 

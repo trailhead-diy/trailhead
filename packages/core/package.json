@@ -47,7 +47,6 @@
     "prepack": "pnpm build"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
     "fp-ts": "^2.16.10",
     "neverthrow": "^8.2.0"
   },

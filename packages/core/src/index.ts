@@ -43,5 +43,5 @@ export {
   fromThrowableAsync as fromThrowableAsyncFunc,
 } from './functional/async.js'
 
-/** Essential utilities for CLI applications - colors and formatting */
-export * from './utils/index.js'
+// Color utilities moved to individual packages that need them
+// Core is now pure and browser-compatible

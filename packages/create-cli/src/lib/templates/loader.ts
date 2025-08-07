@@ -2,6 +2,7 @@ import { resolve, dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync } from 'fs'
 import fg from 'fast-glob'
+import { consola } from 'consola'
 import { validateTemplatePath } from '../config/validation.js'
 import type { TemplateFile, TemplateLoaderConfig } from './types.js'
 
@@ -211,7 +212,7 @@ async function loadTemplateFilesFromDirectory(
     if (baseTemplatesDir) {
       const dirValidation = validateTemplatePath(dir, baseTemplatesDir)
       if (!dirValidation.isOk()) {
-        console.warn(`Skipping invalid template directory: ${dir}`)
+        consola.warn(`Skipping invalid template directory: ${dir}`)
         return []
       }
     }
@@ -230,7 +231,7 @@ async function loadTemplateFilesFromDirectory(
         if (baseTemplatesDir) {
           const fileValidation = validateTemplatePath(filePath, baseTemplatesDir)
           if (!fileValidation.isOk()) {
-            console.warn(`Skipping invalid template file: ${filePath}`)
+            consola.warn(`Skipping invalid template file: ${filePath}`)
             return null
           }
         }
@@ -239,7 +240,7 @@ async function loadTemplateFilesFromDirectory(
 
         // Additional validation of relative path
         if (relativePath.includes('..') || relativePath.startsWith('/')) {
-          console.warn(`Skipping suspicious template file: ${relativePath}`)
+          consola.warn(`Skipping suspicious template file: ${relativePath}`)
           return null
         }
 

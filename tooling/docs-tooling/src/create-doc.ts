@@ -9,7 +9,8 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join, relative } from 'path'
 import { input, select, confirm } from '@inquirer/prompts'
-import chalk from 'chalk'
+import { consola } from 'consola'
+import { colors } from 'consola/utils'
 
 interface DocMetadata {
   type: 'tutorial' | 'how-to' | 'reference' | 'explanation'
@@ -55,15 +56,15 @@ const COMMON_DIRECTORIES = {
 }
 
 function showWelcome(): void {
-  console.log(chalk.bold.blue('\n📝 Trailhead Documentation Creator\n'))
-  console.log('This tool helps you create documentation that follows Diátaxis principles.')
-  console.log('Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n')
+  consola.box('📝 Trailhead Documentation Creator')
+  consola.info('This tool helps you create documentation that follows Diátaxis principles.')
+  consola.info('Each document must be ONE type: Tutorial, How-To, Reference, or Explanation.\n')
 }
 
 function showTypeGuidance(type: string): void {
   const guidance = {
     tutorial: `
-${chalk.bold.green('📚 Tutorial Guidelines:')}
+${colors.bold(colors.green('📚 Tutorial Guidelines:'))}
 - Help users learn by building something concrete
 - Step-by-step instructions with expected outcomes
 - One clear path (no options or alternatives)
@@ -71,7 +72,7 @@ ${chalk.bold.green('📚 Tutorial Guidelines:')}
 - End with a working result`,
 
     'how-to': `
-${chalk.bold.yellow('🛠️ How-To Guide Guidelines:')}
+${colors.bold(colors.yellow('🛠️ How-To Guide Guidelines:'))}
 - Solve specific user problems
 - Assume existing knowledge
 - Get to the solution quickly
@@ -79,7 +80,7 @@ ${chalk.bold.yellow('🛠️ How-To Guide Guidelines:')}
 - Include troubleshooting`,
 
     reference: `
-${chalk.bold.blue('📖 Reference Guidelines:')}
+${colors.bold(colors.blue('📖 Reference Guidelines:'))}
 - Comprehensive technical information
 - Consistent, predictable structure
 - No step-by-step instructions
@@ -87,7 +88,7 @@ ${chalk.bold.blue('📖 Reference Guidelines:')}
 - Brief examples for clarity`,
 
     explanation: `
-${chalk.bold.magenta('💡 Explanation Guidelines:')}
+${colors.bold(colors.magenta('💡 Explanation Guidelines:'))}
 - Help users understand concepts
 - Discuss background and motivation
 - Explain design decisions and trade-offs
@@ -299,7 +300,7 @@ async function createDocument(metadata: DocMetadata): Promise<void> {
     })
 
     if (!overwrite) {
-      console.log(chalk.yellow('Operation cancelled.'))
+      consola.warn('Operation cancelled.')
       return
     }
   }
@@ -307,7 +308,7 @@ async function createDocument(metadata: DocMetadata): Promise<void> {
   // Create directory if it doesn't exist
   if (!existsSync(fullDir)) {
     mkdirSync(fullDir, { recursive: true })
-    console.log(chalk.green(`Created directory: ${relative(process.cwd(), fullDir)}`))
+    consola.success(`Created directory: ${relative(process.cwd(), fullDir)}`)
   }
 
   // Load and process template
@@ -317,8 +318,8 @@ async function createDocument(metadata: DocMetadata): Promise<void> {
   // Write file
   writeFileSync(fullPath, content, 'utf-8')
 
-  console.log(chalk.green(`\n✅ Created: ${relative(process.cwd(), fullPath)}`))
-  console.log(chalk.blue(`\n📝 Next steps:`))
+  consola.success(`\n✅ Created: ${relative(process.cwd(), fullPath)}`)
+  consola.info(`\n📝 Next steps:`)
   console.log(`1. Edit the file to add your content`)
   console.log(`2. Run: pnpm docs:validate`)
   console.log(`3. Run: pnpm docs:lint`)
@@ -355,16 +356,16 @@ async function main(): Promise<void> {
       filename,
     }
 
-    console.log(chalk.bold('\n📋 Summary:'))
-    console.log(`Type: ${chalk.blue(metadata.type)}`)
-    console.log(`Title: ${chalk.blue(metadata.title)}`)
-    console.log(`Description: ${chalk.blue(metadata.description)}`)
-    console.log(`Location: ${chalk.blue(`docs/${metadata.directory}/${metadata.filename}`)}`)
+    consola.log('\n📋 Summary:')
+    consola.log(`Type: ${metadata.type}`)
+    consola.log(`Title: ${metadata.title}`)
+    consola.log(`Description: ${metadata.description}`)
+    consola.log(`Location: docs/${metadata.directory}/${metadata.filename}`)
     if (metadata.prerequisites?.length) {
-      console.log(`Prerequisites: ${chalk.blue(metadata.prerequisites.join(', '))}`)
+      consola.log(`Prerequisites: ${metadata.prerequisites.join(', ')}`)
     }
     if (metadata.related?.length) {
-      console.log(`Related: ${chalk.blue(metadata.related.join(', '))}`)
+      consola.log(`Related: ${metadata.related.join(', ')}`)
     }
 
     const confirm_create = await confirm({
@@ -375,14 +376,14 @@ async function main(): Promise<void> {
     if (confirm_create) {
       await createDocument(metadata)
     } else {
-      console.log(chalk.yellow('Operation cancelled.'))
+      consola.warn('Operation cancelled.')
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('User force closed')) {
-      console.log(chalk.yellow('\nOperation cancelled by user.'))
+      consola.warn('\nOperation cancelled by user.')
       process.exit(0)
     }
-    console.error(chalk.red('Error creating documentation:'), error)
+    consola.error('Error creating documentation:', error)
     process.exit(1)
   }
 }

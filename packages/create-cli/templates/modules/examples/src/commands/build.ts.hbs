@@ -3,6 +3,7 @@ import { ok, err, createCoreError } from '@esteban-url/core'
 import { ensureDirectoryExists } from '@esteban-url/fs'
 import { spawn } from 'child_process'
 import { promisify } from 'util'
+import { consola } from 'consola'
 
 export const buildCommand = createCommand({
   name: 'build',
@@ -22,7 +23,7 @@ export const buildCommand = createCommand({
     }
   },
   async handler(args) {
-    console.log('🏗️  Building {{projectName}}...')
+    consola.start('🏗️  Building {{projectName}}...')
 
     try {
       // Ensure build directory exists
@@ -39,7 +40,7 @@ export const buildCommand = createCommand({
 
       // Clean if requested
       if (args.flags.clean) {
-        console.log('🧹 Cleaning build directory...')
+        consola.info('🧹 Cleaning build directory...')
         await runCommand('rm', ['-rf', 'dist/*'])
       }
 
@@ -52,7 +53,7 @@ export const buildCommand = createCommand({
         buildArgs.push('--watch')
       }
 
-      console.log('📦 Compiling TypeScript...')
+      consola.info('📦 Compiling TypeScript...')
       const buildResult = await runCommand('tsc', buildArgs)
       
       if (buildResult.code !== 0) {
@@ -64,10 +65,10 @@ export const buildCommand = createCommand({
         }))
       }
 
-      console.log('✅ Build completed successfully!')
+      consola.success('✅ Build completed successfully!')
       
       if (!args.flags.watch) {
-        console.log('📁 Build output: ./dist/')
+        consola.info('📁 Build output: ./dist/')
       }
 
       return ok(undefined)

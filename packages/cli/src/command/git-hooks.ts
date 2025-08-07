@@ -7,7 +7,7 @@ import { Command } from 'commander'
 import path from 'path'
 import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
 import { fs } from '@esteban-url/fs'
-import chalk from 'chalk'
+import { colors, consola } from '../utils/chalk.js'
 import { createDefaultLogger } from '../utils/logger.js'
 
 /**
@@ -770,7 +770,7 @@ export function createGitHooksCommand(): Command {
 
       for (const file of files) {
         const fileResult = await fs.exists(file)
-        const status = fileResult.isOk() ? chalk.green('✅ Installed') : chalk.red('❌ Missing')
+        const status = fileResult.isOk() ? colors.green('✅ Installed') : colors.red('❌ Missing')
         logger.info(`   ${file}: ${status}`)
       }
 
@@ -781,14 +781,14 @@ export function createGitHooksCommand(): Command {
           const pkg = JSON.parse(packageJsonResult.value)
           const hasLefthook = pkg.devDependencies?.lefthook || pkg.dependencies?.lefthook
           const lefthookStatus = hasLefthook
-            ? chalk.green('✅ Installed')
-            : chalk.yellow('⚠️  Not installed')
+            ? colors.green('✅ Installed')
+            : colors.yellow('⚠️  Not installed')
           logger.info(`   lefthook package: ${lefthookStatus}`)
         } else {
-          logger.info(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
+          logger.info(`   lefthook package: ${colors.cyan('❓ Cannot determine')}`)
         }
       } catch {
-        console.log(`   lefthook package: ${chalk.gray('❓ Cannot determine')}`)
+        console.log(`   lefthook package: ${colors.cyan('❓ Cannot determine')}`)
       }
     })
 

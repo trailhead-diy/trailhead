@@ -1,10 +1,13 @@
 import { isConfigValidationError, type ConfigValidationError } from './errors.js'
-import { error as errorColor, warning, info, muted, bold } from '@esteban-url/core/utils'
+import { consola } from 'consola'
+import { colors } from 'consola/utils'
+
+const { red: errorColor, yellow: warning, blue: info, gray: muted, bold } = colors
 
 /**
  * Configuration validation error formatting with semantic colors
  *
- * Uses proper CLI color utilities from @esteban-url/core/utils for consistent styling
+ * Uses consola color utilities for consistent styling
  * across the entire monorepo. Colors are applied semantically based on error context.
  */
 

@@ -1,5 +1,6 @@
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core'
+import { createCommand } from '@esteban-url/cli/command'
+import { ok, err, createCoreError } from '@esteban-url/core'
+import { consola } from 'consola'
 import { validateJsonFile, validateFileExists } from '../lib/validators.js'
 import { resolve } from 'path'
 
@@ -20,12 +21,12 @@ export const validateCommand = createCommand({
     const { file, type } = args.flags
 
     if (!file) {
-      console.log('Usage: {{packageName}} validate --file <path> [--type <type>]')
-      console.log('')
-      console.log('Supported types:')
-      console.log('  json     - Validate JSON syntax')
-      console.log('  config   - Validate configuration file')
-      console.log('  package  - Validate package.json')
+      consola.info('Usage: {{packageName}} validate --file <path> [--type <type>]')
+      consola.info('')
+      consola.info('Supported types:')
+      consola.info('  json     - Validate JSON syntax')
+      consola.info('  config   - Validate configuration file')
+      consola.info('  package  - Validate package.json')
       return ok(undefined)
     }
 
@@ -37,7 +38,7 @@ export const validateCommand = createCommand({
       return fileExistsResult
     }
 
-    console.log(`Validating: ${filepath}`)
+    consola.start(`Validating: ${filepath}`)
 
     switch (type) {
       case 'json':
@@ -69,11 +70,11 @@ function validateJson(filepath: string) {
   const result = validateJsonFile(filepath)
   
   if (result.isErr()) {
-    console.error('❌ JSON validation failed')
+    consola.error('❌ JSON validation failed')
     return result
   }
 
-  console.log('✅ Valid JSON file')
+  consola.success('✅ Valid JSON file')
   return ok(undefined)
 }
 
@@ -84,11 +85,11 @@ function validateConfig(filepath: string) {
     const result = validateJsonFile(filepath, configSchema)
     
     if (result.isErr()) {
-      console.error('❌ Configuration validation failed')
+      consola.error('❌ Configuration validation failed')
       return result
     }
 
-    console.log('✅ Valid configuration file')
+    consola.success('✅ Valid configuration file')
     return ok(undefined)
   } catch {
     // Fallback to basic JSON validation
@@ -100,7 +101,7 @@ function validatePackageJson(filepath: string) {
   const result = validateJsonFile(filepath)
   
   if (result.isErr()) {
-    console.error('❌ package.json validation failed')
+    consola.error('❌ package.json validation failed')
     return result
   }
 
@@ -121,9 +122,9 @@ function validatePackageJson(filepath: string) {
     }))
   }
 
-  console.log('✅ Valid package.json file')
-  console.log(`   Name: ${data.name}`)
-  console.log(`   Version: ${data.version}`)
+  consola.success('✅ Valid package.json file')
+  consola.info(`   Name: ${data.name}`)
+  consola.info(`   Version: ${data.version}`)
   
   return ok(undefined)
 }
