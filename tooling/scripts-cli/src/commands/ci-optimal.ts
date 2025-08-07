@@ -96,14 +96,14 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
 
       // Build turbo command with options
       const turboArgs = ['turbo', 'run', 'format:check', 'types']
-      
+
       // Add test or test:coverage based on coverage flag
       if (options.coverage) {
         turboArgs.push('test:coverage')
       } else {
         turboArgs.push('test')
       }
-      
+
       turboArgs.push('build')
       turboArgs.push('--cache-dir=.turbo')
       turboArgs.push(`--concurrency=${options.concurrency || '100%'}`)
@@ -126,7 +126,7 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
         cleanEnv.COVERAGE = 'true'
         execOptions.env = cleanEnv
       }
-      
+
       const turboResult = await execCommand('pnpm', turboArgs, context, execOptions)
       if (turboResult.isErr()) {
         context.logger.error(colorize('red', withIcon('error', 'Quality checks failed')))
@@ -156,14 +156,14 @@ export const ciOptimalCommand = createCommand<CiOptimalOptions>({
       if (options.coverage) {
         context.logger.info('')
         context.logger.info(colorize('yellow', withIcon('stats', 'Generating coverage report...')))
-        
+
         const coverageResult = await execCommand(
           'pnpm',
           ['scripts-cli', 'coverage-check', '--report-only'],
           context,
           { allowFailure: true }
         )
-        
+
         if (coverageResult.isErr()) {
           context.logger.warning(
             colorize('yellow', withIcon('warning', 'Coverage report generation failed'))

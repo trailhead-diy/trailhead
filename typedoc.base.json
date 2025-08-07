@@ -1,14 +1,14 @@
 {
   "$schema": "https://typedoc-plugin-markdown.org/schema.json",
   "plugin": ["typedoc-plugin-markdown"],
-  
+
   "router": "module",
   "flattenOutputFiles": true,
   "mergeReadme": true,
   "entryFileName": "index",
-  
+
   "entryPoints": ["src/index.ts"],
-  
+
   "validation": {
     "notExported": true,
     "invalidLink": true,
@@ -16,14 +16,9 @@
     "rewrittenLink": true,
     "unusedMergeModuleWith": true
   },
-  
-  "requiredToBeDocumented": [
-    "Class",
-    "Interface",
-    "Function",
-    "Method"
-  ],
-  
+
+  "requiredToBeDocumented": ["Class", "Interface", "Function", "Method"],
+
   "navigation": {
     "includeCategories": true,
     "includeGroups": true,
@@ -31,35 +26,35 @@
     "compactFolders": true,
     "excludeReferences": false
   },
-  
+
   "categorizeByGroup": false,
   "defaultCategory": "API",
-  
+
   "parametersFormat": "table",
   "typeDeclarationFormat": "table",
   "propertyMembersFormat": "table",
   "enumMembersFormat": "table",
   "interfacePropertiesFormat": "table",
   "classPropertiesFormat": "table",
-  
+
   "tableColumnSettings": {
     "hideSources": true
   },
-  
+
   "disableSources": true,
   "hideGenerator": true,
   "githubPages": false,
   "skipErrorChecking": false,
   "treatWarningsAsErrors": false,
   "treatValidationWarningsAsErrors": false,
-  
+
   "sort": ["source-order"],
-  
+
   "blockTags": [
     "@alpha",
     "@beta",
     "@defaultValue",
-    "@decorator", 
+    "@decorator",
     "@deprecated",
     "@eventProperty",
     "@example",
@@ -82,20 +77,16 @@
     "@typeParam",
     "@virtual"
   ],
-  
-  "inlineTags": [
-    "@link",
-    "@inheritDoc", 
-    "@label"
-  ],
-  
+
+  "inlineTags": ["@link", "@inheritDoc", "@label"],
+
   "excludePrivate": true,
   "excludeProtected": false,
   "excludeInternal": true,
   "excludeNotDocumented": false,
   "excludeCategories": [],
   "excludeExternals": true,
-  
+
   "visibilityFilters": {
     "protected": true,
     "private": false,
@@ -104,7 +95,7 @@
     "@alpha": false,
     "@beta": true
   },
-  
+
   "externalSymbolLinkMappings": {
     "typescript": {
       "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
@@ -160,7 +151,7 @@
     },
     "neverthrow": {
       "Result": "https://github.com/supermacro/neverthrow#result",
-      "ResultAsync": "https://github.com/supermacro/neverthrow#resultasync", 
+      "ResultAsync": "https://github.com/supermacro/neverthrow#resultasync",
       "ok": "https://github.com/supermacro/neverthrow#ok",
       "err": "https://github.com/supermacro/neverthrow#err",
       "okAsync": "https://github.com/supermacro/neverthrow#okasync",
@@ -294,20 +285,20 @@
       "ListrTaskWrapper": "https://listr2.kilic.dev/task/task-wrapper"
     }
   },
-  
+
   "searchCategoryBoosts": {
     "Classes": 1.5,
     "Interfaces": 1.5,
     "Functions": 1.3
   },
-  
+
   "markdownItOptions": {
     "html": true,
     "linkify": true
   },
-  
+
   "preserveWatchOutput": true,
-  
+
   "gitRevision": "main",
   "gitRemote": "origin",
   "sourceLinkExternal": true

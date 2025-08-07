@@ -3,7 +3,7 @@ import { Result, ok, err, createCoreError, type CoreError } from '@esteban-url/c
 
 /**
  * Package manager configuration
- * 
+ *
  * Contains information about a detected package manager including
  * its commands and version.
  */
@@ -48,7 +48,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000
 
 /**
  * Package manager cache interface
- * 
+ *
  * Provides methods for caching package manager detection results
  * with TTL support to improve performance.
  */
@@ -109,7 +109,7 @@ const defaultCache = createPackageManagerCache()
 
 /**
  * Options for package manager detection
- * 
+ *
  * Allows customization of detection behavior including
  * custom cache instances and command timeouts.
  */
@@ -138,7 +138,7 @@ export const clearPackageManagerCache = (): void => {
 
 /**
  * Semantic version data structure
- * 
+ *
  * Represents a parsed semantic version with major, minor,
  * patch, and optional prerelease components.
  */

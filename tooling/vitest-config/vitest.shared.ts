@@ -127,12 +127,15 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         provider: 'v8',
         reporter: ['text', 'json-summary', 'html'],
         reportsDirectory: './coverage',
-        thresholds: process.env.COVERAGE_ENFORCE === 'true' ? {
-          lines: 70,
-          functions: 70,
-          branches: 60,
-          statements: 70,
-        } : undefined,
+        thresholds:
+          process.env.COVERAGE_ENFORCE === 'true'
+            ? {
+                lines: 70,
+                functions: 70,
+                branches: 60,
+                statements: 70,
+              }
+            : undefined,
         exclude: [
           '**/*.test.ts',
           '**/*.test.tsx',

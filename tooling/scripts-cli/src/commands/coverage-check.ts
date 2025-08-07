@@ -72,8 +72,10 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
 
         // Run tests with coverage
         context.logger.info('')
-        context.logger.info(colorize('yellow', withIcon('progress', 'Running tests with coverage...')))
-        
+        context.logger.info(
+          colorize('yellow', withIcon('progress', 'Running tests with coverage...'))
+        )
+
         // Create a clean environment object
         const testEnv: Record<string, string> = {}
         for (const [key, value] of Object.entries(process.env)) {
@@ -82,7 +84,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
           }
         }
         testEnv.COVERAGE = 'true'
-        
+
         const testResult = await execCommand('pnpm', testArgs, context, {
           env: testEnv,
         })
@@ -97,7 +99,9 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
         }
       } else {
         context.logger.info('')
-        context.logger.info(colorize('yellow', withIcon('info', 'Reading existing coverage reports...')))
+        context.logger.info(
+          colorize('yellow', withIcon('info', 'Reading existing coverage reports...'))
+        )
       }
 
       // Find all coverage-summary.json files
@@ -128,9 +132,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
       await findCoverageFiles(context.projectRoot)
 
       if (coverageFiles.length === 0) {
-        context.logger.warning(
-          colorize('yellow', withIcon('warning', 'No coverage reports found'))
-        )
+        context.logger.warning(colorize('yellow', withIcon('warning', 'No coverage reports found')))
         return ok(undefined)
       }
 
@@ -152,7 +154,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
           try {
             const coverage: CoverageSummary = JSON.parse(contentResult.value)
             const packageName = path.dirname(file).split('/').slice(-2, -1)[0]
-            
+
             packageCoverage.push({ name: packageName, coverage })
 
             totalLines += coverage.total.lines.total
@@ -188,11 +190,14 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
         const pct = coverage.total.lines.pct
         const color = pct >= 80 ? 'green' : pct >= 70 ? 'yellow' : 'red'
         const icon = pct >= 80 ? 'success' : pct >= 70 ? 'warning' : 'error'
-        
+
         context.logger.info(
           colorize(
             color,
-            withIcon(icon, `${name.padEnd(20)} Lines: ${pct.toFixed(1)}% | Functions: ${coverage.total.functions.pct.toFixed(1)}%`)
+            withIcon(
+              icon,
+              `${name.padEnd(20)} Lines: ${pct.toFixed(1)}% | Functions: ${coverage.total.functions.pct.toFixed(1)}%`
+            )
           )
         )
       }
@@ -201,7 +206,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
       context.logger.info('')
       context.logger.info(colorize('blue', withIcon('info', 'Overall Coverage')))
       context.logger.info(colorize('blue', '─'.repeat(60)))
-      
+
       const threshold = options.threshold ? parseFloat(options.threshold) : 70
       const overallColor = linesPct >= threshold ? 'green' : 'red'
       const overallIcon = linesPct >= threshold ? 'success' : 'error'
@@ -210,19 +215,28 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
         colorize(overallColor as any, withIcon(overallIcon, `Lines:      ${linesPct.toFixed(1)}%`))
       )
       context.logger.info(
-        colorize(overallColor as any, withIcon(overallIcon, `Functions:  ${functionsPct.toFixed(1)}%`))
+        colorize(
+          overallColor as any,
+          withIcon(overallIcon, `Functions:  ${functionsPct.toFixed(1)}%`)
+        )
       )
       context.logger.info(
-        colorize(overallColor as any, withIcon(overallIcon, `Branches:   ${branchesPct.toFixed(1)}%`))
+        colorize(
+          overallColor as any,
+          withIcon(overallIcon, `Branches:   ${branchesPct.toFixed(1)}%`)
+        )
       )
       context.logger.info(
-        colorize(overallColor as any, withIcon(overallIcon, `Statements: ${statementsPct.toFixed(1)}%`))
+        colorize(
+          overallColor as any,
+          withIcon(overallIcon, `Statements: ${statementsPct.toFixed(1)}%`)
+        )
       )
 
       // Check thresholds
       if (!options.reportOnly) {
         const failed = linesPct < threshold || functionsPct < threshold || statementsPct < threshold
-        
+
         if (failed) {
           context.logger.error('')
           context.logger.error(
