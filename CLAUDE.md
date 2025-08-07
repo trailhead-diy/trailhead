@@ -122,9 +122,9 @@ trailhead/                            # Root monorepo
 ├── tooling/                         # Internal tooling packages
 │   ├── typescript-config/          # @repo/typescript-config - TS configs
 │   ├── prettier-config/            # @repo/prettier-config - Code formatting
-│   └── vitest-config/              # @repo/vitest-config - Test configuration
-├── docs/                           # Monorepo documentation
-└── scripts/                        # Monorepo-wide scripts
+│   ├── vitest-config/              # @repo/vitest-config - Test configuration
+│   └── dev-cli/                    # @repo/dev-cli - Development operations CLI
+└── docs/                           # Monorepo documentation
 ```
 
 ### Monorepo Commands (from root)
