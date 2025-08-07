@@ -6,7 +6,7 @@
   "description": "Foundation package for Trailhead System - CoreError interface, Result types, and functional programming utilities",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

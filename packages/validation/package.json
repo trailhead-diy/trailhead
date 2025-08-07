@@ -6,7 +6,7 @@
   "description": "Functional validation with Zod integration and Result types for Trailhead System",
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "types": "./dist/index.d.ts",
   "exports": {
