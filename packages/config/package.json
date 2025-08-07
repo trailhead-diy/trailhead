@@ -53,7 +53,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "types": "tsc --noEmit",
-    "format": "prettier --write . --log-level=error --ignore-path .prettierignore "
+    "format": "prettier --write . --log-level=error --ignore-path .prettierignore ",
+    "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",

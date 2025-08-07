@@ -50,8 +50,8 @@
     "format": "prettier --write . --log-level=error --ignore-path ../../.prettierignore",
     "format:check": "prettier --check . --log-level=error --ignore-path ../../.prettierignore",
     "clean": "rm -rf dist",
-    "prepack": "pnpm build",
-    "validate": "pnpm types && pnpm lint && pnpm test:all"
+    "validate": "pnpm types && pnpm lint && pnpm test:all",
+    "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
     "@esteban-url/core": "workspace:*",

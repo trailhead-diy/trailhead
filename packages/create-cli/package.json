@@ -36,8 +36,8 @@
     "format:templates": "echo 'Note: Templates are formatted during generation via transform-helpers.ts'",
     "clean": "rm -rf dist",
     "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
-    "prepack": "pnpm build",
-    "validate": "pnpm types && pnpm lint && pnpm test"
+    "validate": "pnpm types && pnpm lint && pnpm test",
+    "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
     "@esteban-url/cli": "workspace:*",
