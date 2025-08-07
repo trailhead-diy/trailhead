@@ -385,6 +385,7 @@ export function validateCommandConfig<T extends CommandOptions>(
 
 /**
  * Cache for validated option configurations to improve performance
+ * @internal
  */
 const validationCache = new WeakMap<CommandConfig<any>, boolean>()
 
