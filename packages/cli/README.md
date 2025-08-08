@@ -520,6 +520,21 @@ const buildCommand = createCommand({
 4. **Performance First** - Caching, streaming, and optimization built-in
 5. **Developer Experience** - Rich tooling and comprehensive testing utilities
 
+## Documentation
+
+### API Reference
+- **[API Documentation](../../docs/reference/api/cli.md)** - Complete API reference with examples and type information
+
+### Guides & Tutorials
+- **[Getting Started Guide](./docs/tutorials/getting-started.md)** - Build your first CLI application
+- **[Complete CLI Tutorial](./docs/tutorials/build-complete-cli.md)** - Advanced patterns and best practices
+- **[Architecture Overview](./docs/explanation/architecture.md)** - Design principles and patterns
+
+### How-To Guides
+- **[Error Handling](./docs/how-to/handle-errors-in-cli.md)** - Result-based error handling patterns
+- **[Testing CLI Applications](./docs/how-to/test-cli-applications.md)** - Comprehensive testing strategies
+- **[Command Enhancements](./docs/how-to/migrate-to-command-enhancements.md)** - Advanced command patterns
+
 ## License
 
 MIT - see [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE) for details.

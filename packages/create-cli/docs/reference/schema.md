@@ -3,7 +3,7 @@ type: reference
 title: 'Configuration Schema Reference'
 description: 'Complete schema documentation for project configuration options'
 related:
-  - /packages/create-cli/docs/reference/api.md
+  - /docs/reference/api/create-cli.md
   - /docs/reference/templates/tutorial-template.md
   - /packages/create-cli/docs/how-to/configure-defaults.md
 ---

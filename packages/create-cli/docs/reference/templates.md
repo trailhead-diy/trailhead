@@ -4,7 +4,7 @@ title: 'Template System Reference'
 description: 'Complete guide to the template engine and customization system'
 related:
   - /packages/create-cli/docs/reference/schema.md
-  - /packages/create-cli/docs/reference/api.md
+  - /docs/reference/api/create-cli.md
   - /packages/create-cli/docs/how-to/customize-templates.md
 ---
 
