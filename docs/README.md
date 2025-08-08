@@ -12,7 +12,7 @@ This documentation follows the [Diátaxis framework](https://diataxis.fr/) for t
 ## Getting Started
 
 New to Trailhead? Start with our flagship tutorial:
-**[From CSV Hell to CLI Heaven](./tutorials/csv-hell-to-cli-heaven.md)** - Build a real CSV processing CLI in 30 minutes.
+**[Simple CSV Hell](./tutorials/csv-hell-to-cli-heaven.md)** - Build a real CSV processing CLI in 30 minutes.
 
 ## Documentation Structure
 

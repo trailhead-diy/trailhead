@@ -1,4 +1,4 @@
-# From CSV Hell to CLI Heaven
+# Simple CSV Hell
 
 Build a production-ready CSV processing CLI tool using the Trailhead framework.
 

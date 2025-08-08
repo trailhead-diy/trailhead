@@ -431,7 +431,7 @@ debugResult(result, 'File read')
 
 ## Getting Help
 
-1. **Check the tutorial**: [From CSV Hell to CLI Heaven](../tutorials/csv-hell-to-cli-heaven.md)
+1. **Check the tutorial**: [Simple CSV Hell](../tutorials/csv-hell-to-cli-heaven.md)
 2. **Review examples**: Look at the example commands in the generated project
 3. **Read API docs**: [API Reference](../reference/api/)
 4. **GitHub issues**: Report bugs at [github.com/esteban-url/trailhead](https://github.com/esteban-url/trailhead/issues)
