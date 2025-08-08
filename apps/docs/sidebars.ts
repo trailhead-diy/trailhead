@@ -11,36 +11,35 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Tutorials',
       collapsed: false,
-      items: [
-        'tutorials/csv-hell-to-cli-heaven',
-      ],
+      items: ['tutorials/csv-hell-to-cli-heaven'],
     },
     {
       type: 'category',
       label: 'How-To Guides',
       collapsed: false,
-      items: [
-        'how-to/common-workflows',
-        'how-to/troubleshooting',
-      ],
+      items: ['how-to/common-workflows', 'how-to/troubleshooting', 'how-to/generate-api-docs'],
     },
     {
       type: 'category',
       label: 'API Reference',
       collapsed: false,
       items: [
-        'reference/api/index',
-        'reference/api/cli-building',
-        'reference/api/file-operations',
+        'reference/api/README',
+        'reference/api/cli',
+        'reference/api/config',
+        'reference/api/core',
+        'reference/api/create-cli',
+        'reference/api/data',
+        'reference/api/fs',
+        'reference/api/sort',
+        'reference/api/validation',
       ],
     },
     {
       type: 'category',
       label: 'Explanation',
       collapsed: true,
-      items: [
-        'explanation/architecture',
-      ],
+      items: ['explanation/architecture'],
     },
   ],
 }
