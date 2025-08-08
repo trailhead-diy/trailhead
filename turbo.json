@@ -63,7 +63,7 @@
       "persistent": true
     },
     "validate": {
-      "dependsOn": ["format", "types", "lint", "test"],
+      "dependsOn": ["format", "types", "lint", "test", "docs:validate-code"],
       "outputLogs": "errors-only",
       "outputs": [],
       "cache": true
@@ -99,6 +99,17 @@
         ".oxlintrc.json",
         "oxlint.json",
         "package.json"
+      ],
+      "outputLogs": "errors-only",
+      "cache": true
+    },
+    "docs:validate-code": {
+      "outputs": [],
+      "inputs": [
+        "docs/**/*.{md,mdx}",
+        "README.md",
+        "packages/*/README.md",
+        "packages/*/docs/**/*.{md,mdx}"
       ],
       "outputLogs": "errors-only",
       "cache": true

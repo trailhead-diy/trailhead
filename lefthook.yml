@@ -36,16 +36,25 @@ pre-commit:
       glob: "**/*.{ts,tsx}"
       run: pnpm types --filter="./packages/*" -- --incremental
 
-    # 4. Validate documentation structure (if docs changed)
+    # 4. Validate documentation structure and code examples (if docs changed)
     docs-validate:
       priority: 4
       glob: "{docs,packages/**/docs}/**/*.md"
       run: |
-        staged_docs=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md)$' | grep -E '(docs/|packages/.*/docs/)' || true)
+        staged_docs=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|mdx)$' | grep -E '(docs/|packages/.*/docs/|README\.md$)' || true)
         if [ -n "$staged_docs" ]; then
+          # First validate documentation structure
           for file in $staged_docs; do
             pnpm docs:validate "$file" > /dev/null || exit 1
           done
+          
+          # Then validate TypeScript code blocks
+          echo "🔍 Validating TypeScript code blocks in documentation..."
+          pnpm dev-cli validate-docs --pattern "$staged_docs" --verbose || {
+            echo "❌ Documentation code validation failed"
+            echo "💡 Run 'pnpm docs:validate-code --fix' to auto-fix some issues"
+            exit 1
+          }
         fi
 
     # 5. Security and size checks (lightweight)
