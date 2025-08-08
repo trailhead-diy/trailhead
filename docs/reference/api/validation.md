@@ -1,3 +1,8 @@
+---
+type: reference
+sidebar: true
+---
+
 [**Trailhead API Documentation v1.0.0**](README.md)
 
 ---
@@ -183,7 +188,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 ###### Overrides
 
-[`CoreError`](@esteban-url.cli.md#coreerror).[`type`](@esteban-url.cli.md#type)
+[`CoreError`](@esteban-url.cli.md#coreerror).[`type`](@esteban-url.cli.md#type-1)
 
 ##### value?
 

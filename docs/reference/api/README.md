@@ -1,3 +1,10 @@
+---
+type: reference
+sidebar: true
+title: API Index
+description: Browse all available APIs and modules
+---
+
 **Trailhead API Documentation v1.0.0**
 
 ---

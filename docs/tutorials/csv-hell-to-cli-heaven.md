@@ -252,7 +252,7 @@ export async function parseCSVFile(
   // Read the file using Trailhead's file system utilities
   const fileResult = await readFile(filePath, 'utf-8')
 
-  if (fileResult.isError()) {
+  if (fileResult.isErr()) {
     return err(new Error(`Failed to read file: ${fileResult.error.message}`))
   }
 
@@ -331,7 +331,7 @@ export const parseCommand = createCommand<ParseOptions>({
       trimValues: true,
     })
 
-    if (result.isError()) {
+    if (result.isErr()) {
       logger.error(`Failed to parse CSV: ${result.error.message}`)
       return result
     }
@@ -555,7 +555,7 @@ export const transformCommand = createCommand<TransformOptions>({
       trimValues: clean,
     })
 
-    if (parseResult.isError()) {
+    if (parseResult.isErr()) {
       return parseResult
     }
 
@@ -579,7 +579,7 @@ export const transformCommand = createCommand<TransformOptions>({
           })
         )
 
-        if (result.isError()) {
+        if (result.isErr()) {
           return result
         }
 
@@ -647,7 +647,7 @@ export const transformCommand = createCommand<TransformOptions>({
 
     if (output) {
       const writeResult = await writeFile(output, outputContent)
-      if (writeResult.isError()) {
+      if (writeResult.isErr()) {
         return writeResult
       }
       logger.info(`✨ Transformed data written to ${output}`)
@@ -879,7 +879,7 @@ export const validateCommand = createCommand<ValidateOptions>({
       trimValues: true,
     })
 
-    if (parseResult.isError()) {
+    if (parseResult.isErr()) {
       return parseResult
     }
 
@@ -982,7 +982,7 @@ export const validateCommand = createCommand<ValidateOptions>({
       const reportJson = JSON.stringify(validationReport, null, 2)
       const writeResult = await writeFile(reportPath, reportJson)
 
-      if (writeResult.isError()) {
+      if (writeResult.isErr()) {
         logger.error(`Failed to save report: ${writeResult.error.message}`)
       } else {
         logger.info(`\n📄 Full report saved to ${reportPath}`)

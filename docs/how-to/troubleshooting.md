@@ -321,7 +321,7 @@ const fetchData = fromThrowableAsync(async (url: string) => {
 
 // Usage
 const result = await fetchData('https://api.example.com/data')
-if (result.isError()) {
+if (result.isErr()) {
   logger.error(`Failed to fetch: ${result.error.message}`)
 }
 ```

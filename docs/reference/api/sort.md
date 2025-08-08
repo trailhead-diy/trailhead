@@ -1,3 +1,9 @@
+---
+type: reference
+sidebar: true
+example: 0
+---
+
 [**Trailhead API Documentation v1.0.0**](README.md)
 
 ---
@@ -7,21 +13,6 @@
 # @esteban-url/sort
 
 Fast, type-safe sorting utilities for JavaScript/TypeScript.
-
-## Example
-
-```typescript
-import { sortBy, orderBy, topN } from '@esteban-url/sort'
-
-// Sort by a single property
-const sorted = sortBy(users, [(user) => user.age])
-
-// Sort by multiple criteria
-const sorted = orderBy(users, [(user) => user.age, (user) => user.name], ['asc', 'desc'])
-
-// Get top 10 items efficiently
-const top10 = topN(10, scores)
-```
 
 ## Interfaces
 

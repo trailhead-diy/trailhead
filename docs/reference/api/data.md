@@ -1,3 +1,18 @@
+---
+type: reference
+sidebar: true
+description: |-
+  Unified data processing library with auto-detection for CSV, JSON, and Excel formats
+
+  This package provides:
+  - Automatic format detection and parsing
+  - Type-safe data operations with Result types
+  - Support for CSV, JSON, and Excel formats
+  - Functional programming patterns
+  - Comprehensive error handling
+example: 0
+---
+
 [**Trailhead API Documentation v1.0.0**](README.md)
 
 ---
@@ -5,38 +20,6 @@
 [Trailhead API Documentation](README.md) / @esteban-url/data
 
 # @esteban-url/data
-
-## Description
-
-Unified data processing library with auto-detection for CSV, JSON, and Excel formats
-
-This package provides:
-
-- Automatic format detection and parsing
-- Type-safe data operations with Result types
-- Support for CSV, JSON, and Excel formats
-- Functional programming patterns
-- Comprehensive error handling
-
-## Examples
-
-```typescript
-import { data } from '@esteban-url/data'
-
-// Auto-detect and parse any supported format
-const result = await data.parseAuto('data.csv')
-if (result.isOk()) {
-  console.log(result.value.data) // Parsed data array
-  console.log(result.value.format) // Detected format info
-}
-```
-
-```typescript
-import { createCSVOperations } from '@esteban-url/data'
-
-const csvOps = createCSVOperations({ delimiter: ';' })
-const result = await csvOps.parseFile('data.csv')
-```
 
 ## Interfaces
 

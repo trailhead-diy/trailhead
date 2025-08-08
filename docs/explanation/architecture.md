@@ -46,7 +46,7 @@ Trailhead uses Result types to make errors explicit:
 // Trailhead approach - errors are values
 async function readConfig(path: string): Promise<Result<Config, Error>> {
   const readResult = await readFile(path)
-  if (readResult.isError()) {
+  if (readResult.isErr()) {
     return readResult // Propagate error
   }
 
@@ -60,7 +60,7 @@ async function readConfig(path: string): Promise<Result<Config, Error>> {
 
 // Calling code - error handling is required
 const result = await readConfig('config.json')
-if (result.isError()) {
+if (result.isErr()) {
   // TypeScript knows result.error exists here
   logger.error(result.error.message)
 } else {
@@ -293,7 +293,7 @@ The framework encourages specific error handling patterns:
 ```typescript
 async function process(path: string) {
   const readResult = await readFile(path)
-  if (readResult.isError()) {
+  if (readResult.isErr()) {
     return readResult // Early return
   }
 
@@ -348,7 +348,7 @@ Result types work with Promise.all:
 ```typescript
 const results = await Promise.all([readFile('a.txt'), readFile('b.txt'), readFile('c.txt')])
 
-const errors = results.filter((r) => r.isError())
+const errors = results.filter((r) => r.isErr())
 const values = results.filter((r) => r.isOk())
 ```
 

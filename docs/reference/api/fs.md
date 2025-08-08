@@ -1,3 +1,9 @@
+---
+type: reference
+sidebar: true
+example: 0
+---
+
 [**Trailhead API Documentation v1.0.0**](README.md)
 
 ---
@@ -5,27 +11,6 @@
 [Trailhead API Documentation](README.md) / @esteban-url/fs
 
 # @esteban-url/fs
-
-## Example
-
-```typescript
-import { fs } from '@esteban-url/fs'
-
-// Using the convenience object (pre-configured with defaults)
-const result = await fs.readFile('config.json')
-if (result.isOk()) {
-  console.log(result.value)
-} else {
-  console.error(result.error.message)
-}
-
-// Using factory functions for custom configuration
-import { readFile, FSConfig } from '@esteban-url/fs'
-
-const customConfig: FSConfig = { encoding: 'latin1' }
-const customRead = readFile(customConfig)
-const result = await customRead('file.txt')
-```
 
 ## Interfaces
 
@@ -274,7 +259,7 @@ Error type identifier
 
 ###### Overrides
 
-[`CoreError`](@esteban-url.cli.md#coreerror).[`type`](@esteban-url.cli.md#type)
+[`CoreError`](@esteban-url.cli.md#coreerror).[`type`](@esteban-url.cli.md#type-1)
 
 ---
 

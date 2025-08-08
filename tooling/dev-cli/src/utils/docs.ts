@@ -16,6 +16,12 @@ export interface LinkFixResult {
   readonly errors: readonly string[]
 }
 
+export interface FrontmatterFixResult {
+  readonly fixed: number
+  readonly skipped: number
+  readonly errors: readonly string[]
+}
+
 export interface SyntaxCheckOptions {
   readonly pattern: string
   readonly fix: boolean
@@ -98,7 +104,7 @@ export const docsOperations = {
 
       // Determine output path - clean path without '/generated' subdirectory
       const outputPath = options.outputDir || join(docsDir, 'reference', 'api')
-      
+
       // Clean output directory if requested
       if (options.clean && existsSync(outputPath)) {
         execSync(`rm -rf ${outputPath}`, { stdio: 'inherit' })
@@ -110,17 +116,17 @@ export const docsOperations = {
       // Check if we should use monorepo-wide generation or per-package
       const rootTypedocConfig = join(rootDir, 'typedoc.json')
       const hasRootConfig = existsSync(rootTypedocConfig)
-      
+
       if (hasRootConfig) {
         // Use monorepo-wide generation (recommended approach)
-        const entryPoints = options.packages 
-          ? options.packages.map(pkg => `packages/${pkg}`).join(' ')
+        const entryPoints = options.packages
+          ? options.packages.map((pkg) => `packages/${pkg}`).join(' ')
           : 'packages/*'
-        
+
         // Generate to temporary directory first to handle TypeDoc's file naming limitations
         const tempOutputPath = join(outputPath, 'temp-generated')
         mkdirSync(tempOutputPath, { recursive: true })
-        
+
         const command = [
           'npx typedoc',
           `--out ${tempOutputPath}`,
@@ -133,7 +139,7 @@ export const docsOperations = {
           .join(' ')
 
         execSync(command, { stdio: 'inherit', cwd: rootDir })
-        
+
         // Post-process: move and rename files from temp directory to final location
         const renameMappings = [
           ['@esteban-url.cli.md', 'cli.md'],
@@ -143,9 +149,9 @@ export const docsOperations = {
           ['@esteban-url.data.md', 'data.md'],
           ['@esteban-url.fs.md', 'fs.md'],
           ['@esteban-url.sort.md', 'sort.md'],
-          ['@esteban-url.validation.md', 'validation.md']
+          ['@esteban-url.validation.md', 'validation.md'],
         ]
-        
+
         for (const [oldName, newName] of renameMappings) {
           const tempFilePath = join(tempOutputPath, oldName)
           const finalFilePath = join(outputPath, newName)
@@ -153,7 +159,7 @@ export const docsOperations = {
             execSync(`mv "${tempFilePath}" "${finalFilePath}"`, { cwd: rootDir })
           }
         }
-        
+
         // Copy any additional files (README.md, etc.) and clean up temp directory
         try {
           const remainingFiles = fastGlob.sync('*.md', { cwd: tempOutputPath })
@@ -167,10 +173,22 @@ export const docsOperations = {
         } catch (error) {
           // Ignore errors in cleanup
         }
-        
+
         // Remove temporary directory
         if (existsSync(tempOutputPath)) {
           execSync(`rm -rf "${tempOutputPath}"`, { cwd: rootDir })
+        }
+
+        // Fix frontmatter in generated files
+        const frontmatterResult = this.fixApiFrontmatter(outputPath)
+        if (frontmatterResult.isErr()) {
+          // Log warning but don't fail the build
+          console.warn('Warning: Failed to fix API frontmatter:', frontmatterResult.error.message)
+        } else if (frontmatterResult.value.errors.length > 0) {
+          // Log individual file errors as warnings
+          frontmatterResult.value.errors.forEach((error) => {
+            console.warn(`Warning: ${error}`)
+          })
         }
       } else {
         // Fallback to per-package generation
@@ -188,11 +206,11 @@ export const docsOperations = {
           // Check for package-specific typedoc config
           const pkgTypedocConfig = join(packagePath, 'typedoc.json')
           const baseTypedocConfig = join(rootDir, 'typedoc.base.json')
-          
-          const configPath = existsSync(pkgTypedocConfig) 
-            ? pkgTypedocConfig 
-            : existsSync(baseTypedocConfig) 
-              ? baseTypedocConfig 
+
+          const configPath = existsSync(pkgTypedocConfig)
+            ? pkgTypedocConfig
+            : existsSync(baseTypedocConfig)
+              ? baseTypedocConfig
               : null
 
           const command = [
@@ -356,6 +374,118 @@ This section contains auto-generated API documentation for all packages.
           'DOCS_SETUP_ERROR',
           'Failed to setup API documentation integration',
           error instanceof Error ? error.message : String(error)
+        )
+      )
+    }
+  },
+
+  /**
+   * Fix API documentation frontmatter
+   * Replaces template literals like {name} with actual package names
+   */
+  fixApiFrontmatter(outputPath?: string): Result<FrontmatterFixResult, CoreError> {
+    try {
+      const rootDir = resolve(process.cwd())
+      const apiDocsDir = outputPath || join(rootDir, 'docs', 'reference', 'api')
+
+      // Check if directory exists
+      if (!existsSync(apiDocsDir)) {
+        return ok({ fixed: 0, skipped: 0, errors: [] })
+      }
+
+      const files = fastGlob.sync('*.md', {
+        cwd: apiDocsDir,
+        absolute: true,
+      })
+
+      let fixedCount = 0
+      let skippedCount = 0
+      const errors: string[] = []
+
+      for (const filePath of files) {
+        try {
+          const fileName = filePath.split('/').pop() || ''
+          const content = readFileSync(filePath, 'utf8')
+
+          // Skip if no frontmatter
+          if (!content.startsWith('---')) {
+            skippedCount++
+            continue
+          }
+
+          // Extract frontmatter section
+          const frontmatterEnd = content.indexOf('---', 3)
+          if (frontmatterEnd === -1) {
+            skippedCount++
+            continue
+          }
+
+          let frontmatter = content.slice(4, frontmatterEnd)
+          const bodyContent = content.slice(frontmatterEnd + 3)
+
+          // Check if title exists
+          const hasTitle = frontmatter.includes('title:')
+
+          // Extract package name from content
+          let packageName = ''
+          const packageMatch = bodyContent.match(/# (@?[\w-]+\/[\w-]+|\w+)/)
+          if (packageMatch) {
+            packageName = packageMatch[1]
+          } else {
+            // Fallback to filename without extension
+            packageName = fileName.replace(/\.md$/, '')
+          }
+
+          let modified = false
+
+          // Add or update title
+          if (!hasTitle) {
+            // Add title after the first line (after "---")
+            const lines = frontmatter.split('\n')
+            lines.splice(0, 0, `title: "${packageName}"`)
+            frontmatter = lines.join('\n')
+            modified = true
+          } else if (frontmatter.includes('title: "{name}"')) {
+            // Replace template literal with actual package name
+            frontmatter = frontmatter.replace('title: "{name}"', `title: "${packageName}"`)
+            modified = true
+          }
+
+          // Ensure required fields exist
+          if (!frontmatter.includes('type:')) {
+            frontmatter = 'type: reference\n' + frontmatter
+            modified = true
+          }
+          if (!frontmatter.includes('sidebar:')) {
+            frontmatter = frontmatter.trimEnd() + '\nsidebar: true'
+            modified = true
+          }
+
+          if (modified) {
+            // Write updated content
+            const updatedContent = `---\n${frontmatter}\n---${bodyContent}`
+            writeFileSync(filePath, updatedContent, 'utf8')
+            fixedCount++
+          } else {
+            skippedCount++
+          }
+        } catch (fileError) {
+          errors.push(
+            `Failed to process ${filePath}: ${fileError instanceof Error ? fileError.message : String(fileError)}`
+          )
+        }
+      }
+
+      return ok({ fixed: fixedCount, skipped: skippedCount, errors })
+    } catch (error) {
+      return err(
+        createCoreError(
+          'FRONTMATTER_FIX_ERROR',
+          'DOCS_ERROR',
+          'Failed to fix API documentation frontmatter',
+          {
+            details: error instanceof Error ? error.message : String(error),
+          }
         )
       )
     }

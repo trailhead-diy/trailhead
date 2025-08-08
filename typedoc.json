@@ -2,7 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPointStrategy": "packages", 
   "entryPoints": ["packages/*"],
-  "plugin": ["typedoc-plugin-markdown"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-frontmatter"],
 
   "name": "Trailhead API Documentation",
   "includeVersion": true,
@@ -39,6 +39,25 @@
   "hidePageTitle": false,
   "router": "member",
 
+  "frontmatterGlobals": {
+    "type": "reference",
+    "sidebar": true
+  },
+
+  "readmeFrontmatter": {
+    "title": "API Overview",
+    "description": "Complete API reference for Trailhead packages"
+  },
+
+  "indexFrontmatter": {
+    "title": "API Index", 
+    "description": "Browse all available APIs and modules"
+  },
+
+  "frontmatterCommentTags": ["description", "author", "since", "example"],
+
+  "frontmatterNamingConvention": "camelCase",
+
   "validation": {
     "notExported": true,
     "invalidLink": true,
@@ -72,10 +91,12 @@
 
   "blockTags": [
     "@alpha",
+    "@author",
     "@beta",
     "@defaultValue",
     "@decorator",
     "@deprecated",
+    "@description",
     "@eventProperty",
     "@example",
     "@experimental",

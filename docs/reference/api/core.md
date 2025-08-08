@@ -1,3 +1,15 @@
+---
+type: reference
+sidebar: true
+description: |-
+  Foundation package for the Trailhead System providing Result-based error handling.
+
+  This package exports functional programming utilities centered around the Result type pattern,
+  enabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.
+example: 0
+since: 0.1.0
+---
+
 [**Trailhead API Documentation v1.0.0**](README.md)
 
 ---
@@ -5,33 +17,6 @@
 [Trailhead API Documentation](README.md) / @esteban-url/core
 
 # @esteban-url/core
-
-## Description
-
-Foundation package for the Trailhead System providing Result-based error handling.
-
-This package exports functional programming utilities centered around the Result type pattern,
-enabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.
-
-## Example
-
-```typescript
-import { ok, err, Result } from '@esteban-url/core'
-
-function divide(a: number, b: number): Result<number, string> {
-  if (b === 0) return err('Division by zero')
-  return ok(a / b)
-}
-
-const result = divide(10, 2)
-if (result.isOk()) {
-  console.log('Result:', result.value) // 5
-}
-```
-
-## Since
-
-0.1.0
 
 ## Interfaces
 
