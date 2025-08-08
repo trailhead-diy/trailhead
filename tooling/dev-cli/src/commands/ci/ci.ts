@@ -147,6 +147,7 @@ export const ciCommand = createCommand<CiOptions>({
         context.logger.info('')
         context.logger.info(colorize('yellow', withIcon('docs', 'Validating documentation...')))
 
+        // First validate documentation structure
         const docsResult = await execCommand('pnpm', ['docs:validate'], context, {
           allowFailure: true,
         })
@@ -155,9 +156,25 @@ export const ciCommand = createCommand<CiOptions>({
           context.logger.warning(
             colorize(
               'yellow',
-              withIcon('warning', 'Documentation validation failed (non-blocking)')
+              withIcon('warning', 'Documentation structure validation failed (non-blocking)')
             )
           )
+        }
+
+        // Then validate TypeScript code blocks
+        context.logger.info(
+          colorize('yellow', withIcon('search', 'Validating documentation code examples...'))
+        )
+
+        const codeValidationResult = await execCommand('pnpm', ['docs:validate-code'], context, {
+          allowFailure: false,
+        })
+
+        if (codeValidationResult.isErr()) {
+          context.logger.error(
+            colorize('red', withIcon('error', 'Documentation code validation failed'))
+          )
+          return err(codeValidationResult.error)
         }
       }
 

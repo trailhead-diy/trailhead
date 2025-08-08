@@ -2,15 +2,61 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPointStrategy": "packages",
   "entryPoints": ["packages/*"],
-  "plugin": ["typedoc-plugin-markdown"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-frontmatter"],
 
   "name": "Trailhead API Documentation",
   "includeVersion": true,
-  "readme": "README.md",
+  "readme": "none",
+  "projectDocuments": [],
+  "includeHierarchySummary": false,
+  "searchInDocuments": false,
+  "searchInComments": false,
 
   "packageOptions": {
-    "entryPoints": ["src/index.ts"]
+    "entryPoints": ["src/index.ts"],
+    "includeVersion": false,
+    "readme": "none",
+    "projectDocuments": [],
+    "skipErrorChecking": true,
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": false,
+    "excludeInternal": true,
+    "excludeNotDocumented": false,
+    "excludeReferences": true,
+    "disableSources": true,
+    "exclude": ["**/README.md", "**/docs/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"]
   },
+
+  "flattenOutputFiles": true,
+  "mergeReadme": false,
+  "entryFileName": "README",
+  "router": "member",
+  "membersWithOwnFile": [],
+  "fileExtension": ".md",
+  "hideBreadcrumbs": false,
+  "hidePageHeader": false,
+  "hidePageTitle": false,
+  "router": "member",
+
+  "frontmatterGlobals": {
+    "type": "reference",
+    "sidebar": true
+  },
+
+  "readmeFrontmatter": {
+    "title": "API Overview",
+    "description": "Complete API reference for Trailhead packages"
+  },
+
+  "indexFrontmatter": {
+    "title": "API Index",
+    "description": "Browse all available APIs and modules"
+  },
+
+  "frontmatterCommentTags": ["description", "author", "since", "example"],
+
+  "frontmatterNamingConvention": "camelCase",
 
   "validation": {
     "notExported": true,
@@ -23,11 +69,11 @@
   "requiredToBeDocumented": ["Class", "Interface", "Function", "Method"],
 
   "navigation": {
-    "includeCategories": true,
-    "includeGroups": true,
-    "includeFolders": true,
+    "includeCategories": false,
+    "includeGroups": false,
+    "includeFolders": false,
     "compactFolders": true,
-    "excludeReferences": false
+    "excludeReferences": true
   },
 
   "categorizeByGroup": false,
@@ -38,15 +84,19 @@
   "skipErrorChecking": false,
   "treatWarningsAsErrors": false,
   "treatValidationWarningsAsErrors": false,
+  "disableSources": true,
+  "excludeReferences": true,
 
   "sort": ["source-order"],
 
   "blockTags": [
     "@alpha",
+    "@author",
     "@beta",
     "@defaultValue",
     "@decorator",
     "@deprecated",
+    "@description",
     "@eventProperty",
     "@example",
     "@experimental",
@@ -74,17 +124,45 @@
   "excludePrivate": true,
   "excludeProtected": false,
   "excludeInternal": true,
-  "excludeNotDocumented": false,
-  "excludeCategories": [],
+  "excludeCategories": ["Namespace", "Re-exports"],
+  "excludeExternals": true,
+  "excludeTags": ["@namespace"],
+  "excludeReferences": true,
+  "externalPattern": ["node_modules/**/*", "**/node_modules/**/*"],
+  "intentionallyNotExported": [
+    "z",
+    "ok",
+    "err",
+    "Result",
+    "CoreResult",
+    "CoreResultAsync",
+    "fromPromiseAsync",
+    "fromThrowableAsync",
+    "fromThrowableAsyncFunc"
+  ],
 
   "visibilityFilters": {
-    "protected": true,
+    "protected": false,
     "private": false,
     "inherited": true,
     "external": false,
     "@alpha": false,
-    "@beta": true
+    "@beta": true,
+    "@internal": false
   },
+
+  "exclude": ["**/node_modules/**", "**/*.test.ts", "**/*.spec.ts"],
+  "excludeNotDocumented": false,
+  "excludeNotDocumentedKinds": [
+    "Constructor",
+    "Property",
+    "Method",
+    "Accessor",
+    "GetSignature",
+    "SetSignature",
+    "CallSignature",
+    "IndexSignature"
+  ],
 
   "externalSymbolLinkMappings": {
     "typescript": {
@@ -106,11 +184,13 @@
     "Functions": 1.3
   },
 
-  "customCss": "./docs/assets/typedoc-custom.css",
   "markdownItOptions": {
-    "html": true,
+    "html": false,
     "linkify": true
   },
+
+  "publicPath": "",
+  "sanitizeComments": true,
 
   "preserveWatchOutput": true
 }

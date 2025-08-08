@@ -4,7 +4,7 @@ title: '@repo/fs Documentation Hub'
 description: 'Functional filesystem operations with Result-based error handling'
 related:
   - /packages/fs/docs/how-to/file-operations.md
-  - /packages/fs/docs/reference/api.md
+  - /docs/reference/api/fs.md
   - /packages/fs/docs/explanation/result-patterns.md
 ---
 

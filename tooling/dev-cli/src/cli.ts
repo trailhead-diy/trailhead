@@ -11,6 +11,9 @@ import { generateApiCommand } from './commands/docs/generate-api.js'
 import { fixLinksCommand } from './commands/docs/fix-links.js'
 import { fixDeclarationsCommand } from './commands/docs/fix-declarations.js'
 import { setupIntegrationCommand } from './commands/docs/setup-integration.js'
+import { checkSyntaxCommand } from './commands/docs/check-syntax.js'
+import { testExamplesCommand } from './commands/docs/test-examples.js'
+import { validateDocsCommand } from './commands/docs/validate-docs.js'
 // CI/CD commands
 import { npmAuthCommand } from './commands/ci/npm-auth.js'
 import { ciCommand } from './commands/ci/ci.js'
@@ -33,6 +36,9 @@ const cli = createCLI({
     fixLinksCommand,
     fixDeclarationsCommand,
     setupIntegrationCommand,
+    checkSyntaxCommand,
+    testExamplesCommand,
+    validateDocsCommand,
     // CI/CD commands
     npmAuthCommand,
     ciCommand,

@@ -1,13 +1,15 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "@esteban-url/core",
-  "readme": "./README.md",
+  "readme": "none",
   "entryPoints": ["src/index.ts"],
   "categorizeByGroup": true,
   "defaultCategory": "Core Utilities",
   "excludePrivate": true,
-  "excludeInternal": false,
+  "excludeInternal": true,
   "excludeNotDocumented": false,
+  "excludeReferences": true,
+  "excludeExternals": true,
   "navigationLinks": {
     "GitHub": "https://github.com/esteban-url/trailhead",
     "Core Package": "../core/README.md"

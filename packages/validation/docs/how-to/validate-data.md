@@ -7,7 +7,7 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'Familiarity with data validation concepts'
 related:
-  - /packages/validation/docs/reference/api.md
+  - /docs/reference/api/validation.md
   - /docs/how-to/apply-functional-patterns
   - /packages/validation/docs/explanation/composition-patterns.md
 ---

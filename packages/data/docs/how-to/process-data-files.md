@@ -7,7 +7,7 @@ prerequisites:
   - 'Basic TypeScript knowledge'
   - 'File system operations'
 related:
-  - /packages/data/docs/reference/api.md
+  - /docs/reference/api/data.md
   - /docs/how-to/apply-functional-patterns
   - /packages/fs/docs/how-to/file-operations
 ---

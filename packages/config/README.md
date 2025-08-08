@@ -105,7 +105,7 @@ const markdown = await generateMarkdown(docs)
   - [Generate Documentation](../../docs/how-to/generate-config-docs)
 - [Explanations](../../docs/explanation/README.md)
   - [Configuration Sources](../../docs/explanation/config-sources)
-- [API Reference](./docs/reference/api)
+- **[API Documentation](../../docs/reference/api/config.md)** - Complete API reference with examples and type information
 
 ## License
 

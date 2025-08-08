@@ -122,7 +122,7 @@ const result = await mockFS.readJson('/app/config.json')
 - [Explanations](./docs/explanation/result-patterns.md)
   - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
   - [Functional Architecture](../../docs/explanation/functional-architecture.md)
-- [API Reference](./docs/reference/api.md)
+- **[API Documentation](../../docs/reference/api/fs.md)** - Complete API reference with examples and type information
 
 ## License
 

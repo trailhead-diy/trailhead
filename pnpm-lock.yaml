@@ -56,6 +56,9 @@ importers:
       typedoc:
         specifier: ^0.28.9
         version: 0.28.9(typescript@5.8.3)
+      typedoc-plugin-frontmatter:
+        specifier: ^1.3.0
+        version: 1.3.0(typedoc-plugin-markdown@4.8.0(typedoc@0.28.9(typescript@5.8.3)))
       typedoc-plugin-markdown:
         specifier: ^4.8.0
         version: 4.8.0(typedoc@0.28.9(typescript@5.8.3))
@@ -7164,6 +7167,11 @@ packages:
 
   typedarray-to-buffer@3.1.5:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
+
+  typedoc-plugin-frontmatter@1.3.0:
+    resolution: {integrity: sha512-xYQFMAecMlsRUjmf9oM/Sq2FVz4zlgcbIeVFNLdO118CHTN06gIKJNSlyExh9+Xl8sK0YhIvoQwViUURxritWA==}
+    peerDependencies:
+      typedoc-plugin-markdown: '>=4.5.0'
 
   typedoc-plugin-markdown@4.8.0:
     resolution: {integrity: sha512-BQqXnT9PETe6WEFf8bcsvvGEGQHbwTo/BFyY+RUIsSB05Y0Wn56iF+fK1PY2OKJJIhV4kp4dp7osaP9Bm5a0Zw==}
@@ -15552,6 +15560,11 @@ snapshots:
   typedarray-to-buffer@3.1.5:
     dependencies:
       is-typedarray: 1.0.0
+
+  typedoc-plugin-frontmatter@1.3.0(typedoc-plugin-markdown@4.8.0(typedoc@0.28.9(typescript@5.8.3))):
+    dependencies:
+      typedoc-plugin-markdown: 4.8.0(typedoc@0.28.9(typescript@5.8.3))
+      yaml: 2.8.0
 
   typedoc-plugin-markdown@4.8.0(typedoc@0.28.9(typescript@5.8.3)):
     dependencies:

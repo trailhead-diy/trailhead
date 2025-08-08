@@ -64,3 +64,4 @@ temp/
 packages/create-trailhead-cli/test-temp/
 packages/create-trailhead-cli/test-debug/
 hhh.html
+.temp-syntax-*

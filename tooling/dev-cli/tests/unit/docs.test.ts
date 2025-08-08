@@ -3,6 +3,8 @@ import { generateApiCommand } from '../../src/commands/docs/generate-api.js'
 import { fixLinksCommand } from '../../src/commands/docs/fix-links.js'
 import { fixDeclarationsCommand } from '../../src/commands/docs/fix-declarations.js'
 import { setupIntegrationCommand } from '../../src/commands/docs/setup-integration.js'
+import { testExamplesCommand } from '../../src/commands/docs/test-examples.js'
+import { validateDocsCommand } from '../../src/commands/docs/validate-docs.js'
 import { docsOperations } from '../../src/utils/docs.js'
 import { ok, err, createCoreError } from '@esteban-url/core'
 
@@ -13,6 +15,9 @@ vi.mock('../../src/utils/docs.js', () => ({
     fixDocusaurusLinks: vi.fn(),
     fixFunctionDeclarations: vi.fn(),
     setupApiIntegration: vi.fn(),
+    testDocumentationExamples: vi.fn(),
+    validateMarkdownCodeBlocks: vi.fn(),
+    checkDocsSyntax: vi.fn(),
   },
 }))
 
@@ -188,6 +193,225 @@ describe('Documentation Commands', () => {
       const result = await setupIntegrationCommand.execute({}, mockContext as any)
 
       expect(result.isErr()).toBe(true)
+    })
+  })
+
+  describe('testExamplesCommand', () => {
+    it('should have correct configuration', () => {
+      expect(testExamplesCommand.name).toBe('test-examples')
+      expect(testExamplesCommand.description).toContain('Test documentation examples')
+    })
+
+    it('should run tests successfully', async () => {
+      const testResult = { totalTests: 3, passed: 3, failed: 0, errors: [] }
+      vi.mocked(docsOperations.testDocumentationExamples).mockReturnValue(ok(testResult))
+
+      const result = await testExamplesCommand.execute({}, mockContext as any)
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.testDocumentationExamples).toHaveBeenCalledWith({
+        verbose: false,
+        filter: undefined,
+      })
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('All 3 documentation examples passed!')
+      )
+    })
+
+    it('should handle test failures', async () => {
+      const testResult = {
+        totalTests: 3,
+        passed: 2,
+        failed: 1,
+        errors: [{ testName: 'Test 1', error: 'Failed assertion' }],
+      }
+      vi.mocked(docsOperations.testDocumentationExamples).mockReturnValue(ok(testResult))
+
+      const result = await testExamplesCommand.execute({ verbose: true }, mockContext as any)
+
+      expect(result.isErr()).toBe(true)
+      expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('1 of 3 tests failed'))
+    })
+
+    it('should handle filter option', async () => {
+      const testResult = { totalTests: 1, passed: 1, failed: 0, errors: [] }
+      vi.mocked(docsOperations.testDocumentationExamples).mockReturnValue(ok(testResult))
+
+      const result = await testExamplesCommand.execute(
+        { filter: 'CLI creation' },
+        mockContext as any
+      )
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.testDocumentationExamples).toHaveBeenCalledWith({
+        verbose: false,
+        filter: 'CLI creation',
+      })
+    })
+
+    it('should handle verbose mode', async () => {
+      const testResult = {
+        totalTests: 2,
+        passed: 1,
+        failed: 1,
+        errors: [{ testName: 'Test failure', error: 'Error message', stack: 'Stack trace' }],
+      }
+      vi.mocked(docsOperations.testDocumentationExamples).mockReturnValue(ok(testResult))
+
+      const result = await testExamplesCommand.execute({ verbose: true }, mockContext as any)
+
+      expect(result.isErr()).toBe(true)
+      expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Stack trace'))
+    })
+  })
+
+  describe('validateDocsCommand', () => {
+    it('should have correct configuration', () => {
+      expect(validateDocsCommand.name).toBe('validate-docs')
+      expect(validateDocsCommand.description).toContain('Comprehensive documentation validation')
+    })
+
+    it('should validate docs successfully', async () => {
+      const validationResult = {
+        filesChecked: 5,
+        errors: [],
+        warnings: [],
+        passed: 5,
+        failed: 0,
+      }
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+
+      const result = await validateDocsCommand.execute({}, mockContext as any)
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.validateMarkdownCodeBlocks).toHaveBeenCalledWith({
+        pattern: '**/*.{md,mdx}',
+        fix: false,
+        verbose: false,
+        strict: false,
+      })
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('All 5 files passed code validation!')
+      )
+    })
+
+    it('should handle validation failures', async () => {
+      const validationResult = {
+        filesChecked: 3,
+        errors: [
+          {
+            file: 'test.md',
+            line: 10,
+            message: 'Type error',
+            code: 'const x = y',
+            severity: 'error',
+          },
+        ],
+        warnings: [],
+        passed: 2,
+        failed: 1,
+      }
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+
+      const result = await validateDocsCommand.execute({ verbose: true }, mockContext as any)
+
+      expect(result.isErr()).toBe(true)
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringContaining('1 files have validation errors')
+      )
+      expect(mockLogger.error).toHaveBeenCalledWith('\n1. test.md:10')
+    })
+
+    it('should handle custom pattern', async () => {
+      const validationResult = {
+        filesChecked: 2,
+        errors: [],
+        warnings: [],
+        passed: 2,
+        failed: 0,
+      }
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+
+      const result = await validateDocsCommand.execute(
+        {
+          pattern: 'docs/**/*.md',
+        },
+        mockContext as any
+      )
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.validateMarkdownCodeBlocks).toHaveBeenCalledWith({
+        pattern: 'docs/**/*.md',
+        fix: false,
+        verbose: false,
+        strict: false,
+      })
+    })
+
+    it('should handle strict mode with API testing', async () => {
+      const validationResult = {
+        filesChecked: 3,
+        errors: [],
+        warnings: [],
+        passed: 3,
+        failed: 0,
+      }
+      const testResult = { totalTests: 2, passed: 2, failed: 0, errors: [] }
+
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+      vi.mocked(docsOperations.testDocumentationExamples).mockReturnValue(ok(testResult))
+
+      const result = await validateDocsCommand.execute({ strict: true }, mockContext as any)
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.testDocumentationExamples).toHaveBeenCalledWith({ verbose: false })
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('All 2 API tests passed!')
+      )
+    })
+
+    it('should show warnings in verbose mode', async () => {
+      const validationResult = {
+        filesChecked: 2,
+        errors: [],
+        warnings: ['test.md: Contains JavaScript code blocks'],
+        passed: 2,
+        failed: 0,
+      }
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+
+      const result = await validateDocsCommand.execute({ verbose: true }, mockContext as any)
+
+      expect(result.isOk()).toBe(true)
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('1 warnings found'))
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expect.stringContaining('Contains JavaScript code blocks')
+      )
+    })
+
+    it('should handle fix mode', async () => {
+      const validationResult = {
+        filesChecked: 3,
+        errors: [],
+        warnings: [],
+        passed: 3,
+        failed: 0,
+      }
+      vi.mocked(docsOperations.validateMarkdownCodeBlocks).mockReturnValue(ok(validationResult))
+
+      const result = await validateDocsCommand.execute(
+        { fix: true, verbose: true },
+        mockContext as any
+      )
+
+      expect(result.isOk()).toBe(true)
+      expect(docsOperations.validateMarkdownCodeBlocks).toHaveBeenCalledWith({
+        pattern: '**/*.{md,mdx}',
+        fix: true,
+        verbose: true,
+        strict: false,
+      })
+      expect(mockLogger.info).toHaveBeenCalledWith('Fix mode: enabled')
     })
   })
 })

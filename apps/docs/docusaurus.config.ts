@@ -40,7 +40,7 @@ const config: Config = {
         docs: {
           // Main documentation from monorepo docs folder
           path: '../../docs',
-          routeBasePath: 'docs',
+          routeBasePath: '/',
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
           showLastUpdateTime: true,
@@ -54,111 +54,8 @@ const config: Config = {
     ],
   ],
 
-  // Multiple docs instances for packages
-  plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'cli',
-        path: '../../packages/cli/docs',
-        routeBasePath: 'packages/cli',
-        sidebarPath: './sidebars-cli.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'create-cli',
-        path: '../../packages/create-cli/docs',
-        routeBasePath: 'packages/create-cli',
-        sidebarPath: './sidebars-create-cli.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'core',
-        path: '../../packages/core',
-        routeBasePath: 'packages/core',
-        sidebarPath: './sidebars-core.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-        include: ['README.md'],
-      },
-    ],
-    // Temporarily disabled due to MDX compilation error
-    // [
-    //   '@docusaurus/plugin-content-docs',
-    //   {
-    //     id: 'core-api',
-    //     path: '../../docs/core/api',
-    //     routeBasePath: 'packages/core/api',
-    //     sidebarPath: './sidebars-core-api.ts',
-    //     editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-    //     showLastUpdateTime: true,
-    //     showLastUpdateAuthor: true,
-    //   },
-    // ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'config',
-        path: '../../packages/config',
-        routeBasePath: 'packages/config',
-        sidebarPath: './sidebars-config.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-        include: ['README.md', 'docs/**/*.{md,mdx}'],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'data',
-        path: '../../packages/data',
-        routeBasePath: 'packages/data',
-        sidebarPath: './sidebars-data.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-        include: ['README.md', 'docs/**/*.{md,mdx}'],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'fs',
-        path: '../../packages/fs',
-        routeBasePath: 'packages/fs',
-        sidebarPath: './sidebars-fs.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-        include: ['README.md', 'docs/**/*.{md,mdx}'],
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'validation',
-        path: '../../packages/validation',
-        routeBasePath: 'packages/validation',
-        sidebarPath: './sidebars-validation.ts',
-        editUrl: 'https://github.com/esteban-url/trailhead/tree/main/',
-        showLastUpdateTime: true,
-        showLastUpdateAuthor: true,
-        include: ['README.md', 'docs/**/*.{md,mdx}'],
-      },
-    ],
-  ],
+  // No additional plugins - all docs are unified now
+  plugins: [],
 
   themeConfig: {
     // SEO
@@ -180,71 +77,22 @@ const config: Config = {
       },
       items: [
         {
-          type: 'dropdown',
-          label: 'Documentation',
+          type: 'doc',
+          docId: 'README',
           position: 'left',
-          items: [
-            {
-              type: 'doc',
-              docId: 'README',
-              label: 'Overview',
-            },
-            {
-              type: 'doc',
-              docId: 'tutorials/config-getting-started',
-              label: 'Tutorials',
-            },
-            {
-              type: 'doc',
-              docId: 'how-to/contributing',
-              label: 'How-To Guides',
-            },
-            {
-              type: 'doc',
-              docId: 'reference/documentation-standards',
-              label: 'Reference',
-            },
-            {
-              type: 'doc',
-              docId: 'explanation/functional-architecture',
-              label: 'Explanations',
-            },
-          ],
+          label: 'Documentation',
         },
         {
-          type: 'dropdown',
-          label: 'Packages',
+          type: 'doc',
+          docId: 'tutorials/csv-hell-to-cli-heaven',
           position: 'left',
-          items: [
-            {
-              to: '/packages/cli',
-              label: 'CLI Framework',
-            },
-            {
-              to: '/packages/create-cli',
-              label: 'Create CLI',
-            },
-            {
-              to: '/packages/core',
-              label: 'Core',
-            },
-            {
-              to: '/packages/config',
-              label: 'Config',
-            },
-            {
-              to: '/packages/data',
-              label: 'Data',
-            },
-            {
-              to: '/packages/fs',
-              label: 'File System',
-            },
-            {
-              to: '/packages/validation',
-              label: 'Validation',
-            },
-          ],
+          label: 'Tutorial',
+        },
+        {
+          type: 'doc',
+          docId: 'reference/api/README',
+          position: 'left',
+          label: 'API Reference',
         },
         {
           href: 'https://github.com/esteban-url/trailhead',
@@ -263,37 +111,20 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/tutorials/config-getting-started',
+              to: '/tutorials/csv-hell-to-cli-heaven',
             },
             {
               label: 'API Reference',
-              to: '/docs/packages/core/api',
+              to: '/reference/api/',
             },
             {
-              label: 'Contributing',
-              to: '/docs/how-to/contributing',
+              label: 'Architecture',
+              to: '/explanation/architecture',
             },
           ],
         },
         {
-          title: 'Packages',
-          items: [
-            {
-              label: 'CLI Framework',
-              to: '/packages/cli',
-            },
-            {
-              label: 'Create CLI',
-              to: '/packages/create-cli',
-            },
-            {
-              label: 'Core Utilities',
-              to: '/packages/core',
-            },
-          ],
-        },
-        {
-          title: 'More',
+          title: 'Community',
           items: [
             {
               label: 'GitHub',

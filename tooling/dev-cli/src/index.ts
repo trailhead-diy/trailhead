@@ -14,6 +14,7 @@ export { generateApiCommand } from './commands/docs/generate-api.js'
 export { fixLinksCommand } from './commands/docs/fix-links.js'
 export { fixDeclarationsCommand } from './commands/docs/fix-declarations.js'
 export { setupIntegrationCommand } from './commands/docs/setup-integration.js'
+export { checkSyntaxCommand } from './commands/docs/check-syntax.js'
 // CI/CD commands
 export { npmAuthCommand } from './commands/ci/npm-auth.js'
 export { ciCommand } from './commands/ci/ci.js'

@@ -4,7 +4,7 @@ title: '@repo/data Documentation Hub'
 description: 'Functional data processing with format detection and Result-based error handling'
 related:
   - /packages/data/docs/how-to/process-data-files.md
-  - /packages/data/docs/reference/api.md
+  - /docs/reference/api/data.md
   - /packages/data/docs/explanation/format-detection.md
 ---
 

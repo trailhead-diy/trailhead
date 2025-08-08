@@ -5,7 +5,7 @@ description: 'Functional validation with Zod integration and Result-based error 
 related:
   - /packages/validation/docs/how-to/validate-data.md
   - /packages/validation/docs/explanation/composition-patterns.md
-  - /packages/validation/docs/reference/api.md
+  - /docs/reference/api/validation.md
 ---
 
 # @repo/validation Documentation

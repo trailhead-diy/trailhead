@@ -39,3 +39,7 @@ export type { Result, CoreError } from '@esteban-url/core'
 // Primary CLI creation API - the core of this package
 export { createCLI } from './cli.js'
 export type { CLI, CLIConfig } from './cli.js'
+
+// Command creation API - for building individual commands
+export { createCommand } from './command/index.js'
+export type { Command, CommandContext, CommandOption } from './command/index.js'
