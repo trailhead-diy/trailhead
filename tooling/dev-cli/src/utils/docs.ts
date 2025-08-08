@@ -96,40 +96,119 @@ export const docsOperations = {
 
       const targetPackages = options.packages || availablePackages
 
+      // Determine output path - clean path without '/generated' subdirectory
+      const outputPath = options.outputDir || join(docsDir, 'reference', 'api')
+      
       // Clean output directory if requested
-      if (options.clean && existsSync(docsDir)) {
-        execSync(`rm -rf ${docsDir}/api`, { stdio: 'inherit' })
+      if (options.clean && existsSync(outputPath)) {
+        execSync(`rm -rf ${outputPath}`, { stdio: 'inherit' })
       }
 
       // Ensure output directory exists
-      mkdirSync(join(docsDir, 'api'), { recursive: true })
+      mkdirSync(outputPath, { recursive: true })
 
-      // Generate docs for each package
-      for (const pkg of targetPackages) {
-        const packagePath = join(packagesDir, pkg)
-        const packageJsonPath = join(packagePath, 'package.json')
-
-        if (!existsSync(packageJsonPath)) {
-          continue // Skip non-existent packages
-        }
-
-        const outputPath = join(docsDir, pkg, 'api')
-        mkdirSync(outputPath, { recursive: true })
-
-        // Run TypeDoc for this package
-        const typedocConfig = join(rootDir, 'typedoc.json')
+      // Check if we should use monorepo-wide generation or per-package
+      const rootTypedocConfig = join(rootDir, 'typedoc.json')
+      const hasRootConfig = existsSync(rootTypedocConfig)
+      
+      if (hasRootConfig) {
+        // Use monorepo-wide generation (recommended approach)
+        const entryPoints = options.packages 
+          ? options.packages.map(pkg => `packages/${pkg}`).join(' ')
+          : 'packages/*'
+        
+        // Generate to temporary directory first to handle TypeDoc's file naming limitations
+        const tempOutputPath = join(outputPath, 'temp-generated')
+        mkdirSync(tempOutputPath, { recursive: true })
+        
         const command = [
           'npx typedoc',
-          `--tsconfig ${packagePath}/tsconfig.json`,
-          `--out ${outputPath}`,
+          `--out ${tempOutputPath}`,
           options.watch ? '--watch' : '',
-          existsSync(typedocConfig) ? `--options ${typedocConfig}` : '',
-          `${packagePath}/src/index.ts`,
+          `--options ${rootTypedocConfig}`,
+          // Override entry points if specific packages requested
+          options.packages ? `--entryPoints ${entryPoints}` : '',
         ]
           .filter(Boolean)
           .join(' ')
 
         execSync(command, { stdio: 'inherit', cwd: rootDir })
+        
+        // Post-process: move and rename files from temp directory to final location
+        const renameMappings = [
+          ['@esteban-url.cli.md', 'cli.md'],
+          ['@esteban-url.config.md', 'config.md'],
+          ['@esteban-url.core.md', 'core.md'],
+          ['@esteban-url.create-cli.md', 'create-cli.md'],
+          ['@esteban-url.data.md', 'data.md'],
+          ['@esteban-url.fs.md', 'fs.md'],
+          ['@esteban-url.sort.md', 'sort.md'],
+          ['@esteban-url.validation.md', 'validation.md']
+        ]
+        
+        for (const [oldName, newName] of renameMappings) {
+          const tempFilePath = join(tempOutputPath, oldName)
+          const finalFilePath = join(outputPath, newName)
+          if (existsSync(tempFilePath)) {
+            execSync(`mv "${tempFilePath}" "${finalFilePath}"`, { cwd: rootDir })
+          }
+        }
+        
+        // Copy any additional files (README.md, etc.) and clean up temp directory
+        try {
+          const remainingFiles = fastGlob.sync('*.md', { cwd: tempOutputPath })
+          for (const file of remainingFiles) {
+            if (!file.startsWith('@esteban-url.')) {
+              const srcPath = join(tempOutputPath, file)
+              const destPath = join(outputPath, file)
+              execSync(`mv "${srcPath}" "${destPath}"`, { cwd: rootDir })
+            }
+          }
+        } catch (error) {
+          // Ignore errors in cleanup
+        }
+        
+        // Remove temporary directory
+        if (existsSync(tempOutputPath)) {
+          execSync(`rm -rf "${tempOutputPath}"`, { cwd: rootDir })
+        }
+      } else {
+        // Fallback to per-package generation
+        for (const pkg of targetPackages) {
+          const packagePath = join(packagesDir, pkg)
+          const packageJsonPath = join(packagePath, 'package.json')
+
+          if (!existsSync(packageJsonPath)) {
+            continue // Skip non-existent packages
+          }
+
+          const pkgOutputPath = join(outputPath, pkg)
+          mkdirSync(pkgOutputPath, { recursive: true })
+
+          // Check for package-specific typedoc config
+          const pkgTypedocConfig = join(packagePath, 'typedoc.json')
+          const baseTypedocConfig = join(rootDir, 'typedoc.base.json')
+          
+          const configPath = existsSync(pkgTypedocConfig) 
+            ? pkgTypedocConfig 
+            : existsSync(baseTypedocConfig) 
+              ? baseTypedocConfig 
+              : null
+
+          const command = [
+            'npx typedoc',
+            `--tsconfig ${packagePath}/tsconfig.json`,
+            `--out ${pkgOutputPath}`,
+            `--plugin typedoc-plugin-markdown`,
+            options.watch ? '--watch' : '',
+            configPath ? `--options ${configPath}` : '',
+            `${packagePath}/src/index.ts`,
+          ]
+            .filter(Boolean)
+            .join(' ')
+
+          execSync(command, { stdio: 'inherit', cwd: rootDir })
+        }
       }
 
       return ok(undefined)
