@@ -90,7 +90,7 @@ const config: Config = {
         },
         {
           type: 'doc',
-          docId: 'reference/api/index',
+          docId: 'reference/api/README',
           position: 'left',
           label: 'API Reference',
         },
@@ -115,7 +115,7 @@ const config: Config = {
             },
             {
               label: 'API Reference',
-              to: '/reference/api',
+              to: '/reference/api/',
             },
             {
               label: 'Architecture',

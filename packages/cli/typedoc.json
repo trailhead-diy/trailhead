@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "@esteban-url/cli",
-  "readme": "./README.md",
+  "readme": "none",
   "entryPoints": ["src/index.ts"],
 
   "categorizeByGroup": true,
@@ -10,6 +10,8 @@
   "excludePrivate": true,
   "excludeInternal": true,
   "excludeNotDocumented": false,
+  "excludeReferences": true,
+  "excludeExternals": true,
 
   "navigationLinks": {
     "GitHub": "https://github.com/esteban-url/trailhead",
