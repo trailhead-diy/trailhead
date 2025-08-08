@@ -6,7 +6,7 @@ example: 0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/fs
 
@@ -42,7 +42,7 @@ Whether to overwrite existing files (defaults to true)
 
 Whether to copy directories recursively
 
-***
+---
 
 ### FileStats
 
@@ -109,7 +109,7 @@ Optional file name
 
 Size of the file in bytes
 
-***
+---
 
 ### FileSystemError
 
@@ -261,7 +261,7 @@ Error type identifier
 
 [`CoreError`](@esteban-url.cli.md#coreerror).[`type`](@esteban-url.cli.md#type-1)
 
-***
+---
 
 ### FSConfig
 
@@ -275,7 +275,7 @@ import { readFile, writeJson, FSConfig } from '@esteban-url/fs'
 
 const config: FSConfig = {
   encoding: 'utf16le',
-  jsonSpaces: 4
+  jsonSpaces: 4,
 }
 
 const customRead = readFile(config)
@@ -302,7 +302,7 @@ Text encoding for read/write operations (defaults to 'utf8')
 
 Number of spaces for JSON formatting (defaults to 2)
 
-***
+---
 
 ### MkdirOptions
 
@@ -323,7 +323,7 @@ await fs.mkdir('path/to/nested/dir', { recursive: true })
 
 Whether to create parent directories if they don't exist
 
-***
+---
 
 ### MoveOptions
 
@@ -347,7 +347,7 @@ if (result.isErr() && result.error.code === 'EEXIST') {
 
 Whether to overwrite existing destination (defaults to true)
 
-***
+---
 
 ### RmOptions
 
@@ -411,7 +411,7 @@ Copy options
 
 Promise resolving to void or error
 
-***
+---
 
 ### ExistsOp()
 
@@ -433,7 +433,7 @@ Path to check
 
 Promise resolving to boolean existence or error
 
-***
+---
 
 ### FSResult\<T\>
 
@@ -462,7 +462,7 @@ function processFile(path: string): FSResult<string> {
 }
 ```
 
-***
+---
 
 ### MkdirOp()
 
@@ -490,7 +490,7 @@ Creation options
 
 Promise resolving to void or error
 
-***
+---
 
 ### MoveOp()
 
@@ -524,7 +524,7 @@ Move options
 
 Promise resolving to void or error
 
-***
+---
 
 ### ReadDirOp()
 
@@ -546,7 +546,7 @@ Directory path to read
 
 Promise resolving to array of entry names or error
 
-***
+---
 
 ### ReadFileOp()
 
@@ -568,7 +568,7 @@ File path to read
 
 Promise resolving to file contents or error
 
-***
+---
 
 ### ReadJsonOp()
 
@@ -598,7 +598,7 @@ JSON file path
 
 Promise resolving to parsed data or error
 
-***
+---
 
 ### RemoveOp()
 
@@ -626,7 +626,7 @@ Remove options
 
 Promise resolving to void or error
 
-***
+---
 
 ### StatOp()
 
@@ -648,7 +648,7 @@ Path to stat
 
 Promise resolving to FileStats or error
 
-***
+---
 
 ### WriteFileOp()
 
@@ -676,7 +676,7 @@ String content to write
 
 Promise resolving to void or error
 
-***
+---
 
 ### WriteJsonOp()
 
@@ -741,7 +741,7 @@ const reader = readFile() // uses defaultFSConfig
 const customReader = readFile({ ...defaultFSConfig, encoding: 'latin1' })
 ```
 
-***
+---
 
 ### fs
 
@@ -909,7 +909,7 @@ if (exists.isOk() && exists.value) {
 }
 ```
 
-***
+---
 
 ### isWindows
 
@@ -927,7 +927,7 @@ if (isWindows) {
 }
 ```
 
-***
+---
 
 ### pathAssertions
 
@@ -1050,7 +1050,7 @@ expect(pathAssertions.pathContains(fullPath, 'components')).toBe(true)
 expect(pathAssertions.hasCorrectSeparators(generatedPath)).toBe(true)
 ```
 
-***
+---
 
 ### pathMatchers
 
@@ -1299,7 +1299,7 @@ const testFiles = files.filter(pathMatchers.contains('test'))
 const srcFiles = files.filter(pathMatchers.inDirectory('/app/src'))
 ```
 
-***
+---
 
 ### pathSep
 
@@ -1316,7 +1316,7 @@ const path = `dir${pathSep}file.txt`
 // POSIX: 'dir/file.txt'
 ```
 
-***
+---
 
 ### testPaths
 
@@ -1435,7 +1435,7 @@ Apply sorting with stats and error handling - shared utility for readDir/findFil
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`string`[]\>
 
-***
+---
 
 ### copy()
 
@@ -1476,7 +1476,7 @@ if (result.isErr()) {
 }
 ```
 
-***
+---
 
 ### copyIfExists()
 
@@ -1533,7 +1533,7 @@ if (result.isOk()) {
 }
 ```
 
-***
+---
 
 ### createAbsolutePath()
 
@@ -1566,7 +1566,7 @@ createAbsolutePath('..', 'parent-file.txt')
 // Returns: '/current/working/parent-file.txt'
 ```
 
-***
+---
 
 ### createFileSystemError()
 
@@ -1637,7 +1637,7 @@ if (!isValidPath(path)) {
       path,
       code: 'INVALID_PATH',
       suggestion: 'Remove special characters from the path',
-      recoverable: true
+      recoverable: true,
     })
   )
 }
@@ -1648,12 +1648,12 @@ return err(
     path: '/etc/passwd',
     code: 'EPERM',
     severity: 'critical',
-    recoverable: false
+    recoverable: false,
   })
 )
 ```
 
-***
+---
 
 ### createPath()
 
@@ -1687,7 +1687,7 @@ createPath('/root', 'dir', '..', 'file.txt')
 // Returns: '/root/file.txt' (normalized)
 ```
 
-***
+---
 
 ### createPathRegex()
 
@@ -1702,7 +1702,7 @@ Handles wildcards and cross-platform separator differences.
 
 `string`
 
-Pattern with optional wildcards (*)
+Pattern with optional wildcards (\*)
 
 #### Returns
 
@@ -1715,14 +1715,14 @@ RegExp that matches paths on any platform
 ```typescript
 const pattern = createPathRegex('src/*' + '/index.ts')
 pattern.test('src/components/index.ts') // true
-pattern.test('src\\utils\\index.ts')    // true (Windows)
+pattern.test('src\\utils\\index.ts') // true (Windows)
 
 const exact = createPathRegex('config/app.json')
-exact.test('config/app.json')  // true
+exact.test('config/app.json') // true
 exact.test('config\\app.json') // true (Windows)
 ```
 
-***
+---
 
 ### createProjectStructure()
 
@@ -1794,18 +1794,18 @@ Object with common project paths
 ```typescript
 const project = createProjectStructure('my-app')
 
-console.log(project.src)        // 'my-app/src'
+console.log(project.src) // 'my-app/src'
 console.log(project.packageJson) // 'my-app/package.json'
-console.log(project.indexTs)     // 'my-app/src/index.ts'
+console.log(project.indexTs) // 'my-app/src/index.ts'
 
 // Use in tests
 const mockFs = {
   [project.packageJson]: JSON.stringify({ name: 'my-app' }),
-  [project.indexTs]: 'export default {}'
+  [project.indexTs]: 'export default {}',
 }
 ```
 
-***
+---
 
 ### createRelativePath()
 
@@ -1847,7 +1847,7 @@ createRelativePath('/app', '/app')
 // Returns: '.' (same directory)
 ```
 
-***
+---
 
 ### createTempPath()
 
@@ -1890,7 +1890,7 @@ createTempPath('snapshot', 1000000)
 // Returns: '/tmp/trailhead-tests/snapshot-1000000-xyz789'
 ```
 
-***
+---
 
 ### createTestConfig()
 
@@ -1939,14 +1939,14 @@ const config = createTestConfig()
 // Custom config
 const customConfig = createTestConfig({
   projectRoot: '/custom/path',
-  tempDir: '/custom/temp'
+  tempDir: '/custom/temp',
 })
 
 // Use in tests
 const testFile = joinPaths(config.outputDir, 'result.json')
 ```
 
-***
+---
 
 ### createTestPath()
 
@@ -1979,7 +1979,7 @@ const tempFile = createTestPath(getTempDir(), 'test-' + Date.now())
 // Creates unique temp file path for testing
 ```
 
-***
+---
 
 ### emptyDir()
 
@@ -2030,7 +2030,7 @@ if (result.isErr()) {
 }
 ```
 
-***
+---
 
 ### enrichWithStats()
 
@@ -2057,7 +2057,7 @@ Uses parallel stat calls for better performance
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FileStats`](#filestats)[]\>
 
-***
+---
 
 ### ensureDir()
 
@@ -2103,7 +2103,7 @@ await ensurer('logs') // Creates if missing
 await ensurer('logs') // No error if exists
 ```
 
-***
+---
 
 ### exists()
 
@@ -2140,7 +2140,7 @@ const writeChecker = exists({ defaultMode: constants.W_OK })
 const canWrite = await writeChecker('file.txt')
 ```
 
-***
+---
 
 ### findFiles()
 
@@ -2174,14 +2174,14 @@ const tsFiles = await finder('**' + '/*.ts')
 // Find with options
 const srcFiles = await finder('**' + '/*.js', {
   cwd: 'src',
-  ignore: ['**' + '/*.test.js', 'node_modules/**']
+  ignore: ['**' + '/*.test.js', 'node_modules/**'],
 })
 
 // Multiple patterns
 const assets = await finder('**' + '/*.{png,jpg,svg}')
 ```
 
-***
+---
 
 ### getBaseName()
 
@@ -2223,7 +2223,7 @@ getBaseName('/app/src/')
 // Returns: 'src'
 ```
 
-***
+---
 
 ### getDirectoryName()
 
@@ -2259,7 +2259,7 @@ getDirectoryName('/app/src/')
 // Returns: '/app'
 ```
 
-***
+---
 
 ### getExtension()
 
@@ -2295,7 +2295,7 @@ getExtension('README')
 // Returns: ''
 ```
 
-***
+---
 
 ### getTempDir()
 
@@ -2321,7 +2321,7 @@ getTempDir()
 const tempFile = joinPaths(getTempDir(), 'my-app-temp.txt')
 ```
 
-***
+---
 
 ### isAbsolutePath()
 
@@ -2357,7 +2357,7 @@ isAbsolutePath('./relative/path')
 // Returns: false
 ```
 
-***
+---
 
 ### isAllowedPath()
 
@@ -2398,7 +2398,7 @@ isAllowedPath('/app/private/secret.key', allowed)
 // Returns: false
 ```
 
-***
+---
 
 ### isRelativePath()
 
@@ -2434,7 +2434,7 @@ isRelativePath('/absolute/path')
 // Returns: false
 ```
 
-***
+---
 
 ### isSafePath()
 
@@ -2476,7 +2476,7 @@ isSafePath('/other/path', '/app')
 // Returns: false (outside base)
 ```
 
-***
+---
 
 ### isValidName()
 
@@ -2512,7 +2512,7 @@ isValidName('../../etc/passwd')
 // Returns: false (only checks basename 'passwd')
 ```
 
-***
+---
 
 ### joinPaths()
 
@@ -2543,7 +2543,7 @@ joinPaths('dir', 'subdir', 'file.txt')
 // Returns: 'dir\\subdir\\file.txt' (Windows)
 ```
 
-***
+---
 
 ### mapNodeError()
 
@@ -2598,6 +2598,7 @@ try {
 #### Remarks
 
 Handles common Node.js error codes:
+
 - ENOENT: File/directory not found
 - EEXIST: File/directory already exists
 - EACCES: Permission denied
@@ -2606,7 +2607,7 @@ Handles common Node.js error codes:
 - EMFILE: Too many open files
 - ENOSPC: No space left on device
 
-***
+---
 
 ### mkdir()
 
@@ -2655,11 +2656,11 @@ await creator('path/to/nested/dir', { recursive: true })
 // Error handling
 const result = await creator('existing-dir')
 if (result.isErr() && result.error.code === 'DIRECTORY_EXISTS') {
-  console.log('Directory already exists');
+  console.log('Directory already exists')
 }
 ```
 
-***
+---
 
 ### move()
 
@@ -2700,7 +2701,7 @@ if (result.isErr() && result.error.code === 'EEXIST') {
 }
 ```
 
-***
+---
 
 ### needsFileStats()
 
@@ -2718,7 +2719,7 @@ Check if a sort field requires file stats
 
 `boolean`
 
-***
+---
 
 ### normalizeMockPath()
 
@@ -2749,11 +2750,11 @@ normalizeMockPath('C:\\test\\file.txt')
 
 // Use in mock filesystem
 const mockFs = {
-  [normalizeMockPath(path)]: 'content'
+  [normalizeMockPath(path)]: 'content',
 }
 ```
 
-***
+---
 
 ### normalizePath()
 
@@ -2787,7 +2788,7 @@ normalizePath('./foo/../bar')
 // Returns: 'bar' (normalized)
 ```
 
-***
+---
 
 ### outputFile()
 
@@ -2836,7 +2837,7 @@ await outputter('output/reports/2024/summary.txt', 'Report content')
 await outputter('dist/index.html', htmlContent)
 ```
 
-***
+---
 
 ### readDir()
 
@@ -2870,7 +2871,7 @@ if (result.isOk()) {
 }
 ```
 
-***
+---
 
 ### readFile()
 
@@ -2921,18 +2922,18 @@ const result = await reader('missing.txt')
 if (result.isErr()) {
   switch (result.error.code) {
     case 'FILE_NOT_FOUND':
-      console.error('File does not exist');
-      break;
+      console.error('File does not exist')
+      break
     case 'PERMISSION_DENIED':
-      console.error('Cannot access file');
-      break;
+      console.error('Cannot access file')
+      break
     default:
-      console.error(`Failed: ${result.error.message}`);
+      console.error(`Failed: ${result.error.message}`)
   }
 }
 ```
 
-***
+---
 
 ### readIfExists()
 
@@ -2981,7 +2982,7 @@ if (config.isOk()) {
 }
 ```
 
-***
+---
 
 ### readJson()
 
@@ -3026,7 +3027,7 @@ if (result.isErr() && result.error.code === 'JSON_PARSE_ERROR') {
 }
 ```
 
-***
+---
 
 ### remove()
 
@@ -3064,7 +3065,7 @@ await remover('temp-dir/', { recursive: true })
 await remover('maybe-exists.txt', { force: true })
 ```
 
-***
+---
 
 ### resolvePath()
 
@@ -3106,7 +3107,7 @@ resolvePath('/absolute/path')
 // Returns: '/absolute/path' (unchanged)
 ```
 
-***
+---
 
 ### safeJoin()
 
@@ -3139,7 +3140,7 @@ safeJoin('/root/', '/absolute/', 'file')
 // Returns: '/root/absolute/file' (handles double slashes)
 ```
 
-***
+---
 
 ### safeRelative()
 
@@ -3175,7 +3176,7 @@ safeRelative('/src', '/src/components/Button.tsx')
 // Returns: 'components/Button.tsx'
 ```
 
-***
+---
 
 ### sortFileEntries()
 
@@ -3187,7 +3188,7 @@ Sort file entries based on the provided options
 
 ##### T
 
-`T` *extends* `string` \| [`FileStats`](#filestats)
+`T` _extends_ `string` \| [`FileStats`](#filestats)
 
 #### Parameters
 
@@ -3203,7 +3204,7 @@ Sort file entries based on the provided options
 
 `T`[]
 
-***
+---
 
 ### stat()
 
@@ -3238,7 +3239,7 @@ if (result.isOk()) {
 }
 ```
 
-***
+---
 
 ### toBackslashes()
 
@@ -3271,7 +3272,7 @@ toBackslashes('mixed/path\\to\\file')
 // Returns: 'mixed\\path\\to\\file'
 ```
 
-***
+---
 
 ### toForwardSlashes()
 
@@ -3304,7 +3305,7 @@ toForwardSlashes('mixed\\path/to/file')
 // Returns: 'mixed/path/to/file'
 ```
 
-***
+---
 
 ### toPosixPath()
 
@@ -3337,7 +3338,7 @@ toPosixPath('C:\\Users\\Name\\Documents')
 expect(toPosixPath(actualPath)).toBe('/expected/path')
 ```
 
-***
+---
 
 ### toWindowsPath()
 
@@ -3370,7 +3371,7 @@ toWindowsPath('/home/user/documents')
 const winPath = toWindowsPath('/test/path')
 ```
 
-***
+---
 
 ### writeFile()
 
@@ -3426,12 +3427,12 @@ await utf16Writer('unicode.txt', '日本語')
 const result = await writer('/restricted/file.txt', 'data')
 if (result.isErr()) {
   if (result.error.code === 'PERMISSION_DENIED') {
-    console.error('Cannot write to restricted directory');
+    console.error('Cannot write to restricted directory')
   }
 }
 ```
 
-***
+---
 
 ### writeJson()
 

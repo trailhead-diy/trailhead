@@ -5,7 +5,7 @@ sidebar: true
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/validation
 
@@ -29,7 +29,7 @@ sidebar: true
 
 > `readonly` `optional` **stripUnknown**: `boolean`
 
-***
+---
 
 ### ValidationError
 
@@ -48,7 +48,7 @@ const error: CoreError = {
   timestamp: new Date(),
   severity: 'medium',
   recoverable: true,
-  suggestion: 'Please provide a longer username'
+  suggestion: 'Please provide a longer username',
 }
 ```
 
@@ -220,13 +220,13 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ValidationResult`](#validationresult)\<`R`\>\>
 
-***
+---
 
 ### SchemaRegistryKey
 
-> **SchemaRegistryKey** = keyof *typeof* [`schemaRegistry`](#schemaregistry)
+> **SchemaRegistryKey** = keyof _typeof_ [`schemaRegistry`](#schemaregistry)
 
-***
+---
 
 ### SchemaValidator\<T\>
 
@@ -248,7 +248,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 > `readonly` **validate**: [`ValidatorFn`](#validatorfn)\<`unknown`, `T`\>
 
-***
+---
 
 ### ValidationResult\<T\>
 
@@ -260,7 +260,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 `T`
 
-***
+---
 
 ### ValidatorFn()\<T, R\>
 
@@ -292,7 +292,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 > `const` **defaultValidationConfig**: [`ValidationConfig`](#validationconfig)
 
-***
+---
 
 ### schemaRegistry
 
@@ -397,20 +397,20 @@ Zod email schema
 
 ```typescript
 // Direct schema usage
-const schema = emailSchema();
-const result = schema.safeParse('user@example.com');
+const schema = emailSchema()
+const result = schema.safeParse('user@example.com')
 
 // In a user registration form
 const userSchema = z.object({
   email: emailSchema(),
-  password: passwordSchema()
-});
+  password: passwordSchema(),
+})
 
 // With custom validator
-const emailValidator = createValidator(emailSchema());
-const validation = emailValidator('invalid.email');
+const emailValidator = createValidator(emailSchema())
+const validation = emailValidator('invalid.email')
 if (validation.isErr()) {
-  console.log(validation.error.message);
+  console.log(validation.error.message)
 }
 ```
 
@@ -521,23 +521,23 @@ Zod schema for project name validation
 
 ```typescript
 // Validate CLI project name
-const schema = projectNameSchema();
+const schema = projectNameSchema()
 
 // Valid names
-schema.safeParse('my-awesome-cli').success; // true
-schema.safeParse('cli-tool-2024').success; // true
+schema.safeParse('my-awesome-cli').success // true
+schema.safeParse('cli-tool-2024').success // true
 
 // Invalid names
-schema.safeParse('MyProject').success; // false (uppercase)
-schema.safeParse('_private').success; // false (starts with underscore)
-schema.safeParse('@scoped/package').success; // false (contains @/)
+schema.safeParse('MyProject').success // false (uppercase)
+schema.safeParse('_private').success // false (starts with underscore)
+schema.safeParse('@scoped/package').success // false (contains @/)
 
 // In project configuration
 const configSchema = z.object({
   name: projectNameSchema(),
   version: semverSchema(),
-  description: nonEmptyStringSchema('Description')
-});
+  description: nonEmptyStringSchema('Description'),
+})
 ```
 
 ##### stringLength()
@@ -598,7 +598,7 @@ URL validation schema with protocol requirements
 
 `ZodString`
 
-***
+---
 
 ### validate
 
@@ -616,7 +616,7 @@ URL validation schema with protocol requirements
 
 `T`
 
-###### _R
+###### \_R
 
 `_R` = `T`
 
@@ -666,9 +666,9 @@ URL validation schema with protocol requirements
 
 ###### Type Parameters
 
-###### _T
+###### \_T
 
-`_T` *extends* `Record`\<`string`, `any`\>
+`_T` _extends_ `Record`\<`string`, `any`\>
 
 ###### Parameters
 
@@ -710,7 +710,7 @@ URL validation schema with protocol requirements
 
 > **url**: [`ValidatorFn`](#validatorfn)\<`string`\>
 
-***
+---
 
 ### validationPresets
 
@@ -896,7 +896,7 @@ Common validation presets for frequent use cases
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
 
-***
+---
 
 ### anyOf()
 
@@ -918,7 +918,7 @@ Common validation presets for frequent use cases
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
 
-***
+---
 
 ### arraySchema()
 
@@ -960,7 +960,7 @@ Array validation schema with length constraints
 
 `ZodArray`\<`ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>\>
 
-***
+---
 
 ### authorSchema()
 
@@ -972,7 +972,7 @@ Author information schema for project generation
 
 `ZodObject`\<\{ `email`: `ZodOptional`\<`ZodString`\>; `name`: `ZodString`; `url`: `ZodOptional`\<`ZodString`\>; \}, `$strip`\>
 
-***
+---
 
 ### composeValidators()
 
@@ -1006,7 +1006,7 @@ Author information schema for project generation
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R2`\>
 
-***
+---
 
 ### conditionalSchema()
 
@@ -1043,7 +1043,7 @@ Note: Simplified implementation to avoid complex TypeScript issues
 
 `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\> \| `ZodUnion`\<readonly \[`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>, `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodAny`; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>\]\>
 
-***
+---
 
 ### createInvalidTypeError()
 
@@ -1067,7 +1067,7 @@ Note: Simplified implementation to avoid complex TypeScript issues
 
 [`ValidationError`](#validationerror)
 
-***
+---
 
 ### createRequiredFieldError()
 
@@ -1083,7 +1083,7 @@ Note: Simplified implementation to avoid complex TypeScript issues
 
 [`ValidationError`](#validationerror)
 
-***
+---
 
 ### createSchemaValidator()
 
@@ -1111,7 +1111,7 @@ Create a validator function from a schema
 
 [`ValidatorFn`](#validatorfn)\<`unknown`, `T`\>
 
-***
+---
 
 ### createValidationError()
 
@@ -1153,7 +1153,7 @@ Create a validator function from a schema
 
 [`ValidationError`](#validationerror)
 
-***
+---
 
 ### createValidator()
 
@@ -1183,7 +1183,7 @@ Create a validator function from a schema
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R`\>
 
-***
+---
 
 ### dateSchema()
 
@@ -1211,7 +1211,7 @@ Date validation schema with multiple format support
 
 `ZodPipe`\<`ZodString`, `ZodTransform`\<`Date`, `string`\>\> \| `ZodPipe`\<`ZodUnion`\<readonly \[`ZodString`, `ZodString`, `ZodDate`\]\>, `ZodTransform`\<`Date`, `string` \| `Date`\>\>
 
-***
+---
 
 ### emailSchema()
 
@@ -1232,24 +1232,24 @@ Zod email schema
 
 ```typescript
 // Direct schema usage
-const schema = emailSchema();
-const result = schema.safeParse('user@example.com');
+const schema = emailSchema()
+const result = schema.safeParse('user@example.com')
 
 // In a user registration form
 const userSchema = z.object({
   email: emailSchema(),
-  password: passwordSchema()
-});
+  password: passwordSchema(),
+})
 
 // With custom validator
-const emailValidator = createValidator(emailSchema());
-const validation = emailValidator('invalid.email');
+const emailValidator = createValidator(emailSchema())
+const validation = emailValidator('invalid.email')
 if (validation.isErr()) {
-  console.log(validation.error.message);
+  console.log(validation.error.message)
 }
 ```
 
-***
+---
 
 ### filePathSchema()
 
@@ -1277,7 +1277,7 @@ File path validation schema with security checks
 
 `ZodString`
 
-***
+---
 
 ### mergeSchemas()
 
@@ -1289,11 +1289,11 @@ Merge multiple object schemas
 
 ##### T
 
-`T` *extends* [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
+`T` _extends_ [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
 
 ##### U
 
-`U` *extends* [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
+`U` _extends_ [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
 
 #### Parameters
 
@@ -1309,7 +1309,7 @@ Merge multiple object schemas
 
 `ZodObject`\<\{ \[k in string \| number \| symbol\]: ((keyof T & keyof U) extends never ? T & U : \{ \[K in string \| number \| symbol as K extends keyof U ? never : K\]: T\[K\] \} & \{ \[K in string \| number \| symbol\]: U\[K\] \})\[k\] \}, `$strip`\>
 
-***
+---
 
 ### nonEmptyStringSchema()
 
@@ -1327,7 +1327,7 @@ Non-empty string schema
 
 `ZodString`
 
-***
+---
 
 ### optionalSchema()
 
@@ -1351,7 +1351,7 @@ Create a schema with optional fields
 
 `ZodOptional`\<`ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>\>
 
-***
+---
 
 ### packageManagerSchema()
 
@@ -1363,7 +1363,7 @@ Package manager validation schema
 
 `ZodEnum`\<\{ `npm`: `"npm"`; `pnpm`: `"pnpm"`; `yarn`: `"yarn"`; \}\>
 
-***
+---
 
 ### phoneSchema()
 
@@ -1375,7 +1375,7 @@ Phone number validation schema with international support
 
 `ZodString`
 
-***
+---
 
 ### portSchema()
 
@@ -1387,7 +1387,7 @@ Port number validation schema
 
 `ZodNumber`
 
-***
+---
 
 ### positiveIntegerSchema()
 
@@ -1405,7 +1405,7 @@ Positive integer schema
 
 `ZodNumber`
 
-***
+---
 
 ### projectNameSchema()
 
@@ -1426,26 +1426,26 @@ Zod schema for project name validation
 
 ```typescript
 // Validate CLI project name
-const schema = projectNameSchema();
+const schema = projectNameSchema()
 
 // Valid names
-schema.safeParse('my-awesome-cli').success; // true
-schema.safeParse('cli-tool-2024').success; // true
+schema.safeParse('my-awesome-cli').success // true
+schema.safeParse('cli-tool-2024').success // true
 
 // Invalid names
-schema.safeParse('MyProject').success; // false (uppercase)
-schema.safeParse('_private').success; // false (starts with underscore)
-schema.safeParse('@scoped/package').success; // false (contains @/)
+schema.safeParse('MyProject').success // false (uppercase)
+schema.safeParse('_private').success // false (starts with underscore)
+schema.safeParse('@scoped/package').success // false (contains @/)
 
 // In project configuration
 const configSchema = z.object({
   name: projectNameSchema(),
   version: semverSchema(),
-  description: nonEmptyStringSchema('Description')
-});
+  description: nonEmptyStringSchema('Description'),
+})
 ```
 
-***
+---
 
 ### stringLengthSchema()
 
@@ -1471,7 +1471,7 @@ String length validation with configurable min/max
 
 `ZodString`
 
-***
+---
 
 ### trimmedStringSchema()
 
@@ -1489,7 +1489,7 @@ Trimmed string schema that normalizes whitespace
 
 `ZodPipe`\<`ZodString`, `ZodTransform`\<`string`, `string`\>\>
 
-***
+---
 
 ### urlSchema()
 
@@ -1509,7 +1509,7 @@ URL validation schema with protocol requirements
 
 `ZodString`
 
-***
+---
 
 ### validateArray()
 
@@ -1539,7 +1539,7 @@ URL validation schema with protocol requirements
 
 [`ValidatorFn`](#validatorfn)\<`T`[], `R`[]\>
 
-***
+---
 
 ### validateCurrency()
 
@@ -1555,7 +1555,7 @@ URL validation schema with protocol requirements
 
 [`ValidatorFn`](#validatorfn)\<`number`\>
 
-***
+---
 
 ### validateDate()
 
@@ -1571,7 +1571,7 @@ URL validation schema with protocol requirements
 
 [`ValidatorFn`](#validatorfn)\<`string`, `Date`\>
 
-***
+---
 
 ### validateEmail()
 
@@ -1599,29 +1599,29 @@ Email validator function
 #### Example
 
 ```typescript
-const emailValidator = validateEmail();
+const emailValidator = validateEmail()
 
 // Valid email
-const result = emailValidator('user@example.com');
+const result = emailValidator('user@example.com')
 if (result.isOk()) {
-  console.log('Valid email:', result.value);
+  console.log('Valid email:', result.value)
 }
 
 // Invalid email
-const result2 = emailValidator('invalid-email');
+const result2 = emailValidator('invalid-email')
 if (result2.isErr()) {
-  console.log(result2.error.message); // "Invalid email format..."
-  console.log(result2.error.suggestion); // "Provide a valid email address..."
+  console.log(result2.error.message) // "Invalid email format..."
+  console.log(result2.error.suggestion) // "Provide a valid email address..."
 }
 
 // Empty email
-const result3 = emailValidator('');
+const result3 = emailValidator('')
 if (result3.isErr()) {
-  console.log(result3.error.message); // "Email is required"
+  console.log(result3.error.message) // "Email is required"
 }
 ```
 
-***
+---
 
 ### validateNumberRange()
 
@@ -1645,7 +1645,7 @@ if (result3.isErr()) {
 
 [`ValidatorFn`](#validatorfn)\<`number`\>
 
-***
+---
 
 ### validateObject()
 
@@ -1655,7 +1655,7 @@ if (result3.isErr()) {
 
 ##### T
 
-`T` *extends* `Record`\<`string`, `any`\>
+`T` _extends_ `Record`\<`string`, `any`\>
 
 #### Parameters
 
@@ -1671,7 +1671,7 @@ if (result3.isErr()) {
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
 
-***
+---
 
 ### validatePhoneNumber()
 
@@ -1687,7 +1687,7 @@ if (result3.isErr()) {
 
 [`ValidatorFn`](#validatorfn)\<`string`\>
 
-***
+---
 
 ### validateRequired()
 
@@ -1709,7 +1709,7 @@ if (result3.isErr()) {
 
 [`ValidatorFn`](#validatorfn)\<`undefined` \| `null` \| `T`, `T`\>
 
-***
+---
 
 ### validateStringLength()
 
@@ -1733,7 +1733,7 @@ if (result3.isErr()) {
 
 [`ValidatorFn`](#validatorfn)\<`string`\>
 
-***
+---
 
 ### validateUrl()
 
@@ -1761,28 +1761,28 @@ URL validator function
 #### Example
 
 ```typescript
-const urlValidator = validateUrl();
+const urlValidator = validateUrl()
 
 // Valid URLs
-urlValidator('https://example.com').isOk(); // true
-urlValidator('http://sub.example.com/path').isOk(); // true
-urlValidator('https://example.com:8080').isOk(); // true
+urlValidator('https://example.com').isOk() // true
+urlValidator('http://sub.example.com/path').isOk() // true
+urlValidator('https://example.com:8080').isOk() // true
 
 // Invalid URLs
-const result = urlValidator('example.com'); // Missing protocol
+const result = urlValidator('example.com') // Missing protocol
 if (result.isErr()) {
-  console.log(result.error.message); // "Invalid URL format..."
+  console.log(result.error.message) // "Invalid URL format..."
 }
 
 // Use in form validation
-const websiteField = document.querySelector('#website');
-const validation = urlValidator(websiteField.value);
+const websiteField = document.querySelector('#website')
+const validation = urlValidator(websiteField.value)
 if (validation.isErr()) {
-  showError(validation.error.message);
+  showError(validation.error.message)
 }
 ```
 
-***
+---
 
 ### withDefault()
 
@@ -1810,7 +1810,7 @@ Create a schema with default value
 
 `ZodDefault`\<`ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>\>
 
-***
+---
 
 ### zodErrorToValidationError()
 

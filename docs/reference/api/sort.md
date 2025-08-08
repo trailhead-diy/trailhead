@@ -6,7 +6,7 @@ example: 0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/sort
 
@@ -92,10 +92,7 @@ The second value to compare
 
 `number`
 
-A number indicating the relative order:
-         - Negative number if `a` should come before `b`
-         - Zero if `a` and `b` are considered equal
-         - Positive number if `a` should come after `b`
+A number indicating the relative order: - Negative number if `a` should come before `b` - Zero if `a` and `b` are considered equal - Positive number if `a` should come after `b`
 
 #### Examples
 
@@ -106,27 +103,26 @@ const compareNumbers: CompareFn<number> = (a, b) => a - b
 
 ```ts
 // Case-insensitive string comparison
-const compareStrings: CompareFn<string> = (a, b) =>
-  a.toLowerCase().localeCompare(b.toLowerCase())
+const compareStrings: CompareFn<string> = (a, b) => a.toLowerCase().localeCompare(b.toLowerCase())
 ```
 
 ```ts
 // Custom object comparison
-const compareUsers: CompareFn<User> = (a, b) =>
-  a.age - b.age || a.name.localeCompare(b.name)
+const compareUsers: CompareFn<User> = (a, b) => a.age - b.age || a.name.localeCompare(b.name)
 ```
 
-***
+---
 
 ### Order
 
 > **Order** = `"asc"` \| `"desc"`
 
 Represents the sort order direction.
+
 - 'asc' for ascending order (smallest to largest)
 - 'desc' for descending order (largest to smallest)
 
-***
+---
 
 ### PropFn()\<T, K\>
 
@@ -169,22 +165,21 @@ The extracted value to use for comparison
 
 ```ts
 // Extract a property
-const getAge: PropFn<User, number> = user => user.age
+const getAge: PropFn<User, number> = (user) => user.age
 ```
 
 ```ts
 // Compute a value
-const getFullName: PropFn<User, string> = user =>
-  `${user.firstName} ${user.lastName}`
+const getFullName: PropFn<User, string> = (user) => `${user.firstName} ${user.lastName}`
 ```
 
 ```ts
 // Complex calculation
-const getTotalScore: PropFn<Player, number> = player =>
+const getTotalScore: PropFn<Player, number> = (player) =>
   player.scores.reduce((sum, score) => sum + score, 0)
 ```
 
-***
+---
 
 ### SortDirection
 
@@ -226,9 +221,9 @@ The input array to select from
 ##### compareFnOrSelector?
 
 Optional comparison function or property selector.
-                             If a function with 2 parameters, it's used as a comparator.
-                             If a function with 1 parameter, it's used as a property selector.
-                             If omitted, elements are compared using default comparison.
+If a function with 2 parameters, it's used as a comparator.
+If a function with 1 parameter, it's used as a property selector.
+If omitted, elements are compared using default comparison.
 
 [`CompareFn`](#comparefn-1)\<`T`\> | [`PropFn`](#propfn)\<`T`, `any`\>
 
@@ -252,24 +247,20 @@ const users = [
   { name: 'Alice', score: 95 },
   { name: 'Bob', score: 87 },
   { name: 'Charlie', score: 91 },
-  { name: 'David', score: 82 }
+  { name: 'David', score: 82 },
 ]
-bottomN(2, users, u => u.score)
+bottomN(2, users, (u) => u.score)
 // => [{ name: 'David', score: 82 }, { name: 'Bob', score: 87 }]
 ```
 
 ```ts
 // Get earliest dates
-const dates = [
-  new Date('2024-03-15'),
-  new Date('2024-01-10'),
-  new Date('2024-02-20')
-]
+const dates = [new Date('2024-03-15'), new Date('2024-01-10'), new Date('2024-02-20')]
 bottomN(2, dates)
 // => [Date('2024-01-10'), Date('2024-02-20')]
 ```
 
-***
+---
 
 ### orderStrings()
 
@@ -311,7 +302,7 @@ orderStrings(['a', 'abc', 'ab'], (a, b) => a.length - b.length)
 // ['a', 'ab', 'abc']
 ```
 
-***
+---
 
 ### partition()
 
@@ -353,7 +344,7 @@ A tuple of two arrays: [passing elements, failing elements]
 
 ```ts
 // Partition numbers by threshold
-const [high, low] = partition(x => x > 5, [1, 6, 3, 8, 2, 9])
+const [high, low] = partition((x) => x > 5, [1, 6, 3, 8, 2, 9])
 // => [[6, 8, 9], [1, 3, 2]]
 ```
 
@@ -363,9 +354,9 @@ const users = [
   { name: 'Alice', age: 25 },
   { name: 'Bob', age: 17 },
   { name: 'Charlie', age: 30 },
-  { name: 'David', age: 16 }
+  { name: 'David', age: 16 },
 ]
-const [adults, minors] = partition(user => user.age >= 18, users)
+const [adults, minors] = partition((user) => user.age >= 18, users)
 // => [
 //   [{ name: 'Alice', age: 25 }, { name: 'Charlie', age: 30 }],
 //   [{ name: 'Bob', age: 17 }, { name: 'David', age: 16 }]
@@ -378,16 +369,16 @@ const data = [
   { id: 1, value: 10 },
   { id: 2, value: null },
   { id: 3, value: 20 },
-  { id: 4, value: undefined }
+  { id: 4, value: undefined },
 ]
-const [valid, invalid] = partition(item => item.value != null, data)
+const [valid, invalid] = partition((item) => item.value != null, data)
 // => [
 //   [{ id: 1, value: 10 }, { id: 3, value: 20 }],
 //   [{ id: 2, value: null }, { id: 4, value: undefined }]
 // ]
 ```
 
-***
+---
 
 ### sortArray()
 
@@ -399,7 +390,7 @@ Sort an array of primitives (strings, numbers, booleans)
 
 ##### T
 
-`T` *extends* `string` \| `number` \| `boolean`
+`T` _extends_ `string` \| `number` \| `boolean`
 
 #### Parameters
 
@@ -429,7 +420,7 @@ sortArray(['c', 'a', 'b']) // ['a', 'b', 'c']
 sortArray([3, 1, 2], 'desc') // [3, 2, 1]
 ```
 
-***
+---
 
 ### sortMultiple()
 
@@ -470,16 +461,16 @@ New sorted array
 const data = [
   { name: 'John', age: 30 },
   { name: 'Jane', age: 25 },
-  { name: 'Bob', age: 30 }
+  { name: 'Bob', age: 30 },
 ]
 
 sortMultiple(data, [
   { accessor: (item) => item.age, order: 'asc' },
-  { accessor: (item) => item.name, order: 'desc' }
+  { accessor: (item) => item.name, order: 'desc' },
 ])
 ```
 
-***
+---
 
 ### sortStrings()
 
@@ -514,7 +505,7 @@ sortStrings(['zebra', 'apple', 'banana']) // ['apple', 'banana', 'zebra']
 sortStrings(['zebra', 'apple', 'banana'], 'desc') // ['zebra', 'banana', 'apple']
 ```
 
-***
+---
 
 ### topN()
 
@@ -548,9 +539,9 @@ The input array to select from
 ##### compareFnOrSelector?
 
 Optional comparison function or property selector.
-                             If a function with 2 parameters, it's used as a comparator.
-                             If a function with 1 parameter, it's used as a property selector.
-                             If omitted, elements are compared using default comparison.
+If a function with 2 parameters, it's used as a comparator.
+If a function with 1 parameter, it's used as a property selector.
+If omitted, elements are compared using default comparison.
 
 [`CompareFn`](#comparefn-1)\<`T`\> | [`PropFn`](#propfn)\<`T`, `any`\>
 
@@ -573,9 +564,9 @@ topN(3, [9, 3, 1, 7, 2, 8, 4, 6, 5])
 const users = [
   { name: 'Alice', score: 95 },
   { name: 'Bob', score: 87 },
-  { name: 'Charlie', score: 91 }
+  { name: 'Charlie', score: 91 },
 ]
-topN(2, users, u => u.score)
+topN(2, users, (u) => u.score)
 // => [{ name: 'Alice', score: 95 }, { name: 'Charlie', score: 91 }]
 ```
 

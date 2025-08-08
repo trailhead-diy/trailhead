@@ -15,7 +15,7 @@ example: 0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/data
 
@@ -71,7 +71,7 @@ example: 0
 
 [`FormatConfig`](#formatconfig).[`timeout`](#timeout-5)
 
-***
+---
 
 ### ConversionInfo
 
@@ -97,7 +97,7 @@ example: 0
 
 > `readonly` **toFormat**: `string`
 
-***
+---
 
 ### ConversionOperations
 
@@ -147,12 +147,12 @@ example: 0
 
 > `readonly` **getSupportedFormats**: `GetSupportedFormatsOp`
 
-***
+---
 
 ### CSVConfig
 
 Configuration specific to CSV operations
- CSVConfig
+CSVConfig
 
 #### Extends
 
@@ -274,7 +274,7 @@ Transform function for headers
 
 `string`
 
-***
+---
 
 ### CSVFormatInfo
 
@@ -300,7 +300,7 @@ Transform function for headers
 
 > `readonly` **rowCount**: `number`
 
-***
+---
 
 ### CSVOperations
 
@@ -496,7 +496,7 @@ readonly `T`[]
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`void`\>\>
 
-***
+---
 
 ### CSVParseResult
 
@@ -538,12 +538,12 @@ readonly `T`[]
 
 > `readonly` **truncated**: `boolean`
 
-***
+---
 
 ### CSVProcessingOptions
 
 Base processing options for all data operations
- ProcessingOptions
+ProcessingOptions
 
 #### Extends
 
@@ -675,7 +675,7 @@ Skip empty lines
 
 `string`
 
-***
+---
 
 ### CSVStringifyOptions
 
@@ -723,12 +723,12 @@ Skip empty lines
 
 `string`
 
-***
+---
 
 ### DataConfig
 
 Base configuration for all data operations
- DataConfig
+DataConfig
 
 #### Extended by
 
@@ -756,7 +756,7 @@ Maximum file size in bytes
 
 Operation timeout in milliseconds
 
-***
+---
 
 ### DetectionConfig
 
@@ -810,7 +810,7 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **useMagicNumbers**: `boolean`
 
-***
+---
 
 ### DetectionOperations
 
@@ -864,7 +864,7 @@ Operation timeout in milliseconds
 
 [`FormatResult`](#formatresult)\<`FileFormatInfo`\>
 
-***
+---
 
 ### DetectionResult
 
@@ -882,7 +882,7 @@ Operation timeout in milliseconds
 
 > `readonly` **source**: `DetectionSource`
 
-***
+---
 
 ### ExcelCellInfo
 
@@ -904,12 +904,12 @@ Operation timeout in milliseconds
 
 > `readonly` **value**: `any`
 
-***
+---
 
 ### ExcelConfig
 
 Configuration specific to Excel operations
- ExcelConfig
+ExcelConfig
 
 #### Extends
 
@@ -1001,7 +1001,7 @@ Worksheet index to read/write
 
 Worksheet name to read/write
 
-***
+---
 
 ### ExcelFormatInfo
 
@@ -1019,7 +1019,7 @@ Worksheet name to read/write
 
 > `readonly` **worksheetNames**: `string`[]
 
-***
+---
 
 ### ExcelMergeRange
 
@@ -1049,7 +1049,7 @@ Worksheet name to read/write
 
 > **r**: `number`
 
-***
+---
 
 ### ExcelOperations
 
@@ -1261,7 +1261,7 @@ Worksheet name to read/write
 
 > `readonly` **writeFile**: [`WriteFileOperation`](#writefileoperation)\<`any`[], [`ExcelProcessingOptions`](#excelprocessingoptions)\>
 
-***
+---
 
 ### ExcelParseOptions
 
@@ -1343,12 +1343,12 @@ Worksheet name to read/write
 
 > `readonly` `optional` **WTF**: `boolean`
 
-***
+---
 
 ### ExcelProcessingOptions
 
 Base processing options for all data operations
- ProcessingOptions
+ProcessingOptions
 
 #### Extends
 
@@ -1488,7 +1488,7 @@ Skip empty lines
 
 > `readonly` `optional` **worksheetName**: `string`
 
-***
+---
 
 ### ExcelWorkbookInfo
 
@@ -1530,7 +1530,7 @@ Skip empty lines
 
 > `readonly` **worksheetNames**: `string`[]
 
-***
+---
 
 ### ExcelWorksheet
 
@@ -1552,7 +1552,7 @@ Skip empty lines
 
 > `readonly` `optional` **range**: `string`
 
-***
+---
 
 ### ExcelWriteOptions
 
@@ -1610,7 +1610,7 @@ Skip empty lines
 
 > `readonly` `optional` **Title**: `string`
 
-***
+---
 
 ### FormatConfig
 
@@ -1638,12 +1638,12 @@ Skip empty lines
 
 > `readonly` `optional` **timeout**: `number`
 
-***
+---
 
 ### FormatDetectionResult
 
 Result of format detection operation
- FormatDetectionResult
+FormatDetectionResult
 
 #### Properties
 
@@ -1685,12 +1685,12 @@ Format-specific details
 
 Detected format
 
-***
+---
 
 ### JSONConfig
 
 Configuration specific to JSON operations
- JSONConfig
+JSONConfig
 
 #### Extends
 
@@ -1786,7 +1786,7 @@ Operation timeout in milliseconds
 
 [`DataConfig`](#dataconfig).[`timeout`](#timeout-2)
 
-***
+---
 
 ### JSONFormatOptions
 
@@ -1812,7 +1812,7 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **sortKeys**: `boolean` \| `"asc"` \| `"desc"` \| (`a`, `b`) => `number`
 
-***
+---
 
 ### JSONMinifyOptions
 
@@ -1826,7 +1826,7 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **preserveNewlines**: `boolean`
 
-***
+---
 
 ### JSONOperations
 
@@ -1890,12 +1890,12 @@ Operation timeout in milliseconds
 
 > `readonly` **writeFile**: [`WriteFileOperation`](#writefileoperation)\<`any`, [`JSONProcessingOptions`](#jsonprocessingoptions)\>
 
-***
+---
 
 ### JSONProcessingOptions
 
 Base processing options for all data operations
- ProcessingOptions
+ProcessingOptions
 
 #### Extends
 
@@ -2023,7 +2023,7 @@ Skip empty lines
 
 > `readonly` `optional` **space**: `string` \| `number`
 
-***
+---
 
 ### JSONStringifyOptions
 
@@ -2063,7 +2063,7 @@ Skip empty lines
 
 > `readonly` `optional` **space**: `string` \| `number`
 
-***
+---
 
 ### MimeConfig
 
@@ -2113,7 +2113,7 @@ Skip empty lines
 
 [`FormatConfig`](#formatconfig).[`timeout`](#timeout-5)
 
-***
+---
 
 ### MimeOperations
 
@@ -2159,7 +2159,7 @@ Skip empty lines
 
 [`FormatResult`](#formatresult)\<[`MimeTypeInfo`](#mimetypeinfo)\>
 
-***
+---
 
 ### MimeTypeInfo
 
@@ -2193,12 +2193,12 @@ Skip empty lines
 
 > `readonly` **type**: `string`
 
-***
+---
 
 ### ProcessingOptions
 
 Base processing options for all data operations
- ProcessingOptions
+ProcessingOptions
 
 #### Extended by
 
@@ -2252,12 +2252,12 @@ Error callback handler
 
 Skip empty lines
 
-***
+---
 
 ### UnifiedDataConfig
 
 Configuration for unified data operations
- UnifiedDataConfig
+UnifiedDataConfig
 
 #### Example
 
@@ -2266,7 +2266,7 @@ const config: UnifiedDataConfig = {
   csv: { delimiter: ',', header: true },
   excel: { sheet: 0, raw: false },
   autoDetect: true,
-  defaultFormat: 'json'
+  defaultFormat: 'json',
 }
 ```
 
@@ -2314,12 +2314,12 @@ JSON-specific configuration options
 
 MIME type detection configuration
 
-***
+---
 
 ### UnifiedDataOperations
 
 Unified interface for all data operations with automatic format detection
- UnifiedDataOperations
+UnifiedDataOperations
 
 #### Properties
 
@@ -2582,7 +2582,7 @@ Success or error result
 
 [`ConversionOperations`](#conversionoperations)
 
-***
+---
 
 ### CreateCSVOperations()
 
@@ -2598,7 +2598,7 @@ Success or error result
 
 [`CSVOperations`](#csvoperations)
 
-***
+---
 
 ### CreateDetectionOperations()
 
@@ -2614,7 +2614,7 @@ Success or error result
 
 [`DetectionOperations`](#detectionoperations)
 
-***
+---
 
 ### CreateExcelOperations()
 
@@ -2630,7 +2630,7 @@ Success or error result
 
 [`ExcelOperations`](#exceloperations)
 
-***
+---
 
 ### CreateJSONOperations()
 
@@ -2646,7 +2646,7 @@ Success or error result
 
 [`JSONOperations`](#jsonoperations)
 
-***
+---
 
 ### CreateMimeOperations()
 
@@ -2662,7 +2662,7 @@ Success or error result
 
 [`MimeOperations`](#mimeoperations)
 
-***
+---
 
 ### CSVConfigProvider()
 
@@ -2672,7 +2672,7 @@ Success or error result
 
 [`CSVConfig`](#csvconfig)
 
-***
+---
 
 ### CSVDetectFormatFunction()
 
@@ -2688,7 +2688,7 @@ Success or error result
 
 [`DataResult`](#dataresult)\<[`CSVFormatInfo`](#csvformatinfo)\>
 
-***
+---
 
 ### CSVParseFileFunction()
 
@@ -2714,7 +2714,7 @@ Success or error result
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
-***
+---
 
 ### CSVParseFunction()
 
@@ -2740,7 +2740,7 @@ Success or error result
 
 [`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
-***
+---
 
 ### CSVStringifyFunction()
 
@@ -2766,7 +2766,7 @@ readonly `T`[]
 
 [`DataResult`](#dataresult)\<`string`\>
 
-***
+---
 
 ### CSVValidateFunction()
 
@@ -2782,7 +2782,7 @@ readonly `T`[]
 
 [`DataResult`](#dataresult)\<`boolean`\>
 
-***
+---
 
 ### CSVWriteFileFunction()
 
@@ -2812,7 +2812,7 @@ readonly `T`[]
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`void`\>\>
 
-***
+---
 
 ### DataResult\<T\>
 
@@ -2828,7 +2828,7 @@ Standard Result type for all data operations
 
 Success value type
 
-***
+---
 
 ### ExcelConfigProvider()
 
@@ -2838,7 +2838,7 @@ Success value type
 
 [`ExcelConfig`](#excelconfig)
 
-***
+---
 
 ### ExcelDetectFormatFunction()
 
@@ -2854,7 +2854,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<[`ExcelFormatInfo`](#excelformatinfo)\>
 
-***
+---
 
 ### ExcelParseBufferFunction()
 
@@ -2874,7 +2874,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`any`[]\>
 
-***
+---
 
 ### ExcelParseFileFunction()
 
@@ -2894,7 +2894,7 @@ Success value type
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`any`[]\>\>
 
-***
+---
 
 ### ExcelStringifyFunction()
 
@@ -2914,7 +2914,7 @@ Success value type
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`Buffer`\>\>
 
-***
+---
 
 ### ExcelValidateFunction()
 
@@ -2930,7 +2930,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`boolean`\>
 
-***
+---
 
 ### ExcelWriteFileFunction()
 
@@ -2954,7 +2954,7 @@ Success value type
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`void`\>\>
 
-***
+---
 
 ### FormatResult\<T\>
 
@@ -2966,7 +2966,7 @@ Success value type
 
 `T`
 
-***
+---
 
 ### JSONConfigProvider()
 
@@ -2976,7 +2976,7 @@ Success value type
 
 [`JSONConfig`](#jsonconfig)
 
-***
+---
 
 ### JSONFormatFunction()
 
@@ -2996,7 +2996,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`string`\>
 
-***
+---
 
 ### JSONMinifyFunction()
 
@@ -3012,7 +3012,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`string`\>
 
-***
+---
 
 ### JSONParseFileFunction()
 
@@ -3032,7 +3032,7 @@ Success value type
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`any`\>\>
 
-***
+---
 
 ### JSONParseFunction()
 
@@ -3052,7 +3052,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`any`\>
 
-***
+---
 
 ### JSONStringifyFunction()
 
@@ -3072,7 +3072,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`string`\>
 
-***
+---
 
 ### JSONValidateFunction()
 
@@ -3088,7 +3088,7 @@ Success value type
 
 [`DataResult`](#dataresult)\<`boolean`\>
 
-***
+---
 
 ### JSONWriteFileFunction()
 
@@ -3112,7 +3112,7 @@ Success value type
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`void`\>\>
 
-***
+---
 
 ### ParseFileOperation()\<T, O\>
 
@@ -3154,7 +3154,7 @@ Parsing options
 
 Async parsed result or error
 
-***
+---
 
 ### ParseOperation()\<T, O\>
 
@@ -3196,7 +3196,7 @@ Parsing options
 
 Parsed result or error
 
-***
+---
 
 ### StringifyOperation()\<T, O\>
 
@@ -3238,7 +3238,7 @@ Stringify options
 
 Stringified result or error
 
-***
+---
 
 ### ValidateOperation()
 
@@ -3256,7 +3256,7 @@ Validation function for string or buffer data
 
 [`DataResult`](#dataresult)\<`boolean`\>
 
-***
+---
 
 ### WriteFileOperation()\<T, O\>
 
@@ -3306,9 +3306,9 @@ Async write result or error
 
 ## Variables
 
-### COMMON\_MIME\_TYPES
+### COMMON_MIME_TYPES
 
-> `const` **COMMON\_MIME\_TYPES**: `object`
+> `const` **COMMON_MIME_TYPES**: `object`
 
 Format detection, MIME type handling, and conversion operations
 
@@ -3480,19 +3480,19 @@ Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
-***
+---
 
-### CONVERSION\_CATEGORIES
+### CONVERSION_CATEGORIES
 
-> `const` **CONVERSION\_CATEGORIES**: `object`
+> `const` **CONVERSION_CATEGORIES**: `object`
 
 Format detection, MIME type handling, and conversion operations
 
@@ -3510,21 +3510,21 @@ Format detection, MIME type handling, and conversion operations
 
 > `readonly` **DATA**: readonly \[`"json"`, `"xml"`, `"yaml"`, `"toml"`, `"csv"`, `"tsv"`\]
 
-##### DOCUMENT\_OFFICE
+##### DOCUMENT_OFFICE
 
-> `readonly` **DOCUMENT\_OFFICE**: readonly \[`"doc"`, `"docx"`, `"odt"`, `"pdf"`\]
+> `readonly` **DOCUMENT_OFFICE**: readonly \[`"doc"`, `"docx"`, `"odt"`, `"pdf"`\]
 
-##### DOCUMENT\_TEXT
+##### DOCUMENT_TEXT
 
-> `readonly` **DOCUMENT\_TEXT**: readonly \[`"txt"`, `"rtf"`, `"md"`, `"html"`, `"tex"`\]
+> `readonly` **DOCUMENT_TEXT**: readonly \[`"txt"`, `"rtf"`, `"md"`, `"html"`, `"tex"`\]
 
-##### IMAGE\_RASTER
+##### IMAGE_RASTER
 
-> `readonly` **IMAGE\_RASTER**: readonly \[`"jpg"`, `"jpeg"`, `"png"`, `"bmp"`, `"tiff"`, `"webp"`, `"gif"`\]
+> `readonly` **IMAGE_RASTER**: readonly \[`"jpg"`, `"jpeg"`, `"png"`, `"bmp"`, `"tiff"`, `"webp"`, `"gif"`\]
 
-##### IMAGE\_VECTOR
+##### IMAGE_VECTOR
 
-> `readonly` **IMAGE\_VECTOR**: readonly \[`"svg"`, `"eps"`, `"ai"`, `"pdf"`\]
+> `readonly` **IMAGE_VECTOR**: readonly \[`"svg"`, `"eps"`, `"ai"`, `"pdf"`\]
 
 ##### PRESENTATION
 
@@ -3540,15 +3540,15 @@ Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
-***
+---
 
 ### createConversionOperations
 
@@ -3558,15 +3558,15 @@ Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
-***
+---
 
 ### createCSVOperations
 
@@ -3593,11 +3593,11 @@ const result = await csvOps.parseFile('data.csv')
 const csvOps = createCSVOperations({
   delimiter: ';',
   hasHeader: true,
-  dynamicTyping: true
+  dynamicTyping: true,
 })
 ```
 
-***
+---
 
 ### createDetectionOperations
 
@@ -3607,15 +3607,15 @@ Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
-***
+---
 
 ### createExcelOperations
 
@@ -3642,11 +3642,11 @@ const result = await excelOps.parseFile('data.xlsx')
 const excelOps = createExcelOperations({
   worksheetName: 'Summary',
   hasHeader: true,
-  cellDates: true
+  cellDates: true,
 })
 ```
 
-***
+---
 
 ### createJSONOperations
 
@@ -3676,11 +3676,11 @@ const jsonOps = createJSONOperations({
       return new Date(value)
     }
     return value
-  }
+  },
 })
 ```
 
-***
+---
 
 ### createMimeOperations
 
@@ -3690,15 +3690,15 @@ Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
-***
+---
 
 ### data
 
@@ -3707,6 +3707,7 @@ Format detection, MIME type handling, and conversion operations
 Default data operations instance with standard configuration
 
 Pre-configured with:
+
 - Auto-detection enabled
 - JSON as default format
 - Standard CSV/JSON/Excel settings
@@ -3723,7 +3724,7 @@ const result = await data.parseAuto('report.xlsx')
 await data.writeAuto('output.json', processedData)
 ```
 
-***
+---
 
 ### defaultCSVConfig
 
@@ -3733,7 +3734,7 @@ Default configuration for CSV operations
 
 #### Constant
 
-***
+---
 
 ### defaultExcelConfig
 
@@ -3743,7 +3744,7 @@ Default configuration for Excel operations
 
 #### Constant
 
-***
+---
 
 ### defaultJSONConfig
 
@@ -3753,41 +3754,41 @@ Default configuration for JSON operations
 
 #### Constant
 
-***
+---
 
-### MIME\_TYPE\_CATEGORIES
+### MIME_TYPE_CATEGORIES
 
-> `const` **MIME\_TYPE\_CATEGORIES**: `Record`\<`FileCategory`, readonly `string`[]\>
-
-Format detection, MIME type handling, and conversion operations
-
-#### See
-
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
-
-***
-
-### QUALITY\_DEFINITIONS
-
-> `const` **QUALITY\_DEFINITIONS**: `Record`\<`ConversionQuality`, \{ `dataLoss`: `boolean`; `description`: `string`; `fidelity`: `number`; \}\>
+> `const` **MIME_TYPE_CATEGORIES**: `Record`\<`FileCategory`, readonly `string`[]\>
 
 Format detection, MIME type handling, and conversion operations
 
 #### See
 
- - [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
- - [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
- - [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
- - [COMMON\_MIME\_TYPES](#common_mime_types) - Common MIME type mappings
- - [MIME\_TYPE\_CATEGORIES](#mime_type_categories) - MIME type categorization
- - [CONVERSION\_CATEGORIES](#conversion_categories) - Supported conversion categories
- - [QUALITY\_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+
+---
+
+### QUALITY_DEFINITIONS
+
+> `const` **QUALITY_DEFINITIONS**: `Record`\<`ConversionQuality`, \{ `dataLoss`: `boolean`; `description`: `string`; `fidelity`: `number`; \}\>
+
+Format detection, MIME type handling, and conversion operations
+
+#### See
+
+- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
+- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
+- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
+- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
+- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
+- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
+- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
 ## Functions
 
@@ -3838,11 +3839,11 @@ Standardized conversion error object
 ```typescript
 throw createConversionError('Cannot convert Excel to CSV', {
   details: 'Multiple worksheets found, specify which to convert',
-  context: { sourceFormat: 'excel', targetFormat: 'csv', sheets: ['Sheet1', 'Sheet2'] }
+  context: { sourceFormat: 'excel', targetFormat: 'csv', sheets: ['Sheet1', 'Sheet2'] },
 })
 ```
 
-***
+---
 
 ### createCSVError()
 
@@ -3891,11 +3892,11 @@ Standardized CSV error object
 ```typescript
 throw createCSVError('Invalid delimiter in CSV file', {
   details: 'Expected comma but found semicolon',
-  context: { line: 5, column: 3 }
+  context: { line: 5, column: 3 },
 })
 ```
 
-***
+---
 
 ### createExcelError()
 
@@ -3944,11 +3945,11 @@ Standardized Excel error object
 ```typescript
 throw createExcelError('Worksheet not found', {
   details: 'Sheet "Summary" does not exist',
-  context: { requestedSheet: 'Summary', availableSheets: ['Sheet1', 'Sheet2'] }
+  context: { requestedSheet: 'Summary', availableSheets: ['Sheet1', 'Sheet2'] },
 })
 ```
 
-***
+---
 
 ### createFormatDetectionError()
 
@@ -3997,11 +3998,11 @@ Standardized format detection error object
 ```typescript
 throw createFormatDetectionError('Cannot detect file format', {
   details: 'File has no extension and content is ambiguous',
-  context: { fileName: 'data', contentSample: '...' }
+  context: { fileName: 'data', contentSample: '...' },
 })
 ```
 
-***
+---
 
 ### createJSONError()
 
@@ -4050,11 +4051,11 @@ Standardized JSON error object
 ```typescript
 throw createJSONError('Invalid JSON syntax', {
   details: 'Unexpected token at position 42',
-  context: { position: 42, char: '}' }
+  context: { position: 42, char: '}' },
 })
 ```
 
-***
+---
 
 ### createParsingError()
 
@@ -4103,11 +4104,11 @@ Standardized parsing error object
 ```typescript
 throw createParsingError('Failed to parse data', {
   details: 'Unexpected data structure',
-  context: { format: 'csv', line: 10 }
+  context: { format: 'csv', line: 10 },
 })
 ```
 
-***
+---
 
 ### createUnifiedDataOperations()
 
@@ -4141,11 +4142,11 @@ const data = createUnifiedDataOperations({
   csv: { delimiter: ';', header: true },
   excel: { sheet: 'Summary', raw: false },
   autoDetect: true,
-  defaultFormat: 'json'
+  defaultFormat: 'json',
 })
 ```
 
-***
+---
 
 ### createValidationError()
 
@@ -4194,11 +4195,11 @@ Standardized validation error object
 ```typescript
 throw createValidationError('Data validation failed', {
   details: 'Required field "email" is missing',
-  context: { field: 'email', row: 5 }
+  context: { field: 'email', row: 5 },
 })
 ```
 
-***
+---
 
 ### mapLibraryError()
 
@@ -4242,7 +4243,7 @@ try {
 }
 ```
 
-***
+---
 
 ### mapNodeError()
 
@@ -4286,7 +4287,7 @@ try {
 }
 ```
 
-***
+---
 
 ### mapValidationError()
 

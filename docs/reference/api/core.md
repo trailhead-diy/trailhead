@@ -12,7 +12,7 @@ since: 0.1.0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/core
 
@@ -37,7 +37,7 @@ const error: CoreError = {
   timestamp: new Date(),
   severity: 'medium',
   recoverable: true,
-  suggestion: 'Please provide a longer username'
+  suggestion: 'Please provide a longer username',
 }
 ```
 
@@ -119,7 +119,7 @@ When the error occurred
 
 Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
-***
+---
 
 ### ErrorContext
 
@@ -133,7 +133,7 @@ const context: ErrorContext = {
   operation: 'saveUser',
   component: 'user-repository',
   timestamp: new Date(),
-  metadata: { userId: '123', attempt: 1 }
+  metadata: { userId: '123', attempt: 1 },
 }
 ```
 
@@ -188,7 +188,7 @@ function readConfig(): CoreResult<Config> {
 }
 ```
 
-***
+---
 
 ### CoreResultAsync\<T\>
 
@@ -213,11 +213,11 @@ function fetchUser(id: string): CoreResultAsync<User> {
 }
 ```
 
-***
+---
 
 ### IsValidInput\<T\>
 
-> **IsValidInput**\<`T`\> = `T` *extends* `string` ? `T` *extends* `""` ? `false` : `true` : `T` *extends* `unknown`[] ? `T` *extends* \[\] ? `false` : `true` : `T` *extends* `null` \| `undefined` ? `false` : `true`
+> **IsValidInput**\<`T`\> = `T` _extends_ `string` ? `T` _extends_ `""` ? `false` : `true` : `T` _extends_ `unknown`[] ? `T` _extends_ \[\] ? `false` : `true` : `T` _extends_ `null` \| `undefined` ? `false` : `true`
 
 Compile-time type for validating input at the type level.
 Returns true/false at compile time based on input type validity.
@@ -235,7 +235,7 @@ The type to validate
 ```typescript
 type Valid1 = IsValidInput<'hello'> // true
 type Valid2 = IsValidInput<''> // false
-type Valid3 = IsValidInput<[1,2,3]> // true
+type Valid3 = IsValidInput<[1, 2, 3]> // true
 type Valid4 = IsValidInput<[]> // false
 type Valid5 = IsValidInput<null> // false
 ```
@@ -258,7 +258,7 @@ If any Result is Err, returns the first Err.
 
 ###### T
 
-`T` *extends* readonly \[`Result`\<`unknown`, `unknown`\>, `Result`\<`unknown`, `unknown`\>\]
+`T` _extends_ readonly \[`Result`\<`unknown`, `unknown`\>, `Result`\<`unknown`, `unknown`\>\]
 
 ##### Parameters
 
@@ -278,7 +278,7 @@ If any Result is Err, returns the first Err.
 
 ###### T
 
-`T` *extends* readonly `Result`\<`unknown`, `unknown`\>[]
+`T` _extends_ readonly `Result`\<`unknown`, `unknown`\>[]
 
 ##### Parameters
 
@@ -297,7 +297,7 @@ const results = [ok(1), ok(2), ok(3)]
 const combined = combine(results) // Ok([1, 2, 3])
 ```
 
-***
+---
 
 ### combineWithAllErrors()
 
@@ -315,7 +315,7 @@ If any Result is Err, returns Err with array of all errors.
 
 ###### T
 
-`T` *extends* readonly \[`Result`\<`unknown`, `unknown`\>, `Result`\<`unknown`, `unknown`\>\]
+`T` _extends_ readonly \[`Result`\<`unknown`, `unknown`\>, `Result`\<`unknown`, `unknown`\>\]
 
 ##### Parameters
 
@@ -335,7 +335,7 @@ If any Result is Err, returns Err with array of all errors.
 
 ###### T
 
-`T` *extends* readonly `Result`\<`unknown`, `unknown`\>[]
+`T` _extends_ readonly `Result`\<`unknown`, `unknown`\>[]
 
 ##### Parameters
 
@@ -354,7 +354,7 @@ const results = [ok(1), err('error1'), err('error2')]
 const combined = combineWithAllErrors(results) // Err(['error1', 'error2'])
 ```
 
-***
+---
 
 ### createCliError()
 
@@ -413,10 +413,14 @@ Pre-configured error factory for CLI-related errors.
 #### Example
 
 ```typescript
-const error = createCliError('ArgumentError', 'MISSING_REQUIRED_ARG', 'Required argument --file not provided')
+const error = createCliError(
+  'ArgumentError',
+  'MISSING_REQUIRED_ARG',
+  'Required argument --file not provided'
+)
 ```
 
-***
+---
 
 ### createConfigError()
 
@@ -478,7 +482,7 @@ Pre-configured error factory for configuration errors.
 const error = createConfigError('ConfigError', 'MISSING_REQUIRED', 'API key not configured')
 ```
 
-***
+---
 
 ### createDataError()
 
@@ -540,7 +544,7 @@ Pre-configured error factory for data-related errors.
 const error = createDataError('ParseError', 'INVALID_JSON', 'Failed to parse JSON')
 ```
 
-***
+---
 
 ### createFileSystemError()
 
@@ -603,7 +607,7 @@ Default severity is 'high' as filesystem errors often impact functionality.
 const error = createFileSystemError('ReadError', 'FILE_NOT_FOUND', 'Config file missing')
 ```
 
-***
+---
 
 ### createGitError()
 
@@ -665,7 +669,7 @@ Pre-configured error factory for git operations.
 const error = createGitError('GitError', 'UNCOMMITTED_CHANGES', 'Working directory not clean')
 ```
 
-***
+---
 
 ### createValidationError()
 
@@ -740,7 +744,7 @@ Use this when an error causes another error.
 
 ##### E
 
-`E` *extends* [`CoreError`](#coreerror)
+`E` _extends_ [`CoreError`](#coreerror)
 
 Error type extending CoreError
 
@@ -775,7 +779,7 @@ const chainedError = chainError(serviceError, dbError)
 // Now serviceError.cause contains dbError
 ```
 
-***
+---
 
 ### composeResult()
 
@@ -856,7 +860,7 @@ parseAndDouble('abc') // Err('Not a number')
 parseAndDouble('600') // Err('Too large')
 ```
 
-***
+---
 
 ### composeResultAsync()
 
@@ -925,17 +929,17 @@ Composed function that returns a ResultAsync
 
 ```typescript
 const fetchUser = (id: string): ResultAsync<User, string> =>
-  fromPromise(api.getUser(id), e => 'Failed to fetch user')
+  fromPromise(api.getUser(id), (e) => 'Failed to fetch user')
 
 const fetchPosts = (user: User): ResultAsync<Post[], string> =>
-  fromPromise(api.getUserPosts(user.id), e => 'Failed to fetch posts')
+  fromPromise(api.getUserPosts(user.id), (e) => 'Failed to fetch posts')
 
 const fetchUserPosts = composeResultAsync(fetchPosts, fetchUser)
 
 const posts = await fetchUserPosts('123')
 ```
 
-***
+---
 
 ### createCoreError()
 
@@ -1041,22 +1045,17 @@ options.recoverable - false
 #### Example
 
 ```typescript
-const error = createCoreError(
-  'ValidationError',
-  'INVALID_EMAIL',
-  'Email address is not valid',
-  {
-    component: 'user-service',
-    operation: 'validateEmail',
-    severity: 'medium',
-    details: 'Email must contain @ symbol',
-    suggestion: 'Please enter a valid email address',
-    recoverable: true
-  }
-)
+const error = createCoreError('ValidationError', 'INVALID_EMAIL', 'Email address is not valid', {
+  component: 'user-service',
+  operation: 'validateEmail',
+  severity: 'medium',
+  details: 'Email must contain @ symbol',
+  suggestion: 'Please enter a valid email address',
+  recoverable: true,
+})
 ```
 
-***
+---
 
 ### createErrorFactory()
 
@@ -1154,7 +1153,7 @@ const validationError = createUserError(
 )
 ```
 
-***
+---
 
 ### fromPromiseAsync()
 
@@ -1195,9 +1194,8 @@ ResultAsync that will resolve to Ok or Err
 
 ```typescript
 // Basic usage
-const result = await fromPromise(
-  fetch('/api/user'),
-  error => createCoreError('NetworkError', 'FETCH_FAILED', error.message)
+const result = await fromPromise(fetch('/api/user'), (error) =>
+  createCoreError('NetworkError', 'FETCH_FAILED', error.message)
 )
 
 // With default error handler
@@ -1205,11 +1203,11 @@ const data = await fromPromise(readFile('config.json'))
 
 // Chain with other operations
 const user = await fromPromise(fetchUser(id))
-  .andThen(user => fromPromise(enrichUser(user)))
-  .map(user => user.name)
+  .andThen((user) => fromPromise(enrichUser(user)))
+  .map((user) => user.name)
 ```
 
-***
+---
 
 ### fromThrowableAsync()
 
@@ -1228,7 +1226,7 @@ Return type of the function
 
 ##### Args
 
-`Args` *extends* readonly `unknown`[]
+`Args` _extends_ readonly `unknown`[]
 
 Arguments tuple type
 
@@ -1269,16 +1267,15 @@ Safe function that returns Result instead of throwing
 const parseJSON = (text: string) => JSON.parse(text)
 
 // Make it safe
-const safeParseJSON = fromThrowable(
-  parseJSON,
-  error => createCoreError('ParseError', 'INVALID_JSON', error.message)
+const safeParseJSON = fromThrowable(parseJSON, (error) =>
+  createCoreError('ParseError', 'INVALID_JSON', error.message)
 )
 
 const result = safeParseJSON('{"valid": true}') // Ok({valid: true})
 const error = safeParseJSON('invalid json') // Err(CoreError)
 ```
 
-***
+---
 
 ### fromThrowableAsyncFunc()
 
@@ -1297,7 +1294,7 @@ Return type of the async function
 
 ##### Args
 
-`Args` *extends* readonly `unknown`[]
+`Args` _extends_ readonly `unknown`[]
 
 Arguments tuple type
 
@@ -1341,9 +1338,8 @@ const fetchData = async (url: string) => {
 }
 
 // Make it safe
-const safeFetchData = fromThrowableAsync(
-  fetchData,
-  error => createCoreError('FetchError', 'REQUEST_FAILED', error.message)
+const safeFetchData = fromThrowableAsync(fetchData, (error) =>
+  createCoreError('FetchError', 'REQUEST_FAILED', error.message)
 )
 
 // Use it
@@ -1355,7 +1351,7 @@ if (result.isOk()) {
 }
 ```
 
-***
+---
 
 ### getErrorCategory()
 
@@ -1386,7 +1382,7 @@ const error = { category: 'validation', type: 'InvalidInput' }
 const category = getErrorCategory(error) // 'validation'
 ```
 
-***
+---
 
 ### getErrorMessage()
 
@@ -1430,7 +1426,7 @@ getErrorMessage({ message: 'Custom' }) // 'Custom'
 getErrorMessage(null) // 'Unknown error'
 ```
 
-***
+---
 
 ### getErrorType()
 
@@ -1468,7 +1464,7 @@ switch (getErrorType(error)) {
 }
 ```
 
-***
+---
 
 ### hasErrorShape()
 
@@ -1505,7 +1501,7 @@ try {
 }
 ```
 
-***
+---
 
 ### isDefined()
 
@@ -1546,7 +1542,7 @@ if (isDefined(value)) {
 }
 ```
 
-***
+---
 
 ### isNonEmptyArray()
 
@@ -1587,7 +1583,7 @@ if (isNonEmptyArray<string>(items)) {
 }
 ```
 
-***
+---
 
 ### isNonEmptyString()
 
@@ -1622,7 +1618,7 @@ if (isNonEmptyString(input)) {
 }
 ```
 
-***
+---
 
 ### isObject()
 
@@ -1655,7 +1651,7 @@ if (isObject(data)) {
 }
 ```
 
-***
+---
 
 ### isRecoverableError()
 
@@ -1688,7 +1684,7 @@ if (isRecoverableError(error)) {
 }
 ```
 
-***
+---
 
 ### mapLibraryError()
 
@@ -1739,7 +1735,7 @@ try {
 }
 ```
 
-***
+---
 
 ### mapNodeError()
 
@@ -1790,7 +1786,7 @@ try {
 }
 ```
 
-***
+---
 
 ### mapValidationError()
 
@@ -1840,7 +1836,7 @@ if (result.isErr()) {
 }
 ```
 
-***
+---
 
 ### tap()
 
@@ -1886,14 +1882,14 @@ Function that executes side effect and returns original value
 ```typescript
 const result = pipe(
   userData,
-  tap(data => console.log('Processing user:', data.id)),
+  tap((data) => console.log('Processing user:', data.id)),
   transformUser,
-  tap(user => analytics.track('user.transformed', { id: user.id })),
+  tap((user) => analytics.track('user.transformed', { id: user.id })),
   saveUser
 )
 ```
 
-***
+---
 
 ### withContext()
 
@@ -1906,7 +1902,7 @@ Useful for adding context as errors propagate up the call stack.
 
 ##### E
 
-`E` *extends* [`CoreError`](#coreerror)
+`E` _extends_ [`CoreError`](#coreerror)
 
 Error type extending CoreError
 
@@ -1939,6 +1935,6 @@ const originalError = createCoreError('DatabaseError', 'CONNECTION_FAILED', 'Can
 const contextualError = withContext(originalError, {
   component: 'user-repository',
   operation: 'findUserById',
-  metadata: { userId: '123', attempt: 1 }
+  metadata: { userId: '123', attempt: 1 },
 })
 ```

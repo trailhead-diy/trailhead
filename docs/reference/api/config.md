@@ -5,7 +5,7 @@ sidebar: true
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/config
 
@@ -156,7 +156,7 @@ The type of items in the array
 
 [`ArrayFieldBuilder`](#arrayfieldbuilder)\<`T`\>
 
-***
+---
 
 ### BooleanFieldBuilder
 
@@ -224,7 +224,7 @@ Supports optional flags, default values, and examples for documentation.
 
 [`BooleanFieldBuilder`](#booleanfieldbuilder)
 
-***
+---
 
 ### CLILoaderOptions
 
@@ -255,7 +255,7 @@ including prefixes, separators, type parsing, and argument aliases.
 
 > `readonly` `optional` **separator**: `string`
 
-***
+---
 
 ### ConfigChange
 
@@ -282,7 +282,7 @@ old and new values, and the source that triggered the change.
 
 > `readonly` **source**: [`ConfigSource`](#configsource)
 
-***
+---
 
 ### ConfigDefinition\<T\>
 
@@ -333,7 +333,7 @@ The type of configuration data this definition describes
 
 > `readonly` `optional` **version**: `string`
 
-***
+---
 
 ### ConfigLoader
 
@@ -390,7 +390,7 @@ specific source types with optional change watching capabilities.
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#configresult)\<[`ConfigWatcher`](#configwatcher)\>\>
 
-***
+---
 
 ### ConfigManager\<T\>
 
@@ -421,7 +421,7 @@ The type of configuration data being managed
 
 ###### K
 
-`K` *extends* `string` \| `number` \| `symbol`
+`K` _extends_ `string` \| `number` \| `symbol`
 
 ###### Parameters
 
@@ -487,7 +487,7 @@ keyof `T`
 
 ###### K
 
-`K` *extends* `string` \| `number` \| `symbol`
+`K` _extends_ `string` \| `number` \| `symbol`
 
 ###### Parameters
 
@@ -525,7 +525,7 @@ keyof `T`
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#configresult)\<[`ConfigWatcher`](#configwatcher)[]\>\>
 
-***
+---
 
 ### ConfigMetadata
 
@@ -564,7 +564,7 @@ configuration was loaded and processed.
 
 > `readonly` `optional` **version**: `string`
 
-***
+---
 
 ### ConfigOperations
 
@@ -687,7 +687,7 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#configresult)\<[`ConfigWatcher`](#configwatcher)[]\>\>
 
-***
+---
 
 ### ConfigProperty
 
@@ -774,7 +774,7 @@ transformation logic for configuration properties.
 
 `boolean`
 
-***
+---
 
 ### ConfigSchema\<T\>
 
@@ -811,7 +811,7 @@ and strict mode configuration for comprehensive configuration management.
 
 > `readonly` **zodSchema**: `ZodType`\<`T`\>
 
-***
+---
 
 ### ConfigSource
 
@@ -850,7 +850,7 @@ priority for merging, and optional features like watching for changes.
 
 > `readonly` `optional` **watch**: `boolean`
 
-***
+---
 
 ### ConfigState\<T\>
 
@@ -889,7 +889,7 @@ The type of the resolved configuration data
 
 > `readonly` **sources**: readonly [`ResolvedSource`](#resolvedsource)[]
 
-***
+---
 
 ### ConfigTransformer\<T\>
 
@@ -930,7 +930,7 @@ The type of configuration data after transformation
 
 [`ConfigResult`](#configresult)\<`T`\>
 
-***
+---
 
 ### ConfigValidator\<T\>
 
@@ -976,7 +976,7 @@ The type of configuration data being validated
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#configresult)\<`T`\>\>
 
-***
+---
 
 ### ConfigWatcher
 
@@ -999,7 +999,7 @@ the ability to stop watching when no longer needed.
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#configresult)\<`void`\>\>
 
-***
+---
 
 ### EnvLoaderOptions
 
@@ -1030,7 +1030,7 @@ including prefixes, separators, and type parsing behavior.
 
 > `readonly` `optional` **separator**: `string`
 
-***
+---
 
 ### FieldBuilder\<T\>
 
@@ -1107,7 +1107,7 @@ The type of value this field validates
 
 [`FieldBuilder`](#fieldbuilder)\<`T`\>
 
-***
+---
 
 ### FileLoaderOptions
 
@@ -1130,7 +1130,7 @@ encoding, size limits, and allowed file extensions.
 
 > `readonly` `optional` **maxSize**: `number`
 
-***
+---
 
 ### LoaderOperations
 
@@ -1197,7 +1197,7 @@ fetch configuration data from various source types.
 
 `void`
 
-***
+---
 
 ### NumberFieldBuilder
 
@@ -1263,7 +1263,7 @@ const portField = number()
 
 ###### T
 
-`T` *extends* readonly \[`number`, `number`\]
+`T` _extends_ readonly \[`number`, `number`\]
 
 ###### Parameters
 
@@ -1453,7 +1453,7 @@ const portField = number()
 
 [`NumberFieldBuilder`](#numberfieldbuilder)
 
-***
+---
 
 ### ObjectFieldBuilder\<T\>
 
@@ -1554,7 +1554,7 @@ The type of the object structure
 
 [`ObjectFieldBuilder`](#objectfieldbuilder)\<`T`\>
 
-***
+---
 
 ### ResolvedSource
 
@@ -1581,7 +1581,7 @@ during the loading process from a specific configuration source.
 
 > `readonly` **source**: [`ConfigSource`](#configsource)
 
-***
+---
 
 ### SchemaBuilder\<T\>
 
@@ -1664,7 +1664,7 @@ The type of configuration data this schema validates
 
 [`SchemaBuilder`](#schemabuilder)\<`T`\>
 
-***
+---
 
 ### StringFieldBuilder
 
@@ -1743,7 +1743,7 @@ const hostField = string()
 
 ###### T
 
-`T` *extends* readonly \[`string`, `string`\]
+`T` _extends_ readonly \[`string`, `string`\]
 
 ###### Parameters
 
@@ -1901,7 +1901,7 @@ const hostField = string()
 
 [`StringFieldBuilder`](#stringfieldbuilder)
 
-***
+---
 
 ### TransformerOperations
 
@@ -1970,7 +1970,7 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 
 `void`
 
-***
+---
 
 ### ValidationContext
 
@@ -2020,7 +2020,7 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 
 > `readonly` **value**: `unknown`
 
-***
+---
 
 ### ValidationError
 
@@ -2198,7 +2198,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 `BaseValidationError.value`
 
-***
+---
 
 ### ValidatorOperations
 
@@ -2350,11 +2350,11 @@ readonly [`ConfigChange`](#configchange)[]
 
 `void`
 
-***
+---
 
 ### ConfigPath\<T\>
 
-> **ConfigPath**\<`T`\> = `T` *extends* `object` ? \{ readonly \[K in keyof T\]: K extends string ? T\[K\] extends object ? \`$\{K\}\` \| \`$\{K\}.$\{ConfigPath\<T\[K\]\>\}\` : \`$\{K\}\` : never \}\[keyof `T`\] : `never`
+> **ConfigPath**\<`T`\> = `T` _extends_ `object` ? \{ readonly \[K in keyof T\]: K extends string ? T\[K\] extends object ? \`$\{K\}\` \| \`$\{K\}.$\{ConfigPath\<T\[K\]\>\}\` : \`$\{K\}\` : never \}\[keyof `T`\] : `never`
 
 Configuration path type utility for generating dot-notation paths.
 
@@ -2376,7 +2376,7 @@ type ServerConfig = { server: { host: string; port: number } }
 type Paths = ConfigPath<ServerConfig> // 'server' | 'server.host' | 'server.port'
 ```
 
-***
+---
 
 ### ConfigPropertyType
 
@@ -2386,7 +2386,7 @@ Configuration property types supported by the validation system.
 
 Defines the basic types that configuration properties can be validated as.
 
-***
+---
 
 ### ConfigResult\<T\>
 
@@ -2398,7 +2398,7 @@ Defines the basic types that configuration properties can be validated as.
 
 `T`
 
-***
+---
 
 ### ConfigSourceType
 
@@ -2409,7 +2409,7 @@ Configuration source types supported by the system.
 Defines the available source types for loading configuration data
 from various locations and formats.
 
-***
+---
 
 ### ConfigWatchCallback()
 
@@ -2434,7 +2434,7 @@ data or any error that occurred during the reload process.
 
 `void`
 
-***
+---
 
 ### DeepPartial\<T\>
 
@@ -2495,7 +2495,7 @@ const tagsField = zodArray(z.string())
   .build()
 ```
 
-***
+---
 
 ### boolean()
 
@@ -2522,7 +2522,7 @@ const debugField = zodBoolean()
   .build()
 ```
 
-***
+---
 
 ### createConfigManager()
 
@@ -2563,19 +2563,22 @@ Configuration manager instance with full lifecycle management
 #### Example
 
 ```typescript
-const manager = createConfigManager({
-  name: 'api-config',
-  sources: [
-    { type: 'env', env: 'API_', priority: 1 },
-    { type: 'file', path: './api.json', priority: 2, optional: true }
-  ],
-  schema: apiConfigSchema,
-  validators: [connectivityValidator]
-}, {
-  loaderOps: createLoaderOperations(),
-  validatorOps: createValidatorOperations(),
-  transformerOps: createTransformerOperations()
-})
+const manager = createConfigManager(
+  {
+    name: 'api-config',
+    sources: [
+      { type: 'env', env: 'API_', priority: 1 },
+      { type: 'file', path: './api.json', priority: 2, optional: true },
+    ],
+    schema: apiConfigSchema,
+    validators: [connectivityValidator],
+  },
+  {
+    loaderOps: createLoaderOperations(),
+    validatorOps: createValidatorOperations(),
+    transformerOps: createTransformerOperations(),
+  }
+)
 
 // Load configuration
 const state = await manager.load()
@@ -2592,11 +2595,11 @@ await manager.watch((newConfig, oldConfig, changes) => {
 
 #### See
 
- - [ConfigManager](#configmanager) - Manager interface definition
- - [ConfigDefinition](#configdefinition) - Definition structure and options
- - ManagerDependencies - Required dependencies
+- [ConfigManager](#configmanager) - Manager interface definition
+- [ConfigDefinition](#configdefinition) - Definition structure and options
+- ManagerDependencies - Required dependencies
 
-***
+---
 
 ### createConfigOperations()
 
@@ -2624,9 +2627,9 @@ const managerResult = ops.create({
   name: 'app-config',
   sources: [
     { type: 'env', env: 'APP_', priority: 1 },
-    { type: 'file', path: './config.json', priority: 2, optional: true }
+    { type: 'file', path: './config.json', priority: 2, optional: true },
   ],
-  schema: myConfigSchema
+  schema: myConfigSchema,
 })
 
 if (managerResult.isOk()) {
@@ -2637,10 +2640,10 @@ if (managerResult.isOk()) {
 
 #### See
 
- - [ConfigOperations](#configoperations) - Operations interface definition
- - [ConfigDefinition](#configdefinition) - Configuration definition structure
+- [ConfigOperations](#configoperations) - Operations interface definition
+- [ConfigDefinition](#configdefinition) - Configuration definition structure
 
-***
+---
 
 ### createLoaderOperations()
 
@@ -2669,7 +2672,7 @@ const s3Loader: ConfigLoader = {
     const data = await s3.getObject({ Bucket: 'config', Key: source.path })
     return ok(JSON.parse(data.Body.toString()))
   },
-  supports: (source) => source.type === 's3'
+  supports: (source) => source.type === 's3',
 }
 loaderOps.register(s3Loader)
 
@@ -2677,16 +2680,16 @@ loaderOps.register(s3Loader)
 const result = await loaderOps.load({
   type: 's3',
   path: 'production/config.json',
-  priority: 1
+  priority: 1,
 })
 ```
 
 #### See
 
- - [LoaderOperations](#loaderoperations) - Operations interface definition
- - [ConfigLoader](#configloader) - Loader interface for custom implementations
+- [LoaderOperations](#loaderoperations) - Operations interface definition
+- [ConfigLoader](#configloader) - Loader interface for custom implementations
 
-***
+---
 
 ### createSchema()
 
@@ -2728,7 +2731,7 @@ const schema = createZodSchemaBuilder(z.object({ port: z.number() }))
   .build()
 ```
 
-***
+---
 
 ### createTransformerOperations()
 
@@ -2759,13 +2762,10 @@ const envExpansionTransformer: ConfigTransformer<any> = {
   transform: (config) => {
     // Expand ${ENV_VAR} placeholders
     const expanded = JSON.parse(
-      JSON.stringify(config).replace(
-        /\$\{([^}]+)\}/g,
-        (_, varName) => process.env[varName] || ''
-      )
+      JSON.stringify(config).replace(/\$\{([^}]+)\}/g, (_, varName) => process.env[varName] || '')
     )
     return ok(expanded)
-  }
+  },
 }
 
 transformerOps.register(envExpansionTransformer)
@@ -2776,10 +2776,10 @@ const result = transformerOps.transform(rawConfig, [envExpansionTransformer])
 
 #### See
 
- - [TransformerOperations](#transformeroperations) - Operations interface definition
- - [ConfigTransformer](#configtransformer) - Transformer interface for custom implementations
+- [TransformerOperations](#transformeroperations) - Operations interface definition
+- [ConfigTransformer](#configtransformer) - Transformer interface for custom implementations
 
-***
+---
 
 ### createValidationError()
 
@@ -2806,11 +2806,11 @@ const error = createValidationError({
   field: 'port',
   value: -1,
   expectedType: 'positive number',
-  suggestion: 'Use a port between 1 and 65535'
+  suggestion: 'Use a port between 1 and 65535',
 })
 ```
 
-***
+---
 
 ### createValidatorOperations()
 
@@ -2841,14 +2841,16 @@ const dbConnectivityValidator: ConfigValidator<DatabaseConfig> = {
       await testDatabaseConnection(config.host, config.port)
       return ok(config)
     } catch (error) {
-      return err(createValidationError({
-        field: 'database',
-        value: config,
-        expectedType: 'valid database configuration',
-        suggestion: 'Check database host and port are accessible'
-      }))
+      return err(
+        createValidationError({
+          field: 'database',
+          value: config,
+          expectedType: 'valid database configuration',
+          suggestion: 'Check database host and port are accessible',
+        })
+      )
     }
-  }
+  },
 }
 
 validatorOps.register(dbConnectivityValidator)
@@ -2859,10 +2861,10 @@ const result = await validatorOps.validate(config, [dbConnectivityValidator])
 
 #### See
 
- - [ValidatorOperations](#validatoroperations) - Operations interface definition
- - [ConfigValidator](#configvalidator) - Validator interface for custom implementations
+- [ValidatorOperations](#validatoroperations) - Operations interface definition
+- [ConfigValidator](#configvalidator) - Validator interface for custom implementations
 
-***
+---
 
 ### createZodSchema()
 
@@ -2877,7 +2879,7 @@ from object definitions with proper type inference.
 
 ##### T
 
-`T` *extends* [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
+`T` _extends_ [`Readonly`](https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype)\<\{\[`k`: `string`\]: `$ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>; \}\>
 
 #### Parameters
 
@@ -2898,11 +2900,13 @@ Schema builder for fluent configuration
 ```typescript
 const schema = createZodSchema({
   port: z.number().min(1).max(65535),
-  host: z.string().default('localhost')
-}).name('server-config').build()
+  host: z.string().default('localhost'),
+})
+  .name('server-config')
+  .build()
 ```
 
-***
+---
 
 ### defineSchema()
 
@@ -2915,9 +2919,9 @@ schemas with proper type inference and validation rules.
 
 #### Type Parameters
 
-##### _T
+##### \_T
 
-`_T` *extends* `Record`\<`string`, `unknown`\>
+`_T` _extends_ `Record`\<`string`, `unknown`\>
 
 #### Returns
 
@@ -2933,7 +2937,7 @@ Schema definition object with object builder
 
 ###### K
 
-`K` *extends* `Record`\<`string`, `any`\>
+`K` _extends_ `Record`\<`string`, `any`\>
 
 ###### Parameters
 
@@ -2951,11 +2955,11 @@ Schema definition object with object builder
 const schema = defineZodConfigSchema().object({
   port: number().min(1).max(65535).default(3000),
   host: string().default('localhost'),
-  debug: boolean().default(false)
+  debug: boolean().default(false),
 })
 ```
 
-***
+---
 
 ### enhanceZodError()
 
@@ -2985,7 +2989,7 @@ Original Zod validation error
 
 Enhanced validation error with better messaging
 
-***
+---
 
 ### formatValidationError()
 
@@ -3020,7 +3024,7 @@ const formatted = formatValidationError(error, { colors: true })
 console.error(formatted)
 ```
 
-***
+---
 
 ### formatValidationErrors()
 
@@ -3048,7 +3052,7 @@ Formatting options
 
 Formatted error messages
 
-***
+---
 
 ### number()
 
@@ -3077,7 +3081,7 @@ const timeoutField = zodNumber()
   .build()
 ```
 
-***
+---
 
 ### object()
 
@@ -3092,7 +3096,7 @@ nested validation, strict mode options, and property handling controls.
 
 ##### T
 
-`T` *extends* `Record`\<`string`, `any`\>
+`T` _extends_ `Record`\<`string`, `any`\>
 
 #### Parameters
 
@@ -3114,14 +3118,14 @@ Object field builder with validation methods
 const serverConfigField = zodObject({
   host: string().default('localhost'),
   port: number().min(1).max(65535).default(3000),
-  ssl: boolean().default(false)
+  ssl: boolean().default(false),
 })
   .description('Server configuration object')
   .strict()
   .build()
 ```
 
-***
+---
 
 ### string()
 
@@ -3148,7 +3152,7 @@ const apiKeyField = zodString()
   .build()
 ```
 
-***
+---
 
 ### validate()
 
@@ -3196,7 +3200,7 @@ if (result.isOk()) {
 }
 ```
 
-***
+---
 
 ### validateAsync()
 

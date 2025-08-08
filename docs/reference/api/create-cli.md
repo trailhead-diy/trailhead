@@ -13,7 +13,7 @@ since: 0.1.0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
-***
+---
 
 [Trailhead API Documentation](README.md) / @esteban-url/create-cli
 
@@ -49,7 +49,7 @@ Optional template loader configuration for custom template paths
 
 Whether to enable verbose logging output
 
-***
+---
 
 ### ProjectConfig
 
@@ -153,7 +153,7 @@ Whether to use TypeScript (always true)
 
 Whether to enable verbose logging
 
-***
+---
 
 ### TemplateContext
 
@@ -182,21 +182,21 @@ template files to generate the final project structure.
 
 Author name
 
-##### CHANGESET\_REMINDER
+##### CHANGESET_REMINDER
 
-> **CHANGESET\_REMINDER**: `boolean`
+> **CHANGESET_REMINDER**: `boolean`
 
 Whether changeset reminder is enabled
 
-##### CLI\_VERSION
+##### CLI_VERSION
 
-> **CLI\_VERSION**: `string`
+> **CLI_VERSION**: `string`
 
 CLI version for smart test runner
 
-##### CONVENTIONAL\_COMMITS
+##### CONVENTIONAL_COMMITS
 
-> **CONVENTIONAL\_COMMITS**: `boolean`
+> **CONVENTIONAL_COMMITS**: `boolean`
 
 Whether conventional commits are enforced
 
@@ -212,9 +212,9 @@ Current year for copyright notices
 
 Project description
 
-##### DOCS\_VALIDATION
+##### DOCS_VALIDATION
 
-> **DOCS\_VALIDATION**: `boolean`
+> **DOCS_VALIDATION**: `boolean`
 
 Whether docs validation is enabled
 
@@ -258,21 +258,21 @@ Feature flags for template conditional logic
 
 > `optional` **validation**: `boolean`
 
-##### FILE\_PATTERNS
+##### FILE_PATTERNS
 
-> **FILE\_PATTERNS**: `string`
+> **FILE_PATTERNS**: `string`
 
 File patterns for template processing
 
-##### FILESIZE\_PRIORITY
+##### FILESIZE_PRIORITY
 
-> **FILESIZE\_PRIORITY**: `number`
+> **FILESIZE_PRIORITY**: `number`
 
 File size check priority
 
-##### HAS\_SUBPATH\_EXPORTS
+##### HAS_SUBPATH_EXPORTS
 
-> **HAS\_SUBPATH\_EXPORTS**: `boolean`
+> **HAS_SUBPATH_EXPORTS**: `boolean`
 
 Whether project has subpath exports
 
@@ -282,15 +282,15 @@ Whether project has subpath exports
 
 Whether documentation generation is enabled
 
-##### HIGH\_RISK\_PATTERNS
+##### HIGH_RISK_PATTERNS
 
-> **HIGH\_RISK\_PATTERNS**: `string`[]
+> **HIGH_RISK_PATTERNS**: `string`[]
 
 High-risk file patterns that trigger full tests
 
-##### IS\_MONOREPO
+##### IS_MONOREPO
 
-> **IS\_MONOREPO**: `boolean`
+> **IS_MONOREPO**: `boolean`
 
 Whether project is a monorepo
 
@@ -300,27 +300,27 @@ Whether project is a monorepo
 
 License identifier (SPDX format)
 
-##### LINT\_COMMAND
+##### LINT_COMMAND
 
-> **LINT\_COMMAND**: `string`
+> **LINT_COMMAND**: `string`
 
 Lint command
 
-##### LOCKFILE\_VALIDATION
+##### LOCKFILE_VALIDATION
 
-> **LOCKFILE\_VALIDATION**: `boolean`
+> **LOCKFILE_VALIDATION**: `boolean`
 
 Whether lockfile validation is enabled
 
-##### PACKAGE\_MANAGER
+##### PACKAGE_MANAGER
 
-> **PACKAGE\_MANAGER**: `string`
+> **PACKAGE_MANAGER**: `string`
 
 Package manager command
 
-##### PACKAGE\_MAPPINGS?
+##### PACKAGE_MAPPINGS?
 
-> `optional` **PACKAGE\_MAPPINGS**: `Record`\<`string`, `string`\>
+> `optional` **PACKAGE_MAPPINGS**: `Record`\<`string`, `string`\>
 
 Package name mappings (for monorepos)
 
@@ -336,21 +336,21 @@ Selected package manager
 
 Sanitized package name (kebab-case, npm-compatible)
 
-##### PACKAGES\_DIR
+##### PACKAGES_DIR
 
-> **PACKAGES\_DIR**: `string`
+> **PACKAGES_DIR**: `string`
 
 Directory containing packages (for monorepos)
 
-##### PACKAGES\_PATTERN
+##### PACKAGES_PATTERN
 
-> **PACKAGES\_PATTERN**: `string`
+> **PACKAGES_PATTERN**: `string`
 
 Regex pattern to match package files
 
-##### PROJECT\_NAME
+##### PROJECT_NAME
 
-> **PROJECT\_NAME**: `string`
+> **PROJECT_NAME**: `string`
 
 Project name for template context
 
@@ -360,39 +360,39 @@ Project name for template context
 
 Project name as provided by user
 
-##### SECRETS\_PRIORITY
+##### SECRETS_PRIORITY
 
-> **SECRETS\_PRIORITY**: `number`
+> **SECRETS_PRIORITY**: `number`
 
 Secrets scanning priority
 
-##### SKIP\_PATTERNS
+##### SKIP_PATTERNS
 
-> **SKIP\_PATTERNS**: `string`[]
+> **SKIP_PATTERNS**: `string`[]
 
 File patterns to skip for test execution
 
-##### SMART\_TEST\_COMMAND
+##### SMART_TEST_COMMAND
 
-> **SMART\_TEST\_COMMAND**: `string`
+> **SMART_TEST_COMMAND**: `string`
 
 Smart test runner script path
 
-##### SUBPATH\_EXPORTS
+##### SUBPATH_EXPORTS
 
-> **SUBPATH\_EXPORTS**: `string`[]
+> **SUBPATH_EXPORTS**: `string`[]
 
 List of subpath exports
 
-##### TEST\_COMMAND
+##### TEST_COMMAND
 
-> **TEST\_COMMAND**: `string`
+> **TEST_COMMAND**: `string`
 
 Test command to execute
 
-##### TESTS\_PRIORITY
+##### TESTS_PRIORITY
 
-> **TESTS\_PRIORITY**: `number`
+> **TESTS_PRIORITY**: `number`
 
 Tests execution priority
 
@@ -402,9 +402,9 @@ Tests execution priority
 
 Test execution timeout in seconds
 
-##### TYPECHECK\_COMMAND
+##### TYPECHECK_COMMAND
 
-> **TYPECHECK\_COMMAND**: `string`
+> **TYPECHECK_COMMAND**: `string`
 
 TypeScript type checking command
 
@@ -414,7 +414,7 @@ TypeScript type checking command
 
 Initial project version
 
-***
+---
 
 ### TemplateFile
 
@@ -450,7 +450,7 @@ Whether file requires Handlebars template processing
 
 Source path relative to templates directory
 
-***
+---
 
 ### TemplateInfo
 
@@ -488,7 +488,7 @@ Template identifier/name
 
 Template type
 
-***
+---
 
 ### TemplateLoaderConfig
 
@@ -526,6 +526,7 @@ Base directory containing template files (defaults to built-in templates)
 Supported package managers for dependency installation
 
 Focus on the two most widely used and stable package managers:
+
 - npm: Universal compatibility, industry standard
 - pnpm: Modern, efficient, monorepo-ready
 
@@ -569,7 +570,7 @@ const config: ProjectConfig = {
   template: 'basic',
   packageManager: 'pnpm',
   includeDocs: true,
-  dryRun: false
+  dryRun: false,
 }
 
 const result = await generateProject(config, context)
@@ -582,10 +583,10 @@ if (result.isOk()) {
 
 #### See
 
- - [ProjectConfig](#projectconfig) for configuration options
- - [GeneratorContext](#generatorcontext) for context requirements
+- [ProjectConfig](#projectconfig) for configuration options
+- [GeneratorContext](#generatorcontext) for context requirements
 
-***
+---
 
 ### getAvailableTemplates()
 
@@ -614,7 +615,7 @@ templates.forEach((template) => {
 })
 ```
 
-***
+---
 
 ### getTemplateFiles()
 
@@ -655,11 +656,11 @@ const files = await getTemplateFiles('advanced')
 // Using custom template directories
 const customFiles = await getTemplateFiles('basic', {
   templatesDir: '/custom/templates',
-  additionalDirs: ['/extra/templates']
+  additionalDirs: ['/extra/templates'],
 })
 
 console.log(`Found ${files.length} template files`)
-files.forEach(file => {
+files.forEach((file) => {
   console.log(`${file.source} -> ${file.destination}`)
   if (file.isTemplate) console.log('  (will be processed with Handlebars)')
   if (file.executable) console.log('  (will be made executable)')
@@ -667,6 +668,7 @@ files.forEach(file => {
 ```
 
 File discovery process:
+
 1. Determine template directories (built-in or custom)
 2. Load variant-specific files from variant directory
 3. Load shared files from shared directory
@@ -676,11 +678,11 @@ File discovery process:
 
 #### See
 
- - loadTemplateFilesFromDirectory for directory scanning logic
- - [TemplateFile](#templatefile) for file metadata structure
- - [TemplateLoaderConfig](#templateloaderconfig) for configuration options
+- loadTemplateFilesFromDirectory for directory scanning logic
+- [TemplateFile](#templatefile) for file metadata structure
+- [TemplateLoaderConfig](#templateloaderconfig) for configuration options
 
-***
+---
 
 ### validateConfig()
 
