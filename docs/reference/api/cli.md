@@ -13,7 +13,7 @@ since: 0.1.0
 
 [**Trailhead API Documentation v1.0.0**](README.md)
 
----
+***
 
 [Trailhead API Documentation](README.md) / @esteban-url/cli
 
@@ -45,7 +45,7 @@ Command line arguments (defaults to process.argv)
 
 [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`void`\>
 
----
+***
 
 ### CLIConfig
 
@@ -77,7 +77,7 @@ CLI application name (used in help text and version output)
 
 Version string for the CLI application
 
----
+***
 
 ### Command\<T\>
 
@@ -140,7 +140,7 @@ Command name used for CLI invocation
 
 Array of command options/flags
 
----
+***
 
 ### CommandContext
 
@@ -181,7 +181,7 @@ Absolute path to the project root directory
 
 Whether verbose logging is enabled
 
----
+***
 
 ### CommandOption
 
@@ -234,7 +234,7 @@ Whether the option is required
 
 Expected value type for the option
 
----
+***
 
 ### CoreError
 
@@ -253,7 +253,7 @@ const error: CoreError = {
   timestamp: new Date(),
   severity: 'medium',
   recoverable: true,
-  suggestion: 'Please provide a longer username',
+  suggestion: 'Please provide a longer username'
 }
 ```
 
@@ -368,63 +368,61 @@ CLI instance with run() method
 #### Examples
 
 Basic CLI with single command:
-
 ```typescript
 const testCommand = createCommand({
   name: 'test',
   description: 'Run tests',
   action: async (options, context) => {
-    context.logger.info('Tests completed')
-    return { success: true, value: undefined }
-  },
-})
+    context.logger.info('Tests completed');
+    return { success: true, value: undefined };
+  }
+});
 
 const cli = createCLI({
   name: 'my-cli',
   version: '1.0.0',
   description: 'My CLI application',
-  commands: [testCommand],
-})
+  commands: [testCommand]
+});
 
 // Run with process arguments
-await cli.run()
+await cli.run();
 
 // Or run with custom arguments
-await cli.run(['node', 'cli.js', 'test', '--verbose'])
+await cli.run(['node', 'cli.js', 'test', '--verbose']);
 ```
 
 CLI with multiple commands:
-
 ```typescript
 const buildCommand = createCommand({
   name: 'build',
   description: 'Build the project',
   action: async (options, context) => {
     // Build implementation
-    return { success: true, value: undefined }
-  },
-})
+    return { success: true, value: undefined };
+  }
+});
 
 const testCommand = createCommand({
   name: 'test',
   description: 'Run tests',
   action: async (options, context) => {
     // Test implementation
-    return { success: true, value: undefined }
-  },
-})
+    return { success: true, value: undefined };
+  }
+});
 
 const cli = createCLI({
   name: 'project-tools',
   version: '2.1.0',
   description: 'Project development tools',
-  commands: [buildCommand, testCommand],
-})
+  commands: [buildCommand, testCommand]
+});
 
-await cli.run()
+await cli.run();
 ```
 
----
+***
 
 ### createCommand()
 
@@ -439,7 +437,7 @@ The command configuration is validated at creation time to ensure proper structu
 
 ##### T
 
-`T` _extends_ `CommandOptions`
+`T` *extends* `CommandOptions`
 
 Command options type extending CommandOptions
 
@@ -464,24 +462,22 @@ When command configuration is invalid
 #### Examples
 
 Basic command without options:
-
 ```typescript
 const testCommand = createCommand({
   name: 'test',
   description: 'Run tests',
   action: async (options, context) => {
-    context.logger.info('Running tests...')
-    return { success: true, value: undefined }
-  },
-})
+    context.logger.info('Running tests...');
+    return { success: true, value: undefined };
+  }
+});
 ```
 
 Command with options and arguments:
-
 ```typescript
 interface BuildOptions extends CommandOptions {
-  output?: string
-  watch?: boolean
+  output?: string;
+  watch?: boolean;
 }
 
 const buildCommand = createCommand<BuildOptions>({
@@ -492,18 +488,21 @@ const buildCommand = createCommand<BuildOptions>({
     {
       flags: '-o, --output <dir>',
       description: 'Output directory',
-      type: 'string',
+      type: 'string'
     },
     {
       flags: '--watch',
       description: 'Watch for changes',
-      type: 'boolean',
-    },
+      type: 'boolean'
+    }
   ],
-  examples: ['build src', 'build --output dist --watch'],
+  examples: [
+    'build src',
+    'build --output dist --watch'
+  ],
   action: async (options, context) => {
     // Implementation
-    return { success: true, value: undefined }
-  },
-})
+    return { success: true, value: undefined };
+  }
+});
 ```

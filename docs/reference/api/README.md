@@ -7,7 +7,7 @@ description: Browse all available APIs and modules
 
 **Trailhead API Documentation v1.0.0**
 
----
+***
 
 # Trailhead API Documentation v1.0.0
 
