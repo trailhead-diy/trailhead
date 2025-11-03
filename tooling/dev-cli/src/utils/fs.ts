@@ -1,7 +1,7 @@
 import { execSync } from 'child_process'
 import { existsSync, readdirSync, statSync, rmSync } from 'fs'
 import { join } from 'path'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 
 export interface PackageInfo {
   readonly name: string

@@ -197,7 +197,7 @@ The library provides specific error types for different scenarios:
 ### With CLI Applications
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { data } from '@repo/data'
 
 const convertCommand = createCommand({

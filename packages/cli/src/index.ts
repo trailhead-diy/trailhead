@@ -1,5 +1,5 @@
 /**
- * @module @esteban-url/cli
+ * @module @trailhead/cli
  * @description Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.
  *
  * This package provides a modern foundation for CLI applications using functional programming patterns,
@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { createCLI, createCommand } from '@esteban-url/cli'
+ * import { createCLI, createCommand } from '@trailhead/cli'
  *
  * const testCommand = createCommand({
  *   name: 'test',
@@ -33,8 +33,8 @@
  */
 
 // Core Result types from foundation package
-export { ok, err } from '@esteban-url/core'
-export type { Result, CoreError } from '@esteban-url/core'
+export { ok, err } from '@trailhead/core'
+export type { Result, CoreError } from '@trailhead/core'
 
 // Primary CLI creation API - the core of this package
 export { createCLI } from './cli.js'

@@ -49,27 +49,27 @@ const FeatureList: FeatureItem[] = [
 
 const PackageList = [
   {
-    name: '@esteban-url/core',
+    name: '@trailhead/core',
     description: 'Core Result types and utilities',
     link: '/packages/core',
   },
   {
-    name: '@esteban-url/config',
+    name: '@trailhead/config',
     description: 'Type-safe configuration management',
     link: '/packages/config',
   },
   {
-    name: '@esteban-url/fs',
+    name: '@trailhead/fs',
     description: 'Functional file system operations',
     link: '/packages/fs',
   },
   {
-    name: '@esteban-url/data',
+    name: '@trailhead/data',
     description: 'Data processing and transformations',
     link: '/packages/data',
   },
   {
-    name: '@esteban-url/validation',
+    name: '@trailhead/validation',
     description: 'Schema validation and type guards',
     link: '/packages/validation',
   },

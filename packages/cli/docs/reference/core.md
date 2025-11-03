@@ -1,7 +1,7 @@
 ---
 type: reference
 title: 'Core Module API Reference'
-description: 'Result types, error handling, and validation utilities from @esteban-url/core'
+description: 'Result types, error handling, and validation utilities from @trailhead/core'
 related:
   - /packages/cli/docs/reference/flow-control.md
   - /docs/how-to/apply-functional-patterns
@@ -14,21 +14,21 @@ Fundamental types and utilities for error handling, validation, and logging.
 
 ## Overview
 
-| Property    | Value               |
-| ----------- | ------------------- |
-| **Package** | `@esteban-url/core` |
-| **Module**  | `@esteban-url/core` |
-| **Since**   | `v1.0.0`            |
+| Property    | Value             |
+| ----------- | ----------------- |
+| **Package** | `@trailhead/core` |
+| **Module**  | `@trailhead/core` |
+| **Since**   | `v1.0.0`          |
 
-**Note**: The core functionality is provided by the `@esteban-url/core` package, which is a dependency of `@esteban-url/cli`.
+**Note**: The core functionality is provided by the `@trailhead/core` package, which is a dependency of `@trailhead/cli`.
 
 ## Result Types
 
 ### Basic Usage
 
 ```typescript
-import { ok, err, isOk, isErr } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import { ok, err, isOk, isErr } from '@trailhead/core'
+import type { Result } from '@trailhead/core'
 ```
 
 ### Type Definition
@@ -126,14 +126,14 @@ const value = ok(42)._unsafeUnwrap() // 42
 const error = err(new Error('Oops'))._unsafeUnwrap() // Throws Error
 ```
 
-### Result Utilities from @esteban-url/core
+### Result Utilities from @trailhead/core
 
 #### `combine(results: Result<T, E>[]): Result<T[], E>`
 
 Combine multiple Results into a single Result:
 
 ```typescript
-import { combine } from '@esteban-url/core'
+import { combine } from '@trailhead/core'
 
 const results = [ok(1), ok(2), ok(3)]
 const combined = combine(results) // ok([1, 2, 3])
@@ -147,7 +147,7 @@ const combinedError = combine(withError) // err('failed')
 Combine Results, collecting all errors:
 
 ```typescript
-import { combineWithAllErrors } from '@esteban-url/core'
+import { combineWithAllErrors } from '@trailhead/core'
 
 const results = [ok(1), err('error1'), err('error2')]
 const combined = combineWithAllErrors(results) // err(['error1', 'error2'])
@@ -164,7 +164,7 @@ import {
   createValidationError,
   createDataError,
   createCliError,
-} from '@esteban-url/core'
+} from '@trailhead/core'
 
 // Core error with context
 const error = createCoreError('operation_failed', 'Operation failed', {
@@ -195,7 +195,7 @@ interface CLIError extends Error {
 #### Specialized Errors
 
 ```typescript
-import { fileSystemError, validationError, displayError } from '@esteban-url/trailhead-cli/core'
+import { fileSystemError, validationError, displayError } from '@trailhead/trailhead-cli/core'
 
 // File system error
 const fsError = fileSystemError({
@@ -220,8 +220,8 @@ displayError(error, console.error)
 ### Validation Pipeline
 
 ```typescript
-import { createValidationPipeline } from '@esteban-url/trailhead-cli/core'
-import type { ValidationRule } from '@esteban-url/trailhead-cli/core'
+import { createValidationPipeline } from '@trailhead/trailhead-cli/core'
+import type { ValidationRule } from '@trailhead/trailhead-cli/core'
 
 const pipeline = createValidationPipeline([
   {
@@ -252,7 +252,7 @@ import {
   pattern,
   email,
   url,
-} from '@esteban-url/trailhead-cli/core'
+} from '@trailhead/trailhead-cli/core'
 
 // String validation
 const nameValidator = string().pipe(minLength(2)).pipe(maxLength(50))
@@ -287,7 +287,7 @@ import {
   createDefaultLogger,
   createSilentLogger,
   createPrefixedLogger,
-} from '@esteban-url/trailhead-cli/core'
+} from '@trailhead/trailhead-cli/core'
 
 // Standard console logger with colors
 const logger = createDefaultLogger()

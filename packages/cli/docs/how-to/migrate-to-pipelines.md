@@ -81,7 +81,7 @@ async const processFiles = async (files: string[]): Promise<Result<ProcessedFile
 #### After: Using executeBatch
 
 ```typescript
-import { executeBatch } from '@esteban-url/cli/command'
+import { executeBatch } from '@trailhead/cli/command'
 
 async function processFiles(
   files: string[],
@@ -159,8 +159,8 @@ async const buildProject = async (options: BuildOptions): Promise<Result<void>> 
 #### After: Using executeWithPhases
 
 ```typescript
-import { executeWithPhases } from '@esteban-url/cli/command'
-import type { CommandPhase } from '@esteban-url/cli/command'
+import { executeWithPhases } from '@trailhead/cli/command'
+import type { CommandPhase } from '@trailhead/cli/command'
 
 async function buildProject(
   options: BuildOptions,
@@ -247,7 +247,7 @@ async const loadAppConfig = async (options: ConfigOptions): Promise<Result<AppCo
 #### After: Using executeWithConfiguration
 
 ```typescript
-import { executeWithConfiguration } from '@esteban-url/cli/command'
+import { executeWithConfiguration } from '@trailhead/cli/command'
 
 async function runWithConfig(
   options: ConfigOptions,
@@ -301,7 +301,7 @@ async const deployApplication = async (options: DeployOptions): Promise<Result<v
 #### After: Using executeWithDryRun
 
 ```typescript
-import { executeWithDryRun } from '@esteban-url/cli/command'
+import { executeWithDryRun } from '@trailhead/cli/command'
 
 async function deployApplication(
   options: DeployOptions,

@@ -1,17 +1,17 @@
-# @esteban-url/sort
+# @trailhead/sort
 
 Fast, type-safe sorting utilities for JavaScript/TypeScript.
 
 ## Installation
 
 ```bash
-npm install @esteban-url/sort
+npm install @trailhead/sort
 ```
 
 ## Usage
 
 ```typescript
-import { sortBy, orderBy, topN } from '@esteban-url/sort'
+import { sortBy, orderBy, topN } from '@trailhead/sort'
 
 // Sort by a single property
 const users = [
@@ -102,7 +102,7 @@ The `topN` and `bottomN` functions use an optimized partial sorting algorithm th
 Full TypeScript support with strict type safety.
 
 ```typescript
-import type { Order, CompareFn, PropFn } from '@esteban-url/sort'
+import type { Order, CompareFn, PropFn } from '@trailhead/sort'
 
 // Custom comparator
 const customCompare: CompareFn<User> = (a, b) => a.age - b.age

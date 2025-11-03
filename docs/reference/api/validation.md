@@ -7,9 +7,9 @@ sidebar: true
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/validation
+[Trailhead API Documentation](README.md) / @trailhead/validation
 
-# @esteban-url/validation
+# @trailhead/validation
 
 ## Interfaces
 

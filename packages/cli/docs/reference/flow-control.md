@@ -14,11 +14,11 @@ Execution patterns for building robust CLI commands with progress tracking, vali
 
 ## Overview
 
-| Property    | Value                      |
-| ----------- | -------------------------- |
-| **Package** | `@esteban-url/cli`         |
-| **Module**  | `@esteban-url/cli/command` |
-| **Since**   | `v0.3.0`                   |
+| Property    | Value                    |
+| ----------- | ------------------------ |
+| **Package** | `@trailhead/cli`         |
+| **Module**  | `@trailhead/cli/command` |
+| **Since**   | `v0.3.0`                 |
 
 ## Import
 
@@ -30,7 +30,7 @@ import {
   executeWithDryRun,
   executeWithValidation,
   executeFileSystemOperations,
-} from '@esteban-url/cli/command'
+} from '@trailhead/cli/command'
 ```
 
 ## Batch Processing

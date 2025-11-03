@@ -1,4 +1,4 @@
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 import type { ProjectConfig } from '../config/types.js'
 import { createArgsParserError, ERROR_CODES, ERROR_SUGGESTIONS } from '../core/errors.js'
 

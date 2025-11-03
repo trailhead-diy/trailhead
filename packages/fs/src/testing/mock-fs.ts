@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { createMockFileSystem, createTestFileSystem } from '@esteban-url/fs/testing'
+ * import { createMockFileSystem, createTestFileSystem } from '@trailhead/fs/testing'
  *
  * // Create with initial files
  * const fs = createMockFileSystem({
@@ -25,7 +25,7 @@
  * ```
  */
 
-import { ok, err, type Result } from '@esteban-url/core'
+import { ok, err, type Result } from '@trailhead/core'
 import type { FileStats, FileSystemError, MkdirOptions } from '../types.js'
 import { createFileSystemError } from '../errors.js'
 import { dirname, resolve, join } from 'path'

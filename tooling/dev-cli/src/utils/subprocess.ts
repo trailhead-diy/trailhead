@@ -2,8 +2,8 @@ import {
   executeSubprocess,
   type SubprocessConfig,
   type CommandContext,
-} from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+} from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 
 export interface ExecutionOptions {
   readonly cwd?: string

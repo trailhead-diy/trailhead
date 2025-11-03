@@ -13,11 +13,11 @@ description: Browse all available APIs and modules
 
 ## Packages
 
-- [@esteban-url/cli](@esteban-url.cli.md)
-- [@esteban-url/config](@esteban-url.config.md)
-- [@esteban-url/core](@esteban-url.core.md)
-- [@esteban-url/create-cli](@esteban-url.create-cli.md)
-- [@esteban-url/data](@esteban-url.data.md)
-- [@esteban-url/fs](@esteban-url.fs.md)
-- [@esteban-url/sort](@esteban-url.sort.md)
-- [@esteban-url/validation](@esteban-url.validation.md)
+- [@trailhead/cli](@esteban-url.cli.md)
+- [@trailhead/config](@esteban-url.config.md)
+- [@trailhead/core](@esteban-url.core.md)
+- [@trailhead/create-cli](@esteban-url.create-cli.md)
+- [@trailhead/data](@esteban-url.data.md)
+- [@trailhead/fs](@esteban-url.fs.md)
+- [@trailhead/sort](@esteban-url.sort.md)
+- [@trailhead/validation](@esteban-url.validation.md)

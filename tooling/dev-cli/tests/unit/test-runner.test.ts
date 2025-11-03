@@ -117,22 +117,22 @@ describe('test-runner unit tests', () => {
       // Default mappings
       switch (packageName) {
         case 'cli':
-          return '@esteban-url/cli'
+          return '@trailhead/cli'
         case 'create-cli':
-          return '@esteban-url/create-cli'
+          return '@trailhead/create-cli'
         default:
           return packageName
       }
     }
 
-    it('should map cli to @esteban-url/cli', () => {
+    it('should map cli to @trailhead/cli', () => {
       const result = mockGetPackageFilter('cli')
-      expect(result).toBe('@esteban-url/cli')
+      expect(result).toBe('@trailhead/cli')
     })
 
-    it('should map create-cli to @esteban-url/create-cli', () => {
+    it('should map create-cli to @trailhead/create-cli', () => {
       const result = mockGetPackageFilter('create-cli')
-      expect(result).toBe('@esteban-url/create-cli')
+      expect(result).toBe('@trailhead/create-cli')
     })
 
     it('should use config mappings when available', () => {

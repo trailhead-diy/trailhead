@@ -2,8 +2,8 @@ import {
   createValidationError as baseCreateValidationError,
   z,
   type ValidationError as BaseValidationError,
-} from '@esteban-url/validation'
-import { createCoreError, type CoreError } from '@esteban-url/core'
+} from '@trailhead/validation'
+import { createCoreError, type CoreError } from '@trailhead/core'
 
 // ========================================
 // Enhanced Configuration Validation Errors

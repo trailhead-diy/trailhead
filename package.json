@@ -5,7 +5,7 @@
   "description": "Trailhead is a toolkit for building UI libraries and CLIs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git"
+    "url": "git+https://github.com/trailhead-diy/trailhead.git"
   },
   "scripts": {
     "build": "turbo build",

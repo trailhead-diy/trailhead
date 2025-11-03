@@ -1,5 +1,5 @@
 /**
- * Type definitions for @esteban-url/sort
+ * Type definitions for @trailhead/sort
  */
 
 /**

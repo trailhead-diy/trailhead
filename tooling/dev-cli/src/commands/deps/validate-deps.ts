@@ -1,5 +1,5 @@
-import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { colorize, withIcon } from '../../utils/colors.js'
 import fastGlob from 'fast-glob'
 const { glob } = fastGlob
@@ -480,10 +480,10 @@ const displayDependencyGraph = async (
           typeof depVersion === 'string' &&
           (depVersion.startsWith('workspace:') ||
             depName.startsWith('@repo/') ||
-            depName.startsWith('@esteban-url/'))
+            depName.startsWith('@trailhead/'))
         ) {
           // Extract package name
-          const cleanName = depName.replace('@repo/', '').replace('@esteban-url/', '')
+          const cleanName = depName.replace('@repo/', '').replace('@trailhead/', '')
           if (packageDirs.some((p) => p.name === cleanName)) {
             deps.add(cleanName)
           }

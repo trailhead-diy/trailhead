@@ -3,7 +3,7 @@
  * Provides optimized formatting functions to avoid expensive operations
  */
 
-import type { Logger } from '@esteban-url/cli/utils'
+import type { Logger } from '@trailhead/cli/utils'
 
 /**
  * Format object properties for debug logging without expensive JSON.stringify

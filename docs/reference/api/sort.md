@@ -8,9 +8,9 @@ example: 0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/sort
+[Trailhead API Documentation](README.md) / @trailhead/sort
 
-# @esteban-url/sort
+# @trailhead/sort
 
 Fast, type-safe sorting utilities for JavaScript/TypeScript.
 

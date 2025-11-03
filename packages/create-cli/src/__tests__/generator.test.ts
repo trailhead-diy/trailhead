@@ -3,9 +3,9 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 import { rmSync, existsSync } from 'fs'
 import { generateProject } from '../lib/core/generator.js'
-import { createDefaultLogger } from '@esteban-url/cli/utils'
-import { expectSuccess, expectError } from '@esteban-url/cli/testing'
-import { setupResultMatchers } from '@esteban-url/core/testing'
+import { createDefaultLogger } from '@trailhead/cli/utils'
+import { expectSuccess, expectError } from '@trailhead/cli/testing'
+import { setupResultMatchers } from '@trailhead/core/testing'
 import type { ProjectConfig } from '../lib/config/types.js'
 
 // Setup Result matchers for better testing

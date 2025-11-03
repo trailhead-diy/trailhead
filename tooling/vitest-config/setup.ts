@@ -14,7 +14,7 @@ import { beforeEach, afterEach, vi } from 'vitest'
  */
 export function setupResultMatchers() {
   try {
-    const { resultMatchers } = require('@esteban-url/core/testing')
+    const { resultMatchers } = require('@trailhead/core/testing')
     if (globalThis.expect && globalThis.expect.extend) {
       globalThis.expect.extend(resultMatchers)
     }
@@ -54,7 +54,7 @@ export function setupTempDirCleanup() {
     // Clean up temporary directories
     for (const dir of tempDirs) {
       try {
-        const { cleanup } = require('@esteban-url/fs/testing')
+        const { cleanup } = require('@trailhead/fs/testing')
         await cleanup(dir)
       } catch {
         // Silently fail if fs testing is not available

@@ -1,5 +1,5 @@
-import { ok, err, createCoreError, type Result } from '@esteban-url/core'
-import { sortBy, sortStrings } from '@esteban-url/sort'
+import { ok, err, createCoreError, type Result } from '@trailhead/core'
+import { sortBy, sortStrings } from '@trailhead/sort'
 import type { ProjectConfig } from '../config/types.js'
 import type { TemplateFile } from './types.js'
 
@@ -56,7 +56,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: true,
       },
     ],
-    packageDependencies: ['@esteban-url/trailhead-cli'],
+    packageDependencies: ['@trailhead/trailhead-cli'],
     scripts: {
       build: 'pnpm run clean && tsc --emitDeclarationOnly && tsup',
       dev: 'tsup --watch',

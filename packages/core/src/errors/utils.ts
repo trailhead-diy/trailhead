@@ -10,7 +10,7 @@ import { Result } from 'neverthrow'
  *
  * @example
  * ```typescript
- * import { ok, err, Result } from '@esteban-url/core'
+ * import { ok, err, Result } from '@trailhead/core'
  *
  * // Create success results
  * const success = ok(42)

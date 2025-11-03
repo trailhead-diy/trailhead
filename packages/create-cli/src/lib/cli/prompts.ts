@@ -1,5 +1,5 @@
-import { ok, err, createCoreError, type Result } from '@esteban-url/core'
-import { input, select, confirm, checkbox } from '@esteban-url/cli/prompts'
+import { ok, err, createCoreError, type Result } from '@trailhead/core'
+import { input, select, confirm, checkbox } from '@trailhead/cli/prompts'
 import { consola } from 'consola'
 import type { ProjectConfig, PackageManager } from '../config/types.js'
 import { createConfigContext } from '../config/manager.js'

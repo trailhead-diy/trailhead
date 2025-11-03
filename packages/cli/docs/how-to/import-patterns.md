@@ -1,7 +1,7 @@
 ---
 type: how-to
 title: 'How to Optimize Import Patterns'
-description: 'Import @esteban-url/cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
+description: 'Import @trailhead/cli modules efficiently for optimal tree-shaking and smaller bundle sizes'
 prerequisites:
   - 'Node.js ES modules understanding'
   - 'Basic webpack/bundler knowledge'
@@ -12,13 +12,13 @@ related:
 
 # How to Optimize Import Patterns
 
-This guide shows you how to import @esteban-url/cli modules efficiently to minimize bundle size and maximize tree-shaking benefits.
+This guide shows you how to import @trailhead/cli modules efficiently to minimize bundle size and maximize tree-shaking benefits.
 
 ## Prerequisites
 
 Before optimizing imports, ensure you have:
 
-- @esteban-url/cli installed in your project
+- @trailhead/cli installed in your project
 - A bundler (esbuild, webpack 5+, Vite, etc.)
 - TypeScript configured with `moduleResolution: "bundler"`
 - Understanding of ES module imports vs CommonJS
@@ -31,9 +31,9 @@ Import only what you need using subpath imports:
 
 ```typescript
 // ✅ Optimal - Only imports required code
-import { Ok, Err } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import { createFileSystem } from '@esteban-url/fs'
+import { Ok, Err } from '@trailhead/core'
+import { createCommand } from '@trailhead/cli/command'
+import { createFileSystem } from '@trailhead/fs'
 
 // Bundle size: ~25KB
 ```
@@ -54,7 +54,7 @@ const command = createCommand({
   name: 'interactive',
   async action(options, context) {
     if (options.interactive) {
-      const { prompt, select } = await import('@esteban-url/cli/prompts')
+      const { prompt, select } = await import('@trailhead/cli/prompts')
       const answer = await prompt({ message: 'Enter value:' })
     }
     // Regular non-interactive logic
@@ -70,16 +70,16 @@ const command = createCommand({
 
 ## Quick Reference
 
-| What You Need          | Import From                          | Example                                                                   |
-| ---------------------- | ------------------------------------ | ------------------------------------------------------------------------- |
-| Result types (Ok, Err) | `@esteban-url/core`                  | `import { Ok, Err } from "@esteban-url/core"`                             |
-| CLI creation           | `@esteban-url/cli`                   | `import { createCLI } from "@esteban-url/cli"`                            |
-| Commands               | `@esteban-url/cli/command`           | `import { createCommand } from "@esteban-url/cli/command"`                |
-| File operations        | `@esteban-url/fs`                    | `import { createFileSystem } from "@esteban-url/fs"`                      |
-| Configuration          | `@esteban-url/config`                | `import { defineConfig } from "@esteban-url/config"`                      |
-| User prompts           | `@esteban-url/trailhead-cli/prompts` | `import { prompt, select } from "@esteban-url/trailhead-cli/prompts"`     |
-| Testing utilities      | `@esteban-url/trailhead-cli/testing` | `import { createTestContext } from "@esteban-url/trailhead-cli/testing"`  |
-| Styling & spinners     | `@esteban-url/trailhead-cli/utils`   | `import { chalk, createSpinner } from "@esteban-url/trailhead-cli/utils"` |
+| What You Need          | Import From                        | Example                                                                 |
+| ---------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
+| Result types (Ok, Err) | `@trailhead/core`                  | `import { Ok, Err } from "@trailhead/core"`                             |
+| CLI creation           | `@trailhead/cli`                   | `import { createCLI } from "@trailhead/cli"`                            |
+| Commands               | `@trailhead/cli/command`           | `import { createCommand } from "@trailhead/cli/command"`                |
+| File operations        | `@trailhead/fs`                    | `import { createFileSystem } from "@trailhead/fs"`                      |
+| Configuration          | `@trailhead/config`                | `import { defineConfig } from "@trailhead/config"`                      |
+| User prompts           | `@trailhead/trailhead-cli/prompts` | `import { prompt, select } from "@trailhead/trailhead-cli/prompts"`     |
+| Testing utilities      | `@trailhead/trailhead-cli/testing` | `import { createTestContext } from "@trailhead/trailhead-cli/testing"`  |
+| Styling & spinners     | `@trailhead/trailhead-cli/utils`   | `import { chalk, createSpinner } from "@trailhead/trailhead-cli/utils"` |
 
 ## Common Variations
 
@@ -87,12 +87,12 @@ const command = createCommand({
 
 ### 1. Minimal Main Export
 
-The main `@esteban-url/trailhead-cli` export contains only essential types and the CLI factory:
+The main `@trailhead/trailhead-cli` export contains only essential types and the CLI factory:
 
 ```typescript
 // ✅ ONLY these are available from main export
-import { Ok, Err, isOk, isErr, createCLI } from '@esteban-url/trailhead-cli'
-import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli'
+import { Ok, Err, isOk, isErr, createCLI } from '@trailhead/trailhead-cli'
+import type { Result, CLI, CLIConfig } from '@trailhead/trailhead-cli'
 ```
 
 ### 2. Subpath Imports Required
@@ -101,10 +101,10 @@ All other functionality requires subpath imports:
 
 ```typescript
 // ❌ WRONG - Not available from main export
-import { createCommand } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli'
 
 // ✅ CORRECT - Use subpath import
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 ```
 
 ### 3. Tree-Shaking Benefits
@@ -113,10 +113,10 @@ Using subpath imports ensures only used code is bundled:
 
 ```typescript
 // This imports ONLY createCommand (~5KB)
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 
 // This would import the entire module (avoid)
-import * as command from '@esteban-url/trailhead-cli/command'
+import * as command from '@trailhead/trailhead-cli/command'
 ```
 
 ### Variation 2: Import Examples by Use Case
@@ -124,9 +124,9 @@ import * as command from '@esteban-url/trailhead-cli/command'
 ### Basic CLI Application
 
 ```typescript
-import { Ok, Err, createCLI } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err, createCLI } from '@trailhead/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import type { CommandContext } from '@trailhead/trailhead-cli/command'
 
 const cli = createCLI({
   name: 'my-app',
@@ -145,9 +145,9 @@ const myCommand = createCommand({
 ### File Operations
 
 ```typescript
-import { Ok, Err } from '@esteban-url/trailhead-cli'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { Ok, Err } from '@trailhead/trailhead-cli'
+import { createFileSystem } from '@trailhead/trailhead-cli/filesystem'
+import type { FileSystem } from '@trailhead/trailhead-cli/filesystem'
 
 const fs = createFileSystem()
 const result = await fs.readFile('config.json')
@@ -160,7 +160,7 @@ if (result.success) {
 ### Configuration Management
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { defineConfig } from '@trailhead/trailhead-cli/config'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -174,7 +174,7 @@ const config = defineConfig(schema)
 ### Interactive Prompts
 
 ```typescript
-import { prompt, select, confirm } from '@esteban-url/trailhead-cli/prompts'
+import { prompt, select, confirm } from '@trailhead/trailhead-cli/prompts'
 
 const name = await prompt({
   message: "What's your name?",
@@ -189,7 +189,7 @@ const color = await select({
 ### Testing
 
 ```typescript
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing'
+import { createTestContext, mockFileSystem } from '@trailhead/trailhead-cli/testing'
 import { myCommand } from '../src/commands/my-command'
 
 test('command works', async () => {
@@ -207,8 +207,8 @@ test('command works', async () => {
 ### Styling Output
 
 ```typescript
-import { chalk, success, error, warning } from '@esteban-url/trailhead-cli/utils'
-import { createSpinner } from '@esteban-url/trailhead-cli/utils'
+import { chalk, success, error, warning } from '@trailhead/trailhead-cli/utils'
+import { createSpinner } from '@trailhead/trailhead-cli/utils'
 
 console.log(chalk.blue('Info message'))
 console.log(success('✓ Done'))
@@ -224,28 +224,28 @@ spinner.succeed('Loaded!')
 Some modules depend on others. Here's the dependency graph:
 
 ```
-@esteban-url/trailhead-cli (main)
+@trailhead/trailhead-cli (main)
 ├── Result types (Ok, Err, isOk, isErr)
 └── createCLI
 
-@esteban-url/trailhead-cli/command
+@trailhead/trailhead-cli/command
 └── uses Result types from main
 
-@esteban-url/trailhead-cli/filesystem
+@trailhead/trailhead-cli/filesystem
 └── uses Result types from main
 
-@esteban-url/trailhead-cli/config
+@trailhead/trailhead-cli/config
 ├── uses Result types from main
 └── re-exports zod
 
-@esteban-url/trailhead-cli/prompts
+@trailhead/trailhead-cli/prompts
 └── re-exports @inquirer/prompts
 
-@esteban-url/trailhead-cli/testing
+@trailhead/trailhead-cli/testing
 ├── uses Result types from main
 └── can mock any other module
 
-@esteban-url/trailhead-cli/utils
+@trailhead/trailhead-cli/utils
 └── standalone utilities
 ```
 
@@ -259,8 +259,8 @@ Some modules depend on others. Here's the dependency graph:
 
 ```typescript
 // ❌ Prevents tree-shaking
-import * as cli from '@esteban-url/trailhead-cli/command'
-import { createCommand } from '@esteban-url/trailhead-cli/command' // This is also included
+import * as cli from '@trailhead/trailhead-cli/command'
+import { createCommand } from '@trailhead/trailhead-cli/command' // This is also included
 
 // ✅ Proper tree-shaking
 import {
@@ -268,7 +268,7 @@ import {
   executeWithPhases,
   executeWithDryRun,
   displaySummary,
-} from '@esteban-url/trailhead-cli/command'
+} from '@trailhead/trailhead-cli/command'
 ```
 
 ### Issue: TypeScript can't resolve subpath imports
@@ -294,34 +294,34 @@ import {
 
 ```typescript
 // ❌ WRONG
-import { createCommand } from '@esteban-url/trailhead-cli'
-import { createFileSystem } from '@esteban-url/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli'
+import { createFileSystem } from '@trailhead/trailhead-cli'
 
 // ✅ CORRECT
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import { createFileSystem } from '@trailhead/trailhead-cli/filesystem'
 ```
 
 ### 2. Over-importing
 
 ```typescript
 // ❌ WRONG - Imports entire module
-import * as cli from '@esteban-url/trailhead-cli/command'
+import * as cli from '@trailhead/trailhead-cli/command'
 
 // ✅ CORRECT - Import only what you need
-import { createCommand, executeWithPhases } from '@esteban-url/trailhead-cli/command'
+import { createCommand, executeWithPhases } from '@trailhead/trailhead-cli/command'
 ```
 
 ### 3. Mixing Import Styles
 
 ```typescript
 // ❌ WRONG - Inconsistent
-import { Ok } from '@esteban-url/trailhead-cli'
-const { createCommand } = require('@esteban-url/trailhead-cli/command')
+import { Ok } from '@trailhead/trailhead-cli'
+const { createCommand } = require('@trailhead/trailhead-cli/command')
 
 // ✅ CORRECT - Consistent ES modules
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { Ok } from '@trailhead/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 ```
 
 ## Complete Example
@@ -330,7 +330,7 @@ Here's a complete CLI application with optimized imports:
 
 ```typescript
 // cli.ts - Main entry point
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@trailhead/trailhead-cli'
 import { buildCommand } from './commands/build.js'
 import { devCommand } from './commands/dev.js'
 
@@ -343,16 +343,16 @@ const cli = createCLI({
 export default cli
 
 // commands/build.ts - Build command
-import { Ok, Err } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { Ok, Err } from '@trailhead/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import type { CommandContext } from '@trailhead/trailhead-cli/command'
 
 export const buildCommand = createCommand({
   name: 'build',
   description: 'Build the project',
   async action(options, context: CommandContext) {
     // Lazy load file system operations
-    const { createFileSystem } = await import('@esteban-url/trailhead-cli/filesystem')
+    const { createFileSystem } = await import('@trailhead/trailhead-cli/filesystem')
     const fs = createFileSystem()
 
     const result = await fs.readFile('package.json')
@@ -366,9 +366,9 @@ export const buildCommand = createCommand({
 })
 
 // commands/dev.ts - Development command with interactive features
-import { Ok } from '@esteban-url/trailhead-cli'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import type { CommandContext } from '@esteban-url/trailhead-cli/command'
+import { Ok } from '@trailhead/trailhead-cli'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import type { CommandContext } from '@trailhead/trailhead-cli/command'
 
 export const devCommand = createCommand({
   name: 'dev',
@@ -377,7 +377,7 @@ export const devCommand = createCommand({
   async action(options, context: CommandContext) {
     if (options.interactive) {
       // Only load prompts when needed
-      const { select } = await import('@esteban-url/trailhead-cli/prompts')
+      const { select } = await import('@trailhead/trailhead-cli/prompts')
 
       const mode = await select({
         message: 'Choose development mode:',
@@ -436,7 +436,7 @@ esbuild src/cli.ts --bundle --analyze=verbose
 npx webpack-bundle-analyzer dist/
 
 # Check individual module sizes
-du -sh node_modules/@esteban-url/trailhead-cli/dist/*
+du -sh node_modules/@trailhead/trailhead-cli/dist/*
 ```
 
 ### TypeScript Configuration

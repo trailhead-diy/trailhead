@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/core",
+  "name": "@trailhead/core",
   "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Foundation package for Trailhead System - CoreError interface, Result types, and functional programming utilities",
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -80,8 +80,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/core"
   },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "license": "MIT"
 }

@@ -1,5 +1,5 @@
 /**
- * @module @esteban-url/core
+ * @module @trailhead/core
  * @description Foundation package for the Trailhead System providing Result-based error handling.
  *
  * This package exports functional programming utilities centered around the Result type pattern,
@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { ok, err, Result } from '@esteban-url/core'
+ * import { ok, err, Result } from '@trailhead/core'
  *
  * function divide(a: number, b: number): Result<number, string> {
  *   if (b === 0) return err('Division by zero')

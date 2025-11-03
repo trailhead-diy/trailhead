@@ -5,7 +5,7 @@ description: |-
   CLI generator for creating new Trailhead-based CLI applications.
 
   This package provides a comprehensive generator for creating new CLI applications
-  using the @esteban-url/* architecture. It features interactive project setup,
+  using the @trailhead/* architecture. It features interactive project setup,
   template-based generation, and integrated development environment configuration.
 example: 0
 since: 0.1.0
@@ -15,9 +15,9 @@ since: 0.1.0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/create-cli
+[Trailhead API Documentation](README.md) / @trailhead/create-cli
 
-# @esteban-url/create-cli
+# @trailhead/create-cli
 
 ## Interfaces
 
@@ -606,7 +606,7 @@ Array of template information objects
 #### Example
 
 ```typescript
-import { getAvailableTemplates } from '@esteban-url/create-cli'
+import { getAvailableTemplates } from '@trailhead/create-cli'
 
 const templates = getAvailableTemplates()
 templates.forEach((template) => {

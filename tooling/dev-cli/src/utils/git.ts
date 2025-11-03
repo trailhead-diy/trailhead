@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 
 export interface GitStatus {
   readonly hasChanges: boolean

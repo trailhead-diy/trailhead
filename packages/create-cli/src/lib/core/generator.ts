@@ -1,7 +1,7 @@
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { resolve, dirname } from 'path'
-import { fs } from '@esteban-url/fs'
-import { colors, createSpinner } from '@esteban-url/cli/utils'
+import { fs } from '@trailhead/fs'
+import { colors, createSpinner } from '@trailhead/cli/utils'
 import { debugTemplateContext, debugError, debugStats } from '../cli/logger.js'
 import {
   validateProjectName,

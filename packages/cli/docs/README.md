@@ -1,6 +1,6 @@
 ---
 type: explanation
-title: '@esteban-url/cli Documentation Overview'
+title: '@trailhead/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
   - /packages/cli/docs/tutorials/getting-started.md
@@ -8,7 +8,7 @@ related:
   - /packages/cli/docs/explanation/architecture.md
 ---
 
-# @esteban-url/cli Documentation
+# @trailhead/cli Documentation
 
 Functional CLI framework for building command-line applications.
 
@@ -72,7 +72,7 @@ Learning-oriented guides for getting started:
 ### 1. Result-Based Error Handling
 
 ```typescript
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 
 const divide = (a: number, b: number): Result<number> => {
   if (b === 0) {
@@ -85,7 +85,7 @@ const divide = (a: number, b: number): Result<number> => {
 ### 2. Functional Command Creation
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -101,7 +101,7 @@ const greetCommand = createCommand({
 ### 3. Type-Safe Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/config'
+import { defineConfig } from '@trailhead/config'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -117,7 +117,7 @@ const config = defineConfig(schema)
 ### 4. Composable Validation
 
 ```typescript
-import { createValidationPipeline, createRule } from '@esteban-url/validation'
+import { createValidationPipeline, createRule } from '@trailhead/validation'
 
 const pipeline = createValidationPipeline([
   createRule('length', (value: string) => value.length >= 3 || 'Must be at least 3 characters'),
@@ -133,7 +133,7 @@ const pipeline = createValidationPipeline([
 ### Basic CLI Application
 
 ```typescript
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { greetCommand } from './commands/greet'
 import { configCommand } from './commands/config'
 
@@ -162,7 +162,7 @@ const config = JSON.parse(result.value)
 ### Testing Pattern
 
 ```typescript
-import { createTestContext, mockFileSystem } from '@esteban-url/cli/testing'
+import { createTestContext, mockFileSystem } from '@trailhead/cli/testing'
 
 it('should read configuration', async () => {
   const fs = mockFileSystem({

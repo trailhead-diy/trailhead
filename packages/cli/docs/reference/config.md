@@ -13,27 +13,27 @@ Type-safe configuration management with schema validation using Zod and flexible
 
 ## Overview
 
-| Property    | Value                 |
-| ----------- | --------------------- |
-| **Package** | `@esteban-url/config` |
-| **Module**  | `@esteban-url/config` |
+| Property    | Value               |
+| ----------- | ------------------- |
+| **Package** | `@trailhead/config` |
+| **Module**  | `@trailhead/config` |
 
-**Note**: The configuration functionality is provided by the `@esteban-url/config` package, which is a dependency of `@esteban-url/cli`.
+**Note**: The configuration functionality is provided by the `@trailhead/config` package, which is a dependency of `@trailhead/cli`.
 | **Since** | `v1.0.0` |
 
 ## Import
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/config'
-import type { ConfigSchema } from '@esteban-url/config'
+import { defineConfig, loadConfig } from '@trailhead/config'
+import type { ConfigSchema } from '@trailhead/config'
 import { z } from 'zod'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { defineConfig, loadConfig } from '@esteban-url/config'
-import type { ConfigSchema } from '@esteban-url/config'
+import { defineConfig, loadConfig } from '@trailhead/config'
+import type { ConfigSchema } from '@trailhead/config'
 import { z } from 'zod'
 ```
 
@@ -44,7 +44,7 @@ import { z } from 'zod'
 Creates a type-safe configuration definition.
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
+import { defineConfig } from '@trailhead/trailhead-cli/config'
 import { z } from 'zod'
 
 // Define schema
@@ -304,8 +304,8 @@ module.exports = {
 ## Testing Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/trailhead-cli/config'
-import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { defineConfig } from '@trailhead/trailhead-cli/config'
+import { createMemoryFileSystem } from '@trailhead/trailhead-cli/filesystem'
 import { z } from 'zod'
 
 test('config loading', async () => {

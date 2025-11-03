@@ -1,5 +1,5 @@
-import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { execSync } from 'child_process'
 import { colorize, withIcon } from '../../utils/colors.js'
 import { gitOperations } from '../../utils/git.js'

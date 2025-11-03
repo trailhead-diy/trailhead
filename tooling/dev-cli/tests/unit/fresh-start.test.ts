@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { freshStartCommand } from '../../src/commands/dev/fresh-start.js'
 import { gitOperations } from '../../src/utils/git.js'
 import { fsOperations } from '../../src/utils/fs.js'
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError } from '@trailhead/core'
 
 // Mock dependencies
 vi.mock('../../src/utils/git.js', () => ({

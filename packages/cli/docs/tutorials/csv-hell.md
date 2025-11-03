@@ -57,7 +57,7 @@ Let's start with a proper project structure. No dumping everything in one file l
 ```bash
 mkdir csv-processor && cd csv-processor
 npm init -y
-npm install @esteban-url/cli @repo/fs @repo/data papaparse yaml
+npm install @trailhead/cli @repo/fs @repo/data papaparse yaml
 npm install -D @types/node @types/papaparse tsx typescript
 ```
 
@@ -158,7 +158,7 @@ Create `src/lib/csv-parser.ts`. This is where the magic happens:
 import { readFile, writeFile } from 'fs/promises'
 import Papa from 'papaparse'
 import { stringify as stringifyYaml } from 'yaml'
-import { ok, err, Result } from '@esteban-url/cli'
+import { ok, err, Result } from '@trailhead/cli'
 import type { CSVRow, FieldMapping, OutputFormat } from './types.js'
 
 export async function parseCSV(filePath: string): Promise<Result<CSVRow[], Error>> {
@@ -302,10 +302,10 @@ export async function writeOutput(
 Create `src/commands/transform.ts`:
 
 ```typescript
-import { ok, err } from '@esteban-url/cli';
-import { createCommand, type CommandContext } from '@esteban-url/cli/command';
+import { ok, err } from '@trailhead/cli';
+import { createCommand, type CommandContext } from '@trailhead/cli/command';
 import { fs } from '@repo/fs';
-import { prompt, select } from '@esteban-url/cli/prompts';
+import { prompt, select } from '@trailhead/cli/prompts';
 // Note: Using simpler approach without workflow tasks
 import { parseCSV, transformFields, cleanData, writeOutput } from '../lib/csv-parser.js';
 import type { TransformCommandOptions } from './types.js';
@@ -452,7 +452,7 @@ Now add the workflow tasks:
 Create `src/lib/validators.ts`:
 
 ```typescript
-import { ok, err, Result } from '@esteban-url/cli'
+import { ok, err, Result } from '@trailhead/cli'
 import type { CSVRow, ValidationResult, ValidationError, ValidationRule } from './types.js'
 
 export function validateData(
@@ -553,7 +553,7 @@ Create `src/index.ts`:
 ```typescript
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { transformCommand } from './commands/transform.js'
 
 const cli = createCLI({
@@ -601,7 +601,7 @@ node dist/index.js transform test-data.csv --format json --clean --interactive
 Create `src/commands/validate.ts` (abbreviated for space):
 
 ```typescript
-import { createCommand, type CommandContext } from '@esteban-url/cli/command'
+import { createCommand, type CommandContext } from '@trailhead/cli/command'
 import { validateData } from '../lib/validators.js'
 import type { ValidateCommandOptions } from './types.js'
 

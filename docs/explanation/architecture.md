@@ -81,7 +81,7 @@ Benefits:
 The framework is organized as a monorepo with clear separation of concerns:
 
 ```
-@esteban-url/
+@trailhead/
 ├── core           # Fundamental types (Result, Option)
 ├── cli            # CLI framework and command system
 ├── fs             # File system operations
@@ -181,7 +181,7 @@ This makes commands:
 
 ## File System Design
 
-The `@esteban-url/fs` package wraps Node.js fs operations:
+The `@trailhead/fs` package wraps Node.js fs operations:
 
 ### Async by Default
 
@@ -253,8 +253,8 @@ console.log(context.cwd) // e.g., /tmp/test-xyz/
 Configuration uses a builder pattern with multiple sources:
 
 ```typescript
-import { createConfigManager, defineSchema } from '@esteban-url/config'
-import { string, number, boolean } from '@esteban-url/config'
+import { createConfigManager, defineSchema } from '@trailhead/config'
+import { string, number, boolean } from '@trailhead/config'
 
 // Define schema with builders
 const schema = defineSchema({

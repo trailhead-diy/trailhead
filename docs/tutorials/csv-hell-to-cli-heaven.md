@@ -45,7 +45,7 @@ Let's use the Trailhead CLI generator to scaffold our project:
 
 ```bash
 # Create a new CLI project
-pnpm create @esteban-url/cli csv-processor --preset basic-cli
+pnpm create @trailhead/cli csv-processor --preset basic-cli
 
 # Navigate to your new project
 cd csv-processor
@@ -104,7 +104,7 @@ csv-processor/
 └── package.json          # Project configuration
 ```
 
-> 💡 **Key Concept**: The `@esteban-url/cli` framework uses **functional programming** and **Result types** instead of exceptions. This means errors are values you handle explicitly, making your CLI more predictable and easier to test.
+> 💡 **Key Concept**: The `@trailhead/cli` framework uses **functional programming** and **Result types** instead of exceptions. This means errors are values you handle explicitly, making your CLI more predictable and easier to test.
 
 ---
 
@@ -116,9 +116,9 @@ Let's understand the key patterns in your new CLI before we start building.
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCLI } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 
 // Create version command
 const versionCommand = createCommand({
@@ -165,8 +165,8 @@ await cli.run()
 Look at a typical command (`src/commands/version.ts`):
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 
 export const versionCommand = createCommand({
   name: 'version',
@@ -232,8 +232,8 @@ Create a new file `src/lib/csv-parser.ts`:
 
 ```typescript
 import Papa from 'papaparse'
-import { ok, err, Result } from '@esteban-url/core'
-import { readFile } from '@esteban-url/fs'
+import { ok, err, Result } from '@trailhead/core'
+import { readFile } from '@trailhead/fs'
 
 export interface CSVRow {
   [key: string]: string
@@ -279,16 +279,16 @@ export function parseCSVContent(
 }
 ```
 
-> 📘 **Package Spotlight**: `@esteban-url/fs` provides file system operations that return Result types instead of throwing errors. It wraps Node's fs module with proper error handling. [Learn more →](../reference/api/file-operations.md)
+> 📘 **Package Spotlight**: `@trailhead/fs` provides file system operations that return Result types instead of throwing errors. It wraps Node's fs module with proper error handling. [Learn more →](../reference/api/file-operations.md)
 
 ### Step 3: Create the Parse Command
 
 Create `src/commands/parse.ts`:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
-import type { CommandOptions } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
+import type { CommandOptions } from '@trailhead/cli/command'
 import { parseCSVFile } from '../lib/csv-parser.js'
 
 interface ParseOptions extends CommandOptions {
@@ -358,9 +358,9 @@ Update `src/index.ts`:
 
 ```diff
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCLI } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 + import { parseCommand } from './commands/parse.js'
 
 // ... existing commands (versionCommand, helpCommand) ...
@@ -480,13 +480,13 @@ pnpm add yaml
 Create `src/commands/transform.ts`:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err, Result } from '@esteban-url/core'
-import type { CommandOptions } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err, Result } from '@trailhead/core'
+import type { CommandOptions } from '@trailhead/cli/command'
 import { parseCSVFile } from '../lib/csv-parser.js'
-import { writeFile } from '@esteban-url/fs'
+import { writeFile } from '@trailhead/fs'
 import * as yaml from 'yaml'
-import { input } from '@esteban-url/cli/prompts'
+import { input } from '@trailhead/cli/prompts'
 
 interface TransformOptions extends CommandOptions {
   output?: string
@@ -675,7 +675,7 @@ async function generateCSV(data: any[]): Promise<string> {
 }
 ```
 
-> 📘 **Package Spotlight**: `@esteban-url/cli/prompts` provides interactive prompts with Result-based error handling. It wraps the popular `enquirer` library to fit the framework's patterns. [Learn more →](../reference/api/cli-building.md#prompts)
+> 📘 **Package Spotlight**: `@trailhead/cli/prompts` provides interactive prompts with Result-based error handling. It wraps the popular `enquirer` library to fit the framework's patterns. [Learn more →](../reference/api/cli-building.md#prompts)
 
 ### Step 2: Add Transform to Your CLI
 
@@ -683,9 +683,9 @@ Update `src/index.ts`:
 
 ```diff
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCLI } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 import { parseCommand } from './commands/parse.js'
 + import { transformCommand } from './commands/transform.js'
 
@@ -798,12 +798,12 @@ export type ValidatedRow = z.infer<typeof csvRowSchema>
 Create `src/commands/validate.ts`:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err, Result } from '@esteban-url/core'
-import type { CommandOptions } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err, Result } from '@trailhead/core'
+import type { CommandOptions } from '@trailhead/cli/command'
 import { parseCSVFile } from '../lib/csv-parser.js'
 import { csvRowSchema } from '../lib/validation-rules.js'
-import { writeFile } from '@esteban-url/fs'
+import { writeFile } from '@trailhead/fs'
 import { z } from 'zod'
 
 interface ValidateOptions extends CommandOptions {
@@ -1101,7 +1101,7 @@ Congratulations! You've built a production-ready CSV processing CLI with:
 
 ### Enhance Your CLI
 
-- Add progress bars for large files using `@esteban-url/cli/progress`
+- Add progress bars for large files using `@trailhead/cli/progress`
 - Support more formats (Excel, XML) with additional parsers
 - Add data aggregation and analysis commands
 - Create a config file for transform rules

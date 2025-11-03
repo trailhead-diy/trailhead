@@ -1,4 +1,4 @@
-import { createCoreError, type CoreError } from '@esteban-url/core'
+import { createCoreError, type CoreError } from '@trailhead/core'
 
 /**
  * Standardized error codes for create-cli package

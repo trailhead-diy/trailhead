@@ -1,4 +1,4 @@
-import { err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import type { CommandContext, CommandOption } from './types.js'
 
 // Simple FileSystem interface for file processing

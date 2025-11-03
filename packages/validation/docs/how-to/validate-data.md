@@ -987,7 +987,7 @@ app.post('/users', createValidationMiddleware(createUserSchema), (req, res) => {
 ### CLI Input Validation
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { validate } from '@repo/validation'
 
 const deployCommand = createCommand({

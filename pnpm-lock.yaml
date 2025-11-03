@@ -117,18 +117,18 @@ importers:
 
   packages/cli:
     dependencies:
-      '@esteban-url/core':
-        specifier: workspace:*
-        version: link:../core
-      '@esteban-url/fs':
-        specifier: workspace:*
-        version: link:../fs
-      '@esteban-url/sort':
-        specifier: workspace:*
-        version: link:../sort
       '@inquirer/prompts':
         specifier: ^7.8.0
         version: 7.8.0(@types/node@24.1.0)
+      '@trailhead/core':
+        specifier: workspace:*
+        version: link:../core
+      '@trailhead/fs':
+        specifier: workspace:*
+        version: link:../fs
+      '@trailhead/sort':
+        specifier: workspace:*
+        version: link:../sort
       '@types/cli-progress':
         specifier: ^3.11.6
         version: 3.11.6
@@ -178,13 +178,13 @@ importers:
 
   packages/config:
     dependencies:
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@esteban-url/fs':
+      '@trailhead/fs':
         specifier: workspace:*
         version: link:../fs
-      '@esteban-url/validation':
+      '@trailhead/validation':
         specifier: workspace:*
         version: link:../validation
       consola:
@@ -252,19 +252,19 @@ importers:
 
   packages/create-cli:
     dependencies:
-      '@esteban-url/cli':
+      '@trailhead/cli':
         specifier: workspace:*
         version: link:../cli
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@esteban-url/fs':
+      '@trailhead/fs':
         specifier: workspace:*
         version: link:../fs
-      '@esteban-url/sort':
+      '@trailhead/sort':
         specifier: workspace:*
         version: link:../sort
-      '@esteban-url/validation':
+      '@trailhead/validation':
         specifier: workspace:*
         version: link:../validation
       consola:
@@ -316,13 +316,13 @@ importers:
 
   packages/data:
     dependencies:
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@esteban-url/fs':
+      '@trailhead/fs':
         specifier: workspace:*
         version: link:../fs
-      '@esteban-url/sort':
+      '@trailhead/sort':
         specifier: workspace:*
         version: link:../sort
       file-type:
@@ -374,10 +374,10 @@ importers:
 
   packages/fs:
     dependencies:
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@esteban-url/sort':
+      '@trailhead/sort':
         specifier: workspace:*
         version: link:../sort
       fs-extra:
@@ -457,7 +457,7 @@ importers:
 
   packages/validation:
     dependencies:
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../core
       zod:
@@ -494,13 +494,13 @@ importers:
 
   tooling/dev-cli:
     dependencies:
-      '@esteban-url/cli':
+      '@trailhead/cli':
         specifier: workspace:*
         version: link:../../packages/cli
-      '@esteban-url/core':
+      '@trailhead/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@esteban-url/fs':
+      '@trailhead/fs':
         specifier: workspace:*
         version: link:../../packages/fs
       consola:

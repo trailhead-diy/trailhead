@@ -1,5 +1,5 @@
-import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join } from 'path'
 import { colorize, withIcon } from '../../utils/colors.js'
@@ -85,7 +85,7 @@ function getAllPackages(): PackageInfo[] {
 }
 
 /**
- * Validate that @repo/* packages don't depend on @esteban-url/* packages
+ * Validate that @repo/* packages don't depend on @trailhead/* packages
  */
 function validateRepoPackageDependencies(packages: readonly PackageInfo[]): readonly Violation[] {
   const violations: Violation[] = []
@@ -100,11 +100,11 @@ function validateRepoPackageDependencies(packages: readonly PackageInfo[]): read
     }
 
     for (const depName of Object.keys(allDeps)) {
-      if (depName.startsWith('@esteban-url/')) {
+      if (depName.startsWith('@trailhead/')) {
         violations.push({
           package: pkg.name,
           dependency: depName,
-          rule: '@repo/* packages should not depend on @esteban-url/* packages',
+          rule: '@repo/* packages should not depend on @trailhead/* packages',
         })
       }
     }
@@ -131,7 +131,7 @@ function validateWorkspaceProtocol(packages: readonly PackageInfo[]): readonly V
       if (
         internalPackages.has(depName) &&
         !depVersion.startsWith('workspace:') &&
-        (depName.startsWith('@esteban-url/') || depName.startsWith('@repo/'))
+        (depName.startsWith('@trailhead/') || depName.startsWith('@repo/'))
       ) {
         violations.push({
           package: pkg.name || 'unknown',
@@ -153,7 +153,7 @@ function validatePublicPackageBoundaries(packages: readonly PackageInfo[]): read
   const violations: Violation[] = []
 
   for (const { package: pkg } of packages) {
-    if (!pkg.name?.startsWith('@esteban-url/')) continue
+    if (!pkg.name?.startsWith('@trailhead/')) continue
 
     const allDeps = {
       ...pkg.dependencies,
@@ -182,7 +182,7 @@ function detectCircularDependencies(packages: readonly PackageInfo[]): readonly 
   const internalPackageMap = new Map(
     packages
       .filter(
-        (p) => p.package.name?.startsWith('@esteban-url/') || p.package.name?.startsWith('@repo/')
+        (p) => p.package.name?.startsWith('@trailhead/') || p.package.name?.startsWith('@repo/')
       )
       .map((p) => [p.package.name!, p])
   )
@@ -218,7 +218,7 @@ function detectCircularDependencies(packages: readonly PackageInfo[]): readonly 
 
   for (const { package: pkg } of packages) {
     // Only check internal packages
-    if (!pkg.name?.startsWith('@esteban-url/') && !pkg.name?.startsWith('@repo/')) continue
+    if (!pkg.name?.startsWith('@trailhead/') && !pkg.name?.startsWith('@repo/')) continue
 
     const allDeps = {
       ...pkg.dependencies,
@@ -297,14 +297,14 @@ export const validateInterdepsCommand = createCommand<ValidateInterdepsOptions>(
       if (options.graph) {
         context.logger.info('📊 Dependency Graph Information:')
         const internalPackages = packages.filter(
-          (p) => p.package.name?.startsWith('@esteban-url/') || p.package.name?.startsWith('@repo/')
+          (p) => p.package.name?.startsWith('@trailhead/') || p.package.name?.startsWith('@repo/')
         )
 
         for (const { package: pkg } of internalPackages) {
           const deps = Object.keys({
             ...pkg.dependencies,
             ...pkg.devDependencies,
-          }).filter((dep) => dep.startsWith('@esteban-url/') || dep.startsWith('@repo/'))
+          }).filter((dep) => dep.startsWith('@trailhead/') || dep.startsWith('@repo/'))
 
           if (deps.length > 0) {
             context.logger.info(`${pkg.name} → ${deps.join(', ')}`)

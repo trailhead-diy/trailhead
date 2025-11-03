@@ -14,9 +14,9 @@ since: 0.1.0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/core
+[Trailhead API Documentation](README.md) / @trailhead/core
 
-# @esteban-url/core
+# @trailhead/core
 
 ## Interfaces
 

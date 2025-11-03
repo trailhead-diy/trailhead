@@ -6,7 +6,7 @@ import { setupIntegrationCommand } from '../../src/commands/docs/setup-integrati
 import { testExamplesCommand } from '../../src/commands/docs/test-examples.js'
 import { validateDocsCommand } from '../../src/commands/docs/validate-docs.js'
 import { docsOperations } from '../../src/utils/docs.js'
-import { ok, err, createCoreError } from '@esteban-url/core'
+import { ok, err, createCoreError } from '@trailhead/core'
 
 // Mock docs operations
 vi.mock('../../src/utils/docs.js', () => ({

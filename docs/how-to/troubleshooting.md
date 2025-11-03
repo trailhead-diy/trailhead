@@ -4,7 +4,7 @@ Solutions to common problems when building CLIs with the Trailhead framework.
 
 ## Installation Issues
 
-### `pnpm create @esteban-url/cli` fails
+### `pnpm create @trailhead/cli` fails
 
 **Problem**: Command not found or permission errors
 
@@ -19,7 +19,7 @@ node --version  # Should show v16.0.0 or higher
 2. Try with npx:
 
 ```bash
-npx @esteban-url/create-cli my-project
+npx @trailhead/create-cli my-project
 ```
 
 3. Check npm registry:
@@ -119,7 +119,7 @@ export default {
 
 ```typescript
 // src/index.ts
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { myCommand } from './commands/my-command.js'
 
 const cli = createCLI({
@@ -189,15 +189,15 @@ const content = readResult.unwrapOr('default')
 
 ```typescript
 // Main package exports
-import { createCLI } from '@esteban-url/cli'
-import { ok, err } from '@esteban-url/core'
-import { readFile, writeFile } from '@esteban-url/fs'
+import { createCLI } from '@trailhead/cli'
+import { ok, err } from '@trailhead/core'
+import { readFile, writeFile } from '@trailhead/fs'
 
 // Subpath exports - use exact paths from package.json
-import { createCommand } from '@esteban-url/cli/command'
-import { input, confirm } from '@esteban-url/cli/prompts'
-import { createTestContext } from '@esteban-url/cli/testing'
-import { SingleBar } from '@esteban-url/cli/progress'
+import { createCommand } from '@trailhead/cli/command'
+import { input, confirm } from '@trailhead/cli/prompts'
+import { createTestContext } from '@trailhead/cli/testing'
+import { SingleBar } from '@trailhead/cli/progress'
 
 // Local imports - always with .js extension
 import { utils } from './lib/utils.js'
@@ -208,11 +208,11 @@ import { config } from './config/index.js'
 
 ```typescript
 // Wrong - these don't exist
-import { defineArgs } from '@esteban-url/cli/args' // ✗
-import { spinner } from '@esteban-url/cli/progress' // ✗
+import { defineArgs } from '@trailhead/cli/args' // ✗
+import { spinner } from '@trailhead/cli/progress' // ✗
 
 // Wrong - no index exports
-import { readFile } from '@esteban-url/fs/index' // ✗
+import { readFile } from '@trailhead/fs/index' // ✗
 
 // Wrong - missing .js extension for local files
 import { myHelper } from './helpers/util' // ✗
@@ -249,7 +249,7 @@ export default {
 **Solution**: Use test utilities:
 
 ```typescript
-import { createTestContextWithFiles } from '@esteban-url/cli/testing'
+import { createTestContextWithFiles } from '@trailhead/cli/testing'
 
 // Create a test context with virtual files
 const context = await createTestContextWithFiles({
@@ -262,9 +262,9 @@ const result = await myCommand.execute(options, context)
 
 // Or manually mock file operations
 import { vi } from 'vitest'
-import * as fs from '@esteban-url/fs'
+import * as fs from '@trailhead/fs'
 
-vi.mock('@esteban-url/fs', () => ({
+vi.mock('@trailhead/fs', () => ({
   readFile: vi.fn().mockResolvedValue(ok('file content')),
   writeFile: vi.fn().mockResolvedValue(ok(undefined)),
   exists: vi.fn().mockResolvedValue(ok(true)),
@@ -298,7 +298,7 @@ const timeout = flags.timeout ?? 5000
 **Solution**: Always use Result types:
 
 ```typescript
-import { fromThrowableAsync } from '@esteban-url/core'
+import { fromThrowableAsync } from '@trailhead/core'
 
 // Instead of throwing
 async function riskyOperation(): Promise<string> {

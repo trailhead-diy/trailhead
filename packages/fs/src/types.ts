@@ -1,5 +1,5 @@
-import type { Result, CoreError } from '@esteban-url/core'
-import type { Order } from '@esteban-url/sort'
+import type { Result, CoreError } from '@trailhead/core'
+import type { Order } from '@trailhead/sort'
 
 /**
  * File statistics information returned by stat operations.
@@ -154,7 +154,7 @@ export interface RmOptions {
  *
  * @example
  * ```typescript
- * import { readFile, writeJson, FSConfig } from '@esteban-url/fs'
+ * import { readFile, writeJson, FSConfig } from '@trailhead/fs'
  *
  * const config: FSConfig = {
  *   encoding: 'utf16le',

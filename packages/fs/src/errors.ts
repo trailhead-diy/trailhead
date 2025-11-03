@@ -1,4 +1,4 @@
-import { createErrorFactory } from '@esteban-url/core'
+import { createErrorFactory } from '@trailhead/core'
 import type { FileSystemError } from './types.js'
 
 // Use standardized error factory from core

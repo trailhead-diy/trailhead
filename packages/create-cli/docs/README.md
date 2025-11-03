@@ -1,6 +1,6 @@
 ---
 type: explanation
-title: '@esteban-url/create-cli Documentation Overview'
+title: '@trailhead/create-cli Documentation Overview'
 description: 'Complete documentation hub for the CLI project generator'
 related:
   - /packages/create-cli/docs/tutorials/getting-started.md
@@ -8,18 +8,18 @@ related:
   - /packages/create-cli/docs/how-to/customize-templates.md
 ---
 
-# @esteban-url/create-cli Documentation
+# @trailhead/create-cli Documentation
 
-The create-cli package provides a modern generator for scaffolding CLI applications built with the @esteban-url/cli framework. It offers intelligent project setup with best practices, TypeScript configuration, and comprehensive testing utilities built-in.
+The create-cli package provides a modern generator for scaffolding CLI applications built with the @trailhead/cli framework. It offers intelligent project setup with best practices, TypeScript configuration, and comprehensive testing utilities built-in.
 
 ## Framework Philosophy
 
-@esteban-url/create-cli is designed around these principles:
+@trailhead/create-cli is designed around these principles:
 
 - **Zero-config start** - Sensible defaults with full customization available
 - **Best practices built-in** - TypeScript, testing, linting pre-configured
 - **Template flexibility** - Multiple templates for different use cases
-- **Framework integration** - Seamless integration with @esteban-url/cli
+- **Framework integration** - Seamless integration with @trailhead/cli
 
 ## Documentation Structure
 
@@ -50,7 +50,7 @@ Task-oriented guides:
 ### 1. Interactive Project Setup
 
 ```bash
-npx @esteban-url/create-cli my-awesome-cli
+npx @trailhead/create-cli my-awesome-cli
 
 # Interactive prompts guide you through:
 # - Project name and description
@@ -92,8 +92,8 @@ npx @esteban-url/create-cli my-awesome-cli
 Generated projects include:
 
 ```typescript
-import { createCLI, createCommand } from '@esteban-url/cli'
-import { Ok, Err } from '@esteban-url/core'
+import { createCLI, createCommand } from '@trailhead/cli'
+import { Ok, Err } from '@trailhead/core'
 
 // Pre-configured with:
 - Command structure
@@ -108,16 +108,16 @@ import { Ok, Err } from '@esteban-url/core'
 
 ```bash
 # Quick start with defaults
-npx @esteban-url/create-cli my-cli
+npx @trailhead/create-cli my-cli
 
 # With options
-npx @esteban-url/create-cli my-cli --template advanced --pm pnpm
+npx @trailhead/create-cli my-cli --template advanced --pm pnpm
 ```
 
 ### Programmatic Usage
 
 ```typescript
-import { generateProject } from '@esteban-url/create-cli'
+import { generateProject } from '@trailhead/create-cli'
 
 const result = await generateProject({
   projectName: 'my-cli',
@@ -179,7 +179,7 @@ Templates use Handlebars with custom helpers:
 
 ### For CLI Generation
 
-1. **Run generator**: `npx @esteban-url/create-cli my-cli`
+1. **Run generator**: `npx @trailhead/create-cli my-cli`
 2. **Navigate to project**: `cd my-cli`
 3. **Install dependencies**: `pnpm install` (auto-detected)
 4. **Start development**: `pnpm dev`

@@ -17,9 +17,9 @@ example: 0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/data
+[Trailhead API Documentation](README.md) / @trailhead/data
 
-# @esteban-url/data
+# @trailhead/data
 
 ## Interfaces
 
@@ -3715,7 +3715,7 @@ Pre-configured with:
 #### Example
 
 ```typescript
-import { data } from '@esteban-url/data'
+import { data } from '@trailhead/data'
 
 // Parse any supported format
 const result = await data.parseAuto('report.xlsx')

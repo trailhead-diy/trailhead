@@ -84,7 +84,7 @@ const BUILTIN_TEMPLATES: TemplateInfo[] = [
  *
  * @example
  * ```typescript
- * import { getAvailableTemplates } from '@esteban-url/create-cli'
+ * import { getAvailableTemplates } from '@trailhead/create-cli'
  *
  * const templates = getAvailableTemplates()
  * templates.forEach((template) => {

@@ -318,7 +318,7 @@ interface CoreError {
 {{projectName}} can be used programmatically in Node.js applications:
 
 ```typescript
-import { createCLI } from '@esteban-url/trailhead-cli/command';
+import { createCLI } from '@trailhead/trailhead-cli/command';
 import { buildCommand } from './commands/build.js';
 
 const cli = createCLI({
@@ -336,8 +336,8 @@ await cli.run(['build', '--production']);
 {{projectName}} is built with TypeScript and provides full type definitions:
 
 ```typescript
-import type { Result } from '@esteban-url/trailhead-cli/core';
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import type { Result } from '@trailhead/trailhead-cli/core';
+import { createCommand } from '@trailhead/trailhead-cli/command';
 
 const myCommand = createCommand({
   name: 'example',

@@ -1,5 +1,5 @@
 /**
- * @module @esteban-url/data
+ * @module @trailhead/data
  * @description Unified data processing library with auto-detection for CSV, JSON, and Excel formats
  *
  * This package provides:
@@ -11,7 +11,7 @@
  *
  * @example Basic usage with auto-detection
  * ```typescript
- * import { data } from '@esteban-url/data'
+ * import { data } from '@trailhead/data'
  *
  * // Auto-detect and parse any supported format
  * const result = await data.parseAuto('data.csv')
@@ -23,7 +23,7 @@
  *
  * @example Format-specific operations
  * ```typescript
- * import { createCSVOperations } from '@esteban-url/data'
+ * import { createCSVOperations } from '@trailhead/data'
  *
  * const csvOps = createCSVOperations({ delimiter: ';' })
  * const result = await csvOps.parseFile('data.csv')
@@ -171,7 +171,7 @@ export type {
  *
  * @example Auto-parsing with format detection
  * ```typescript
- * import { data } from '@esteban-url/data'
+ * import { data } from '@trailhead/data'
  *
  * const result = await data.parseAuto('data.csv')
  * if (result.isOk()) {

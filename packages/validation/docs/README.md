@@ -316,7 +316,7 @@ app.post('/users', validateBody(validateCreateUser), (req, res) => {
 ### With CLI Applications
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { validate } from '@repo/validation'
 
 const createProjectCommand = createCommand({

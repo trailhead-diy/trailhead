@@ -1,4 +1,4 @@
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 // Development commands
 import { freshStartCommand } from './commands/dev/fresh-start.js'
 import { testRunnerCommand } from './commands/dev/test-runner.js'

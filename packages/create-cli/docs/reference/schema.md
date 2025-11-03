@@ -10,7 +10,7 @@ related:
 
 # Configuration Schema Reference
 
-Complete reference for all configuration options available in @esteban-url/create-cli.
+Complete reference for all configuration options available in @trailhead/create-cli.
 
 ## Overview
 
@@ -205,7 +205,7 @@ Configuration can come from multiple sources (in priority order):
 ### Command Line
 
 ```bash
-npx @esteban-url/create-cli my-cli \
+npx @trailhead/create-cli my-cli \
   --type standalone-cli \
   --package-manager pnpm \
   --features config,testing \

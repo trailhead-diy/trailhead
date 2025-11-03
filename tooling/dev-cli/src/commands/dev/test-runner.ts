@@ -1,5 +1,5 @@
-import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { execCommand } from '../../utils/subprocess.js'
 import { colorize, withIcon } from '../../utils/colors.js'
 
@@ -349,9 +349,9 @@ function getPackageFilter(packageName: string, config: TestConfig): string {
   // Default mappings
   switch (packageName) {
     case 'cli':
-      return '@esteban-url/cli'
+      return '@trailhead/cli'
     case 'create-cli':
-      return '@esteban-url/create-cli'
+      return '@trailhead/create-cli'
     default:
       return packageName
   }

@@ -1,8 +1,8 @@
-import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { execCommand } from '../../utils/subprocess.js'
 import { colorize, withIcon } from '../../utils/colors.js'
-import { fs } from '@esteban-url/fs'
+import { fs } from '@trailhead/fs'
 import path from 'path'
 
 interface CoverageCheckOptions extends CommandOptions {
@@ -44,7 +44,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
     },
     {
       flags: '--package-filter <filter>',
-      description: 'Filter packages to check (e.g., "@esteban-url/core")',
+      description: 'Filter packages to check (e.g., "@trailhead/core")',
       type: 'string',
     },
   ],
@@ -52,7 +52,7 @@ export const coverageCheckCommand = createCommand<CoverageCheckOptions>({
     'coverage-check',
     'coverage-check --changed',
     'coverage-check --report-only',
-    'coverage-check --package-filter "@esteban-url/core"',
+    'coverage-check --package-filter "@trailhead/core"',
   ],
   action: async (options, context): Promise<Result<void, CoreError>> => {
     try {

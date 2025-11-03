@@ -25,9 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@esteban-url/cli": "workspace:*",
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/fs": "workspace:*",
+    "@trailhead/cli": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
     "consola": "^3.4.2",
     "fast-glob": "^3.3.2"
   },

@@ -2,7 +2,7 @@
  * Performance monitoring utilities for CLI testing
  */
 
-import { topN, bottomN, sortBy, orderBy } from '@esteban-url/sort'
+import { topN, bottomN, sortBy, orderBy } from '@trailhead/sort'
 
 export interface PerformanceMetrics {
   executionTime: number

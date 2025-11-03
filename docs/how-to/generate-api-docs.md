@@ -135,7 +135,7 @@ Each package can have its own `typedoc.json` to override settings:
 ```json
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "@esteban-url/cli",
+  "name": "@trailhead/cli",
   "readme": "./README.md",
   "entryPoints": ["src/index.ts"],
 
@@ -186,7 +186,7 @@ Document entire modules using `@module` tag:
 
 ````typescript
 /**
- * @module @esteban-url/cli
+ * @module @trailhead/cli
  * @description Foundation CLI orchestrator providing a complete CLI framework.
  *
  * This package provides modern CLI application foundations using functional
@@ -194,8 +194,8 @@ Document entire modules using `@module` tag:
  *
  * @example
  * ```typescript
- * import { createCLI, createCommand } from '@esteban-url/cli'
- * import { ok } from '@esteban-url/core'
+ * import { createCLI, createCommand } from '@trailhead/cli'
+ * import { ok } from '@trailhead/core'
  *
  * const cli = createCLI({ name: 'my-cli', version: '1.0.0' });
  * ```
@@ -356,7 +356,7 @@ Include runnable examples:
 /**
  * @example Basic usage
  * ```typescript
- * import { createCLI } from '@esteban-url/cli'
+ * import { createCLI } from '@trailhead/cli'
  *
  * const cli = createCLI({
  *   name: 'my-cli',

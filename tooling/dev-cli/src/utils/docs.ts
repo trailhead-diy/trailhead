@@ -1,7 +1,7 @@
 import { execSync } from 'child_process'
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { join, resolve } from 'path'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import fastGlob from 'fast-glob'
 
 export interface DocsGenerationOptions {
@@ -659,19 +659,19 @@ declare function ok<T>(value: T): Result<T, never>
 declare function err<E>(error: E): Result<never, E>
 
 // Module declarations for documentation examples
-declare module '@esteban-url/cli' { export function createCLI(config: CLIConfig): CLI }
-declare module '@esteban-url/cli/command' { 
+declare module '@trailhead/cli' { export function createCLI(config: CLIConfig): CLI }
+declare module '@trailhead/cli/command' { 
     export function createCommand<T>(config: any): Command<T>
     export interface CommandOptions {}
     export interface CommandContext extends CommandContext {}
 }
-declare module '@esteban-url/core' { 
+declare module '@trailhead/core' { 
     export function ok<T>(value: T): Result<T, never>
     export function err<E>(error: E): Result<never, E>
     export interface Result<T, E> extends Result<T, E> {}
 }
-declare module '@esteban-url/fs' { export function readFile(path: string, encoding?: string): Promise<Result<string, Error>> }
-declare module '@esteban-url/config' {
+declare module '@trailhead/fs' { export function readFile(path: string, encoding?: string): Promise<Result<string, Error>> }
+declare module '@trailhead/config' {
     export function defineSchema(): any
     export function createConfigManager(config: any): any
     export function string(): any
@@ -679,9 +679,9 @@ declare module '@esteban-url/config' {
     export function boolean(): any
     export function object(shape: any): any
 }
-declare module '@esteban-url/data' { export const data: any }
-declare module '@esteban-url/sort' { export function sortBy(arr: any[], fns: any[]): any[] }
-declare module '@esteban-url/validation' { export const validate: any; export const z: any }
+declare module '@trailhead/data' { export const data: any }
+declare module '@trailhead/sort' { export function sortBy(arr: any[], fns: any[]): any[] }
+declare module '@trailhead/validation' { export const validate: any; export const z: any }
 
 // Third-party module declarations
 declare module 'zod' { const z: any; export { z } }
@@ -1118,7 +1118,7 @@ declare module '@inquirer/prompts' {
    */
   isRunnableExample(code: string): boolean {
     // Look for imports from @esteban-url packages
-    if (code.includes('@esteban-url/')) {
+    if (code.includes('@trailhead/')) {
       return true
     }
 
@@ -1229,9 +1229,9 @@ console.log('✅ ${test.name} - No compilation errors')
       {
         name: 'Basic CLI creation',
         code: `
-import { createCLI } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCLI } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 
 const versionCommand = createCommand({
   name: 'version',
@@ -1253,7 +1253,7 @@ const cli = createCLI({
       {
         name: 'Result type patterns',
         code: `
-import { ok, err, Result } from '@esteban-url/core'
+import { ok, err, Result } from '@trailhead/core'
 
 const success: Result<string, Error> = ok('success')
 const failure: Result<string, Error> = err(new Error('failed'))

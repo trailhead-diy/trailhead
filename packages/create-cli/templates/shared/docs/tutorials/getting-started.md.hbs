@@ -23,14 +23,14 @@ or higher. ## Step 2: Create Your First Command Let's create a simple "hello" co
 project directory: ```bash mkdir my-first-cli cd my-first-cli
 {{packageName}}
 init ``` This creates a basic project structure. Now add a hello command: ```typescript //
-src/commands/hello.ts import { createCommand } from '@esteban-url/trailhead-cli/command' import { Ok
-} from '@esteban-url/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
+src/commands/hello.ts import { createCommand } from '@trailhead/trailhead-cli/command' import { Ok
+} from '@trailhead/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
 description: 'Greet someone', arguments: '[name]', options: [ { name: 'enthusiastic', alias: 'e',
 type: 'boolean', description: 'Add enthusiasm to the greeting' } ], action: async (options, context)
 => { const { logger, args } = context const name = args[0] || 'World' const enthusiasm =
 options.enthusiastic ? '!' : '.' logger.success(`Hello, ${name}${enthusiasm}`) return Ok(undefined)
 } }) ``` ## Step 3: Register the Command Update your main CLI file to include the new command:
-```typescript // src/index.ts import { createCLI } from '@esteban-url/trailhead-cli' import {
+```typescript // src/index.ts import { createCLI } from '@trailhead/trailhead-cli' import {
 helloCommand } from './commands/hello.js' async function main() { const cli = createCLI({ name:
 'my-first-cli', version: '1.0.0', description: 'My first CLI application', commands: [helloCommand]
 }) await cli.run() } main().catch(console.error) ``` ## Step 4: Build and Test Build your CLI:
@@ -39,8 +39,8 @@ helloCommand } from './commands/hello.js' async function main() { const cli = cr
 build ``` Test your new command: ```bash node bin/cli.js hello # Output: Hello, World. node
 bin/cli.js hello Alice --enthusiastic # Output: Hello, Alice! ``` ## Step 5: Add Error Handling
 Let's enhance our command with proper error handling: ```typescript // src/commands/hello.ts
-(updated) import { createCommand } from '@esteban-url/trailhead-cli/command' import { Ok, Err } from
-'@esteban-url/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
+(updated) import { createCommand } from '@trailhead/trailhead-cli/command' import { Ok, Err } from
+'@trailhead/trailhead-cli/core' export const helloCommand = createCommand({ name: 'hello',
 description: 'Greet someone', arguments: '[name]', options: [ { name: 'enthusiastic', alias: 'e',
 type: 'boolean', description: 'Add enthusiasm to the greeting' }, { name: 'language', alias: 'l',
 type: 'string', description: 'Greeting language (en|es|fr)' } ], action: async (options, context) =>
@@ -53,7 +53,7 @@ fr: 'Bonjour' } const greeting = greetings[language as keyof typeof greetings] c
 options.enthusiastic ? '!' : '.' logger.success(`${greeting}, ${name}${enthusiasm}`) return
 Ok(undefined) } }) ``` ## Step 6: Add Tests Create a test for your command: ```typescript //
 src/commands/__tests__/hello.test.ts import { describe, it, expect } from 'vitest' import {
-createTestContext } from '@esteban-url/trailhead-cli/testing' import { helloCommand } from
+createTestContext } from '@trailhead/trailhead-cli/testing' import { helloCommand } from
 '../hello.js' describe('hello command', () => { it('should greet with default name', async () => {
 const context = createTestContext({ args: [] }) const result = await helloCommand.execute({},
 context) expect(result.success).toBe(true) expect(context.logger.info).toHaveBeenCalledWith('Hello,

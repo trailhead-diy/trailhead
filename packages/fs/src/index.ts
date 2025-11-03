@@ -1,12 +1,12 @@
 /**
- * @module @esteban-url/fs
+ * @module @trailhead/fs
  *
  * Functional filesystem operations with Result types for safe error handling.
  * Provides a modern, type-safe alternative to Node.js fs module with explicit error handling.
  *
  * @example
  * ```typescript
- * import { fs } from '@esteban-url/fs'
+ * import { fs } from '@trailhead/fs'
  *
  * // Using the convenience object (pre-configured with defaults)
  * const result = await fs.readFile('config.json')
@@ -17,7 +17,7 @@
  * }
  *
  * // Using factory functions for custom configuration
- * import { readFile, FSConfig } from '@esteban-url/fs'
+ * import { readFile, FSConfig } from '@trailhead/fs'
  *
  * const customConfig: FSConfig = { encoding: 'latin1' }
  * const customRead = readFile(customConfig)
@@ -102,7 +102,7 @@ import {
  *
  * @example
  * ```typescript
- * import { fs } from '@esteban-url/fs'
+ * import { fs } from '@trailhead/fs'
  *
  * // Read a file
  * const content = await fs.readFile('data.txt')

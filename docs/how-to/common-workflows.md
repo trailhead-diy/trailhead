@@ -7,8 +7,8 @@ How-to guides for typical CLI development tasks.
 Start with a basic command structure:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
 
 export const greetCommand = createCommand({
   name: 'greet',
@@ -43,9 +43,9 @@ export const greetCommand = createCommand({
 Use the built-in prompt utilities for user interaction:
 
 ```typescript
-import { input, confirm, select } from '@esteban-url/cli/prompts'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { input, confirm, select } from '@trailhead/cli/prompts'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 
 export const initCommand = createCommand({
   name: 'init',
@@ -100,9 +100,9 @@ export const initCommand = createCommand({
 Use the filesystem utilities with proper Result handling:
 
 ```typescript
-import { fs } from '@esteban-url/fs'
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
+import { fs } from '@trailhead/fs'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
 
 export const processCommand = createCommand({
   name: 'process',
@@ -156,11 +156,11 @@ export const processCommand = createCommand({
 
 ## Handling Configuration
 
-Use the configuration utilities from `@esteban-url/config`:
+Use the configuration utilities from `@trailhead/config`:
 
 ```typescript
 // src/lib/config.ts
-import { createConfigManager } from '@esteban-url/config'
+import { createConfigManager } from '@trailhead/config'
 import { z } from 'zod'
 
 // Define your schema using Zod
@@ -220,7 +220,7 @@ const command = createCommand({
 For more advanced configuration scenarios:
 
 ```typescript
-import { createConfigOperations } from '@esteban-url/config'
+import { createConfigOperations } from '@trailhead/config'
 import { z } from 'zod'
 
 // Create operations instance
@@ -258,8 +258,8 @@ if (validateResult.isErr()) {
 Show progress for long-running operations:
 
 ```typescript
-import { createProgressBar } from '@esteban-url/cli/progress'
-import { createCommand } from '@esteban-url/cli/command'
+import { createProgressBar } from '@trailhead/cli/progress'
+import { createCommand } from '@trailhead/cli/command'
 
 export const downloadCommand = createCommand({
   name: 'download',
@@ -295,8 +295,8 @@ export const downloadCommand = createCommand({
 For operations without known duration:
 
 ```typescript
-import { createSpinner, withSpinner } from '@esteban-url/cli/utils'
-import { createCommand } from '@esteban-url/cli/command'
+import { createSpinner, withSpinner } from '@trailhead/cli/utils'
+import { createCommand } from '@trailhead/cli/command'
 
 export const deployCommand = createCommand({
   name: 'deploy',
@@ -334,9 +334,9 @@ export const deployCommand = createCommand({
 Implement graceful error handling and recovery:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
-import { fs } from '@esteban-url/fs'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
+import { fs } from '@trailhead/fs'
 
 export const safeCommand = createCommand({
   name: 'safe-process',
@@ -390,7 +390,7 @@ Write tests for your CLI commands:
 
 ```typescript
 import { describe, it, expect } from 'vitest'
-import { createTestContext } from '@esteban-url/cli/testing'
+import { createTestContext } from '@trailhead/cli/testing'
 import { myCommand } from './my-command.js'
 
 describe('myCommand', () => {
@@ -432,8 +432,8 @@ describe('myCommand', () => {
 Detect and use the appropriate package manager:
 
 ```typescript
-import { detectPackageManager, getRunCommand } from '@esteban-url/cli/utils'
-import { createCommand } from '@esteban-url/cli/command'
+import { detectPackageManager, getRunCommand } from '@trailhead/cli/utils'
+import { createCommand } from '@trailhead/cli/command'
 
 export const runCommand = createCommand({
   name: 'run',

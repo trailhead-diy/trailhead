@@ -13,22 +13,22 @@ Styling, logging, spinners, and statistics tracking utilities for CLI applicatio
 
 ## Overview
 
-| Property    | Value                    |
-| ----------- | ------------------------ |
-| **Package** | `@esteban-url/cli`       |
-| **Module**  | `@esteban-url/cli/utils` |
-| **Since**   | `v1.0.0`                 |
+| Property    | Value                  |
+| ----------- | ---------------------- |
+| **Package** | `@trailhead/cli`       |
+| **Module**  | `@trailhead/cli/utils` |
+| **Since**   | `v1.0.0`               |
 
 ## Import
 
 ```typescript
-import { chalk, success, error, warning, createSpinner, createStats } from '@esteban-url/cli/utils'
+import { chalk, success, error, warning, createSpinner, createStats } from '@trailhead/cli/utils'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { chalk, success, error, warning, createSpinner, createStats } from '@esteban-url/cli/utils'
+import { chalk, success, error, warning, createSpinner, createStats } from '@trailhead/cli/utils'
 ```
 
 ## Terminal Styling
@@ -38,7 +38,7 @@ import { chalk, success, error, warning, createSpinner, createStats } from '@est
 Full [chalk](https://github.com/chalk/chalk) library for terminal styling.
 
 ```typescript
-import { chalk } from '@esteban-url/cli/utils'
+import { chalk } from '@trailhead/cli/utils'
 
 console.log(chalk.blue('Information'))
 console.log(chalk.red.bold('Error!'))
@@ -62,7 +62,7 @@ import {
   dim, // Dimmed text
   italic, // Italic text
   underline, // Underlined text
-} from '@esteban-url/cli/utils'
+} from '@trailhead/cli/utils'
 
 // Usage
 console.log(success('✓ Operation completed'))
@@ -83,7 +83,7 @@ console.log(dim(muted('Less important info')))
 Create loading spinners for long-running operations.
 
 ```typescript
-import { createSpinner } from '@esteban-url/cli/utils'
+import { createSpinner } from '@trailhead/cli/utils'
 
 const spinner = createSpinner('Loading data...')
 
@@ -117,7 +117,7 @@ interface Spinner {
 Execute async operations with automatic spinner management.
 
 ```typescript
-import { withSpinner } from '@esteban-url/cli/utils'
+import { withSpinner } from '@trailhead/cli/utils'
 
 const result = await withSpinner({
   text: 'Processing files...',
@@ -134,7 +134,7 @@ const result = await withSpinner({
 
 ```typescript
 // Using ora directly for more control
-import { ora } from '@esteban-url/cli/utils'
+import { ora } from '@trailhead/cli/utils'
 
 const spinner = ora({
   text: 'Loading',
@@ -165,7 +165,7 @@ spinner.stopAndPersist({
 Track operation statistics.
 
 ```typescript
-import { createStats } from '@esteban-url/cli/utils'
+import { createStats } from '@trailhead/cli/utils'
 
 const stats = createStats()
 
@@ -209,7 +209,7 @@ interface StatsSummary {
 Format statistics for display.
 
 ```typescript
-import { formatStats } from '@esteban-url/cli/utils'
+import { formatStats } from '@trailhead/cli/utils'
 
 const summary = stats.getSummary()
 const formatted = formatStats(summary)
@@ -227,7 +227,7 @@ console.log(formatted)
 Update statistics based on operation results.
 
 ```typescript
-import { updateStats } from '@esteban-url/cli/utils'
+import { updateStats } from '@trailhead/cli/utils'
 
 const stats = createStats()
 
@@ -249,7 +249,7 @@ console.log(`Failed: ${summary.file_processing_error}`)
 Get formatted elapsed time.
 
 ```typescript
-import { getElapsedTime } from '@esteban-url/cli/utils'
+import { getElapsedTime } from '@trailhead/cli/utils'
 
 const start = Date.now()
 
@@ -266,7 +266,7 @@ console.log(`Completed in ${getElapsedTime(start)}`)
 Remove undefined values from objects.
 
 ```typescript
-import { filterUndefined } from '@esteban-url/cli/utils'
+import { filterUndefined } from '@trailhead/cli/utils'
 
 const options = {
   name: 'test',
@@ -284,7 +284,7 @@ const filtered = filterUndefined(options)
 Merge options with defaults.
 
 ```typescript
-import { mergeOptionsWithDefaults } from '@esteban-url/cli/utils'
+import { mergeOptionsWithDefaults } from '@trailhead/cli/utils'
 
 const defaults = {
   port: 3000,
@@ -306,7 +306,7 @@ const merged = mergeOptionsWithDefaults(options, defaults)
 Process and validate command options.
 
 ```typescript
-import { processCommandOptions } from '@esteban-url/cli/utils'
+import { processCommandOptions } from '@trailhead/cli/utils'
 
 const schema = [
   { name: 'port', type: 'number', default: 3000 },

@@ -1,5 +1,5 @@
-import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { colorize, withIcon } from '../../utils/colors.js'
 import { docsOperations } from '../../utils/docs.js'
 

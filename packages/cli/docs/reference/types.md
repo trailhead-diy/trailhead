@@ -1,7 +1,7 @@
 ---
 type: reference
 title: 'Type Reference Index'
-description: 'Index of all types exported by @esteban-url/trailhead-cli modules'
+description: 'Index of all types exported by @trailhead/trailhead-cli modules'
 related:
   - /packages/cli/docs/reference/core.md
   - /packages/cli/docs/reference/command.md
@@ -10,31 +10,31 @@ related:
 
 # Type Reference Index
 
-Index of all types exported by @esteban-url/trailhead-cli modules.
+Index of all types exported by @trailhead/trailhead-cli modules.
 
 ## Overview
 
-| Property    | Value                        |
-| ----------- | ---------------------------- |
-| **Package** | `@esteban-url/trailhead-cli` |
-| **Module**  | All modules                  |
-| **Since**   | `v1.0.0`                     |
+| Property    | Value                      |
+| ----------- | -------------------------- |
+| **Package** | `@trailhead/trailhead-cli` |
+| **Module**  | All modules                |
+| **Since**   | `v1.0.0`                   |
 
 ## Import
 
 ```typescript
-import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli'
+import type { Result, CLI, CLIConfig } from '@trailhead/trailhead-cli'
 ```
 
 ## Import by Module
 
-### Main Export (`@esteban-url/trailhead-cli`)
+### Main Export (`@trailhead/trailhead-cli`)
 
 ```typescript
-import type { Result, CLI, CLIConfig } from '@esteban-url/trailhead-cli'
+import type { Result, CLI, CLIConfig } from '@trailhead/trailhead-cli'
 ```
 
-### Core Types (`@esteban-url/trailhead-cli/core`)
+### Core Types (`@trailhead/trailhead-cli/core`)
 
 ```typescript
 import type {
@@ -49,10 +49,10 @@ import type {
   ValidationRule,
   ValidationPipeline,
   Validator,
-} from '@esteban-url/trailhead-cli/core'
+} from '@trailhead/trailhead-cli/core'
 ```
 
-### Command Types (`@esteban-url/trailhead-cli/command`)
+### Command Types (`@trailhead/trailhead-cli/command`)
 
 ```typescript
 import type {
@@ -64,10 +64,10 @@ import type {
   ParsedOptions,
   ExecutionOptions,
   ProgressOptions,
-} from '@esteban-url/trailhead-cli/command'
+} from '@trailhead/trailhead-cli/command'
 ```
 
-### FileSystem Types (`@esteban-url/trailhead-cli/filesystem`)
+### FileSystem Types (`@trailhead/trailhead-cli/filesystem`)
 
 ```typescript
 import type {
@@ -78,16 +78,16 @@ import type {
   CopyOptions,
   RemoveOptions,
   JsonOptions,
-} from '@esteban-url/trailhead-cli/filesystem'
+} from '@trailhead/trailhead-cli/filesystem'
 ```
 
-### Config Types (`@esteban-url/trailhead-cli/config`)
+### Config Types (`@trailhead/trailhead-cli/config`)
 
 ```typescript
-import type { ConfigDefinition, ConfigSchema, LoadOptions } from '@esteban-url/trailhead-cli/config'
+import type { ConfigDefinition, ConfigSchema, LoadOptions } from '@trailhead/trailhead-cli/config'
 ```
 
-### Testing Types (`@esteban-url/trailhead-cli/testing`)
+### Testing Types (`@trailhead/trailhead-cli/testing`)
 
 ```typescript
 import type {
@@ -97,10 +97,10 @@ import type {
   MockPrompts,
   RunOptions,
   CommandTestRunner,
-} from '@esteban-url/trailhead-cli/testing'
+} from '@trailhead/trailhead-cli/testing'
 ```
 
-### Utils Types (`@esteban-url/trailhead-cli/utils`)
+### Utils Types (`@trailhead/trailhead-cli/utils`)
 
 ```typescript
 import type {
@@ -110,7 +110,7 @@ import type {
   StatsSummary,
   OptionSchema,
   StyleFunction,
-} from '@esteban-url/trailhead-cli/utils'
+} from '@trailhead/trailhead-cli/utils'
 ```
 
 ## Core Type Definitions
@@ -245,10 +245,10 @@ All types are designed to work together:
 
 ```typescript
 // Example: Command using multiple module types
-import type { Command, CommandContext } from '@esteban-url/trailhead-cli/command'
-import type { Result } from '@esteban-url/trailhead-cli'
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import type { Logger } from '@esteban-url/trailhead-cli/core'
+import type { Command, CommandContext } from '@trailhead/trailhead-cli/command'
+import type { Result } from '@trailhead/trailhead-cli'
+import type { FileSystem } from '@trailhead/trailhead-cli/filesystem'
+import type { Logger } from '@trailhead/trailhead-cli/core'
 
 const myCommand: Command<MyOptions> = {
   name: 'process',

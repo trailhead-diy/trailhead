@@ -4,7 +4,7 @@
  */
 
 import { describe, test, expect } from 'vitest'
-import { resultMatchers } from '@esteban-url/core/testing'
+import { resultMatchers } from '@trailhead/core/testing'
 
 // Setup Result matchers for testing
 expect.extend(resultMatchers)

@@ -1,4 +1,4 @@
-# @esteban-url/cli
+# @trailhead/cli
 
 > Functional CLI framework for building production-ready command-line applications with TypeScript
 
@@ -8,7 +8,7 @@
 
 A modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes in public API—just pure functions and immutable data.
 
-## Why Choose @esteban-url/cli?
+## Why Choose @trailhead/cli?
 
 ### 🎯 **Explicit Error Handling**
 
@@ -31,18 +31,18 @@ Pure functions, immutable data, and composition patterns throughout. No classes,
 ### Installation
 
 ```bash
-# Install from GitHub Packages (private repo)
-pnpm add @esteban-url/cli
+# Install from npm
+pnpm add @trailhead/cli
 
 # Or generate a new project
-npx create-cli my-cli
+npx @trailhead/create-cli my-cli
 ```
 
 ### Basic CLI in 30 Seconds
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -69,7 +69,7 @@ await greetCommand.execute(['--name', 'World'])
 ### Result Types - No Exceptions
 
 ```typescript
-import { Result, ok, err } from '@esteban-url/core'
+import { Result, ok, err } from '@trailhead/core'
 
 // Functions return Results instead of throwing
 async const deployApp = async (env: string): Promise<Result<string, Error>> => {
@@ -97,7 +97,7 @@ if (result.isok()) {
 ### Command Composition
 
 ```typescript
-import { createCommand, executeWithPhases } from '@esteban-url/cli/command'
+import { createCommand, executeWithPhases } from '@trailhead/cli/command'
 
 const buildCommand = createCommand({
   name: 'build',
@@ -132,13 +132,13 @@ const buildCommand = createCommand({
 
 ## Module Reference
 
-### Main Export (`@esteban-url/cli`)
+### Main Export (`@trailhead/cli`)
 
 The main export provides CLI creation and basic Result types:
 
 ```typescript
-import { createCLI, ok, err } from '@esteban-url/cli'
-import type { Result, CoreError } from '@esteban-url/cli'
+import { createCLI, ok, err } from '@trailhead/cli'
+import type { Result, CoreError } from '@trailhead/cli'
 
 // Create a CLI application
 const cli = createCLI({
@@ -150,9 +150,9 @@ const cli = createCLI({
 })
 ```
 
-**Note**: For extended Result utilities, use `@esteban-url/core` directly.
+**Note**: For extended Result utilities, use `@trailhead/core` directly.
 
-### Command (`@esteban-url/cli/command`)
+### Command (`@trailhead/cli/command`)
 
 Command creation, validation, and execution patterns
 
@@ -162,7 +162,7 @@ import {
   executeWithPhases,
   executeWithValidation,
   executeWithDryRun,
-} from '@esteban-url/cli/command'
+} from '@trailhead/cli/command'
 
 // Advanced command with validation
 const processCommand = createCommand({
@@ -185,7 +185,7 @@ const processCommand = createCommand({
 })
 ```
 
-### Testing (`@esteban-url/cli/testing`)
+### Testing (`@trailhead/cli/testing`)
 
 Comprehensive testing utilities with mocks and assertions
 
@@ -195,7 +195,7 @@ import {
   createMockFileSystem,
   expectSuccess,
   expectError,
-} from '@esteban-url/cli/testing'
+} from '@trailhead/cli/testing'
 
 describe('my command', () => {
   test('should process files successfully', async () => {
@@ -213,12 +213,12 @@ describe('my command', () => {
 })
 ```
 
-### Progress (`@esteban-url/cli/progress`)
+### Progress (`@trailhead/cli/progress`)
 
 Progress tracking with enhanced capabilities
 
 ```typescript
-import { createProgressTracker } from '@esteban-url/cli/progress'
+import { createProgressTracker } from '@trailhead/cli/progress'
 
 const progress = createProgressTracker({
   total: 100,
@@ -232,12 +232,12 @@ for (let i = 0; i < 100; i++) {
 }
 ```
 
-### Utils (`@esteban-url/cli/utils`)
+### Utils (`@trailhead/cli/utils`)
 
 Utilities for styling, package detection, and more
 
 ```typescript
-import { chalk, createSpinner, detectPackageManager, createLogger } from '@esteban-url/cli/utils'
+import { chalk, createSpinner, detectPackageManager, createLogger } from '@trailhead/cli/utils'
 
 // Rich terminal output
 console.log(chalk.success('✓ Build completed'))
@@ -257,7 +257,7 @@ spinner.stop('Deployed successfully')
 For complex workflows that need progress tracking:
 
 ```typescript
-import { executeWithPhases } from '@esteban-url/cli/command'
+import { executeWithPhases } from '@trailhead/cli/command'
 
 const phases = [
   {
@@ -283,7 +283,7 @@ const result = await executeWithPhases(phases, { env: 'production' }, context)
 ### Interactive Prompts
 
 ```typescript
-import { createInteractiveCommand } from '@esteban-url/cli/command'
+import { createInteractiveCommand } from '@trailhead/cli/command'
 
 const setupCommand = createInteractiveCommand({
   name: 'setup',
@@ -303,9 +303,9 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { fs } from '@esteban-url/fs'
+import { fs } from '@trailhead/fs'
 
-// Use @esteban-url/fs package for file operations
+// Use @trailhead/fs package for file operations
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -330,7 +330,7 @@ if (copyResult.isErr()) {
 Focus on testing business logic and user interactions:
 
 ```typescript
-import { createTestRunner } from '@esteban-url/cli/testing'
+import { createTestRunner } from '@trailhead/cli/testing'
 
 describe('build command', () => {
   const testRunner = createTestRunner()
@@ -355,7 +355,7 @@ describe('build command', () => {
 ### Mock File System
 
 ```typescript
-import { createMockFileSystem } from '@esteban-url/cli/testing'
+import { createMockFileSystem } from '@trailhead/cli/testing'
 
 test('processes configuration file', async () => {
   const mockFs = createMockFileSystem({
@@ -398,7 +398,7 @@ const command = createCommand({
 For large file processing:
 
 ```typescript
-import { createProcessingStream } from '@esteban-url/cli/command'
+import { createProcessingStream } from '@trailhead/cli/command'
 
 const processLargeFile = createCommand({
   name: 'process-large',
@@ -465,7 +465,7 @@ program
 **After (Modern Pattern):**
 
 ```typescript
-// @esteban-url/cli with Result-based error handling
+// @trailhead/cli with Result-based error handling
 const deployCommand = createCommand({
   name: 'deploy',
   options: {
@@ -502,7 +502,7 @@ yargs.command(
 **After (Modern Pattern):**
 
 ```typescript
-// @esteban-url/cli with Result-based error handling
+// @trailhead/cli with Result-based error handling
 const buildCommand = createCommand({
   name: 'build',
   arguments: [{ name: 'env', type: 'string', description: 'Target environment' }],

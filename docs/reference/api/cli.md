@@ -15,9 +15,9 @@ since: 0.1.0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/cli
+[Trailhead API Documentation](README.md) / @trailhead/cli
 
-# @esteban-url/cli
+# @trailhead/cli
 
 ## Interfaces
 

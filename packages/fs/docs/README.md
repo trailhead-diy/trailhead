@@ -296,7 +296,7 @@ async const loadValidatedConfig = async (configPath: string): Promise<Result<App
 ### With CLI Applications
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { fs } from '@repo/fs'
 
 const copyCommand = createCommand({

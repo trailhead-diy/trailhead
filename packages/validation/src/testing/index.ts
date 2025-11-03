@@ -1,5 +1,5 @@
 /**
- * @esteban-url/validation/testing
+ * @trailhead/validation/testing
  *
  * Validation testing utilities for schema testing, validation mocking, and assertion helpers.
  * Provides domain-focused utilities for testing validation logic, error handling, and schema composition.
@@ -11,7 +11,7 @@
  *   validationFixtures,
  *   assertValidationSuccess,
  *   testSchemaComposition,
- * } from '@esteban-url/validation/testing'
+ * } from '@trailhead/validation/testing'
  *
  * // Create mock validator
  * const validator = createMockValidator()
@@ -23,7 +23,7 @@
  * ```
  */
 
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 import { z } from 'zod'
 
 // ========================================

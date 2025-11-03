@@ -23,7 +23,7 @@ import { rmSync, existsSync } from 'fs'
 import { execa } from 'execa'
 import chalk from 'chalk'
 import ora from 'ora'
-import { createTestContext } from '@esteban-url/trailhead-cli/testing'
+import { createTestContext } from '@trailhead/trailhead-cli/testing'
 import { generateProject } from '../src/lib/generator.js'
 import type { ProjectConfig, TemplateVariant, PackageManager } from '../src/lib/types.js'
 

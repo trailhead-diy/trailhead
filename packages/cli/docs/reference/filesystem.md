@@ -1,7 +1,7 @@
 ---
 type: reference
 title: 'FileSystem Module API Reference'
-description: 'File system abstraction layer from @esteban-url/fs package'
+description: 'File system abstraction layer from @trailhead/fs package'
 related:
   - /packages/cli/docs/reference/core.md
   - /packages/cli/docs/reference/testing.md
@@ -13,26 +13,26 @@ Abstraction layer for file system operations with consistent error handling and 
 
 ## Overview
 
-| Property    | Value             |
-| ----------- | ----------------- |
-| **Package** | `@esteban-url/fs` |
-| **Module**  | `@esteban-url/fs` |
-| **Since**   | `v1.0.0`          |
+| Property    | Value           |
+| ----------- | --------------- |
+| **Package** | `@trailhead/fs` |
+| **Module**  | `@trailhead/fs` |
+| **Since**   | `v1.0.0`        |
 
-**Note**: The filesystem functionality is provided by the `@esteban-url/fs` package, which is a dependency of `@esteban-url/cli`.
+**Note**: The filesystem functionality is provided by the `@trailhead/fs` package, which is a dependency of `@trailhead/cli`.
 
 ## Import
 
 ```typescript
-import { createFileSystem } from '@esteban-url/fs'
-import type { FileSystem } from '@esteban-url/fs'
+import { createFileSystem } from '@trailhead/fs'
+import type { FileSystem } from '@trailhead/fs'
 ```
 
 ## Basic Usage
 
 ```typescript
-import { createFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import type { FileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { createFileSystem } from '@trailhead/trailhead-cli/filesystem'
+import type { FileSystem } from '@trailhead/trailhead-cli/filesystem'
 
 const fs = createFileSystem()
 ```
@@ -107,7 +107,7 @@ interface JsonOptions {
 ### Real FileSystem (Default)
 
 ```typescript
-import { createFileSystem, createNodeFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { createFileSystem, createNodeFileSystem } from '@trailhead/trailhead-cli/filesystem'
 
 // Using factory (recommended)
 const fs = createFileSystem()
@@ -119,7 +119,7 @@ const nodeFs = createNodeFileSystem()
 ### Memory FileSystem (Testing)
 
 ```typescript
-import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem'
+import { createMemoryFileSystem } from '@trailhead/trailhead-cli/filesystem'
 
 // Empty memory filesystem
 const fs = createMemoryFileSystem()
@@ -307,8 +307,8 @@ if (!result.success) {
 ## Testing with Memory FileSystem
 
 ```typescript
-import { createMemoryFileSystem } from '@esteban-url/trailhead-cli/filesystem'
-import { createTestContext } from '@esteban-url/trailhead-cli/testing'
+import { createMemoryFileSystem } from '@trailhead/trailhead-cli/filesystem'
+import { createTestContext } from '@trailhead/trailhead-cli/testing'
 
 test('file processing', async () => {
   // Create memory filesystem with test data
@@ -359,7 +359,7 @@ import {
   readFile,
   writeFile,
   ensureDirectory,
-} from '@esteban-url/trailhead-cli/filesystem'
+} from '@trailhead/trailhead-cli/filesystem'
 
 // Find files matching pattern
 const tsFiles = await findFiles('/src', '**/*.ts')
@@ -377,7 +377,7 @@ await writeFile(fs, '/data.json', content, { backup: true })
 ### Path Utilities
 
 ```typescript
-import { getRelativePath, compareFiles } from '@esteban-url/trailhead-cli/filesystem'
+import { getRelativePath, compareFiles } from '@trailhead/trailhead-cli/filesystem'
 
 // Get relative path
 const relative = getRelativePath('/home/user', '/home/user/project/src')

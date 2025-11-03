@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
-import { ok, err, createCoreError } from '@esteban-url/core'
-import type { CommandContext } from '@esteban-url/cli/command'
+import { ok, err, createCoreError } from '@trailhead/core'
+import type { CommandContext } from '@trailhead/cli/command'
 
 export function createMockContext(overrides: Partial<CommandContext> = {}): CommandContext {
   const mockLogger = {

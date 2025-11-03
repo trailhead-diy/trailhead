@@ -58,7 +58,7 @@ describe('validate-deps unit tests', () => {
 
     it('should extract external package imports', () => {
       const content = `
-        import { something } from '@esteban-url/cli'
+        import { something } from '@trailhead/cli'
         import { other } from '@external/package'
       `
       const result = mockExtractImportedPackages(content)
@@ -68,7 +68,7 @@ describe('validate-deps unit tests', () => {
     it('should filter out @repo imports', () => {
       const content = `
         import { config } from '@repo/typescript-config'
-        import { cli } from '@esteban-url/cli'
+        import { cli } from '@trailhead/cli'
       `
       const result = mockExtractImportedPackages(content)
       expect(result).toEqual(['esteban-url'])
@@ -177,8 +177,8 @@ describe('validate-deps unit tests', () => {
 
     it.skip('should detect circular dependencies', () => {
       const packageContents = {
-        'esteban-url/cli': [`import { config } from '@esteban-url/config'`],
-        'esteban-url/config': [`import { utils } from '@esteban-url/cli'`],
+        'esteban-url/cli': [`import { config } from '@trailhead/config'`],
+        'esteban-url/config': [`import { utils } from '@trailhead/cli'`],
       }
 
       const result = mockCheckForCircularImport(
@@ -191,7 +191,7 @@ describe('validate-deps unit tests', () => {
 
     it('should not detect false positives', () => {
       const packageContents = {
-        'esteban-url/cli': [`import { config } from '@esteban-url/config'`],
+        'esteban-url/cli': [`import { config } from '@trailhead/config'`],
         'esteban-url/config': [`import { lodash } from 'lodash'`],
       }
 

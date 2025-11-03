@@ -8,9 +8,9 @@ example: 0
 
 ---
 
-[Trailhead API Documentation](README.md) / @esteban-url/fs
+[Trailhead API Documentation](README.md) / @trailhead/fs
 
-# @esteban-url/fs
+# @trailhead/fs
 
 ## Interfaces
 
@@ -271,7 +271,7 @@ Used with factory functions to create customized filesystem operations.
 #### Example
 
 ```typescript
-import { readFile, writeJson, FSConfig } from '@esteban-url/fs'
+import { readFile, writeJson, FSConfig } from '@trailhead/fs'
 
 const config: FSConfig = {
   encoding: 'utf16le',
@@ -732,7 +732,7 @@ Used when no custom configuration is provided.
 #### Example
 
 ```typescript
-import { defaultFSConfig, readFile } from '@esteban-url/fs'
+import { defaultFSConfig, readFile } from '@trailhead/fs'
 
 // Use defaults
 const reader = readFile() // uses defaultFSConfig
@@ -887,7 +887,7 @@ All operations return Result\<T, FileSystemError\> for safe error handling witho
 #### Example
 
 ```typescript
-import { fs } from '@esteban-url/fs'
+import { fs } from '@trailhead/fs'
 
 // Read a file
 const content = await fs.readFile('data.txt')
