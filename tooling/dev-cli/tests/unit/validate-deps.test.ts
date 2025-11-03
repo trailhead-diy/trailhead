@@ -62,7 +62,7 @@ describe('validate-deps unit tests', () => {
         import { other } from '@external/package'
       `
       const result = mockExtractImportedPackages(content)
-      expect(result).toEqual(['esteban-url', 'external'])
+      expect(result).toEqual(['trailhead', 'external'])
     })
 
     it('should filter out @repo imports', () => {
@@ -71,7 +71,7 @@ describe('validate-deps unit tests', () => {
         import { cli } from '@trailhead/cli'
       `
       const result = mockExtractImportedPackages(content)
-      expect(result).toEqual(['esteban-url'])
+      expect(result).toEqual(['trailhead'])
     })
   })
 
