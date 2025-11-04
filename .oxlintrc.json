@@ -21,7 +21,6 @@
     "**/*.mjs",
     "**/*.cjs",
     ".next",
-    "templates",
-    "apps/demos/**"
+    "templates"
   ]
 }

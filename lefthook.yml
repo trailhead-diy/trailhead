@@ -84,5 +84,32 @@ pre-push:
           exit 1
         }
 
-# Personal overrides (not committed)
-# Create .lefthook-local.yml to customize
+# ============================================================
+# Personal Overrides (not committed)
+# ============================================================
+# Create .lefthook-local.yml to customize for your workflow
+#
+# Examples:
+#
+# Skip specific hooks during development:
+# pre-commit:
+#   exclude_tags:
+#     - typecheck    # Skip type checking for faster commits
+#
+# Skip all hooks temporarily:
+# skip: true
+#
+# Skip specific commands:
+# pre-commit:
+#   commands:
+#     prettier:
+#       skip: true   # Skip if you have auto-format on save
+#
+# Skip hooks for specific file patterns:
+# pre-commit:
+#   commands:
+#     oxlint:
+#       exclude: "*.test.{ts,tsx}"
+#
+# Quick override via environment:
+#   LEFTHOOK=0 git commit  # Skip all hooks
