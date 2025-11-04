@@ -12,6 +12,7 @@ dist/
 .next/
 out/
 build/
+.docusaurus/
 *.tsbuildinfo
 .turbo/
 *.bundled_*.mjs
