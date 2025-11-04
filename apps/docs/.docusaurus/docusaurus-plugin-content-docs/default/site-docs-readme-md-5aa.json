@@ -1,0 +1,22 @@
+{
+  "id": "README",
+  "title": "Trailhead CLI Framework Documentation",
+  "description": "This documentation follows the Diátaxis framework for technical documentation.",
+  "source": "@site/../../docs/README.md",
+  "sourceDirName": ".",
+  "slug": "/",
+  "permalink": "/",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/README.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "esteban",
+  "lastUpdatedAt": 1754628137000,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "next": {
+    "title": "Simple CSV Hell",
+    "permalink": "/tutorials/csv-hell-to-cli-heaven"
+  }
+}

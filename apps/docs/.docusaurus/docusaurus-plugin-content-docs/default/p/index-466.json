@@ -1,0 +1,239 @@
+{
+  "version": {
+    "pluginId": "default",
+    "version": "current",
+    "label": "Next",
+    "banner": null,
+    "badge": false,
+    "noIndex": false,
+    "className": "docs-version-current",
+    "isLast": true,
+    "docsSidebars": {
+      "docsSidebar": [
+        { "type": "link", "label": "Overview", "href": "/", "docId": "README", "unlisted": false },
+        {
+          "type": "category",
+          "label": "Tutorials",
+          "collapsed": false,
+          "items": [
+            {
+              "type": "link",
+              "label": "Simple CSV Hell",
+              "href": "/tutorials/csv-hell-to-cli-heaven",
+              "docId": "tutorials/csv-hell-to-cli-heaven",
+              "unlisted": false
+            }
+          ],
+          "collapsible": true
+        },
+        {
+          "type": "category",
+          "label": "How-To Guides",
+          "collapsed": false,
+          "items": [
+            {
+              "type": "link",
+              "label": "Common CLI Development Workflows",
+              "href": "/how-to/common-workflows",
+              "docId": "how-to/common-workflows",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "Troubleshooting Guide",
+              "href": "/how-to/troubleshooting",
+              "docId": "how-to/troubleshooting",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "How to Generate and Integrate API Documentation",
+              "href": "/how-to/generate-api-docs",
+              "docId": "how-to/generate-api-docs",
+              "unlisted": false
+            }
+          ],
+          "collapsible": true
+        },
+        {
+          "type": "category",
+          "label": "API Reference",
+          "collapsed": false,
+          "items": [
+            {
+              "type": "link",
+              "label": "API Index",
+              "href": "/reference/api/",
+              "docId": "reference/api/README",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "cli",
+              "href": "/reference/api/cli",
+              "docId": "reference/api/cli",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "config",
+              "href": "/reference/api/config",
+              "docId": "reference/api/config",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "core",
+              "href": "/reference/api/core",
+              "docId": "reference/api/core",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "create-cli",
+              "href": "/reference/api/create-cli",
+              "docId": "reference/api/create-cli",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "data",
+              "href": "/reference/api/data",
+              "docId": "reference/api/data",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "fs",
+              "href": "/reference/api/fs",
+              "docId": "reference/api/fs",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "sort",
+              "href": "/reference/api/sort",
+              "docId": "reference/api/sort",
+              "unlisted": false
+            },
+            {
+              "type": "link",
+              "label": "validation",
+              "href": "/reference/api/validation",
+              "docId": "reference/api/validation",
+              "unlisted": false
+            }
+          ],
+          "collapsible": true
+        },
+        {
+          "type": "category",
+          "label": "Explanation",
+          "collapsed": true,
+          "items": [
+            {
+              "type": "link",
+              "label": "Architecture Overview",
+              "href": "/explanation/architecture",
+              "docId": "explanation/architecture",
+              "unlisted": false
+            }
+          ],
+          "collapsible": true
+        }
+      ]
+    },
+    "docs": {
+      "explanation/architecture": {
+        "id": "explanation/architecture",
+        "title": "Architecture Overview",
+        "description": "Understanding the design decisions and architecture of the Trailhead CLI framework.",
+        "sidebar": "docsSidebar"
+      },
+      "how-to/common-workflows": {
+        "id": "how-to/common-workflows",
+        "title": "Common CLI Development Workflows",
+        "description": "How-to guides for typical CLI development tasks.",
+        "sidebar": "docsSidebar"
+      },
+      "how-to/generate-api-docs": {
+        "id": "how-to/generate-api-docs",
+        "title": "How to Generate and Integrate API Documentation",
+        "description": "This guide explains how to generate API documentation from TypeScript source code using TypeDoc and integrate it with the existing Diátaxis-based documentation framework.",
+        "sidebar": "docsSidebar"
+      },
+      "how-to/troubleshooting": {
+        "id": "how-to/troubleshooting",
+        "title": "Troubleshooting Guide",
+        "description": "Solutions to common problems when building CLIs with the Trailhead framework.",
+        "sidebar": "docsSidebar"
+      },
+      "README": {
+        "id": "README",
+        "title": "Trailhead CLI Framework Documentation",
+        "description": "This documentation follows the Diátaxis framework for technical documentation.",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/cli": {
+        "id": "reference/api/cli",
+        "title": "cli",
+        "description": "Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.\n\nThis package provides a modern foundation for CLI applications using functional programming patterns,\nexplicit error handling with Result types, and comprehensive command management. Built on top of\nCommander.js with enhanced type safety and validation.",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/config": {
+        "id": "reference/api/config",
+        "title": "config",
+        "description": "Trailhead API Documentation v1.0.0",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/core": {
+        "id": "reference/api/core",
+        "title": "core",
+        "description": "Foundation package for the Trailhead System providing Result-based error handling.\n\nThis package exports functional programming utilities centered around the Result type pattern,\nenabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/create-cli": {
+        "id": "reference/api/create-cli",
+        "title": "create-cli",
+        "description": "CLI generator for creating new Trailhead-based CLI applications.\n\nThis package provides a comprehensive generator for creating new CLI applications\nusing the @trailhead/* architecture. It features interactive project setup,\ntemplate-based generation, and integrated development environment configuration.",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/data": {
+        "id": "reference/api/data",
+        "title": "data",
+        "description": "Unified data processing library with auto-detection for CSV, JSON, and Excel formats\n\nThis package provides:\n- Automatic format detection and parsing\n- Type-safe data operations with Result types\n- Support for CSV, JSON, and Excel formats\n- Functional programming patterns\n- Comprehensive error handling",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/fs": {
+        "id": "reference/api/fs",
+        "title": "fs",
+        "description": "Trailhead API Documentation v1.0.0",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/README": {
+        "id": "reference/api/README",
+        "title": "API Index",
+        "description": "Browse all available APIs and modules",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/sort": {
+        "id": "reference/api/sort",
+        "title": "sort",
+        "description": "Trailhead API Documentation v1.0.0",
+        "sidebar": "docsSidebar"
+      },
+      "reference/api/validation": {
+        "id": "reference/api/validation",
+        "title": "validation",
+        "description": "Trailhead API Documentation v1.0.0",
+        "sidebar": "docsSidebar"
+      },
+      "tutorials/csv-hell-to-cli-heaven": {
+        "id": "tutorials/csv-hell-to-cli-heaven",
+        "title": "Simple CSV Hell",
+        "description": "Build a production-ready CSV processing CLI tool using the Trailhead framework.",
+        "sidebar": "docsSidebar"
+      }
+    }
+  }
+}

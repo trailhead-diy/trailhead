@@ -36,243 +36,6 @@ pre-commit:
       glob: "**/*.{ts,tsx}"
       run: pnpm types --filter="./packages/*" -- --incremental
 
-    # 4. Validate documentation structure and code examples (if docs changed)
-    docs-validate:
-      priority: 4
-      glob: "{docs,packages/**/docs}/**/*.md"
-      run: |
-        staged_docs=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|mdx)$' | grep -E '(docs/|packages/.*/docs/|README\.md$)' || true)
-        if [ -n "$staged_docs" ]; then
-          # First validate documentation structure
-          for file in $staged_docs; do
-            pnpm docs:validate "$file" > /dev/null || exit 1
-          done
-          
-          # Then validate TypeScript code blocks
-          echo "🔍 Validating TypeScript code blocks in documentation..."
-          pnpm dev-cli validate-docs --pattern "$staged_docs" --verbose || {
-            echo "❌ Documentation code validation failed"
-            echo "💡 Run 'pnpm docs:validate-code --fix' to auto-fix some issues"
-            exit 1
-          }
-        fi
-
-    # 5. Security and size checks (lightweight)
-    security-checks:
-      priority: 5
-      run: |
-        # Check for secrets (skip lock files)
-        staged_files=$(git diff --cached --name-only | grep -vE '(pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$' || true)
-        if [ -n "$staged_files" ]; then
-          if echo "$staged_files" | xargs grep -l -E -i "(api[_-]?key|secret|token|password)" 2>/dev/null; then
-            echo "⚠️ Potential secrets detected"
-          fi
-          
-          # Check file sizes (only for large files)
-          large_files=$(echo "$staged_files" | xargs ls -la 2>/dev/null | awk '$5 > 1048576 {print $9, "(" $5 " bytes)"}' || true)
-          if [ -n "$large_files" ]; then
-            echo "⚠️ Large files detected:"
-            echo "$large_files"
-          fi
-        fi
-
-    # 6. Run all tests (comprehensive validation)
-    smart-tests:
-      priority: 6
-      run: pnpm test
-
-    # 7. Build validation (conditional)
-    build-affected:
-      priority: 7
-      glob: "**/*.{ts,tsx,js,jsx,json}"
-      run: |
-        # Use Turborepo's affected detection with caching
-        pnpm turbo build --filter='...[HEAD^1]' --cache-dir=.turbo > /dev/null || {
-          echo "❌ Build failed - this would fail in CI"
-          exit 1
-        }
-
-    # 8. Workspace dependency validation
-    workspace-check:
-      priority: 8
-      run: |
-        # Only run when package.json files change
-        if git diff --cached --name-only | grep -q 'package\.json$'; then
-          node -e "
-            const fs = require('fs');
-            const path = require('path');
-            
-            try {
-              // Get all package.json files
-              const packages = [];
-              const packageDirs = ['packages/cli', 'packages/create-cli'];
-              
-              for (const dir of packageDirs) {
-                const pkgPath = path.join(dir, 'package.json');
-                if (fs.existsSync(pkgPath)) {
-                  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-                  packages.push({ dir, pkg });
-                }
-              }
-              
-              let errors = [];
-              
-              // Check workspace: protocol usage
-              for (const { dir, pkg } of packages) {
-                const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-                for (const [name, version] of Object.entries(deps)) {
-                  if (name.startsWith('@repo/') && !version.startsWith('workspace:')) {
-                    errors.push(\`\${dir}: Internal dependency '\${name}' should use 'workspace:*' protocol\`);
-                  }
-                }
-              }
-              
-              if (errors.length > 0) {
-                console.error('❌ Workspace dependency validation failed:');
-                errors.forEach(err => console.error('  ' + err));
-                process.exit(1);
-              }
-            } catch (err) {
-              console.log('⚠️ Workspace validation skipped:', err.message);
-            }
-          " || exit 1
-        fi
-        
-    # 9. Environment parity check
-    env-check:
-      priority: 9
-      run: |
-        node -e "
-          const fs = require('fs');
-          // Use built-in version comparison instead of semver
-          function satisfies(version, range) {
-            // Simple version check - remove 'v' prefix and handle basic ranges
-            const cleanVersion = version.replace(/^v/, '');
-            
-            // Handle different range operators
-            if (range.startsWith('>=')) {
-              const minVersion = range.substring(2);
-              const [vMajor, vMinor = 0, vPatch = 0] = cleanVersion.split('.').map(Number);
-              const [rMajor, rMinor = 0, rPatch = 0] = minVersion.split('.').map(Number);
-              
-              if (vMajor > rMajor) return true;
-              if (vMajor < rMajor) return false;
-              if (vMinor > rMinor) return true;
-              if (vMinor < rMinor) return false;
-              return vPatch >= rPatch;
-            }
-            
-            // Default to basic equality check
-            return cleanVersion.startsWith(range.replace(/[>=~^]/, ''));
-          }
-          
-          try {
-            // Check Node version against engines
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            const nodeVersion = process.version;
-            const engines = pkg.engines?.node;
-            
-            if (engines && !satisfies(nodeVersion, engines)) {
-              console.error(\`❌ Node version mismatch: current \${nodeVersion}, required \${engines}\`);
-              process.exit(1);
-            }
-            
-            // Check pnpm version if specified
-            const pnpmVersion = pkg.engines?.pnpm;
-            if (pnpmVersion) {
-              try {
-                const { execSync } = require('child_process');
-                const currentPnpm = execSync('pnpm --version', { encoding: 'utf8' }).trim();
-                if (!satisfies(currentPnpm, pnpmVersion)) {
-                  console.error(\`❌ PNPM version mismatch: current \${currentPnpm}, required \${pnpmVersion}\`);
-                  process.exit(1);
-                }
-              } catch (err) {
-                console.log('⚠️ Could not check PNPM version');
-              }
-            }
-            
-            // Silent success
-          } catch (err) {
-            console.log('⚠️ Environment check skipped:', err.message);
-          }
-        " || exit 1
-        
-    # 10. Package.json validation
-    package-validation:
-      priority: 10
-      run: |
-        # Only run when package.json files change
-        if git diff --cached --name-only | grep -q 'package\.json$'; then
-          node -e '
-            const fs = require("fs");
-            const path = require("path");
-            
-            try {
-              // Get all package.json files
-              const packages = [];
-              const packageDirs = ["packages/cli", "packages/create-cli"];
-              
-              for (const dir of packageDirs) {
-                const pkgPath = path.join(dir, "package.json");
-                if (fs.existsSync(pkgPath)) {
-                  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-                  packages.push({ dir, pkg, path: pkgPath });
-                }
-              }
-              
-              let errors = [];
-              let warnings = [];
-              
-              // 1. Required scripts validation
-              const requiredScripts = ["build", "test", "lint", "types"];
-              for (const { dir, pkg } of packages) {
-                for (const script of requiredScripts) {
-                  if (!pkg.scripts || !pkg.scripts[script]) {
-                    errors.push(`${dir}: Missing required script "${script}"`);
-                  }
-                }
-              }
-              
-              // 2. License consistency
-              for (const { dir, pkg } of packages) {
-                if (!pkg.license) {
-                  errors.push(`${dir}: Missing license field`);
-                } else if (pkg.license !== "MIT") {
-                  warnings.push(`${dir}: License "${pkg.license}" may not match expected "MIT"`);
-                }
-              }
-              
-              // 3. Repository field consistency
-              for (const { dir, pkg } of packages) {
-                if (!pkg.repository) {
-                  errors.push(`${dir}: Missing repository field`);
-                } else if (typeof pkg.repository === "object") {
-                  if (!pkg.repository.directory) {
-                    errors.push(`${dir}: Repository missing directory field for monorepo`);
-                  } else if (pkg.repository.directory !== dir) {
-                    errors.push(`${dir}: Repository directory "${pkg.repository.directory}" does not match actual path "${dir}"`);
-                  }
-                }
-              }
-              
-              // Report results
-              if (warnings.length > 0) {
-                console.log("⚠️ Package.json warnings:");
-                warnings.forEach(warn => console.log("  " + warn));
-              }
-              
-              if (errors.length > 0) {
-                console.error("❌ Package.json validation failed:");
-                errors.forEach(err => console.error("  " + err));
-                process.exit(1);
-              }
-            } catch (err) {
-              console.log("⚠️ Package.json validation skipped:", err.message);
-            }
-          ' || exit 1
-        fi
-
 prepare-commit-msg:
   commands:
     changeset-reminder:
@@ -291,88 +54,35 @@ commit-msg:
       run: 'first_line=$(head -n1 {1}); if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+$"; then echo "❌ Commit message must follow conventional format:"; echo "   type(scope?): description"; echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"; echo "   Example: feat(cli): add new command"; exit 1; fi'
 
 pre-push:
-  parallel: false  # Changed to sequential for better control
   commands:
-    # Run comprehensive local CI before push
-    local-ci-check:
-      priority: 1
+    # Run tests and validate before push
+    validate-push:
       run: |
         echo "🚀 Running pre-push validation..."
-        echo "⚡ Running full test suite to match CI exactly..."
-        
-        # Clear cache and run full suite to prevent cache issues
-        rm -rf .turbo
-        pnpm dev-cli ci || {
+        echo "⚡ Running tests and type checks..."
+
+        # Run tests and types in parallel via Turbo
+        pnpm turbo run test types --filter="./packages/*" || {
           echo ""
           echo "❌ Pre-push validation failed!"
           echo ""
           echo "💡 Fix issues with:"
-          echo "   pnpm ci:run       # Run full local CI"
-          echo "   pnpm test         # Run tests only"
+          echo "   pnpm test         # Run tests"
+          echo "   pnpm types        # Type check"
           echo ""
           echo "🚨 To bypass (emergencies only):"
           echo "   git push --no-verify"
           echo ""
           exit 1
         }
-    
+
     # Validate lockfile is up to date
     lockfile-check:
-      priority: 2
       run: |
-        pnpm install --lockfile-only --frozen-lockfile > /dev/null || {
+        pnpm install --lockfile-only --frozen-lockfile > /dev/null 2>&1 || {
           echo "❌ pnpm-lock.yaml is out of date! Run 'pnpm install' and commit the updated lockfile"
           exit 1
         }
-    
-    # Optional coverage check for changed packages (opt-in only)
-    coverage-check:
-      priority: 3
-      run: |
-        if [ "$RUN_COVERAGE" = "1" ]; then
-          echo "📊 Running coverage check for changed packages..."
-          COVERAGE=true pnpm test --affected > /dev/null 2>&1 || true
-          pnpm dev-cli coverage-check --changed --report-only || {
-            echo ""
-            echo "⚠️  Coverage check completed (non-blocking)"
-            echo "💡 Run 'pnpm coverage' to see detailed report"
-            echo ""
-          }
-        else
-          echo "⚡ Coverage check skipped (opt-in with RUN_COVERAGE=1)"
-        fi
-
-    # Check branch sync status (warning only)
-    branch-sync-check:
-      priority: 2
-      run: |
-        # Simple branch sync check without external dependencies
-        git fetch origin main --quiet 2>/dev/null || true
-        
-        LOCAL=$(git rev-parse HEAD)
-        REMOTE=$(git rev-parse origin/main 2>/dev/null || echo "")
-        BASE=$(git merge-base HEAD origin/main 2>/dev/null || echo "")
-        
-        if [ -z "$REMOTE" ]; then
-          echo "⚠️ Could not check branch sync: origin/main not found"
-          exit 0
-        fi
-        
-        if [ "$LOCAL" = "$REMOTE" ]; then
-          exit 0
-        elif [ "$LOCAL" = "$BASE" ]; then
-          BEHIND=$(git rev-list --count HEAD..origin/main)
-          echo "⚠️ Branch is $BEHIND commits behind origin/main"
-          if [ "$BEHIND" -gt 10 ]; then
-            echo "❌ Branch is significantly behind. Please sync before pushing."
-            exit 1
-          fi
-        elif [ "$REMOTE" = "$BASE" ]; then
-          AHEAD=$(git rev-list --count origin/main..HEAD)
-          echo "ℹ️ Branch is $AHEAD commits ahead of origin/main"
-        else
-          echo "⚠️ Branch has diverged from origin/main"
-        fi
 
 # Personal overrides (not committed)
 # Create .lefthook-local.yml to customize

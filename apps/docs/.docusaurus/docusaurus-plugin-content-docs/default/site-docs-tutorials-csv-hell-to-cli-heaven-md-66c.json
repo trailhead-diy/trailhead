@@ -1,0 +1,26 @@
+{
+  "id": "tutorials/csv-hell-to-cli-heaven",
+  "title": "Simple CSV Hell",
+  "description": "Build a production-ready CSV processing CLI tool using the Trailhead framework.",
+  "source": "@site/../../docs/tutorials/csv-hell-to-cli-heaven.md",
+  "sourceDirName": "tutorials",
+  "slug": "/tutorials/csv-hell-to-cli-heaven",
+  "permalink": "/tutorials/csv-hell-to-cli-heaven",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/tutorials/csv-hell-to-cli-heaven.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Overview",
+    "permalink": "/"
+  },
+  "next": {
+    "title": "Common CLI Development Workflows",
+    "permalink": "/how-to/common-workflows"
+  }
+}

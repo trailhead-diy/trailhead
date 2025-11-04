@@ -18,7 +18,6 @@ build/
 *.bundled_*.cjs
 tsup.config.bundled_*.mjs
 tsup.config.bundled_*.cjs
-.docusaurus/
 
 # Misc
 .DS_Store

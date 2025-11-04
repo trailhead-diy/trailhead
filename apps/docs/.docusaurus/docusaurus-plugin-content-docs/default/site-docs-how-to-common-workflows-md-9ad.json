@@ -1,0 +1,26 @@
+{
+  "id": "how-to/common-workflows",
+  "title": "Common CLI Development Workflows",
+  "description": "How-to guides for typical CLI development tasks.",
+  "source": "@site/../../docs/how-to/common-workflows.md",
+  "sourceDirName": "how-to",
+  "slug": "/how-to/common-workflows",
+  "permalink": "/how-to/common-workflows",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/how-to/common-workflows.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Simple CSV Hell",
+    "permalink": "/tutorials/csv-hell-to-cli-heaven"
+  },
+  "next": {
+    "title": "Troubleshooting Guide",
+    "permalink": "/how-to/troubleshooting"
+  }
+}

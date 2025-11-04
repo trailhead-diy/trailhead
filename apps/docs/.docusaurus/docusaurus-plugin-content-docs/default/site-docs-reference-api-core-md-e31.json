@@ -1,0 +1,32 @@
+{
+  "id": "reference/api/core",
+  "title": "core",
+  "description": "Foundation package for the Trailhead System providing Result-based error handling.\n\nThis package exports functional programming utilities centered around the Result type pattern,\nenabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.",
+  "source": "@site/../../docs/reference/api/core.md",
+  "sourceDirName": "reference/api",
+  "slug": "/reference/api/core",
+  "permalink": "/reference/api/core",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/reference/api/core.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {
+    "type": "reference",
+    "sidebar": true,
+    "description": "Foundation package for the Trailhead System providing Result-based error handling.\n\nThis package exports functional programming utilities centered around the Result type pattern,\nenabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.",
+    "example": 0,
+    "since": "0.1.0"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "config",
+    "permalink": "/reference/api/config"
+  },
+  "next": {
+    "title": "create-cli",
+    "permalink": "/reference/api/create-cli"
+  }
+}

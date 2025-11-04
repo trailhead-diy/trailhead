@@ -92,15 +92,15 @@ pnpm dev
 
 ### 🔗 Package Relationship Matrix
 
-| Package                                              | Purpose           | Dependencies                                 | Best For                           |
-| ---------------------------------------------------- | ----------------- | -------------------------------------------- | ---------------------------------- |
+| Package                                            | Purpose           | Dependencies                                 | Best For                           |
+| -------------------------------------------------- | ----------------- | -------------------------------------------- | ---------------------------------- |
 | **[@trailhead/cli](./packages/cli)**               | CLI Framework     | `@repo/core`, `@repo/fs`, `@repo/validation` | Building command-line applications |
-| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                           | Scaffolding CLI projects           |
-| **[@repo/core](./packages/core)**                    | Foundation        | None                                         | Result types, functional utilities |
-| **[@repo/fs](./packages/fs)**                        | File System       | `@repo/core`                                 | File operations, path utilities    |
-| **[@repo/data](./packages/data)**                    | Data Processing   | `@repo/core`                                 | CSV/JSON/Excel processing          |
-| **[@repo/validation](./packages/validation)**        | Validation        | `@repo/core`                                 | Data validation, schema checking   |
-| **[@repo/config](./packages/config)**                | Configuration     | `@repo/core`, `@repo/validation`             | Type-safe configuration            |
+| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                             | Scaffolding CLI projects           |
+| **[@repo/core](./packages/core)**                  | Foundation        | None                                         | Result types, functional utilities |
+| **[@repo/fs](./packages/fs)**                      | File System       | `@repo/core`                                 | File operations, path utilities    |
+| **[@repo/data](./packages/data)**                  | Data Processing   | `@repo/core`                                 | CSV/JSON/Excel processing          |
+| **[@repo/validation](./packages/validation)**      | Validation        | `@repo/core`                                 | Data validation, schema checking   |
+| **[@repo/config](./packages/config)**              | Configuration     | `@repo/core`, `@repo/validation`             | Type-safe configuration            |
 
 ### 🎯 When to Use Each Package
 

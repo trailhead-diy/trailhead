@@ -1,0 +1,30 @@
+{
+  "id": "reference/api/fs",
+  "title": "fs",
+  "description": "Trailhead API Documentation v1.0.0",
+  "source": "@site/../../docs/reference/api/fs.md",
+  "sourceDirName": "reference/api",
+  "slug": "/reference/api/fs",
+  "permalink": "/reference/api/fs",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/reference/api/fs.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {
+    "type": "reference",
+    "sidebar": true,
+    "example": 0
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "data",
+    "permalink": "/reference/api/data"
+  },
+  "next": {
+    "title": "sort",
+    "permalink": "/reference/api/sort"
+  }
+}

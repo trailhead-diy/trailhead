@@ -1,0 +1,31 @@
+{
+  "id": "reference/api/README",
+  "title": "API Index",
+  "description": "Browse all available APIs and modules",
+  "source": "@site/../../docs/reference/api/README.md",
+  "sourceDirName": "reference/api",
+  "slug": "/reference/api/",
+  "permalink": "/reference/api/",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/reference/api/README.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {
+    "type": "reference",
+    "sidebar": true,
+    "title": "API Index",
+    "description": "Browse all available APIs and modules"
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "How to Generate and Integrate API Documentation",
+    "permalink": "/how-to/generate-api-docs"
+  },
+  "next": {
+    "title": "cli",
+    "permalink": "/reference/api/cli"
+  }
+}

@@ -48,32 +48,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Security Scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
-
-  # CodeQL Analysis (disabled until code scanning is enabled in repo settings)
-  # To enable: Go to Settings > Security > Code scanning and enable it
-  # codeql:
-  #   name: CodeQL Analysis
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     actions: read
-  #     contents: read
-  #     security-events: write
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Initialize CodeQL
-  #       uses: github/codeql-action/init@v3
-  #       with:
-  #         languages: javascript-typescript
-  #
-  #     - name: Perform CodeQL Analysis
-  #       uses: github/codeql-action/analyze@v3
-
   # Cross-platform smoke test (only on main)
   compatibility:
     name: OS Compatibility

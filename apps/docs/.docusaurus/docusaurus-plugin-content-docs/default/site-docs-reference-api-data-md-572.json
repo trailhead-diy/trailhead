@@ -1,0 +1,31 @@
+{
+  "id": "reference/api/data",
+  "title": "data",
+  "description": "Unified data processing library with auto-detection for CSV, JSON, and Excel formats\n\nThis package provides:\n- Automatic format detection and parsing\n- Type-safe data operations with Result types\n- Support for CSV, JSON, and Excel formats\n- Functional programming patterns\n- Comprehensive error handling",
+  "source": "@site/../../docs/reference/api/data.md",
+  "sourceDirName": "reference/api",
+  "slug": "/reference/api/data",
+  "permalink": "/reference/api/data",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/reference/api/data.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {
+    "type": "reference",
+    "sidebar": true,
+    "description": "Unified data processing library with auto-detection for CSV, JSON, and Excel formats\n\nThis package provides:\n- Automatic format detection and parsing\n- Type-safe data operations with Result types\n- Support for CSV, JSON, and Excel formats\n- Functional programming patterns\n- Comprehensive error handling",
+    "example": 0
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "create-cli",
+    "permalink": "/reference/api/create-cli"
+  },
+  "next": {
+    "title": "fs",
+    "permalink": "/reference/api/fs"
+  }
+}

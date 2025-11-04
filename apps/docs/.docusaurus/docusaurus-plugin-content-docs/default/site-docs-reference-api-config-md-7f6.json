@@ -1,0 +1,29 @@
+{
+  "id": "reference/api/config",
+  "title": "config",
+  "description": "Trailhead API Documentation v1.0.0",
+  "source": "@site/../../docs/reference/api/config.md",
+  "sourceDirName": "reference/api",
+  "slug": "/reference/api/config",
+  "permalink": "/reference/api/config",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/esteban-url/trailhead/tree/main/../../docs/reference/api/config.md",
+  "tags": [],
+  "version": "current",
+  "lastUpdatedBy": "Esteban Rojas",
+  "lastUpdatedAt": 1762191560000,
+  "frontMatter": {
+    "type": "reference",
+    "sidebar": true
+  },
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "cli",
+    "permalink": "/reference/api/cli"
+  },
+  "next": {
+    "title": "core",
+    "permalink": "/reference/api/core"
+  }
+}
