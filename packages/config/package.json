@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/config",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
   "private": false,

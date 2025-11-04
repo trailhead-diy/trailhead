@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/data",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "private": false,
   "description": "Unified data processing and format detection (CSV, JSON, Excel) with Result types for Trailhead System",
