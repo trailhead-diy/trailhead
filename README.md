@@ -92,15 +92,16 @@ pnpm dev
 
 ### 🔗 Package Relationship Matrix
 
-| Package                                            | Purpose           | Dependencies                                 | Best For                           |
-| -------------------------------------------------- | ----------------- | -------------------------------------------- | ---------------------------------- |
-| **[@trailhead/cli](./packages/cli)**               | CLI Framework     | `@repo/core`, `@repo/fs`, `@repo/validation` | Building command-line applications |
-| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                             | Scaffolding CLI projects           |
-| **[@repo/core](./packages/core)**                  | Foundation        | None                                         | Result types, functional utilities |
-| **[@repo/fs](./packages/fs)**                      | File System       | `@repo/core`                                 | File operations, path utilities    |
-| **[@repo/data](./packages/data)**                  | Data Processing   | `@repo/core`                                 | CSV/JSON/Excel processing          |
-| **[@repo/validation](./packages/validation)**      | Validation        | `@repo/core`                                 | Data validation, schema checking   |
-| **[@repo/config](./packages/config)**              | Configuration     | `@repo/core`, `@repo/validation`             | Type-safe configuration            |
+| Package                                                | Purpose           | Dependencies                                            | Best For                           |
+| ------------------------------------------------------ | ----------------- | ------------------------------------------------------- | ---------------------------------- |
+| **[@trailhead/cli](./packages/cli)**                   | CLI Framework     | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort`   | Building command-line applications |
+| **[@trailhead/create-cli](./packages/create-cli)**     | Project Generator | `@trailhead/cli`                                        | Scaffolding CLI projects           |
+| **[@trailhead/core](./packages/core)**                 | Foundation        | None                                                    | Result types, functional utilities |
+| **[@trailhead/fs](./packages/fs)**                     | File System       | `@trailhead/core`, `@trailhead/sort`                    | File operations, path utilities    |
+| **[@trailhead/data](./packages/data)**                 | Data Processing   | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort`   | CSV/JSON/Excel processing          |
+| **[@trailhead/validation](./packages/validation)**     | Validation        | `@trailhead/core`                                       | Data validation, schema checking   |
+| **[@trailhead/config](./packages/config)**             | Configuration     | `@trailhead/core`, `@trailhead/validation`              | Type-safe configuration            |
+| **[@trailhead/sort](./packages/sort)**                 | Sorting           | None                                                    | Fast, type-safe sorting utilities  |
 
 ### 🎯 When to Use Each Package
 
@@ -109,34 +110,34 @@ pnpm dev
 ```typescript
 // Use @trailhead/cli for the framework
 import { createCommand } from '@trailhead/cli/command'
-// + @repo/fs for file operations
-// + @repo/validation for user input validation
-// + @repo/data for processing data files
+// + @trailhead/fs for file operations
+// + @trailhead/validation for user input validation
+// + @trailhead/data for processing data files
 ```
 
 #### Processing Data Files?
 
 ```typescript
-// Use @repo/data for format handling
-import { data } from '@repo/data'
-// + @repo/fs for file operations
-// + @repo/validation for data validation
+// Use @trailhead/data for format handling
+import { data } from '@trailhead/data'
+// + @trailhead/fs for file operations
+// + @trailhead/validation for data validation
 ```
 
 #### Need File Operations?
 
 ```typescript
-// Use @repo/fs for filesystem operations
-import { fs } from '@repo/fs'
-// + @repo/core for Result types
+// Use @trailhead/fs for filesystem operations
+import { fs } from '@trailhead/fs'
+// + @trailhead/core for Result types
 ```
 
 #### Validating User Input?
 
 ```typescript
-// Use @repo/validation for validation
-import { validate } from '@repo/validation'
-// + @repo/core for Result types
+// Use @trailhead/validation for validation
+import { validate } from '@trailhead/validation'
+// + @trailhead/core for Result types
 ```
 
 ### 🔄 Common Integration Patterns
@@ -145,9 +146,9 @@ import { validate } from '@repo/validation'
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { data } from '@repo/data'
-import { fs } from '@repo/fs'
-import { validate } from '@repo/validation'
+import { data } from '@trailhead/data'
+import { fs } from '@trailhead/fs'
+import { validate } from '@trailhead/validation'
 
 const processCommand = createCommand({
   name: 'process',
@@ -174,8 +175,8 @@ const processCommand = createCommand({
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@repo/fs'
-import { validate, createSchemaValidator } from '@repo/validation'
+import { fs } from '@trailhead/fs'
+import { validate, createSchemaValidator } from '@trailhead/validation'
 import { z } from 'zod'
 
 // Define config schema
@@ -208,8 +209,8 @@ const deployCommand = createCommand({
 #### Multi-Format Data Conversion
 
 ```typescript
-import { data } from '@repo/data'
-import { fs } from '@repo/fs'
+import { data } from '@trailhead/data'
+import { fs } from '@trailhead/fs'
 import { createCommand } from '@trailhead/cli/command'
 
 const convertCommand = createCommand({
@@ -257,6 +258,14 @@ const convertCommand = createCommand({
 - **Monorepo support** - Optimized for both standalone and monorepo development
 - **Interactive setup** - Guided configuration with sensible defaults
 
+#### ⚡ [@trailhead/sort](./packages/sort) - Type-Safe Sorting Utilities
+
+- **High performance** - Powered by es-toolkit for optimal speed
+- **Type safety** - Full TypeScript support with comprehensive types
+- **Zero dependencies** - Minimal footprint with single dependency
+- **Functional API** - Pure functions for predictable sorting
+- **Flexible sorting** - Support for complex sorting scenarios
+
 ## Monorepo Architecture
 
 ```text
@@ -264,18 +273,17 @@ trailhead/
 ├── packages/                           # Public packages
 │   ├── cli/                           # @trailhead/cli - CLI framework
 │   ├── create-cli/                    # @trailhead/create-cli - Project generator
-│   ├── core/                          # @repo/core - Foundation (Result types)
-│   ├── fs/                            # @repo/fs - File system operations
-│   ├── data/                          # @repo/data - Data processing
-│   ├── validation/                    # @repo/validation - Data validation
-│   └── config/                        # @repo/config - Configuration management
-├── apps/demos/                        # Example applications
-│   ├── next/                          # Next.js demo
-│   └── rwsdk/                         # RedwoodJS SDK demo
+│   ├── core/                          # @trailhead/core - Foundation (Result types)
+│   ├── fs/                            # @trailhead/fs - File system operations
+│   ├── data/                          # @trailhead/data - Data processing
+│   ├── validation/                    # @trailhead/validation - Data validation
+│   ├── config/                        # @trailhead/config - Configuration management
+│   └── sort/                          # @trailhead/sort - Sorting utilities
 ├── tooling/                           # Shared development tools
-│   ├── typescript-config/             # Shared TypeScript configurations
-│   ├── prettier-config/               # Code formatting
-│   └── vitest-config/                 # Test configuration
+│   ├── typescript-config/             # @repo/typescript-config - TypeScript configs
+│   ├── prettier-config/               # @repo/prettier-config - Code formatting
+│   ├── vitest-config/                 # @repo/vitest-config - Test configuration
+│   └── tsup-config/                   # @repo/tsup-config - Build configuration
 └── docs/                              # Monorepo documentation (Diátaxis framework)
 ```
 
@@ -468,4 +476,4 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-**Built with ❤️ using functional programming principles, modern TypeScript, and comprehensive testing.**
+**Built with intention, care and frustration, using functional programming principles, modern TypeScript, and comprehensive testing.**
