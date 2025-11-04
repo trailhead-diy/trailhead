@@ -346,7 +346,7 @@ if (result.isErr()) {
 
 ```bash
 # Clone repository
-git clone https://github.com/esteban-url/trailhead.git
+git clone https://github.com/trailhead-diy/trailhead.git
 cd trailhead/packages/create-cli
 
 # Install dependencies
@@ -426,7 +426,7 @@ MIT © [Esteban URL](https://github.com/esteban-url)
 
 ## Support
 
-- [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
+- [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
 - [Documentation](https://trailhead.esteban-url.dev)
 - [CLI Framework Docs](https://trailhead.esteban-url.dev/cli)
 

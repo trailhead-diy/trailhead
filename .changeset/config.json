@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "esteban-url/trailhead"
+      "repo": "trailhead-diy/trailhead"
     }
   ],
   "commit": false,

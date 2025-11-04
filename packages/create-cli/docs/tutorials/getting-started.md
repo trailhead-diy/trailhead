@@ -302,6 +302,6 @@ If you see TypeScript errors:
 
 ### Need Help?
 
-- Check the [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
+- Check the [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
 - Read the [@trailhead/cli documentation](../../../cli/)
-- Ask in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
+- Ask in [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions)

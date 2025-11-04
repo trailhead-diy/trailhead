@@ -71,6 +71,11 @@
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "sideEffects": false,
   "keywords": [
     "configuration",
     "config",

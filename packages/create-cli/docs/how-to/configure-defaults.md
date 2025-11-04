@@ -185,7 +185,7 @@ Full example with all options:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/esteban-url/trailhead/main/packages/create-cli/schema.json",
+  "$schema": "https://raw.githubusercontent.com/trailhead-diy/trailhead/main/packages/create-cli/schema.json",
   "projectType": "standalone-cli",
   "packageManager": "pnpm",
   "nodeVersion": "20",
@@ -354,7 +354,7 @@ Use JSON Schema for IDE support:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/esteban-url/trailhead/main/packages/create-cli/schema.json",
+  "$schema": "https://raw.githubusercontent.com/trailhead-diy/trailhead/main/packages/create-cli/schema.json",
   "packageManager": "pnpm"
   // IDE will provide autocomplete and validation
 }
