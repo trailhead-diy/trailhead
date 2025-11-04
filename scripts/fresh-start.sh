@@ -15,6 +15,11 @@ else
 fi
 
 echo ""
+echo "🔄 Switching to main and pulling latest..."
+git checkout main
+git pull origin main
+
+echo ""
 echo "🗑️  Cleaning build artifacts and dependencies..."
 rm -rf node_modules .turbo
 find packages -type d -name "dist" -exec rm -rf {} + 2>/dev/null || true
