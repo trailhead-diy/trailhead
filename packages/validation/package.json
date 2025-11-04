@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/validation",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "private": false,
   "description": "Functional validation with Zod integration and Result types for Trailhead System",

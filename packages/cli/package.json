@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/cli",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
