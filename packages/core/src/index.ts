@@ -1,6 +1,5 @@
 /**
- * @module @trailhead/core
- * @description Foundation package for the Trailhead System providing Result-based error handling.
+ * Foundation package for the Trailhead System providing Result-based error handling.
  *
  * This package exports functional programming utilities centered around the Result type pattern,
  * enabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.
@@ -20,6 +19,8 @@
  * }
  * ```
  *
+ * @packageDocumentation
+ * @module @trailhead/core
  * @since 0.1.0
  */
 

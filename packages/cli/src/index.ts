@@ -1,6 +1,5 @@
 /**
- * @module @trailhead/cli
- * @description Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.
+ * Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.
  *
  * This package provides a modern foundation for CLI applications using functional programming patterns,
  * explicit error handling with Result types, and comprehensive command management. Built on top of
@@ -29,6 +28,8 @@
  * await cli.run();
  * ```
  *
+ * @packageDocumentation
+ * @module @trailhead/cli
  * @since 0.1.0
  */
 

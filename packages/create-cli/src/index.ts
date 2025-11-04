@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @module @trailhead/create-cli
- * @description CLI generator for creating new Trailhead-based CLI applications.
+ * CLI generator for creating new Trailhead-based CLI applications.
  *
  * This package provides a comprehensive generator for creating new CLI applications
  * using the @trailhead/* architecture. It features interactive project setup,
@@ -38,6 +37,8 @@
  * }, context)
  * ```
  *
+ * @packageDocumentation
+ * @module @trailhead/create-cli
  * @since 0.1.0
  */
 

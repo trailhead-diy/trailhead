@@ -1,6 +1,5 @@
 /**
- * @module @trailhead/data
- * @description Unified data processing library with auto-detection for CSV, JSON, and Excel formats
+ * Unified data processing library with auto-detection for CSV, JSON, and Excel formats
  *
  * This package provides:
  * - Automatic format detection and parsing
@@ -28,6 +27,9 @@
  * const csvOps = createCSVOperations({ delimiter: ';' })
  * const result = await csvOps.parseFile('data.csv')
  * ```
+ *
+ * @packageDocumentation
+ * @module @trailhead/data
  */
 
 // ========================================

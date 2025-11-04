@@ -19,8 +19,7 @@ import type {
 /**
  * Default configuration for CSV operations
  *
- * @constant
- * @type {Required<CSVConfig>}
+ * @readonly
  *
  * @property {string} delimiter - Field delimiter (default: ',')
  * @property {string} quoteChar - Quote character (default: '"')
