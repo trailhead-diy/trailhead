@@ -278,7 +278,7 @@ This provides:
 
 ## Mental Models
 
-### Think of It Like...
+### Think of It Like
 
 The framework's design is like a **professional toolbox** where:
 
@@ -460,4 +460,4 @@ Different teams may weigh these trade-offs differently. The framework's modular 
 
 ---
 
-**Questions?** These are complex topics with nuanced trade-offs. Feel free to discuss in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions) or [Discord community](https://discord.gg/trailhead).
+**Questions?** These are complex topics with nuanced trade-offs. Feel free to discuss in [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions).

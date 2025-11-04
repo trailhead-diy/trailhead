@@ -466,8 +466,8 @@ pnpm dev
 
 ## Community
 
-- **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
+- **Issues**: [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions)
 - **Contributing**: See [CLAUDE.md](./CLAUDE.md) for guidelines
 
 ## License

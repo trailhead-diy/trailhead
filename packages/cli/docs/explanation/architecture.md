@@ -148,7 +148,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 
 ## Mental Models
 
-### Think of It Like...
+### Think of It Like
 
 The architecture is like a **well-organized toolbox** where:
 
@@ -338,4 +338,4 @@ The Result type system, while more verbose than exceptions, creates more reliabl
 
 ---
 
-**Questions?** The architecture involves several complex concepts working together. Feel free to discuss in the [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions) or [Discord community](https://discord.gg/trailhead).
+**Questions?** The architecture involves several complex concepts working together. Feel free to discuss in the [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions).

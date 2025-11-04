@@ -186,7 +186,7 @@ it('should read configuration', async () => {
 
 ## Contributing
 
-We welcome contributions! Please see the [Contributing Guide](https://github.com/esteban-url/trailhead/blob/main/CONTRIBUTING.md) for details on:
+We welcome contributions! Please see the [Contributing Guide](https://github.com/trailhead-diy/trailhead/blob/main/CONTRIBUTING.md) for details on:
 
 - Setting up your development environment
 - Running tests and linting
@@ -195,10 +195,10 @@ We welcome contributions! Please see the [Contributing Guide](https://github.com
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
+- **Issues**: [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions)
 - **Documentation**: See the [documentation directory](../)
 
 ## License
 
-MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+MIT - See [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)

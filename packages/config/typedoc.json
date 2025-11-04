@@ -11,7 +11,7 @@
   "excludeReferences": true,
   "excludeExternals": true,
   "navigationLinks": {
-    "GitHub": "https://github.com/esteban-url/trailhead",
+    "GitHub": "https://github.com/trailhead-diy/trailhead",
     "Config Package": "../config/README.md"
   },
   "gitRevision": "main",

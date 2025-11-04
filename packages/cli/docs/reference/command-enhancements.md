@@ -13,12 +13,12 @@ Boilerplate reduction utilities for command creation, workflow management, and o
 
 ## Overview
 
-| Property    | Value                                                       |
-| ----------- | ----------------------------------------------------------- |
-| **Package** | `@trailhead/cli`                                            |
-| **Module**  | `@trailhead/cli/command`                                    |
-| **Since**   | `v0.3.0`                                                    |
-| **Issue**   | [#112](https://github.com/esteban-url/trailhead/issues/112) |
+| Property    | Value                                                         |
+| ----------- | ------------------------------------------------------------- |
+| **Package** | `@trailhead/cli`                                              |
+| **Module**  | `@trailhead/cli/command`                                      |
+| **Since**   | `v0.3.0`                                                      |
+| **Issue**   | [#112](https://github.com/trailhead-diy/trailhead/issues/112) |
 
 ## Import
 

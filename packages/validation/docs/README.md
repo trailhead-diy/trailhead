@@ -464,4 +464,4 @@ See the [Contributing Guide](../how-to/contributing.md)for development setup and
 
 ## License
 
-MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+MIT - See [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
