@@ -3,7 +3,7 @@
 > Functional CLI framework for building production-ready command-line applications with TypeScript
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
 A modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes in public API—just pure functions and immutable data.
@@ -72,7 +72,7 @@ await greetCommand.execute(['--name', 'World'])
 import { Result, ok, err } from '@trailhead/core'
 
 // Functions return Results instead of throwing
-async const deployApp = async (env: string): Promise<Result<string, Error>> => {
+const deployApp = async (env: string): Promise<Result<string, Error>> => {
   if (!env) {
     return err(new Error('Environment required'))
   }
@@ -87,7 +87,7 @@ async const deployApp = async (env: string): Promise<Result<string, Error>> => {
 
 // Handle results explicitly
 const result = await deployApp('staging')
-if (result.isok()) {
+if (result.isOk()) {
   console.log(result.value)
 } else {
   console.error('Deploy failed:', result.error.message)
@@ -367,7 +367,7 @@ test('processes configuration file', async () => {
   const context = createTestContext({ fileSystem: mockFs })
   const result = await processProject('/project', context)
 
-  expect(result.isok()).toBe(true)
+  expect(result.isOk()).toBe(true)
   expect(mockFs.exists('/project/dist/index.js')).toBe(true)
 })
 ```
@@ -524,7 +524,7 @@ const buildCommand = createCommand({
 
 ### API Reference
 
-- **[API Documentation](../../docs/reference/api/cli.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.cli.md)** - Complete API reference with examples and type information
 
 ### Guides & Tutorials
 

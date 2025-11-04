@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: 'Format Detection System'
-description: 'Understanding how automatic format detection works in @repo/data'
+description: 'Understanding how automatic format detection works in @trailhead/data'
 related:
   - /packages/data/docs/how-to/process-data-files.md
   - /packages/cli/docs/reference/core.md
@@ -10,11 +10,11 @@ related:
 
 # Format Detection System
 
-This document explains how @repo/data automatically detects file formats and why this approach was chosen for the library's design.
+This document explains how @trailhead/data automatically detects file formats and why this approach was chosen for the library's design.
 
 ## Overview
 
-The format detection system in @repo/data uses multiple detection strategies to identify data file formats automatically. This enables users to process files without explicitly specifying the format, making the API more intuitive and reducing boilerplate code.
+The format detection system in @trailhead/data uses multiple detection strategies to identify data file formats automatically. This enables users to process files without explicitly specifying the format, making the API more intuitive and reducing boilerplate code.
 
 ## Background
 
@@ -187,7 +187,7 @@ const CONTENT_PATTERNS = {
 ### Basic Auto-Detection
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 // Automatic format detection
 const result = await data.parseAuto('./unknown-file.dat')
@@ -199,7 +199,7 @@ if (result.success) {
 ### Manual Detection
 
 ```typescript
-import { createDetectionOperations } from '@repo/data'
+import { createDetectionOperations } from '@trailhead/data'
 
 const detector = createDetectionOperations()
 const detection = await detector.detectFormat('./file.dat')

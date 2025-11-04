@@ -412,7 +412,7 @@ Complete documentation is available in the [docs directory](./docs/README.md)
 
 ### 📋 Reference
 
-- **[API Documentation](../../docs/reference/api/create-cli.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.create-cli.md)** - Complete API reference with examples and type information
 - [Configuration Schema](./docs/reference/schema.md)- All configuration options
 - [Template System](./docs/reference/templates.md)- Template engine details
 
