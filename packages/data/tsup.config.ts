@@ -10,6 +10,7 @@ export default defineConfig(
       'excel/index': 'src/excel/index.ts',
       'detection/index': 'src/detection/index.ts',
       'mime/index': 'src/mime/index.ts',
+      'formats/index': 'src/formats/index.ts',
       'conversion/index': 'src/conversion/index.ts',
       'testing/index': 'src/testing/index.ts',
     },

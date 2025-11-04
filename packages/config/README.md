@@ -1,9 +1,9 @@
-# @repo/config
+# @trailhead/config
 
 > Type-safe configuration management with validation and documentation generation
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
 ## Features
@@ -18,41 +18,50 @@
 ## Installation
 
 ```bash
-pnpm add @repo/config
+pnpm add @trailhead/config
 # or
-npm install @repo/config
+npm install @trailhead/config
 ```
 
 ## Quick Start
 
 ```typescript
-import { defineConfigSchema, createConfigOperations } from '@repo/config'
+import { defineSchema, object, string, number, boolean } from '@trailhead/config'
+import { z } from 'zod'
 
-// Define schema
-const schema = defineConfigSchema()
-  .object({
-    app: {
-      name: { type: 'string', required: true },
-      port: { type: 'number', default: 3000 },
-      debug: { type: 'boolean', default: false },
-    },
+// Define schema using Zod or field builders
+const appConfigSchema = defineSchema(
+  z.object({
+    app: z.object({
+      name: z.string().min(1),
+      port: z.number().min(1).max(65535).default(3000),
+      debug: z.boolean().default(false),
+    }),
   })
-  .build()
+)
 
-// Load configuration
+// Or use field builders for more convenience
+const serverSchema = object({
+  host: string().default('localhost').description('Server hostname').build(),
+  port: number().min(1).max(65535).default(3000).description('Server port').build(),
+  secure: boolean().default(false).description('Enable HTTPS').build(),
+}).build()
+
+// Load and validate configuration
+import { createConfigOperations } from '@trailhead/config'
+
 const configOps = createConfigOperations()
-const result = await configOps.load({
+const manager = configOps.create({
   name: 'app-config',
-  schema,
   sources: [
     { type: 'file', path: './config.json', priority: 1 },
     { type: 'env', priority: 2 },
   ],
 })
 
-if (result.isOk()) {
-  const config = result.value.resolved
-  console.log('Loaded:', config.app.name)
+const state = await manager.load()
+if (state.isOk()) {
+  console.log('Loaded:', manager.get('app.name'))
 }
 ```
 
@@ -61,40 +70,101 @@ if (result.isOk()) {
 ### Schema Definition
 
 ```typescript
-import { defineConfigSchema, string, number, boolean } from '@repo/config'
+import { defineSchema, string, number, boolean, object } from '@trailhead/config'
+import { z } from 'zod'
 
-const schema = defineConfigSchema()
-  .object({
-    // Define your schema structure
+// Using Zod directly
+const schema = defineSchema(
+  z.object({
+    database: z.object({
+      host: z.string(),
+      port: z.number().min(1).max(65535),
+    }),
   })
-  .strict(true)
-  .build()
+)
+
+// Using field builders
+const serverConfig = object({
+  host: string().description('Server hostname').default('localhost').minLength(1).build(),
+  port: number()
+    .description('Server port')
+    .min(1, 'Port must be positive')
+    .max(65535, 'Port must be valid')
+    .default(3000)
+    .build(),
+  debug: boolean().description('Enable debug mode').default(false).build(),
+}).build()
 ```
 
 ### Configuration Loading
 
 ```typescript
-import { createConfigOperations } from '@repo/config'
+import { createConfigOperations, createConfigManager } from '@trailhead/config'
 
+// Using operations
 const configOps = createConfigOperations()
-await configOps.load(definition)
-await configOps.validate(data, schema)
+const manager = configOps.create({
+  name: 'my-config',
+  sources: [
+    { type: 'file', path: './config.json', priority: 1 },
+    { type: 'env', prefix: 'APP_', priority: 2 },
+  ],
+})
+
+// Load configuration
+const state = await manager.load()
+if (state.isOk()) {
+  const value = manager.get('database.host')
+  console.log('Database host:', value)
+}
+
+// Watch for changes
+manager.watch((change) => {
+  console.log('Config changed:', change.path, change.newValue)
+})
+```
+
+### Validation
+
+```typescript
+import { validate, validateAsync } from '@trailhead/config'
+import { z } from 'zod'
+
+const schema = z.object({
+  port: z.number().min(1).max(65535),
+})
+
+// Synchronous validation
+const result = validate({ port: 3000 }, schema)
+if (result.isOk()) {
+  console.log('Valid:', result.value)
+}
+
+// Asynchronous validation
+const asyncResult = await validateAsync(data, schema)
 ```
 
 ### Documentation Generation
 
 ```typescript
-import { generateConfigDocs, generateMarkdown } from '@repo/config/docs'
+import { generateDocs, generateJsonSchema } from '@trailhead/config'
 
-const docs = await generateConfigDocs(schema)
-const markdown = await generateMarkdown(docs)
+// Generate human-readable documentation
+const docs = generateDocs(schema, {
+  title: 'Server Configuration',
+  includeExamples: true,
+})
+console.log(docs.markdown)
+
+// Generate JSON Schema
+const jsonSchema = generateJsonSchema(schema)
 ```
 
 ## Related Packages
 
-- **@repo/core** - Result types and functional utilities
-- **@repo/fs** - File system operations
-- **@repo/validation** - Data validation
+- **@trailhead/core** - Result types and functional utilities
+- **@trailhead/fs** - File system operations
+- **@trailhead/validation** - Data validation
 
 ## Documentation
 
@@ -105,7 +175,7 @@ const markdown = await generateMarkdown(docs)
   - [Generate Documentation](../../docs/how-to/generate-config-docs)
 - [Explanations](../../docs/explanation/README.md)
   - [Configuration Sources](../../docs/explanation/config-sources)
-- **[API Documentation](../../docs/reference/api/config.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.config.md)** - Complete API reference with examples and type information
 
 ## License
 
