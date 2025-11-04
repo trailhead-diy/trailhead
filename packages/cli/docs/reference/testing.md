@@ -13,11 +13,11 @@ Utilities for testing CLI applications with mocked dependencies and test runners
 
 ## Overview
 
-| Property    | Value                      |
-| ----------- | -------------------------- |
-| **Package** | `@esteban-url/cli`         |
-| **Module**  | `@esteban-url/cli/testing` |
-| **Since**   | `v1.0.0`                   |
+| Property    | Value                    |
+| ----------- | ------------------------ |
+| **Package** | `@trailhead/cli`         |
+| **Module**  | `@trailhead/cli/testing` |
+| **Since**   | `v1.0.0`                 |
 
 ## Import
 
@@ -29,7 +29,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from '@esteban-url/cli/testing'
+} from '@trailhead/cli/testing'
 ```
 
 ## Basic Usage
@@ -42,7 +42,7 @@ import {
   mockPrompts,
   expectResult,
   expectError,
-} from '@esteban-url/cli/testing'
+} from '@trailhead/cli/testing'
 ```
 
 ## Test Context
@@ -187,7 +187,7 @@ expect(fsError.code).toBe('EACCES')
 Run a command with test context.
 
 ```typescript
-import { runCommand } from '@esteban-url/trailhead-cli/testing'
+import { runCommand } from '@trailhead/trailhead-cli/testing'
 
 test('init command', async () => {
   const result = await runCommand(initCommand, {
@@ -207,7 +207,7 @@ test('init command', async () => {
 Advanced test runner with fluent API.
 
 ```typescript
-import { CommandTestRunner } from '@esteban-url/trailhead-cli/testing'
+import { CommandTestRunner } from '@trailhead/trailhead-cli/testing'
 
 const runner = new CommandTestRunner(myCommand)
   .withArgs({ input: 'test.txt' })
@@ -315,7 +315,7 @@ test('validates options', async () => {
 ### Path Utilities
 
 ```typescript
-import { normalizePath, joinPath, resolvePath } from '@esteban-url/trailhead-cli/testing'
+import { normalizePath, joinPath, resolvePath } from '@trailhead/trailhead-cli/testing'
 
 // Normalize paths for consistent testing
 const path1 = normalizePath('C:\\Users\\test\\file.txt')
@@ -333,7 +333,7 @@ const absolute = resolvePath('./config.json', '/project')
 ### Creating Test Contexts with Files
 
 ```typescript
-import { createTestContextWithFiles } from '@esteban-url/trailhead-cli/testing'
+import { createTestContextWithFiles } from '@trailhead/trailhead-cli/testing'
 
 const context = await createTestContextWithFiles({
   'src/index.ts': 'export const hello = "world";',
@@ -356,7 +356,7 @@ Example test setup with Vitest:
 
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createTestContext, mockFileSystem } from '@esteban-url/trailhead-cli/testing'
+import { createTestContext, mockFileSystem } from '@trailhead/trailhead-cli/testing'
 import { myCommand } from '../src/commands/my-command'
 
 describe('MyCommand', () => {

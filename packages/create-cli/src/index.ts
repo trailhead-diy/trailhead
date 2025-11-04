@@ -1,26 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * @module @esteban-url/create-cli
- * @description CLI generator for creating new Trailhead-based CLI applications.
+ * CLI generator for creating new Trailhead-based CLI applications.
  *
  * This package provides a comprehensive generator for creating new CLI applications
- * using the @esteban-url/* architecture. It features interactive project setup,
+ * using the @trailhead/* architecture. It features interactive project setup,
  * template-based generation, and integrated development environment configuration.
  *
  * @example
  * ```bash
  * # Interactive generation
- * npx @esteban-url/create-cli
- * npx @esteban-url/create-cli my-awesome-cli
+ * npx @trailhead/create-cli
+ * npx @trailhead/create-cli my-awesome-cli
  *
  * # Programmatic usage
- * npm install @esteban-url/create-cli
+ * npm install @trailhead/create-cli
  * ```
  *
  * @example
  * ```typescript
- * import { generateProject } from '@esteban-url/create-cli'
+ * import { generateProject } from '@trailhead/create-cli'
  *
  * const result = await generateProject({
  *   projectName: 'my-cli',
@@ -38,11 +37,13 @@
  * }, context)
  * ```
  *
+ * @packageDocumentation
+ * @module @trailhead/create-cli
  * @since 0.1.0
  */
 
-import { createCLI } from '@esteban-url/cli'
-import { createDefaultLogger } from '@esteban-url/cli/utils'
+import { createCLI } from '@trailhead/cli'
+import { createDefaultLogger } from '@trailhead/cli/utils'
 import { generateCommand } from './commands/generate.js'
 import { configCommand } from './commands/config.js'
 
@@ -64,7 +65,7 @@ export type { TemplateInfo } from './lib/templates/utils.js'
 /**
  * Create Trailhead CLI Generator
  *
- * A CLI generator that creates new projects using the @esteban-url/* architecture
+ * A CLI generator that creates new projects using the @trailhead/* architecture
  * Built with functional programming principles and explicit error handling
  */
 async function main() {

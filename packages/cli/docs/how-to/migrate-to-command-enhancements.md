@@ -3,7 +3,7 @@ type: how-to
 title: 'Migrate to Command Enhancements'
 description: 'Reduce boilerplate in existing CLI commands using enhancement utilities'
 prerequisites:
-  - Basic understanding of @esteban-url/cli commands
+  - Basic understanding of @trailhead/cli commands
   - Existing CLI project using standard commands
 related:
   - /packages/cli/docs/reference/command-enhancements.md
@@ -41,7 +41,7 @@ Replace with a typed task builder:
 
 ```typescript
 // After: Single type definition
-import { createTaskBuilder } from '@esteban-url/cli/workflows'
+import { createTaskBuilder } from '@trailhead/cli/workflows'
 
 const createMyTask = createTaskBuilder<MyContext>()
 
@@ -98,7 +98,7 @@ Replace with specialized command builder:
 
 ```typescript
 // After: Automatic file validation
-import { createFileProcessingCommand } from '@esteban-url/cli/command'
+import { createFileProcessingCommand } from '@trailhead/cli/command'
 
 export const processCommand = createFileProcessingCommand<ProcessOptions>({
   name: 'process',
@@ -142,7 +142,7 @@ Replace with pre-defined options:
 
 ```typescript
 // After: Reusable option definitions
-import { commonOptions } from '@esteban-url/cli/command'
+import { commonOptions } from '@trailhead/cli/command'
 
 const command1Options = [
   commonOptions.output(),
@@ -165,7 +165,7 @@ For more complex option sets:
 
 ```typescript
 // Using fluent API
-import { defineOptions } from '@esteban-url/cli/command'
+import { defineOptions } from '@trailhead/cli/command'
 
 const options = defineOptions()
   .common(['output', 'format', 'verbose', 'dryRun'])
@@ -183,8 +183,8 @@ const options = defineOptions()
 
 ```typescript
 // commands/transform.ts - Before
-import { createCommand } from '@esteban-url/cli/command'
-import { createTask } from '@esteban-url/cli/workflows'
+import { createCommand } from '@trailhead/cli/command'
+import { createTask } from '@trailhead/cli/workflows'
 
 interface TransformContext {
   inputFile: string
@@ -260,7 +260,7 @@ import {
   createTaskBuilder,
   defineOptions,
   type FileProcessingOptions,
-} from '@esteban-url/cli/command'
+} from '@trailhead/cli/command'
 
 interface TransformOptions extends FileProcessingOptions {
   transform: string

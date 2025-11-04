@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 import { createValidationError, zodErrorToValidationError } from './errors.js'
 import type { ValidationResult, ValidatorFn, ValidationConfig, SchemaValidator } from './types.js'
 

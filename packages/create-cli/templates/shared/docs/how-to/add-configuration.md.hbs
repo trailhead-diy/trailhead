@@ -75,7 +75,7 @@ Create a configuration loader that uses the trailhead-cli config system:
 
 ```typescript
 // src/config/loader.ts
-import { defineConfig, loadConfig } from '@esteban-url/trailhead-cli/config'
+import { defineConfig, loadConfig } from '@trailhead/trailhead-cli/config'
 import { configSchema, type ProjectConfig } from './schema.js'
 
 export const projectConfig = defineConfig(configSchema)
@@ -137,8 +137,8 @@ Use the configuration in your commands:
 
 ```typescript
 // src/commands/build.ts
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import { Ok, Err } from '@trailhead/trailhead-cli/core'
 import { loadProjectConfig } from '../config/loader.js'
 
 export const buildCommand = createCommand({
@@ -204,8 +204,8 @@ Create a command to validate configuration:
 
 ```typescript
 // src/commands/config.ts
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { Ok, Err } from '@esteban-url/trailhead-cli/core'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import { Ok, Err } from '@trailhead/trailhead-cli/core'
 import { loadProjectConfig, projectConfig } from '../config/loader.js'
 import { configSchema } from '../config/schema.js'
 

@@ -1,6 +1,6 @@
 {
-  "name": "@esteban-url/sort",
-  "version": "0.0.0",
+  "name": "@trailhead/sort",
+  "version": "1.0.0",
   "description": "Fast, type-safe sorting utilities powered by es-toolkit",
   "keywords": [
     "sort",
@@ -9,13 +9,9 @@
     "performance"
   ],
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/esteban-url/trailhead",
-    "directory": "packages/sort"
-  },
+  "private": false,
+  "author": "Esteban Rojas (Trailhead DIY)",
   "license": "MIT",
-  "author": "Esteban Url",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -63,8 +59,16 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trailhead-diy/trailhead",
+    "directory": "packages/sort"
+  },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   }
 }

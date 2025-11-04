@@ -34,7 +34,7 @@ A task management CLI called `taskly` with these features:
 ```bash
 mkdir taskly && cd taskly
 npm init -y
-npm install @esteban-url/cli zod
+npm install @trailhead/cli zod
 npm install -D typescript tsx @types/node vitest
 ```
 
@@ -100,8 +100,8 @@ export interface Config {
 Create `src/lib/storage.ts`:
 
 ```typescript
-import { ok, err, Result } from '@esteban-url/core'
-import { fs } from '@esteban-url/fs'
+import { ok, err, Result } from '@trailhead/core'
+import { fs } from '@trailhead/fs'
 import type { Task, TaskStore } from './types'
 
 export class TaskStorage {
@@ -204,7 +204,7 @@ Create `src/config/schema.ts`:
 
 ```typescript
 import { z } from 'zod'
-import { defineConfig } from '@esteban-url/config'
+import { defineConfig } from '@trailhead/config'
 import type { Config } from '../lib/types'
 
 const configSchema = z.object({
@@ -225,9 +225,9 @@ export const config = defineConfig<Config>(configSchema, {
 Create `src/commands/add.ts`:
 
 ```typescript
-import { ok, err } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import { prompt, select } from '@esteban-url/cli/prompts'
+import { ok, err } from '@trailhead/core'
+import { createCommand } from '@trailhead/cli/command'
+import { prompt, select } from '@trailhead/cli/prompts'
 import { TaskStorage } from '../lib/storage'
 import { config } from '../config/schema'
 
@@ -315,9 +315,9 @@ export const addCommand = createCommand({
 Create `src/commands/list.ts`:
 
 ```typescript
-import { ok } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import { displaySummary } from '@esteban-url/cli/command'
+import { ok } from '@trailhead/core'
+import { createCommand } from '@trailhead/cli/command'
+import { displaySummary } from '@trailhead/cli/command'
 import { TaskStorage } from '../lib/storage'
 import { config } from '../config/schema'
 import chalk from 'chalk'
@@ -415,9 +415,9 @@ export const listCommand = createCommand({
 Create `src/commands/complete.ts`:
 
 ```typescript
-import { ok, err } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import { select } from '@esteban-url/cli/prompts'
+import { ok, err } from '@trailhead/core'
+import { createCommand } from '@trailhead/cli/command'
+import { select } from '@trailhead/cli/prompts'
 import { TaskStorage } from '../lib/storage'
 import { config } from '../config/schema'
 
@@ -484,9 +484,9 @@ export const completeCommand = createCommand({
 Create `src/commands/config.ts`:
 
 ```typescript
-import { ok } from '@esteban-url/core'
-import { createCommand } from '@esteban-url/cli/command'
-import { prompt, select } from '@esteban-url/cli/prompts'
+import { ok } from '@trailhead/core'
+import { createCommand } from '@trailhead/cli/command'
+import { prompt, select } from '@trailhead/cli/prompts'
 import { config } from '../config/schema'
 
 export const configCommand = createCommand({
@@ -553,7 +553,7 @@ Create `src/index.ts`:
 
 ```typescript
 #!/usr/bin/env node
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { addCommand } from './commands/add'
 import { listCommand } from './commands/list'
 import { completeCommand } from './commands/complete'
@@ -594,7 +594,7 @@ Create `src/lib/storage.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest'
 import { TaskStorage } from './storage'
-import { mockFileSystem } from '@esteban-url/cli/testing'
+import { mockFileSystem } from '@trailhead/cli/testing'
 
 describe('TaskStorage', () => {
   let storage: TaskStorage
@@ -691,7 +691,7 @@ Create `src/commands/add.test.ts`:
 ```typescript
 import { describe, it, expect } from 'vitest'
 import { addCommand } from './add'
-import { createTestContext, mockFileSystem, mockPrompts } from '@esteban-url/cli/testing'
+import { createTestContext, mockFileSystem, mockPrompts } from '@trailhead/cli/testing'
 
 describe('add command', () => {
   it('adds task with provided options', async () => {
@@ -804,8 +804,8 @@ taskly complete
 Enhance commands with phased execution for better progress tracking:
 
 ````typescript
-import { executeWithPhases } from '@esteban-url/cli/command'
-import type { CommandPhase } from '@esteban-url/cli/command'
+import { executeWithPhases } from '@trailhead/cli/command'
+import type { CommandPhase } from '@trailhead/cli/command'
 
 action: async (options, context) => {
   const phases: CommandPhase<TaskContext>[] = [

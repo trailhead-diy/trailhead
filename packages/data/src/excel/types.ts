@@ -18,8 +18,7 @@ import type {
 /**
  * Default configuration for Excel operations
  *
- * @constant
- * @type {ExcelConfig}
+ * @readonly
  *
  * @property {string} encoding - File encoding (default: 'utf8')
  * @property {number} timeout - Operation timeout (default: 30000ms)

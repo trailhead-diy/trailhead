@@ -1,5 +1,5 @@
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
-import { readFile, writeFile, exists, defaultFSConfig } from '@esteban-url/fs'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
+import { readFile, writeFile, exists, defaultFSConfig } from '@trailhead/fs'
 import { resolve } from 'path'
 import {
   validateConfigFile,

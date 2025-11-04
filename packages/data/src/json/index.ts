@@ -7,7 +7,7 @@
  *
  * @example Basic JSON parsing
  * ```typescript
- * import { createJSONOperations } from '@esteban-url/data/json'
+ * import { createJSONOperations } from '@trailhead/data/json'
  *
  * const jsonOps = createJSONOperations()
  * const result = await jsonOps.parseFile('data.json')

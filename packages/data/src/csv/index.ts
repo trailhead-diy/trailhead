@@ -7,7 +7,7 @@
  *
  * @example Basic CSV parsing
  * ```typescript
- * import { createCSVOperations } from '@esteban-url/data/csv'
+ * import { createCSVOperations } from '@trailhead/data/csv'
  *
  * const csvOps = createCSVOperations()
  * const result = await csvOps.parseFile('data.csv')

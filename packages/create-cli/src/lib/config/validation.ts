@@ -1,6 +1,6 @@
 import { resolve, normalize, isAbsolute, relative } from 'path'
 import { z } from 'zod'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import type { ProjectConfig, PackageManager } from './types.js'
 
 /**

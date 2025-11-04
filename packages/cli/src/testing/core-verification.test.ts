@@ -6,12 +6,12 @@ import { describe, test, expect, beforeAll } from 'vitest'
 
 describe('Core Result Testing Verification', () => {
   beforeAll(async () => {
-    const { setupResultMatchers } = await import('@esteban-url/core/testing')
+    const { setupResultMatchers } = await import('@trailhead/core/testing')
     setupResultMatchers()
   })
 
   test('should work with Result matchers', async () => {
-    const { createOkResult, createErrResult } = await import('@esteban-url/core/testing')
+    const { createOkResult, createErrResult } = await import('@trailhead/core/testing')
 
     const okResult = createOkResult('success')
     const errResult = createErrResult('failure')
@@ -24,7 +24,7 @@ describe('Core Result Testing Verification', () => {
 
   test('should work with enhanced assertions', async () => {
     const { assertOk, assertErr, unwrapOk, createOkResult, createErrResult } = await import(
-      '@esteban-url/core/testing'
+      '@trailhead/core/testing'
     )
 
     const okResult = createOkResult('test-value')
@@ -40,7 +40,7 @@ describe('Core Result Testing Verification', () => {
   })
 
   test('should verify core testing exports are available', async () => {
-    const exports = await import('@esteban-url/core/testing')
+    const exports = await import('@trailhead/core/testing')
 
     const expectedExports = [
       'setupResultMatchers',
@@ -60,7 +60,7 @@ describe('Core Result Testing Verification', () => {
   })
 
   test('should work with array Results', async () => {
-    const { createOkResult } = await import('@esteban-url/core/testing')
+    const { createOkResult } = await import('@trailhead/core/testing')
 
     const arrayResult = createOkResult(['item1', 'item2', 'item3'])
 

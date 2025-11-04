@@ -518,7 +518,7 @@ async const processFilesInParallel = async (filePaths: string[]) => {
 ### CLI Command Integration
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 
 const processCommand = createCommand({
   name: 'process',

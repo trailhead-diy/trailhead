@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/fs",
+  "name": "@trailhead/fs",
   "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Functional filesystem operations with Result types for Trailhead System",
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -38,8 +38,8 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/sort": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/sort": "workspace:*",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0"
   },
@@ -75,8 +75,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/fs"
   },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "license": "MIT"
 }

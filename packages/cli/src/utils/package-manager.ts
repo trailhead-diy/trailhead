@@ -1,5 +1,5 @@
 import { execSync, type ExecSyncOptions } from 'node:child_process'
-import { Result, ok, err, createCoreError, type CoreError } from '@esteban-url/core'
+import { Result, ok, err, createCoreError, type CoreError } from '@trailhead/core'
 
 /**
  * Package manager configuration

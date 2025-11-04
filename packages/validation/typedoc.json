@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "@esteban-url/validation",
+  "name": "@trailhead/validation",
   "readme": "none",
   "entryPoints": ["src/index.ts"],
   "categorizeByGroup": true,

@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/cli",
-  "version": "0.1.0",
+  "name": "@trailhead/cli",
+  "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "types": "./dist/index.d.ts",
   "exports": {
@@ -54,9 +54,9 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/fs": "workspace:*",
-    "@esteban-url/sort": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/sort": "workspace:*",
     "@inquirer/prompts": "^7.8.0",
     "@types/cli-progress": "^3.11.6",
     "cli-progress": "^3.12.0",
@@ -94,8 +94,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/cli"
   },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "license": "MIT"
 }

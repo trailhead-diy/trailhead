@@ -15,8 +15,8 @@ Boilerplate reduction utilities for command creation, workflow management, and o
 
 | Property    | Value                                                       |
 | ----------- | ----------------------------------------------------------- |
-| **Package** | `@esteban-url/cli`                                          |
-| **Module**  | `@esteban-url/cli/command`                                  |
+| **Package** | `@trailhead/cli`                                            |
+| **Module**  | `@trailhead/cli/command`                                    |
 | **Since**   | `v0.3.0`                                                    |
 | **Issue**   | [#112](https://github.com/esteban-url/trailhead/issues/112) |
 
@@ -28,7 +28,7 @@ import {
   createFileProcessingCommand,
   commonOptions,
   defineOptions,
-} from '@esteban-url/cli/command'
+} from '@trailhead/cli/command'
 ```
 
 ## Task Builder API
@@ -231,7 +231,7 @@ import {
   createFileProcessingCommand,
   defineOptions,
   type FileProcessingOptions,
-} from '@esteban-url/cli/command'
+} from '@trailhead/cli/command'
 
 interface TransformOptions extends FileProcessingOptions {
   transform?: string
@@ -270,7 +270,7 @@ export const transformCommand = createFileProcessingCommand<TransformOptions>({
 ### Workflow with Typed Tasks
 
 ```typescript
-import { createTaskBuilder } from '@esteban-url/cli/workflows'
+import { createTaskBuilder } from '@trailhead/cli/workflows'
 
 interface ProcessContext {
   inputPath: string

@@ -12,8 +12,7 @@ import type { JSONConfig, JSONProcessingOptions, JSONOperations, DataResult } fr
 /**
  * Default configuration for JSON operations
  *
- * @constant
- * @type {JSONConfig}
+ * @readonly
  *
  * @property {string} encoding - File encoding (default: 'utf8')
  * @property {number} timeout - Operation timeout (default: 30000ms)

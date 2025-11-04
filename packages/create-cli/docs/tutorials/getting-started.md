@@ -1,7 +1,7 @@
 ---
 type: tutorial
 title: 'Generate Your First CLI Application'
-description: 'Create a functional CLI tool in 5 minutes using @esteban-url/create-cli'
+description: 'Create a functional CLI tool in 5 minutes using @trailhead/create-cli'
 prerequisites:
   - Node.js 18+ installed
   - Basic command line knowledge
@@ -14,7 +14,7 @@ related:
 
 # Generate Your First CLI Application
 
-In this tutorial, you'll use @esteban-url/create-cli to generate a fully functional command-line application. By the end, you'll have a working CLI tool with TypeScript, testing, and best practices built-in.
+In this tutorial, you'll use @trailhead/create-cli to generate a fully functional command-line application. By the end, you'll have a working CLI tool with TypeScript, testing, and best practices built-in.
 
 ## What You'll Build
 
@@ -39,7 +39,7 @@ Make sure you have:
 Open your terminal and run:
 
 ```bash
-npx @esteban-url/create-cli my-awesome-cli
+npx @trailhead/create-cli my-awesome-cli
 ```
 
 This command will start an interactive setup process.
@@ -142,7 +142,7 @@ my-awesome-cli v0.1.0
 
 Usage: my-awesome-cli [options] [command]
 
-A CLI built with @esteban-url/cli framework
+A CLI built with @trailhead/cli framework
 
 Options:
   -V, --version    output the version number
@@ -158,8 +158,8 @@ Commands:
 Create a new command in `src/commands/greet.ts`:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
-import { ok } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command'
+import { ok } from '@trailhead/core'
 
 export const greetCommand = createCommand({
   name: 'greet',
@@ -184,7 +184,7 @@ export const greetCommand = createCommand({
 Update `src/index.ts` to include your new command:
 
 ```typescript
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { helpCommand } from './commands/help'
 import { versionCommand } from './commands/version'
 import { greetCommand } from './commands/greet'
@@ -192,7 +192,7 @@ import { greetCommand } from './commands/greet'
 const cli = createCLI({
   name: 'my-awesome-cli',
   version: '0.1.0',
-  description: 'A CLI built with @esteban-url/cli framework',
+  description: 'A CLI built with @trailhead/cli framework',
   commands: [helpCommand, versionCommand, greetCommand],
 })
 
@@ -247,7 +247,7 @@ This creates optimized JavaScript files in the `dist/` directory.
 
 You've successfully:
 
-1. ✅ Generated a CLI project with @esteban-url/create-cli
+1. ✅ Generated a CLI project with @trailhead/create-cli
 2. ✅ Explored the project structure
 3. ✅ Added a custom command
 4. ✅ Tested your CLI locally
@@ -303,5 +303,5 @@ If you see TypeScript errors:
 ### Need Help?
 
 - Check the [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- Read the [@esteban-url/cli documentation](../../../cli/)
+- Read the [@trailhead/cli documentation](../../../cli/)
 - Ask in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)

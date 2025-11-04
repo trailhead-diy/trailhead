@@ -1,5 +1,5 @@
-import { ok, err } from '@esteban-url/core'
-import { readFile, writeFile } from '@esteban-url/fs'
+import { ok, err } from '@trailhead/core'
+import { readFile, writeFile } from '@trailhead/fs'
 import * as Papa from 'papaparse'
 import type {
   CSVProcessingOptions,

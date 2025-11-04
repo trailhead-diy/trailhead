@@ -1,6 +1,6 @@
-import { createCommand, type CommandOptions, type CommandContext } from '@esteban-url/cli/command'
-import { createDefaultLogger } from '@esteban-url/cli/utils'
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
+import { createDefaultLogger } from '@trailhead/cli/utils'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 import { generateProject } from '../lib/core/generator.js'
 import { gatherProjectConfig } from '../lib/cli/prompts.js'
 import { createGeneratorError, ERROR_CODES, ERROR_SUGGESTIONS } from '../lib/core/errors.js'
@@ -28,7 +28,7 @@ interface GenerateOptions extends CommandOptions {
  */
 export const generateCommand = createCommand<GenerateOptions>({
   name: 'generate',
-  description: 'Generate a new CLI project using the @esteban-url/* architecture',
+  description: 'Generate a new CLI project using the @trailhead/* architecture',
   arguments: '[project-name]',
   options: [
     {

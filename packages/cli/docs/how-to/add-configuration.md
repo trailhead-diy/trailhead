@@ -53,7 +53,7 @@ if (result.isOk()) {
 Integrate configuration into your CLI commands:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { createConfigManager } from '@repo/config'
 import { z } from 'zod'
 

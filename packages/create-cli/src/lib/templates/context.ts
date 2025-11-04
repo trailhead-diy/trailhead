@@ -12,7 +12,7 @@ export function createTemplateContext(config: ProjectConfig): TemplateContext {
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
-    description: `CLI application built with @esteban-url/cli`,
+    description: `CLI application built with @trailhead/cli`,
     author: 'Your Name',
     email: 'your.email@example.com',
     license: 'MIT',

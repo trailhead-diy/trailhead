@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { createCommand, type CommandContext } from '../src/command/index.js'
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 import { createDefaultLogger } from '../src/utils/logger.js'
-import { fs } from '@esteban-url/fs'
+import { fs } from '@trailhead/fs'
 
 // Create mock context for testing
 const createMockContext = (args: string[] = []): CommandContext => ({

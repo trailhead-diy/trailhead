@@ -1,7 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "files": [],
-  "references": [{ "path": "./packages/cli" }, { "path": "./tooling/docs-tooling" }],
+  "references": [
+    { "path": "./packages/cli" },
+    { "path": "./packages/config" },
+    { "path": "./packages/core" },
+    { "path": "./packages/create-cli" },
+    { "path": "./packages/data" },
+    { "path": "./packages/fs" },
+    { "path": "./packages/sort" },
+    { "path": "./packages/validation" },
+    { "path": "./tooling/tsup-config" },
+    { "path": "./tooling/vitest-config" }
+  ],
   "compilerOptions": {
     "composite": true,
     "declaration": true,

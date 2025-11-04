@@ -4,13 +4,14 @@ export default defineConfig({
   test: {
     // Define all package projects
     projects: [
-      'packages/core',
       'packages/cli',
       'packages/config',
+      'packages/core',
+      'packages/create-cli',
       'packages/data',
       'packages/fs',
+      'packages/sort',
       'packages/validation',
-      'packages/create-cli',
     ],
   },
 })

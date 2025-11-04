@@ -1,5 +1,5 @@
 /**
- * @esteban-url/fs/testing
+ * @trailhead/fs/testing
  *
  * Filesystem testing utilities and mocks.
  * Provides in-memory filesystem mocking and path helpers for testing.
@@ -13,7 +13,7 @@
  *   createPath, createTempPath, normalizePath,
  *   // Test fixtures
  *   basicProject, configFiles, monorepoStructure
- * } from '@esteban-url/fs/testing'
+ * } from '@trailhead/fs/testing'
  *
  * // Create mock filesystem
  * const fs = createMockFileSystem({

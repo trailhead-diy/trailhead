@@ -1,8 +1,8 @@
 import type { CommandContext } from '../command/index.js'
 // @ts-expect-error - Domain package types will be available after build
-import type { FileSystem } from '@esteban-url/fs'
+import type { FileSystem } from '@trailhead/fs'
 import type { Logger } from '../utils/logger.js'
-import { createMockFileSystem } from '@esteban-url/fs/testing'
+import { createMockFileSystem } from '@trailhead/fs/testing'
 
 /**
  * Options for creating test command contexts

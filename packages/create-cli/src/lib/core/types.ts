@@ -4,7 +4,7 @@
  * @module core/types
  */
 
-import type { Logger } from '@esteban-url/cli/utils'
+import type { Logger } from '@trailhead/cli/utils'
 import type { TemplateLoaderConfig } from '../templates/types.js'
 
 /**

@@ -1,10 +1,10 @@
-# @esteban-url/create-cli
+# @trailhead/create-cli
 
-A modern CLI generator built with functional programming principles and the @esteban-url/cli framework. Creates well-structured, type-safe CLI applications using best practices and proven patterns.
+A modern CLI generator built with functional programming principles and the @trailhead/cli framework. Creates well-structured, type-safe CLI applications using best practices and proven patterns.
 
 ## Features
 
-- 🎯 **CLI Framework Foundation** - Built on @esteban-url/cli for robust command handling
+- 🎯 **CLI Framework Foundation** - Built on @trailhead/cli for robust command handling
 - 🔧 **Functional Programming** - Pure functions, immutable data, composition over inheritance
 - 📦 **Template System** - Handlebars-based templates with intelligent caching
 - 🛡️ **Type Safety** - Full TypeScript support with Result types for error handling
@@ -15,21 +15,21 @@ A modern CLI generator built with functional programming principles and the @est
 
 ```bash
 # Run directly with npx (no installation required)
-npx @esteban-url/create-cli my-awesome-cli
+npx @trailhead/create-cli my-awesome-cli
 
 # Or with explicit generate command
-npx @esteban-url/create-cli generate my-awesome-cli
+npx @trailhead/create-cli generate my-awesome-cli
 
 # Install globally for repeated use
-npm install -g @esteban-url/create-cli
+npm install -g @trailhead/create-cli
 create-trailhead-cli my-awesome-cli
 
 # With options
-npx @esteban-url/create-cli my-cli --docs --package-manager npm
+npx @trailhead/create-cli my-cli --docs --package-manager npm
 
 # See all options
-npx @esteban-url/create-cli --help
-npx @esteban-url/create-cli generate --help
+npx @trailhead/create-cli --help
+npx @trailhead/create-cli generate --help
 ```
 
 ## Project Types & Features
@@ -55,12 +55,12 @@ Select features based on your needs:
 
 ## CLI Framework Integration
 
-This generator creates projects using the @esteban-url/cli framework, providing:
+This generator creates projects using the @trailhead/cli framework, providing:
 
 ### Command Structure
 
 ```typescript
-import { createCLI, createCommand } from '@esteban-url/cli'
+import { createCLI, createCommand } from '@trailhead/cli'
 
 const myCommand = createCommand({
   name: 'hello',
@@ -81,7 +81,7 @@ const cli = createCLI({
 ### Error Handling
 
 ```typescript
-import { ok, err, Result, CoreError } from '@esteban-url/core'
+import { ok, err, Result, CoreError } from '@trailhead/core'
 
 const processData = (input: string): Result<string, CoreError> => {
   if (!input) {
@@ -94,8 +94,8 @@ const processData = (input: string): Result<string, CoreError> => {
 ### Testing
 
 ```typescript
-import { expectSuccess, expectError } from '@esteban-url/cli/testing'
-import { setupResultMatchers } from '@esteban-url/core/testing'
+import { expectSuccess, expectError } from '@trailhead/cli/testing'
+import { setupResultMatchers } from '@trailhead/core/testing'
 
 setupResultMatchers()
 
@@ -208,7 +208,7 @@ pnpm config reset             # Reset to defaults
 ### Generator Function
 
 ```typescript
-import { generateProject } from '@esteban-url/create-cli'
+import { generateProject } from '@trailhead/create-cli'
 
 const result = await generateProject(config, context)
 if (result.isOk()) {
@@ -253,7 +253,7 @@ import {
   assertProjectGeneration,
   validateProjectGeneration,
   templateFixtures,
-} from '@esteban-url/create-cli/testing'
+} from '@trailhead/create-cli/testing'
 
 // Mock scaffolder for testing
 const scaffolder = createMockScaffolder()
@@ -432,4 +432,4 @@ MIT © [Esteban URL](https://github.com/esteban-url)
 
 ---
 
-Built with ❤️ using the @esteban-url/cli framework
+Built with ❤️ using the @trailhead/cli framework

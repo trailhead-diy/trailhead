@@ -1,4 +1,4 @@
-import { createCommand } from '@esteban-url/cli/command' import { ok } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command' import { ok } from '@trailhead/core'
 export const helpCommand = createCommand({ name: 'help', description: 'Show help information',
 action: async (options, context) => { const { logger } = context logger.info(`
 {{projectName}}

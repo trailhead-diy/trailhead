@@ -113,8 +113,8 @@ Trailhead is a modern Turborepo monorepo containing UI libraries, CLI frameworks
 ```
 trailhead/                            # Root monorepo
 ├── packages/                         # Public packages
-│   ├── cli/                         # @esteban-url/cli - CLI framework
-│   └── create-cli/                  # @esteban-url/create-cli - CLI generator
+│   ├── cli/                         # @trailhead/cli - CLI framework
+│   └── create-cli/                  # @trailhead/create-cli - CLI generator
 ├── apps/                            # Applications
 │   └── demos/                       # Demo applications
 │       ├── next/                    # Next.js demo
@@ -156,9 +156,9 @@ pnpm clean
 
 ```bash
 # Work on specific package
-pnpm build --filter=@esteban-url/cli
-pnpm test --filter=@esteban-url/create-cli
-pnpm lint --filter=@esteban-url/cli
+pnpm build --filter=@trailhead/cli
+pnpm test --filter=@trailhead/create-cli
+pnpm lint --filter=@trailhead/cli
 
 # Work on multiple packages
 pnpm build --filter=./packages/*
@@ -182,7 +182,7 @@ pnpm build --filter=./packages/*
 ### Adding New Packages
 
 1. Create package directory in appropriate location (`packages/`, `apps/`, or `tooling/`)
-2. Add proper package.json with correct namespace (@esteban-url/_\_or @repo/_\_)
+2. Add proper package.json with correct namespace (@trailhead/_\_or @repo/_\_)
 3. Update dependencies to use `workspace:*` for internal packages
 4. Add to PNPM workspace configuration if needed
 
@@ -194,13 +194,13 @@ pnpm build --filter=./packages/*
 - **Package Boundaries**: Respect package boundaries and dependencies
 - **Build Dependencies**: Ensure proper dependency order in turbo.json
 
-## Package: @esteban-url/cli
+## Package: @trailhead/cli
 
 A functional CLI framework for building robust, testable command-line applications with TypeScript.
 
 ### Overview
 
-@esteban-url/cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
+@trailhead/cli provides a modern foundation for CLI applications using functional programming patterns, explicit error handling with Result types, and comprehensive testing utilities.
 
 ### Features
 
@@ -216,9 +216,9 @@ A functional CLI framework for building robust, testable command-line applicatio
 
 ```bash
 # From monorepo root
-pnpm test --filter=@esteban-url/cli
-pnpm build --filter=@esteban-url/cli
-pnpm lint --filter=@esteban-url/cli
+pnpm test --filter=@trailhead/cli
+pnpm build --filter=@trailhead/cli
+pnpm lint --filter=@trailhead/cli
 
 # From package directory (packages/cli/)
 pnpm test                    # Run all tests
@@ -238,12 +238,12 @@ pnpm lint                   # Linting
 
 ### Module Exports
 
-- **Core** (`@esteban-url/core`) - Result types and error handling
-- **Command** (`@esteban-url/cli/command`) - Command creation and execution
-- **FileSystem** (`@esteban-url/fs`) - Abstract filesystem operations
-- **Configuration** (`@esteban-url/config`) - Type-safe configuration
-- **Prompts** (`@esteban-url/cli/prompts`) - Interactive user prompts
-- **Testing** (`@esteban-url/cli/testing`) - Test utilities and mocks
+- **Core** (`@trailhead/core`) - Result types and error handling
+- **Command** (`@trailhead/cli/command`) - Command creation and execution
+- **FileSystem** (`@trailhead/fs`) - Abstract filesystem operations
+- **Configuration** (`@trailhead/config`) - Type-safe configuration
+- **Prompts** (`@trailhead/cli/prompts`) - Interactive user prompts
+- **Testing** (`@trailhead/cli/testing`) - Test utilities and mocks
 
 ## App: demos/next
 

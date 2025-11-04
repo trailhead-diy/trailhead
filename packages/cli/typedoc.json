@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "@esteban-url/cli",
+  "name": "@trailhead/cli",
   "readme": "none",
   "entryPoints": ["src/index.ts"],
 

@@ -1,7 +1,7 @@
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { select, confirm, input } from '@inquirer/prompts'
 import { consola } from 'consola'
-import { sortStrings, sortBy } from '@esteban-url/sort'
+import { sortStrings, sortBy } from '@trailhead/sort'
 import {
   BUILT_IN_PRESETS,
   type PresetConfig,

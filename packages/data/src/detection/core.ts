@@ -1,5 +1,5 @@
-import { ok, err } from '@esteban-url/core'
-import { readFile } from '@esteban-url/fs'
+import { ok, err } from '@trailhead/core'
+import { readFile } from '@trailhead/fs'
 import { fileTypeFromBuffer } from 'file-type'
 import path from 'node:path'
 import type {

@@ -13,7 +13,7 @@
  *
  * @example Basic auto-detection usage
  * ```typescript
- * import { data } from '@esteban-url/data'
+ * import { data } from '@trailhead/data'
  *
  * // Parse any supported format automatically
  * const result = await data.parseAuto('report.xlsx')
@@ -25,7 +25,7 @@
  *
  * @example Custom configuration
  * ```typescript
- * import { createUnifiedDataOperations } from '@esteban-url/data'
+ * import { createUnifiedDataOperations } from '@trailhead/data'
  *
  * const customData = createUnifiedDataOperations({
  *   csv: { delimiter: ';', header: true },
@@ -35,7 +35,7 @@
  * ```
  */
 
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 
 // Import existing operations
 import { createCSVOperations, type CSVOperations } from './csv/index.js'
@@ -585,7 +585,7 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
  *
  * @example Basic usage
  * ```typescript
- * import { data } from '@esteban-url/data'
+ * import { data } from '@trailhead/data'
  *
  * // Parse any supported format
  * const result = await data.parseAuto('report.xlsx')

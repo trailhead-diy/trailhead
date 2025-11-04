@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/config",
+  "name": "@trailhead/config",
   "version": "1.0.0",
   "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
   "private": false,
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "exports": {
     ".": {
@@ -57,9 +57,9 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/fs": "workspace:*",
-    "@esteban-url/validation": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/validation": "workspace:*",
     "consola": "^3.4.2"
   },
   "devDependencies": {
@@ -80,11 +80,14 @@
     "cli",
     "typescript"
   ],
-  "author": "Esteban Borai",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/config"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme"
 }

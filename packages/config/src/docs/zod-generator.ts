@@ -1,5 +1,5 @@
-import { z } from '@esteban-url/validation'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { z } from '@trailhead/validation'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import type { ZodConfigSchema } from '../core/zod-schema.js'
 
 // ========================================
@@ -201,7 +201,7 @@ export const generateZodConfigDocs = <T>(
       arrayFieldCount: fields.filter((f) => f.type === 'array').length,
       enumFieldCount: fields.filter((f) => f.constraints?.enum).length,
       schemaVersion: schema.version,
-      generator: '@esteban-url/config/zod',
+      generator: '@trailhead/config/zod',
       generatorVersion: '2.0.0',
       zodVersion: 'unknown', // z.version is not available
     }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { z } from '@esteban-url/validation'
+import { z } from '@trailhead/validation'
 import { createConfigOperations } from './operations.js'
 
 describe('Config Operations', () => {

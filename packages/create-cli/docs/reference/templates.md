@@ -10,7 +10,7 @@ related:
 
 # Template System Reference
 
-Technical reference for the @esteban-url/create-cli template system, which uses Handlebars for dynamic project generation.
+Technical reference for the @trailhead/create-cli template system, which uses Handlebars for dynamic project generation.
 
 ## Overview
 

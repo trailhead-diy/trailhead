@@ -1,5 +1,5 @@
 /**
- * @esteban-url/core/testing
+ * @trailhead/core/testing
  *
  * Core testing utilities for Result types and error handling.
  * Provides the foundation for testing functional programming patterns.
@@ -15,7 +15,7 @@
  *   createAsyncOk, fromPromise, chainAsync,
  *   // Vitest matchers
  *   setupResultMatchers, resultMatchers
- * } from '@esteban-url/core/testing'
+ * } from '@trailhead/core/testing'
  *
  * // Test Result types
  * const result = createOkResult('success')

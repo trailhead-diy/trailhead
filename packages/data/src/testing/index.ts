@@ -1,5 +1,5 @@
 /**
- * @esteban-url/data/testing
+ * @trailhead/data/testing
  *
  * Unified data processing and format testing utilities.
  * Provides domain-focused utilities for testing data parsing, format detection, conversion, and processing operations.
@@ -14,7 +14,7 @@
  *   assertDataTransformation,
  *   assertFormatDetection,
  *   testDataConversion,
- * } from '@esteban-url/data/testing'
+ * } from '@trailhead/data/testing'
  *
  * // Create mock data processor
  * const processor = createMockDataProcessor()
@@ -31,7 +31,7 @@
  * ```
  */
 
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 
 // ========================================
 // Data Types and Interfaces

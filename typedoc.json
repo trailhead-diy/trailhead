@@ -129,17 +129,7 @@
   "excludeTags": ["@namespace"],
   "excludeReferences": true,
   "externalPattern": ["node_modules/**/*", "**/node_modules/**/*"],
-  "intentionallyNotExported": [
-    "z",
-    "ok",
-    "err",
-    "Result",
-    "CoreResult",
-    "CoreResultAsync",
-    "fromPromiseAsync",
-    "fromThrowableAsync",
-    "fromThrowableAsyncFunc"
-  ],
+  "intentionallyNotExported": [],
 
   "visibilityFilters": {
     "protected": false,
@@ -175,6 +165,47 @@
       "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
       "Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
       "Object": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object"
+    },
+    "@trailhead/cli": {
+      "CommandArgument": "#",
+      "FileSystem": "#",
+      "Logger": "#",
+      "CommandConfig": "#",
+      "CommandOptions": "#"
+    },
+    "@trailhead/config": {
+      "ManagerDependencies": "#",
+      "ConfigOperations": "#",
+      "ValidatorOperations": "#",
+      "ConfigResult": "#",
+      "FormatterOptions": "#",
+      "ConfigSchema": "#"
+    },
+    "@trailhead/create-cli": {
+      "loadTemplateFilesFromDirectory": "#"
+    },
+    "@trailhead/data": {
+      "FileCategory": "#",
+      "ConversionQuality": "#",
+      "ConversionOptions": "#",
+      "CheckConversionOp": "#",
+      "GetSupportedFormatsOp": "#",
+      "ValidateStringOperation": "#",
+      "DetectFromBufferOp": "#",
+      "DetectFromExtensionOp": "#",
+      "DetectFromFileOp": "#",
+      "FileFormatInfo": "#",
+      "DetectionReliability": "#",
+      "DetectionSource": "#",
+      "ValidateBufferOperation": "#",
+      "GetExtensionsOp": "#",
+      "GetMimeTypeOp": "#",
+      "IsMimeTypeOp": "#",
+      "ParsedData": "#"
+    },
+    "@trailhead/fs": {
+      "FindFilesOp": "#",
+      "SortOptions": "#"
     }
   },
 

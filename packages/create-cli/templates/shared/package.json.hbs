@@ -34,13 +34,13 @@
   },
   "dependencies": {
 {{#if IS_MONOREPO}}
-    "@esteban-url/cli": "workspace:*",
-    "@esteban-url/core": "workspace:*",
+    "@trailhead/cli": "workspace:*",
+    "@trailhead/core": "workspace:*",
     "consola": "^3.4.2"{{#if features.config}},
     "zod": "^3.22.4"{{/if}}
 {{else}}
-    "@esteban-url/cli": "^0.1.0",
-    "@esteban-url/core": "^0.1.0",
+    "@trailhead/cli": "^0.1.0",
+    "@trailhead/core": "^0.1.0",
     "consola": "^3.4.2"{{#if features.config}},
     "zod": "^3.22.4"{{/if}}
 {{/if}}

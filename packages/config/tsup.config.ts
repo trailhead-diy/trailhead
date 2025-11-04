@@ -13,11 +13,6 @@ export default defineConfig(
     },
     dts: true,
     splitting: true,
-    external: [
-      '@esteban-url/core',
-      '@esteban-url/validation',
-      '@esteban-url/fs',
-      '@esteban-url/cli',
-    ],
+    external: ['@trailhead/core', '@trailhead/validation', '@trailhead/fs', '@trailhead/cli'],
   })
 )

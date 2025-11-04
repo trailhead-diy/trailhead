@@ -12,13 +12,13 @@ dist/
 .next/
 out/
 build/
+.docusaurus/
 *.tsbuildinfo
 .turbo/
 *.bundled_*.mjs
 *.bundled_*.cjs
 tsup.config.bundled_*.mjs
 tsup.config.bundled_*.cjs
-.docusaurus/
 
 # Misc
 .DS_Store

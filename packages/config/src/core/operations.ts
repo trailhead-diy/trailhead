@@ -1,4 +1,4 @@
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import {
   createConfigValidationError,
   createSchemaValidationError,

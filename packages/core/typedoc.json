@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "name": "@esteban-url/core",
+  "name": "@trailhead/core",
   "readme": "none",
   "entryPoints": ["src/index.ts"],
   "categorizeByGroup": true,

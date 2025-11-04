@@ -1,11 +1,11 @@
 /**
- * @esteban-url/cli/testing
+ * @trailhead/cli/testing
  *
  * CLI-specific testing utilities for command execution, interactive testing, and CLI workflows.
  * For general testing utilities, see the respective domain packages:
- * - @esteban-url/core/testing - Result matchers, error testing
- * - @esteban-url/fs/testing - Filesystem fixtures, path utilities
- * - @esteban-url/validation/testing - Schema testing
+ * - @trailhead/core/testing - Result matchers, error testing
+ * - @trailhead/fs/testing - Filesystem fixtures, path utilities
+ * - @trailhead/validation/testing - Schema testing
  *
  * @example
  * ```typescript
@@ -20,7 +20,7 @@
  *   expectCommandSuccess, expectCommandFailure,
  *   // CLI performance monitoring
  *   measureCLIPerformance, createCLIPerformanceMonitor
- * } from '@esteban-url/cli/testing'
+ * } from '@trailhead/cli/testing'
  *
  * // Test CLI command execution
  * const result = await runCommand(myCommand, ['--verbose'])
@@ -137,13 +137,13 @@ export type {
  * @example
  * ```typescript
  * // Result testing
- * import { setupResultMatchers } from '@esteban-url/core/testing'
+ * import { setupResultMatchers } from '@trailhead/core/testing'
  *
  * // Filesystem testing
- * import { createTestTempDir, normalizePath } from '@esteban-url/fs/testing'
+ * import { createTestTempDir, normalizePath } from '@trailhead/fs/testing'
  *
  * // CLI testing (this package)
- * import { runCommand, createInteractiveTest } from '@esteban-url/cli/testing'
+ * import { runCommand, createInteractiveTest } from '@trailhead/cli/testing'
  * ```
  */
 
@@ -154,11 +154,11 @@ export type {
 /**
  * Utilities moved to other packages:
  *
- * @esteban-url/core/testing:
+ * @trailhead/core/testing:
  * - resultMatchers, setupResultMatchers
  * - Result helpers and factories
  *
- * @esteban-url/fs/testing:
+ * @trailhead/fs/testing:
  * - createTestTempDir, cleanup, createTestFile
  * - normalizePath, pathAssertions
  * - fixture management for files

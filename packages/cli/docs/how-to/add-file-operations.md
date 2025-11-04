@@ -27,8 +27,8 @@ This guide shows you how to add file system operations to your CLI application u
 To read files in your CLI commands:
 
 ```typescript
-import { ok, err } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
+import { ok, err } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
 import { fs } from '@repo/fs'
 
 const readCommand = createCommand({
@@ -61,8 +61,8 @@ const readCommand = createCommand({
 For more complex file processing:
 
 ```typescript
-import { ok, err } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
+import { ok, err } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
 import { fs } from '@repo/fs'
 
 const processCommand = createCommand({
@@ -101,7 +101,7 @@ To process multiple files:
 
 ```typescript
 import { fs } from '@repo/fs'
-import { combineWithAllErrors } from '@esteban-url/core'
+import { combineWithAllErrors } from '@trailhead/core'
 
 async const processMultipleFiles = async (patterns: string[]) => {
   const results = await Promise.all(patterns.map((pattern) => fs.glob(pattern)))

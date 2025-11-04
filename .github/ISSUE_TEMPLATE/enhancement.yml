@@ -65,8 +65,8 @@ body:
       label: Component
       description: Which part of the project does this enhancement relate to?
       options:
-        - CLI Framework (@esteban-url/trailhead-cli)
-        - Web UI Components (@esteban-url/trailhead-web-ui)
+        - CLI Framework (@trailhead/trailhead-cli)
+        - Web UI Components (@trailhead/trailhead-web-ui)
         - Documentation
         - Build System / Tooling
         - Testing Infrastructure

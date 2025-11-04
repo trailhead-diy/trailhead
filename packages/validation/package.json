@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/validation",
+  "name": "@trailhead/validation",
   "version": "1.0.0",
   "type": "module",
   "private": false,
   "description": "Functional validation with Zod integration and Result types for Trailhead System",
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "types": "./dist/index.d.ts",
   "exports": {
@@ -33,7 +33,7 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/core": "workspace:*",
+    "@trailhead/core": "workspace:*",
     "zod": "^4.0.14"
   },
   "devDependencies": {
@@ -67,8 +67,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/validation"
   },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "license": "MIT"
 }

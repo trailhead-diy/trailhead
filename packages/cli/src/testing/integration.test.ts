@@ -4,9 +4,9 @@
  */
 
 import { describe, test, expect } from 'vitest'
-import { ok, err } from '@esteban-url/core'
-import { setupResultMatchers, createTestError } from '@esteban-url/core/testing'
-import { createMockFileSystem } from '@esteban-url/fs/testing'
+import { ok, err } from '@trailhead/core'
+import { setupResultMatchers, createTestError } from '@trailhead/core/testing'
+import { createMockFileSystem } from '@trailhead/fs/testing'
 
 // Setup cross-package matchers
 setupResultMatchers()

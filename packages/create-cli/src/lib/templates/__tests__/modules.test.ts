@@ -260,10 +260,10 @@ describe('module sorting utilities', () => {
 
         // Dependencies should be sorted alphabetically
         const deps = template.packageDependencies
-        expect(deps).toEqual(['@esteban-url/trailhead-cli', 'zod'])
+        expect(deps).toEqual(['@trailhead/trailhead-cli', 'zod'])
 
         // Should still contain expected dependencies
-        expect(deps).toContain('@esteban-url/trailhead-cli')
+        expect(deps).toContain('@trailhead/trailhead-cli')
         expect(deps).toContain('zod') // from config module
       }
     })

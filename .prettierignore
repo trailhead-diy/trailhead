@@ -1,7 +1,4 @@
-# Exclude external Catalyst UI Kit demo and components
-packages/web-ui/catalyst-ui-kit/
-
-# Exclude generated/built files
+# Generated/built files
 dist/
 build/
 .next/
@@ -9,10 +6,10 @@ node_modules/
 coverage/
 .turbo/
 
-# Exclude lock files
+# Lock files
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
-# Exclude Handlebars template files
+# Handlebars templates
 **/*.hbs

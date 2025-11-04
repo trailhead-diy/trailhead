@@ -10,7 +10,7 @@ related:
 
 # CLI Build Configuration Reference
 
-Complete reference for build configuration options, bundler settings, and optimization parameters for CLI applications built with `@esteban-url/cli`.
+Complete reference for build configuration options, bundler settings, and optimization parameters for CLI applications built with `@trailhead/cli`.
 
 ## Configuration Files
 

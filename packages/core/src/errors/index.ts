@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { ok, err, createCoreError } from '@esteban-url/core/errors'
+ * import { ok, err, createCoreError } from '@trailhead/core/errors'
  *
  * function divide(a: number, b: number): Result<number, CoreError> {
  *   if (b === 0) {

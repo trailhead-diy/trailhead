@@ -1,5 +1,5 @@
 import type { CommandContext, CommandPhase } from './types.js'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { colors } from '../utils/chalk.js'
 
 /**

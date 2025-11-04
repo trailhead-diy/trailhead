@@ -1,4 +1,4 @@
-import { createCommand } from '@esteban-url/cli/command' import { ok } from '@esteban-url/core'
+import { createCommand } from '@trailhead/cli/command' import { ok } from '@trailhead/core'
 export const versionCommand = createCommand({ name: 'version', description: 'Show version
 information', action: async (options, context) => { context.logger.info(`{{packageName}}
 version

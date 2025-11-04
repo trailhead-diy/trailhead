@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { sortBy, orderBy, topN, bottomN, partition } from '../index'
 
-describe('@esteban-url/sort', () => {
+describe('@trailhead/sort', () => {
   describe('sortBy', () => {
     it('sorts by property selector', () => {
       const users = [
