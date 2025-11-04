@@ -1,6 +1,6 @@
 {
   "name": "trailhead",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Trailhead is a toolkit for building UI libraries and CLIs",
   "repository": {
