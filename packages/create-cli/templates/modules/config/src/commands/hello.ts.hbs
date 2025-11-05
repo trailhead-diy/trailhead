@@ -1,0 +1,58 @@
+import { createCommand } from '@trailhead/cli/command'
+import { ok, type Result, type CoreError } from '@trailhead/core'
+import { createSpinner } from '@trailhead/cli/utils'
+import { getAppContext } from '../lib/config.js'
+import type { Config } from '../lib/config-schema.js'
+
+/**
+ * Hello command - demonstrates using configuration from context
+ *
+ * Uses the theme.color setting loaded at startup to print
+ * a colored welcome message with user's name.
+ */
+export const helloCommand = createCommand({
+  name: 'hello',
+  description: 'Print a welcome message using the configured theme',
+  action: async (_options, context): Promise<Result<void, CoreError>> => {
+    // Get config from app context (loaded at startup)
+    const { config } = getAppContext()
+
+    // Show spinner to demonstrate spinner functionality
+    const spinner = createSpinner('Starting...')
+    spinner.start()
+
+    // Add a small delay to show the spinner (demo purposes)
+    await new Promise((resolve) => setTimeout(resolve, 800))
+
+    spinner.success('Ready!')
+
+    // Create welcome message with config name
+    const welcomeMessage = `Welcome to ${config.name}!`
+    const coloredMessage = getColoredMessage(welcomeMessage, config.theme.color)
+
+    // Print styled welcome message
+    context.logger.raw.log('')
+    context.logger.raw.log(coloredMessage)
+    context.logger.info(`Version: ${config.version}`)
+    context.logger.info(`Environment: ${config.environment}`)
+    context.logger.raw.log('')
+
+    return ok(undefined)
+  },
+})
+
+/**
+ * Get colored message using ANSI color codes
+ */
+function getColoredMessage(text: string, color: Config['theme']['color']): string {
+  const colors = {
+    blue: '\x1b[34m',
+    green: '\x1b[32m',
+    red: '\x1b[31m',
+    yellow: '\x1b[33m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+  }
+  const reset = '\x1b[0m'
+  return `${colors[color]}${text}${reset}`
+}

@@ -1,15 +1,21 @@
-import { z } from 'zod'
+import { z } from '@trailhead/validation'
 
+/**
+ * Application configuration schema
+ *
+ * Defines the structure and validation rules for application configuration.
+ */
 export const configSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   version: z.string().regex(/^\d+\.\d+\.\d+/, 'Version must be in semver format'),
   environment: z.enum(['development', 'production', 'test']),
+  theme: z.object({
+    color: z.enum(['blue', 'green', 'red', 'yellow', 'magenta', 'cyan']),
+  }),
   settings: z.object({
     debug: z.boolean(),
     verbose: z.boolean(),
-    maxRetries: z.number().min(0).optional(),
-    timeout: z.number().min(1000).optional()
-  })
+  }),
 })
 
 export type Config = z.infer<typeof configSchema>

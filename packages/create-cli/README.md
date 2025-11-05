@@ -26,7 +26,7 @@ create-trailhead-cli my-awesome-cli
 npx @trailhead/create-cli my-cli
 
 # With options
-npx @trailhead/create-cli my-cli --docs --package-manager pnpm
+npx @trailhead/create-cli my-cli --package-manager pnpm
 
 # See all options
 npx @trailhead/create-cli --help

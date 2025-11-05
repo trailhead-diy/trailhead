@@ -30,7 +30,6 @@
  *   nodeVersion: '18.0.0',
  *   typescript: true,
  *   ide: 'vscode',
- *   includeDocs: true,
  *   dryRun: false,
  *   force: false,
  *   verbose: false
@@ -45,12 +44,10 @@
 import { createCLI } from '@trailhead/cli'
 import { createDefaultLogger } from '@trailhead/cli/utils'
 import { generateCommand } from './commands/generate.js'
-import { configCommand } from './commands/config.js'
 
 // Export utilities for programmatic use
 export { generateProject } from './lib/core/generator.js'
 export { getTemplateFiles } from './lib/templates/loader.js'
-export { validateConfig } from './lib/config/validation.js'
 export { getAvailableTemplates } from './lib/templates/utils.js'
 export type {
   ProjectConfig,
@@ -73,11 +70,7 @@ async function main() {
   const args = process.argv.slice(2)
   const firstArg = args[0]
   const isCommand =
-    firstArg &&
-    (firstArg === 'generate' ||
-      firstArg === 'config' ||
-      firstArg === 'help' ||
-      firstArg.startsWith('-'))
+    firstArg && (firstArg === 'generate' || firstArg === 'help' || firstArg.startsWith('-'))
 
   // If first argument is not a command and not a flag, treat it as project name
   if (firstArg && !isCommand) {
@@ -88,8 +81,8 @@ async function main() {
   const cli = createCLI({
     name: 'create-trailhead-cli',
     version: '0.1.0',
-    description: 'Modern CLI generator with interactive setup and configuration management',
-    commands: [generateCommand, configCommand],
+    description: 'Simple CLI generator for @trailhead/* projects',
+    commands: [generateCommand],
   })
 
   await cli.run()

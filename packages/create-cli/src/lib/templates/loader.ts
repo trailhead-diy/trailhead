@@ -138,12 +138,12 @@ export async function getTemplateFiles(
  */
 export function resolveTemplatePaths(variant: string, config?: TemplateLoaderConfig) {
   // Default built-in template directory
-  // When running from dist/lib, templates are at ../templates
-  // When running tests from src/lib, we need to check multiple locations
+  // When running from bundled dist/index.js, __dirname is dist/
+  // When running tests from src/lib/templates/loader.ts, __dirname is src/lib/templates/
   const candidatePaths = [
-    resolve(__dirname, '../templates'), // dist/lib -> dist/templates
-    resolve(__dirname, '../../templates'), // src/lib -> templates (during tests)
-    resolve(__dirname, '../../dist/templates'), // src/lib -> dist/templates (during tests)
+    resolve(__dirname, 'templates'), // dist/ -> dist/templates (when bundled)
+    resolve(__dirname, '../../../templates'), // src/lib/templates -> templates (during tests, source)
+    resolve(__dirname, '../../../dist/templates'), // src/lib/templates -> dist/templates (during tests, built)
   ]
 
   // Find the first path that exists
