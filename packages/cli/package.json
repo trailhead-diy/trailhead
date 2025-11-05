@@ -54,27 +54,27 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.9.0",
     "@trailhead/core": "workspace:*",
     "@trailhead/fs": "workspace:*",
     "@trailhead/sort": "workspace:*",
-    "@inquirer/prompts": "^7.8.0",
     "@types/cli-progress": "^3.11.6",
     "cli-progress": "^3.12.0",
-    "commander": "^14.0.0",
+    "commander": "^14.0.2",
     "consola": "^3.4.2",
-    "listr2": "^9.0.1",
+    "listr2": "^9.0.5",
     "yocto-spinner": "^1.0.0"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/node": "^24.1.0",
-    "@vitest/coverage-v8": "^3.2.4",
-    "oxlint": "^1.9.0",
+    "@types/node": "^24.10.0",
+    "@vitest/coverage-v8": "^4.0.7",
+    "oxlint": "^1.25.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
   },
   "engines": {
     "node": ">=20.0.0",

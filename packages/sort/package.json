@@ -40,19 +40,19 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "es-toolkit": "^1.39.8"
+    "es-toolkit": "^1.41.0"
   },
   "devDependencies": {
     "@repo/prettier-config": "workspace:*",
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/node": "^24.1.0",
-    "@vitest/coverage-v8": "^3.2.4",
-    "oxlint": "^1.9.0",
+    "@types/node": "^24.10.0",
+    "@vitest/coverage-v8": "^4.0.7",
+    "oxlint": "^1.25.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
   },
   "prettier": "@repo/prettier-config",
   "engines": {
