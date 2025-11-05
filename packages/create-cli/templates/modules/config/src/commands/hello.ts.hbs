@@ -1,67 +1,48 @@
-import { createCommand, type CommandContext } from '@trailhead/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { ok, type Result, type CoreError } from '@trailhead/core'
 import { createSpinner } from '@trailhead/cli/utils'
-import { fs } from '@trailhead/fs'
-import { resolve } from 'path'
-import { configSchema, type Config } from '../lib/config-schema.js'
+import { getAppContext } from '../lib/config.js'
+import type { Config } from '../lib/config-schema.js'
 
 /**
- * Hello command - demonstrates using configuration
+ * Hello command - demonstrates using configuration from context
  *
- * Reads the config.json file and uses the theme.color setting
- * to print a colored "Hello, World!" message.
- *
- * This shows:
- * - Reading config with @trailhead/fs
- * - Using config values in commands
- * - Graceful fallback when config doesn't exist
- * - Using spinner for progress indication
- * - Using ANSI color codes for output
+ * Uses the theme.color setting loaded at startup to print
+ * a colored welcome message with user's name.
  */
 export const helloCommand = createCommand({
   name: 'hello',
-  description: 'Print a hello message using the configured theme color',
+  description: 'Print a welcome message using the configured theme',
   action: async (_options, context): Promise<Result<void, CoreError>> => {
-    const configPath = resolve('config.json')
+    // Get config from app context (loaded at startup)
+    const { config } = getAppContext()
 
-    // Show spinner while loading config
-    const spinner = createSpinner('Loading configuration...')
+    // Show spinner to demonstrate spinner functionality
+    const spinner = createSpinner('Starting...')
     spinner.start()
 
     // Add a small delay to show the spinner (demo purposes)
     await new Promise((resolve) => setTimeout(resolve, 800))
 
-    // Try to read config file
-    const configResult = await fs.readJson<unknown>(configPath)
+    spinner.success('Ready!')
 
-    // Use configured color or fall back to default
-    let color: Config['theme']['color'] = 'cyan'
+    // Create welcome message with config name
+    const welcomeMessage = `Welcome to ${config.name}!`
+    const coloredMessage = getColoredMessage(welcomeMessage, config.theme.color)
 
-    if (configResult.isOk()) {
-      // Validate config with schema
-      const validationResult = configSchema.safeParse(configResult.value)
-      if (validationResult.success) {
-        color = validationResult.data.theme.color
-        spinner.success('Configuration loaded')
-      } else {
-        spinner.warning('Config invalid, using defaults')
-        context.logger.warning('Config file exists but is invalid, using default color')
-      }
-    } else {
-      spinner.success('Using default configuration')
-    }
-
-    // Print hello message using ANSI color codes
-    const coloredMessage = getColoredMessage('Hello, World!', color)
+    // Print styled welcome message
+    context.logger.raw.log('')
     context.logger.raw.log(coloredMessage)
-    context.logger.info(`Theme color: ${color}`)
+    context.logger.info(`Version: ${config.version}`)
+    context.logger.info(`Environment: ${config.environment}`)
+    context.logger.raw.log('')
 
     return ok(undefined)
   },
 })
 
 /**
- * Get colored message using consola/ANSI color codes
+ * Get colored message using ANSI color codes
  */
 function getColoredMessage(text: string, color: Config['theme']['color']): string {
   const colors = {

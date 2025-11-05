@@ -77,16 +77,20 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
       {
-        source: 'modules/config/config.example.json.hbs',
-        destination: 'config.example.json',
+        source: 'modules/config/src/lib/config.ts.hbs',
+        destination: 'src/lib/config.ts',
+        isTemplate: true,
+        executable: false,
+      },
+      {
+        source: 'modules/config/config.json.hbs',
+        destination: 'config.json',
         isTemplate: true,
         executable: false,
       },
     ],
     packageDependencies: ['@trailhead/config', '@trailhead/fs'],
-    scripts: {
-      'config:validate': 'node bin/cli.js config --validate',
-    },
+    scripts: {},
   },
 
   testing: {

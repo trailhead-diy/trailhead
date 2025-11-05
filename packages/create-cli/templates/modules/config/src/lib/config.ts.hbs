@@ -1,0 +1,144 @@
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
+import { fs } from '@trailhead/fs'
+import { resolve } from 'path'
+import { configSchema, type Config } from './config-schema.js'
+
+/**
+ * Configuration operations library
+ *
+ * Centralizes all config loading, validation, and saving operations.
+ */
+
+const CONFIG_PATH = resolve('config.json')
+
+/**
+ * Default configuration
+ */
+const DEFAULT_CONFIG: Config = {
+  name: '{{packageName}}',
+  version: '{{version}}',
+  environment: 'development',
+  theme: { color: 'cyan' },
+  settings: { debug: false, verbose: false },
+}
+
+/**
+ * Application context for sharing config across commands
+ */
+interface AppContext {
+  config: Config
+}
+
+let appContext: AppContext = {
+  config: DEFAULT_CONFIG,
+}
+
+/**
+ * Set application context
+ * Called at startup to store loaded config
+ */
+export function setAppContext(context: Partial<AppContext>): void {
+  appContext = { ...appContext, ...context }
+}
+
+/**
+ * Get application context
+ * Used by commands to access loaded config
+ */
+export function getAppContext(): AppContext {
+  return appContext
+}
+
+/**
+ * Load configuration from file
+ *
+ * Reads config.json, validates it, and returns Config or creates default if missing.
+ *
+ * @returns Result with Config or CoreError
+ */
+export async function loadConfig(): Promise<Result<Config, CoreError>> {
+  // Check if config exists
+  const existsResult = await fs.exists(CONFIG_PATH)
+  if (existsResult.isErr()) {
+    return err(
+      createCoreError('CONFIG_CHECK_FAILED', 'CLI_ERROR', 'Failed to check config file', {
+        recoverable: true,
+        cause: existsResult.error,
+      })
+    )
+  }
+
+  // If doesn't exist, create default
+  if (!existsResult.value) {
+    const writeResult = await saveConfig(DEFAULT_CONFIG)
+    if (writeResult.isErr()) {
+      return err(writeResult.error)
+    }
+    return ok(DEFAULT_CONFIG)
+  }
+
+  // Read existing config
+  const readResult = await fs.readJson<unknown>(CONFIG_PATH)
+  if (readResult.isErr()) {
+    return err(
+      createCoreError('CONFIG_READ_FAILED', 'CLI_ERROR', 'Failed to read config file', {
+        recoverable: true,
+        cause: readResult.error,
+      })
+    )
+  }
+
+  // Validate config
+  const validationResult = configSchema.safeParse(readResult.value)
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+    return err(
+      createCoreError('CONFIG_INVALID', 'CLI_ERROR', `Invalid config: ${errors.join(', ')}`, {
+        recoverable: true,
+      })
+    )
+  }
+
+  return ok(validationResult.data)
+}
+
+/**
+ * Save configuration to file
+ *
+ * Validates config before saving to ensure data integrity.
+ *
+ * @param config - Configuration to save
+ * @returns Result with void or CoreError
+ */
+export async function saveConfig(config: Config): Promise<Result<void, CoreError>> {
+  // Validate before saving
+  const validationResult = configSchema.safeParse(config)
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+    return err(
+      createCoreError('CONFIG_INVALID', 'CLI_ERROR', `Invalid config: ${errors.join(', ')}`, {
+        recoverable: true,
+      })
+    )
+  }
+
+  // Save to file
+  const writeResult = await fs.writeJson(CONFIG_PATH, validationResult.data, { spaces: 2 })
+  if (writeResult.isErr()) {
+    return err(
+      createCoreError('CONFIG_WRITE_FAILED', 'CLI_ERROR', 'Failed to save config file', {
+        recoverable: true,
+        cause: writeResult.error,
+      })
+    )
+  }
+
+  return ok(undefined)
+}
+
+/**
+ * Get default configuration
+ */
+export function getDefaultConfig(): Config {
+  return { ...DEFAULT_CONFIG }
+}

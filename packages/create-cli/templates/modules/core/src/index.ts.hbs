@@ -5,6 +5,7 @@ import { createDefaultLogger } from '@trailhead/cli/utils'
 {{#if features.config}}
 import { helloCommand } from './commands/hello.js'
 import { configCommand } from './commands/config.js'
+import { loadConfig, getDefaultConfig, setAppContext } from './lib/config.js'
 {{/if}}
 
 /**
@@ -23,6 +24,18 @@ import { configCommand } from './commands/config.js'
  */
 async function main() {
 {{#if features.config}}
+  // Load configuration at startup
+  const logger = createDefaultLogger()
+  const configResult = await loadConfig()
+  const config = configResult.isOk() ? configResult.value : getDefaultConfig()
+
+  if (configResult.isErr()) {
+    logger.warning('Config file is invalid, using defaults')
+  }
+
+  // Store config in app context for commands to access
+  setAppContext({ config })
+
   // If no command provided, run hello as default
   const args = process.argv.slice(2)
   const firstArg = args[0]
@@ -33,19 +46,24 @@ async function main() {
     // Insert 'hello' command as default
     process.argv.splice(2, 0, 'hello')
   }
-{{/if}}
 
+  const cli = createCLI({
+    name: config.name,
+    version: config.version,
+    description: '{{description}}',
+    commands: [
+      helloCommand,
+      configCommand,
+    ],
+  })
+{{else}}
   const cli = createCLI({
     name: '{{packageName}}',
     version: '{{version}}',
     description: '{{description}}',
-    commands: [
-{{#if features.config}}
-      helloCommand,
-      configCommand,
-{{/if}}
-    ],
+    commands: [],
   })
+{{/if}}
 
   await cli.run()
 }
