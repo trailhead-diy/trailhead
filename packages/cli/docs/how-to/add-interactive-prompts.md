@@ -239,6 +239,5 @@ try {
 
 ## See Also
 
-- [Prompts API Reference](../../reference/prompts)
-- [Command Patterns](../../reference/command)
+- [CLI API Reference](/docs/@trailhead.cli.md) - Prompts and command patterns
 - [Error Handling Guide](../../how-to/handle-errors-in-cli)

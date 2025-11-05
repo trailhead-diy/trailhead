@@ -6,36 +6,24 @@
 [![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-## Features
-
-- Result-based validation with explicit error handling
-- Pre-built validators for common use cases
-- Zod schema integration
-- Functional composition patterns
-- TypeScript type inference
-- Testing utilities
+Result-based validation with Zod integration, pre-built validators, functional composition patterns, and comprehensive testing utilities.
 
 ## Installation
 
 ```bash
 pnpm add @trailhead/validation
-# or
-npm install @trailhead/validation
 ```
 
-## Quick Start
+## Quick Example
 
 ```typescript
-import { validate } from '@trailhead/validation'
+import { validate, createSchemaValidator, z } from '@trailhead/validation'
 
-// Basic validators
+// Pre-built validators
 const emailResult = validate.email('user@example.com')
 const urlResult = validate.url('https://example.com')
-const phoneResult = validate.phoneNumber('+1-555-123-4567')
 
-// Schema validation
-import { z, createSchemaValidator } from '@trailhead/validation'
-
+// Schema validation with Zod
 const userSchema = z.object({
   name: z.string().min(3),
   email: z.string().email(),
@@ -44,96 +32,25 @@ const userSchema = z.object({
 
 const validateUser = createSchemaValidator(userSchema)
 const result = validateUser({ name: 'John', email: 'john@example.com', age: 25 })
+
+if (result.isOk()) {
+  console.log('Valid user:', result.value)
+}
 ```
 
-## API Reference
+## Key Features
 
-### Pre-built Validators
-
-```typescript
-import { validate } from '@trailhead/validation'
-
-// Basic validators
-validate.email(value)
-validate.url(value)
-validate.phoneNumber(value)
-validate.required(value)
-validate.currency(value)
-validate.date(value)
-
-// Factory validators
-validate.stringLength(min, max?)
-validate.numberRange(min?, max?)
-validate.array(itemValidator)
-validate.object(shape)
-```
-
-### Schema Operations
-
-```typescript
-import { createSchemaValidator, createValidator, z } from '@trailhead/validation'
-
-// Create validator from schema
-const validateUser = createSchemaValidator(userSchema)
-
-// Compose validators
-import { composeValidators, allOf, anyOf } from '@trailhead/validation'
-
-const validator = composeValidators(...validators)
-const all = allOf([...validators])
-const any = anyOf([...validators])
-```
-
-### Pre-built Schemas
-
-```typescript
-import {
-  emailSchema,
-  urlSchema,
-  phoneSchema,
-  projectNameSchema,
-  portSchema,
-  positiveIntegerSchema,
-  nonEmptyStringSchema,
-  trimmedStringSchema,
-  dateSchema,
-  authorSchema,
-} from '@trailhead/validation'
-```
-
-### Testing
-
-```typescript
-import {
-  createMockValidator,
-  assertValidationSuccess,
-  assertValidationFailure,
-} from '@trailhead/validation/testing'
-
-// Create mock validator
-const mockValidator = createMockValidator()
-
-// Assert validation results
-assertValidationSuccess(result) // Throws if validation failed
-assertValidationFailure(result) // Throws if validation succeeded
-```
-
-## Related Packages
-
-- **@trailhead/core** - Result types and functional utilities
-- **@trailhead/fs** - File system operations
-- **@trailhead/data** - Data processing and format conversion
+- **Result-based** - Explicit error handling with Result types
+- **Pre-built validators** - Common validators for email, URL, phone, etc.
+- **Zod integration** - Full support for Zod schemas
+- **Functional composition** - Compose validators with `allOf`, `anyOf`
+- **Type-safe** - TypeScript type inference from schemas
 
 ## Documentation
 
-- [Tutorials](./docs/README.md)
-  - [Form Validation Guide](../../docs/tutorials/form-validation-guide.md)
-- [How-to Guides](./docs/how-to/validate-data.md)
-  - [Create Custom Validators](../../docs/how-to/create-custom-validators.md)
-- [Explanations](./docs/explanation/composition-patterns.md)
-  - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](../../docs/explanation/functional-architecture.md)
-- **[API Documentation](../../docs/@trailhead.validation.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.validation.md)** - Complete API reference
+- **[Form Validation Guide](../../docs/tutorials/form-validation-guide.md)** - Tutorial
+- **[Create Custom Validators](../../docs/how-to/create-custom-validators.md)** - How-to guide
 
 ## License
 

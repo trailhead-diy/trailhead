@@ -295,6 +295,6 @@ const schema = z.object({
 
 ## See Also
 
-- [Configuration API Reference](../../../config/reference/api)
+- [Configuration API Reference](/docs/@trailhead.config.md)
 - [Schema Definition Guide](./define-schemas)
 - [Configuration Sources Explanation](../explanation/config-sources)

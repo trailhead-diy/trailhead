@@ -1,10 +1,4 @@
----
-type: reference
-sidebar: true
-example: 0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -14,9 +8,24 @@ example: 0
 
 Fast, type-safe sorting utilities for JavaScript/TypeScript.
 
+## Example
+
+```typescript
+import { sortBy, orderBy, topN } from '@trailhead/sort'
+
+// Sort by a single property
+const sorted = sortBy(users, [(user) => user.age])
+
+// Sort by multiple criteria
+const sorted = orderBy(users, [(user) => user.age, (user) => user.name], ['asc', 'desc'])
+
+// Get top 10 items efficiently
+const top10 = topN(10, scores)
+```
+
 ## Interfaces
 
-### SortOptions\<T\>
+### SortOptions
 
 Common sorting options interface for consistent API across packages
 
@@ -30,7 +39,7 @@ Common sorting options interface for consistent API across packages
 
 ##### by?
 
-> `optional` **by**: `string` \| `string`[] \| [`PropFn`](#propfn)\<`T`, `any`\> \| [`PropFn`](#propfn)\<`T`, `any`\>[]
+> `optional` **by**: `string` \| [`PropFn`](#propfn)\<`T`, `any`\> \| [`PropFn`](#propfn)\<`T`, `any`\>[] \| `string`[]
 
 Field(s) to sort by - can be a single field or array of fields
 
@@ -60,7 +69,7 @@ Sort order(s) - can be a single order or array matching the fields
 
 ## Type Aliases
 
-### CompareFn()\<T\>
+### CompareFn()
 
 > **CompareFn**\<`T`\> = (`a`, `b`) => `number`
 
@@ -124,7 +133,7 @@ Represents the sort order direction.
 
 ---
 
-### PropFn()\<T, K\>
+### PropFn()
 
 > **PropFn**\<`T`, `K`\> = (`item`) => `K`
 

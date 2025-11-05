@@ -1,9 +1,4 @@
----
-type: reference
-sidebar: true
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -13,7 +8,7 @@ sidebar: true
 
 ## Interfaces
 
-### ArrayFieldBuilder\<T\>
+### ArrayFieldBuilder
 
 Array field builder providing fluent API for array configuration fields.
 
@@ -32,11 +27,11 @@ The type of items in the array
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `T`[]\>
+> `readonly` **build**: () => `ZodType`\<`T`[] \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `T`[]\>
+`ZodType`\<`T`[] \| `undefined`\>
 
 ##### default()
 
@@ -168,11 +163,11 @@ Supports optional flags, default values, and examples for documentation.
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `boolean`\>
+> `readonly` **build**: () => `ZodType`\<`boolean` \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `boolean`\>
+`ZodType`\<`boolean` \| `undefined`\>
 
 ##### default()
 
@@ -284,7 +279,7 @@ old and new values, and the source that triggered the change.
 
 ---
 
-### ConfigDefinition\<T\>
+### ConfigDefinition
 
 Configuration definition interface defining the structure and behavior of configuration.
 
@@ -392,7 +387,7 @@ specific source types with optional change watching capabilities.
 
 ---
 
-### ConfigManager\<T\>
+### ConfigManager
 
 Configuration manager interface providing lifecycle management for configuration.
 
@@ -415,7 +410,7 @@ The type of configuration data being managed
 
 ##### get()
 
-> `readonly` **get**: \<`K`\>(`key`) => `undefined` \| `T`\[`K`\]
+> `readonly` **get**: \<`K`\>(`key`) => `T`\[`K`\] \| `undefined`
 
 ###### Type Parameters
 
@@ -431,23 +426,23 @@ The type of configuration data being managed
 
 ###### Returns
 
-`undefined` \| `T`\[`K`\]
+`T`\[`K`\] \| `undefined`
 
 ##### getMetadata()
 
-> `readonly` **getMetadata**: () => `undefined` \| [`ConfigMetadata`](#configmetadata)
+> `readonly` **getMetadata**: () => [`ConfigMetadata`](#configmetadata) \| `undefined`
 
 ###### Returns
 
-`undefined` \| [`ConfigMetadata`](#configmetadata)
+[`ConfigMetadata`](#configmetadata) \| `undefined`
 
 ##### getState()
 
-> `readonly` **getState**: () => `undefined` \| [`ConfigState`](#configstate)\<`T`\>
+> `readonly` **getState**: () => [`ConfigState`](#configstate)\<`T`\> \| `undefined`
 
 ###### Returns
 
-`undefined` \| [`ConfigState`](#configstate)\<`T`\>
+[`ConfigState`](#configstate)\<`T`\> \| `undefined`
 
 ##### has()
 
@@ -657,7 +652,7 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 
 ###### schema
 
-[`ConfigSchema`](#)\<`T`\>
+`ConfigSchema`\<`T`\>
 
 ###### Returns
 
@@ -776,7 +771,7 @@ transformation logic for configuration properties.
 
 ---
 
-### ConfigSchema\<T\>
+### ConfigSchema
 
 Zod-powered configuration schema with metadata and validation options.
 
@@ -852,7 +847,7 @@ priority for merging, and optional features like watching for changes.
 
 ---
 
-### ConfigState\<T\>
+### ConfigState
 
 Configuration state interface representing loaded and processed configuration.
 
@@ -891,7 +886,7 @@ The type of the resolved configuration data
 
 ---
 
-### ConfigTransformer\<T\>
+### ConfigTransformer
 
 Configuration transformer interface for modifying configuration data.
 
@@ -932,7 +927,7 @@ The type of configuration data after transformation
 
 ---
 
-### ConfigValidator\<T\>
+### ConfigValidator
 
 Configuration validator interface for custom validation logic.
 
@@ -1032,7 +1027,7 @@ including prefixes, separators, and type parsing behavior.
 
 ---
 
-### FieldBuilder\<T\>
+### FieldBuilder
 
 Generic field builder interface for all configuration field types.
 
@@ -1051,11 +1046,11 @@ The type of value this field validates
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `T`\>
+> `readonly` **build**: () => `ZodType`\<`T` \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `T`\>
+`ZodType`\<`T` \| `undefined`\>
 
 ##### default()
 
@@ -1143,7 +1138,7 @@ fetch configuration data from various source types.
 
 ##### getLoader()
 
-> `readonly` **getLoader**: (`source`) => `undefined` \| [`ConfigLoader`](#configloader)
+> `readonly` **getLoader**: (`source`) => [`ConfigLoader`](#configloader) \| `undefined`
 
 ###### Parameters
 
@@ -1153,7 +1148,7 @@ fetch configuration data from various source types.
 
 ###### Returns
 
-`undefined` \| [`ConfigLoader`](#configloader)
+[`ConfigLoader`](#configloader) \| `undefined`
 
 ##### load()
 
@@ -1221,11 +1216,11 @@ const portField = number()
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `number`\>
+> `readonly` **build**: () => `ZodType`\<`number` \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `number`\>
+`ZodType`\<`number` \| `undefined`\>
 
 ##### default()
 
@@ -1455,7 +1450,7 @@ const portField = number()
 
 ---
 
-### ObjectFieldBuilder\<T\>
+### ObjectFieldBuilder
 
 Object field builder providing fluent API for object configuration fields.
 
@@ -1474,11 +1469,11 @@ The type of the object structure
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `T`\>
+> `readonly` **build**: () => `ZodType`\<`T` \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `T`\>
+`ZodType`\<`T` \| `undefined`\>
 
 ##### default()
 
@@ -1583,7 +1578,7 @@ during the loading process from a specific configuration source.
 
 ---
 
-### SchemaBuilder\<T\>
+### SchemaBuilder
 
 Schema builder interface providing fluent API for configuration schema construction.
 
@@ -1687,11 +1682,11 @@ const hostField = string()
 
 ##### build()
 
-> `readonly` **build**: () => `ZodType`\<`undefined` \| `string`\>
+> `readonly` **build**: () => `ZodType`\<`string` \| `undefined`\>
 
 ###### Returns
 
-`ZodType`\<`undefined` \| `string`\>
+`ZodType`\<`string` \| `undefined`\>
 
 ##### default()
 
@@ -1974,11 +1969,14 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 
 ### ValidationContext
 
+Context object for creating configuration validation errors.
+Provides all necessary information to construct a helpful error message.
+
 #### Properties
 
 ##### cause?
 
-> `readonly` `optional` **cause**: `Error` \| [`CoreError`](@trailhead.cli.md#coreerror)
+> `readonly` `optional` **cause**: [`CoreError`](@trailhead.cli.md#coreerror) \| `Error`
 
 ##### constraints?
 
@@ -2023,6 +2021,9 @@ readonly [`ConfigTransformer`](#configtransformer)\<`T`\>[]
 ---
 
 ### ValidationError
+
+Enhanced validation error with configuration-specific features.
+Extends base validation error with helpful suggestions, examples, and fix commands.
 
 #### Extends
 
@@ -2315,7 +2316,7 @@ readonly [`ConfigValidator`](#configvalidator)\<`T`\>[]
 
 ## Type Aliases
 
-### ConfigChangeCallback()\<T\>
+### ConfigChangeCallback()
 
 > **ConfigChangeCallback**\<`T`\> = (`newConfig`, `oldConfig`, `changes`) => `void`
 
@@ -2352,7 +2353,7 @@ readonly [`ConfigChange`](#configchange)[]
 
 ---
 
-### ConfigPath\<T\>
+### ConfigPath
 
 > **ConfigPath**\<`T`\> = `T` _extends_ `object` ? \{ readonly \[K in keyof T\]: K extends string ? T\[K\] extends object ? \`$\{K\}\` \| \`$\{K\}.$\{ConfigPath\<T\[K\]\>\}\` : \`$\{K\}\` : never \}\[keyof `T`\] : `never`
 
@@ -2388,7 +2389,7 @@ Defines the basic types that configuration properties can be validated as.
 
 ---
 
-### ConfigResult\<T\>
+### ConfigResult
 
 > **ConfigResult**\<`T`\> = `Result`\<`T`, [`CoreError`](@trailhead.cli.md#coreerror)\>
 
@@ -2436,7 +2437,7 @@ data or any error that occurred during the reload process.
 
 ---
 
-### DeepPartial\<T\>
+### DeepPartial
 
 > **DeepPartial**\<`T`\> = `{ readonly [P in keyof T]?: T[P] extends (infer U)[] ? DeepPartial<U>[] : T[P] extends readonly (infer U)[] ? readonly DeepPartial<U>[] : T[P] extends object ? DeepPartial<T[P]> : T[P] }`
 
@@ -2603,7 +2604,7 @@ await manager.watch((newConfig, oldConfig, changes) => {
 
 ### createConfigOperations()
 
-> **createConfigOperations**(): [`ConfigOperations`](#)
+> **createConfigOperations**(): `ConfigOperations`
 
 Creates configuration operations with integrated loader, validator, and transformer operations.
 
@@ -2613,7 +2614,7 @@ validation, and type safety.
 
 #### Returns
 
-[`ConfigOperations`](#)
+`ConfigOperations`
 
 Complete configuration operations interface
 
@@ -2785,7 +2786,7 @@ const result = transformerOps.transform(rawConfig, [envExpansionTransformer])
 
 > **createValidationError**(`context`): [`ValidationError`](#validationerror)
 
-Creates a configuration validation error with detailed context.
+Creates an enhanced configuration validation error with helpful context.
 
 #### Parameters
 
@@ -2793,30 +2794,19 @@ Creates a configuration validation error with detailed context.
 
 [`ValidationContext`](#validationcontext)
 
-Validation error context including field, value, and suggestions
+Validation context containing all error details
 
 #### Returns
 
 [`ValidationError`](#validationerror)
 
-Configuration validation error
-
-#### Example
-
-```typescript
-const error = createValidationError({
-  field: 'port',
-  value: -1,
-  expectedType: 'positive number',
-  suggestion: 'Use a port between 1 and 65535',
-})
-```
+Enhanced validation error with suggestions and examples
 
 ---
 
 ### createValidatorOperations()
 
-> **createValidatorOperations**(): [`ValidatorOperations`](#)
+> **createValidatorOperations**(): `ValidatorOperations`
 
 Creates validator operations for managing configuration validators.
 
@@ -2826,7 +2816,7 @@ environment-specific validation, connectivity checks, and custom constraints.
 
 #### Returns
 
-[`ValidatorOperations`](#)
+`ValidatorOperations`
 
 Validator operations interface with registration and validation capabilities
 
@@ -2967,7 +2957,8 @@ const schema = defineZodConfigSchema().object({
 
 > **enhanceZodError**(`zodError`, `schemaName?`, `schema?`): [`CoreError`](@trailhead.cli.md#coreerror)
 
-Enhances Zod validation errors with additional context and formatting.
+Converts Zod validation errors to configuration validation errors.
+Enhances errors with examples from schema metadata when available.
 
 #### Parameters
 
@@ -2975,25 +2966,25 @@ Enhances Zod validation errors with additional context and formatting.
 
 `ZodError`
 
-Original Zod validation error
+Zod validation error to enhance
 
 ##### schemaName?
 
 `string`
 
-Optional schema name for better error messages
+Optional schema name for context
 
 ##### schema?
 
 `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\>
 
-Optional schema for extracting field examples
+Optional schema to extract examples from
 
 #### Returns
 
 [`CoreError`](@trailhead.cli.md#coreerror)
 
-Enhanced validation error with better messaging
+Core error with enhanced validation details
 
 ---
 
@@ -3001,7 +2992,7 @@ Enhanced validation error with better messaging
 
 > **formatValidationError**(`error`, `options?`): `string`
 
-Formats a validation error for display to users.
+Formats a single validation error with default or custom options.
 
 #### Parameters
 
@@ -3013,22 +3004,15 @@ Validation error to format
 
 ##### options?
 
-[`FormatterOptions`](#)
+`FormatterOptions`
 
-Formatting options
+Optional formatting options
 
 #### Returns
 
 `string`
 
-Formatted error message
-
-#### Example
-
-```typescript
-const formatted = formatValidationError(error, { colors: true })
-console.error(formatted)
-```
+Formatted error string
 
 ---
 
@@ -3036,7 +3020,7 @@ console.error(formatted)
 
 > **formatValidationErrors**(`errors`, `options?`): `string`
 
-Formats multiple validation errors for display to users.
+Formats multiple validation errors with summary and details.
 
 #### Parameters
 
@@ -3048,15 +3032,15 @@ Array of validation errors to format
 
 ##### options?
 
-[`FormatterOptions`](#)
+`FormatterOptions`
 
-Formatting options
+Optional formatting options
 
 #### Returns
 
 `string`
 
-Formatted error messages
+Formatted errors string with summary
 
 ---
 
@@ -3162,7 +3146,7 @@ const apiKeyField = zodString()
 
 ### validate()
 
-> **validate**\<`T`\>(`data`, `schema`): [`ConfigResult`](#)\<`T`\>
+> **validate**\<`T`\>(`data`, `schema`): `ConfigResult`\<`T`\>
 
 Validates configuration data against a Zod schema synchronously.
 
@@ -3191,7 +3175,7 @@ Zod configuration schema to validate against
 
 #### Returns
 
-[`ConfigResult`](#)\<`T`\>
+`ConfigResult`\<`T`\>
 
 Result with validated data or detailed validation errors
 
@@ -3210,7 +3194,7 @@ if (result.isOk()) {
 
 ### validateAsync()
 
-> **validateAsync**\<`T`\>(`data`, `schema`): [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#)\<`T`\>\>
+> **validateAsync**\<`T`\>(`data`, `schema`): [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`ConfigResult`\<`T`\>\>
 
 Validates configuration data against a Zod schema asynchronously.
 
@@ -3239,6 +3223,6 @@ Zod configuration schema to validate against
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ConfigResult`](#)\<`T`\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<`ConfigResult`\<`T`\>\>
 
 Promise resolving to Result with validated data or detailed validation errors

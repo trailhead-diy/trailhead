@@ -36,6 +36,20 @@ pre-commit:
       glob: "**/*.{ts,tsx}"
       run: pnpm types --filter="./packages/*" -- --incremental
 
+    # 4. JSDoc validation (documentation coverage)
+    jsdoc:
+      priority: 4
+      glob: "packages/*/src/**/*.{ts,tsx}"
+      run: |
+        echo "📚 Validating JSDoc coverage..."
+        pnpm typedoc --emit none || {
+          echo "⚠️  TypeDoc validation warnings detected"
+          echo "💡 Add JSDoc to public APIs (functions, interfaces, types)"
+          echo "   See: typedoc.json for validation rules"
+          echo "   Note: This is a warning, not blocking commit"
+          exit 0
+        }
+
 prepare-commit-msg:
   commands:
     changeset-reminder:

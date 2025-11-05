@@ -449,8 +449,8 @@ Potential evolution areas:
 
 ### Technical Details
 
-- [API Reference](../../reference/core.md)- Complete function signatures
-- [Type Definitions](../../reference/types.md)- TypeScript interfaces and types
+- [CLI API Reference](/docs/@trailhead.cli.md) - Complete function signatures and TypeScript types
+- [Core API Reference](/docs/@trailhead.core.md) - Result types and error handling
 
 ## Discussion
 

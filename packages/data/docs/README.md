@@ -29,7 +29,7 @@ Functional data processing library with automatic format detection and Result-ba
 
 Complete API documentation is available in the shared documentation:
 
-- [Data API Reference](../reference/api.md)- Complete function and type definitions
+- [Data API Documentation](/docs/@trailhead.data.md) - Complete function and type definitions
 
 ### Understanding the Design
 
@@ -189,7 +189,7 @@ The library provides specific error types for different scenarios:
 ## Next Steps
 
 1. Start with [Process Data Files](../how-to/process-data-files.md)for common tasks
-2. Review the [API Reference](../reference/api.md)for detailed documentation
+2. Review the [Data API Documentation](/docs/@trailhead.data.md) for detailed documentation
 3. Understand [Format Detection](../explanation/format-detection.md)for advanced usage
 
 ## Integration Examples

@@ -1,16 +1,31 @@
----
-type: reference
-sidebar: true
-example: 0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
 [Trailhead API Documentation](README.md) / @trailhead/fs
 
 # @trailhead/fs
+
+## Example
+
+```typescript
+import { fs } from '@trailhead/fs'
+
+// Using the convenience object (pre-configured with defaults)
+const result = await fs.readFile('config.json')
+if (result.isOk()) {
+  console.log(result.value)
+} else {
+  console.error(result.error.message)
+}
+
+// Using factory functions for custom configuration
+import { readFile, FSConfig } from '@trailhead/fs'
+
+const customConfig: FSConfig = { encoding: 'latin1' }
+const customRead = readFile(customConfig)
+const result = await customRead('file.txt')
+```
 
 ## Interfaces
 
@@ -435,7 +450,7 @@ Promise resolving to boolean existence or error
 
 ---
 
-### FSResult\<T\>
+### FSResult
 
 > **FSResult**\<`T`\> = `Result`\<`T`, [`FileSystemError`](#filesystemerror)\>
 
@@ -750,9 +765,9 @@ const customReader = readFile({ ...defaultFSConfig, encoding: 'latin1' })
 Pre-configured filesystem operations using default configuration.
 Provides a drop-in replacement for common filesystem operations with Result-based error handling.
 
-All operations return Result\<T, FileSystemError\> for safe error handling without exceptions.
+All operations return Result<T, FileSystemError> for safe error handling without exceptions.
 
-#### Type declaration
+#### Type Declaration
 
 ##### copy
 
@@ -814,7 +829,7 @@ All operations return Result\<T, FileSystemError\> for safe error handling witho
 
 ##### findFiles
 
-> **findFiles**: [`FindFilesOp`](#)
+> **findFiles**: `FindFilesOp`
 
 ##### mkdir
 
@@ -852,7 +867,7 @@ All operations return Result\<T, FileSystemError\> for safe error handling witho
 
 ##### readIfExists()
 
-> **readIfExists**: (`path`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`null` \| `string`\>\>
+> **readIfExists**: (`path`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`string` \| `null`\>\>
 
 ###### Parameters
 
@@ -862,7 +877,7 @@ All operations return Result\<T, FileSystemError\> for safe error handling witho
 
 ###### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`null` \| `string`\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`string` \| `null`\>\>
 
 ##### readJson
 
@@ -936,7 +951,7 @@ if (isWindows) {
 Assertion helpers for cross-platform path testing.
 Normalizes paths for consistent comparisons across platforms.
 
-#### Type declaration
+#### Type Declaration
 
 ##### hasCorrectSeparators()
 
@@ -1059,7 +1074,7 @@ expect(pathAssertions.hasCorrectSeparators(generatedPath)).toBe(true)
 Path matchers for testing and filtering.
 Provides curried functions for common path matching operations.
 
-#### Type declaration
+#### Type Declaration
 
 ##### contains()
 
@@ -1325,7 +1340,7 @@ const path = `dir${pathSep}file.txt`
 Environment-specific path constants for testing.
 Provides platform-aware test paths and separators.
 
-#### Type declaration
+#### Type Declaration
 
 ##### fixtures
 
@@ -1417,7 +1432,7 @@ Apply sorting with stats and error handling - shared utility for readDir/findFil
 
 ##### sortOptions
 
-[`SortOptions`](#)
+`SortOptions`
 
 ##### statFn
 
@@ -2144,7 +2159,7 @@ const canWrite = await writeChecker('file.txt')
 
 ### findFiles()
 
-> **findFiles**(`_config`): [`FindFilesOp`](#)
+> **findFiles**(`_config`): `FindFilesOp`
 
 Creates a file finder function using glob patterns.
 Searches for files matching patterns with optional filtering.
@@ -2159,7 +2174,7 @@ Optional filesystem configuration
 
 #### Returns
 
-[`FindFilesOp`](#)
+`FindFilesOp`
 
 Configured file finder function
 
@@ -2713,7 +2728,7 @@ Check if a sort field requires file stats
 
 ##### sortOptions?
 
-[`SortOptions`](#)
+`SortOptions`
 
 #### Returns
 
@@ -2937,7 +2952,7 @@ if (result.isErr()) {
 
 ### readIfExists()
 
-> **readIfExists**(`_config`): (`path`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`null` \| `string`\>\>
+> **readIfExists**(`_config`): (`path`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`string` \| `null`\>\>
 
 Creates a conditional reader that returns null if file doesn't exist.
 Useful for optional configuration files or fallback scenarios.
@@ -2954,7 +2969,7 @@ Optional filesystem configuration
 
 Configured conditional reader function
 
-> (`path`): [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`null` \| `string`\>\>
+> (`path`): [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`string` \| `null`\>\>
 
 ##### Parameters
 
@@ -2964,7 +2979,7 @@ Configured conditional reader function
 
 ##### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`null` \| `string`\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`FSResult`](#fsresult)\<`string` \| `null`\>\>
 
 #### Example
 
@@ -3198,7 +3213,7 @@ Sort file entries based on the provided options
 
 ##### options?
 
-[`SortOptions`](#)
+`SortOptions`
 
 #### Returns
 

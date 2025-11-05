@@ -909,6 +909,6 @@ Key patterns demonstrated:
 
 ## Further Learning
 
-- Review [Command Enhancements](../../reference/command-enhancements)
+- Review [CLI API Documentation](/docs/@trailhead.cli.md) for command enhancements
 - Explore [Pipeline Patterns](../../how-to/use-result-pipelines)
 - Learn about [Testing Strategies](../../how-to/test-cli-applications)

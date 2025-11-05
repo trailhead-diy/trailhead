@@ -397,5 +397,5 @@ await executeWithPhases(phases, data, context)
 ## Next Steps
 
 - Review [Command Execution Patterns](../../how-to/use-result-pipelines)
-- Study [API Reference](../../reference/flow-control)
+- Study [Core API Reference](/docs/@trailhead.core.md)
 - Explore [Command Testing](../../how-to/test-cli-applications)

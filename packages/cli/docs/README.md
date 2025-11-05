@@ -30,13 +30,7 @@ Functional CLI framework for building command-line applications.
 
 Complete API documentation for all modules:
 
-- [Main Export](../reference/core.md)- CLI creation and basic Result types
-- [Command Module](../reference/command.md)- Command creation and execution
-- [Prompts Module](../reference/prompts.md)- Interactive user prompts
-- [Testing Module](../reference/testing.md)- Testing utilities and helpers
-- [Utils Module](../reference/utils.md)- Logger, spinner, and other utilities
-- [Progress Module](../reference/utils.md)- Progress tracking utilities
-- [Types Reference](../reference/types.md)- TypeScript type definitions
+- [CLI API Documentation](/docs/@trailhead.cli.md) - Full TypeDoc-generated API reference
 
 ### Related Packages
 
@@ -181,7 +175,7 @@ it('should read configuration', async () => {
 
 1. Follow the [Getting Started Guide](../tutorials/getting-started.md)to build your first CLI
 2. Read about [Architecture](../explanation/architecture.md)to understand the framework
-3. Explore the [API Reference](../reference/core.md)for detailed documentation
+3. Explore the [API Reference](/docs/@trailhead.cli.md)for detailed documentation
 4. Review the API documentation for advanced usage patterns
 
 ## Contributing

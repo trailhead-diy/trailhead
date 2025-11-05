@@ -1,11 +1,4 @@
----
-type: reference
-sidebar: true
-example: 0
-since: 0.1.0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -18,6 +11,34 @@ Foundation CLI orchestrator for the Trailhead System providing a complete CLI fr
 This package provides a modern foundation for CLI applications using functional programming patterns,
 explicit error handling with Result types, and comprehensive command management. Built on top of
 Commander.js with enhanced type safety and validation.
+
+## Example
+
+```typescript
+import { createCLI, createCommand } from '@trailhead/cli'
+
+const testCommand = createCommand({
+  name: 'test',
+  description: 'Run tests',
+  action: async (options, context) => {
+    context.logger.info('Running tests...')
+    return ok(undefined)
+  },
+})
+
+const cli = createCLI({
+  name: 'my-cli',
+  version: '1.0.0',
+  description: 'My CLI application',
+  commands: [testCommand],
+})
+
+await cli.run()
+```
+
+## Since
+
+0.1.0
 
 ## Interfaces
 
@@ -79,7 +100,7 @@ Version string for the CLI application
 
 ---
 
-### Command\<T\>
+### Command
 
 Command interface object for CLI registration
 
@@ -98,9 +119,9 @@ Type of options object passed to the execute function
 
 ##### arguments?
 
-> `optional` **arguments**: `string` \| [`CommandArgument`](#)[]
+> `optional` **arguments**: `string` \| `CommandArgument`[]
 
-Commander.js style arguments specification (e.g., '\<input\> [output]')
+Commander.js style arguments specification (e.g., '<input> [output]')
 
 ##### description
 
@@ -159,13 +180,13 @@ Positional arguments passed to the command
 
 ##### fs
 
-> `readonly` **fs**: [`FileSystem`](#)
+> `readonly` **fs**: `FileSystem`
 
 Filesystem abstraction for file operations
 
 ##### logger
 
-> `readonly` **logger**: [`Logger`](#)
+> `readonly` **logger**: `Logger`
 
 Logger instance for command output
 
@@ -214,7 +235,7 @@ Description shown in help text
 
 > `optional` **flags**: `string`
 
-Commander.js style flags string (e.g., '-v, --verbose' or '--output \<dir\>')
+Commander.js style flags string (e.g., '-v, --verbose' or '--output <dir>')
 
 ##### name?
 
@@ -439,7 +460,7 @@ The command configuration is validated at creation time to ensure proper structu
 
 ##### T
 
-`T` _extends_ [`CommandOptions`](#)
+`T` _extends_ `CommandOptions`
 
 Command options type extending CommandOptions
 
@@ -447,7 +468,7 @@ Command options type extending CommandOptions
 
 ##### config
 
-[`CommandConfig`](#)\<`T`\>
+`CommandConfig`\<`T`\>
 
 Command configuration object
 

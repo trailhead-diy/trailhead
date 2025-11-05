@@ -29,7 +29,7 @@ Functional filesystem operations with Result-based error handling and dependency
 
 Complete API documentation is available in the shared documentation:
 
-- [FileSystem API Reference](../reference/api.md)- Complete function and type definitions
+- [FileSystem API Documentation](/docs/@trailhead.fs.md) - Complete function and type definitions
 
 ### Understanding the Design
 
@@ -212,7 +212,7 @@ The library provides specific error types for different scenarios:
 ## Next Steps
 
 1. Start with [File Operations](../how-to/file-operations.md)for common tasks
-2. Review the [FileSystem API Reference](../reference/api.md)for detailed documentation
+2. Review the [FileSystem API Documentation](/docs/@trailhead.fs.md) for detailed documentation
 3. Understand [Result Patterns](../explanation/result-patterns.md)for advanced error handling
 
 ## Integration Examples

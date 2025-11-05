@@ -452,6 +452,6 @@ const runMigratedCommand = (command, options) => {
 
 ## Next Steps
 
-- Review [Command Enhancements Reference](../../reference/command-enhancements)
+- Review [CLI API Reference](/docs/@trailhead.cli.md) - Command enhancements and utilities
 - Learn about [Pipeline Utilities](../../how-to/use-result-pipelines)
 - Explore [Testing Enhanced Commands](../../how-to/test-cli-applications)

@@ -176,6 +176,6 @@ const readJson = async (path: string) => {
 
 ## See Also
 
-- [File System API Reference](../../../fs/reference/api)
-- [Command API Reference](../../reference/command)
+- [File System API Reference](/docs/@trailhead.fs.md)
+- [CLI API Reference](/docs/@trailhead.cli.md)
 - [Error Handling Patterns](../../how-to/handle-errors-in-cli)

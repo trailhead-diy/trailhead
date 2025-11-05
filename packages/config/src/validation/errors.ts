@@ -9,6 +9,10 @@ import { createCoreError, type CoreError } from '@trailhead/core'
 // Enhanced Configuration Validation Errors
 // ========================================
 
+/**
+ * Enhanced validation error with configuration-specific features.
+ * Extends base validation error with helpful suggestions, examples, and fix commands.
+ */
 export interface ConfigValidationError extends BaseValidationError {
   readonly suggestion: string
   readonly examples: readonly unknown[]
@@ -19,6 +23,10 @@ export interface ConfigValidationError extends BaseValidationError {
   readonly data?: Record<string, unknown>
 }
 
+/**
+ * Context object for creating configuration validation errors.
+ * Provides all necessary information to construct a helpful error message.
+ */
 export interface ConfigValidationContext {
   readonly field: string
   readonly value: unknown
@@ -37,6 +45,12 @@ export interface ConfigValidationContext {
 // Enhanced Error Factory Functions
 // ========================================
 
+/**
+ * Creates an enhanced configuration validation error with helpful context.
+ *
+ * @param context - Validation context containing all error details
+ * @returns Enhanced validation error with suggestions and examples
+ */
 export const createConfigValidationError = (
   context: ConfigValidationContext
 ): ConfigValidationError => {
@@ -77,6 +91,13 @@ export const createConfigValidationError = (
   }
 }
 
+/**
+ * Creates a schema validation error from multiple field errors.
+ *
+ * @param errors - Array of configuration validation errors
+ * @param schemaName - Optional schema name for context
+ * @returns Core error with nested validation errors
+ */
 export const createSchemaValidationError = (
   errors: readonly ConfigValidationError[],
   schemaName?: string
@@ -125,6 +146,15 @@ const generateErrorMessage = (context: MessageContext): string => {
 // Enhanced Configuration Error Factories
 // ========================================
 
+/**
+ * Converts Zod validation errors to configuration validation errors.
+ * Enhances errors with examples from schema metadata when available.
+ *
+ * @param zodError - Zod validation error to enhance
+ * @param schemaName - Optional schema name for context
+ * @param schema - Optional schema to extract examples from
+ * @returns Core error with enhanced validation details
+ */
 export const enhanceZodError = (
   zodError: z.ZodError,
   schemaName?: string,
@@ -246,6 +276,14 @@ export const enhanceZodError = (
   return createSchemaValidationError(configErrors, schemaName)
 }
 
+/**
+ * Creates an error for missing required configuration fields.
+ *
+ * @param field - Field name that is missing
+ * @param expectedType - Expected type of the field
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error with helpful examples
+ */
 export const createMissingFieldError = (
   field: string,
   expectedType: string,
@@ -265,6 +303,15 @@ export const createMissingFieldError = (
   })
 }
 
+/**
+ * Creates an error for type mismatches in configuration values.
+ *
+ * @param field - Field name with wrong type
+ * @param value - Actual value that was provided
+ * @param expectedType - Expected type of the field
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error with type examples
+ */
 export const createTypeError = (
   field: string,
   value: unknown,
@@ -286,6 +333,15 @@ export const createTypeError = (
   })
 }
 
+/**
+ * Creates an error for values not matching allowed enum options.
+ *
+ * @param field - Field name with invalid enum value
+ * @param value - Actual value that was provided
+ * @param allowedValues - Array of allowed enum values
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error listing valid options
+ */
 export const createEnumError = (
   field: string,
   value: unknown,
@@ -303,6 +359,16 @@ export const createEnumError = (
     constraints: { allowedValues },
   })
 
+/**
+ * Creates an error for numeric values outside allowed range.
+ *
+ * @param field - Field name with out-of-range value
+ * @param value - Actual value that was provided
+ * @param min - Optional minimum allowed value
+ * @param max - Optional maximum allowed value
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error with valid range
+ */
 export const createRangeError = (
   field: string,
   value: unknown,
@@ -333,6 +399,16 @@ export const createRangeError = (
   })
 }
 
+/**
+ * Creates an error for string values with invalid length.
+ *
+ * @param field - Field name with invalid length
+ * @param value - Actual value that was provided
+ * @param minLength - Optional minimum allowed length
+ * @param maxLength - Optional maximum allowed length
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error with length requirements
+ */
 export const createLengthError = (
   field: string,
   value: unknown,
@@ -363,6 +439,16 @@ export const createLengthError = (
   })
 }
 
+/**
+ * Creates an error for string values not matching required pattern.
+ *
+ * @param field - Field name with invalid pattern
+ * @param value - Actual value that was provided
+ * @param pattern - Regular expression pattern required
+ * @param description - Optional human-readable pattern description
+ * @param path - Path to the field in nested configuration
+ * @returns Validation error with pattern requirements
+ */
 export const createPatternError = (
   field: string,
   value: unknown,
@@ -504,10 +590,22 @@ const getTypeExamples = (type: string): readonly unknown[] => {
 // Validation Error Predicates
 // ========================================
 
+/**
+ * Type guard for configuration validation errors.
+ *
+ * @param error - Error object to check
+ * @returns True if error is a configuration validation error
+ */
 export const isConfigValidationError = (error: unknown): error is ConfigValidationError => {
   return typeof error === 'object' && error !== null && 'suggestion' in error && 'examples' in error
 }
 
+/**
+ * Type guard for schema validation errors.
+ *
+ * @param error - Error object to check
+ * @returns True if error is a schema validation error
+ */
 export const isSchemaValidationError = (error: unknown): error is CoreError => {
   return (
     typeof error === 'object' &&

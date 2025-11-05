@@ -21,6 +21,13 @@ import {
 // Detection Core Operations
 // ========================================
 
+/**
+ * Creates detection operations for identifying file formats from various sources.
+ * Supports detection from buffers, files, extensions, and MIME types with configurable reliability.
+ *
+ * @param config - Optional detection configuration for magic number and extension detection
+ * @returns Detection operations interface with format identification methods
+ */
 export const createDetectionOperations: CreateDetectionOperations = (config = {}) => {
   const detectionConfig = { ...defaultDetectionConfig, ...config }
 
@@ -192,6 +199,14 @@ export const createDetectionOperations: CreateDetectionOperations = (config = {}
 // Helper Functions
 // ========================================
 
+/**
+ * Detects file format from magic number signatures in buffer.
+ * Provides high-reliability detection based on file content analysis.
+ *
+ * @param buffer - Buffer containing file data to analyze
+ * @param _config - Detection configuration (currently unused)
+ * @returns Result with detected format or error
+ */
 const detectFromMagicNumbers = (
   buffer: Buffer,
   _config: DetectionConfig
@@ -214,6 +229,14 @@ const detectFromMagicNumbers = (
   )
 }
 
+/**
+ * Checks if buffer matches a specific magic number pattern.
+ * Applies optional bit mask for flexible pattern matching.
+ *
+ * @param buffer - Buffer to check against pattern
+ * @param pattern - Magic number pattern with signature and offset
+ * @returns True if buffer matches the pattern
+ */
 const matchesMagicPattern = (
   buffer: Buffer,
   pattern: (typeof FORMAT_DATABASE.magicNumbers)[0]
@@ -243,6 +266,14 @@ const matchesMagicPattern = (
   return true
 }
 
+/**
+ * Detects file format using the file-type library.
+ * Provides medium-reliability detection as a fallback method.
+ *
+ * @param buffer - Buffer containing file data to analyze
+ * @param _config - Detection configuration (currently unused)
+ * @returns Result with detected format or error
+ */
 const detectWithFileType = async (
   buffer: Buffer,
   _config: DetectionConfig
@@ -278,6 +309,13 @@ const detectWithFileType = async (
   }
 }
 
+/**
+ * Categorizes a file format based on its MIME type.
+ * Maps MIME types to high-level categories like image, video, document, etc.
+ *
+ * @param mimeType - MIME type string to categorize
+ * @returns Format category classification
+ */
 const categorizeFromMime = (mimeType: string): FileFormatInfo['category'] => {
   const [type] = mimeType.split('/')
 

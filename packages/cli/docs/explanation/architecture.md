@@ -327,8 +327,8 @@ Potential areas for enhancement include:
 
 ### Technical Details
 
-- [API Reference](../../reference/core.md)- Complete function documentation
-- [Type Definitions](../../reference/types.md)- TypeScript interface specifications
+- [CLI API Reference](/docs/@trailhead.cli.md) - Complete function documentation
+- [Core API Reference](/docs/@trailhead.core.md) - TypeScript type definitions
 
 ## Discussion
 

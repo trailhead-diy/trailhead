@@ -736,6 +736,6 @@ async const loadUserConfig = async (configPath: string) => {
 
 ## Next Steps
 
-- Review [FileSystem API Reference](../../../cli/reference/core.md)for detailed function documentation
+- Review [FileSystem API Documentation](/docs/@trailhead.fs.md) for detailed function documentation
 - Learn about [Result Patterns](../../explanation/result-patterns.md)for advanced error handling
 - Explore [Data Processing](../../../data/how-to/process-data-files.md)for working with data files
