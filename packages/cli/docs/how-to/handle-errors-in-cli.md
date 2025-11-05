@@ -395,5 +395,5 @@ describe('error handling', () => {
 ## Next Steps
 
 - Explore [Command Execution Patterns](../../how-to/use-result-pipelines)
-- Review [Core API Reference](../../reference/core)
+- Review [Core API Reference](/docs/@trailhead.core.md)
 - Learn about [Testing Errors](../../how-to/test-cli-applications)

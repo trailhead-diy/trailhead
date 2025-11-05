@@ -461,9 +461,8 @@ Ensure your `tsconfig.json` supports subpath imports:
 
 ## Reference
 
-- [Package Exports Reference](../../reference/command.md)- All available exports
-- [Module Architecture](../../explanation/architecture.md)- How modules are structured
-- [Build Configuration](../../reference/build-config.md)- Bundler configurations
+- [CLI API Reference](/docs/@trailhead.cli.md) - All available exports
+- [Module Architecture](../../explanation/architecture.md) - How modules are structured
 
 ---
 

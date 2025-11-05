@@ -495,4 +495,4 @@ new-package:
 
 - Explore [Custom Templates](../../how-to/customize-templates)
 - Learn about [Custom Prompts](../../how-to/custom-prompts)
-- Review [Configuration Schema](../../../cli/reference/config)
+- Review [Configuration API](/docs/@trailhead.config.md)

@@ -27,15 +27,13 @@ The create-cli package provides a modern generator for scaffolding CLI applicati
 
 - [Quick Start Guide](../tutorials/getting-started.md)- Generate your first CLI in minutes
 - [Template Overview](../explanation/templates.md)- Understanding available templates
-- [Configuration Options](../../cli/reference/config.md)- All generation options
+- [Configuration Options](/docs/@trailhead.config.md) - All generation options
 
 ### API Reference
 
 Complete API documentation:
 
-- [Generator API](../../cli/reference/core.md)- Programmatic project generation
-- [Configuration Schema](../reference/schema.md)- Project configuration options
-- [Template System](../reference/templates.md)- Template engine and customization
+- [Create CLI API Documentation](/docs/@trailhead.create-cli.md) - Programmatic project generation and template system
 
 ### How-To Guides
 
@@ -230,7 +228,7 @@ Generated `package.json` includes:
 1. Follow the [Getting Started Guide](../tutorials/getting-started.md)to generate your first CLI
 2. Explore [Template Options](../explanation/templates.md)for different project types
 3. Learn about [Customization](../how-to/customize-templates.md)for team-specific needs
-4. Check the [API Reference](../../cli/reference/core.md)for programmatic usage
+4. Check the [API Reference](/docs/@trailhead.create-cli.md)for programmatic usage
 
 ## Support
 

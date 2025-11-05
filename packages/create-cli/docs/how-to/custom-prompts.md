@@ -558,4 +558,4 @@ Some terminals may have issues with Unicode characters or colors.
 
 - Learn about [Configuration Defaults](../../how-to/configure-defaults)
 - Explore [Template Customization](../../how-to/customize-templates)
-- Review [API Reference](../../../cli/reference/core)
+- Review [Create CLI API](/docs/@trailhead.create-cli.md)

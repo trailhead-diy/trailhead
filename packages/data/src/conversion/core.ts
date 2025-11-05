@@ -16,6 +16,13 @@ import {
 // Conversion Core Operations
 // ========================================
 
+/**
+ * Creates conversion operations for checking format compatibility and conversion chains.
+ * Provides utilities to determine if conversions are supported and estimate quality loss.
+ *
+ * @param _config - Optional conversion configuration (currently unused)
+ * @returns Conversion operations interface with format compatibility checks
+ */
 export const createConversionOperations: CreateConversionOperations = (_config = {}) => {
   const checkConversion = (fromFormat: string, toFormat: string): FormatResult<ConversionInfo> => {
     try {
@@ -172,6 +179,13 @@ const normalizeFormat = (format: string): string => {
   return format.toLowerCase().replace(/^\./, '')
 }
 
+/**
+ * Finds conversion rule between two formats in the conversion matrix.
+ *
+ * @param fromFormat - Source format to convert from
+ * @param toFormat - Target format to convert to
+ * @returns Conversion info without format names, or null if not supported
+ */
 const findConversionRule = (
   fromFormat: string,
   toFormat: string
@@ -238,6 +252,14 @@ const findConversionRule = (
   return rules[fromFormat]?.[toFormat] || null
 }
 
+/**
+ * Finds a conversion chain through intermediate formats.
+ * Attempts to find two-step conversion paths when direct conversion is unavailable.
+ *
+ * @param fromFormat - Source format to start from
+ * @param toFormat - Target format to reach
+ * @returns Array of format names in conversion chain, or empty if none found
+ */
 const findConversionChain = (fromFormat: string, toFormat: string): string[] => {
   // Simplified chain finding - would use proper graph algorithms in production
   const intermediateFormats = getCommonIntermediateFormats(fromFormat, toFormat)
@@ -254,6 +276,14 @@ const findConversionChain = (fromFormat: string, toFormat: string): string[] => 
   return []
 }
 
+/**
+ * Identifies common intermediate formats for conversion chains.
+ * Returns format(s) that can serve as conversion bridges between categories.
+ *
+ * @param fromFormat - Source format category
+ * @param toFormat - Target format category
+ * @returns Array of intermediate format names
+ */
 const getCommonIntermediateFormats = (fromFormat: string, toFormat: string): string[] => {
   const fromCategory = getFormatCategory(fromFormat)
   const toCategory = getFormatCategory(toFormat)
@@ -299,6 +329,12 @@ const getFormatCategory = (format: string): string => {
   return 'unknown'
 }
 
+/**
+ * Gets all supported formats for a specific category.
+ *
+ * @param category - File category to get formats for
+ * @returns Array of format names in the category
+ */
 const getSupportedFormatsForCategory = (category: FileCategory): readonly string[] => {
   switch (category) {
     case 'image':

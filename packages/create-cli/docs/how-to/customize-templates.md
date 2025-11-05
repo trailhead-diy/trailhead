@@ -438,5 +438,5 @@ Error: Parse error on line 10
 ## Next Steps
 
 - Learn about [Custom Prompts](../../how-to/custom-prompts)
-- Explore [Template Reference](../../reference/templates)
+- Explore [Create CLI API](/docs/@trailhead.create-cli.md) - Template system reference
 - Configure [Default Settings](../../how-to/configure-defaults)

@@ -6,7 +6,7 @@
 [![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-A modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes in public API—just pure functions and immutable data.
+Modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes—just pure functions and immutable data.
 
 ## Why Choose @trailhead/cli?
 
@@ -38,11 +38,11 @@ pnpm add @trailhead/cli
 npx @trailhead/create-cli my-cli
 ```
 
-### Basic CLI in 30 Seconds
+## Quick Example
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { ok, err } from '@trailhead/core'
+import { ok } from '@trailhead/core'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -63,6 +63,14 @@ const greetCommand = createCommand({
 // Run your command
 await greetCommand.execute(['--name', 'World'])
 ```
+
+## Key Features
+
+- **Result-based error handling** - Explicit error paths with Result types instead of exceptions
+- **Functional programming** - Pure functions, immutable data, composition patterns
+- **Testing utilities** - Built-in mocks, assertions, and test contexts
+- **Performance optimized** - Caching, streaming APIs, and optimized command processing
+- **Type-safe** - Full TypeScript support with strict type checking
 
 ## Core Concepts
 
@@ -372,154 +380,6 @@ test('processes configuration file', async () => {
 })
 ```
 
-## Performance Features
-
-### Command Caching
-
-Commands automatically cache expensive operations:
-
-```typescript
-const command = createCommand({
-  name: 'analyze',
-  caching: {
-    enabled: true,
-    keyFn: (options) => `${options.file}-${options.mode}`,
-    ttl: 300000, // 5 minutes
-  },
-  action: async (options) => {
-    // Expensive analysis only runs when cache misses
-    return analyzeFile(options.file, options.mode)
-  },
-})
-```
-
-### Streaming Operations
-
-For large file processing:
-
-```typescript
-import { createProcessingStream } from '@trailhead/cli/command'
-
-const processLargeFile = createCommand({
-  name: 'process-large',
-  action: async (options, context) => {
-    const stream = createProcessingStream({
-      chunkSize: 1024 * 64, // 64KB chunks
-      transform: (chunk) => processChunk(chunk),
-    })
-
-    return stream.processFile(options.inputFile, options.outputFile)
-  },
-})
-```
-
-## Development Commands
-
-```bash
-# Build the package
-pnpm build
-
-# Run tests with coverage
-pnpm test
-
-# Watch mode for development
-pnpm test:watch
-
-# Type checking
-pnpm types
-
-# Linting (dual setup)
-pnpm lint              # Fast oxlint
-pnpm lint:neverthrow   # Result type validation
-
-# Run all tests
-pnpm test
-
-# Complete validation
-pnpm validate
-```
-
-## Examples
-
-Check out the [documentation](./docs/README.md)for comprehensive guides and API references.
-
-## Migration Guide
-
-### From Commander.js
-
-**Before (Legacy Pattern):**
-
-```typescript
-// Commander.js with exception-based error handling
-program
-  .command('deploy')
-  .option('-e, --env <env>', 'Environment')
-  .action((options) => {
-    if (!options.env) {
-      throw new Error('Environment required') // ❌ Exception-based
-    }
-    deploy(options.env) // ❌ No error handling
-  })
-```
-
-**After (Modern Pattern):**
-
-```typescript
-// @trailhead/cli with Result-based error handling
-const deployCommand = createCommand({
-  name: 'deploy',
-  options: {
-    env: { type: 'string', required: true, description: 'Environment' },
-  },
-  action: async ({ env }) => {
-    const result = await deploy(env)
-    return result // ✅ Returns Result<T, E>
-  },
-})
-```
-
-### From Yargs
-
-**Before (Legacy Pattern):**
-
-```typescript
-// Yargs with try/catch error handling
-yargs.command(
-  'build [env]',
-  'Build project',
-  (yargs) => yargs.positional('env', { type: 'string' }),
-  (argv) => {
-    try {
-      build(argv.env) // ❌ Exception-based
-    } catch (error) {
-      console.error(error.message) // ❌ Manual error handling
-      process.exit(1) // ❌ Hard exit
-    }
-  }
-)
-```
-
-**After (Modern Pattern):**
-
-```typescript
-// @trailhead/cli with Result-based error handling
-const buildCommand = createCommand({
-  name: 'build',
-  arguments: [{ name: 'env', type: 'string', description: 'Target environment' }],
-  action: async ({ env }) => {
-    return build(env) // ✅ Returns Result<T, E>
-  },
-})
-```
-
-## Architecture Principles
-
-1. **Functional Programming** - Pure functions, immutable data, composition
-2. **Explicit Error Handling** - Result types instead of exceptions
-3. **Dependency Injection** - All I/O through context for testability
-4. **Performance First** - Caching, streaming, and optimization built-in
-5. **Developer Experience** - Rich tooling and comprehensive testing utilities
-
 ## Documentation
 
 ### API Reference
@@ -540,4 +400,4 @@ const buildCommand = createCommand({
 
 ## License
 
-MIT - see [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE) for details.
+MIT © [Esteban URL](https://github.com/esteban-url)

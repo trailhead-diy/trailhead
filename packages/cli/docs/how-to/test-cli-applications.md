@@ -460,6 +460,5 @@ const result = await realCommand.execute(options, context)
 
 ## Next Steps
 
-- Review [Testing API Reference](../../reference/testing)
+- Review [CLI API Reference](/docs/@trailhead.cli.md) - Testing utilities and command patterns
 - Learn about [Error Handling](../../how-to/handle-errors-in-cli)
-- Explore [Command Patterns](../../reference/command)

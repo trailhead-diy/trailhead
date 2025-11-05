@@ -826,9 +826,8 @@ Expected results:
 
 ## Reference
 
-- [Utils API Reference](../../reference/utils.md)- Performance utilities and stats
-- [FileSystem API Reference](../../reference/filesystem.md)- Efficient file operations
-- [Build Configuration](../../reference/build-config.md)- Bundler optimization settings
+- [CLI API Reference](/docs/@trailhead.cli.md) - Performance utilities and stats
+- [FileSystem API Reference](/docs/@trailhead.fs.md) - Efficient file operations
 
 ### Optimization Tools
 

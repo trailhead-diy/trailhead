@@ -1,11 +1,4 @@
----
-type: reference
-sidebar: true
-example: 0
-since: 0.1.0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -17,6 +10,26 @@ Foundation package for the Trailhead System providing Result-based error handlin
 
 This package exports functional programming utilities centered around the Result type pattern,
 enabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.
+
+## Example
+
+```typescript
+import { ok, err, Result } from '@trailhead/core'
+
+function divide(a: number, b: number): Result<number, string> {
+  if (b === 0) return err('Division by zero')
+  return ok(a / b)
+}
+
+const result = divide(10, 2)
+if (result.isOk()) {
+  console.log('Result:', result.value) // 5
+}
+```
+
+## Since
+
+0.1.0
 
 ## Interfaces
 
@@ -165,7 +178,7 @@ When the operation was performed
 
 ## Type Aliases
 
-### CoreResult\<T\>
+### CoreResult
 
 > **CoreResult**\<`T`\> = `Result`\<`T`, [`CoreError`](#coreerror)\>
 
@@ -190,7 +203,7 @@ function readConfig(): CoreResult<Config> {
 
 ---
 
-### CoreResultAsync\<T\>
+### CoreResultAsync
 
 > **CoreResultAsync**\<`T`\> = `ResultAsync`\<`T`, [`CoreError`](#coreerror)\>
 
@@ -215,7 +228,7 @@ function fetchUser(id: string): CoreResultAsync<User> {
 
 ---
 
-### IsValidInput\<T\>
+### IsValidInput
 
 > **IsValidInput**\<`T`\> = `T` _extends_ `string` ? `T` _extends_ `""` ? `false` : `true` : `T` _extends_ `unknown`[] ? `T` _extends_ \[\] ? `false` : `true` : `T` _extends_ `null` \| `undefined` ? `false` : `true`
 
@@ -1524,7 +1537,7 @@ The expected type when defined
 
 Value to check
 
-`undefined` | `null` | `T`
+`T` | `null` | `undefined`
 
 #### Returns
 

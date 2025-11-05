@@ -633,6 +633,6 @@ async const processWithConfig = async (config: ProcessingConfig) => {
 
 ## Next Steps
 
-- Review [Data API Reference](../../reference/api.md)for detailed function documentation
+- Review [Data API Documentation](/docs/@trailhead.data.md) for detailed function documentation
 - Learn about [Format Detection](../../explanation/format-detection.md)system
 - Explore [File System Operations](../../../fs/how-to/file-operations.md)for file handling

@@ -350,5 +350,5 @@ context.logger.success('All phases completed successfully')
 ## Next Steps
 
 - Learn about [Command Enhancements](../../how-to/migrate-to-command-enhancements)
-- Review [Command API Reference](../../reference/command)
+- Review [CLI API Reference](/docs/@trailhead.cli.md)
 - Explore [Testing Commands](../../how-to/test-cli-applications)

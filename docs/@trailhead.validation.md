@@ -1,9 +1,4 @@
----
-type: reference
-sidebar: true
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -196,7 +191,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 ## Type Aliases
 
-### AsyncValidatorFn()\<T, R\>
+### AsyncValidatorFn()
 
 > **AsyncValidatorFn**\<`T`, `R`\> = (`value`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`ValidationResult`](#validationresult)\<`R`\>\>
 
@@ -228,7 +223,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 ---
 
-### SchemaValidator\<T\>
+### SchemaValidator
 
 > **SchemaValidator**\<`T`\> = `object`
 
@@ -250,7 +245,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 ---
 
-### ValidationResult\<T\>
+### ValidationResult
 
 > **ValidationResult**\<`T`\> = `Result`\<`T`, [`ValidationError`](#validationerror)\>
 
@@ -262,7 +257,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 ---
 
-### ValidatorFn()\<T, R\>
+### ValidatorFn()
 
 > **ValidatorFn**\<`T`, `R`\> = (`value`) => [`ValidationResult`](#validationresult)\<`R`\>
 
@@ -300,7 +295,7 @@ Error type for categorization (e.g., 'ValidationError', 'NetworkError')
 
 Schema registry for dynamic schema lookup
 
-#### Type declaration
+#### Type Declaration
 
 ##### array()
 
@@ -372,7 +367,7 @@ Date validation schema with multiple format support
 
 ###### format?
 
-`"iso"` \| `"date-only"` \| `"any"`
+`"any"` \| `"iso"` \| `"date-only"`
 
 ###### Returns
 
@@ -604,7 +599,7 @@ URL validation schema with protocol requirements
 
 > `const` **validate**: `object`
 
-#### Type declaration
+#### Type Declaration
 
 ##### array()
 
@@ -718,7 +713,7 @@ URL validation schema with protocol requirements
 
 Common validation presets for frequent use cases
 
-#### Type declaration
+#### Type Declaration
 
 ##### array()
 
@@ -776,7 +771,7 @@ Common validation presets for frequent use cases
 
 ###### format?
 
-`"iso"` \| `"date-only"` \| `"any"`
+`"any"` \| `"iso"` \| `"date-only"`
 
 ###### Returns
 
@@ -880,6 +875,8 @@ Common validation presets for frequent use cases
 
 > **allOf**\<`T`\>(...`validators`): [`ValidatorFn`](#validatorfn)\<`T`\>
 
+Creates a validator that succeeds only if all provided validators succeed.
+
 #### Type Parameters
 
 ##### T
@@ -892,9 +889,13 @@ Common validation presets for frequent use cases
 
 ...[`ValidatorFn`](#validatorfn)\<`T`\>[]
 
+Array of validator functions to apply
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
+
+Combined validator using AND logic
 
 ---
 
@@ -902,6 +903,8 @@ Common validation presets for frequent use cases
 
 > **anyOf**\<`T`\>(...`validators`): [`ValidatorFn`](#validatorfn)\<`T`\>
 
+Creates a validator that succeeds if any of the provided validators succeed.
+
 #### Type Parameters
 
 ##### T
@@ -914,9 +917,13 @@ Common validation presets for frequent use cases
 
 ...[`ValidatorFn`](#validatorfn)\<`T`\>[]
 
+Array of validator functions to try
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
+
+Combined validator using OR logic
 
 ---
 
@@ -978,6 +985,8 @@ Author information schema for project generation
 
 > **composeValidators**\<`T`, `R1`, `R2`\>(`first`, `second`): [`ValidatorFn`](#validatorfn)\<`T`, `R2`\>
 
+Composes two validators sequentially, passing output of first to second.
+
 #### Type Parameters
 
 ##### T
@@ -998,19 +1007,25 @@ Author information schema for project generation
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R1`\>
 
+First validator to apply
+
 ##### second
 
 [`ValidatorFn`](#validatorfn)\<`R1`, `R2`\>
+
+Second validator to apply to first's output
 
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R2`\>
 
+Composed validator function
+
 ---
 
 ### conditionalSchema()
 
-> **conditionalSchema**\<`T`\>(`conditionField`, `conditionValue`, `thenSchema`, `elseSchema?`): `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\> \| `ZodUnion`\<readonly \[`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>, `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodAny`; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>\]\>
+> **conditionalSchema**\<`T`\>(`conditionField`, `conditionValue`, `thenSchema`, `elseSchema?`): `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\> \| `ZodUnion`\<readonly \[`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>, `ZodObject`\<\{\[`key`: `string`\]: `ZodAny` \| `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>\]\>
 
 Create conditional schema based on another field
 Note: Simplified implementation to avoid complex TypeScript issues
@@ -1041,7 +1056,7 @@ Note: Simplified implementation to avoid complex TypeScript issues
 
 #### Returns
 
-`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\> \| `ZodUnion`\<readonly \[`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>, `ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodAny`; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>\]\>
+`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\> \| `ZodUnion`\<readonly \[`ZodObject`\<\{\[`key`: `string`\]: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\> \| `ZodLiteral`\<`any`\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>, `ZodObject`\<\{\[`key`: `string`\]: `ZodAny` \| `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; `value`: `ZodType`\<`T`, `unknown`, `$ZodTypeInternals`\<`T`, `unknown`\>\>; \}, `$strip`\>\]\>
 
 ---
 
@@ -1159,6 +1174,9 @@ Create a validator function from a schema
 
 > **createValidator**\<`T`, `R`\>(`schema`, `_config`): [`ValidatorFn`](#validatorfn)\<`T`, `R`\>
 
+Creates a validator function from a Zod schema.
+Validates input values and returns Result with either validated data or error.
+
 #### Type Parameters
 
 ##### T
@@ -1175,13 +1193,19 @@ Create a validator function from a schema
 
 `ZodType`\<`R`\>
 
+Zod schema to validate against
+
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R`\>
+
+Validator function that takes input and returns validation result
 
 ---
 
@@ -1205,7 +1229,7 @@ Date validation schema with multiple format support
 
 ###### format?
 
-`"iso"` \| `"date-only"` \| `"any"`
+`"any"` \| `"iso"` \| `"date-only"`
 
 #### Returns
 
@@ -1515,6 +1539,8 @@ URL validation schema with protocol requirements
 
 > **validateArray**\<`T`, `R`\>(`validator`, `_config`): [`ValidatorFn`](#validatorfn)\<`T`[], `R`[]\>
 
+Creates an array validator that applies a validator to each element.
+
 #### Type Parameters
 
 ##### T
@@ -1531,13 +1557,19 @@ URL validation schema with protocol requirements
 
 [`ValidatorFn`](#validatorfn)\<`T`, `R`\>
 
+Validator function to apply to each array element
+
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`[], `R`[]\>
+
+Array validator function
 
 ---
 
@@ -1545,15 +1577,21 @@ URL validation schema with protocol requirements
 
 > **validateCurrency**(`_config`): [`ValidatorFn`](#validatorfn)\<`number`\>
 
+Creates a currency validator ensuring positive numbers with max 2 decimal places.
+
 #### Parameters
 
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`number`\>
+
+Currency validator function
 
 ---
 
@@ -1561,15 +1599,21 @@ URL validation schema with protocol requirements
 
 > **validateDate**(`_config`): [`ValidatorFn`](#validatorfn)\<`string`, `Date`\>
 
+Creates a date validator supporting ISO 8601 and YYYY-MM-DD formats.
+
 #### Parameters
 
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`string`, `Date`\>
+
+Date validator function that returns Date object
 
 ---
 
@@ -1627,29 +1671,41 @@ if (result3.isErr()) {
 
 > **validateNumberRange**(`min?`, `max?`, `_config?`): [`ValidatorFn`](#validatorfn)\<`number`\>
 
+Creates a number range validator with min/max bounds.
+
 #### Parameters
 
 ##### min?
 
 `number`
 
+Optional minimum value
+
 ##### max?
 
 `number`
+
+Optional maximum value
 
 ##### \_config?
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`number`\>
+
+Number range validator function
 
 ---
 
 ### validateObject()
 
 > **validateObject**\<`T`\>(`validators`, `_config`): [`ValidatorFn`](#validatorfn)\<`T`\>
+
+Creates an object validator that applies field-specific validators.
 
 #### Type Parameters
 
@@ -1663,13 +1719,19 @@ if (result3.isErr()) {
 
 [`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<`{ [K in keyof T]: ValidatorFn<T[K]> }`\>
 
+Map of field names to validator functions
+
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`T`\>
+
+Object validator function
 
 ---
 
@@ -1677,21 +1739,39 @@ if (result3.isErr()) {
 
 > **validatePhoneNumber**(`_config`): [`ValidatorFn`](#validatorfn)\<`string`\>
 
+Creates a phone number validator function.
+Validates US phone numbers in various formats (e.g., (555) 123-4567, 5551234567).
+
 #### Parameters
 
 ##### \_config
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`string`\>
+
+Phone number validator function
+
+#### Example
+
+```typescript
+const validator = validatePhoneNumber()
+validator('(555) 123-4567').isOk() // true
+validator('5551234567').isOk() // true
+validator('invalid').isErr() // true
+```
 
 ---
 
 ### validateRequired()
 
-> **validateRequired**\<`T`\>(`_config`): [`ValidatorFn`](#validatorfn)\<`undefined` \| `null` \| `T`, `T`\>
+> **validateRequired**\<`T`\>(`_config`): [`ValidatorFn`](#validatorfn)\<`T` \| `null` \| `undefined`, `T`\>
+
+Creates a required field validator that rejects null, undefined, and empty strings.
 
 #### Type Parameters
 
@@ -1705,9 +1785,13 @@ if (result3.isErr()) {
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
-[`ValidatorFn`](#validatorfn)\<`undefined` \| `null` \| `T`, `T`\>
+[`ValidatorFn`](#validatorfn)\<`T` \| `null` \| `undefined`, `T`\>
+
+Required field validator function
 
 ---
 
@@ -1715,23 +1799,33 @@ if (result3.isErr()) {
 
 > **validateStringLength**(`min`, `max?`, `_config?`): [`ValidatorFn`](#validatorfn)\<`string`\>
 
+Creates a string length validator with min/max constraints.
+
 #### Parameters
 
 ##### min
 
 `number`
 
+Minimum required length
+
 ##### max?
 
 `number`
+
+Optional maximum allowed length
 
 ##### \_config?
 
 [`ValidationConfig`](#validationconfig) = `defaultValidationConfig`
 
+Optional validation configuration
+
 #### Returns
 
 [`ValidatorFn`](#validatorfn)\<`string`\>
+
+String length validator function
 
 ---
 

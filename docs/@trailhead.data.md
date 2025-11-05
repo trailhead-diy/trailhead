@@ -1,10 +1,4 @@
----
-type: reference
-sidebar: true
-example: 0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -21,6 +15,26 @@ This package provides:
 - Support for CSV, JSON, and Excel formats
 - Functional programming patterns
 - Comprehensive error handling
+
+## Examples
+
+```typescript
+import { data } from '@trailhead/data'
+
+// Auto-detect and parse any supported format
+const result = await data.parseAuto('data.csv')
+if (result.isOk()) {
+  console.log(result.value.data) // Parsed data array
+  console.log(result.value.format) // Detected format info
+}
+```
+
+```typescript
+import { createCSVOperations } from '@trailhead/data'
+
+const csvOps = createCSVOperations({ delimiter: ';' })
+const result = await csvOps.parseFile('data.csv')
+```
 
 ## Interfaces
 
@@ -84,11 +98,11 @@ This package provides:
 
 ##### options?
 
-> `readonly` `optional` **options**: [`ConversionOptions`](#)
+> `readonly` `optional` **options**: `ConversionOptions`
 
 ##### quality
 
-> `readonly` **quality**: [`ConversionQuality`](#)
+> `readonly` **quality**: `ConversionQuality`
 
 ##### supported
 
@@ -106,11 +120,11 @@ This package provides:
 
 ##### checkConversion
 
-> `readonly` **checkConversion**: [`CheckConversionOp`](#)
+> `readonly` **checkConversion**: `CheckConversionOp`
 
 ##### estimateConversionQuality()
 
-> `readonly` **estimateConversionQuality**: (`fromFormat`, `toFormat`) => [`FormatResult`](#formatresult)\<[`ConversionQuality`](#)\>
+> `readonly` **estimateConversionQuality**: (`fromFormat`, `toFormat`) => [`FormatResult`](#formatresult)\<`ConversionQuality`\>
 
 ###### Parameters
 
@@ -124,7 +138,7 @@ This package provides:
 
 ###### Returns
 
-[`FormatResult`](#formatresult)\<[`ConversionQuality`](#)\>
+[`FormatResult`](#formatresult)\<`ConversionQuality`\>
 
 ##### getConversionChain()
 
@@ -146,7 +160,7 @@ This package provides:
 
 ##### getSupportedFormats
 
-> `readonly` **getSupportedFormats**: [`GetSupportedFormatsOp`](#)
+> `readonly` **getSupportedFormats**: `GetSupportedFormatsOp`
 
 ---
 
@@ -359,7 +373,7 @@ readonly `Record`\<`string`, `unknown`\>[]
 
 ##### parseFile()
 
-> `readonly` **parseFile**: \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+> `readonly` **parseFile**: \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 ###### Type Parameters
 
@@ -379,11 +393,11 @@ readonly `Record`\<`string`, `unknown`\>[]
 
 ###### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 ##### parseString()
 
-> `readonly` **parseString**: \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+> `readonly` **parseString**: \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 ###### Type Parameters
 
@@ -403,11 +417,11 @@ readonly `Record`\<`string`, `unknown`\>[]
 
 ###### Returns
 
-[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 ##### parseToArrays()
 
-> `readonly` **parseToArrays**: (`data`, `options?`) => [`DataResult`](#dataresult)\<[`ParsedData`](#)\<readonly `string`[]\>\>
+> `readonly` **parseToArrays**: (`data`, `options?`) => [`DataResult`](#dataresult)\<`ParsedData`\<readonly `string`[]\>\>
 
 ###### Parameters
 
@@ -421,11 +435,11 @@ readonly `Record`\<`string`, `unknown`\>[]
 
 ###### Returns
 
-[`DataResult`](#dataresult)\<[`ParsedData`](#)\<readonly `string`[]\>\>
+[`DataResult`](#dataresult)\<`ParsedData`\<readonly `string`[]\>\>
 
 ##### parseToObjects()
 
-> `readonly` **parseToObjects**: (`data`, `options?`) => [`DataResult`](#dataresult)\<[`ParsedData`](#)\<`Record`\<`string`, `unknown`\>\>\>
+> `readonly` **parseToObjects**: (`data`, `options?`) => [`DataResult`](#dataresult)\<`ParsedData`\<`Record`\<`string`, `unknown`\>\>\>
 
 ###### Parameters
 
@@ -439,7 +453,7 @@ readonly `Record`\<`string`, `unknown`\>[]
 
 ###### Returns
 
-[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`Record`\<`string`, `unknown`\>\>\>
+[`DataResult`](#dataresult)\<`ParsedData`\<`Record`\<`string`, `unknown`\>\>\>
 
 ##### stringify()
 
@@ -467,7 +481,7 @@ readonly `T`[]
 
 ##### validate
 
-> `readonly` **validate**: [`ValidateStringOperation`](#)
+> `readonly` **validate**: `ValidateStringOperation`
 
 ##### writeFile()
 
@@ -837,19 +851,19 @@ Operation timeout in milliseconds
 
 ##### detectFromBuffer
 
-> `readonly` **detectFromBuffer**: [`DetectFromBufferOp`](#)
+> `readonly` **detectFromBuffer**: `DetectFromBufferOp`
 
 ##### detectFromExtension
 
-> `readonly` **detectFromExtension**: [`DetectFromExtensionOp`](#)
+> `readonly` **detectFromExtension**: `DetectFromExtensionOp`
 
 ##### detectFromFile
 
-> `readonly` **detectFromFile**: [`DetectFromFileOp`](#)
+> `readonly` **detectFromFile**: `DetectFromFileOp`
 
 ##### detectFromMime()
 
-> `readonly` **detectFromMime**: (`mimeType`, `config?`) => [`FormatResult`](#formatresult)\<[`FileFormatInfo`](#)\>
+> `readonly` **detectFromMime**: (`mimeType`, `config?`) => [`FormatResult`](#formatresult)\<`FileFormatInfo`\>
 
 ###### Parameters
 
@@ -863,7 +877,7 @@ Operation timeout in milliseconds
 
 ###### Returns
 
-[`FormatResult`](#formatresult)\<[`FileFormatInfo`](#)\>
+[`FormatResult`](#formatresult)\<`FileFormatInfo`\>
 
 ---
 
@@ -873,15 +887,15 @@ Operation timeout in milliseconds
 
 ##### format
 
-> `readonly` **format**: [`FileFormatInfo`](#)
+> `readonly` **format**: `FileFormatInfo`
 
 ##### reliability
 
-> `readonly` **reliability**: [`DetectionReliability`](#)
+> `readonly` **reliability**: `DetectionReliability`
 
 ##### source
 
-> `readonly` **source**: [`DetectionSource`](#)
+> `readonly` **source**: `DetectionSource`
 
 ---
 
@@ -1256,7 +1270,7 @@ Worksheet name to read/write
 
 ##### validate
 
-> `readonly` **validate**: [`ValidateBufferOperation`](#)
+> `readonly` **validate**: `ValidateBufferOperation`
 
 ##### writeFile
 
@@ -1885,7 +1899,7 @@ Operation timeout in milliseconds
 
 ##### validate
 
-> `readonly` **validate**: [`ValidateStringOperation`](#)
+> `readonly` **validate**: `ValidateStringOperation`
 
 ##### writeFile
 
@@ -2122,15 +2136,15 @@ Skip empty lines
 
 ##### getExtensions
 
-> `readonly` **getExtensions**: [`GetExtensionsOp`](#)
+> `readonly` **getExtensions**: `GetExtensionsOp`
 
 ##### getMimeType
 
-> `readonly` **getMimeType**: [`GetMimeTypeOp`](#)
+> `readonly` **getMimeType**: `GetMimeTypeOp`
 
 ##### isMimeType
 
-> `readonly` **isMimeType**: [`IsMimeTypeOp`](#)
+> `readonly` **isMimeType**: `IsMimeTypeOp`
 
 ##### normalizeMimeType()
 
@@ -2168,7 +2182,7 @@ Skip empty lines
 
 ##### category
 
-> `readonly` **category**: [`FileCategory`](#)
+> `readonly` **category**: `FileCategory`
 
 ##### charset?
 
@@ -2453,7 +2467,7 @@ Parsed data with format information
 
 ##### parseCSV()
 
-> **parseCSV**: \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+> **parseCSV**: \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 Parse CSV file directly
 
@@ -2475,11 +2489,11 @@ Parse CSV file directly
 
 ###### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 ##### parseCSVFromContent()
 
-> **parseCSVFromContent**: \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+> **parseCSVFromContent**: \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 Parse CSV from string content
 
@@ -2501,7 +2515,7 @@ Parse CSV from string content
 
 ###### Returns
 
-[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 ##### parseExcel
 
@@ -2693,7 +2707,7 @@ Success or error result
 
 ### CSVParseFileFunction()
 
-> **CSVParseFileFunction** = \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+> **CSVParseFileFunction** = \<`T`\>(`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 #### Type Parameters
 
@@ -2713,13 +2727,13 @@ Success or error result
 
 #### Returns
 
-[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>\>
+[`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>\>
 
 ---
 
 ### CSVParseFunction()
 
-> **CSVParseFunction** = \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+> **CSVParseFunction** = \<`T`\>(`data`, `options?`) => [`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 #### Type Parameters
 
@@ -2739,7 +2753,7 @@ Success or error result
 
 #### Returns
 
-[`DataResult`](#dataresult)\<[`ParsedData`](#)\<`T`\>\>
+[`DataResult`](#dataresult)\<`ParsedData`\<`T`\>\>
 
 ---
 
@@ -2815,7 +2829,7 @@ readonly `T`[]
 
 ---
 
-### DataResult\<T\>
+### DataResult
 
 > **DataResult**\<`T`\> = `Result`\<`T`, [`CoreError`](@trailhead.cli.md#coreerror)\>
 
@@ -2957,7 +2971,7 @@ Success value type
 
 ---
 
-### FormatResult\<T\>
+### FormatResult
 
 > **FormatResult**\<`T`\> = `Result`\<`T`, [`CoreError`](@trailhead.cli.md#coreerror)\>
 
@@ -3115,7 +3129,7 @@ Success value type
 
 ---
 
-### ParseFileOperation()\<T, O\>
+### ParseFileOperation()
 
 > **ParseFileOperation**\<`T`, `O`\> = (`filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`T`\>\>
 
@@ -3157,7 +3171,7 @@ Async parsed result or error
 
 ---
 
-### ParseOperation()\<T, O\>
+### ParseOperation()
 
 > **ParseOperation**\<`T`, `O`\> = (`data`, `options?`) => [`DataResult`](#dataresult)\<`T`\>
 
@@ -3199,7 +3213,7 @@ Parsed result or error
 
 ---
 
-### StringifyOperation()\<T, O\>
+### StringifyOperation()
 
 > **StringifyOperation**\<`T`, `O`\> = (`data`, `options?`) => [`DataResult`](#dataresult)\<`string`\>
 
@@ -3259,7 +3273,7 @@ Validation function for string or buffer data
 
 ---
 
-### WriteFileOperation()\<T, O\>
+### WriteFileOperation()
 
 > **WriteFileOperation**\<`T`, `O`\> = (`data`, `filePath`, `options?`) => [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)\<[`DataResult`](#dataresult)\<`void`\>\>
 
@@ -3313,7 +3327,7 @@ Async write result or error
 
 Format detection, MIME type handling, and conversion operations
 
-#### Type declaration
+#### Type Declaration
 
 ##### AVI
 
@@ -3497,7 +3511,7 @@ Format detection, MIME type handling, and conversion operations
 
 Format detection, MIME type handling, and conversion operations
 
-#### Type declaration
+#### Type Declaration
 
 ##### ARCHIVE
 
@@ -3555,17 +3569,16 @@ Format detection, MIME type handling, and conversion operations
 
 > `const` **createConversionOperations**: [`CreateConversionOperations`](#createconversionoperations)
 
-Format detection, MIME type handling, and conversion operations
+Creates conversion operations for checking format compatibility and conversion chains.
+Provides utilities to determine if conversions are supported and estimate quality loss.
 
-#### See
+#### Param
 
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+Optional conversion configuration (currently unused)
+
+#### Returns
+
+Conversion operations interface with format compatibility checks
 
 ---
 
@@ -3604,17 +3617,16 @@ const csvOps = createCSVOperations({
 
 > `const` **createDetectionOperations**: [`CreateDetectionOperations`](#createdetectionoperations)
 
-Format detection, MIME type handling, and conversion operations
+Creates detection operations for identifying file formats from various sources.
+Supports detection from buffers, files, extensions, and MIME types with configurable reliability.
 
-#### See
+#### Param
 
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+Optional detection configuration for magic number and extension detection
+
+#### Returns
+
+Detection operations interface with format identification methods
 
 ---
 
@@ -3753,7 +3765,7 @@ Default configuration for JSON operations
 
 ### MIME_TYPE_CATEGORIES
 
-> `const` **MIME_TYPE_CATEGORIES**: `Record`\<[`FileCategory`](#), readonly `string`[]\>
+> `const` **MIME_TYPE_CATEGORIES**: `Record`\<`FileCategory`, readonly `string`[]\>
 
 Format detection, MIME type handling, and conversion operations
 
@@ -3771,7 +3783,7 @@ Format detection, MIME type handling, and conversion operations
 
 ### QUALITY_DEFINITIONS
 
-> `const` **QUALITY_DEFINITIONS**: `Record`\<[`ConversionQuality`](#), \{ `dataLoss`: `boolean`; `description`: `string`; `fidelity`: `number`; \}\>
+> `const` **QUALITY_DEFINITIONS**: `Record`\<`ConversionQuality`, \{ `dataLoss`: `boolean`; `description`: `string`; `fidelity`: `number`; \}\>
 
 Format detection, MIME type handling, and conversion operations
 

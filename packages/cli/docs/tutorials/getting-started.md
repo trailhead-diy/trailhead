@@ -236,6 +236,5 @@ cli.run(process.argv)
 ## Learn More
 
 - [Import Patterns](../../how-to/import-patterns.md)- Master the import system
-- [Command Reference](../../reference/command.md)- All command options
+- [CLI API Documentation](/docs/@trailhead.cli.md) - Complete API documentation
 - [Testing Guide](../../how-to/test-cli-applications.md)- Test your CLI
-- [API Reference](../../reference/command.md)- Complete API documentation

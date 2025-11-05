@@ -1,11 +1,4 @@
----
-type: reference
-sidebar: true
-example: 0
-since: 0.1.0
----
-
-[**Trailhead API Documentation v1.0.0**](README.md)
+[**Trailhead API Documentation v0.1.0**](README.md)
 
 ---
 
@@ -18,6 +11,43 @@ CLI generator for creating new Trailhead-based CLI applications.
 This package provides a comprehensive generator for creating new CLI applications
 using the @trailhead/\* architecture. It features interactive project setup,
 template-based generation, and integrated development environment configuration.
+
+## Examples
+
+```bash
+# Interactive generation
+npx @trailhead/create-cli
+npx @trailhead/create-cli my-awesome-cli
+
+# Programmatic usage
+npm install @trailhead/create-cli
+```
+
+```typescript
+import { generateProject } from '@trailhead/create-cli'
+
+const result = await generateProject(
+  {
+    projectName: 'my-cli',
+    projectPath: '/path/to/project',
+    packageManager: 'pnpm',
+    features: { core: true, config: true },
+    projectType: 'standalone-cli',
+    nodeVersion: '18.0.0',
+    typescript: true,
+    ide: 'vscode',
+    includeDocs: true,
+    dryRun: false,
+    force: false,
+    verbose: false,
+  },
+  context
+)
+```
+
+## Since
+
+0.1.0
 
 ## Interfaces
 
@@ -33,7 +63,7 @@ abstraction for testing and cross-platform compatibility.
 
 ##### logger
 
-> **logger**: [`Logger`](#)
+> **logger**: `Logger`
 
 Logger instance for user feedback and debugging
 
@@ -484,7 +514,7 @@ Template identifier/name
 
 ##### type
 
-> **type**: `"basic"` \| `"advanced"` \| `"custom"`
+> **type**: `"custom"` \| `"basic"` \| `"advanced"`
 
 Template type
 

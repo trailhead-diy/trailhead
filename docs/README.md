@@ -1,15 +1,8 @@
----
-type: reference
-sidebar: true
-title: API Index
-description: Browse all available APIs and modules
----
-
-**Trailhead API Documentation v1.0.0**
+**Trailhead API Documentation v0.1.0**
 
 ---
 
-# Trailhead API Documentation v1.0.0
+# Trailhead API Documentation v0.1.0
 
 ## Packages
 

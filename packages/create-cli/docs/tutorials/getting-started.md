@@ -282,7 +282,7 @@ my-awesome-cli greet --name "Your Name"
 
 - [Template Options](../../explanation/templates.md)- Understand the different templates
 - [Customize Templates](../../how-to/customize-templates.md)- Modify templates for your team
-- [API Reference](../../../cli/reference/core.md)- Use the generator programmatically
+- [API Reference](/docs/@trailhead.create-cli.md) - Use the generator programmatically
 
 ## Troubleshooting
 
