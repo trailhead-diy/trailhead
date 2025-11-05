@@ -5,7 +5,7 @@ import { promisify } from 'util'
 /**
  * Integration tests for {{projectName}} CLI
  *
- * Tests the CLI behavior through child process execution.
+ * Tests the actual CLI functionality through child process execution.
  * The @trailhead/cli framework automatically provides --version and --help flags.
  */
 describe('{{projectName}} CLI Integration', () => {
@@ -23,17 +23,23 @@ describe('{{projectName}} CLI Integration', () => {
   })
 
 {{#if features.config}}
-  it('should handle config command', async () => {
-    const { stdout } = await execFile('node', ['bin/cli.js', 'config'])
-    expect(stdout).toContain('--init, --validate, or --show')
+  it('should run hello command and show welcome message', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'hello'])
+    expect(stdout).toContain('Welcome to {{packageName}}')
+    expect(stdout).toContain('Version: {{version}}')
+    expect(stdout).toContain('Environment: development')
+  })
+
+  it('should show hello command help', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'hello', '--help'])
+    expect(stdout).toContain('Print a welcome message')
+    expect(stdout).toContain('Usage:')
   })
 
   it('should show config command help', async () => {
     const { stdout } = await execFile('node', ['bin/cli.js', 'config', '--help'])
-    expect(stdout).toContain('Manage application configuration')
-    expect(stdout).toContain('--init')
-    expect(stdout).toContain('--validate')
-    expect(stdout).toContain('--show')
+    expect(stdout).toContain('View and edit application configuration')
+    expect(stdout).toContain('Usage:')
   })
 {{/if}}
 })
