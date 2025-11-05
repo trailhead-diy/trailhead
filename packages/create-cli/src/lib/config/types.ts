@@ -23,6 +23,15 @@ export interface ProjectConfig {
   projectName: string
   /** Absolute path where the project will be created */
   projectPath: string
+  /** Project description */
+  description?: string
+  /** Project author information */
+  author?: {
+    name: string
+    email: string
+  }
+  /** Project license */
+  license?: string
   /** Package manager for dependency installation */
   packageManager: PackageManager
   /** Feature flags */
