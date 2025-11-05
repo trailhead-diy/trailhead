@@ -91,7 +91,7 @@ export async function loadConfig(): Promise<Result<Config, CoreError>> {
   // Validate config
   const validationResult = configSchema.safeParse(readResult.value)
   if (!validationResult.success) {
-    const errors = validationResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+    const errors = validationResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`)
     return err(
       createCoreError('CONFIG_INVALID', 'CLI_ERROR', `Invalid config: ${errors.join(', ')}`, {
         recoverable: true,
@@ -114,7 +114,7 @@ export async function saveConfig(config: Config): Promise<Result<void, CoreError
   // Validate before saving
   const validationResult = configSchema.safeParse(config)
   if (!validationResult.success) {
-    const errors = validationResult.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`)
+    const errors = validationResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`)
     return err(
       createCoreError('CONFIG_INVALID', 'CLI_ERROR', `Invalid config: ${errors.join(', ')}`, {
         recoverable: true,
