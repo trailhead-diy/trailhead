@@ -3,7 +3,6 @@
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
 import { existsSync } from 'fs'
-import { consola } from 'consola'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -16,9 +15,9 @@ if (existsSync(distPath)) {
   await import(distPath)
 } else if (existsSync(srcPath)) {
   // Development mode - use tsx to run TypeScript directly
-  consola.warn('Running in development mode - ensure you have tsx installed')
+  console.warn('⚠ Running in development mode - ensure you have tsx installed')
   await import(srcPath)
 } else {
-  consola.error('Error: Could not find the main entry point')
+  console.error('✖ Error: Could not find the main entry point')
   process.exit(1)
 }

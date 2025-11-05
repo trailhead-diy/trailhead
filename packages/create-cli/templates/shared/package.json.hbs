@@ -35,13 +35,15 @@
   "dependencies": {
 {{#if IS_MONOREPO}}
     "@trailhead/cli": "workspace:*",
-    "@trailhead/core": "workspace:*",
-    "consola": "^3.4.2"{{#if features.config}},
+    "@trailhead/core": "workspace:*"{{#if features.config}},
+    "@trailhead/config": "workspace:*",
+    "@trailhead/fs": "workspace:*",
     "zod": "^3.22.4"{{/if}}
 {{else}}
     "@trailhead/cli": "^1.0.0",
-    "@trailhead/core": "^1.0.0",
-    "consola": "^3.4.2"{{#if features.config}},
+    "@trailhead/core": "^1.0.0"{{#if features.config}},
+    "@trailhead/config": "^1.0.0",
+    "@trailhead/fs": "^1.0.0",
     "zod": "^3.22.4"{{/if}}
 {{/if}}
   },

@@ -31,7 +31,6 @@ export interface ProjectConfig {
     config?: boolean
     validation?: boolean
     testing?: boolean
-    docs?: boolean
     cicd?: boolean
   }
   /** Project type */
@@ -42,8 +41,6 @@ export interface ProjectConfig {
   typescript: boolean
   /** IDE configuration */
   ide: 'vscode' | 'none'
-  /** Whether to include documentation */
-  includeDocs: boolean
   /** Whether to run in dry-run mode (no actual file operations) */
   dryRun: boolean
   /** Whether to force overwrite existing directories */

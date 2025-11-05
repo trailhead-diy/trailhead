@@ -44,15 +44,12 @@ export interface TemplateContext {
   packageManager: PackageManager
   /** Current year for copyright notices */
   currentYear: number
-  /** Whether documentation generation is enabled */
-  hasDocs: boolean
   /** Feature flags for template conditional logic */
   features: {
     core: boolean
     config?: boolean
     validation?: boolean
     testing?: boolean
-    docs?: boolean
     examples?: boolean
     cicd?: boolean
   }
@@ -98,8 +95,6 @@ export interface TemplateContext {
   FILESIZE_PRIORITY: number
   /** Tests execution priority */
   TESTS_PRIORITY: number
-  /** Whether docs validation is enabled */
-  DOCS_VALIDATION: boolean
   /** Whether changeset reminder is enabled */
   CHANGESET_REMINDER: boolean
   /** Whether conventional commits are enforced */

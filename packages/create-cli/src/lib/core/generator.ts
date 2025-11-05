@@ -52,7 +52,6 @@ let globalTemplateCompilerContext = createTemplateCompilerContext({
  *   projectPath: '/path/to/project',
  *   template: 'basic',
  *   packageManager: 'pnpm',
- *   includeDocs: true,
  *   dryRun: false
  * }
  *

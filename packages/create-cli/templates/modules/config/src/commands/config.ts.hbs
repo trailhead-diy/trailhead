@@ -1,16 +1,26 @@
-import { createCommand, type CommandOptions } from '@trailhead/cli/command'
-import { ok, err, createCoreError } from '@trailhead/core'
-import { consola } from 'consola'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
+import { fs } from '@trailhead/fs'
 import { resolve } from 'path'
 import { configSchema, type Config } from '../lib/config-schema.js'
 
+/**
+ * Configuration command options
+ */
 interface ConfigCommandOptions extends CommandOptions {
   init?: boolean
   validate?: boolean
   show?: boolean
 }
 
+/**
+ * Configuration management command
+ *
+ * Demonstrates proper usage of @trailhead libraries:
+ * - @trailhead/fs for filesystem operations with Result types
+ * - Zod for configuration schema validation
+ * - @trailhead/core for error handling
+ */
 export const configCommand = createCommand<ConfigCommandOptions>({
   name: 'config',
   description: 'Manage application configuration',
@@ -18,101 +28,154 @@ export const configCommand = createCommand<ConfigCommandOptions>({
     {
       flags: '--init',
       description: 'Initialize a new configuration file',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       flags: '--validate',
       description: 'Validate existing configuration',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       flags: '--show',
       description: 'Show current configuration',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
-  async action(options, context) {
+  async action(options, context): Promise<Result<void, CoreError>> {
     const configPath = resolve('config.json')
 
     if (options.init) {
-      return initConfig(configPath)
+      return initConfig(configPath, context.logger)
     }
 
     if (options.validate) {
-      return validateConfig(configPath)
+      return validateConfig(configPath, context.logger)
     }
 
     if (options.show) {
-      return showConfig(configPath)
+      return showConfig(configPath, context.logger)
     }
 
     context.logger.info('Use --init, --validate, or --show to manage configuration')
     return ok(undefined)
-  }
+  },
 })
 
-function initConfig(configPath: string) {
-  try {
-    if (existsSync(configPath)) {
-      consola.info('Configuration file already exists. Use --validate to check it.')
-      return ok(undefined)
-    }
-
-    const defaultConfig: Config = {
-      name: '{{packageName}}',
-      version: '{{version}}',
-      environment: 'development',
-      settings: {
-        debug: false,
-        verbose: false
-      }
-    }
-
-    writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2))
-    consola.success(`Configuration file created at ${configPath}`)
-    return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_INIT_FAILED', 'CLI_ERROR', 'Failed to initialize configuration', { recoverable: true }))
-  }
-}
-
-function validateConfig(configPath: string) {
-  try {
-    if (!existsSync(configPath)) {
-      return err(createCoreError('CONFIG_NOT_FOUND', 'CLI_ERROR', `Configuration file not found: ${configPath}`, { recoverable: true }))
-    }
-
-    const configData = readFileSync(configPath, 'utf-8')
-    const config = JSON.parse(configData)
-    const result = configSchema.safeParse(config)
-
-    if (!result.success) {
-      consola.error('Configuration validation failed:')
-      result.error.errors.forEach(error => {
-        consola.error(`  ${error.path.join('.')}: ${error.message}`)
+/**
+ * Initialize a new configuration file
+ * Demonstrates @trailhead/fs writeJson with Result-based error handling
+ */
+async function initConfig(
+  configPath: string,
+  logger: CommandContext['logger']
+): Promise<Result<void, CoreError>> {
+  // Check if file already exists using @trailhead/fs
+  const existsResult = await fs.exists(configPath)
+  if (existsResult.isErr()) {
+    return err(
+      createCoreError('CONFIG_CHECK_FAILED', 'CLI_ERROR', 'Failed to check configuration file', {
+        recoverable: true,
+        cause: existsResult.error,
       })
-      return err(createCoreError('CONFIG_INVALID', 'CLI_ERROR', 'Configuration validation failed', { recoverable: true }))
-    }
-
-    consola.success('Configuration is valid ✓')
-    return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', 'Failed to validate configuration', { recoverable: true }))
+    )
   }
+
+  if (existsResult.value) {
+    logger.info('Configuration file already exists. Use --validate to check it.')
+    return ok(undefined)
+  }
+
+  // Create default configuration
+  const defaultConfig: Config = {
+    name: '{{packageName}}',
+    version: '{{version}}',
+    environment: 'development',
+    theme: {
+      color: 'cyan',
+    },
+    settings: {
+      debug: false,
+      verbose: false,
+    },
+  }
+
+  // Write configuration using @trailhead/fs writeJson
+  const writeResult = await fs.writeJson(configPath, defaultConfig, { spaces: 2 })
+  if (writeResult.isErr()) {
+    return err(
+      createCoreError('CONFIG_INIT_FAILED', 'CLI_ERROR', 'Failed to initialize configuration', {
+        recoverable: true,
+        cause: writeResult.error,
+      })
+    )
+  }
+
+  logger.success(`Configuration file created at ${configPath}`)
+  return ok(undefined)
 }
 
-function showConfig(configPath: string) {
-  try {
-    if (!existsSync(configPath)) {
-      return err(createCoreError('CONFIG_NOT_FOUND', 'CLI_ERROR', `Configuration file not found: ${configPath}`, { recoverable: true }))
-    }
-
-    const configData = readFileSync(configPath, 'utf-8')
-    const config = JSON.parse(configData)
-    consola.info('Current configuration:')
-    consola.box(JSON.stringify(config, null, 2))
-    return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_SHOW_FAILED', 'CLI_ERROR', 'Failed to show configuration', { recoverable: true }))
+/**
+ * Validate configuration file
+ * Demonstrates @trailhead/fs readJson and Zod schema validation
+ */
+async function validateConfig(
+  configPath: string,
+  logger: CommandContext['logger']
+): Promise<Result<void, CoreError>> {
+  // Read configuration using @trailhead/fs
+  const readResult = await fs.readJson<unknown>(configPath)
+  if (readResult.isErr()) {
+    return err(
+      createCoreError(
+        'CONFIG_NOT_FOUND',
+        'CLI_ERROR',
+        `Configuration file not found: ${configPath}`,
+        { recoverable: true, cause: readResult.error }
+      )
+    )
   }
+
+  // Validate using Zod schema
+  const validationResult = configSchema.safeParse(readResult.value)
+  if (!validationResult.success) {
+    logger.error('Configuration validation failed:')
+    // Show validation errors with helpful messages
+    validationResult.error.errors.forEach((error) => {
+      logger.error(`  ${error.path.join('.')}: ${error.message}`)
+    })
+    return err(
+      createCoreError('CONFIG_INVALID', 'CLI_ERROR', 'Configuration validation failed', {
+        recoverable: true,
+      })
+    )
+  }
+
+  logger.success('Configuration is valid ✓')
+  return ok(undefined)
+}
+
+/**
+ * Show current configuration
+ * Demonstrates @trailhead/fs readJson with proper error handling
+ */
+async function showConfig(
+  configPath: string,
+  logger: CommandContext['logger']
+): Promise<Result<void, CoreError>> {
+  // Read configuration using @trailhead/fs
+  const readResult = await fs.readJson<Config>(configPath)
+  if (readResult.isErr()) {
+    return err(
+      createCoreError(
+        'CONFIG_NOT_FOUND',
+        'CLI_ERROR',
+        `Configuration file not found: ${configPath}`,
+        { recoverable: true, cause: readResult.error }
+      )
+    )
+  }
+
+  logger.info('Current configuration:')
+  logger.info(JSON.stringify(readResult.value, null, 2))
+  return ok(undefined)
 }

@@ -2,36 +2,38 @@ import { describe, it, expect } from 'vitest'
 import { execFile as execFileCb } from 'child_process'
 import { promisify } from 'util'
 
+/**
+ * Integration tests for {{projectName}} CLI
+ *
+ * Tests the CLI behavior through child process execution.
+ * The @trailhead/cli framework automatically provides --version and --help flags.
+ */
 describe('{{projectName}} CLI Integration', () => {
   const execFile = promisify(execFileCb)
 
-  it('should show version when --version flag is passed', async () => {
+  it('should show version with --version flag (framework-provided)', async () => {
     const { stdout } = await execFile('node', ['bin/cli.js', '--version'])
     expect(stdout.trim()).toBe('{{version}}')
   })
 
-  it('should show help when --help flag is passed', async () => {
+  it('should show help with --help flag (framework-provided)', async () => {
     const { stdout } = await execFile('node', ['bin/cli.js', '--help'])
-    expect(stdout).toContain('{{projectName}}')
     expect(stdout).toContain('{{description}}')
-    expect(stdout).toContain('Commands:')
-  })
-
-  it('should show help when help command is used', async () => {
-    const { stdout } = await execFile('node', ['bin/cli.js', 'help'])
-    expect(stdout).toContain('{{projectName}}')
     expect(stdout).toContain('Usage:')
-  })
-
-  it('should show version when version command is used', async () => {
-    const { stdout } = await execFile('node', ['bin/cli.js', 'version'])
-    expect(stdout.trim()).toContain('{{packageName}} version {{version}}')
   })
 
 {{#if features.config}}
   it('should handle config command', async () => {
     const { stdout } = await execFile('node', ['bin/cli.js', 'config'])
     expect(stdout).toContain('--init, --validate, or --show')
+  })
+
+  it('should show config command help', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'config', '--help'])
+    expect(stdout).toContain('Manage application configuration')
+    expect(stdout).toContain('--init')
+    expect(stdout).toContain('--validate')
+    expect(stdout).toContain('--show')
   })
 {{/if}}
 })

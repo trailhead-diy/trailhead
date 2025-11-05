@@ -38,18 +38,6 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
       {
-        source: 'modules/core/src/commands/version.ts.hbs',
-        destination: 'src/commands/version.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/core/src/commands/help.ts.hbs',
-        destination: 'src/commands/help.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
         source: 'shared/bin/cli.js.hbs',
         destination: 'bin/cli.js',
         isTemplate: true,
@@ -66,10 +54,16 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
 
   config: {
     name: 'config',
-    description: 'Configuration management system',
+    description: 'Configuration management system using @trailhead/config and @trailhead/fs',
     dependencies: ['core'],
     conflicts: [],
     files: [
+      {
+        source: 'modules/config/src/commands/hello.ts.hbs',
+        destination: 'src/commands/hello.ts',
+        isTemplate: true,
+        executable: false,
+      },
       {
         source: 'modules/config/src/commands/config.ts.hbs',
         destination: 'src/commands/config.ts',
@@ -89,7 +83,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
     ],
-    packageDependencies: ['zod'],
+    packageDependencies: ['@trailhead/config', '@trailhead/fs'],
     scripts: {
       'config:validate': 'node bin/cli.js config --validate',
     },
@@ -104,12 +98,6 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
       {
         source: 'modules/testing/src/__tests__/integration/cli.test.ts.hbs',
         destination: 'src/__tests__/integration/cli.test.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
-        source: 'modules/testing/src/__tests__/commands/version.test.ts.hbs',
-        destination: 'src/__tests__/commands/version.test.ts',
         isTemplate: true,
         executable: false,
       },
@@ -224,24 +212,6 @@ export function composeTemplate(config: ProjectConfig): Result<ComposedTemplate,
         isTemplate: true,
         executable: false,
       })
-    }
-
-    // Add IDE configuration
-    if (config.ide === 'vscode') {
-      allFiles.push(
-        {
-          source: 'modules/vscode/.vscode/settings.json.hbs',
-          destination: '.vscode/settings.json',
-          isTemplate: true,
-          executable: false,
-        },
-        {
-          source: 'modules/vscode/.vscode/extensions.json',
-          destination: '.vscode/extensions.json',
-          isTemplate: false,
-          executable: false,
-        }
-      )
     }
 
     // Sort modules by name and files by destination

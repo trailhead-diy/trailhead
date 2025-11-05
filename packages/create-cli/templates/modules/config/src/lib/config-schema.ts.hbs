@@ -1,15 +1,49 @@
 import { z } from 'zod'
 
+/**
+ * Application configuration schema
+ *
+ * This demonstrates using Zod directly for configuration validation.
+ * The schema is used with @trailhead/config's validate() function for
+ * Result-based validation with proper error handling.
+ *
+ * Alternative approach using @trailhead/config schema builders:
+ * ```typescript
+ * import { defineSchema, string, number, boolean, object } from '@trailhead/config'
+ *
+ * export const configSchema = defineSchema(
+ *   object({
+ *     name: string().min(1, 'Name is required'),
+ *     version: string().pattern(/^\d+\.\d+\.\d+/, 'Version must be in semver format'),
+ *     environment: string().enum(['development', 'production', 'test']),
+ *     theme: object({
+ *       color: string().enum(['blue', 'green', 'red', 'yellow', 'magenta', 'cyan'])
+ *     }),
+ *     settings: object({
+ *       debug: boolean(),
+ *       verbose: boolean(),
+ *       maxRetries: number().min(0).optional(),
+ *       timeout: number().min(1000).optional()
+ *     })
+ *   })
+ * )
+ * ```
+ *
+ * Both approaches work - use whichever you prefer!
+ */
 export const configSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   version: z.string().regex(/^\d+\.\d+\.\d+/, 'Version must be in semver format'),
   environment: z.enum(['development', 'production', 'test']),
+  theme: z.object({
+    color: z.enum(['blue', 'green', 'red', 'yellow', 'magenta', 'cyan']),
+  }),
   settings: z.object({
     debug: z.boolean(),
     verbose: z.boolean(),
     maxRetries: z.number().min(0).optional(),
-    timeout: z.number().min(1000).optional()
-  })
+    timeout: z.number().min(1000).optional(),
+  }),
 })
 
 export type Config = z.infer<typeof configSchema>
