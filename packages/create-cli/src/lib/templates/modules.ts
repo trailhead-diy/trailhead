@@ -195,12 +195,6 @@ export function composeTemplate(config: ProjectConfig): Result<ComposedTemplate,
         executable: false,
       },
       {
-        source: 'shared/tsup.config.ts.hbs',
-        destination: 'tsup.config.ts',
-        isTemplate: true,
-        executable: false,
-      },
-      {
         source: 'shared/_gitignore',
         destination: '.gitignore',
         isTemplate: false,

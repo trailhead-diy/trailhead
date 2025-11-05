@@ -89,5 +89,14 @@
     "url": "https://github.com/{{author}}/{{packageName}}.git"
   },
   "author": "{{author}} <{{email}}>",
-  "license": "{{license}}"
+  "license": "{{license}}",
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "format": ["esm"],
+    "dts": false,
+    "sourcemap": true,
+    "target": "node18",
+    "clean": false,
+    "minify": false
+  }
 }
