@@ -92,16 +92,16 @@ pnpm dev
 
 ### 🔗 Package Relationship Matrix
 
-| Package                                                | Purpose           | Dependencies                                            | Best For                           |
-| ------------------------------------------------------ | ----------------- | ------------------------------------------------------- | ---------------------------------- |
-| **[@trailhead/cli](./packages/cli)**                   | CLI Framework     | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort`   | Building command-line applications |
-| **[@trailhead/create-cli](./packages/create-cli)**     | Project Generator | `@trailhead/cli`                                        | Scaffolding CLI projects           |
-| **[@trailhead/core](./packages/core)**                 | Foundation        | None                                                    | Result types, functional utilities |
-| **[@trailhead/fs](./packages/fs)**                     | File System       | `@trailhead/core`, `@trailhead/sort`                    | File operations, path utilities    |
-| **[@trailhead/data](./packages/data)**                 | Data Processing   | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort`   | CSV/JSON/Excel processing          |
-| **[@trailhead/validation](./packages/validation)**     | Validation        | `@trailhead/core`                                       | Data validation, schema checking   |
-| **[@trailhead/config](./packages/config)**             | Configuration     | `@trailhead/core`, `@trailhead/validation`              | Type-safe configuration            |
-| **[@trailhead/sort](./packages/sort)**                 | Sorting           | None                                                    | Fast, type-safe sorting utilities  |
+| Package                                            | Purpose           | Dependencies                                          | Best For                           |
+| -------------------------------------------------- | ----------------- | ----------------------------------------------------- | ---------------------------------- |
+| **[@trailhead/cli](./packages/cli)**               | CLI Framework     | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort` | Building command-line applications |
+| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                                      | Scaffolding CLI projects           |
+| **[@trailhead/core](./packages/core)**             | Foundation        | None                                                  | Result types, functional utilities |
+| **[@trailhead/fs](./packages/fs)**                 | File System       | `@trailhead/core`, `@trailhead/sort`                  | File operations, path utilities    |
+| **[@trailhead/data](./packages/data)**             | Data Processing   | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort` | CSV/JSON/Excel processing          |
+| **[@trailhead/validation](./packages/validation)** | Validation        | `@trailhead/core`                                     | Data validation, schema checking   |
+| **[@trailhead/config](./packages/config)**         | Configuration     | `@trailhead/core`, `@trailhead/validation`            | Type-safe configuration            |
+| **[@trailhead/sort](./packages/sort)**             | Sorting           | None                                                  | Fast, type-safe sorting utilities  |
 
 ### 🎯 When to Use Each Package
 

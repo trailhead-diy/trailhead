@@ -36,7 +36,6 @@ const result = await generateProject(
     nodeVersion: '18.0.0',
     typescript: true,
     ide: 'vscode',
-    includeDocs: true,
     dryRun: false,
     force: false,
     verbose: false,
@@ -87,6 +86,26 @@ Complete project configuration for the generation process
 
 #### Properties
 
+##### author?
+
+> `optional` **author**: `object`
+
+Project author information
+
+###### email
+
+> **email**: `string`
+
+###### name
+
+> **name**: `string`
+
+##### description?
+
+> `optional` **description**: `string`
+
+Project description
+
 ##### dryRun
 
 > **dryRun**: `boolean`
@@ -111,10 +130,6 @@ Feature flags
 
 > **core**: `true`
 
-###### docs?
-
-> `optional` **docs**: `boolean`
-
 ###### testing?
 
 > `optional` **testing**: `boolean`
@@ -135,11 +150,11 @@ Whether to force overwrite existing directories
 
 IDE configuration
 
-##### includeDocs
+##### license?
 
-> **includeDocs**: `boolean`
+> `optional` **license**: `string`
 
-Whether to include documentation
+Project license
 
 ##### nodeVersion
 
@@ -242,12 +257,6 @@ Current year for copyright notices
 
 Project description
 
-##### DOCS_VALIDATION
-
-> **DOCS_VALIDATION**: `boolean`
-
-Whether docs validation is enabled
-
 ##### email
 
 > **email**: `string`
@@ -271,10 +280,6 @@ Feature flags for template conditional logic
 ###### core
 
 > **core**: `boolean`
-
-###### docs?
-
-> `optional` **docs**: `boolean`
 
 ###### examples?
 
@@ -305,12 +310,6 @@ File size check priority
 > **HAS_SUBPATH_EXPORTS**: `boolean`
 
 Whether project has subpath exports
-
-##### hasDocs
-
-> **hasDocs**: `boolean`
-
-Whether documentation generation is enabled
 
 ##### HIGH_RISK_PATTERNS
 
@@ -599,7 +598,6 @@ const config: ProjectConfig = {
   projectPath: '/path/to/project',
   template: 'basic',
   packageManager: 'pnpm',
-  includeDocs: true,
   dryRun: false,
 }
 
@@ -711,24 +709,3 @@ File discovery process:
 - [loadTemplateFilesFromDirectory](#) for directory scanning logic
 - [TemplateFile](#templatefile) for file metadata structure
 - [TemplateLoaderConfig](#templateloaderconfig) for configuration options
-
----
-
-### validateConfig()
-
-> **validateConfig**(`config`): `Result`\<[`ProjectConfig`](#projectconfig), [`CoreError`](@trailhead.cli.md#coreerror)\>
-
-Validate and normalize project configuration with defaults
-
-Takes a partial project configuration and returns a complete ProjectConfig
-with validated values and sensible defaults applied.
-
-#### Parameters
-
-##### config
-
-[`Partial`](https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)\<[`ProjectConfig`](#projectconfig)\>
-
-#### Returns
-
-`Result`\<[`ProjectConfig`](#projectconfig), [`CoreError`](@trailhead.cli.md#coreerror)\>

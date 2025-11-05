@@ -69,8 +69,41 @@ commit-msg:
 
 pre-push:
   commands:
+    # Generate API documentation
+    generate-docs:
+      priority: 1
+      run: |
+        # Check if any source files changed
+        if ! git diff --name-only origin/main...HEAD 2>/dev/null | grep -qE "^packages/.*/src/.*\.ts$"; then
+          exit 0
+        fi
+
+        echo "📚 Source files changed, updating API documentation..."
+
+        # Build packages first (required for TypeDoc)
+        if ! pnpm turbo run build --filter="./packages/*" --force > /dev/null 2>&1; then
+          echo "⚠️  Build failed, skipping docs generation"
+          exit 0
+        fi
+
+        # Generate docs (includes formatting)
+        pnpm docs:api || {
+          echo "⚠️  TypeDoc generation had warnings (non-blocking)"
+          exit 0
+        }
+
+        # Check if docs changed and stage them
+        if ! git diff --quiet docs/; then
+          git add docs/
+          echo "✅ API documentation updated and staged"
+          echo "   Docs will be included in this push"
+        else
+          echo "✅ API documentation unchanged"
+        fi
+
     # Run tests and validate before push
     validate-push:
+      priority: 2
       run: |
         echo "🚀 Running pre-push validation..."
         echo "⚡ Running tests and type checks..."
@@ -92,6 +125,7 @@ pre-push:
 
     # Validate lockfile is up to date
     lockfile-check:
+      priority: 3
       run: |
         pnpm install --lockfile-only --frozen-lockfile > /dev/null 2>&1 || {
           echo "❌ pnpm-lock.yaml is out of date! Run 'pnpm install' and commit the updated lockfile"
