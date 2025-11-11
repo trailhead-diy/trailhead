@@ -1,38 +1,76 @@
 #!/usr/bin/env node
 
-import { createCLI } from '@esteban-url/cli'
-import { consola } from 'consola'
-import { versionCommand } from './commands/version.js'
-import { helpCommand } from './commands/help.js'
+import { createCLI } from '@trailhead/cli'
+import { createDefaultLogger } from '@trailhead/cli/utils'
 {{#if features.config}}
+import { helloCommand } from './commands/hello.js'
 import { configCommand } from './commands/config.js'
+import { loadConfig, getDefaultConfig, setAppContext } from './lib/config.js'
 {{/if}}
 
 /**
  * {{projectName}} CLI
- * 
+ *
  * {{description}}
- * Built with @esteban-url/cli
+ * Built with @trailhead/cli
+ *
+ * The framework automatically provides:
+ * - `-h, --help` flag for all commands
+ * - `-V, --version` flag to show version
+ * - `-v, --verbose` flag for detailed output
+ *
+ * Default command: hello
+ * Run without arguments to see the hello message.
  */
 async function main() {
+{{#if features.config}}
+  // Load configuration at startup
+  const logger = createDefaultLogger()
+  const configResult = await loadConfig()
+  const config = configResult.isOk() ? configResult.value : getDefaultConfig()
+
+  if (configResult.isErr()) {
+    logger.warning('Config file is invalid, using defaults')
+  }
+
+  // Store config in app context for commands to access
+  setAppContext({ config })
+
+  // If no command provided, run hello as default
+  const args = process.argv.slice(2)
+  const firstArg = args[0]
+  const isCommand = firstArg && !firstArg.startsWith('-')
+  const isValidCommand = isCommand && ['hello', 'config', 'help'].includes(firstArg)
+
+  if (!firstArg || (isCommand && !isValidCommand && firstArg !== 'help')) {
+    // Insert 'hello' command as default
+    process.argv.splice(2, 0, 'hello')
+  }
+
+  const cli = createCLI({
+    name: config.name,
+    version: config.version,
+    description: '{{description}}',
+    commands: [
+      helloCommand,
+      configCommand,
+    ],
+  })
+{{else}}
   const cli = createCLI({
     name: '{{packageName}}',
     version: '{{version}}',
     description: '{{description}}',
-    commands: [
-      versionCommand,
-      helpCommand,
-{{#if features.config}}
-      configCommand,
-{{/if}}
-    ]
+    commands: [],
   })
+{{/if}}
 
   await cli.run()
 }
 
 // Run the CLI
 main().catch((error) => {
-  consola.error('Fatal error:', error)
+  const logger = createDefaultLogger()
+  logger.error(`Fatal error: ${error instanceof Error ? error.message : String(error)}`)
   process.exit(1)
 })

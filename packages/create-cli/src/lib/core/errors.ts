@@ -1,4 +1,4 @@
-import { createCoreError, type CoreError } from '@esteban-url/core'
+import { createCoreError, type CoreError } from '@trailhead/core'
 
 /**
  * Standardized error codes for create-cli package
@@ -15,6 +15,7 @@ export const ERROR_CODES = {
   // Argument parsing errors
   MISSING_PACKAGE_MANAGER_VALUE: 'MISSING_PACKAGE_MANAGER_VALUE',
   INVALID_PACKAGE_MANAGER_VALUE: 'INVALID_PACKAGE_MANAGER_VALUE',
+  INVALID_PROJECT_NAME: 'INVALID_PROJECT_NAME',
   UNKNOWN_OPTION: 'UNKNOWN_OPTION',
   UNEXPECTED_ARGUMENT: 'UNEXPECTED_ARGUMENT',
   PROJECT_NAME_REQUIRED: 'PROJECT_NAME_REQUIRED',

@@ -1,6 +1,6 @@
 import { resolve, normalize, isAbsolute, relative } from 'path'
 import { z } from 'zod'
-import { ok, err, createCoreError, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import type { ProjectConfig, PackageManager } from './types.js'
 
 /**
@@ -306,14 +306,12 @@ export function validateConfig(config: Partial<ProjectConfig>): Result<ProjectCo
         config: config.features?.config ?? false,
         validation: config.features?.validation ?? false,
         testing: config.features?.testing ?? true,
-        docs: config.features?.docs ?? false,
         cicd: config.features?.cicd ?? false,
       },
       projectType: config.projectType || 'standalone-cli',
       nodeVersion: config.nodeVersion || '18',
       typescript: config.typescript ?? true, // Always true for this generator
       ide: config.ide || 'none',
-      includeDocs: config.includeDocs ?? false,
       dryRun: config.dryRun ?? false,
       force: config.force ?? false,
       verbose: config.verbose ?? false,

@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: 'Understanding Framework Design Decisions'
-description: 'The rationale and trade-offs behind key architectural choices in @esteban-url/cli, from functional programming to Result types'
+description: 'The rationale and trade-offs behind key architectural choices in @trailhead/cli, from functional programming to Result types'
 prerequisites:
   - 'Basic CLI development experience'
   - 'Understanding of error handling patterns'
@@ -14,11 +14,11 @@ related:
 
 # Understanding Framework Design Decisions
 
-Every architectural choice in @esteban-url/cli reflects careful consideration of trade-offs between developer experience, performance, maintainability, and ecosystem compatibility. This explanation explores the reasoning behind major design decisions and their implications.
+Every architectural choice in @trailhead/cli reflects careful consideration of trade-offs between developer experience, performance, maintainability, and ecosystem compatibility. This explanation explores the reasoning behind major design decisions and their implications.
 
 ## Overview
 
-The design decisions in @esteban-url/cli prioritize long-term maintainability, optimal performance, and developer productivity. Rather than following conventional patterns that may seem familiar, the framework adopts approaches that solve fundamental problems in CLI development: bundle size, testability, error handling, and composability.
+The design decisions in @trailhead/cli prioritize long-term maintainability, optimal performance, and developer productivity. Rather than following conventional patterns that may seem familiar, the framework adopts approaches that solve fundamental problems in CLI development: bundle size, testability, error handling, and composability.
 
 ## Background
 
@@ -54,7 +54,7 @@ class Command extends BaseCommand {
 
 ### Why This Framework Takes a Different Approach
 
-@esteban-url/trailhead-cli addresses these fundamental issues through systematic design choices:
+@trailhead/trailhead-cli addresses these fundamental issues through systematic design choices:
 
 ```typescript
 // ✅ Functional approach
@@ -105,8 +105,8 @@ The framework organizes functionality into independent modules that can be impor
 
 ```typescript
 // Import only what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { readFile } from '@trailhead/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 // Only these modules affect your bundle size
 ```
 
@@ -200,8 +200,8 @@ This enables:
 
 ```typescript
 // Granular imports
-import { readFile } from '@esteban-url/trailhead-cli/filesystem'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { readFile } from '@trailhead/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 // Only these specific modules are bundled
 ```
 
@@ -278,7 +278,7 @@ This provides:
 
 ## Mental Models
 
-### Think of It Like...
+### Think of It Like
 
 The framework's design is like a **professional toolbox** where:
 
@@ -333,8 +333,8 @@ When building a CLI that processes files, the design decisions work together:
 
 ```typescript
 // Only import what you need
-import { readFile } from '@esteban-url/trailhead-cli/filesystem'
-import { createCommand } from '@esteban-url/trailhead-cli/command'
+import { readFile } from '@trailhead/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/trailhead-cli/command'
 
 const processCommand: Command = {
   name: 'process',
@@ -449,8 +449,8 @@ Potential evolution areas:
 
 ### Technical Details
 
-- [API Reference](../../reference/core.md)- Complete function signatures
-- [Type Definitions](../../reference/types.md)- TypeScript interfaces and types
+- [CLI API Reference](/docs/@trailhead.cli.md) - Complete function signatures and TypeScript types
+- [Core API Reference](/docs/@trailhead.core.md) - Result types and error handling
 
 ## Discussion
 
@@ -460,4 +460,4 @@ Different teams may weigh these trade-offs differently. The framework's modular 
 
 ---
 
-**Questions?** These are complex topics with nuanced trade-offs. Feel free to discuss in [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions) or [Discord community](https://discord.gg/trailhead).
+**Questions?** These are complex topics with nuanced trade-offs. Feel free to discuss in [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions).

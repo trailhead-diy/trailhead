@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { createAsyncOk, fromPromise, chainAsync } from '@esteban-url/core/testing'
+ * import { createAsyncOk, fromPromise, chainAsync } from '@trailhead/core/testing'
  *
  * // Create async Results
  * const asyncSuccess = createAsyncOk('value', 100) // resolves after 100ms

@@ -28,13 +28,13 @@ This guide shows you how to handle errors consistently in CLI applications using
 ### Import Error Utilities
 
 ```typescript
-import { ok, err, Result } from '@esteban-url/core'
+import { ok, err, Result } from '@trailhead/core'
 import {
   createFileSystemError,
   createValidationError,
   createDataError,
   createCliError,
-} from '@esteban-url/core'
+} from '@trailhead/core'
 ```
 
 ### Simple Error Handling
@@ -60,8 +60,8 @@ async const readConfig = async (path: string): Promise<Result<Config>> => {
 ### File System Errors
 
 ```typescript
-import { createFileSystemError } from '@esteban-url/core'
-import { fs } from '@esteban-url/fs'
+import { createFileSystemError } from '@trailhead/core'
+import { fs } from '@trailhead/fs'
 
 async const loadData = async (filePath: string): Promise<Result<string>> => {
   const exists = await fs.exists(filePath)
@@ -81,7 +81,7 @@ async const loadData = async (filePath: string): Promise<Result<string>> => {
 ### Validation Errors
 
 ```typescript
-import { createValidationError } from '@esteban-url/core'
+import { createValidationError } from '@trailhead/core'
 
 const validateOptions = (options: Options): Result<Options> => {
   if (!options.input) {
@@ -113,7 +113,7 @@ const validateOptions = (options: Options): Result<Options> => {
 ### Data Processing Errors
 
 ```typescript
-import { createDataError } from '@esteban-url/core'
+import { createDataError } from '@trailhead/core'
 
 async const parseCSV = async (content: string): Promise<Result<Row[]>> => {
   try {
@@ -130,7 +130,7 @@ async const parseCSV = async (content: string): Promise<Result<Row[]>> => {
 ### Adding Context to Errors
 
 ```typescript
-import { withContext, chainError } from '@esteban-url/core'
+import { withContext, chainError } from '@trailhead/core'
 
 async const processFile = async (path: string): Promise<Result<ProcessedData>> => {
   // Read file
@@ -159,7 +159,7 @@ async const processFile = async (path: string): Promise<Result<ProcessedData>> =
 ### Using Result Composition
 
 ```typescript
-import { composeResult } from '@esteban-url/core'
+import { composeResult } from '@trailhead/core'
 
 async const loadAndValidateConfig = async (path: string): Promise<Result<Config>> => {
   return composeResult(
@@ -174,7 +174,7 @@ async const loadAndValidateConfig = async (path: string): Promise<Result<Config>
 ### Handling Multiple Results
 
 ```typescript
-import { combine } from '@esteban-url/core'
+import { combine } from '@trailhead/core'
 
 async const loadMultipleConfigs = async (paths: string[]): Promise<Result<Config[]>> => {
   const results = await Promise.all(paths.map((path) => loadConfig(path)))
@@ -229,7 +229,7 @@ async function loadConfigWithFallback(
 ### Partial Success
 
 ```typescript
-import { combineWithAllErrors } from '@esteban-url/core'
+import { combineWithAllErrors } from '@trailhead/core'
 
 async const processFiles = async (paths: string[]): Promise<Result<ProcessedFile[]>> => {
   const results = await Promise.all(
@@ -250,7 +250,7 @@ async const processFiles = async (paths: string[]): Promise<Result<ProcessedFile
 ### In Command Actions
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 
 const processCommand = createCommand({
   name: 'process',
@@ -331,8 +331,8 @@ const logDetailedError = (error: CoreError, context: CommandContext): void => {
 ### Testing Error Paths
 
 ```typescript
-import { createTestContext } from '@esteban-url/cli/testing'
-import { createFileSystemError } from '@esteban-url/core'
+import { createTestContext } from '@trailhead/cli/testing'
+import { createFileSystemError } from '@trailhead/core'
 
 describe('error handling', () => {
   test('handles missing file gracefully', async () => {
@@ -395,5 +395,5 @@ describe('error handling', () => {
 ## Next Steps
 
 - Explore [Command Execution Patterns](../../how-to/use-result-pipelines)
-- Review [Core API Reference](../../reference/core)
+- Review [Core API Reference](/docs/@trailhead.core.md)
 - Learn about [Testing Errors](../../how-to/test-cli-applications)

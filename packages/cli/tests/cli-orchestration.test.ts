@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { createCLI } from '../src/cli.js'
 import { createCommand } from '../src/command/index.js'
-import { ok } from '@esteban-url/core'
+import { ok } from '@trailhead/core'
 
 describe('CLI Orchestration', () => {
   it('should orchestrate multiple commands', () => {

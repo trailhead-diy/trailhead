@@ -1,5 +1,5 @@
 /**
- * @esteban-url/config/testing
+ * @trailhead/config/testing
  *
  * Configuration testing utilities for config loading, validation testing, and config mocking.
  * Provides domain-focused utilities for testing configuration systems and validation patterns.
@@ -11,7 +11,7 @@
  *   configFixtures,
  *   assertConfigValid,
  *   createConfigTestScenario,
- * } from '@esteban-url/config/testing'
+ * } from '@trailhead/config/testing'
  *
  * // Create mock configuration
  * const mockConfig = createMockConfig()
@@ -23,7 +23,7 @@
  * ```
  */
 
-import { ok, err, type Result, type CoreError } from '@esteban-url/core'
+import { ok, err, type Result, type CoreError } from '@trailhead/core'
 
 // ========================================
 // Configuration Types and Interfaces

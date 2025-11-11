@@ -7,7 +7,7 @@
  *
  * @example Basic Excel parsing
  * ```typescript
- * import { createExcelOperations } from '@esteban-url/data/excel'
+ * import { createExcelOperations } from '@trailhead/data/excel'
  *
  * const excelOps = createExcelOperations()
  * const result = await excelOps.parseFile('report.xlsx')

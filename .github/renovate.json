@@ -19,14 +19,14 @@
     {
       "description": "CLI package dependencies",
       "matchFileNames": ["packages/cli/**"],
-      "groupName": "@esteban-url/trailhead-cli dependencies",
+      "groupName": "@trailhead/trailhead-cli dependencies",
       "labels": ["cli", "dependencies"],
       "semanticCommitScope": "cli"
     },
     {
       "description": "Create CLI package dependencies",
       "matchFileNames": ["packages/create-cli/**"],
-      "groupName": "@esteban-url/create-cli dependencies",
+      "groupName": "@trailhead/create-cli dependencies",
       "labels": ["create-cli", "dependencies"],
       "semanticCommitScope": "create-cli"
     },

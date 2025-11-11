@@ -306,7 +306,7 @@ export { createTransformerOperations } from './transformers/operations.js'
 /**
  * Creates a configuration validation error with detailed context.
  *
- * @param details - Validation error details including field, value, and suggestions
+ * @param context - Validation error context including field, value, and suggestions
  * @returns Configuration validation error
  *
  * @example
@@ -325,7 +325,8 @@ export { createValidationError } from './validation/index.js'
  * Enhances Zod validation errors with additional context and formatting.
  *
  * @param zodError - Original Zod validation error
- * @param context - Additional context for the error
+ * @param schemaName - Optional schema name for better error messages
+ * @param schema - Optional schema for extracting field examples
  * @returns Enhanced validation error with better messaging
  */
 export { enhanceZodError } from './validation/index.js'

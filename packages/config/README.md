@@ -1,111 +1,66 @@
-# @repo/config
+# @trailhead/config
 
 > Type-safe configuration management with validation and documentation generation
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-## Features
-
-- Result-based configuration loading and validation
-- Schema definition with builder pattern
-- Multiple configuration sources (files, env, CLI)
-- Documentation generation from schemas
-- Type-safe with full TypeScript support
-- Testing utilities
+Type-safe configuration management with Result-based validation, schema definition with builder patterns, and automatic documentation generation.
 
 ## Installation
 
 ```bash
-pnpm add @repo/config
-# or
-npm install @repo/config
+pnpm add @trailhead/config
 ```
 
-## Quick Start
+## Quick Example
 
 ```typescript
-import { defineConfigSchema, createConfigOperations } from '@repo/config'
+import { defineSchema, createConfigOperations } from '@trailhead/config'
+import { z } from 'zod'
 
-// Define schema
-const schema = defineConfigSchema()
-  .object({
-    app: {
-      name: { type: 'string', required: true },
-      port: { type: 'number', default: 3000 },
-      debug: { type: 'boolean', default: false },
-    },
+// Define schema using Zod
+const appConfigSchema = defineSchema(
+  z.object({
+    app: z.object({
+      name: z.string().min(1),
+      port: z.number().min(1).max(65535).default(3000),
+      debug: z.boolean().default(false),
+    }),
   })
-  .build()
+)
 
-// Load configuration
+// Load and validate configuration
 const configOps = createConfigOperations()
-const result = await configOps.load({
+const manager = configOps.create({
   name: 'app-config',
-  schema,
   sources: [
     { type: 'file', path: './config.json', priority: 1 },
     { type: 'env', priority: 2 },
   ],
 })
 
-if (result.isOk()) {
-  const config = result.value.resolved
-  console.log('Loaded:', config.app.name)
+const state = await manager.load()
+if (state.isOk()) {
+  console.log('Loaded:', manager.get('app.name'))
 }
 ```
 
-## API Reference
+## Key Features
 
-### Schema Definition
-
-```typescript
-import { defineConfigSchema, string, number, boolean } from '@repo/config'
-
-const schema = defineConfigSchema()
-  .object({
-    // Define your schema structure
-  })
-  .strict(true)
-  .build()
-```
-
-### Configuration Loading
-
-```typescript
-import { createConfigOperations } from '@repo/config'
-
-const configOps = createConfigOperations()
-await configOps.load(definition)
-await configOps.validate(data, schema)
-```
-
-### Documentation Generation
-
-```typescript
-import { generateConfigDocs, generateMarkdown } from '@repo/config/docs'
-
-const docs = await generateConfigDocs(schema)
-const markdown = await generateMarkdown(docs)
-```
-
-## Related Packages
-
-- **@repo/core** - Result types and functional utilities
-- **@repo/fs** - File system operations
-- **@repo/validation** - Data validation
+- **Result-based validation** - Explicit error handling for config operations
+- **Schema definition** - Zod integration with field builder patterns
+- **Multiple sources** - Load from files, environment variables, and CLI arguments
+- **Documentation generation** - Auto-generate docs from schemas
+- **Type-safe** - Full TypeScript support with type inference
 
 ## Documentation
 
-- [Tutorials](../../docs/tutorials/config-getting-started.md)
-  - [Getting Started with Config](../../docs/tutorials/config-getting-started)
-- [How-to Guides](../../docs/how-to/README.md)
-  - [Define Configuration Schemas](../../docs/how-to/define-schemas)
-  - [Generate Documentation](../../docs/how-to/generate-config-docs)
-- [Explanations](../../docs/explanation/README.md)
-  - [Configuration Sources](../../docs/explanation/config-sources)
-- **[API Documentation](../../docs/reference/api/config.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.config.md)** - Complete API reference
+- **[Getting Started](../../docs/tutorials/config-getting-started.md)** - Configuration basics
+- **[Define Schemas](../../docs/how-to/define-schemas)** - Schema creation patterns
+- **[Generate Docs](../../docs/how-to/generate-config-docs)** - Documentation generation
 
 ## License
 

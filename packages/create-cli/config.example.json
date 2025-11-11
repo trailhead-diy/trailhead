@@ -15,11 +15,9 @@
     "config": true,
     "validation": true,
     "testing": true,
-    "docs": true,
     "cicd": true
   },
   "nodeVersion": "18",
   "typescript": true,
-  "ide": "vscode",
-  "includeDocs": true
+  "ide": "vscode"
 }

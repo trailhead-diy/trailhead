@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@trailhead/core'
 
 // ========================================
 // Result Type - Use standard Result<T, CoreError>
@@ -8,7 +8,7 @@ import type { Result, CoreError } from '@esteban-url/core'
  * Type aliases for configuration system result and error handling.
  *
  * These types provide consistent error handling throughout the configuration
- * system using the standard Result pattern from @esteban-url/core.
+ * system using the standard Result pattern from @trailhead/core.
  */
 export type ConfigValue = unknown
 export type ConfigError = CoreError

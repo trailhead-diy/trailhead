@@ -53,7 +53,7 @@ import { createCSVOperations } from './csv/index.js'
 import { createJSONOperations } from './json/index.js'
 import { createExcelOperations } from './excel/index.js'
 import { createDetectionOperations } from './detection/index.js'
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 
 const mockCSVOps = vi.mocked(createCSVOperations)
 const mockJSONOps = vi.mocked(createJSONOperations)

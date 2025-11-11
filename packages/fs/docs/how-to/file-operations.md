@@ -21,7 +21,7 @@ This guide shows you how to perform common filesystem tasks using Result-based e
 ### Read Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const readConfigFile = async (configPath: string) => {
   const result = await fs.readFile(configPath)
@@ -38,7 +38,7 @@ async const readConfigFile = async (configPath: string) => {
 ### Write Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const saveUserData = async (filePath: string, data: string) => {
   const result = await fs.writeFile(filePath, data)
@@ -55,7 +55,7 @@ async const saveUserData = async (filePath: string, data: string) => {
 ### Check File Existence
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const processIfExists = async (filePath: string) => {
   const existsResult = await fs.exists(filePath)
@@ -78,7 +78,7 @@ async const processIfExists = async (filePath: string) => {
 ### Read and Parse JSON
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 interface Config {
   port: number
@@ -102,7 +102,7 @@ async const loadConfig = async (configPath: string) => {
 ### Write JSON Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const saveAppState = async (statePath: string, state: any) => {
   const result = await fs.writeJson(statePath, state)
@@ -119,7 +119,7 @@ async const saveAppState = async (statePath: string, state: any) => {
 ### Update JSON Configuration
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const updateConfig = async (configPath: string, updates: Partial<Config>) => {
   // Read existing config
@@ -151,7 +151,7 @@ async const updateConfig = async (configPath: string, updates: Partial<Config>) 
 ### Create Directories
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const setupProjectStructure = async (projectPath: string) => {
   // Create main project directory
@@ -180,7 +180,7 @@ async const setupProjectStructure = async (projectPath: string) => {
 ### Ensure Directory Exists
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const ensureOutputDirectory = async (outputPath: string) => {
   const result = await fs.ensureDir(outputPath)
@@ -197,7 +197,7 @@ async const ensureOutputDirectory = async (outputPath: string) => {
 ### List Directory Contents
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const listProjectFiles = async (projectPath: string) => {
   const result = await fs.readDir(projectPath)
@@ -219,7 +219,7 @@ async const listProjectFiles = async (projectPath: string) => {
 ### Copy Files and Directories
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const backupConfig = async (configPath: string) => {
   const backupPath = `${configPath}.backup`
@@ -238,7 +238,7 @@ async const backupConfig = async (configPath: string) => {
 ### Move/Rename Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const organizeFiles = async (tempDir: string, finalDir: string) => {
   // Ensure destination directory exists
@@ -273,7 +273,7 @@ async const organizeFiles = async (tempDir: string, finalDir: string) => {
 ### Remove Files and Directories
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const cleanupTempFiles = async (tempDir: string) => {
   // Check if directory exists
@@ -304,7 +304,7 @@ async const cleanupTempFiles = async (tempDir: string) => {
 ### Find Files by Pattern
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const findSourceFiles = async (projectPath: string) => {
   // Find all TypeScript files
@@ -335,7 +335,7 @@ async const findSourceFiles = async (projectPath: string) => {
 ### Get File Statistics
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const analyzeFile = async (filePath: string) => {
   const statResult = await fs.stat(filePath)
@@ -358,7 +358,7 @@ async const analyzeFile = async (filePath: string) => {
 ### Output File with Directory Creation
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const saveReport = async (reportPath: string, reportData: string) => {
   // This will create parent directories if they don't exist
@@ -378,7 +378,7 @@ async const saveReport = async (reportPath: string, reportData: string) => {
 ### Graceful Fallbacks
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const readConfigWithDefaults = async (configPath: string) => {
   const result = await fs.readJson(configPath)
@@ -404,7 +404,7 @@ async const readConfigWithDefaults = async (configPath: string) => {
 ### Conditional Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const conditionalCopy = async (srcPath: string, destPath: string, overwrite = false) => {
   // Check if source exists
@@ -441,7 +441,7 @@ async const conditionalCopy = async (srcPath: string, destPath: string, overwrit
 ### Multiple Operation Chains
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const processConfigFile = async (configPath: string, outputPath: string) => {
   // Chain multiple operations with error propagation
@@ -487,7 +487,7 @@ async const processConfigFile = async (configPath: string, outputPath: string) =
 ### Working with Paths
 
 ```typescript
-import { join, dirname, basename, extname, resolve } from '@repo/fs/utils'
+import { join, dirname, basename, extname, resolve } from '@trailhead/fs/utils'
 
 const analyzeFilePath = (inputPath: string) => {
   const absolutePath = resolve(inputPath)
@@ -518,8 +518,8 @@ const analyzeFilePath = (inputPath: string) => {
 ### Build Dynamic Paths
 
 ```typescript
-import { join } from '@repo/fs/utils'
-import { fs } from '@repo/fs'
+import { join } from '@trailhead/fs/utils'
+import { fs } from '@trailhead/fs'
 
 async const setupProjectLayout = async (projectName: string, baseDir: string) => {
   const projectPath = join(baseDir, projectName)
@@ -569,7 +569,7 @@ async const setupProjectLayout = async (projectName: string, baseDir: string) =>
 ### Process Multiple Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const processMultipleFiles = async (filePaths: string[]) => {
   const results = []
@@ -606,7 +606,7 @@ async const processMultipleFiles = async (filePaths: string[]) => {
 ### Parallel File Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const copyMultipleFiles = async (fileMappings: Array<{ src: string; dest: string }>) => {
   // Process all copies in parallel
@@ -643,8 +643,8 @@ async const copyMultipleFiles = async (fileMappings: Array<{ src: string; dest: 
 ### With Data Processing
 
 ```typescript
-import { fs } from '@repo/fs'
-import { data } from '@repo/data'
+import { fs } from '@trailhead/fs'
+import { data } from '@trailhead/data'
 
 async const convertDataFiles = async (inputDir: string, outputDir: string) => {
   // Find all data files
@@ -693,8 +693,8 @@ async const convertDataFiles = async (inputDir: string, outputDir: string) => {
 ### With Validation
 
 ```typescript
-import { fs } from '@repo/fs'
-import { validate } from '@repo/validation'
+import { fs } from '@trailhead/fs'
+import { validate } from '@trailhead/validation'
 
 interface UserConfig {
   name: string
@@ -736,6 +736,6 @@ async const loadUserConfig = async (configPath: string) => {
 
 ## Next Steps
 
-- Review [FileSystem API Reference](../../../cli/reference/core.md)for detailed function documentation
+- Review [FileSystem API Documentation](/docs/@trailhead.fs.md) for detailed function documentation
 - Learn about [Result Patterns](../../explanation/result-patterns.md)for advanced error handling
 - Explore [Data Processing](../../../data/how-to/process-data-files.md)for working with data files

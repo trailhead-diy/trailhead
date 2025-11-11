@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { setupResultMatchers } from '@esteban-url/core/testing'
+ * import { setupResultMatchers } from '@trailhead/core/testing'
  *
  * // Setup in test files or global setup
  * setupResultMatchers()
@@ -278,7 +278,7 @@ export const resultMatchers = {
  * @example
  * ```typescript
  * // In vitest.setup.ts or individual test files
- * import { setupResultMatchers } from '@esteban-url/core/testing'
+ * import { setupResultMatchers } from '@trailhead/core/testing'
  *
  * setupResultMatchers()
  * ```

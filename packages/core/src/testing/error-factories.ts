@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { createValidationError, createTestError, hasErrorCode } from '@esteban-url/core/testing'
+ * import { createValidationError, createTestError, hasErrorCode } from '@trailhead/core/testing'
  *
  * // Create specific error types
  * const validationErr = createValidationError('Required field missing', 'email')

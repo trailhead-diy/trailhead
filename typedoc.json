@@ -1,23 +1,25 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "plugin": ["typedoc-plugin-markdown"],
   "entryPointStrategy": "packages",
   "entryPoints": ["packages/*"],
-  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-frontmatter"],
+  "out": "docs",
+  "mergeReadme": true,
+  "outputFileStrategy": "modules",
+  "flattenOutputFiles": true,
+  "fileExtension": ".md",
+  "entryFileName": "README.md",
+  "membersWithOwnFile": [],
 
   "name": "Trailhead API Documentation",
   "includeVersion": true,
   "readme": "none",
-  "projectDocuments": [],
-  "includeHierarchySummary": false,
-  "searchInDocuments": false,
-  "searchInComments": false,
 
   "packageOptions": {
     "entryPoints": ["src/index.ts"],
     "includeVersion": false,
     "readme": "none",
-    "projectDocuments": [],
-    "skipErrorChecking": true,
+    "skipErrorChecking": false,
     "excludeExternals": true,
     "excludePrivate": true,
     "excludeProtected": false,
@@ -28,40 +30,10 @@
     "exclude": ["**/README.md", "**/docs/**", "**/*.md", "**/*.test.ts", "**/*.spec.ts"]
   },
 
-  "flattenOutputFiles": true,
-  "mergeReadme": false,
-  "entryFileName": "README",
-  "router": "member",
-  "membersWithOwnFile": [],
-  "fileExtension": ".md",
-  "hideBreadcrumbs": false,
-  "hidePageHeader": false,
-  "hidePageTitle": false,
-  "router": "member",
-
-  "frontmatterGlobals": {
-    "type": "reference",
-    "sidebar": true
-  },
-
-  "readmeFrontmatter": {
-    "title": "API Overview",
-    "description": "Complete API reference for Trailhead packages"
-  },
-
-  "indexFrontmatter": {
-    "title": "API Index",
-    "description": "Browse all available APIs and modules"
-  },
-
-  "frontmatterCommentTags": ["description", "author", "since", "example"],
-
-  "frontmatterNamingConvention": "camelCase",
-
   "validation": {
-    "notExported": true,
+    "notExported": false,
     "invalidLink": true,
-    "notDocumented": false,
+    "notDocumented": true,
     "rewrittenLink": true,
     "unusedMergeModuleWith": true
   },
@@ -81,9 +53,10 @@
 
   "hideGenerator": true,
   "githubPages": false,
-  "skipErrorChecking": false,
+  "skipErrorChecking": true,
   "treatWarningsAsErrors": false,
   "treatValidationWarningsAsErrors": false,
+  "logLevel": "Error",
   "disableSources": true,
   "excludeReferences": true,
 
@@ -127,18 +100,40 @@
   "excludeCategories": ["Namespace", "Re-exports"],
   "excludeExternals": true,
   "excludeTags": ["@namespace"],
-  "excludeReferences": true,
+
   "externalPattern": ["node_modules/**/*", "**/node_modules/**/*"],
   "intentionallyNotExported": [
-    "z",
-    "ok",
-    "err",
-    "Result",
-    "CoreResult",
-    "CoreResultAsync",
-    "fromPromiseAsync",
-    "fromThrowableAsync",
-    "fromThrowableAsyncFunc"
+    "CommandArgument",
+    "FileSystem",
+    "Logger",
+    "CommandConfig",
+    "CommandOptions",
+    "ConfigOperations",
+    "ValidatorOperations",
+    "ConfigResult",
+    "ManagerDependencies",
+    "FormatterOptions",
+    "ConfigSchema",
+    "FileCategory",
+    "ConversionQuality",
+    "ConversionOptions",
+    "CheckConversionOp",
+    "GetSupportedFormatsOp",
+    "ValidateStringOperation",
+    "DetectFromBufferOp",
+    "DetectFromExtensionOp",
+    "DetectFromFileOp",
+    "FileFormatInfo",
+    "DetectionReliability",
+    "DetectionSource",
+    "ValidateBufferOperation",
+    "GetExtensionsOp",
+    "GetMimeTypeOp",
+    "IsMimeTypeOp",
+    "ParsedData",
+    "FindFilesOp",
+    "SortOptions",
+    "loadTemplateFilesFromDirectory"
   ],
 
   "visibilityFilters": {
@@ -175,6 +170,12 @@
       "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
       "Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
       "Object": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object"
+    },
+    "@trailhead/config": {
+      "ManagerDependencies": "#"
+    },
+    "@trailhead/create-cli": {
+      "loadTemplateFilesFromDirectory": "#"
     }
   },
 
@@ -183,14 +184,6 @@
     "Interfaces": 1.5,
     "Functions": 1.3
   },
-
-  "markdownItOptions": {
-    "html": false,
-    "linkify": true
-  },
-
-  "publicPath": "",
-  "sanitizeComments": true,
 
   "preserveWatchOutput": true
 }

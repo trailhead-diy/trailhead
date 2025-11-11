@@ -82,8 +82,8 @@ Create your module templates:
 
 ```handlebars
 {{!-- templates/modules/analytics/src/lib/analytics.ts.hbs --}}
-import { ok, err } from '@esteban-url/core'
-import type { Result } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
+import type { Result } from '@trailhead/core'
 
 export interface AnalyticsConfig {
   apiKey: string
@@ -379,7 +379,7 @@ When changing templates significantly:
 {{#if company}}
   "@{{company}}/eslint-config",
 {{/if}}
-"@esteban-url/eslint-config" ] }
+"@trailhead/eslint-config" ] }
 ```
 
 ### Custom Directory Structure
@@ -438,5 +438,5 @@ Error: Parse error on line 10
 ## Next Steps
 
 - Learn about [Custom Prompts](../../how-to/custom-prompts)
-- Explore [Template Reference](../../reference/templates)
+- Explore [Create CLI API](/docs/@trailhead.create-cli.md) - Template system reference
 - Configure [Default Settings](../../how-to/configure-defaults)

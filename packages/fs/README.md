@@ -1,41 +1,29 @@
-# @repo/fs
+# @trailhead/fs
 
 > Filesystem operations with Result-based error handling
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-## Features
-
-- Result-based error handling for all operations
-- Complete filesystem coverage (read, write, copy, move, remove)
-- Built-in JSON support
-- Mock filesystem for testing
-- Path manipulation utilities
-- Full TypeScript support
+Complete filesystem operations with Result-based error handling, built-in JSON support, and mock filesystem for testing.
 
 ## Installation
 
 ```bash
-pnpm add @repo/fs
-# or
-npm install @repo/fs
+pnpm add @trailhead/fs
 ```
 
-## Quick Start
+## Quick Example
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 // Read a file
 const result = await fs.readFile('./config.json')
 if (result.isOk()) {
   console.log('File contents:', result.value)
 }
-
-// Write a file
-await fs.writeFile('./output.txt', 'Hello, World!')
 
 // JSON operations
 const config = await fs.readJson('./config.json')
@@ -47,82 +35,19 @@ await fs.copy('./source', './destination')
 await fs.move('./old.txt', './new.txt')
 ```
 
-## API Reference
+## Key Features
 
-### Core Operations
-
-```typescript
-import { fs } from '@repo/fs'
-
-// File operations
-await fs.readFile(path)
-await fs.writeFile(path, content)
-await fs.exists(path)
-await fs.stat(path)
-
-// Directory operations
-await fs.mkdir(path, options?)
-await fs.readDir(path)
-await fs.ensureDir(path)
-await fs.emptyDir(path)
-
-// File management
-await fs.copy(src, dest, options?)
-await fs.move(src, dest, options?)
-await fs.remove(path, options?)
-
-// JSON operations
-await fs.readJson(path)
-await fs.writeJson(path, data, options?)
-
-// Utilities
-await fs.outputFile(path, content)
-await fs.findFiles(pattern, options?)
-```
-
-### Path Utilities
-
-```typescript
-import { join, resolve, dirname, basename, extname, isAbsolute } from '@repo/fs/utils'
-
-const fullPath = join('src', 'components', 'Button.tsx')
-const absPath = resolve('./config.json')
-const dir = dirname('/path/to/file.txt')
-const name = basename('/path/to/file.txt')
-const ext = extname('script.ts')
-const isAbs = isAbsolute('/home/user')
-```
-
-### Testing
-
-```typescript
-import { createMockFS } from '@repo/fs/testing'
-
-const mockFS = createMockFS({
-  '/app/config.json': '{"name": "test"}',
-  '/app/data/': null, // directory
-})
-
-// Use mockFS exactly like fs
-const result = await mockFS.readJson('/app/config.json')
-```
-
-## Related Packages
-
-- **@repo/core** - Result types and functional utilities
-- **@repo/data** - Data processing and format conversion
-- **@repo/validation** - Data validation
+- **Result-based** - Explicit error handling for all filesystem operations
+- **Complete coverage** - Read, write, copy, move, remove operations
+- **JSON support** - Built-in JSON reading and writing
+- **Mock filesystem** - Testing utilities with in-memory filesystem
+- **Path utilities** - Helper functions for path manipulation
 
 ## Documentation
 
-- [Tutorials](./docs/README.md)
-  - [File Operations Basics](../../docs/tutorials/file-operations-basics.md)
-- [How-to Guides](./docs/how-to/file-operations.md)
-  - [Perform Atomic File Operations](../../docs/how-to/perform-atomic-file-operations.md)
-- [Explanations](./docs/explanation/result-patterns.md)
-  - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](../../docs/explanation/functional-architecture.md)
-- **[API Documentation](../../docs/reference/api/fs.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.fs.md)** - Complete API reference
+- **[File Operations Basics](../../docs/tutorials/file-operations-basics.md)** - Tutorial
+- **[Perform Atomic Operations](../../docs/how-to/perform-atomic-file-operations.md)** - How-to guide
 
 ## License
 

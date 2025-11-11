@@ -1,6 +1,6 @@
 ---
 type: explanation
-title: '@esteban-url/cli Documentation Overview'
+title: '@trailhead/cli Documentation Overview'
 description: 'Complete documentation hub for the functional CLI framework'
 related:
   - /packages/cli/docs/tutorials/getting-started.md
@@ -8,7 +8,7 @@ related:
   - /packages/cli/docs/explanation/architecture.md
 ---
 
-# @esteban-url/cli Documentation
+# @trailhead/cli Documentation
 
 Functional CLI framework for building command-line applications.
 
@@ -30,13 +30,7 @@ Functional CLI framework for building command-line applications.
 
 Complete API documentation for all modules:
 
-- [Main Export](../reference/core.md)- CLI creation and basic Result types
-- [Command Module](../reference/command.md)- Command creation and execution
-- [Prompts Module](../reference/prompts.md)- Interactive user prompts
-- [Testing Module](../reference/testing.md)- Testing utilities and helpers
-- [Utils Module](../reference/utils.md)- Logger, spinner, and other utilities
-- [Progress Module](../reference/utils.md)- Progress tracking utilities
-- [Types Reference](../reference/types.md)- TypeScript type definitions
+- [CLI API Documentation](/docs/@trailhead.cli.md) - Full TypeDoc-generated API reference
 
 ### Related Packages
 
@@ -72,7 +66,7 @@ Learning-oriented guides for getting started:
 ### 1. Result-Based Error Handling
 
 ```typescript
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 
 const divide = (a: number, b: number): Result<number> => {
   if (b === 0) {
@@ -85,7 +79,7 @@ const divide = (a: number, b: number): Result<number> => {
 ### 2. Functional Command Creation
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 
 const greetCommand = createCommand({
   name: 'greet',
@@ -101,7 +95,7 @@ const greetCommand = createCommand({
 ### 3. Type-Safe Configuration
 
 ```typescript
-import { defineConfig } from '@esteban-url/config'
+import { defineConfig } from '@trailhead/config'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -117,7 +111,7 @@ const config = defineConfig(schema)
 ### 4. Composable Validation
 
 ```typescript
-import { createValidationPipeline, createRule } from '@esteban-url/validation'
+import { createValidationPipeline, createRule } from '@trailhead/validation'
 
 const pipeline = createValidationPipeline([
   createRule('length', (value: string) => value.length >= 3 || 'Must be at least 3 characters'),
@@ -133,7 +127,7 @@ const pipeline = createValidationPipeline([
 ### Basic CLI Application
 
 ```typescript
-import { createCLI } from '@esteban-url/cli'
+import { createCLI } from '@trailhead/cli'
 import { greetCommand } from './commands/greet'
 import { configCommand } from './commands/config'
 
@@ -162,7 +156,7 @@ const config = JSON.parse(result.value)
 ### Testing Pattern
 
 ```typescript
-import { createTestContext, mockFileSystem } from '@esteban-url/cli/testing'
+import { createTestContext, mockFileSystem } from '@trailhead/cli/testing'
 
 it('should read configuration', async () => {
   const fs = mockFileSystem({
@@ -181,12 +175,12 @@ it('should read configuration', async () => {
 
 1. Follow the [Getting Started Guide](../tutorials/getting-started.md)to build your first CLI
 2. Read about [Architecture](../explanation/architecture.md)to understand the framework
-3. Explore the [API Reference](../reference/core.md)for detailed documentation
+3. Explore the [API Reference](/docs/@trailhead.cli.md)for detailed documentation
 4. Review the API documentation for advanced usage patterns
 
 ## Contributing
 
-We welcome contributions! Please see the [Contributing Guide](https://github.com/esteban-url/trailhead/blob/main/CONTRIBUTING.md) for details on:
+We welcome contributions! Please see the [Contributing Guide](https://github.com/trailhead-diy/trailhead/blob/main/CONTRIBUTING.md) for details on:
 
 - Setting up your development environment
 - Running tests and linting
@@ -195,10 +189,10 @@ We welcome contributions! Please see the [Contributing Guide](https://github.com
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
+- **Issues**: [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions)
 - **Documentation**: See the [documentation directory](../)
 
 ## License
 
-MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+MIT - See [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)

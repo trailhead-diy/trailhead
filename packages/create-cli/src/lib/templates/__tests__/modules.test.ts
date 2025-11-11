@@ -211,26 +211,22 @@ describe('module sorting utilities', () => {
       }
     })
 
-    it('should handle IDE specific files in sorted order', () => {
-      const vscodeConfig: ProjectConfig = {
-        ...mockConfig,
-        ide: 'vscode',
-      }
-
-      const result = composeTemplate(vscodeConfig)
+    it('should compose template with all files sorted', () => {
+      const result = composeTemplate(mockConfig)
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
         const template = result.value
 
-        // Should include VSCode config files
-        expect(template.files.some((f) => f.destination === '.vscode/settings.json')).toBe(true)
-        expect(template.files.some((f) => f.destination === '.vscode/extensions.json')).toBe(true)
-
-        // All files should still be sorted
+        // All files should be sorted by destination path
         const destinations = template.files.map((f) => f.destination)
         const sortedDestinations = [...destinations].sort()
         expect(destinations).toEqual(sortedDestinations)
+
+        // Should include core shared files
+        expect(template.files.some((f) => f.destination === 'package.json')).toBe(true)
+        expect(template.files.some((f) => f.destination === 'tsconfig.json')).toBe(true)
+        expect(template.files.some((f) => f.destination === '.gitignore')).toBe(true)
       }
     })
 
@@ -260,11 +256,12 @@ describe('module sorting utilities', () => {
 
         // Dependencies should be sorted alphabetically
         const deps = template.packageDependencies
-        expect(deps).toEqual(['@esteban-url/trailhead-cli', 'zod'])
+        expect(deps).toEqual(['@trailhead/config', '@trailhead/fs', '@trailhead/trailhead-cli'])
 
-        // Should still contain expected dependencies
-        expect(deps).toContain('@esteban-url/trailhead-cli')
-        expect(deps).toContain('zod') // from config module
+        // Should contain all expected dependencies
+        expect(deps).toContain('@trailhead/trailhead-cli') // from core module
+        expect(deps).toContain('@trailhead/config') // from config module
+        expect(deps).toContain('@trailhead/fs') // from config module
       }
     })
   })

@@ -987,7 +987,7 @@ app.post('/users', createValidationMiddleware(createUserSchema), (req, res) => {
 ### CLI Input Validation
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { validate } from '@repo/validation'
 
 const deployCommand = createCommand({
@@ -1030,6 +1030,6 @@ const deployCommand = createCommand({
 
 ## Next Steps
 
-- Review [Validation API Reference](../../reference/api.md)for detailed function documentation
+- Review [Validation API Documentation](/docs/@trailhead.validation.md) for detailed function documentation
 - Learn about [Composition Patterns](../../explanation/composition-patterns.md)for advanced validator composition
 - Explore [Functional Patterns](./apply-functional-patterns.md)for Result type usage

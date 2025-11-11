@@ -1,13 +1,12 @@
 # @trailhead/core
 
-Foundation package for the Trailhead ecosystem providing unified Result types, enhanced error handling, and performance-optimized utilities.
+> Foundation package providing unified Result types, enhanced error handling, and performance-optimized utilities
 
-## Features
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-- **Unified Result Types** - Single source of truth for all Result operations across the ecosystem
-- **Enhanced Error Context** - Rich debugging information with operation context, timestamps, and severity levels
-- **Performance-Optimized Type Guards** - Zero-overhead validation for critical paths
-- **Functional Programming Utilities** - Composition helpers and Result-based functional patterns
+Foundation package for the Trailhead ecosystem providing unified Result types, enhanced error handling, and performance-optimized type guards.
 
 ## Installation
 
@@ -15,9 +14,7 @@ Foundation package for the Trailhead ecosystem providing unified Result types, e
 npm install @trailhead/core
 ```
 
-## Usage
-
-### Basic Result Operations
+## Quick Example
 
 ```typescript
 import { ok, err, type Result } from '@trailhead/core'
@@ -37,122 +34,19 @@ if (result.isOk()) {
 }
 ```
 
-### Enhanced Error Creation
+## Key Features
 
-```typescript
-import { createCoreError } from '@trailhead/core'
+- **Unified Result types** - Single source of truth for Result operations across the ecosystem
+- **Enhanced error context** - Rich debugging with operation context, timestamps, and severity
+- **Performance-optimized type guards** - Zero-overhead validation for critical paths
+- **Functional utilities** - Composition helpers and Result-based patterns
 
-const error = createCoreError('VALIDATION_FAILED', 'Invalid input data', {
-  component: 'UserService',
-  operation: 'validateUser',
-  severity: 'high',
-  suggestion: 'Check that all required fields are provided',
-  recoverable: true,
-  context: { userId: '123', field: 'email' },
-})
-```
+## Documentation
 
-### Performance-Optimized Type Guards
-
-```typescript
-import { isDefined, isNonEmptyString, isObject } from '@trailhead/core'
-
-// Fast null/undefined checks
-if (isDefined(value)) {
-  // value is guaranteed to be non-null/undefined
-}
-
-// Optimized string validation
-if (isNonEmptyString(input)) {
-  // input is guaranteed to be a non-empty string
-}
-
-// Efficient object validation
-if (isObject(data)) {
-  // data is guaranteed to be a record
-}
-```
-
-### Functional Composition
-
-```typescript
-import { pipe, composeResult } from '@trailhead/core'
-
-const processData = pipe(
-  validateInput,
-  composeResult(transformData, validateInput),
-  composeResult(saveToDatabase, transformData)
-)
-
-const result = await processData(inputData)
-```
-
-## API Reference
-
-### Result Types
-
-- `Result<T, E>` - Core Result type (re-exported from neverthrow)
-- `CoreResult<T>` - Result with CoreError
-- `CoreResultAsync<T>` - Async Result with CoreError
-
-### Error Handling
-
-- `createCoreError(type, message, options)` - Create enhanced error with context
-- `withContext(error, context)` - Add contextual information to existing error
-- `chainError(error, cause)` - Chain errors for error propagation
-
-### Type Guards
-
-- `isDefined<T>(value)` - Check if value is not null/undefined
-- `isNonEmptyString(value)` - Validate non-empty strings
-- `isObject(value)` - Validate objects
-- `isNonEmptyArray<T>(value)` - Validate non-empty arrays
-- `hasErrorShape(value)` - Check if value has error structure
-
-### Utilities
-
-- `getErrorMessage(error)` - Extract human-readable message
-- `isRecoverableError(error)` - Check if error is recoverable
-- `getErrorType(error)` - Extract error type for pattern matching
-
-## Breaking Changes in v1.0.0
-
-1. **Enhanced CoreError Interface** - Added `component`, `operation`, `timestamp`, and `severity` fields
-2. **Unified Result Imports** - All packages must import Result types from @trailhead/core
-3. **Performance Type Guards** - New compile-time optimized validation functions
-
-## Migration Guide
-
-### From direct neverthrow imports:
-
-```typescript
-// Before
-import { ok, err, type Result } from 'neverthrow'
-
-// After
-import { ok, err, type Result } from '@trailhead/core'
-```
-
-### Enhanced error creation:
-
-```typescript
-// Before
-const error = { type: 'ERROR', message: 'Failed' }
-
-// After
-const error = createCoreError('ERROR', 'Failed', {
-  component: 'MyComponent',
-  operation: 'myOperation',
-  severity: 'medium',
-})
-```
-
-## Performance Notes
-
-- Type guards are optimized for V8 and use minimal property access
-- Compile-time validation reduces runtime overhead
-- Enhanced error context is generated lazily to minimize performance impact
+- **[API Documentation](../../docs/@trailhead.core.md)** - Complete API reference
+- **[Result Types Pattern](../../docs/explanation/result-types-pattern.md)** - Understanding Result types
+- **[Functional Architecture](../../docs/explanation/functional-architecture.md)** - Functional programming patterns
 
 ## License
 
-MIT
+MIT © [Esteban URL](https://github.com/esteban-url)

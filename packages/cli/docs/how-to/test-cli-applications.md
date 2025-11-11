@@ -51,12 +51,7 @@ export default defineConfig({
 ### Step 3: Import Testing Utilities
 
 ```typescript
-import {
-  createTestContext,
-  mockFileSystem,
-  mockLogger,
-  mockPrompts,
-} from '@esteban-url/cli/testing'
+import { createTestContext, mockFileSystem, mockLogger, mockPrompts } from '@trailhead/cli/testing'
 ```
 
 ## Testing Commands
@@ -66,7 +61,7 @@ import {
 ```typescript
 import { describe, it, expect } from 'vitest'
 import { myCommand } from '../src/commands/my-command'
-import { createTestContext } from '@esteban-url/cli/testing'
+import { createTestContext } from '@trailhead/cli/testing'
 
 describe('myCommand', () => {
   it('executes successfully with valid options', async () => {
@@ -82,7 +77,7 @@ describe('myCommand', () => {
 ### Testing Command with File Operations
 
 ```typescript
-import { mockFileSystem } from '@esteban-url/cli/testing'
+import { mockFileSystem } from '@trailhead/cli/testing'
 
 it('processes input file', async () => {
   // Arrange: Set up mock filesystem
@@ -110,7 +105,7 @@ it('processes input file', async () => {
 ### Testing Interactive Commands
 
 ```typescript
-import { mockPrompts } from '@esteban-url/cli/testing'
+import { mockPrompts } from '@trailhead/cli/testing'
 
 it('handles user prompts', async () => {
   const prompts = mockPrompts({
@@ -166,7 +161,7 @@ it('validates required options', async () => {
 ### Test Multi-Step Workflows
 
 ```typescript
-import { createTaskList } from '@esteban-url/cli/workflows'
+import { createTaskList } from '@trailhead/cli/workflows'
 
 it('completes workflow successfully', async () => {
   const context = createTestContext()
@@ -211,7 +206,7 @@ it('skips steps based on conditions', async () => {
 ### Capture and Assert Logs
 
 ```typescript
-import { mockLogger } from '@esteban-url/cli/testing'
+import { mockLogger } from '@trailhead/cli/testing'
 
 it('logs appropriate messages', async () => {
   const logger = mockLogger()
@@ -465,6 +460,5 @@ const result = await realCommand.execute(options, context)
 
 ## Next Steps
 
-- Review [Testing API Reference](../../reference/testing)
+- Review [CLI API Reference](/docs/@trailhead.cli.md) - Testing utilities and command patterns
 - Learn about [Error Handling](../../how-to/handle-errors-in-cli)
-- Explore [Command Patterns](../../reference/command)

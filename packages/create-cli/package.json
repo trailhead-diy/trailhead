@@ -1,16 +1,16 @@
 {
-  "name": "@esteban-url/create-cli",
-  "version": "0.1.0",
+  "name": "@trailhead/create-cli",
+  "version": "1.0.1",
   "type": "module",
   "private": false,
-  "description": "CLI generator for creating projects with @esteban-url/cli",
+  "description": "CLI generator for creating projects with @trailhead/cli",
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "bin": {
     "create-cli": "./bin/cli.js",
-    "@esteban-url/create-cli": "./bin/cli.js"
+    "@trailhead/create-cli": "./bin/cli.js"
   },
   "types": "./dist/index.d.ts",
   "exports": {
@@ -35,37 +35,37 @@
     "format:check": "prettier --check . --log-level=error --ignore-path ../../.prettierignore",
     "format:templates": "echo 'Note: Templates are formatted during generation via transform-helpers.ts'",
     "clean": "rm -rf dist",
-    "pretest": "pnpm --filter='@esteban-url/*' build && pnpm build",
+    "pretest": "pnpm --filter='@trailhead/*' build && pnpm build",
     "validate": "pnpm types && pnpm lint && pnpm test",
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/cli": "workspace:*",
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/fs": "workspace:*",
-    "@esteban-url/sort": "workspace:*",
-    "@esteban-url/validation": "workspace:*",
+    "@trailhead/cli": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/sort": "workspace:*",
+    "@trailhead/validation": "workspace:*",
     "consola": "^3.4.2",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",
-    "zod": "^4.0.14"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/node": "^24.1.0",
-    "@vitest/coverage-v8": "^3.2.4",
-    "oxlint": "^1.9.0",
+    "@types/node": "^24.10.0",
+    "@vitest/coverage-v8": "^4.0.7",
+    "oxlint": "^1.25.0",
     "tsup": "^8.5.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
   },
   "sideEffects": false,
   "files": [
@@ -84,8 +84,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/create-cli"
   },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme",
   "license": "MIT"
 }

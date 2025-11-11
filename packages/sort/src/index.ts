@@ -4,7 +4,7 @@
  *
  * @example
  * ```typescript
- * import { sortBy, orderBy, topN } from '@esteban-url/sort'
+ * import { sortBy, orderBy, topN } from '@trailhead/sort'
  *
  * // Sort by a single property
  * const sorted = sortBy(users, [user => user.age])

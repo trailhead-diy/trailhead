@@ -29,7 +29,7 @@ Functional validation library with Zod integration, providing both simple valida
 
 Complete API documentation is available in the shared documentation:
 
-- [Validation API Reference](../reference/api.md)- Complete function and type definitions
+- [Validation API Documentation](/docs/@trailhead.validation.md) - Complete function and type definitions
 
 ### Understanding the Design
 
@@ -268,7 +268,7 @@ if (!result.success) {
 ## Next Steps
 
 1. Start with [Validate Data](../how-to/validate-data.md)for common validation tasks
-2. Review the [Validation API Reference](../reference/api.md)for detailed documentation
+2. Review the [Validation API Documentation](/docs/@trailhead.validation.md) for detailed documentation
 3. Understand [Composition Patterns](../explanation/composition-patterns.md)for advanced usage
 
 ## Integration Examples
@@ -316,7 +316,7 @@ app.post('/users', validateBody(validateCreateUser), (req, res) => {
 ### With CLI Applications
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { validate } from '@repo/validation'
 
 const createProjectCommand = createCommand({
@@ -464,4 +464,4 @@ See the [Contributing Guide](../how-to/contributing.md)for development setup and
 
 ## License
 
-MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+MIT - See [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)

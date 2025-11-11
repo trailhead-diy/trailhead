@@ -10,7 +10,7 @@ related:
 
 # Understanding the Template System
 
-This document explains the design decisions, architecture, and philosophy behind the @esteban-url/create-cli template system.
+This document explains the design decisions, architecture, and philosophy behind the @trailhead/create-cli template system.
 
 ## Design Philosophy
 

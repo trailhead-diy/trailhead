@@ -1,6 +1,6 @@
 ---
 type: explanation
-title: '@esteban-url/create-cli Documentation Overview'
+title: '@trailhead/create-cli Documentation Overview'
 description: 'Complete documentation hub for the CLI project generator'
 related:
   - /packages/create-cli/docs/tutorials/getting-started.md
@@ -8,18 +8,18 @@ related:
   - /packages/create-cli/docs/how-to/customize-templates.md
 ---
 
-# @esteban-url/create-cli Documentation
+# @trailhead/create-cli Documentation
 
-The create-cli package provides a modern generator for scaffolding CLI applications built with the @esteban-url/cli framework. It offers intelligent project setup with best practices, TypeScript configuration, and comprehensive testing utilities built-in.
+The create-cli package provides a modern generator for scaffolding CLI applications built with the @trailhead/cli framework. It offers intelligent project setup with best practices, TypeScript configuration, and comprehensive testing utilities built-in.
 
 ## Framework Philosophy
 
-@esteban-url/create-cli is designed around these principles:
+@trailhead/create-cli is designed around these principles:
 
 - **Zero-config start** - Sensible defaults with full customization available
 - **Best practices built-in** - TypeScript, testing, linting pre-configured
 - **Template flexibility** - Multiple templates for different use cases
-- **Framework integration** - Seamless integration with @esteban-url/cli
+- **Framework integration** - Seamless integration with @trailhead/cli
 
 ## Documentation Structure
 
@@ -27,15 +27,13 @@ The create-cli package provides a modern generator for scaffolding CLI applicati
 
 - [Quick Start Guide](../tutorials/getting-started.md)- Generate your first CLI in minutes
 - [Template Overview](../explanation/templates.md)- Understanding available templates
-- [Configuration Options](../../cli/reference/config.md)- All generation options
+- [Configuration Options](/docs/@trailhead.config.md) - All generation options
 
 ### API Reference
 
 Complete API documentation:
 
-- [Generator API](../../cli/reference/core.md)- Programmatic project generation
-- [Configuration Schema](../reference/schema.md)- Project configuration options
-- [Template System](../reference/templates.md)- Template engine and customization
+- [Create CLI API Documentation](/docs/@trailhead.create-cli.md) - Programmatic project generation and template system
 
 ### How-To Guides
 
@@ -50,7 +48,7 @@ Task-oriented guides:
 ### 1. Interactive Project Setup
 
 ```bash
-npx @esteban-url/create-cli my-awesome-cli
+npx @trailhead/create-cli my-awesome-cli
 
 # Interactive prompts guide you through:
 # - Project name and description
@@ -92,8 +90,8 @@ npx @esteban-url/create-cli my-awesome-cli
 Generated projects include:
 
 ```typescript
-import { createCLI, createCommand } from '@esteban-url/cli'
-import { Ok, Err } from '@esteban-url/core'
+import { createCLI, createCommand } from '@trailhead/cli'
+import { Ok, Err } from '@trailhead/core'
 
 // Pre-configured with:
 - Command structure
@@ -108,16 +106,16 @@ import { Ok, Err } from '@esteban-url/core'
 
 ```bash
 # Quick start with defaults
-npx @esteban-url/create-cli my-cli
+npx @trailhead/create-cli my-cli
 
 # With options
-npx @esteban-url/create-cli my-cli --template advanced --pm pnpm
+npx @trailhead/create-cli my-cli --template advanced --pm pnpm
 ```
 
 ### Programmatic Usage
 
 ```typescript
-import { generateProject } from '@esteban-url/create-cli'
+import { generateProject } from '@trailhead/create-cli'
 
 const result = await generateProject({
   projectName: 'my-cli',
@@ -179,7 +177,7 @@ Templates use Handlebars with custom helpers:
 
 ### For CLI Generation
 
-1. **Run generator**: `npx @esteban-url/create-cli my-cli`
+1. **Run generator**: `npx @trailhead/create-cli my-cli`
 2. **Navigate to project**: `cd my-cli`
 3. **Install dependencies**: `pnpm install` (auto-detected)
 4. **Start development**: `pnpm dev`
@@ -230,14 +228,14 @@ Generated `package.json` includes:
 1. Follow the [Getting Started Guide](../tutorials/getting-started.md)to generate your first CLI
 2. Explore [Template Options](../explanation/templates.md)for different project types
 3. Learn about [Customization](../how-to/customize-templates.md)for team-specific needs
-4. Check the [API Reference](../../cli/reference/core.md)for programmatic usage
+4. Check the [API Reference](/docs/@trailhead.create-cli.md)for programmatic usage
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/esteban-url/trailhead/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions)
+- **Issues**: [GitHub Issues](https://github.com/trailhead-diy/trailhead/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions)
 - **Examples**: See generated project examples
 
 ## License
 
-MIT - See [LICENSE](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+MIT - See [LICENSE](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)

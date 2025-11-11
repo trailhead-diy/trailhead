@@ -20,16 +20,16 @@ This guide shows various ways to add interactivity to your CLI commands using th
 
 - A working CLI application
 - Basic understanding of async/await
-- The prompts module from @esteban-url/cli
+- The prompts module from @trailhead/cli
 
 ## Basic Text Input
 
 Add simple text prompts to gather user input:
 
 ```typescript
-import { ok } from '@esteban-url/cli'
-import { createCommand } from '@esteban-url/cli/command'
-import { prompt } from '@esteban-url/cli/prompts'
+import { ok } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
+import { prompt } from '@trailhead/cli/prompts'
 
 const initCommand = createCommand({
   name: 'init',
@@ -51,7 +51,7 @@ const initCommand = createCommand({
 Let users choose from predefined options:
 
 ```typescript
-import { select } from '@esteban-url/cli/prompts'
+import { select } from '@trailhead/cli/prompts'
 
 const template = await select({
   message: 'Choose a template:',
@@ -74,7 +74,7 @@ const framework = await select({
 Allow multiple choices:
 
 ```typescript
-import { multiselect } from '@esteban-url/cli/prompts'
+import { multiselect } from '@trailhead/cli/prompts'
 
 const features = await multiselect({
   message: 'Select features to include:',
@@ -94,7 +94,7 @@ const features = await multiselect({
 Get yes/no responses:
 
 ```typescript
-import { confirm } from '@esteban-url/cli/prompts'
+import { confirm } from '@trailhead/cli/prompts'
 
 const shouldContinue = await confirm({
   message: 'Do you want to continue?',
@@ -111,7 +111,7 @@ if (!shouldContinue) {
 Securely collect sensitive information:
 
 ```typescript
-import { password } from '@esteban-url/cli/prompts'
+import { password } from '@trailhead/cli/prompts'
 
 const token = await password({
   message: 'Enter your API token:',
@@ -215,7 +215,7 @@ try {
 Show progress during async operations:
 
 ```typescript
-import { spinner } from '@esteban-url/cli/prompts'
+import { spinner } from '@trailhead/cli/prompts'
 
 const spin = spinner()
 spin.start('Loading configuration...')
@@ -239,6 +239,5 @@ try {
 
 ## See Also
 
-- [Prompts API Reference](../../reference/prompts)
-- [Command Patterns](../../reference/command)
+- [CLI API Reference](/docs/@trailhead.cli.md) - Prompts and command patterns
 - [Error Handling Guide](../../how-to/handle-errors-in-cli)

@@ -1,20 +1,45 @@
-import { describe, it, expect } from 'vitest' import { execFile as execFileCb } from 'child_process'
-import { promisify } from 'util' describe('{{projectName}}
-CLI Integration', () => { const execFile = promisify(execFileCb) it('should show version when
---version flag is passed', async () => { const { stdout } = await execFile('node', ['bin/cli.js',
-'--version']) expect(stdout.trim()).toBe('{{version}}') }) it('should show help when --help flag is
-passed', async () => { const { stdout } = await execFile('node', ['bin/cli.js', '--help'])
-expect(stdout).toContain('{{projectName}}') expect(stdout).toContain('{{description}}')
-expect(stdout).toContain('Commands:') }) it('should show help when help command is used', async ()
-=> { const { stdout } = await execFile('node', ['bin/cli.js', 'help']) expect(stdout).toContain('{{projectName}}')
-expect(stdout).toContain('Usage:') }) it('should show version when version command is used', async
-() => { const { stdout } = await execFile('node', ['bin/cli.js', 'version'])
-expect(stdout.trim()).toContain('{{packageName}}
-version
-{{version}}') })
+import { describe, it, expect } from 'vitest'
+import { execFile as execFileCb } from 'child_process'
+import { promisify } from 'util'
+
+/**
+ * Integration tests for {{projectName}} CLI
+ *
+ * Tests the actual CLI functionality through child process execution.
+ * The @trailhead/cli framework automatically provides --version and --help flags.
+ */
+describe('{{projectName}} CLI Integration', () => {
+  const execFile = promisify(execFileCb)
+
+  it('should show version with --version flag (framework-provided)', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', '--version'])
+    expect(stdout.trim()).toBe('{{version}}')
+  })
+
+  it('should show help with --help flag (framework-provided)', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', '--help'])
+    expect(stdout).toContain('{{description}}')
+    expect(stdout).toContain('Usage:')
+  })
 
 {{#if features.config}}
-  it('should handle config command', async () => { const { stdout } = await execFile('node',
-  ['bin/cli.js', 'config']) expect(stdout).toContain('--init, --validate, or --show') })
+  it('should run hello command and show welcome message', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'hello'])
+    expect(stdout).toContain('Welcome to {{packageName}}')
+    expect(stdout).toContain('Version: {{version}}')
+    expect(stdout).toContain('Environment: development')
+  })
+
+  it('should show hello command help', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'hello', '--help'])
+    expect(stdout).toContain('Print a welcome message')
+    expect(stdout).toContain('Usage:')
+  })
+
+  it('should show config command help', async () => {
+    const { stdout } = await execFile('node', ['bin/cli.js', 'config', '--help'])
+    expect(stdout).toContain('View and edit application configuration')
+    expect(stdout).toContain('Usage:')
+  })
 {{/if}}
 })

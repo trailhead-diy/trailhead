@@ -4,7 +4,7 @@ This document explains the architecture and design principles behind {{projectNa
 
 ## Overview
 
-{{projectName}} is built using functional programming principles with the [@esteban-url/trailhead-cli](https://github.com/esteban-url/trailhead) framework, which provides:
+{{projectName}} is built using functional programming principles with the [@trailhead/trailhead-cli](https://github.com/trailhead-diy/trailhead) framework, which provides:
 
 - **Result-based error handling** - No exceptions, explicit error propagation
 - **Functional programming** - Pure functions, immutability, composition
@@ -39,7 +39,7 @@ const config = Object.freeze({
 No exceptions are thrown. All errors are handled explicitly using Result types:
 
 ```typescript
-import { ok, err, createCoreError } from '@esteban-url/trailhead-cli/core';
+import { ok, err, createCoreError } from '@trailhead/trailhead-cli/core';
 
 function risky Operation(): Result<Success, Error> {
   try {
@@ -68,7 +68,7 @@ if (result.isOk()) {
 Commands are pure functions that return Results:
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command';
+import { createCommand } from '@trailhead/trailhead-cli/command';
 
 export const myCommand = createCommand({
   name: 'example',
@@ -164,7 +164,7 @@ graph TD
 
 ```typescript
 // src/index.ts
-import { createCLI } from '@esteban-url/trailhead-cli/command';
+import { createCLI } from '@trailhead/trailhead-cli/command';
 
 const cli = createCLI({
   name: '{{packageName}}',
@@ -392,7 +392,7 @@ if (userInput.isErr()) {
 File operations go through the filesystem abstraction:
 
 ```typescript
-import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem';
+import { readFile, writeFile } from '@trailhead/trailhead-cli/filesystem';
 
 const content = await readFile(filepath);
 if (content.isErr()) {

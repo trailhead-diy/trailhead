@@ -1,32 +1,23 @@
-# @repo/data
+# @trailhead/data
 
 > Data processing for CSV, JSON, and Excel with Result-based error handling
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/esteban-url/trailhead/blob/main/LICENSE)
+[![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-## Features
-
-- Unified API for CSV, JSON, and Excel formats
-- Automatic format detection
-- Format conversion between all supported types
-- Streaming support for large files
-- Result-based error handling
-- Full TypeScript support
+Unified data processing for CSV, JSON, and Excel formats with automatic format detection, conversion, and streaming support.
 
 ## Installation
 
 ```bash
-pnpm add @repo/data
-# or
-npm install @repo/data
+pnpm add @trailhead/data
 ```
 
-## Quick Start
+## Quick Example
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 // Auto-detect and parse any supported format
 const result = await data.parseAuto('./data.csv')
@@ -39,12 +30,18 @@ if (result.isOk()) {
 await data.writeAuto('./output.json', myData)
 ```
 
-## API Reference
+## Key Features
+
+- **Unified API** - Single interface for CSV, JSON, and Excel formats
+- **Auto-detection** - Automatic format detection from file content
+- **Format conversion** - Convert between all supported formats
+- **Streaming support** - Process large files efficiently
+- **Result-based** - Explicit error handling with Result types
 
 ### Core Functions
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 // Auto-detect and parse
 await data.parseAuto(filePath)
@@ -57,12 +54,12 @@ await data.writeAuto(filePath, data)
 ### Format-Specific Operations
 
 ```typescript
-import { createCSVOperations, createJSONOperations, createExcelOperations } from '@repo/data'
+import { createCSVOperations, createJSONOperations, createExcelOperations } from '@trailhead/data'
 
 // CSV
 const csv = createCSVOperations()
 await csv.parseFile(path)
-await csv.writeFile(path, data)
+await csv.writeFile(data, path) // Note: data first, then path
 
 // JSON
 const json = createJSONOperations({ prettify: true })
@@ -78,28 +75,17 @@ await excel.writeFile(path, { sheets: [...] })
 ### Format Conversion
 
 ```typescript
-import { createConversionOperations } from '@repo/data/formats/conversion'
+import { createConversionOperations } from '@trailhead/data/formats/conversion'
 
 const converter = createConversionOperations()
 await converter.convert(source, target, { from: 'csv', to: 'json' })
 ```
 
-## Related Packages
-
-- **@repo/core** - Result types and functional utilities
-- **@repo/fs** - File system operations
-- **@repo/validation** - Data validation
-
 ## Documentation
 
-- [Tutorials](./docs/README.md)
-  - [Data Pipeline Processing](../../docs/tutorials/data-pipeline-processing.md)
-- [How-to Guides](./docs/how-to/process-data-files.md)
-  - [Convert Data Formats](../../docs/how-to/convert-data-formats.md)
-- [Explanations](./docs/explanation/format-detection.md)
-  - [Result Types Pattern](../../docs/explanation/result-types-pattern.md)
-  - [Functional Architecture](../../docs/explanation/functional-architecture.md)
-- **[API Documentation](../../docs/reference/api/data.md)** - Complete API reference with examples and type information
+- **[API Documentation](../../docs/@trailhead.data.md)** - Complete API reference
+- **[Data Pipeline Processing](../../docs/tutorials/data-pipeline-processing.md)** - Tutorial
+- **[Convert Data Formats](../../docs/how-to/convert-data-formats.md)** - How-to guide
 
 ## License
 

@@ -1,11 +1,11 @@
 ---
 type: how-to
 title: 'Use CLI Command Execution Patterns'
-description: 'Use @esteban-url/cli execution patterns for batch processing and phased operations'
+description: 'Use @trailhead/cli execution patterns for batch processing and phased operations'
 prerequisites:
   - Understanding of Result types
   - Basic async/await knowledge
-  - Familiarity with @esteban-url/cli commands
+  - Familiarity with @trailhead/cli commands
 related:
   - /packages/cli/docs/reference/command.md
   - /packages/cli/docs/how-to/migrate-to-command-enhancements.md
@@ -15,7 +15,7 @@ related:
 
 # Use CLI Command Execution Patterns
 
-This guide shows you how to use @esteban-url/cli's execution patterns for building robust command-line operations with progress tracking, batch processing, and phased execution.
+This guide shows you how to use @trailhead/cli's execution patterns for building robust command-line operations with progress tracking, batch processing, and phased execution.
 
 > **Note**: For general Result composition patterns, see [Compose Result Operations](./compose-result-operations).
 
@@ -31,8 +31,8 @@ import {
   executeWithDryRun,
   executeWithValidation,
   executeFileSystemOperations,
-} from '@esteban-url/cli/command'
-import { ok, err } from '@esteban-url/core'
+} from '@trailhead/cli/command'
+import { ok, err } from '@trailhead/core'
 ```
 
 ## Batch Processing
@@ -42,8 +42,8 @@ Process multiple items with concurrency control and progress tracking:
 ### Basic Batch Execution
 
 ```typescript
-import { executeBatch } from '@esteban-url/cli/command'
-import { createCommand } from '@esteban-url/cli/command'
+import { executeBatch } from '@trailhead/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 
 const processFilesCommand = createCommand({
   name: 'process-files',
@@ -95,8 +95,8 @@ Execute operations in sequential phases with data passing between phases:
 ### Multi-Phase Command
 
 ```typescript
-import { executeWithPhases } from '@esteban-url/cli/command'
-import type { CommandPhase } from '@esteban-url/cli/command'
+import { executeWithPhases } from '@trailhead/cli/command'
+import type { CommandPhase } from '@trailhead/cli/command'
 
 interface BuildContext {
   sourceDir: string
@@ -167,7 +167,7 @@ const buildCommand = createCommand({
 Load and merge configuration before executing:
 
 ```typescript
-import { executeWithConfiguration } from '@esteban-url/cli/command'
+import { executeWithConfiguration } from '@trailhead/cli/command'
 
 const deployCommand = createCommand({
   name: 'deploy',
@@ -202,7 +202,7 @@ const deployCommand = createCommand({
 Execute commands with dry-run mode:
 
 ```typescript
-import { executeWithDryRun } from '@esteban-url/cli/command'
+import { executeWithDryRun } from '@trailhead/cli/command'
 
 const migrateCommand = createCommand({
   name: 'migrate',
@@ -232,7 +232,7 @@ const migrateCommand = createCommand({
 Execute file operations atomically with automatic rollback on failure:
 
 ```typescript
-import { executeFileSystemOperations } from '@esteban-url/cli/command'
+import { executeFileSystemOperations } from '@trailhead/cli/command'
 
 const scaffoldCommand = createCommand({
   name: 'scaffold',
@@ -257,7 +257,7 @@ const scaffoldCommand = createCommand({
 Execute with built-in validation:
 
 ```typescript
-import { executeWithValidation } from '@esteban-url/cli/command'
+import { executeWithValidation } from '@trailhead/cli/command'
 import { z } from 'zod'
 
 const configSchema = z.object({
@@ -350,5 +350,5 @@ context.logger.success('All phases completed successfully')
 ## Next Steps
 
 - Learn about [Command Enhancements](../../how-to/migrate-to-command-enhancements)
-- Review [Command API Reference](../../reference/command)
+- Review [CLI API Reference](/docs/@trailhead.cli.md)
 - Explore [Testing Commands](../../how-to/test-cli-applications)

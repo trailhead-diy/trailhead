@@ -53,7 +53,7 @@ if (result.isOk()) {
 Integrate configuration into your CLI commands:
 
 ```typescript
-import { createCommand } from '@esteban-url/cli/command'
+import { createCommand } from '@trailhead/cli/command'
 import { createConfigManager } from '@repo/config'
 import { z } from 'zod'
 
@@ -295,6 +295,6 @@ const schema = z.object({
 
 ## See Also
 
-- [Configuration API Reference](../../../config/reference/api)
+- [Configuration API Reference](/docs/@trailhead.config.md)
 - [Schema Definition Guide](./define-schemas)
 - [Configuration Sources Explanation](../explanation/config-sources)

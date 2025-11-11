@@ -3,7 +3,7 @@ type: how-to
 title: 'Configure Default Settings'
 description: 'Set up personal or team defaults for consistent project generation'
 prerequisites:
-  - Installation of @esteban-url/create-cli
+  - Installation of @trailhead/create-cli
   - Understanding of configuration options
 related:
   - /packages/cli/docs/reference/config.md
@@ -61,7 +61,7 @@ Edit `~/.createclirc.json`:
 Check that your defaults are loaded:
 
 ```bash
-npx @esteban-url/create-cli config list
+npx @trailhead/create-cli config list
 
 # Output:
 # Current configuration:
@@ -110,23 +110,23 @@ my-monorepo/
 
 ```bash
 # Show all configuration
-npx @esteban-url/create-cli config list
+npx @trailhead/create-cli config list
 
 # Show specific value
-npx @esteban-url/create-cli config get packageManager
+npx @trailhead/create-cli config get packageManager
 ```
 
 ### Set Configuration Values
 
 ```bash
 # Set single value
-npx @esteban-url/create-cli config set packageManager pnpm
+npx @trailhead/create-cli config set packageManager pnpm
 
 # Set nested value
-npx @esteban-url/create-cli config set features.testing true
+npx @trailhead/create-cli config set features.testing true
 
 # Set multiple values
-npx @esteban-url/create-cli config set \
+npx @trailhead/create-cli config set \
   packageManager pnpm \
   nodeVersion 20 \
   ide vscode
@@ -136,10 +136,10 @@ npx @esteban-url/create-cli config set \
 
 ```bash
 # Reset single value
-npx @esteban-url/create-cli config unset packageManager
+npx @trailhead/create-cli config unset packageManager
 
 # Reset all to defaults
-npx @esteban-url/create-cli config reset
+npx @trailhead/create-cli config reset
 ```
 
 ## Environment Variables
@@ -174,7 +174,7 @@ export CREATE_CLI_NODE_VERSION=18
 export CREATE_CLI_FEATURES=config,testing
 
 # Run generator
-npx @esteban-url/create-cli "$@"
+npx @trailhead/create-cli "$@"
 ```
 
 ## Configuration Schemas
@@ -185,7 +185,7 @@ Full example with all options:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/esteban-url/trailhead/main/packages/create-cli/schema.json",
+  "$schema": "https://raw.githubusercontent.com/trailhead-diy/trailhead/main/packages/create-cli/schema.json",
   "projectType": "standalone-cli",
   "packageManager": "pnpm",
   "nodeVersion": "20",
@@ -333,7 +333,7 @@ EOF
 cp ~/.config/create-cli/presets/enterprise.json .createclirc.json
 
 # Generate with preset
-npx @esteban-url/create-cli my-cli
+npx @trailhead/create-cli my-cli
 ```
 
 ## Validation
@@ -342,10 +342,10 @@ npx @esteban-url/create-cli my-cli
 
 ```bash
 # Check if configuration is valid
-npx @esteban-url/create-cli config validate
+npx @trailhead/create-cli config validate
 
 # Validate specific file
-npx @esteban-url/create-cli config validate ./my-config.json
+npx @trailhead/create-cli config validate ./my-config.json
 ```
 
 ### Schema Validation
@@ -354,7 +354,7 @@ Use JSON Schema for IDE support:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/esteban-url/trailhead/main/packages/create-cli/schema.json",
+  "$schema": "https://raw.githubusercontent.com/trailhead-diy/trailhead/main/packages/create-cli/schema.json",
   "packageManager": "pnpm"
   // IDE will provide autocomplete and validation
 }
@@ -379,7 +379,7 @@ Use JSON Schema for IDE support:
 3. Check precedence:
    ```bash
    # Shows where config is loaded from
-   npx @esteban-url/create-cli config list --verbose
+   npx @trailhead/create-cli config list --verbose
    ```
 
 ### Conflicting Settings
@@ -389,7 +389,7 @@ Command line arguments always win:
 ```bash
 # Config file has packageManager: "npm"
 # But CLI argument overrides it
-npx @esteban-url/create-cli my-cli --package-manager pnpm
+npx @trailhead/create-cli my-cli --package-manager pnpm
 ```
 
 ### Permission Issues
@@ -436,10 +436,10 @@ Use different configs for different environments:
 
 ```bash
 # Development
-alias create-cli-dev='CREATE_CLI_CONFIG=~/.createclirc.dev.json npx @esteban-url/create-cli'
+alias create-cli-dev='CREATE_CLI_CONFIG=~/.createclirc.dev.json npx @trailhead/create-cli'
 
 # Production
-alias create-cli-prod='CREATE_CLI_CONFIG=~/.createclirc.prod.json npx @esteban-url/create-cli'
+alias create-cli-prod='CREATE_CLI_CONFIG=~/.createclirc.prod.json npx @trailhead/create-cli'
 ```
 
 ### 4. Regular Updates
@@ -469,9 +469,9 @@ alias update-cli-config='curl -o ~/.createclirc.json https://company.com/cli-con
 
 ```bash
 # ~/.bashrc or ~/.zshrc
-alias newcli='npx @esteban-url/create-cli'
-alias newlib='npx @esteban-url/create-cli --type library'
-alias newmono='npx @esteban-url/create-cli --type monorepo-package'
+alias newcli='npx @trailhead/create-cli'
+alias newlib='npx @trailhead/create-cli --type library'
+alias newmono='npx @trailhead/create-cli --type monorepo-package'
 ```
 
 ### With Makefiles
@@ -479,14 +479,14 @@ alias newmono='npx @esteban-url/create-cli --type monorepo-package'
 ```makefile
 .PHONY: new-cli
 new-cli:
-	@npx @esteban-url/create-cli $(name) \
+	@npx @trailhead/create-cli $(name) \
 		--package-manager pnpm \
 		--features config,testing \
 		--include-docs
 
 .PHONY: new-package
 new-package:
-	@npx @esteban-url/create-cli packages/$(name) \
+	@npx @trailhead/create-cli packages/$(name) \
 		--type monorepo-package \
 		--skip-install
 ```
@@ -495,4 +495,4 @@ new-package:
 
 - Explore [Custom Templates](../../how-to/customize-templates)
 - Learn about [Custom Prompts](../../how-to/custom-prompts)
-- Review [Configuration Schema](../../../cli/reference/config)
+- Review [Configuration API](/docs/@trailhead.config.md)

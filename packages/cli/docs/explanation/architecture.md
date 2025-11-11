@@ -1,7 +1,7 @@
 ---
 type: explanation
 title: 'Understanding the CLI Framework Architecture'
-description: 'Deep dive into the architectural principles and design patterns that make @esteban-url/cli lightweight, testable, and maintainable'
+description: 'Deep dive into the architectural principles and design patterns that make @trailhead/cli lightweight, testable, and maintainable'
 prerequisites:
   - 'Basic understanding of functional programming'
   - 'Familiarity with TypeScript'
@@ -14,7 +14,7 @@ related:
 
 # Understanding the CLI Framework Architecture
 
-@esteban-url/cli uses functional programming principles, explicit error handling, and modular organization.
+@trailhead/cli uses functional programming principles, explicit error handling, and modular organization.
 
 ## Overview
 
@@ -43,7 +43,7 @@ This approach has significant drawbacks:
 
 ### Why This Architecture?
 
-@esteban-url/cli addresses these problems through **subpath exports** that create clear module boundaries:
+@trailhead/cli addresses these problems through **subpath exports** that create clear module boundaries:
 
 ```json
 {
@@ -148,7 +148,7 @@ These concepts form a cohesive system: modular exports enable targeted imports, 
 
 ## Mental Models
 
-### Think of It Like...
+### Think of It Like
 
 The architecture is like a **well-organized toolbox** where:
 
@@ -198,8 +198,8 @@ The architecture is like a **well-organized toolbox** where:
 When building a CLI that processes files, you only import what you need:
 
 ```typescript
-import { createCommand } from '@esteban-url/trailhead-cli/command'
-import { readFile, writeFile } from '@esteban-url/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/trailhead-cli/command'
+import { readFile, writeFile } from '@trailhead/trailhead-cli/filesystem'
 
 // Only file and command modules are bundled
 ```
@@ -223,36 +223,36 @@ The Result type system enables clean error propagation without losing context or
 ## Module Dependency Graph
 
 ```
-@esteban-url/trailhead-cli (main)
+@trailhead/trailhead-cli (main)
 ├── Only exports: Ok, Err, isOk, isErr, createCLI
 └── No dependencies on other modules
 
-@esteban-url/trailhead-cli/core
+@trailhead/trailhead-cli/core
 ├── Exports: Error handling, validation, logging
 └── No dependencies on other modules
 
-@esteban-url/trailhead-cli/command
+@trailhead/trailhead-cli/command
 ├── Exports: Command creation and execution
 └── Depends on: Result types from main
 
-@esteban-url/trailhead-cli/filesystem
+@trailhead/trailhead-cli/filesystem
 ├── Exports: File operations
 └── Depends on: Result types from main
 
-@esteban-url/trailhead-cli/config
+@trailhead/trailhead-cli/config
 ├── Exports: Configuration management
 ├── Depends on: Result types from main
 └── Re-exports: zod
 
-@esteban-url/trailhead-cli/prompts
+@trailhead/trailhead-cli/prompts
 ├── Exports: User interaction
 └── Re-exports: @inquirer/prompts
 
-@esteban-url/trailhead-cli/testing
+@trailhead/trailhead-cli/testing
 ├── Exports: Test utilities
 └── Can mock any module
 
-@esteban-url/trailhead-cli/utils
+@trailhead/trailhead-cli/utils
 ├── Exports: Styling, spinners, stats
 └── Standalone utilities
 ```
@@ -327,8 +327,8 @@ Potential areas for enhancement include:
 
 ### Technical Details
 
-- [API Reference](../../reference/core.md)- Complete function documentation
-- [Type Definitions](../../reference/types.md)- TypeScript interface specifications
+- [CLI API Reference](/docs/@trailhead.cli.md) - Complete function documentation
+- [Core API Reference](/docs/@trailhead.core.md) - TypeScript type definitions
 
 ## Discussion
 
@@ -338,4 +338,4 @@ The Result type system, while more verbose than exceptions, creates more reliabl
 
 ---
 
-**Questions?** The architecture involves several complex concepts working together. Feel free to discuss in the [GitHub Discussions](https://github.com/esteban-url/trailhead/discussions) or [Discord community](https://discord.gg/trailhead).
+**Questions?** The architecture involves several complex concepts working together. Feel free to discuss in the [GitHub Discussions](https://github.com/trailhead-diy/trailhead/discussions).

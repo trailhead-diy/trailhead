@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { createOkResult, assertOk, unwrapOk } from '@esteban-url/core/testing'
+ * import { createOkResult, assertOk, unwrapOk } from '@trailhead/core/testing'
  *
  * // Create test Results
  * const successResult = createOkResult('test-value')

@@ -1,6 +1,6 @@
 import { promises as fs, constants } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 import { glob } from 'glob'
 import { mapNodeError, createFileSystemError } from './errors.js'
 import { sortFileEntries, needsFileStats, applySortingWithStats } from './utils/sorting.js'
@@ -34,7 +34,7 @@ import type {
  *
  * @example
  * ```typescript
- * import { defaultFSConfig, readFile } from '@esteban-url/fs'
+ * import { defaultFSConfig, readFile } from '@trailhead/fs'
  *
  * // Use defaults
  * const reader = readFile() // uses defaultFSConfig

@@ -1,12 +1,12 @@
 {
-  "name": "@esteban-url/config",
-  "version": "1.0.0",
+  "name": "@trailhead/config",
+  "version": "1.0.1",
   "description": "Enhanced Zod-powered configuration management for CLI applications",
   "type": "module",
   "private": false,
+  "author": "Esteban Rojas (Trailhead DIY)",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "exports": {
     ".": {
@@ -57,20 +57,25 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@esteban-url/core": "workspace:*",
-    "@esteban-url/fs": "workspace:*",
-    "@esteban-url/validation": "workspace:*",
+    "@trailhead/core": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/validation": "workspace:*",
     "consola": "^3.4.2"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.7",
     "tsup": "^8.5.0",
-    "typescript": "^5.7.3",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "sideEffects": false,
   "keywords": [
     "configuration",
     "config",
@@ -80,11 +85,14 @@
     "cli",
     "typescript"
   ],
-  "author": "Esteban Borai",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/esteban-url/trailhead.git",
+    "url": "git+https://github.com/trailhead-diy/trailhead.git",
     "directory": "packages/config"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/trailhead-diy/trailhead/issues"
+  },
+  "homepage": "https://github.com/trailhead-diy/trailhead#readme"
 }

@@ -7,26 +7,24 @@ import type { TemplateContext } from './types.js'
 export function createTemplateContext(config: ProjectConfig): TemplateContext {
   const isMonorepo = false // No monorepo templates in simplified CLI generator
   const hasTypeScript = true // All templates use TypeScript
-  const _isAdvanced = config.features?.testing || config.features?.docs || config.features?.cicd
+  const _isAdvanced = config.features?.testing || config.features?.cicd
 
   return {
     projectName: config.projectName,
     packageName: sanitizePackageName(config.projectName),
-    description: `CLI application built with @esteban-url/cli`,
-    author: 'Your Name',
-    email: 'your.email@example.com',
-    license: 'MIT',
+    description: config.description || `CLI application built with @trailhead/cli`,
+    author: config.author?.name || 'Your Name',
+    email: config.author?.email || 'your.email@example.com',
+    license: config.license || 'MIT',
     version: '0.1.0',
     packageManager: config.packageManager,
     currentYear: new Date().getFullYear(),
-    hasDocs: config.includeDocs,
     features: {
       core: true,
       config: config.features?.config,
       validation: config.features?.validation,
       testing: config.features?.testing,
-      docs: config.features?.docs,
-      examples: config.features?.testing || config.features?.docs, // Enable examples if testing or docs are enabled
+      examples: config.features?.testing, // Enable examples if testing is enabled
       cicd: config.features?.cicd,
     },
 
@@ -86,7 +84,6 @@ export function createTemplateContext(config: ProjectConfig): TemplateContext {
     FILESIZE_PRIORITY: 6,
     TESTS_PRIORITY: 7,
 
-    DOCS_VALIDATION: config.includeDocs,
     CHANGESET_REMINDER: isMonorepo,
     CONVENTIONAL_COMMITS: true,
     LOCKFILE_VALIDATION: config.packageManager === 'pnpm',

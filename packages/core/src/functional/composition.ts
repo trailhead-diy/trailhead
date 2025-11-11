@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { pipe, flow } from '@esteban-url/core'
+ * import { pipe, flow } from '@trailhead/core'
  *
  * // Using pipe for data transformation
  * const result = pipe(

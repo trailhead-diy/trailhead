@@ -34,15 +34,17 @@
   },
   "dependencies": {
 {{#if IS_MONOREPO}}
-    "@esteban-url/cli": "workspace:*",
-    "@esteban-url/core": "workspace:*",
-    "consola": "^3.4.2"{{#if features.config}},
-    "zod": "^3.22.4"{{/if}}
+    "@trailhead/cli": "workspace:*",
+    "@trailhead/core": "workspace:*"{{#if features.config}},
+    "@trailhead/config": "workspace:*",
+    "@trailhead/fs": "workspace:*",
+    "@trailhead/validation": "workspace:*"{{/if}}
 {{else}}
-    "@esteban-url/cli": "^0.1.0",
-    "@esteban-url/core": "^0.1.0",
-    "consola": "^3.4.2"{{#if features.config}},
-    "zod": "^3.22.4"{{/if}}
+    "@trailhead/cli": "^1.0.0",
+    "@trailhead/core": "^1.0.0"{{#if features.config}},
+    "@trailhead/config": "^1.0.0",
+    "@trailhead/fs": "^1.0.0",
+    "@trailhead/validation": "^1.0.0"{{/if}}
 {{/if}}
   },
   "devDependencies": {
@@ -87,5 +89,14 @@
     "url": "https://github.com/{{author}}/{{packageName}}.git"
   },
   "author": "{{author}} <{{email}}>",
-  "license": "{{license}}"
+  "license": "{{license}}",
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "format": ["esm"],
+    "dts": false,
+    "sourcemap": true,
+    "target": "node18",
+    "clean": false,
+    "minify": false
+  }
 }

@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@trailhead/core'
 
 // ========================================
 // Configuration Types

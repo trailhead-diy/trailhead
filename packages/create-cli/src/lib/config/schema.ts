@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ok, err, createCoreError, type Result } from '@esteban-url/core'
+import { ok, err, createCoreError, type Result } from '@trailhead/core'
 import type { ProjectConfig } from './types.js'
 
 /**
@@ -73,7 +73,6 @@ export const featuresSchema = z.object({
   config: z.boolean().optional(),
   validation: z.boolean().optional(),
   testing: z.boolean().optional(),
-  docs: z.boolean().optional(),
   cicd: z.boolean().optional(),
 })
 
@@ -98,7 +97,6 @@ export const modernProjectConfigSchema = z.object({
   ide: ideSchema,
 
   // Generation options
-  includeDocs: z.boolean().default(false),
   dryRun: z.boolean().default(false),
   force: z.boolean().default(false),
   verbose: z.boolean().default(false),
@@ -113,7 +111,6 @@ export const configFileSchema = z.object({
   nodeVersion: nodeVersionSchema,
   typescript: z.boolean(),
   ide: ideSchema,
-  includeDocs: z.boolean(),
 })
 
 // Preset configuration schema for templates
@@ -125,7 +122,6 @@ export const presetConfigSchema = z.object({
   packageManager: packageManagerSchema.optional(),
   nodeVersion: nodeVersionSchema.optional(),
   ide: ideSchema.optional(),
-  includeDocs: z.boolean().optional(),
 })
 
 // Type exports
@@ -236,7 +232,6 @@ export function createConfigFile(config: ProjectConfig): ConfigFile {
     nodeVersion: config.nodeVersion,
     typescript: config.typescript,
     ide: config.ide,
-    includeDocs: config.includeDocs,
   }
 }
 
@@ -253,7 +248,6 @@ export function mergePresetWithConfig(
     packageManager: userConfig.packageManager || preset.packageManager, // User overrides preset
     nodeVersion: userConfig.nodeVersion || preset.nodeVersion, // User overrides preset
     ide: userConfig.ide || preset.ide, // User overrides preset
-    includeDocs: userConfig.includeDocs ?? preset.includeDocs,
     features: {
       core: true,
       ...preset.features,
@@ -322,7 +316,6 @@ export function generateConfigJsonSchema() {
           config: { type: 'boolean' },
           validation: { type: 'boolean' },
           testing: { type: 'boolean' },
-          docs: { type: 'boolean' },
           cicd: { type: 'boolean' },
         },
         required: ['core'],
@@ -341,10 +334,6 @@ export function generateConfigJsonSchema() {
         type: 'string',
         enum: ['vscode', 'none'],
         description: 'IDE configuration',
-      },
-      includeDocs: {
-        type: 'boolean',
-        description: 'Include documentation',
       },
     },
     required: [

@@ -1,118 +1,121 @@
-import { createCommand, type CommandOptions } from '@esteban-url/cli/command'
-import { ok, err, createCoreError } from '@esteban-url/core'
-import { consola } from 'consola'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
-import { resolve } from 'path'
-import { configSchema, type Config } from '../lib/config-schema.js'
+import { createCommand } from '@trailhead/cli/command'
+import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
+import { confirm, select, input } from '@trailhead/cli/prompts'
+import { loadConfig, saveConfig } from '../lib/config.js'
+import type { Config } from '../lib/config-schema.js'
 
-interface ConfigCommandOptions extends CommandOptions {
-  init?: boolean
-  validate?: boolean
-  show?: boolean
-}
-
-export const configCommand = createCommand<ConfigCommandOptions>({
+/**
+ * Configuration management command
+ *
+ * This is the default command that runs when no arguments are provided.
+ * It displays the current configuration and allows interactive editing.
+ */
+export const configCommand = createCommand({
   name: 'config',
-  description: 'Manage application configuration',
-  options: [
-    {
-      flags: '--init',
-      description: 'Initialize a new configuration file',
-      type: 'boolean'
-    },
-    {
-      flags: '--validate',
-      description: 'Validate existing configuration',
-      type: 'boolean'
-    },
-    {
-      flags: '--show',
-      description: 'Show current configuration',
-      type: 'boolean'
-    }
-  ],
-  async action(options, context) {
-    const configPath = resolve('config.json')
-
-    if (options.init) {
-      return initConfig(configPath)
+  description: 'View and edit application configuration',
+  action: async (_options, context): Promise<Result<void, CoreError>> => {
+    // Load current configuration
+    const configResult = await loadConfig()
+    if (configResult.isErr()) {
+      context.logger.error(`Failed to load config: ${configResult.error.message}`)
+      return err(configResult.error)
     }
 
-    if (options.validate) {
-      return validateConfig(configPath)
-    }
+    const config = configResult.value
 
-    if (options.show) {
-      return showConfig(configPath)
-    }
+    // Display current configuration
+    context.logger.info('Current configuration:')
+    context.logger.info('')
+    context.logger.info(`  Name:        ${config.name}`)
+    context.logger.info(`  Version:     ${config.version}`)
+    context.logger.info(`  Environment: ${config.environment}`)
+    context.logger.info(`  Theme color: ${config.theme.color}`)
+    context.logger.info(`  Debug:       ${config.settings.debug}`)
+    context.logger.info(`  Verbose:     ${config.settings.verbose}`)
+    context.logger.info('')
 
-    context.logger.info('Use --init, --validate, or --show to manage configuration')
-    return ok(undefined)
-  }
-})
+    // Ask if user wants to edit
+    const shouldEdit = await confirm({
+      message: 'Would you like to edit the configuration?',
+      default: false,
+    })
 
-function initConfig(configPath: string) {
-  try {
-    if (existsSync(configPath)) {
-      consola.info('Configuration file already exists. Use --validate to check it.')
+    if (!shouldEdit) {
       return ok(undefined)
     }
 
-    const defaultConfig: Config = {
-      name: '{{packageName}}',
-      version: '{{version}}',
-      environment: 'development',
+    // Prompt for each configuration value
+    const name = await input({
+      message: 'Name:',
+      default: config.name,
+      validate: (value: string) => value.length > 0 || 'Name is required',
+    })
+
+    const version = await input({
+      message: 'Version:',
+      default: config.version,
+      validate: (value: string) =>
+        /^\d+\.\d+\.\d+/.test(value) || 'Version must be in semver format (e.g., 1.0.0)',
+    })
+
+    const environment = await select({
+      message: 'Environment:',
+      choices: [
+        { name: 'Development', value: 'development' },
+        { name: 'Production', value: 'production' },
+        { name: 'Test', value: 'test' },
+      ],
+      default: config.environment,
+    })
+
+    const color = await select({
+      message: 'Theme color:',
+      choices: [
+        { name: 'Blue', value: 'blue' },
+        { name: 'Green', value: 'green' },
+        { name: 'Red', value: 'red' },
+        { name: 'Yellow', value: 'yellow' },
+        { name: 'Magenta', value: 'magenta' },
+        { name: 'Cyan', value: 'cyan' },
+      ],
+      default: config.theme.color,
+    })
+
+    const debug = await confirm({
+      message: 'Enable debug mode?',
+      default: config.settings.debug,
+    })
+
+    const verbose = await confirm({
+      message: 'Enable verbose output?',
+      default: config.settings.verbose,
+    })
+
+    // Create updated configuration
+    const updatedConfig: Config = {
+      name,
+      version,
+      environment: environment as Config['environment'],
+      theme: {
+        color: color as Config['theme']['color'],
+      },
       settings: {
-        debug: false,
-        verbose: false
-      }
+        debug,
+        verbose,
+      },
     }
 
-    writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2))
-    consola.success(`Configuration file created at ${configPath}`)
+    // Save configuration
+    const saveResult = await saveConfig(updatedConfig)
+    if (saveResult.isErr()) {
+      context.logger.error(`Failed to save config: ${saveResult.error.message}`)
+      return err(saveResult.error)
+    }
+
+    context.logger.success('Configuration saved successfully!')
+    context.logger.info('')
+    context.logger.info('Note: Restart the CLI to apply name/version changes')
+
     return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_INIT_FAILED', 'CLI_ERROR', 'Failed to initialize configuration', { recoverable: true }))
-  }
-}
-
-function validateConfig(configPath: string) {
-  try {
-    if (!existsSync(configPath)) {
-      return err(createCoreError('CONFIG_NOT_FOUND', 'CLI_ERROR', `Configuration file not found: ${configPath}`, { recoverable: true }))
-    }
-
-    const configData = readFileSync(configPath, 'utf-8')
-    const config = JSON.parse(configData)
-    const result = configSchema.safeParse(config)
-
-    if (!result.success) {
-      consola.error('Configuration validation failed:')
-      result.error.errors.forEach(error => {
-        consola.error(`  ${error.path.join('.')}: ${error.message}`)
-      })
-      return err(createCoreError('CONFIG_INVALID', 'CLI_ERROR', 'Configuration validation failed', { recoverable: true }))
-    }
-
-    consola.success('Configuration is valid ✓')
-    return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_VALIDATION_FAILED', 'CLI_ERROR', 'Failed to validate configuration', { recoverable: true }))
-  }
-}
-
-function showConfig(configPath: string) {
-  try {
-    if (!existsSync(configPath)) {
-      return err(createCoreError('CONFIG_NOT_FOUND', 'CLI_ERROR', `Configuration file not found: ${configPath}`, { recoverable: true }))
-    }
-
-    const configData = readFileSync(configPath, 'utf-8')
-    const config = JSON.parse(configData)
-    consola.info('Current configuration:')
-    consola.box(JSON.stringify(config, null, 2))
-    return ok(undefined)
-  } catch (_error) {
-    return err(createCoreError('CONFIG_SHOW_FAILED', 'CLI_ERROR', 'Failed to show configuration', { recoverable: true }))
-  }
-}
+  },
+})

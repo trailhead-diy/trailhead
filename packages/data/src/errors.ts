@@ -12,8 +12,8 @@ import {
   mapLibraryError as coreMapLibraryError,
   mapValidationError as coreMapValidationError,
   type CoreError,
-} from '@esteban-url/core'
-import type { FileSystemError } from '@esteban-url/fs'
+} from '@trailhead/core'
+import type { FileSystemError } from '@trailhead/fs'
 
 // ========================================
 // Standardized Error Factory
@@ -336,6 +336,6 @@ export const mapFileSystemError = (fsError: FileSystemError, operation: string):
 
 /**
  * Base error factory for creating custom data errors
- * @see createErrorFactory from @esteban-url/core
+ * @see createErrorFactory from @trailhead/core
  */
 export { createDataError }

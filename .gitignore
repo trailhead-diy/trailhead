@@ -12,13 +12,13 @@ dist/
 .next/
 out/
 build/
+.docusaurus/
 *.tsbuildinfo
 .turbo/
 *.bundled_*.mjs
 *.bundled_*.cjs
 tsup.config.bundled_*.mjs
 tsup.config.bundled_*.cjs
-.docusaurus/
 
 # Misc
 .DS_Store
@@ -65,3 +65,5 @@ packages/create-trailhead-cli/test-temp/
 packages/create-trailhead-cli/test-debug/
 hhh.html
 .temp-syntax-*
+.typedoc
+my-test-project/

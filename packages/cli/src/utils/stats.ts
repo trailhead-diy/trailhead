@@ -1,4 +1,4 @@
-import { topN, bottomN, sortBy, orderBy } from '@esteban-url/sort'
+import { topN, bottomN, sortBy, orderBy } from '@trailhead/sort'
 
 /**
  * Statistics tracking interface for CLI operations

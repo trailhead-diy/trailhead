@@ -14,6 +14,10 @@ const { red: errorColor, yellow: warning, blue: info, gray: muted, bold } = colo
 // Error Formatting System
 // ========================================
 
+/**
+ * Error formatter interface for converting validation errors to user-friendly output.
+ * Supports multiple output formats including text, JSON, and interactive displays.
+ */
 export interface ValidationErrorFormatter {
   readonly formatError: (error: ConfigValidationError) => string
   readonly formatErrors: (errors: readonly ConfigValidationError[]) => string
@@ -22,6 +26,10 @@ export interface ValidationErrorFormatter {
   readonly formatJson: (error: ConfigValidationError) => ValidationErrorJson
 }
 
+/**
+ * Interactive error information for prompts and CLI displays.
+ * Provides structured data for building interactive error displays with suggestions and examples.
+ */
 export interface InteractiveErrorInfo {
   readonly title: string
   readonly description: string
@@ -31,6 +39,10 @@ export interface InteractiveErrorInfo {
   readonly learnMoreUrl?: string
 }
 
+/**
+ * JSON representation of validation errors for API responses and logging.
+ * Serializable format suitable for transmission and storage.
+ */
 export interface ValidationErrorJson {
   readonly field: string
   readonly path: readonly string[]
@@ -43,6 +55,10 @@ export interface ValidationErrorJson {
   readonly constraints?: Record<string, unknown>
 }
 
+/**
+ * Configuration options for error formatters.
+ * Controls output styling, verbosity, and behavior.
+ */
 export interface FormatterOptions {
   readonly includeColors?: boolean
   readonly includeExamples?: boolean
@@ -53,10 +69,15 @@ export interface FormatterOptions {
 }
 
 // ========================================
-// ========================================
 // Helper Functions
 // ========================================
 
+/**
+ * Converts validation error to JSON format for serialization.
+ *
+ * @param error - Configuration validation error to convert
+ * @returns JSON representation of the error
+ */
 const formatJson = (error: ConfigValidationError): ValidationErrorJson => ({
   field: error.field || 'unknown',
   path: error.path,
@@ -73,6 +94,21 @@ const formatJson = (error: ConfigValidationError): ValidationErrorJson => ({
 // Default Formatter Implementation
 // ========================================
 
+/**
+ * Creates a validation error formatter with customizable options.
+ *
+ * @param options - Formatting options for output customization
+ * @returns Configured error formatter instance
+ *
+ * @example
+ * ```typescript
+ * const formatter = createValidationErrorFormatter({
+ *   includeColors: true,
+ *   maxExamples: 3
+ * });
+ * console.log(formatter.formatError(error));
+ * ```
+ */
 export const createValidationErrorFormatter = (
   options: FormatterOptions = {}
 ): ValidationErrorFormatter => {
@@ -299,6 +335,13 @@ const groupErrorsByField = (errors: readonly ConfigValidationError[]): Record<st
 // Convenience Functions
 // ========================================
 
+/**
+ * Formats a single validation error with default or custom options.
+ *
+ * @param error - Validation error to format
+ * @param options - Optional formatting options
+ * @returns Formatted error string
+ */
 export const formatValidationError = (
   error: ConfigValidationError,
   options?: FormatterOptions
@@ -307,6 +350,13 @@ export const formatValidationError = (
   return formatter.formatError(error)
 }
 
+/**
+ * Formats multiple validation errors with summary and details.
+ *
+ * @param errors - Array of validation errors to format
+ * @param options - Optional formatting options
+ * @returns Formatted errors string with summary
+ */
 export const formatValidationErrors = (
   errors: readonly ConfigValidationError[],
   options?: FormatterOptions
@@ -315,6 +365,12 @@ export const formatValidationErrors = (
   return formatter.formatErrors(errors)
 }
 
+/**
+ * Converts validation errors to JSON array for API responses.
+ *
+ * @param errors - Array of validation errors to convert
+ * @returns Array of JSON error representations
+ */
 export const formatValidationErrorsJson = (
   errors: readonly ConfigValidationError[]
 ): ValidationErrorJson[] => {
@@ -322,6 +378,13 @@ export const formatValidationErrorsJson = (
   return errors.map((error) => formatter.formatJson(error))
 }
 
+/**
+ * Extracts configuration validation errors from various error types.
+ * Handles both direct validation errors and nested schema validation errors.
+ *
+ * @param error - Error object to extract validation errors from
+ * @returns Array of configuration validation errors
+ */
 export const extractValidationErrors = (error: unknown): ConfigValidationError[] => {
   if (isConfigValidationError(error)) {
     return [error]

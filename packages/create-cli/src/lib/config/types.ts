@@ -23,6 +23,15 @@ export interface ProjectConfig {
   projectName: string
   /** Absolute path where the project will be created */
   projectPath: string
+  /** Project description */
+  description?: string
+  /** Project author information */
+  author?: {
+    name: string
+    email: string
+  }
+  /** Project license */
+  license?: string
   /** Package manager for dependency installation */
   packageManager: PackageManager
   /** Feature flags */
@@ -31,7 +40,6 @@ export interface ProjectConfig {
     config?: boolean
     validation?: boolean
     testing?: boolean
-    docs?: boolean
     cicd?: boolean
   }
   /** Project type */
@@ -42,8 +50,6 @@ export interface ProjectConfig {
   typescript: boolean
   /** IDE configuration */
   ide: 'vscode' | 'none'
-  /** Whether to include documentation */
-  includeDocs: boolean
   /** Whether to run in dry-run mode (no actual file operations) */
   dryRun: boolean
   /** Whether to force overwrite existing directories */

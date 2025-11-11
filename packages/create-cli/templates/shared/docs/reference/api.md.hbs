@@ -494,7 +494,7 @@ Use `--verbose` for debug-level logging or `--quiet` to suppress non-error outpu
 ### Programmatic Usage
 
 ```typescript
-import { createCLI } from '@esteban-url/trailhead-cli'
+import { createCLI } from '@trailhead/trailhead-cli'
 import { myCommand } from './commands/my-command.js'
 
 const cli = createCLI({
@@ -511,7 +511,7 @@ await cli.run(['build', '--output', 'custom-dist'])
 ### Testing
 
 ```typescript
-import { createTestContext, runCLI } from '@esteban-url/trailhead-cli/testing'
+import { createTestContext, runCLI } from '@trailhead/trailhead-cli/testing'
 
 // Test commands
 const context = createTestContext()

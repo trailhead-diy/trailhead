@@ -1,4 +1,4 @@
-import type { Result, CoreError } from '@esteban-url/core'
+import type { Result, CoreError } from '@trailhead/core'
 import type { Logger } from '../utils/logger.js'
 
 // Simple FileSystem interface for CLI context

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ok, err } from '@esteban-url/core'
+import { ok, err } from '@trailhead/core'
 import { createValidationError, zodErrorToValidationError } from './errors.js'
 import type { ValidationResult, ValidatorFn, ValidationConfig, SchemaValidator } from './types.js'
 
@@ -10,7 +10,14 @@ export const defaultValidationConfig: ValidationConfig = {
   allowUnknown: false,
 } as const
 
-// Core validation utilities with dependency injection
+/**
+ * Creates a validator function from a Zod schema.
+ * Validates input values and returns Result with either validated data or error.
+ *
+ * @param schema - Zod schema to validate against
+ * @param _config - Optional validation configuration
+ * @returns Validator function that takes input and returns validation result
+ */
 export const createValidator =
   <T, R = T>(
     schema: z.ZodType<R>,
@@ -26,6 +33,13 @@ export const createValidator =
     return ok(result.data)
   }
 
+/**
+ * Creates a schema validator object with schema and validation function.
+ *
+ * @param schema - Zod schema to create validator from
+ * @param _config - Optional validation configuration
+ * @returns Schema validator with embedded schema and validate function
+ */
 export const createSchemaValidator = <T>(
   schema: z.ZodType<T>,
   _config: ValidationConfig = defaultValidationConfig
@@ -149,6 +163,21 @@ export const validateUrl =
     return ok(result.data)
   }
 
+/**
+ * Creates a phone number validator function.
+ * Validates US phone numbers in various formats (e.g., (555) 123-4567, 5551234567).
+ *
+ * @param _config - Optional validation configuration
+ * @returns Phone number validator function
+ *
+ * @example
+ * ```typescript
+ * const validator = validatePhoneNumber();
+ * validator('(555) 123-4567').isOk(); // true
+ * validator('5551234567').isOk(); // true
+ * validator('invalid').isErr(); // true
+ * ```
+ */
 export const validatePhoneNumber =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string> =>
   (phone: string): ValidationResult<string> => {
@@ -174,6 +203,14 @@ export const validatePhoneNumber =
     return ok(result.data)
   }
 
+/**
+ * Creates a string length validator with min/max constraints.
+ *
+ * @param min - Minimum required length
+ * @param max - Optional maximum allowed length
+ * @param _config - Optional validation configuration
+ * @returns String length validator function
+ */
 export const validateStringLength =
   (
     min: number,
@@ -210,6 +247,14 @@ export const validateStringLength =
     return ok(result.data)
   }
 
+/**
+ * Creates a number range validator with min/max bounds.
+ *
+ * @param min - Optional minimum value
+ * @param max - Optional maximum value
+ * @param _config - Optional validation configuration
+ * @returns Number range validator function
+ */
 export const validateNumberRange =
   (
     min?: number,
@@ -257,6 +302,12 @@ export const validateNumberRange =
     return ok(result.data)
   }
 
+/**
+ * Creates a required field validator that rejects null, undefined, and empty strings.
+ *
+ * @param _config - Optional validation configuration
+ * @returns Required field validator function
+ */
 export const validateRequired =
   <T>(_config: ValidationConfig = defaultValidationConfig): ValidatorFn<T | null | undefined, T> =>
   (value: T | null | undefined): ValidationResult<T> => {
@@ -272,6 +323,12 @@ export const validateRequired =
     return ok(result.data)
   }
 
+/**
+ * Creates a currency validator ensuring positive numbers with max 2 decimal places.
+ *
+ * @param _config - Optional validation configuration
+ * @returns Currency validator function
+ */
 export const validateCurrency =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<number> =>
   (value: number): ValidationResult<number> => {
@@ -300,6 +357,12 @@ export const validateCurrency =
     return ok(result.data)
   }
 
+/**
+ * Creates a date validator supporting ISO 8601 and YYYY-MM-DD formats.
+ *
+ * @param _config - Optional validation configuration
+ * @returns Date validator function that returns Date object
+ */
 export const validateDate =
   (_config: ValidationConfig = defaultValidationConfig): ValidatorFn<string, Date> =>
   (dateString: string): ValidationResult<Date> => {
@@ -363,7 +426,13 @@ export const validateDate =
     return ok(date)
   }
 
-// Composition utilities
+/**
+ * Creates an array validator that applies a validator to each element.
+ *
+ * @param validator - Validator function to apply to each array element
+ * @param _config - Optional validation configuration
+ * @returns Array validator function
+ */
 export const validateArray =
   <T, R = T>(
     validator: ValidatorFn<T, R>,
@@ -396,6 +465,13 @@ export const validateArray =
     return ok(validatedItems)
   }
 
+/**
+ * Creates an object validator that applies field-specific validators.
+ *
+ * @param validators - Map of field names to validator functions
+ * @param _config - Optional validation configuration
+ * @returns Object validator function
+ */
 export const validateObject =
   <T extends Record<string, any>>(
     validators: Partial<{ [K in keyof T]: ValidatorFn<T[K]> }>,
@@ -431,7 +507,13 @@ export const validateObject =
     return ok(validatedObj)
   }
 
-// Validation composition
+/**
+ * Composes two validators sequentially, passing output of first to second.
+ *
+ * @param first - First validator to apply
+ * @param second - Second validator to apply to first's output
+ * @returns Composed validator function
+ */
 export const composeValidators =
   <T, R1, R2>(first: ValidatorFn<T, R1>, second: ValidatorFn<R1, R2>): ValidatorFn<T, R2> =>
   (value: T): ValidationResult<R2> => {
@@ -441,6 +523,12 @@ export const composeValidators =
     return second(firstResult.value)
   }
 
+/**
+ * Creates a validator that succeeds if any of the provided validators succeed.
+ *
+ * @param validators - Array of validator functions to try
+ * @returns Combined validator using OR logic
+ */
 export const anyOf =
   <T>(...validators: ValidatorFn<T>[]): ValidatorFn<T> =>
   (value: T): ValidationResult<T> => {
@@ -460,6 +548,12 @@ export const anyOf =
     )
   }
 
+/**
+ * Creates a validator that succeeds only if all provided validators succeed.
+ *
+ * @param validators - Array of validator functions to apply
+ * @returns Combined validator using AND logic
+ */
 export const allOf =
   <T>(...validators: ValidatorFn<T>[]): ValidatorFn<T> =>
   (value: T): ValidationResult<T> => {
