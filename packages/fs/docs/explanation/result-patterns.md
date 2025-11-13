@@ -10,11 +10,11 @@ related:
 
 # Result Patterns in FileSystem Operations
 
-This document explains why @repo/fs uses Result types for error handling and how this design improves reliability and composability in filesystem operations.
+This document explains why @trailhead/fs uses Result types for error handling and how this design improves reliability and composability in filesystem operations.
 
 ## Overview
 
-The @repo/fs package uses Result types instead of throwing exceptions for error handling. This approach makes errors explicit, predictable, and composable, leading to more robust filesystem operations.
+The @trailhead/fs package uses Result types instead of throwing exceptions for error handling. This approach makes errors explicit, predictable, and composable, leading to more robust filesystem operations.
 
 ## Background
 
@@ -598,4 +598,4 @@ async function* processFiles(filePaths: string[]) {
 
 ---
 
-The Result pattern in @repo/fs represents a fundamental shift toward more reliable, testable, and maintainable filesystem operations. While it requires learning new patterns, the benefits in type safety, error handling, and code quality make it a worthwhile investment for modern TypeScript applications.
+The Result pattern in @trailhead/fs represents a fundamental shift toward more reliable, testable, and maintainable filesystem operations. While it requires learning new patterns, the benefits in type safety, error handling, and code quality make it a worthwhile investment for modern TypeScript applications.

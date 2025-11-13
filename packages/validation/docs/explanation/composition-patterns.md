@@ -1,20 +1,18 @@
 ---
 type: explanation
 title: 'Validator Composition Patterns'
-description: 'Understanding the design and benefits of composable validation in @repo/validation'
+description: 'Understanding the design and benefits of composable validation in @trailhead/validation'
 related:
   - /packages/validation/docs/how-to/validate-data.md
-  - /docs/explanation/result-types-pattern.md
-  - /docs/explanation/functional-architecture
 ---
 
 # Validator Composition Patterns
 
-This document explains the design philosophy behind @repo/validation's composable validator system and how it enables flexible, reusable validation logic.
+This document explains the design philosophy behind @trailhead/validation's composable validator system and how it enables flexible, reusable validation logic.
 
 ## Overview
 
-The @repo/validation package is built around the principle of composability—small, focused validators that can be combined to create complex validation logic. This approach promotes code reuse, testability, and maintainability.
+The @trailhead/validation package is built around the principle of composability—small, focused validators that can be combined to create complex validation logic. This approach promotes code reuse, testability, and maintainability.
 
 ## Background
 
@@ -667,4 +665,4 @@ const suggestedValidator = suggest(
 
 ---
 
-The composition patterns in @repo/validation provide a powerful foundation for building flexible, reusable validation logic. By following functional programming principles and leveraging Result types, these patterns enable developers to create complex validation rules from simple, testable building blocks.
+The composition patterns in @trailhead/validation provide a powerful foundation for building flexible, reusable validation logic. By following functional programming principles and leveraging Result types, these patterns enable developers to create complex validation rules from simple, testable building blocks.

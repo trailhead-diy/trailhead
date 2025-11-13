@@ -7,14 +7,12 @@ prerequisites:
   - Understanding of Zod schemas
   - Basic CLI structure
 related:
-  - /packages/config/docs/reference/api
-  - /docs/how-to/define-schemas
-  - /docs/tutorials/config-getting-started
+  - /docs/@trailhead.config.md
 ---
 
 # How to Add Configuration to Your CLI
 
-This guide shows you how to add configuration management to your CLI application using @repo/config.
+This guide shows you how to add configuration management to your CLI application using @trailhead/config.
 
 ## Prerequisites
 
@@ -27,7 +25,7 @@ This guide shows you how to add configuration management to your CLI application
 Create a configuration schema and manager:
 
 ```typescript
-import { createConfigManager } from '@repo/config'
+import { createConfigManager } from '@trailhead/config'
 import { z } from 'zod'
 
 const configSchema = z.object({
@@ -54,7 +52,7 @@ Integrate configuration into your CLI commands:
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { createConfigManager } from '@repo/config'
+import { createConfigManager } from '@trailhead/config'
 import { z } from 'zod'
 
 const configSchema = z.object({

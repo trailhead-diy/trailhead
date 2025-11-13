@@ -66,7 +66,7 @@ pnpm add @trailhead/cli --workspace
 - File operations should use `@trailhead/fs` directly
 - This keeps your bundle size minimal
 
-See the [Import Patterns Guide](../../how-to/import-patterns.md)for complete details.
+See the [Import Patterns Guide](../how-to/import-patterns.md) for complete details.
 
 ## Your First CLI Application
 
@@ -153,14 +153,14 @@ Every command receives a context with useful utilities:
 ```typescript
 import type { CommandContext } from '@trailhead/cli/command'
 
-async const myAction = async (options: any, context: CommandContext) => {
+const myAction = async (options: any, context: CommandContext) => {
   // Logger for output
   context.logger.info('Processing...')
   context.logger.success('Done!')
   context.logger.error('Failed!')
 
   // File system access via fs package
-  // Note: Use @repo/fs package for file operations
+  // Note: Use @trailhead/fs package for file operations
   const result = await context.fs.readFile('config.json')
 
   // Project root directory
@@ -181,10 +181,10 @@ You've successfully built your first CLI application! You now understand:
 
 Now that you've completed this tutorial, explore these guides to extend your CLI:
 
-- [How to Add File Operations](../../how-to/add-file-operations.md)- Read, write, and process files
-- [How to Add Interactive Prompts](../../how-to/add-interactive-prompts.md)- Make your CLI interactive
-- [How to Add Configuration](../../how-to/add-configuration.md)- Add configuration management
-- [How to Test CLI Applications](../../how-to/test-cli-applications.md)- Write tests for your CLI
+- [How to Add File Operations](../how-to/add-file-operations.md) - Read, write, and process files
+- [How to Add Interactive Prompts](../how-to/add-interactive-prompts.md) - Make your CLI interactive
+- [How to Add Configuration](../how-to/add-configuration.md) - Add configuration management
+- [How to Test CLI Applications](../how-to/test-cli-applications.md) - Write tests for your CLI
 
 ## Complete Example
 
@@ -194,7 +194,7 @@ Here's a minimal but complete CLI application:
 #!/usr/bin/env node
 import { ok, err, createCLI } from '@trailhead/cli'
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 import { prompt } from '@trailhead/cli/prompts'
 
 const mainCommand = createCommand({
@@ -235,6 +235,6 @@ cli.run(process.argv)
 
 ## Learn More
 
-- [Import Patterns](../../how-to/import-patterns.md)- Master the import system
-- [CLI API Documentation](/docs/@trailhead.cli.md) - Complete API documentation
-- [Testing Guide](../../how-to/test-cli-applications.md)- Test your CLI
+- [Import Patterns](../how-to/import-patterns.md) - Master the import system
+- [CLI API Documentation](../../../../docs/@trailhead.cli.md) - Complete API documentation
+- [Testing Guide](../how-to/test-cli-applications.md) - Test your CLI

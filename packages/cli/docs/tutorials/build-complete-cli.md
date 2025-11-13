@@ -320,7 +320,7 @@ import { createCommand } from '@trailhead/cli/command'
 import { displaySummary } from '@trailhead/cli/command'
 import { TaskStorage } from '../lib/storage'
 import { config } from '../config/schema'
-import chalk from 'chalk'
+import { colors } from '@trailhead/cli/utils'
 
 export const listCommand = createCommand({
   name: 'list',
@@ -373,23 +373,23 @@ export const listCommand = createCommand({
 
     // Display pending tasks
     if (pending.length > 0) {
-      context.logger.info(chalk.bold('\n📋 Pending Tasks:\n'))
+      context.logger.info(colors.bold('\n📋 Pending Tasks:\n'))
       pending.forEach((task) => {
-        const tags = task.tags?.length ? chalk.dim(` [${task.tags.join(', ')}]`) : ''
-        context.logger.info(`  ${chalk.yellow('○')} [${task.id}] ${task.title}${tags}`)
+        const tags = task.tags?.length ? colors.dim(` [${task.tags.join(', ')}]`) : ''
+        context.logger.info(`  ${colors.yellow('○')} [${task.id}] ${task.title}${tags}`)
         if (task.description) {
-          context.logger.info(`    ${chalk.dim(task.description)}`)
+          context.logger.info(`    ${colors.dim(task.description)}`)
         }
       })
     }
 
     // Display completed tasks
     if (completed.length > 0 && (options.all || cfg.showCompleted)) {
-      context.logger.info(chalk.bold('\n✅ Completed Tasks:\n'))
+      context.logger.info(colors.bold('\n✅ Completed Tasks:\n'))
       completed.forEach((task) => {
-        const tags = task.tags?.length ? chalk.dim(` [${task.tags.join(', ')}]`) : ''
+        const tags = task.tags?.length ? colors.dim(` [${task.tags.join(', ')}]`) : ''
         context.logger.info(
-          `  ${chalk.green('✓')} [${task.id}] ${chalk.strikethrough(task.title)}${tags}`
+          `  ${colors.green('✓')} [${task.id}] ${colors.strikethrough(task.title)}${tags}`
         )
       })
     }

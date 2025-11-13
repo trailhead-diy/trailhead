@@ -48,9 +48,9 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 
 **Best for:** Adding features, fixing bugs, improving documentation
 
-→ **Start here:** [Development Workflow](./CLAUDE.md)  
-→ **Architecture:** [Functional Architecture](./docs/explanation/functional-architecture.md)  
-→ **Documentation:** [Writing Guide](./docs/reference/writing-guide.md)
+→ **Start here:** [Development Workflow](./CLAUDE.md)
+→ **Architecture:** [Architecture Overview](./packages/cli/docs/explanation/architecture.md)
+→ **Design:** [Design Decisions](./packages/cli/docs/explanation/design-decisions.md)
 
 ---
 
@@ -61,9 +61,11 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 ```bash
 # Install the functional CLI framework
 pnpm add @trailhead/cli
+```
 
+```typescript
 # Create your first command
-import { createCommand } from '@trailhead/cli';
+import { createCommand } from '@trailhead/cli/command';
 
 const myCommand = createCommand({
   name: 'build',
@@ -421,13 +423,13 @@ pnpm dev
 
 ### 📚 Package Documentation
 
-| Package             | Quick Start                                                                 | How-to Guides                                                                | API Reference                                                     |
-| ------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| **CLI Framework**   | [Getting Started](./packages/cli/docs/tutorials/getting-started.md)         | [Build Complete CLI](./packages/cli/docs/tutorials/build-complete-cli.md)    | [Command API](./packages/cli/docs/reference/command.md)           |
-| **Create CLI**      | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Template API](./packages/create-cli/docs/reference/templates.md) |
-| **Data Processing** | [Data Pipeline Tutorial](./docs/tutorials/data-pipeline-processing.md)      | [Convert Data Formats](./docs/how-to/convert-data-formats.md)                | [Data API](./packages/data/docs/reference/api.md)                 |
-| **File Operations** | [File Operations Basics](./docs/tutorials/file-operations-basics.md)        | [Atomic File Operations](./docs/how-to/perform-atomic-file-operations.md)    | [FS API](./packages/fs/docs/reference/api.md)                     |
-| **Validation**      | [Form Validation Guide](./docs/tutorials/form-validation-guide.md)          | [Create Custom Validators](./docs/how-to/create-custom-validators.md)        | [Validation API](./packages/validation/docs/reference/api.md)     |
+| Package             | Quick Start                                                                 | How-to Guides                                                                | API Reference                           |
+| ------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------- |
+| **CLI Framework**   | [Getting Started](./packages/cli/docs/tutorials/getting-started.md)         | [Build Complete CLI](./packages/cli/docs/tutorials/build-complete-cli.md)    | [CLI API](./docs/@trailhead.cli.md)     |
+| **Create CLI**      | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Create CLI API](./docs/@trailhead.create-cli.md) |
+| **Data Processing** | [Process Data Files](./packages/data/docs/how-to/process-data-files.md)     | [Format Detection](./packages/data/docs/explanation/format-detection.md)     | [Data API](./docs/@trailhead.data.md)   |
+| **File Operations** | [File Operations](./packages/fs/docs/how-to/file-operations.md)             | [Result Patterns](./packages/fs/docs/explanation/result-patterns.md)         | [FS API](./docs/@trailhead.fs.md)       |
+| **Validation**      | [Validate Data](./packages/validation/docs/how-to/validate-data.md)         | [Composition Patterns](./packages/validation/docs/explanation/composition-patterns.md) | [Validation API](./docs/@trailhead.validation.md) |
 
 ### 🧭 Find What You Need
 
@@ -435,34 +437,38 @@ pnpm dev
 
 - [Build Your First CLI](./packages/cli/docs/tutorials/getting-started.md)
 - [Complete CLI Application](./packages/cli/docs/tutorials/build-complete-cli.md)
-- [Data Processing Pipeline](./docs/tutorials/data-pipeline-processing.md)
-- [File Operations Fundamentals](./docs/tutorials/file-operations-basics.md)
+- [Generate a CLI Project](./packages/create-cli/docs/tutorials/getting-started.md)
 
 **Problem-Solving (How-to Guides)** - Specific solutions for common tasks
 
 - [Handle CLI Errors](./packages/cli/docs/how-to/handle-errors-in-cli.md)
 - [Test CLI Applications](./packages/cli/docs/how-to/test-cli-applications.md)
-- [Convert Data Formats](./docs/how-to/convert-data-formats.md)
-- [Create Custom Validators](./docs/how-to/create-custom-validators.md)
+- [Add File Operations](./packages/cli/docs/how-to/add-file-operations.md)
+- [Process Data Files](./packages/data/docs/how-to/process-data-files.md)
+- [Validate Data](./packages/validation/docs/how-to/validate-data.md)
 
-**Reference (API Docs)** - Technical specifications and lookups
+**Reference (API Docs)** - Complete API documentation
 
-- [CLI Command API](./packages/cli/docs/reference/command.md)
-- [File System API](./packages/fs/docs/reference/api.md)
-- [Data Processing API](./packages/data/docs/reference/api.md)
-- [Validation API](./packages/validation/docs/reference/api.md)
+- [CLI API](./docs/@trailhead.cli.md)
+- [Core API](./docs/@trailhead.core.md)
+- [File System API](./docs/@trailhead.fs.md)
+- [Data API](./docs/@trailhead.data.md)
+- [Validation API](./docs/@trailhead.validation.md)
+- [Config API](./docs/@trailhead.config.md)
+- [Sort API](./docs/@trailhead.sort.md)
 
 **Understanding (Explanations)** - Concepts and design decisions
 
-- [Functional Architecture](./docs/explanation/functional-architecture.md)
-- [Result Types Pattern](./docs/explanation/result-types-pattern.md)
-- [Package Ecosystem](./docs/explanation/package-ecosystem.md)
+- [Architecture Overview](./packages/cli/docs/explanation/architecture.md)
+- [Design Decisions](./packages/cli/docs/explanation/design-decisions.md)
+- [Result Patterns](./packages/fs/docs/explanation/result-patterns.md)
+- [Format Detection](./packages/data/docs/explanation/format-detection.md)
+- [Template System](./packages/create-cli/docs/explanation/templates.md)
 
 ### 🤝 Contributing
 
 - **[Development Workflow](./CLAUDE.md)** - Issue-driven development process
-- **[Documentation Standards](./docs/reference/documentation-standards.md)** - Diátaxis framework implementation
-- **[Writing Guide](./docs/reference/writing-guide.md)** - Quick reference for contributors
+- **[API Documentation](./docs/README.md)** - TypeDoc-generated API reference
 
 ## Community
 

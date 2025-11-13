@@ -1,14 +1,13 @@
 ---
 type: explanation
-title: '@repo/validation Documentation Hub'
+title: '@trailhead/validation Documentation Hub'
 description: 'Functional validation with Zod integration and Result-based error handling'
 related:
   - /packages/validation/docs/how-to/validate-data.md
   - /packages/validation/docs/explanation/composition-patterns.md
-  - /docs/reference/api/validation.md
 ---
 
-# @repo/validation Documentation
+# @trailhead/validation Documentation
 
 Functional validation library with Zod integration, providing both simple validators and schema-based validation through Result types.
 
@@ -40,7 +39,7 @@ Complete API documentation is available in the shared documentation:
 ### 1. Simple Validators
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // Built-in validators with sensible defaults
 const emailResult = validate.email('user@example.com')
@@ -57,7 +56,7 @@ if (!lengthResult.success) {
 ### 2. Schema-Based Validation
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 const userSchema = z.object({
   name: z.string().min(1),
@@ -87,7 +86,7 @@ import {
   validateRequired,
   validateStringLength,
   validateEmail,
-} from '@repo/validation'
+} from '@trailhead/validation'
 
 // Chain validators together
 const emailValidator = composeValidators(
@@ -102,7 +101,7 @@ const result = emailValidator('user@example.com')
 ### 4. Pre-built Schemas
 
 ```typescript
-import { emailSchema, urlSchema, projectNameSchema, portSchema } from '@repo/validation'
+import { emailSchema, urlSchema, projectNameSchema, portSchema } from '@trailhead/validation'
 
 // Use pre-built schemas directly with Zod
 const configSchema = z.object({
@@ -118,7 +117,7 @@ const configSchema = z.object({
 ### Basic Form Validation
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 async const validateRegistrationForm = async (formData: any) => {
   const errors = []
@@ -158,7 +157,7 @@ async const validateRegistrationForm = async (formData: any) => {
 ### Configuration Validation
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 const configSchema = z.object({
   server: z.object({
@@ -198,7 +197,7 @@ async const loadConfig = async (configPath: string) => {
 ### Array and Object Validation
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // Validate array of emails
 const emailListValidator = validate.array(validate.email)
@@ -276,7 +275,7 @@ if (!result.success) {
 ### With Express.js Middleware
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 import { Request, Response, NextFunction } from 'express'
 
 const createUserSchema = z.object({
@@ -317,7 +316,7 @@ app.post('/users', validateBody(validateCreateUser), (req, res) => {
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 const createProjectCommand = createCommand({
   name: 'create',
@@ -361,8 +360,8 @@ const createProjectCommand = createCommand({
 ### With Data Processing
 
 ```typescript
-import { data } from '@repo/data'
-import { createValidator, z } from '@repo/validation'
+import { data } from '@trailhead/data'
+import { createValidator, z } from '@trailhead/validation'
 
 const csvRowSchema = z.object({
   name: z.string().min(1),
@@ -418,7 +417,7 @@ async const processEmployeeData = async (csvPath: string) => {
 ### With Form Libraries
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // React Hook Form integration example
 const useValidatedForm = () => {

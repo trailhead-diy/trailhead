@@ -103,13 +103,11 @@ const command: Command = {
 
 ```typescript
 // ❌ Imports that prevent tree-shaking
-import * as utils from '@trailhead/trailhead-cli/utils'
-import { createSpinner } from '@trailhead/trailhead-cli/utils'
-const chalk = require('chalk') // CommonJS prevents optimization
+import * as utils from '@trailhead/cli/utils'
+const consola = require('consola') // CommonJS prevents optimization
 
 // ✅ Tree-shake friendly imports
-import { createSpinner } from '@trailhead/trailhead-cli/utils'
-import { chalk } from '@trailhead/trailhead-cli/utils' // Re-exported ES modules
+import { createSpinner, consola, colors } from '@trailhead/cli/utils' // Re-exported ES modules
 ```
 
 ### Method 2: Runtime Performance Optimization
@@ -397,7 +395,7 @@ await build({
   external: [
     // Keep heavy dependencies external
     '@inquirer/prompts',
-    'chalk',
+    'consola',
   ],
   treeShaking: true,
   // Analyze bundle

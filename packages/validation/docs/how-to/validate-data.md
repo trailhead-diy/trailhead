@@ -21,7 +21,7 @@ This guide shows you how to validate different types of data using functional va
 ### Validate Email Addresses
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 const validateEmailField = (email: string) => {
   const result = validate.email(email)
@@ -43,7 +43,7 @@ validateEmailField('') // ❌ Required
 ### Validate String Length
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // Create length validator
 const usernameValidator = validate.stringLength(3, 20)
@@ -67,7 +67,7 @@ validateUsername('a'.repeat(25)) // ❌ Too long
 ### Validate Number Ranges
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // Create range validators
 const ageValidator = validate.numberRange(13, 120)
@@ -92,7 +92,7 @@ validateUserAge(150) // ❌ Too old
 ### Validate Required Fields
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 const validateRequiredField = (value: any) => {
   const result = validate.required(value)
@@ -116,7 +116,7 @@ validateRequiredField(undefined) // ❌ Undefined
 ### User Registration Form
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 interface RegistrationData {
   email: string
@@ -126,7 +126,7 @@ interface RegistrationData {
   terms: boolean
 }
 
-async const validateRegistration = async (data: RegistrationData) => {
+constvalidateRegistration = async (data: RegistrationData) => {
   const errors: Array<{ field: string; message: string }> = []
 
   // Validate email
@@ -179,7 +179,7 @@ async const validateRegistration = async (data: RegistrationData) => {
 ### Configuration Validation
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 interface ServerConfig {
   host: string
@@ -247,7 +247,7 @@ const validateServerConfig = (config: any) => {
 ### Define Validation Schemas
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 // User profile schema
 const userProfileSchema = z.object({
@@ -272,7 +272,7 @@ const validateUserProfile = createValidator(userProfileSchema)
 ### Validate with Schemas
 
 ```typescript
-async const processUserProfile = async (profileData: any) => {
+constprocessUserProfile = async (profileData: any) => {
   const validationResult = validateUserProfile(profileData)
 
   if (!validationResult.success) {
@@ -315,7 +315,7 @@ const profileResult = await processUserProfile({
 ### API Request Validation
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 // API endpoint schemas
 const createPostSchema = z.object({
@@ -361,7 +361,7 @@ const validateRequestBody = (validator: any) => {
 ### Validate Array of Simple Values
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 // Validate array of emails
 const emailListValidator = validate.array(validate.email)
@@ -390,7 +390,7 @@ validateEmailList(emails)
 ### Validate Array of Objects
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 const contactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -426,7 +426,7 @@ const processContactList = (contacts: any[]) => {
 ### Batch Validation with Partial Success
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 interface ValidationBatchResult<T> {
   successful: T[]
@@ -492,7 +492,7 @@ if (batchResult.success) {
 ### Conditional Field Validation
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 
 // Schema with conditional validation
 const paymentSchema = z.discriminatedUnion('type', [
@@ -546,7 +546,7 @@ const processPayment = (paymentData: any) => {
 ### Runtime Schema Generation
 
 ```typescript
-import { z } from '@repo/validation'
+import { z } from '@trailhead/validation'
 
 const createDynamicSchema = (fields: Array<{ name: string; type: string; required: boolean }>) => {
   const schemaFields: Record<string, z.ZodTypeAny> = {}
@@ -606,7 +606,7 @@ const result = validateDynamicForm(formData)
 ### Chain Multiple Validators
 
 ```typescript
-import { composeValidators, validateRequired, validateStringLength } from '@repo/validation'
+import { composeValidators, validateRequired, validateStringLength } from '@trailhead/validation'
 
 // Create composed validator
 const usernameValidator = composeValidators(
@@ -635,7 +635,7 @@ const validateUsername = (username: string) => {
 ### Alternative Validation (anyOf)
 
 ```typescript
-import { anyOf, validateEmail, validatePhoneNumber } from '@repo/validation'
+import { anyOf, validateEmail, validatePhoneNumber } from '@trailhead/validation'
 
 // Accept either email or phone number
 const contactValidator = anyOf(validateEmail(), validatePhoneNumber())
@@ -660,7 +660,7 @@ validateContactInfo('invalid-contact') // ❌ Neither email nor phone
 ### Combined Validation (allOf)
 
 ```typescript
-import { allOf, validateStringLength } from '@repo/validation'
+import { allOf, validateStringLength } from '@trailhead/validation'
 
 // Password must meet multiple criteria
 const passwordValidator = allOf(
@@ -708,8 +708,8 @@ const validateStrongPassword = (password: string) => {
 ### Create Domain-Specific Validators
 
 ```typescript
-import { ok, err } from '@repo/validation'
-import type { ValidationResult } from '@repo/validation'
+import { ok, err } from '@trailhead/validation'
+import type { ValidationResult } from '@trailhead/validation'
 
 // Custom credit card validator
 const validateCreditCard = (cardNumber: string): ValidationResult<string> => {
@@ -778,11 +778,11 @@ const validateIPAddress = (ip: string): ValidationResult<string> => {
 ### Async Validators
 
 ```typescript
-import { fs } from '@repo/fs'
-import type { ValidationResult } from '@repo/validation'
+import { fs } from '@trailhead/fs'
+import type { ValidationResult } from '@trailhead/validation'
 
 // Async validator to check if file exists
-async const validateFileExists = async (filePath: string): Promise<ValidationResult<string>> => {
+constvalidateFileExists = async (filePath: string): Promise<ValidationResult<string>> => {
   const existsResult = await fs.exists(filePath)
 
   if (!existsResult.success) {
@@ -797,7 +797,7 @@ async const validateFileExists = async (filePath: string): Promise<ValidationRes
 }
 
 // Async validator to check if email is already registered
-async const validateUniqueEmail = async (email: string): Promise<ValidationResult<string>> => {
+constvalidateUniqueEmail = async (email: string): Promise<ValidationResult<string>> => {
   // Simulate database check
   const existingUsers = await getUsersByEmail(email)
 
@@ -809,7 +809,7 @@ async const validateUniqueEmail = async (email: string): Promise<ValidationResul
 }
 
 // Compose async validators
-async const validateRegistrationEmail = async (email: string): Promise<ValidationResult<string>> => {
+constvalidateRegistrationEmail = async (email: string): Promise<ValidationResult<string>> => {
   // First validate format
   const formatResult = validate.email(email)
   if (!formatResult.success) {
@@ -827,7 +827,7 @@ async const validateRegistrationEmail = async (email: string): Promise<Validatio
 ### Collect All Validation Errors
 
 ```typescript
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 interface ValidationErrors {
   [field: string]: string[]
@@ -948,7 +948,7 @@ const validateWithDefaults = (data: any) => {
 ### Express.js Middleware
 
 ```typescript
-import { createValidator, z } from '@repo/validation'
+import { createValidator, z } from '@trailhead/validation'
 import type { Request, Response, NextFunction } from 'express'
 
 const createValidationMiddleware = (schema: z.ZodSchema) => {
@@ -988,7 +988,7 @@ app.post('/users', createValidationMiddleware(createUserSchema), (req, res) => {
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { validate } from '@repo/validation'
+import { validate } from '@trailhead/validation'
 
 const deployCommand = createCommand({
   name: 'deploy',

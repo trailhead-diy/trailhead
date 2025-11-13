@@ -70,16 +70,16 @@ const command = createCommand({
 
 ## Quick Reference
 
-| What You Need          | Import From                        | Example                                                                 |
-| ---------------------- | ---------------------------------- | ----------------------------------------------------------------------- |
-| Result types (Ok, Err) | `@trailhead/core`                  | `import { Ok, Err } from "@trailhead/core"`                             |
-| CLI creation           | `@trailhead/cli`                   | `import { createCLI } from "@trailhead/cli"`                            |
-| Commands               | `@trailhead/cli/command`           | `import { createCommand } from "@trailhead/cli/command"`                |
-| File operations        | `@trailhead/fs`                    | `import { createFileSystem } from "@trailhead/fs"`                      |
-| Configuration          | `@trailhead/config`                | `import { defineConfig } from "@trailhead/config"`                      |
-| User prompts           | `@trailhead/trailhead-cli/prompts` | `import { prompt, select } from "@trailhead/trailhead-cli/prompts"`     |
-| Testing utilities      | `@trailhead/trailhead-cli/testing` | `import { createTestContext } from "@trailhead/trailhead-cli/testing"`  |
-| Styling & spinners     | `@trailhead/trailhead-cli/utils`   | `import { chalk, createSpinner } from "@trailhead/trailhead-cli/utils"` |
+| What You Need          | Import From              | Example                                                                 |
+| ---------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Result types (Ok, Err) | `@trailhead/core`        | `import { Ok, Err } from "@trailhead/core"`                             |
+| CLI creation           | `@trailhead/cli`         | `import { createCLI } from "@trailhead/cli"`                            |
+| Commands               | `@trailhead/cli/command` | `import { createCommand } from "@trailhead/cli/command"`                |
+| File operations        | `@trailhead/fs`          | `import { createFileSystem } from "@trailhead/fs"`                      |
+| Configuration          | `@trailhead/config`      | `import { defineConfig } from "@trailhead/config"`                      |
+| User prompts           | `@trailhead/cli/prompts` | `import { input, select } from "@trailhead/cli/prompts"`                |
+| Testing utilities      | `@trailhead/cli/testing` | `import { createTestContext } from "@trailhead/cli/testing"`            |
+| Styling & spinners     | `@trailhead/cli/utils`   | `import { consola, colors, createSpinner } from "@trailhead/cli/utils"` |
 
 ## Common Variations
 
@@ -207,16 +207,22 @@ test('command works', async () => {
 ### Styling Output
 
 ```typescript
-import { chalk, success, error, warning } from '@trailhead/trailhead-cli/utils'
-import { createSpinner } from '@trailhead/trailhead-cli/utils'
+import { consola, colors, createSpinner } from '@trailhead/cli/utils'
 
-console.log(chalk.blue('Info message'))
-console.log(success('✓ Done'))
-console.log(error('✗ Failed'))
+// Using consola for structured logging
+consola.info('Info message')
+consola.success('✓ Done')
+consola.error('✗ Failed')
+
+// Or use colors directly
+console.log(colors.blue('Info message'))
+console.log(colors.green('✓ Done'))
+console.log(colors.red('✗ Failed'))
 
 const spinner = createSpinner('Loading...')
+spinner.start()
 // ... do work
-spinner.succeed('Loaded!')
+spinner.stop('Loaded!')
 ```
 
 ### Variation 3: Understanding Module Dependencies

@@ -1,14 +1,13 @@
 ---
 type: explanation
-title: '@repo/fs Documentation Hub'
+title: '@trailhead/fs Documentation Hub'
 description: 'Functional filesystem operations with Result-based error handling'
 related:
   - /packages/fs/docs/how-to/file-operations.md
-  - /docs/reference/api/fs.md
   - /packages/fs/docs/explanation/result-patterns.md
 ---
 
-# @repo/fs Documentation
+# @trailhead/fs Documentation
 
 Functional filesystem operations with Result-based error handling and dependency injection.
 
@@ -40,7 +39,7 @@ Complete API documentation is available in the shared documentation:
 ### 1. Result-Based Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 const result = await fs.readFile('./config.json')
 if (result.success) {
@@ -53,7 +52,7 @@ if (result.success) {
 ### 2. Dependency Injection
 
 ```typescript
-import { readFile } from '@repo/fs'
+import { readFile } from '@trailhead/fs'
 
 // Create configured operation
 const reader = readFile({ encoding: 'utf8' })
@@ -66,7 +65,7 @@ const data = await reader('./data.txt')
 ### 3. JSON Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 // Read and parse JSON
 const configResult = await fs.readJson('./config.json')
@@ -82,7 +81,7 @@ if (configResult.success) {
 ### 4. Path Utilities
 
 ```typescript
-import { join, dirname, basename, extname } from '@repo/fs/utils'
+import { join, dirname, basename, extname } from '@trailhead/fs/utils'
 
 const filePath = join('src', 'components', 'Button.tsx')
 const dir = dirname(filePath) // 'src/components'
@@ -95,7 +94,7 @@ const ext = extname(filePath) // '.tsx'
 ### Basic File Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const processFile = async (inputPath: string, outputPath: string) => {
   // Check if input exists
@@ -126,7 +125,7 @@ async const processFile = async (inputPath: string, outputPath: string) => {
 ### Directory Operations
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const setupProject = async (projectPath: string) => {
   // Ensure project directory exists
@@ -160,7 +159,7 @@ async const setupProject = async (projectPath: string) => {
 ### Error Recovery
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 async const readConfigWithFallback = async (configPath: string) => {
   // Try to read main config
@@ -220,8 +219,8 @@ The library provides specific error types for different scenarios:
 ### With Data Processing
 
 ```typescript
-import { fs } from '@repo/fs'
-import { data } from '@repo/data'
+import { fs } from '@trailhead/fs'
+import { data } from '@trailhead/data'
 
 async const processDataFile = async (inputPath: string, outputPath: string) => {
   // Check if input exists
@@ -259,8 +258,8 @@ async const processDataFile = async (inputPath: string, outputPath: string) => {
 ### With Configuration Management
 
 ```typescript
-import { fs } from '@repo/fs'
-import { validate } from '@repo/validation'
+import { fs } from '@trailhead/fs'
+import { validate } from '@trailhead/validation'
 
 interface AppConfig {
   port: number
@@ -297,7 +296,7 @@ async const loadValidatedConfig = async (configPath: string): Promise<Result<App
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/fs'
 
 const copyCommand = createCommand({
   name: 'copy',

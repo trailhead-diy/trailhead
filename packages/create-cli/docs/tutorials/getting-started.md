@@ -7,7 +7,6 @@ prerequisites:
   - Basic command line knowledge
   - npm or pnpm installed
 related:
-  - /packages/cli/docs/reference/config.md
   - /packages/create-cli/docs/how-to/customize-templates.md
   - /packages/create-cli/docs/explanation/templates.md
 ---
