@@ -41,7 +41,7 @@
     "@trailhead/core": "workspace:*",
     "@trailhead/sort": "workspace:*",
     "fs-extra": "^11.3.2",
-    "glob": "^11.0.0"
+    "glob": "^11.1.0"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
