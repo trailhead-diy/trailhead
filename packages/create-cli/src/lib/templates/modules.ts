@@ -54,7 +54,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
 
   config: {
     name: 'config',
-    description: 'Configuration management system using @trailhead/config and @trailhead/fs',
+    description: 'Configuration management using @trailhead/fs and Zod',
     dependencies: ['core'],
     conflicts: [],
     files: [
@@ -89,7 +89,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
     ],
-    packageDependencies: ['@trailhead/config', '@trailhead/fs'],
+    packageDependencies: ['@trailhead/fs', 'zod'],
     scripts: {},
   },
 

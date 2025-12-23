@@ -9,6 +9,7 @@ export default defineConfig(
       'functional/index': 'src/functional/index.ts',
       'testing/index': 'src/testing/index.ts',
       'utils/index': 'src/utils/index.ts',
+      validation: 'src/validation.ts',
     },
     dts: true,
   })

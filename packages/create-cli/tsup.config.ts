@@ -15,7 +15,6 @@ const baseConfig = tsupProfiles.node({
     '@trailhead/cli',
     '@trailhead/core',
     '@trailhead/fs',
-    '@trailhead/validation',
     '@trailhead/trailhead-cli',
     '@inquirer/prompts',
     'handlebars',

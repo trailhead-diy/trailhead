@@ -9,66 +9,39 @@ import type { ProjectConfig } from './types.js'
 // Base schemas for reuse
 export const projectNameSchema = z
   .string({
-    error: (issue) => {
-      if (issue.code === 'invalid_type') {
-        return 'Project name must be a string'
-      }
-      return 'Invalid project name'
-    },
+    invalid_type_error: 'Project name must be a string',
+    required_error: 'Project name is required',
   })
-  .min(1, { error: 'Project name is required' })
-  .regex(/^[a-z0-9-]+$/, { error: 'Project name must be lowercase alphanumeric with hyphens only' })
-  .max(214, { error: 'Project name must be less than 214 characters' }) // npm package name limit
+  .min(1, { message: 'Project name is required' })
+  .regex(/^[a-z0-9-]+$/, { message: 'Project name must be lowercase alphanumeric with hyphens only' })
+  .max(214, { message: 'Project name must be less than 214 characters' }) // npm package name limit
 
 export const packageManagerSchema = z.enum(['npm', 'pnpm'], {
-  error: (issue) => {
-    if (issue.code === 'invalid_value') {
-      const received = (issue as any).received
-      return `Package manager must be "npm" or "pnpm", received "${received}"`
-    }
-    return 'Invalid package manager'
-  },
+  errorMap: () => ({ message: 'Package manager must be "npm" or "pnpm"' }),
 })
 
 export const projectTypeSchema = z.enum(['standalone-cli', 'library', 'monorepo-package'], {
-  error: (issue) => {
-    if (issue.code === 'invalid_value') {
-      const options = ['standalone-cli', 'library', 'monorepo-package']
-      const received = (issue as any).received
-      return `Project type must be one of: ${options.join(', ')}, received "${received}"`
-    }
-    return 'Invalid project type'
-  },
+  errorMap: () => ({ message: 'Project type must be one of: standalone-cli, library, monorepo-package' }),
 })
 
 export const ideSchema = z.enum(['vscode', 'none'], {
-  error: (issue) => {
-    if (issue.code === 'invalid_value') {
-      const received = (issue as any).received
-      return `IDE must be "vscode" or "none", received "${received}"`
-    }
-    return 'Invalid IDE option'
-  },
+  errorMap: () => ({ message: 'IDE must be "vscode" or "none"' }),
 })
 
 export const nodeVersionSchema = z
   .string({
-    error: 'Node version must be provided as a string',
+    invalid_type_error: 'Node version must be provided as a string',
+    required_error: 'Node version is required',
   })
-  .regex(/^\d+$/, { error: 'Node version must be a numeric string (e.g., "18", "20")' })
+  .regex(/^\d+$/, { message: 'Node version must be a numeric string (e.g., "18", "20")' })
   .refine((val) => parseInt(val) >= 14, {
-    error: 'Node version must be 14 or higher',
+    message: 'Node version must be 14 or higher',
   })
 
 // Feature flags schema with validation
 export const featuresSchema = z.object({
   core: z.literal(true, {
-    error: (issue) => {
-      if (issue.code === 'invalid_value') {
-        return 'Core feature is required and must be true'
-      }
-      return 'Core feature must be enabled'
-    },
+    errorMap: () => ({ message: 'Core feature must be enabled' }),
   }),
   config: z.boolean().optional(),
   validation: z.boolean().optional(),

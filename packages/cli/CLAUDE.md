@@ -241,7 +241,6 @@ pnpm lint                   # Linting
 - **Core** (`@trailhead/core`) - Result types and error handling
 - **Command** (`@trailhead/cli/command`) - Command creation and execution
 - **FileSystem** (`@trailhead/fs`) - Abstract filesystem operations
-- **Configuration** (`@trailhead/config`) - Type-safe configuration
 - **Prompts** (`@trailhead/cli/prompts`) - Interactive user prompts
 - **Testing** (`@trailhead/cli/testing`) - Test utilities and mocks
 

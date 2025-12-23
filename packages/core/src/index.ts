@@ -44,5 +44,8 @@ export {
   fromThrowableAsync as fromThrowableAsyncFunc,
 } from './functional/async.js'
 
+/** Validation utilities - Zod integration with Result types */
+export * from './validation.js'
+
 // Color utilities moved to individual packages that need them
 // Core is now pure and browser-compatible

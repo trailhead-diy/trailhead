@@ -5,7 +5,6 @@
  * For general testing utilities, see the respective domain packages:
  * - @trailhead/core/testing - Result matchers, error testing
  * - @trailhead/fs/testing - Filesystem fixtures, path utilities
- * - @trailhead/validation/testing - Schema testing
  *
  * @example
  * ```typescript

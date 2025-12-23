@@ -1,0 +1,633 @@
+{
+  "version": "2.0",
+  "timestamp": "2025-12-23T17:45:00.000Z",
+  "gitSha": "485409157d35945cf020e048b88aab95357996dc",
+  "gitBranch": "optimize-action",
+  "lastAnalyzedFiles": [
+    "packages/data/src/conversion/core.ts",
+    "packages/data/src/conversion/index.ts",
+    "packages/data/src/conversion/types.ts",
+    "packages/data/src/csv/core.ts",
+    "packages/data/src/csv/index.ts",
+    "packages/data/src/csv/types.ts",
+    "packages/data/src/detection/core.ts",
+    "packages/data/src/detection/database.ts",
+    "packages/data/src/detection/index.ts",
+    "packages/data/src/detection/types.ts",
+    "packages/data/src/errors.ts",
+    "packages/data/src/excel/core.ts",
+    "packages/data/src/excel/index.ts",
+    "packages/data/src/excel/types.ts",
+    "packages/data/src/formats-errors.ts",
+    "packages/data/src/formats-types.ts",
+    "packages/data/src/formats/index.ts",
+    "packages/data/src/index.ts",
+    "packages/data/src/json/core.ts",
+    "packages/data/src/json/index.ts",
+    "packages/data/src/json/types.ts",
+    "packages/data/src/mime/core.ts",
+    "packages/data/src/mime/index.ts",
+    "packages/data/src/mime/types.ts",
+    "packages/data/src/operations.ts",
+    "packages/data/src/testing/data-generators.ts",
+    "packages/data/src/testing/format-testing.ts",
+    "packages/data/src/testing/index.ts",
+    "packages/data/src/testing/transform-helpers.ts",
+    "packages/data/src/types.ts"
+  ],
+  "projectType": {
+    "language": "TypeScript",
+    "framework": "Node.js",
+    "testFramework": "Vitest"
+  },
+  "summary": {
+    "behaviorsAnalyzed": 68,
+    "fullyCovered": 52,
+    "partiallyCovered": 12,
+    "notCovered": 4,
+    "qualityIssues": 2,
+    "coveragePercent": 85
+  },
+  "gaps": [
+    {
+      "behavior": "CSVOperations.parseFile",
+      "file": "packages/data/src/csv/core.ts:143",
+      "risk": "high",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test that reads actual CSV file from fixtures directory to verify file I/O and parsing together"
+    },
+    {
+      "behavior": "CSVOperations.writeFile",
+      "file": "packages/data/src/csv/core.ts:185",
+      "risk": "high",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test that writes CSV to temp file and verifies contents"
+    },
+    {
+      "behavior": "JSONOperations.parseFile",
+      "file": "packages/data/src/json/core.ts:77",
+      "risk": "high",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test that reads actual JSON file from fixtures directory"
+    },
+    {
+      "behavior": "JSONOperations.writeFile",
+      "file": "packages/data/src/json/core.ts:122",
+      "risk": "high",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test that writes JSON to temp file and verifies contents"
+    },
+    {
+      "behavior": "ExcelOperations.parseFile",
+      "file": "packages/data/src/excel/core.ts:112",
+      "risk": "high",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test with real .xlsx fixture file to test complete parsing workflow"
+    },
+    {
+      "behavior": "ExcelOperations.writeFile",
+      "file": "packages/data/src/excel/core.ts:181",
+      "risk": "medium",
+      "status": "partial",
+      "testTypes": {
+        "unit": true,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Integration test exists for stringify but writeFile needs verification with temp file"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheet",
+      "file": "packages/data/src/excel/core.ts:127",
+      "risk": "medium",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add test with multi-sheet Excel file fixture"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheetByIndex",
+      "file": "packages/data/src/excel/core.ts:136",
+      "risk": "low",
+      "status": "missing",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add test with multi-sheet Excel file using index-based selection"
+    },
+    {
+      "behavior": "DetectionOperations.detectFromFile",
+      "file": "packages/data/src/detection/core.ts:60",
+      "risk": "high",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration tests with real files of different formats (not just buffer tests)"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAuto",
+      "file": "packages/data/src/operations.ts:312",
+      "risk": "critical",
+      "status": "partial",
+      "testTypes": {
+        "unit": true,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Current tests use mocks. Add integration test with real files to verify end-to-end auto-detection workflow"
+    },
+    {
+      "behavior": "UnifiedDataOperations.writeAuto",
+      "file": "packages/data/src/operations.ts:411",
+      "risk": "medium",
+      "status": "partial",
+      "testTypes": {
+        "unit": true,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test that writes to temp files with various extensions"
+    },
+    {
+      "behavior": "UnifiedDataOperations.detectFormat",
+      "file": "packages/data/src/operations.ts:487",
+      "risk": "medium",
+      "status": "partial",
+      "testTypes": {
+        "unit": true,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add integration test with real files to verify format detection"
+    },
+    {
+      "behavior": "CSVOperations.parseToObjects",
+      "file": "packages/data/src/csv/core.ts:293",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Tested indirectly through parseString but could use explicit test"
+    },
+    {
+      "behavior": "CSVOperations.fromObjects",
+      "file": "packages/data/src/csv/core.ts:309",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Tested indirectly through stringify but could use explicit test"
+    },
+    {
+      "behavior": "ExcelOperations.parseToObjects",
+      "file": "packages/data/src/excel/core.ts:239",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add explicit test for object parsing mode"
+    },
+    {
+      "behavior": "ExcelOperations.fromObjects",
+      "file": "packages/data/src/excel/core.ts:255",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "suggestion": "Add explicit test for object to Excel conversion"
+    }
+  ],
+  "qualityIssues": [
+    {
+      "file": "packages/data/src/operations.test.ts",
+      "issue": "over-mocked",
+      "details": "Tests mock all underlying CSV/JSON/Excel operations. While this tests the unified interface logic, it doesn't verify actual parsing/writing behavior. Should add integration tests with real operations."
+    },
+    {
+      "file": "packages/data/src/excel/core.test.ts",
+      "issue": "happy-path-only",
+      "details": "Tests primarily cover edge cases (empty buffer, empty array) but lack tests for successful parsing of real Excel data with various configurations (dates, formulas, merged cells)"
+    }
+  ],
+  "coverageMatrix": [
+    {
+      "behavior": "CSV.parseString",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSV.parseFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "missing"
+    },
+    {
+      "behavior": "CSV.stringify",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSV.writeFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "missing"
+    },
+    {
+      "behavior": "CSV.validate",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSV.detectFormat",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.parseString",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.parseFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "missing"
+    },
+    {
+      "behavior": "JSON.stringify",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.writeFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "missing"
+    },
+    {
+      "behavior": "JSON.validate",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.minify",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.format",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.sortJSONArray",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSON.extractUniqueSorted",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Excel.parseBuffer",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "Excel.parseFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "missing"
+    },
+    {
+      "behavior": "Excel.stringify",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "Excel.writeFile",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "Excel.validate",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Excel.detectFormat",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "partial"
+    },
+    {
+      "behavior": "Excel.getWorksheetNames",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "partial"
+    },
+    {
+      "behavior": "Excel.createWorkbook",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "Detection.detectFromBuffer",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "Detection.detectFromFile",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "partial"
+    },
+    {
+      "behavior": "Detection.detectFromExtension",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Detection.detectFromMime",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Detection.detectBatch",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "MIME.getMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MIME.getExtensions",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MIME.isMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MIME.normalizeMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MIME.parseMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Conversion.checkConversion",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Conversion.getSupportedFormats",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Conversion.getConversionChain",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Conversion.estimateConversionQuality",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedData.parseAuto",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "critical",
+      "status": "partial"
+    },
+    {
+      "behavior": "UnifiedData.parseAutoFromContent",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "UnifiedData.writeAuto",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "UnifiedData.convertFormat",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "Testing.createMockFormatDetector",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Testing.testFormatConversion",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "Testing.validateFormat",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    }
+  ],
+  "resolved": [],
+  "recommendations": {
+    "immediate": [
+      "Add integration tests for file I/O operations (parseFile, writeFile) across CSV, JSON, and Excel modules - these are high-risk behaviors currently untested",
+      "Create fixture files in tests/fixtures/ for real-world data scenarios (CSV with special chars, Excel with formulas/dates, nested JSON)",
+      "Add integration test for UnifiedDataOperations.parseAuto with real files to verify end-to-end auto-detection workflow (critical risk)"
+    ],
+    "shortTerm": [
+      "Reduce mocking in operations.test.ts by adding complementary integration tests that use real format operations",
+      "Add tests for Excel edge cases: date parsing, formula cells, merged cells, password-protected files",
+      "Test CSV with various delimiters (semicolon, tab, pipe) and encodings in real files",
+      "Add error recovery tests for malformed files that should fail gracefully"
+    ],
+    "notes": [
+      "Unit test coverage for string/buffer parsing is solid across all modules",
+      "MIME and Conversion modules have excellent coverage for their pure-function operations",
+      "Testing utilities (format-testing.ts) are well-tested themselves",
+      "Main gap pattern: file I/O integration tests missing across all format handlers",
+      "The operations.test.ts tests validate orchestration logic but not actual data processing"
+    ]
+  },
+  "history": []
+}
