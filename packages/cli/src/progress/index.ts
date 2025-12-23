@@ -1,7 +1,8 @@
 export { createProgressTracker, updateProgress, calculateWeightedProgress } from './tracker.js'
 export type { ProgressTracker, ProgressState, ProgressOptions } from './types.js'
 
-// Enhanced progress tracking exports - addresses issue #116 item 13
+// Enhanced progress tracking - deprecated in v2.0.0
+// These exports are kept for backward compatibility but may be removed in v3.0.0
 export {
   createEnhancedProgressTracker,
   type EnhancedProgressTracker,
@@ -9,6 +10,3 @@ export {
   type EnhancedProgressOptions,
   type EnhancedProgressStep,
 } from './enhanced-tracker.js'
-
-// Re-export cli-progress for advanced usage
-export { SingleBar, MultiBar, Presets } from 'cli-progress'

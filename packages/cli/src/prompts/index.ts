@@ -1,9 +1,50 @@
-// Re-export all Inquirer.js prompts with enhanced TypeScript support
-export * from '@inquirer/prompts'
-import { createDefaultLogger } from '../utils/logger.js'
+/**
+ * @module cli/prompts
+ * @description Interactive prompts built on Clack for beautiful CLI experiences.
+ *
+ * Re-exports Clack prompts with custom helpers for common patterns.
+ *
+ * @since 2.0.0
+ */
+import {
+  text,
+  confirm,
+  select,
+  multiselect,
+  group,
+  groupMultiselect,
+  isCancel,
+  cancel,
+  intro,
+  outro,
+  log,
+  spinner,
+  note,
+  password,
+  selectKey,
+} from '@clack/prompts'
+
+// Re-export all Clack primitives
+export {
+  text,
+  confirm,
+  select,
+  multiselect,
+  group,
+  groupMultiselect,
+  isCancel,
+  cancel,
+  intro,
+  outro,
+  log,
+  spinner,
+  note,
+  password,
+  selectKey,
+}
 
 /**
- * Create a confirmation prompt with optional details display
+ * Confirmation prompt with optional details display
  *
  * Shows a yes/no confirmation prompt with optional bullet points
  * displayed before the question. Useful for confirming destructive
@@ -12,11 +53,11 @@ import { createDefaultLogger } from '../utils/logger.js'
  * @param message - The confirmation question to ask
  * @param details - Optional array of details to display as bullets
  * @param defaultValue - Default answer (default: true)
- * @returns Async function that shows prompt and returns boolean response
+ * @returns Promise that resolves to boolean response
  *
  * @example
  * ```typescript
- * const confirmDelete = createConfirmationPrompt(
+ * const shouldDelete = await confirmWithDetails(
  *   'Delete all generated files?',
  *   [
  *     'Remove dist/ directory',
@@ -25,33 +66,36 @@ import { createDefaultLogger } from '../utils/logger.js'
  *   ],
  *   false
  * );
- *
- * const shouldDelete = await confirmDelete();
  * ```
  */
-export function createConfirmationPrompt(
+export async function confirmWithDetails(
   message: string,
   details?: string[],
-  defaultValue: boolean = true
-) {
-  return async () => {
-    if (details && details.length > 0) {
-      const logger = createDefaultLogger()
-      logger.info('This will:')
-      details.forEach((detail) => logger.info(`  • ${detail}`))
-      logger.info('')
+  defaultValue = true
+): Promise<boolean> {
+  if (details && details.length > 0) {
+    log.info('This will:')
+    for (const detail of details) {
+      log.message(`  • ${detail}`, { symbol: '' })
     }
-
-    const { confirm } = await import('@inquirer/prompts')
-    return confirm({
-      message,
-      default: defaultValue,
-    })
+    log.message('', { symbol: '' })
   }
+
+  const result = await confirm({
+    message,
+    initialValue: defaultValue,
+  })
+
+  if (isCancel(result)) {
+    cancel('Operation cancelled.')
+    process.exit(0)
+  }
+
+  return result
 }
 
 /**
- * Create a directory path prompt with validation
+ * Directory path prompt with validation
  *
  * Shows an input prompt for directory paths with built-in validation
  * to ensure safe relative paths without parent directory traversal.
@@ -59,37 +103,51 @@ export function createConfirmationPrompt(
  *
  * @param message - The prompt message to display
  * @param defaultPath - Default directory path suggestion
- * @returns Async function that shows prompt and returns validated path
+ * @returns Promise that resolves to validated path
  *
  * @example
  * ```typescript
- * const getOutputDir = createDirectoryPrompt(
+ * const outputPath = await directoryPrompt(
  *   'Where should we save the output?',
  *   'dist/output'
  * );
- *
- * const outputPath = await getOutputDir();
  * // User input is validated and normalized
  * ```
  */
-export function createDirectoryPrompt(message: string, defaultPath?: string) {
-  return async () => {
-    const { input } = await import('@inquirer/prompts')
-    return input({
-      message,
-      default: defaultPath,
-      validate: (answer) => {
-        if (!answer || typeof answer !== 'string') {
-          return 'Please enter a valid directory path'
-        }
-        if (answer.includes('..') || answer.startsWith('/')) {
-          return 'Please enter a relative path without ".." segments'
-        }
-        return true
-      },
-      transformer: (answer) => {
-        return String(answer).trim().replace(/\\/g, '/')
-      },
-    })
+export async function directoryPrompt(message: string, defaultPath?: string): Promise<string> {
+  const result = await text({
+    message,
+    placeholder: defaultPath,
+    initialValue: defaultPath,
+    validate: (value) => {
+      if (!value?.trim()) {
+        return 'Please enter a valid directory path'
+      }
+      if (value.includes('..') || value.startsWith('/')) {
+        return 'Please enter a relative path without ".." segments'
+      }
+    },
+  })
+
+  if (isCancel(result)) {
+    cancel('Operation cancelled.')
+    process.exit(0)
   }
+
+  return String(result).trim().replace(/\\/g, '/')
+}
+
+// Legacy aliases for backward compatibility (deprecated)
+/**
+ * @deprecated Use `confirmWithDetails` instead. Will be removed in v3.0.0.
+ */
+export function createConfirmationPrompt(message: string, details?: string[], defaultValue = true) {
+  return () => confirmWithDetails(message, details, defaultValue)
+}
+
+/**
+ * @deprecated Use `directoryPrompt` instead. Will be removed in v3.0.0.
+ */
+export function createDirectoryPrompt(message: string, defaultPath?: string) {
+  return () => directoryPrompt(message, defaultPath)
 }

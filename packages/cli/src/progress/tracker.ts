@@ -1,35 +1,30 @@
-import { SingleBar, Presets } from 'cli-progress'
+import { spinner } from '@clack/prompts'
 import type { ProgressTracker, ProgressState, ProgressOptions } from './types.js'
 
 /**
  * Default progress options
  */
-const DEFAULT_OPTIONS: Required<Omit<ProgressOptions, 'stepWeights' | 'barOptions'>> = {
+const DEFAULT_OPTIONS: Required<Omit<ProgressOptions, 'stepWeights'>> = {
   totalSteps: 1,
-  format: 'Progress [{bar}] {percentage}% | {step}/{total} | {stepName}',
+  format: '', // Ignored in Clack implementation
   showStepNames: true,
 }
 
 /**
  * Create a progress tracker for long-running operations
  *
- * Provides visual progress feedback using cli-progress with support
- * for step names, weighted progress, and custom formatting.
+ * Provides visual progress feedback using Clack's spinner with step tracking.
+ * Shows step progress as "Step X/Y: stepName" format.
  *
  * @param options - Progress tracker configuration
  * @param options.totalSteps - Total number of steps in operation
- * @param options.stepWeights - Optional weights for weighted progress
- * @param options.format - Custom progress bar format string
+ * @param options.stepWeights - Optional weights for weighted progress (kept for API compat)
  * @param options.showStepNames - Whether to display step names
- * @param options.barOptions - Additional cli-progress options
  * @returns Progress tracker instance for managing progress state
  *
  * @example
  * ```typescript
- * const tracker = createProgressTracker({
- *   totalSteps: 5,
- *   format: 'Building [{bar}] {percentage}% | {stepName}'
- * });
+ * const tracker = createProgressTracker({ totalSteps: 5 });
  *
  * tracker.nextStep('Compiling TypeScript');
  * tracker.nextStep('Running tests');
@@ -40,23 +35,10 @@ export function createProgressTracker(options: ProgressOptions): ProgressTracker
   const config = { ...DEFAULT_OPTIONS, ...options }
 
   let state: ProgressState = createInitialState(config)
+  const s = spinner()
 
-  // Initialize cli-progress bar
-  const progressBar = new SingleBar({
-    ...Presets.shades_classic,
-    format: config.format,
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-    hideCursor: true,
-    ...config.barOptions,
-  })
-
-  // Start the progress bar
-  progressBar.start(config.totalSteps, 0, {
-    step: 0,
-    total: config.totalSteps,
-    stepName: 'Starting...',
-  })
+  // Start the spinner
+  s.start(formatMessage(state, config))
 
   return {
     nextStep: (stepName: string, metadata: Record<string, unknown> = {}) => {
@@ -67,7 +49,7 @@ export function createProgressTracker(options: ProgressOptions): ProgressTracker
         metadata,
       })
 
-      updateProgressBar(progressBar, state, config)
+      s.message(formatMessage(state, config))
       return state
     },
 
@@ -78,7 +60,7 @@ export function createProgressTracker(options: ProgressOptions): ProgressTracker
         metadata,
       })
 
-      updateProgressBar(progressBar, state, config)
+      s.message(formatMessage(state, config))
       return state
     },
 
@@ -90,35 +72,37 @@ export function createProgressTracker(options: ProgressOptions): ProgressTracker
         percentage: 100,
       })
 
-      progressBar.update(state.totalSteps, {
-        step: state.totalSteps,
-        total: state.totalSteps,
-        stepName: 'Complete',
-      })
-
-      progressBar.stop()
+      s.stop('Complete')
       return state
     },
 
     getState: () => ({ ...state }),
 
     reset: (totalSteps: number) => {
-      progressBar.stop()
+      s.stop()
       state = createInitialState({ ...config, totalSteps })
-
-      progressBar.start(totalSteps, 0, {
-        step: 0,
-        total: totalSteps,
-        stepName: 'Starting...',
-      })
-
+      s.start(formatMessage(state, config))
       return state
     },
 
     stop: () => {
-      progressBar.stop()
+      s.stop()
     },
   }
+}
+
+/**
+ * Format progress message for spinner display
+ */
+function formatMessage(
+  state: ProgressState,
+  config: Required<Omit<ProgressOptions, 'stepWeights'>>
+): string {
+  const stepInfo = `[${state.currentStep}/${state.totalSteps}]`
+  if (config.showStepNames && state.stepName) {
+    return `${stepInfo} ${state.stepName}`
+  }
+  return stepInfo
 }
 
 /**
@@ -173,23 +157,6 @@ function createInitialState(options: ProgressOptions): ProgressState {
     completed: false,
     metadata: {},
   }
-}
-
-/**
- * Update the cli-progress bar with current state
- */
-function updateProgressBar(
-  progressBar: SingleBar,
-  state: ProgressState,
-  config: Required<Omit<ProgressOptions, 'stepWeights' | 'barOptions'>>
-): void {
-  const payload = {
-    step: state.currentStep,
-    total: state.totalSteps,
-    stepName: config.showStepNames ? state.stepName : '',
-  }
-
-  progressBar.update(state.currentStep, payload)
 }
 
 /**

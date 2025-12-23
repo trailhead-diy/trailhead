@@ -1,6 +1,22 @@
-export { consola, colors, logSuccess, logError, logWarning, logInfo, log } from './chalk.js'
-export { createSpinner, withSpinner } from './spinner.js'
-export { createDefaultLogger, type Logger } from './logger.js'
+export {
+  colors,
+  red,
+  green,
+  yellow,
+  blue,
+  cyan,
+  magenta,
+  white,
+  gray,
+  bold,
+  dim,
+  underline,
+  italic,
+  strikethrough,
+  reset,
+} from './chalk.js'
+export { createSpinner, withSpinner, type Spinner } from './spinner.js'
+export { createDefaultLogger, logger, type Logger } from './logger.js'
 
 export {
   createStats,

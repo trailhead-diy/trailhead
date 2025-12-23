@@ -1,8 +1,9 @@
-import { SingleBar, Presets } from 'cli-progress'
-import type { ProgressTracker, ProgressState, ProgressOptions } from './types.js'
+import { spinner } from '@clack/prompts'
+import type { ProgressTracker, ProgressState } from './types.js'
 
 /**
  * Enhanced progress step configuration
+ * @deprecated Enhanced progress tracker is deprecated. Use createProgressTracker instead.
  */
 export interface EnhancedProgressStep {
   /** Step name for display */
@@ -15,6 +16,7 @@ export interface EnhancedProgressStep {
 
 /**
  * Enhanced progress tracking state
+ * @deprecated Enhanced progress tracker is deprecated. Use createProgressTracker instead.
  */
 export interface EnhancedProgressState extends ProgressState {
   /** Current step being executed */
@@ -37,18 +39,20 @@ export interface EnhancedProgressState extends ProgressState {
 
 /**
  * Enhanced progress options
+ * @deprecated Enhanced progress tracker is deprecated. Use createProgressTracker instead.
  */
-export interface EnhancedProgressOptions extends ProgressOptions {
+export interface EnhancedProgressOptions {
   /** Progress steps configuration */
   steps: EnhancedProgressStep[]
   /** Whether to show time estimates */
   showTimeEstimates?: boolean
-  /** Custom format template */
-  enhancedFormat?: string
+  /** Whether to show step names */
+  showStepNames?: boolean
 }
 
 /**
  * Enhanced progress tracker with multi-step progress and time estimates
+ * @deprecated Enhanced progress tracker is deprecated. Use createProgressTracker instead.
  */
 export interface EnhancedProgressTracker extends ProgressTracker {
   /** Get enhanced progress state */
@@ -72,40 +76,20 @@ export interface EnhancedProgressTracker extends ProgressTracker {
  */
 const DEFAULT_ENHANCED_OPTIONS: Partial<EnhancedProgressOptions> = {
   showTimeEstimates: true,
-  enhancedFormat: 'Progress [{bar}] {percentage}% | {step}/{total} | {stepName} | ETA: {eta}',
   showStepNames: true,
 }
 
 /**
  * Create an enhanced progress tracker with multi-step progress and time estimates
  *
+ * @deprecated This function is deprecated and will be removed in v3.0.0.
+ * Use createProgressTracker instead for simpler progress tracking.
+ *
  * Provides advanced progress tracking with weighted steps, time estimates,
- * and per-step progress updates. Ideal for complex operations with
- * varying step durations.
+ * and per-step progress updates. Uses Clack's spinner for display.
  *
  * @param options - Enhanced progress configuration
- * @param options.steps - Array of step configurations with names and weights
- * @param options.showTimeEstimates - Whether to display ETA (default: true)
- * @param options.enhancedFormat - Custom format with {eta} support
  * @returns Enhanced progress tracker with time estimation capabilities
- *
- * @example
- * ```typescript
- * const tracker = createEnhancedProgressTracker({
- *   steps: [
- *     { name: 'Download files', weight: 3 },
- *     { name: 'Process data', weight: 5 },
- *     { name: 'Upload results', weight: 2 }
- *   ],
- *   showTimeEstimates: true
- * });
- *
- * tracker.startNextStep();
- * tracker.updateStepProgress(50); // 50% through download
- * tracker.completeStep();
- *
- * const { remaining, elapsed } = tracker.getTimeEstimate();
- * ```
  */
 export function createEnhancedProgressTracker(
   options: EnhancedProgressOptions
@@ -113,24 +97,10 @@ export function createEnhancedProgressTracker(
   const config = { ...DEFAULT_ENHANCED_OPTIONS, ...options }
 
   let state: EnhancedProgressState = createInitialEnhancedState(config)
+  const s = spinner()
 
-  // Initialize cli-progress bar
-  const progressBar = new SingleBar({
-    ...Presets.shades_classic,
-    format: config.enhancedFormat || config.format,
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-    hideCursor: true,
-    ...config.barOptions,
-  })
-
-  // Start the progress bar
-  progressBar.start(100, 0, {
-    step: 1,
-    total: config.steps.length,
-    stepName: config.steps[0]?.name || 'Starting...',
-    eta: 'calculating...',
-  })
+  // Start the spinner
+  s.start(formatEnhancedMessage(state, config))
 
   return {
     nextStep: (stepName: string, metadata: Record<string, unknown> = {}) => {
@@ -145,7 +115,7 @@ export function createEnhancedProgressTracker(
         metadata,
       })
 
-      updateEnhancedProgressBar(progressBar, state, config)
+      s.message(formatEnhancedMessage(state, config))
       return state
     },
 
@@ -161,7 +131,7 @@ export function createEnhancedProgressTracker(
         metadata,
       })
 
-      updateEnhancedProgressBar(progressBar, state, config)
+      s.message(formatEnhancedMessage(state, config))
       return state
     },
 
@@ -174,41 +144,26 @@ export function createEnhancedProgressTracker(
         completed: true,
       })
 
-      progressBar.update(100, {
-        step: state.steps.length,
-        total: state.steps.length,
-        stepName: 'Complete',
-        eta: '0s',
-      })
-
-      progressBar.stop()
+      s.stop('Complete')
       return state
     },
 
     getState: () => ({ ...state }),
 
     reset: (totalSteps: number) => {
-      progressBar.stop()
-      // Create new steps with equal weights if not provided
+      s.stop()
       const newSteps = Array.from({ length: totalSteps }, (_, i) => ({
         name: `Step ${i + 1}`,
         weight: 1,
       }))
 
       state = createInitialEnhancedState({ ...config, steps: newSteps })
-
-      progressBar.start(100, 0, {
-        step: 1,
-        total: totalSteps,
-        stepName: 'Starting...',
-        eta: 'calculating...',
-      })
-
+      s.start(formatEnhancedMessage(state, config))
       return state
     },
 
     stop: () => {
-      progressBar.stop()
+      s.stop()
     },
 
     // Enhanced methods
@@ -220,7 +175,7 @@ export function createEnhancedProgressTracker(
         stepProgress: clampedProgress,
       })
 
-      updateEnhancedProgressBar(progressBar, state, config)
+      s.message(formatEnhancedMessage(state, config))
       return state
     },
 
@@ -228,7 +183,6 @@ export function createEnhancedProgressTracker(
       const nextIndex = Math.min(state.currentStepIndex + 1, state.steps.length - 1)
       const nextStep = state.steps[nextIndex]
 
-      // Record completion time of previous step
       const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0
       const newCompletionTimes = [...state.stepCompletionTimes, completionTime]
 
@@ -240,12 +194,11 @@ export function createEnhancedProgressTracker(
         stepCompletionTimes: newCompletionTimes,
       })
 
-      updateEnhancedProgressBar(progressBar, state, config)
+      s.message(formatEnhancedMessage(state, config))
       return state
     },
 
     completeStep: (stepName?: string) => {
-      // Record completion time
       const completionTime = state.stepStartTime ? Date.now() - state.stepStartTime : 0
       const newCompletionTimes = [...state.stepCompletionTimes, completionTime]
 
@@ -255,7 +208,7 @@ export function createEnhancedProgressTracker(
         stepCompletionTimes: newCompletionTimes,
       })
 
-      updateEnhancedProgressBar(progressBar, state, config)
+      s.message(formatEnhancedMessage(state, config))
       return state
     },
 
@@ -267,6 +220,32 @@ export function createEnhancedProgressTracker(
       return { remaining, total, elapsed }
     },
   }
+}
+
+/**
+ * Format enhanced progress message for spinner display
+ */
+function formatEnhancedMessage(
+  state: EnhancedProgressState,
+  config: EnhancedProgressOptions
+): string {
+  const parts: string[] = []
+
+  parts.push(`[${state.currentStep}/${state.totalSteps}]`)
+
+  if (config.showStepNames && state.stepName) {
+    parts.push(state.stepName)
+  }
+
+  if (state.stepProgress > 0 && state.stepProgress < 100) {
+    parts.push(`(${state.stepProgress}%)`)
+  }
+
+  if (config.showTimeEstimates && state.estimatedTimeRemaining) {
+    parts.push(`ETA: ${formatTimeEstimate(state.estimatedTimeRemaining)}`)
+  }
+
+  return parts.join(' ')
 }
 
 /**
@@ -305,7 +284,6 @@ function updateEnhancedProgress(
   const now = Date.now()
   const timeElapsed = now - currentState.startTime
 
-  // Calculate overall progress based on step weights and current step progress
   const currentStepIndex = updates.currentStepIndex ?? currentState.currentStepIndex
   const stepProgress = updates.stepProgress ?? currentState.stepProgress
   const steps = updates.steps ?? currentState.steps
@@ -320,14 +298,12 @@ function updateEnhancedProgress(
   const overallProgress =
     totalWeight > 0 ? ((completedWeight + currentStepWeightedProgress) / totalWeight) * 100 : 0
 
-  // Calculate time estimates
   const completionTimes = updates.stepCompletionTimes ?? currentState.stepCompletionTimes
   const averageStepTime =
     completionTimes.length > 0
       ? completionTimes.reduce((sum, time) => sum + time, 0) / completionTimes.length
       : undefined
 
-  // Estimate remaining time based on remaining steps and average completion time
   const remainingSteps = steps.length - currentStepIndex - stepProgress / 100
   const estimatedTimeRemaining =
     averageStepTime && remainingSteps > 0 ? averageStepTime * remainingSteps : undefined
@@ -342,28 +318,6 @@ function updateEnhancedProgress(
     currentStep: currentStepIndex + 1,
     completed: updates.completed ?? overallProgress >= 100,
   }
-}
-
-/**
- * Update the cli-progress bar with enhanced state
- */
-function updateEnhancedProgressBar(
-  progressBar: SingleBar,
-  state: EnhancedProgressState,
-  config: EnhancedProgressOptions
-): void {
-  const eta = formatTimeEstimate(state.estimatedTimeRemaining)
-
-  const payload = {
-    step: state.currentStep,
-    total: state.totalSteps,
-    stepName: config.showStepNames ? state.stepName : '',
-    eta: config.showTimeEstimates ? eta : '',
-    stepProgress: state.stepProgress,
-    timeElapsed: formatTimeEstimate(state.timeElapsed),
-  }
-
-  progressBar.update(state.percentage, payload)
 }
 
 /**

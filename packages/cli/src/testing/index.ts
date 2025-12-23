@@ -89,7 +89,7 @@ export type {
 // ========================================
 // CLI Context and Mocking
 // ========================================
-export { createTestContext, createTestContextWithFiles } from './context.js'
+export { createTestContext, createTestContextWithFiles, createNoopLogger } from './context.js'
 
 export type { TestContextOptions } from './context.js'
 

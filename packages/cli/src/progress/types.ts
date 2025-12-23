@@ -1,5 +1,3 @@
-import type { Options as CliProgressOptions } from 'cli-progress'
-
 /**
  * Progress state represents the current state of a long-running operation
  */
@@ -46,10 +44,8 @@ export interface ProgressOptions {
   totalSteps: number
   /** Step weights for weighted progress calculation */
   stepWeights?: number[]
-  /** Custom cli-progress options */
-  barOptions?: Partial<CliProgressOptions>
-  /** Format template for progress display */
+  /** Format template for progress display (ignored in Clack, kept for API compat) */
   format?: string
-  /** Whether to show step names in progress */
+  /** Whether to show step names in progress (default: true) */
   showStepNames?: boolean
 }

@@ -5,6 +5,23 @@ import type { Logger } from '../utils/logger.js'
 import { createMockFileSystem } from '@trailhead/fs/testing'
 
 /**
+ * Create a no-op logger for testing
+ *
+ * Returns a logger that silently discards all messages.
+ * Useful for testing without console noise.
+ */
+export function createNoopLogger(): Logger {
+  return {
+    info: () => {},
+    success: () => {},
+    warning: () => {},
+    error: () => {},
+    debug: () => {},
+    step: () => {},
+  }
+}
+
+/**
  * Options for creating test command contexts
  *
  * Allows customization of all context properties for testing
@@ -45,9 +62,7 @@ export interface TestContextOptions {
 export function createTestContext(options: TestContextOptions = {}): CommandContext {
   return {
     projectRoot: options.projectRoot ?? '/test/project',
-    logger:
-      options.logger ??
-      ({ info: () => {}, error: () => {}, debug: () => {}, warn: () => {} } as any),
+    logger: options.logger ?? createNoopLogger(),
     verbose: options.verbose ?? false,
     fs: options.filesystem ?? createMockFileSystem(),
     args: options.args ?? [],

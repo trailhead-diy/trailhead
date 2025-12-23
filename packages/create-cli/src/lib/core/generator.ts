@@ -470,7 +470,7 @@ async function setupDevelopmentEnvironment(
     // Setup development scripts
     const scriptsResult = await setupDevelopmentScripts(_config, context)
     if (!scriptsResult.isOk()) {
-      spinner.text = 'Development scripts setup failed, continuing...'
+      spinner.message('Development scripts setup failed, continuing...')
       debugError(logger, 'Development scripts setup', scriptsResult.error)
     }
 

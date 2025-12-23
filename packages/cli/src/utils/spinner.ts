@@ -1,30 +1,72 @@
 /**
  * @module cli/utils/spinner
- * @description Spinner utilities for CLI loading indicators built on yocto-spinner.
+ * @description Spinner utilities for CLI loading indicators built on Clack.
  *
- * Provides lightweight spinner utilities for CLI applications with minimal bundle size.
- * Built on top of yocto-spinner for cross-platform compatibility and modern terminal support.
+ * Provides spinner utilities for CLI applications with beautiful, consistent UI.
+ * Built on top of @clack/prompts for modern terminal support.
  *
- * @since 0.1.0
+ * @since 2.0.0
  */
-import yoctoSpinner from 'yocto-spinner'
+import { spinner as clackSpinner } from '@clack/prompts'
+
+/**
+ * Spinner instance interface matching the API consumers expect
+ */
+export interface Spinner {
+  /** Start the spinner with optional initial message */
+  start: (message?: string) => void
+  /** Stop the spinner with a success message */
+  stop: (message?: string) => void
+  /** Stop the spinner with a success message (alias for stop) */
+  success: (message?: string) => void
+  /** Stop the spinner with an error message */
+  error: (message?: string) => void
+  /** Update the spinner message while running */
+  message: (message: string) => void
+}
 
 /**
  * Create a spinner with standard configuration
  * @param text - Text to display next to the spinner
- * @returns Configured yocto-spinner instance
+ * @returns Configured spinner instance
  * @example
  * ```typescript
  * const spinner = createSpinner('Loading...');
  * spinner.start();
  * // ... do work ...
- * spinner.success();
+ * spinner.success('Done!');
  * ```
  */
-export function createSpinner(text: string) {
-  return yoctoSpinner({
-    text,
-  })
+export function createSpinner(text: string): Spinner {
+  const s = clackSpinner()
+  let started = false
+
+  return {
+    start: (message?: string) => {
+      started = true
+      s.start(message ?? text)
+    },
+    stop: (message?: string) => {
+      if (started) {
+        s.stop(message ?? text)
+      }
+    },
+    success: (message?: string) => {
+      if (started) {
+        s.stop(message ?? 'Done')
+      }
+    },
+    error: (message?: string) => {
+      if (started) {
+        s.stop(message ?? 'Failed')
+      }
+    },
+    message: (message: string) => {
+      if (started) {
+        s.message(message)
+      }
+    },
+  }
 }
 
 /**
@@ -49,17 +91,16 @@ export function createSpinner(text: string) {
  * // Spinner automatically succeeds on completion or fails on error
  * ```
  */
-export function withSpinner<T>(text: string, fn: () => Promise<T>): Promise<T> {
-  const spinner = createSpinner(text)
-  spinner.start()
+export async function withSpinner<T>(text: string, fn: () => Promise<T>): Promise<T> {
+  const s = clackSpinner()
+  s.start(text)
 
-  return fn()
-    .then((result) => {
-      spinner.success()
-      return result
-    })
-    .catch((error) => {
-      spinner.error()
-      throw error
-    })
+  try {
+    const result = await fn()
+    s.stop('Done')
+    return result
+  } catch (error) {
+    s.stop('Failed')
+    throw error
+  }
 }
