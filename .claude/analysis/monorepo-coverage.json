@@ -1,0 +1,232 @@
+{
+  "version": "2.0",
+  "timestamp": "2025-12-29T00:30:00.000Z",
+  "gitSha": "6973bb229c1ea3117e32be88a3ed9e2fd07c6755",
+  "packages": [
+    {
+      "name": "cli",
+      "path": "packages/cli",
+      "status": "analyzed",
+      "coveragePercent": 95,
+      "gapCount": 8,
+      "lastAnalyzed": "2025-12-28T23:59:00.000Z",
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": [
+        { "behavior": "createCLI.run.fullFlow", "risk": "high", "status": "partial" },
+        { "behavior": "gitHooks.installGitHooks.realFs", "risk": "medium", "status": "partial" },
+        { "behavior": "performance.processOptionWithCache", "risk": "medium", "status": "missing" }
+      ]
+    },
+    {
+      "name": "core",
+      "path": "packages/core",
+      "status": "analyzed",
+      "coveragePercent": 100,
+      "gapCount": 2,
+      "lastAnalyzed": "2025-12-28T21:15:00.000Z",
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": [
+        { "behavior": "testing/result-helpers", "risk": "low", "status": "partial" },
+        {
+          "behavior": "vitest-matchers setupResultMatchers error path",
+          "risk": "low",
+          "status": "partial"
+        }
+      ]
+    },
+    {
+      "name": "create-cli",
+      "path": "packages/create-cli",
+      "status": "analyzed",
+      "coveragePercent": 91,
+      "gapCount": 12,
+      "lastAnalyzed": "2025-12-28T21:30:00.000Z",
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": [
+        { "behavior": "compiler.getCachedTemplate", "risk": "medium", "status": "partial" },
+        { "behavior": "loader.getTemplateFiles", "risk": "medium", "status": "partial" },
+        { "behavior": "loader.resolveTemplatePaths", "risk": "medium", "status": "partial" }
+      ]
+    },
+    {
+      "name": "data",
+      "path": "packages/data",
+      "status": "analyzed",
+      "coveragePercent": 94,
+      "gapCount": 10,
+      "lastAnalyzed": "2025-12-28T21:30:00.000Z",
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": [
+        { "behavior": "UnifiedDataOperations.parseAuto", "risk": "critical", "status": "partial" },
+        { "behavior": "UnifiedDataOperations.writeAuto", "risk": "high", "status": "partial" },
+        { "behavior": "DetectionOperations.detectFromFile", "risk": "high", "status": "partial" }
+      ]
+    },
+    {
+      "name": "prettier-config",
+      "path": "tooling/prettier-config",
+      "status": "not-applicable",
+      "coveragePercent": null,
+      "gapCount": 0,
+      "lastAnalyzed": null,
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": []
+    },
+    {
+      "name": "tsup-config",
+      "path": "tooling/tsup-config",
+      "status": "not-applicable",
+      "coveragePercent": null,
+      "gapCount": 0,
+      "lastAnalyzed": null,
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": []
+    },
+    {
+      "name": "typescript-config",
+      "path": "tooling/typescript-config",
+      "status": "not-applicable",
+      "coveragePercent": null,
+      "gapCount": 0,
+      "lastAnalyzed": null,
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": []
+    },
+    {
+      "name": "vitest-config",
+      "path": "tooling/vitest-config",
+      "status": "not-applicable",
+      "coveragePercent": null,
+      "gapCount": 0,
+      "lastAnalyzed": null,
+      "staleSince": null,
+      "changedFilesSince": 0,
+      "topGaps": []
+    }
+  ],
+  "apps": [],
+  "crossPackageRisks": [
+    {
+      "consumer": "cli",
+      "dependency": "core",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
+      "consumer": "create-cli",
+      "dependency": "core",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
+      "consumer": "create-cli",
+      "dependency": "cli",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
+      "consumer": "data",
+      "dependency": "core",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
+      "consumer": "data",
+      "dependency": "cli",
+      "riskyBehaviors": [],
+      "risk": "low"
+    }
+  ],
+  "aggregateSummary": {
+    "totalPackages": 8,
+    "analyzed": 4,
+    "stale": 0,
+    "neverAnalyzed": 0,
+    "notApplicable": 4,
+    "averageCoverage": 95
+  },
+  "topGapsAcrossMonorepo": [
+    {
+      "package": "data",
+      "behavior": "UnifiedDataOperations.parseAuto",
+      "risk": "critical",
+      "status": "partial"
+    },
+    {
+      "package": "data",
+      "behavior": "UnifiedDataOperations.writeAuto",
+      "risk": "high",
+      "status": "partial"
+    },
+    {
+      "package": "data",
+      "behavior": "DetectionOperations.detectFromFile",
+      "risk": "high",
+      "status": "partial"
+    },
+    { "package": "cli", "behavior": "createCLI.run.fullFlow", "risk": "high", "status": "partial" },
+    {
+      "package": "data",
+      "behavior": "DetectionOperations.detectBatch",
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "data",
+      "behavior": "ExcelOperations.parseFile.realFixture",
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "cli",
+      "behavior": "gitHooks.installGitHooks.realFs",
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "cli",
+      "behavior": "performance.processOptionWithCache",
+      "risk": "medium",
+      "status": "missing"
+    },
+    {
+      "package": "create-cli",
+      "behavior": "compiler.getCachedTemplate",
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "create-cli",
+      "behavior": "loader.getTemplateFiles",
+      "risk": "medium",
+      "status": "partial"
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2025-12-28T19:00:00.000Z",
+      "gitSha": "28774fb55ceb2e7f969bbd8f9c056b219c2c80db",
+      "averageCoverage": 82,
+      "totalGaps": 75
+    },
+    {
+      "timestamp": "2025-12-29T00:00:00.000Z",
+      "gitSha": "ec27e62d8eff1f3bafe7113a6dbade7fcbb89a3f",
+      "averageCoverage": 90,
+      "totalGaps": 47
+    },
+    {
+      "timestamp": "2025-12-29T00:30:00.000Z",
+      "gitSha": "6973bb229c1ea3117e32be88a3ed9e2fd07c6755",
+      "averageCoverage": 95,
+      "totalGaps": 32
+    }
+  ]
+}

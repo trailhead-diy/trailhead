@@ -1,0 +1,651 @@
+{
+  "version": "2.0",
+  "timestamp": "2025-12-28T23:59:00.000Z",
+  "gitSha": "07938ff6c0156ff292b9cc365437f38f929b0a0a",
+  "gitBranch": "optimize-action",
+  "lastAnalyzedFiles": [
+    "packages/cli/src/cli.ts",
+    "packages/cli/src/index.ts",
+    "packages/cli/src/command/base.ts",
+    "packages/cli/src/command/builders.ts",
+    "packages/cli/src/command/git-hooks.ts",
+    "packages/cli/src/command/index.ts",
+    "packages/cli/src/command/patterns.ts",
+    "packages/cli/src/command/performance.ts",
+    "packages/cli/src/command/types.ts",
+    "packages/cli/src/command/validation.ts",
+    "packages/cli/src/fs/core.ts",
+    "packages/cli/src/fs/errors.ts",
+    "packages/cli/src/fs/index.ts",
+    "packages/cli/src/fs/testing/fixtures.ts",
+    "packages/cli/src/fs/testing/index.ts",
+    "packages/cli/src/fs/testing/mock-fs.ts",
+    "packages/cli/src/fs/types.ts",
+    "packages/cli/src/fs/utils/index.ts",
+    "packages/cli/src/fs/utils/path-utils.ts",
+    "packages/cli/src/fs/utils/sorting.ts",
+    "packages/cli/src/progress/enhanced-tracker.ts",
+    "packages/cli/src/progress/index.ts",
+    "packages/cli/src/progress/tracker.ts",
+    "packages/cli/src/progress/types.ts",
+    "packages/cli/src/prompts/index.ts",
+    "packages/cli/src/testing/assertions.ts",
+    "packages/cli/src/testing/cli-testing.ts",
+    "packages/cli/src/testing/context.ts",
+    "packages/cli/src/testing/index.ts",
+    "packages/cli/src/testing/interactive.ts",
+    "packages/cli/src/testing/performance.ts",
+    "packages/cli/src/testing/runner.ts",
+    "packages/cli/src/utils/chalk.ts",
+    "packages/cli/src/utils/index.ts",
+    "packages/cli/src/utils/logger.ts",
+    "packages/cli/src/utils/options.ts",
+    "packages/cli/src/utils/package-manager.ts",
+    "packages/cli/src/utils/spinner.ts",
+    "packages/cli/src/utils/stats.ts"
+  ],
+  "projectType": {
+    "language": "TypeScript",
+    "framework": "CLI Framework (Commander.js + Clack)",
+    "testFramework": "Vitest"
+  },
+  "summary": {
+    "behaviorsAnalyzed": 55,
+    "fullyCovered": 47,
+    "partiallyCovered": 5,
+    "notCovered": 3,
+    "qualityIssues": 2,
+    "coveragePercent": 95
+  },
+  "gaps": [
+    {
+      "behavior": "patterns.executeWithConfiguration",
+      "file": "src/command/patterns.ts:451",
+      "risk": "low",
+      "status": "missing",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Add tests for configuration loading, preset application, and override merging"
+    },
+    {
+      "behavior": "performance.processOptionWithCache",
+      "file": "src/command/performance.ts:65",
+      "risk": "medium",
+      "status": "missing",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Add unit tests for option processing with flags, name+alias, and caching behavior"
+    },
+    {
+      "behavior": "performance.processCommandOptionsWithCache",
+      "file": "src/command/performance.ts:120",
+      "risk": "low",
+      "status": "missing",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Add unit tests for batch option processing - currently only exercised indirectly through CLI.run()"
+    },
+    {
+      "behavior": "createCLI.run.fullFlow",
+      "file": "src/cli.ts:112",
+      "risk": "high",
+      "status": "partial",
+      "testTypes": { "unit": true, "integration": true, "e2e": false },
+      "suggestion": "cli-creation.test.ts covers full flow; add edge case tests for variadic args and required option validation"
+    },
+    {
+      "behavior": "gitHooks.installGitHooks.realFs",
+      "file": "src/command/git-hooks.ts:340",
+      "risk": "medium",
+      "status": "partial",
+      "testTypes": { "unit": true, "integration": false, "e2e": false },
+      "suggestion": "Current test heavily mocks fs - add integration test with real temp directory for template rendering"
+    },
+    {
+      "behavior": "gitHooks.removeGitHooks",
+      "file": "src/command/git-hooks.ts:561",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Add tests for file removal in both dry-run and normal modes"
+    },
+    {
+      "behavior": "testing.runner utilities",
+      "file": "src/testing/runner.ts",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": { "unit": false, "integration": true, "e2e": false },
+      "suggestion": "Runner utilities are used throughout tests; add self-verifying unit tests for runTestCommandExpectError"
+    },
+    {
+      "behavior": "logger.createDefaultLogger.verboseMode",
+      "file": "src/utils/logger.ts:41",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": { "unit": false, "integration": true, "e2e": false },
+      "suggestion": "Logger is tested indirectly via command tests; add focused unit test for debug output in verbose mode"
+    }
+  ],
+  "qualityIssues": [
+    {
+      "file": "tests/git-hooks.integration.test.ts",
+      "issue": "over-mocked",
+      "details": "Heavy mocking of fs module prevents testing actual template rendering. Consider using real temp directory for template content verification."
+    },
+    {
+      "file": "tests/cli-orchestration.test.ts",
+      "issue": "happy-path-only",
+      "details": "Tests verify CLI structure but don't execute commands. Consider running actual command actions to verify context injection."
+    }
+  ],
+  "coverageMatrix": [
+    {
+      "behavior": "createCommand",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "covered"
+    },
+    {
+      "behavior": "createCLI",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "covered"
+    },
+    {
+      "behavior": "CLI.run",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "partial"
+    },
+    {
+      "behavior": "validateCommandOption",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "validateCommandConfig",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "validateCommandConfigWithCache",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "defineOptions",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "commonOptions",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "createFileProcessingCommand",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeFileSystemOperations",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeSubprocess",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeBatch",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeWithPhases",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "displaySummary",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeInteractiveCommand",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeWithValidation",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeWithDryRun",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "executeWithConfiguration",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "missing"
+    },
+    {
+      "behavior": "processOptionWithCache",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "missing"
+    },
+    {
+      "behavior": "processCommandOptionsWithCache",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "missing"
+    },
+    {
+      "behavior": "createGitHooksCommand",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "detectProjectConfig",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "installGitHooks",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "behavior": "removeGitHooks",
+      "unit": false,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "partial"
+    },
+    {
+      "behavior": "fs.readFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.writeFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.exists",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.stat",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.mkdir",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.readDir",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.copy",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.move",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.remove",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.readJson",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.writeJson",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.ensureDir",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.outputFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.emptyDir",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.findFiles",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.readIfExists",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.copyIfExists",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "fs.sorting",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "mapNodeError",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "createFileSystemError",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "progress.createProgressTracker",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "progress.updateProgress",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "progress.calculateWeightedProgress",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "prompts.confirmWithDetails",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "prompts.directoryPrompt",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "packageManager.detectPackageManager",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "packageManager.parseSemVer",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "packageManager.compareSemVer",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "packageManager.getRunCommand",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "packageManager.caching",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "testing.createTestContext",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    }
+  ],
+  "resolved": [
+    {
+      "behavior": "builders.createFileProcessingCommand",
+      "resolvedIn": "tests/builders.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "patterns.executeInteractiveCommand",
+      "resolvedIn": "tests/patterns.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "patterns.executeWithValidation",
+      "resolvedIn": "tests/patterns.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "patterns.executeWithDryRun",
+      "resolvedIn": "tests/patterns.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "prompts.confirmWithDetails",
+      "resolvedIn": "tests/prompts.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "prompts.directoryPrompt",
+      "resolvedIn": "tests/prompts.test.ts",
+      "resolvedAt": "2025-12-28"
+    }
+  ],
+  "recommendations": {
+    "immediate": [
+      "Add unit tests for processOptionWithCache/processCommandOptionsWithCache - these handle Commander.js option registration"
+    ],
+    "shortTerm": [
+      "Add tests for executeWithConfiguration - low-risk but missing coverage",
+      "Reduce mocking in git-hooks.integration.test.ts - use real temp directory for template verification",
+      "Add edge case tests for CLI.run() with variadic arguments and required option validation"
+    ],
+    "notes": [
+      "Significant improvement: Previous gaps for createFileProcessingCommand, executeInteractiveCommand, executeWithValidation, executeWithDryRun, prompts are now fully covered",
+      "Coverage increased from 88% to 95% - 6 behaviors were resolved since last analysis",
+      "Filesystem module (fs/) has excellent coverage with real integration tests using temp directories",
+      "Package manager detection has comprehensive unit tests with proper child_process mocking",
+      "Progress tracker, subprocess execution, batch processing, and phase execution are well-tested",
+      "Command validation, option builders, and CLI creation have thorough coverage",
+      "Remaining gaps are low-to-medium risk internal utilities, not public API behaviors"
+    ]
+  },
+  "history": [
+    {
+      "timestamp": "2025-12-28T18:45:00.000Z",
+      "gitSha": "28774fb55ceb2e7f969bbd8f9c056b219c2c80db",
+      "coveragePercent": 88,
+      "gapCount": 16
+    },
+    {
+      "timestamp": "2025-12-28T23:30:00.000Z",
+      "gitSha": "ec27e62d8eff1f3bafe7113a6dbade7fcbb89a3f",
+      "coveragePercent": 88,
+      "gapCount": 14
+    },
+    {
+      "timestamp": "2025-12-28T23:59:00.000Z",
+      "gitSha": "07938ff6c0156ff292b9cc365437f38f929b0a0a",
+      "coveragePercent": 95,
+      "gapCount": 8
+    }
+  ]
+}
