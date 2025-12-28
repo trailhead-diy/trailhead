@@ -286,12 +286,37 @@ export const createConflictError = (
 })
 
 /**
- * Creates an Error Result from a TestError
+ * Creates an Error Result from a TestError.
+ *
+ * @template T - Expected success value type (for type inference)
+ * @param error - The TestError to wrap
+ * @returns Result in Err state containing the error
+ *
+ * @example
+ * ```typescript
+ * const error = createTestError('VALIDATION_ERROR', 'Invalid input')
+ * const result: Result<User, TestError> = createErrorResult(error)
+ * expect(result.isErr()).toBe(true)
+ * ```
  */
 export const createErrorResult = <T>(error: TestError): Result<T, TestError> => err(error)
 
 /**
- * Creates a validation Error Result
+ * Creates a validation Error Result with VALIDATION_ERROR code.
+ *
+ * @template T - Expected success value type (for type inference)
+ * @param message - Validation error message
+ * @param field - Optional field name that failed validation
+ * @returns Result in Err state with validation error
+ *
+ * @example
+ * ```typescript
+ * const result: Result<User, TestError> = createValidationErrorResult(
+ *   'must be at least 18',
+ *   'age'
+ * )
+ * // Error message: "age: must be at least 18"
+ * ```
  */
 export const createValidationErrorResult = <T>(
   message: string,
@@ -299,7 +324,22 @@ export const createValidationErrorResult = <T>(
 ): Result<T, TestError> => err(createValidationError(message, field))
 
 /**
- * Creates a filesystem Error Result
+ * Creates a filesystem Error Result with FS_ERROR code.
+ *
+ * @template T - Expected success value type (for type inference)
+ * @param operation - The filesystem operation that failed
+ * @param path - The file/directory path involved
+ * @param cause - Optional underlying error cause
+ * @returns Result in Err state with filesystem error
+ *
+ * @example
+ * ```typescript
+ * const result: Result<string, TestError> = createFsErrorResult(
+ *   'read',
+ *   '/etc/config.json',
+ *   originalError
+ * )
+ * ```
  */
 export const createFsErrorResult = <T>(
   operation: string,
@@ -308,7 +348,24 @@ export const createFsErrorResult = <T>(
 ): Result<T, TestError> => err(createFsError(operation, path, cause))
 
 /**
- * Error factory builder for custom error types
+ * Error factory builder for creating custom error types.
+ * Returns a function that creates TestError with consistent code and formatted message.
+ *
+ * @template T - Parameters object type
+ * @param code - Error code to use for all created errors
+ * @param createMessage - Function to generate message from params
+ * @returns Factory function that creates TestError from params
+ *
+ * @example
+ * ```typescript
+ * const createUserError = createErrorFactory<{ userId: string; action: string }>(
+ *   'ACCESS_ERROR',
+ *   (params) => `User ${params.userId} cannot ${params.action}`
+ * )
+ *
+ * const error = createUserError({ userId: '123', action: 'delete' })
+ * // { code: 'ACCESS_ERROR', message: 'User 123 cannot delete', cause: {...} }
+ * ```
  */
 export const createErrorFactory =
   <T extends Record<string, unknown>>(code: TestErrorCode, createMessage: (params: T) => string) =>
@@ -319,7 +376,17 @@ export const createErrorFactory =
   })
 
 /**
- * Creates a mock error for testing error handling
+ * Creates a mock error for testing error handling.
+ * Useful for quickly creating test errors without specifying details.
+ *
+ * @param message - Error message, defaults to 'Mock error'
+ * @returns TestError with MOCK_ERROR code
+ *
+ * @example
+ * ```typescript
+ * const error = createMockError()
+ * const customError = createMockError('Custom mock message')
+ * ```
  */
 export const createMockError = (message = 'Mock error'): TestError => ({
   code: 'MOCK_ERROR',
@@ -327,14 +394,44 @@ export const createMockError = (message = 'Mock error'): TestError => ({
 })
 
 /**
- * Creates a mock async error for testing
+ * Creates a mock async error for testing Promise rejection handling.
+ * Returns a Promise that immediately rejects with a mock error.
+ *
+ * @param message - Error message, defaults to 'Mock async error'
+ * @returns Promise that rejects with a TestError
+ * @throws {TestError} Always rejects with MOCK_ERROR
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await createMockAsyncError('Network failed')
+ * } catch (error) {
+ *   expect(error.code).toBe('MOCK_ERROR')
+ * }
+ * ```
  */
 export const createMockAsyncError = (message = 'Mock async error'): Promise<never> => {
   return Promise.reject(createMockError(message))
 }
 
 /**
- * Creates an error chain for testing error propagation
+ * Creates an error chain for testing error propagation.
+ * Each message becomes a nested cause of the previous.
+ *
+ * @param errors - Array of error messages (first is primary)
+ * @returns Chained TestError with nested cause structure
+ *
+ * @example
+ * ```typescript
+ * const chain = createErrorChain([
+ *   'Service unavailable',
+ *   'Database connection failed',
+ *   'Network timeout'
+ * ])
+ * // Primary: 'Service unavailable'
+ * // chain.cause.message: 'Database connection failed'
+ * // chain.cause.cause.message: 'Network timeout'
+ * ```
  */
 export const createErrorChain = (errors: string[]): TestError & { code: 'CHAINED_ERROR' } => {
   const [primary, ...causes] = errors
@@ -346,7 +443,18 @@ export const createErrorChain = (errors: string[]): TestError & { code: 'CHAINED
 }
 
 /**
- * Extracts error messages from a chain
+ * Extracts all error messages from a chained error.
+ * Recursively walks the cause chain and collects messages.
+ *
+ * @param error - Chained error to extract messages from
+ * @returns Array of messages from primary to deepest cause
+ *
+ * @example
+ * ```typescript
+ * const chain = createErrorChain(['A', 'B', 'C'])
+ * const messages = extractErrorChain(chain)
+ * // ['A', 'B', 'C']
+ * ```
  */
 export const extractErrorChain = (error: TestError & { code: 'CHAINED_ERROR' }): string[] => {
   const messages = [error.message]
@@ -357,7 +465,19 @@ export const extractErrorChain = (error: TestError & { code: 'CHAINED_ERROR' }):
 }
 
 /**
- * Type guard to check if an error is a TestError
+ * Type guard to check if an error is a TestError.
+ * Validates presence and type of required code and message properties.
+ *
+ * @param error - Unknown value to check
+ * @returns Type predicate indicating if value is a TestError
+ *
+ * @example
+ * ```typescript
+ * const maybeError: unknown = someFunction()
+ * if (isTestError(maybeError)) {
+ *   console.log(maybeError.code, maybeError.message)
+ * }
+ * ```
  */
 export const isTestError = (error: unknown): error is TestError => {
   return (
@@ -371,7 +491,22 @@ export const isTestError = (error: unknown): error is TestError => {
 }
 
 /**
- * Type guard to check if an error has a specific code
+ * Type guard to check if an error has a specific error code.
+ * Narrows the error type to include the specific code literal.
+ *
+ * @template T - Specific error code to check for
+ * @param error - TestError to check
+ * @param code - Error code to match against
+ * @returns Type predicate narrowing error to have specific code
+ *
+ * @example
+ * ```typescript
+ * const error = createTestError('VALIDATION_ERROR', 'Invalid')
+ * if (hasErrorCode(error, 'VALIDATION_ERROR')) {
+ *   // TypeScript knows error.code is 'VALIDATION_ERROR'
+ *   handleValidationError(error)
+ * }
+ * ```
  */
 export const hasErrorCode = <T extends TestErrorCode>(
   error: TestError,

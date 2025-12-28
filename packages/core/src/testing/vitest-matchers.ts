@@ -108,7 +108,12 @@ const toHaveValue = function (this: any, received: Result<any, any>, expected: a
 }
 
 /**
- * Matcher to check Result error with custom assertion
+ * Matcher to check Result error matches expected value.
+ * Compares the entire error object for equality.
+ *
+ * @param received - Result to check
+ * @param expected - Expected error value
+ * @returns Vitest matcher result
  */
 const toHaveError = function (this: any, received: Result<any, any>, expected: any) {
   if (received.isOk()) {
@@ -233,7 +238,12 @@ const toHaveLength = function (this: any, received: Result<any, any>, expectedLe
 }
 
 /**
- * Matcher to check if Result value matches a pattern
+ * Matcher to check if Result value matches a pattern.
+ * Uses deep equality comparison on the Ok value.
+ *
+ * @param received - Result to check
+ * @param expected - Expected value pattern to match
+ * @returns Vitest matcher result
  */
 const toMatchResult = function (this: any, received: Result<any, any>, expected: any) {
   if (received.isErr()) {

@@ -4,7 +4,13 @@ import { ok, err, createCoreError, type Result, type CoreError } from '@trailhea
 import type { ProjectConfig, PackageManager } from './types.js'
 
 /**
- * Validation utilities using Zod schemas for type-safe input validation
+ * Validation utilities using Zod schemas for type-safe input validation.
+ *
+ * Provides security-focused validation for user inputs including project names,
+ * paths, and configuration values. All validators return Result types for
+ * explicit error handling.
+ *
+ * @module config/validation
  */
 
 // Constants for validation limits
@@ -116,14 +122,27 @@ function zodResultToResult<T>(
 }
 
 /**
- * Validate and sanitize project name
+ * Validate and sanitize a project name.
+ *
+ * Checks length, character restrictions (alphanumeric, dots, dashes, underscores),
+ * and rejects Windows reserved names (CON, PRN, AUX, NUL, COM1-9, LPT1-9).
+ *
+ * @param name - Project name to validate
+ * @returns Result with validated name or validation error
  */
 export function validateProjectName(name: string): Result<string, CoreError> {
   return zodResultToResult(projectNameSchema, name, 'Project name')
 }
 
 /**
- * Validate project path with directory traversal protection
+ * Validate project path with directory traversal protection.
+ *
+ * Resolves relative paths against baseDir and validates path length
+ * and null byte restrictions for security.
+ *
+ * @param inputPath - Path to validate (absolute or relative)
+ * @param baseDir - Base directory for resolving relative paths
+ * @returns Result with resolved absolute path or validation error
  */
 export function validateProjectPath(inputPath: string, baseDir: string): Result<string, CoreError> {
   // First validate the basic path schema
@@ -148,14 +167,26 @@ export function validateProjectPath(inputPath: string, baseDir: string): Result<
 }
 
 /**
- * Validate package manager
+ * Validate package manager selection.
+ *
+ * Only allows whitelisted package managers: npm, pnpm.
+ *
+ * @param packageManager - Package manager name to validate
+ * @returns Result with validated package manager or validation error
  */
 export function validatePackageManager(packageManager: string): Result<string, CoreError> {
   return zodResultToResult(packageManagerSchema, packageManager, 'Package manager')
 }
 
 /**
- * Validate template file path to prevent directory traversal
+ * Validate template file path to prevent directory traversal attacks.
+ *
+ * Ensures the resolved path stays within the base template directory.
+ * Rejects paths with ".." sequences or absolute paths that escape.
+ *
+ * @param filePath - Template file path to validate
+ * @param baseTemplateDir - Base directory templates must reside within
+ * @returns Result with resolved safe path or validation error
  */
 export function validateTemplatePath(
   filePath: string,
@@ -192,7 +223,14 @@ export function validateTemplatePath(
 }
 
 /**
- * Validate output file path to prevent directory traversal
+ * Validate output file path to prevent directory traversal attacks.
+ *
+ * Ensures generated files are written only within the project directory.
+ * Rejects paths with ".." or absolute paths that would escape the project.
+ *
+ * @param filePath - Output file path to validate (must be relative)
+ * @param baseOutputDir - Project directory files must be written within
+ * @returns Result with resolved safe path or validation error
  */
 export function validateOutputPath(
   filePath: string,
@@ -238,7 +276,14 @@ export function validateOutputPath(
 }
 
 /**
- * Sanitize text input to prevent injection attacks
+ * Sanitize text input to prevent injection attacks.
+ *
+ * Removes null bytes, control characters, and other dangerous characters.
+ * Trims whitespace and enforces length limits.
+ *
+ * @param input - Text string to sanitize
+ * @param _maxLength - Maximum allowed length (default: 1000, currently unused)
+ * @returns Result with sanitized text or validation error
  */
 export function sanitizeText(
   input: string,
@@ -256,10 +301,21 @@ export function sanitizeText(
 }
 
 /**
- * Validate and normalize project configuration with defaults
+ * Validate and normalize project configuration with defaults.
  *
- * Takes a partial project configuration and returns a complete ProjectConfig
- * with validated values and sensible defaults applied.
+ * Takes a partial configuration and returns a complete ProjectConfig with
+ * all required fields validated and sensible defaults applied for optional fields.
+ *
+ * @param config - Partial configuration with at least projectName
+ * @returns Result with complete validated ProjectConfig or validation error
+ *
+ * @remarks
+ * Default values applied:
+ * - packageManager: 'pnpm'
+ * - projectType: 'standalone-cli'
+ * - nodeVersion: '18'
+ * - typescript: true
+ * - features.testing: true
  */
 export function validateConfig(config: Partial<ProjectConfig>): Result<ProjectConfig, CoreError> {
   try {

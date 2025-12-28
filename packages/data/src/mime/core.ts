@@ -1,3 +1,11 @@
+/**
+ * @module mime/core
+ * @description Core MIME type operations implementation
+ *
+ * Provides factory for creating MIME type operations including type detection,
+ * extension resolution, category checking, and MIME type parsing.
+ */
+
 import { ok, err } from '@trailhead/core'
 import * as mimeTypes from 'mime-types'
 import type { MimeConfig, FormatResult, MimeTypeInfo, FileCategory } from '../formats-types.js'
@@ -8,6 +16,33 @@ import { createMimeError, createInvalidMimeTypeError, mapLibraryError } from '..
 // MIME Core Operations
 // ========================================
 
+/**
+ * Creates MIME type operations for working with MIME types and file extensions
+ *
+ * Provides a complete interface for MIME type detection, extension resolution,
+ * category checking, normalization, and parsing. Uses the mime-types library
+ * for extension-based detection.
+ *
+ * @param config - Optional MIME configuration overrides
+ * @returns MimeOperations interface with all MIME type methods
+ *
+ * @example
+ * ```typescript
+ * const mimeOps = createMimeOperations({ strictMode: true });
+ *
+ * // Get MIME type from file path
+ * const result = mimeOps.getMimeType('document.pdf');
+ * if (result.isOk()) {
+ *   console.log(result.value.full); // 'application/pdf'
+ * }
+ *
+ * // Get extensions for MIME type
+ * const exts = mimeOps.getExtensions('image/jpeg');
+ * if (exts.isOk()) {
+ *   console.log(exts.value); // ['jpeg', 'jpg']
+ * }
+ * ```
+ */
 export const createMimeOperations: CreateMimeOperations = (config = {}) => {
   const mimeConfig = { ...defaultMimeConfig, ...config }
 

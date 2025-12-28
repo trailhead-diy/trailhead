@@ -1,33 +1,57 @@
+/**
+ * Zod schemas for configuration validation.
+ *
+ * Provides comprehensive validation schemas for project configuration,
+ * configuration files, and presets. Exports both schemas and validation
+ * functions that return Result types.
+ *
+ * @module config/schema
+ */
+
 import { z } from 'zod'
 import { ok, err, createCoreError, type Result } from '@trailhead/core'
 import type { ProjectConfig } from './types.js'
 
-/**
- * Comprehensive configuration schema for create-trailhead-cli
- */
-
 // Base schemas for reuse
+
+/**
+ * Zod schema for project names.
+ *
+ * Validates: lowercase alphanumeric with hyphens, 1-214 chars (npm limit).
+ */
 export const projectNameSchema = z
   .string({
     invalid_type_error: 'Project name must be a string',
     required_error: 'Project name is required',
   })
   .min(1, { message: 'Project name is required' })
-  .regex(/^[a-z0-9-]+$/, { message: 'Project name must be lowercase alphanumeric with hyphens only' })
+  .regex(/^[a-z0-9-]+$/, {
+    message: 'Project name must be lowercase alphanumeric with hyphens only',
+  })
   .max(214, { message: 'Project name must be less than 214 characters' }) // npm package name limit
 
+/** Zod schema for package manager selection (npm or pnpm) */
 export const packageManagerSchema = z.enum(['npm', 'pnpm'], {
   errorMap: () => ({ message: 'Package manager must be "npm" or "pnpm"' }),
 })
 
+/** Zod schema for project type selection */
 export const projectTypeSchema = z.enum(['standalone-cli', 'library', 'monorepo-package'], {
-  errorMap: () => ({ message: 'Project type must be one of: standalone-cli, library, monorepo-package' }),
+  errorMap: () => ({
+    message: 'Project type must be one of: standalone-cli, library, monorepo-package',
+  }),
 })
 
+/** Zod schema for IDE configuration selection */
 export const ideSchema = z.enum(['vscode', 'none'], {
   errorMap: () => ({ message: 'IDE must be "vscode" or "none"' }),
 })
 
+/**
+ * Zod schema for Node.js version.
+ *
+ * Validates: numeric string, version 14 or higher.
+ */
 export const nodeVersionSchema = z
   .string({
     invalid_type_error: 'Node version must be provided as a string',
@@ -38,7 +62,7 @@ export const nodeVersionSchema = z
     message: 'Node version must be 14 or higher',
   })
 
-// Feature flags schema with validation
+/** Zod schema for feature flags with core always required */
 export const featuresSchema = z.object({
   core: z.literal(true, {
     errorMap: () => ({ message: 'Core feature must be enabled' }),
@@ -49,7 +73,7 @@ export const featuresSchema = z.object({
   cicd: z.boolean().optional(),
 })
 
-// Main project configuration schema
+/** Complete Zod schema for project configuration with all fields */
 export const modernProjectConfigSchema = z.object({
   // Basic project information
   projectName: projectNameSchema,
@@ -75,7 +99,7 @@ export const modernProjectConfigSchema = z.object({
   verbose: z.boolean().default(false),
 })
 
-// Configuration file schema (subset for saving to disk)
+/** Zod schema for configuration files saved to disk (subset of full config) */
 export const configFileSchema = z.object({
   projectName: projectNameSchema,
   projectType: projectTypeSchema,
@@ -86,7 +110,7 @@ export const configFileSchema = z.object({
   ide: ideSchema,
 })
 
-// Preset configuration schema for templates
+/** Zod schema for preset configurations (templates with partial overrides) */
 export const presetConfigSchema = z.object({
   name: projectNameSchema,
   description: z.string().min(1, 'Preset description is required'),
@@ -97,12 +121,17 @@ export const presetConfigSchema = z.object({
   ide: ideSchema.optional(),
 })
 
-// Type exports
+/** TypeScript type inferred from configFileSchema */
 export type ConfigFile = z.infer<typeof configFileSchema>
+
+/** TypeScript type inferred from presetConfigSchema */
 export type PresetConfig = z.infer<typeof presetConfigSchema>
 
 /**
- * Validate a project configuration
+ * Validate a complete project configuration.
+ *
+ * @param config - Unknown input to validate
+ * @returns Result with validated ProjectConfig or validation error
  */
 export function validateProjectConfig(config: unknown): Result<ProjectConfig, any> {
   const result = modernProjectConfigSchema.safeParse(config)
@@ -131,7 +160,10 @@ export function validateProjectConfig(config: unknown): Result<ProjectConfig, an
 }
 
 /**
- * Validate a configuration file
+ * Validate a configuration file structure.
+ *
+ * @param config - Unknown input to validate
+ * @returns Result with validated ConfigFile or validation error
  */
 export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
   const result = configFileSchema.safeParse(config)
@@ -165,7 +197,10 @@ export function validateConfigFile(config: unknown): Result<ConfigFile, any> {
 }
 
 /**
- * Validate a preset configuration
+ * Validate a preset configuration.
+ *
+ * @param preset - Unknown input to validate
+ * @returns Result with validated PresetConfig or validation error
  */
 export function validatePresetConfig(preset: unknown): Result<PresetConfig, any> {
   const result = presetConfigSchema.safeParse(preset)
@@ -194,7 +229,12 @@ export function validatePresetConfig(preset: unknown): Result<PresetConfig, any>
 }
 
 /**
- * Create a configuration file from ProjectConfig
+ * Extract a ConfigFile subset from a full ProjectConfig.
+ *
+ * Used when saving configuration to disk (excludes runtime-only fields).
+ *
+ * @param config - Full project configuration
+ * @returns ConfigFile containing only persistable fields
  */
 export function createConfigFile(config: ProjectConfig): ConfigFile {
   return {
@@ -209,7 +249,14 @@ export function createConfigFile(config: ProjectConfig): ConfigFile {
 }
 
 /**
- * Merge preset with user configuration
+ * Merge a preset with user-provided configuration.
+ *
+ * Preset values serve as defaults; user values override most preset values.
+ * ProjectType is always taken from preset.
+ *
+ * @param preset - Preset configuration to use as base
+ * @param userConfig - User-provided overrides
+ * @returns Merged partial configuration
  */
 export function mergePresetWithConfig(
   preset: PresetConfig,
@@ -230,7 +277,11 @@ export function mergePresetWithConfig(
 }
 
 /**
- * Generate JSON schema for configuration file
+ * Generate a JSON Schema for configuration files.
+ *
+ * Provides IDE support with autocomplete and validation for config files.
+ *
+ * @returns JSON Schema object compatible with draft-07
  */
 export function generateConfigJsonSchema() {
   // This would generate a JSON Schema for IDE support

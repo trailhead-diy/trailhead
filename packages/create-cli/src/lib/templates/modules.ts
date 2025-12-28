@@ -1,3 +1,12 @@
+/**
+ * Modular template composition system.
+ *
+ * Provides a feature-based approach to template composition where projects
+ * are built from discrete feature modules (core, config, testing, etc.).
+ *
+ * @module templates/modules
+ */
+
 import { ok, err, createCoreError, type Result } from '@trailhead/core'
 import { sortBy } from 'es-toolkit'
 import type { ProjectConfig } from '../config/types.js'
@@ -7,26 +16,48 @@ import type { TemplateFile } from './types.js'
 const sortStrings = (arr: string[], order: 'asc' | 'desc' = 'asc'): string[] =>
   order === 'desc' ? [...arr].sort().reverse() : [...arr].sort()
 
+/**
+ * Feature module definition for template composition.
+ *
+ * Each module represents a discrete feature that can be included in a project.
+ */
 export interface FeatureModule {
+  /** Unique module identifier */
   name: string
+  /** Human-readable description */
   description: string
-  dependencies: string[] // Other feature modules this depends on
-  conflicts: string[] // Features that conflict with this one
+  /** Other module names this module requires */
+  dependencies: string[]
+  /** Module names that cannot be used with this module */
+  conflicts: string[]
+  /** Template files provided by this module */
   files: TemplateFile[]
-  packageDependencies?: string[] // Additional npm dependencies needed
-  scripts?: Record<string, string> // Additional package.json scripts
+  /** npm packages to add to dependencies */
+  packageDependencies?: string[]
+  /** Scripts to add to package.json */
+  scripts?: Record<string, string>
 }
 
+/**
+ * Result of template composition with all resolved modules and files.
+ */
 export interface ComposedTemplate {
+  /** Composed template name (based on project type) */
   name: string
+  /** All selected and resolved feature modules */
   modules: FeatureModule[]
+  /** All template files from all modules */
   files: TemplateFile[]
+  /** All npm package dependencies */
   packageDependencies: string[]
+  /** All package.json scripts */
   scripts: Record<string, string>
 }
 
 /**
- * Define all available feature modules
+ * Registry of all available feature modules.
+ *
+ * Each module provides files, dependencies, and scripts for a specific feature.
  */
 export const FEATURE_MODULES: Record<string, FeatureModule> = {
   core: {
@@ -125,7 +156,13 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
 }
 
 /**
- * Compose template from selected features
+ * Compose a complete template from selected feature modules.
+ *
+ * Resolves dependencies, checks for conflicts, and combines all files,
+ * package dependencies, and scripts from selected modules.
+ *
+ * @param config - Project configuration with feature flags
+ * @returns Result with composed template or composition error
  */
 export function composeTemplate(config: ProjectConfig): Result<ComposedTemplate, any> {
   try {
@@ -297,7 +334,10 @@ function checkConflicts(modules: FeatureModule[]): Result<void, any> {
 }
 
 /**
- * Get recommended modules for a project type
+ * Get recommended feature modules for a given project type.
+ *
+ * @param projectType - Type of project (standalone-cli, library, monorepo-package)
+ * @returns Array of recommended module names
  */
 export function getRecommendedModules(projectType: string): string[] {
   const base = ['core']
@@ -318,7 +358,9 @@ export function getRecommendedModules(projectType: string): string[] {
 }
 
 /**
- * Get all available feature modules sorted by name
+ * Get all available feature modules sorted alphabetically by name.
+ *
+ * @returns Array of FeatureModule objects sorted by name
  */
 export function getSortedFeatureModules(): FeatureModule[] {
   const modules = Object.values(FEATURE_MODULES)
@@ -326,7 +368,9 @@ export function getSortedFeatureModules(): FeatureModule[] {
 }
 
 /**
- * Get module names sorted alphabetically
+ * Get all module names sorted alphabetically.
+ *
+ * @returns Array of module name strings
  */
 export function getSortedModuleNames(): string[] {
   const names = Object.keys(FEATURE_MODULES)
@@ -334,7 +378,10 @@ export function getSortedModuleNames(): string[] {
 }
 
 /**
- * Sort template files by destination path
+ * Sort template files by destination path alphabetically.
+ *
+ * @param files - Array of template files to sort
+ * @returns New array sorted by destination path
  */
 export function sortTemplateFiles(files: TemplateFile[]): TemplateFile[] {
   return sortBy(files, [(file) => file.destination])

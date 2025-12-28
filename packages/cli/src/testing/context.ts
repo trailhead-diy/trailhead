@@ -3,10 +3,12 @@ import type { Logger } from '../utils/logger.js'
 import { createMockFileSystem } from '../fs/testing/index.js'
 
 /**
- * Create a no-op logger for testing
+ * Create a no-op logger for testing.
  *
  * Returns a logger that silently discards all messages.
- * Useful for testing without console noise.
+ * Useful for tests that need to suppress console output.
+ *
+ * @returns Logger instance that discards all output
  */
 export function createNoopLogger(): Logger {
   return {

@@ -1,3 +1,9 @@
+/**
+ * Generate command for creating new CLI projects.
+ *
+ * @module commands/generate
+ */
+
 import { createCommand, type CommandOptions, type CommandContext } from '@trailhead/cli/command'
 import { createDefaultLogger } from '@trailhead/cli/utils'
 import { ok, err, type Result, type CoreError } from '@trailhead/core'
@@ -6,9 +12,7 @@ import { createGeneratorError, ERROR_CODES } from '../lib/core/errors.js'
 import { resolve } from 'path'
 import type { ProjectConfig } from '../lib/config/types.js'
 
-/**
- * Generate command options
- */
+/** Options specific to the generate command */
 interface GenerateOptions extends CommandOptions {
   /** Overwrite existing directory */
   readonly force?: boolean
@@ -17,7 +21,9 @@ interface GenerateOptions extends CommandOptions {
 }
 
 /**
- * Generate command - creates new CLI projects
+ * CLI command that generates new @trailhead/* based projects.
+ *
+ * Validates project name, creates configuration, and delegates to generateProject.
  */
 export const generateCommand = createCommand<GenerateOptions>({
   name: 'generate',

@@ -57,6 +57,9 @@ export function createDefaultLogger(verbose = false): Logger {
 }
 
 /**
- * Export a default logger instance for convenience
+ * Default logger instance for convenience.
+ *
+ * Uses non-verbose mode. Create a custom logger with createDefaultLogger()
+ * if you need verbose debug output.
  */
 export const logger = createDefaultLogger()

@@ -1,8 +1,7 @@
 import type { Command, CommandContext } from '../command/index.js'
 
 /**
- * CLI snapshot testing utilities
- * Provides built-in snapshot testing for CLI output
+ * Options for CLI output snapshot testing.
  */
 export interface CLISnapshotOptions {
   normalizeOutput?: (output: string) => string
@@ -10,15 +9,28 @@ export interface CLISnapshotOptions {
   trimWhitespace?: boolean
 }
 
+/**
+ * Result of a CLI test execution.
+ */
 export interface CLITestResult {
+  /** Captured standard output */
   stdout: string
+  /** Captured standard error */
   stderr: string
+  /** Process exit code */
   exitCode: number
+  /** Whether command succeeded (exitCode === 0) */
   success: boolean
 }
 
 /**
- * Create a CLI test runner with output capture
+ * Create a CLI test runner with output capture.
+ *
+ * Creates a runner that executes commands while capturing console output
+ * and process.exit calls. Useful for testing CLI command output.
+ *
+ * @param options - Snapshot configuration options
+ * @returns Test runner with run method
  */
 export function createCLITestRunner(options: CLISnapshotOptions = {}) {
   const { normalizeOutput, stripAnsi = true, trimWhitespace = true } = options
@@ -129,8 +141,13 @@ export function createCLITestRunner(options: CLISnapshotOptions = {}) {
 }
 
 /**
- * Snapshot testing for CLI commands
- * Note: Requires test framework with expect and toMatchSnapshot
+ * Assert CLI result matches snapshot.
+ *
+ * Requires test framework with expect and toMatchSnapshot (e.g., Vitest, Jest).
+ *
+ * @param result - CLI test result to snapshot
+ * @param snapshotName - Optional snapshot identifier
+ * @throws {Error} If test framework is not available
  */
 export function expectCLISnapshot(result: CLITestResult, snapshotName?: string) {
   const snapshot = {
@@ -148,7 +165,7 @@ export function expectCLISnapshot(result: CLITestResult, snapshotName?: string) 
 }
 
 /**
- * Integration test helpers for complete CLI workflows
+ * Single step in a CLI workflow test.
  */
 export interface WorkflowStep {
   name: string
@@ -158,6 +175,16 @@ export interface WorkflowStep {
   verify?: (result: CLITestResult) => void
 }
 
+/**
+ * Create a multi-step workflow test.
+ *
+ * Must be used within a test framework environment. Returns a test
+ * function that executes steps in sequence with setup/verify hooks.
+ *
+ * @param _workflowName - Descriptive name for the workflow
+ * @param _steps - Array of workflow steps to execute
+ * @returns Test function (throws if not in test environment)
+ */
 export function createWorkflowTest(_workflowName: string, _steps: WorkflowStep[]): () => void {
   return () => {
     // This function returns a test suite that should be executed in a test environment
@@ -167,7 +194,9 @@ export function createWorkflowTest(_workflowName: string, _steps: WorkflowStep[]
 }
 
 /**
- * Command test builder for comprehensive command testing
+ * Test case definition for command testing.
+ *
+ * @template T - Command options type
  */
 export interface CommandTestCase<T> {
   name: string
@@ -180,6 +209,17 @@ export interface CommandTestCase<T> {
   cleanup?: () => Promise<void>
 }
 
+/**
+ * Create a test suite for a command with multiple test cases.
+ *
+ * Must be used within a test framework environment.
+ *
+ * @template T - Command options type
+ * @param _commandName - Name of the command being tested
+ * @param _command - Command to test
+ * @param _testCases - Array of test case definitions
+ * @returns Test function (throws if not in test environment)
+ */
 export function createCommandTestSuite<T>(
   _commandName: string,
   _command: Command<T>,
@@ -195,7 +235,10 @@ export function createCommandTestSuite<T>(
 }
 
 /**
- * Utility to strip ANSI color codes from output
+ * Remove ANSI escape codes from a string.
+ *
+ * @param str - String potentially containing ANSI codes
+ * @returns String with ANSI codes removed
  */
 function stripAnsiCodes(str: string): string {
   // eslint-disable-next-line no-control-regex
@@ -203,7 +246,7 @@ function stripAnsiCodes(str: string): string {
 }
 
 /**
- * Helper for testing interactive CLI commands
+ * Step definition for interactive command testing.
  */
 export interface InteractiveTestStep {
   prompt: string | RegExp
@@ -211,6 +254,16 @@ export interface InteractiveTestStep {
   delay?: number
 }
 
+/**
+ * Create an interactive command test with simulated user input.
+ *
+ * Must be used within a test framework environment.
+ *
+ * @param _testName - Descriptive name for the test
+ * @param _command - Command to test
+ * @param _steps - Array of prompt/response steps
+ * @returns Test function (throws if not in test environment)
+ */
 export function createInteractiveTest(
   _testName: string,
   _command: Command<any>,

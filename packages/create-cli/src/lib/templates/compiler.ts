@@ -1,3 +1,12 @@
+/**
+ * Handlebars template compiler with caching and sanitization.
+ *
+ * Provides optimized template compilation with intelligent caching,
+ * comprehensive Handlebars helpers, and security-focused sanitization.
+ *
+ * @module templates/compiler
+ */
+
 import { fs } from '@trailhead/cli/fs'
 import { createHash } from 'crypto'
 import Handlebars from 'handlebars'
@@ -7,7 +16,7 @@ import type { TemplateContext } from './types.js'
 import { createTemplateCompilerError, ERROR_CODES } from '../core/errors.js'
 
 /**
- * Cache entry structure for compiled Handlebars templates
+ * Cache entry structure for compiled Handlebars templates.
  *
  * @internal
  */
@@ -31,7 +40,7 @@ export interface TemplateCacheState {
 }
 
 /**
- * Template compilation options
+ * Configuration options for the template compiler.
  */
 export interface TemplateCompilerOptions {
   /** Enable template caching */
@@ -45,16 +54,14 @@ export interface TemplateCompilerOptions {
 }
 
 /**
- * Template compiler context
+ * Runtime context for the template compiler including cache state.
  */
 export interface TemplateCompilerContext {
   readonly cache: TemplateCacheState
   readonly options: Required<TemplateCompilerOptions>
 }
 
-/**
- * Default template compiler options
- */
+/** Default compiler options applied when not specified */
 const DEFAULT_COMPILER_OPTIONS: Required<TemplateCompilerOptions> = {
   enableCache: true,
   maxCacheSize: 100,
@@ -391,11 +398,14 @@ export async function compileTemplate(
 }
 
 /**
- * Get cached template if valid
+ * Retrieve a cached template if valid.
  *
- * @param templatePath - Path to template file
- * @param context - Template compiler context
- * @returns Result with cached template or null if not cached/invalid
+ * Checks if template exists in cache and validates against file modification time.
+ * Returns null if not cached or if file has been modified since caching.
+ *
+ * @param templatePath - Absolute path to template file
+ * @param context - Template compiler context with cache
+ * @returns Result with cached template delegate, or null if cache miss/invalid
  */
 export async function getCachedTemplate(
   templatePath: string,
@@ -432,12 +442,15 @@ export async function getCachedTemplate(
 }
 
 /**
- * Cache compiled template
+ * Cache a compiled template with its metadata.
  *
- * @param templatePath - Path to template file
- * @param template - Compiled Handlebars template
- * @param context - Template compiler context
- * @returns Updated template compiler context
+ * Stores the template with file modification time and content hash for
+ * future cache invalidation. Evicts oldest entries when cache is full.
+ *
+ * @param templatePath - Absolute path to template file
+ * @param template - Compiled Handlebars template delegate
+ * @param context - Template compiler context with cache
+ * @returns Updated context with new cache entry
  */
 export async function cacheTemplate(
   templatePath: string,
@@ -489,11 +502,14 @@ export async function cacheTemplate(
 }
 
 /**
- * Pre-compile multiple templates for better performance
+ * Pre-compile multiple templates for better runtime performance.
  *
- * @param templatePaths - Array of template file paths to precompile
+ * Compiles all templates in parallel and caches them. Skips files that
+ * cannot be read or compiled without failing the entire operation.
+ *
+ * @param templatePaths - Array of absolute paths to template files
  * @param context - Template compiler context
- * @returns Result with updated context or error
+ * @returns Result with updated context containing cached templates
  */
 export async function precompileTemplates(
   templatePaths: string[],
@@ -552,10 +568,10 @@ export async function precompileTemplates(
 }
 
 /**
- * Clear template cache
+ * Clear all entries from the template cache.
  *
  * @param context - Template compiler context
- * @returns Updated context with cleared cache
+ * @returns New context with empty cache (initialized state preserved)
  */
 export function clearTemplateCache(context: TemplateCompilerContext): TemplateCompilerContext {
   return {
@@ -568,10 +584,10 @@ export function clearTemplateCache(context: TemplateCompilerContext): TemplateCo
 }
 
 /**
- * Get cache statistics
+ * Get statistics about the template cache.
  *
  * @param context - Template compiler context
- * @returns Cache statistics
+ * @returns Object with cache size and list of cached template paths
  */
 export function getTemplateCacheStats(context: TemplateCompilerContext): {
   size: number
@@ -584,11 +600,13 @@ export function getTemplateCacheStats(context: TemplateCompilerContext): {
 }
 
 /**
- * Cleanup old cache entries based on memory pressure
+ * Remove oldest cache entries to reduce memory usage.
+ *
+ * Keeps only the most recently added entries up to maxEntries.
  *
  * @param context - Template compiler context
- * @param maxEntries - Maximum number of entries to keep
- * @returns Updated context with cleaned cache
+ * @param maxEntries - Maximum entries to retain (default: 100)
+ * @returns New context with trimmed cache
  */
 export function cleanupTemplateCache(
   context: TemplateCompilerContext,
@@ -612,10 +630,13 @@ export function cleanupTemplateCache(
 }
 
 /**
- * Sanitize template context to prevent injection attacks
+ * Sanitize template context to prevent injection attacks.
+ *
+ * Recursively sanitizes all string values using sanitizeText.
+ * Preserves numbers and booleans; replaces other types with empty strings.
  *
  * @param context - Template context to sanitize
- * @returns Result with sanitized context or error
+ * @returns Result with sanitized context or error if sanitization fails
  */
 export function sanitizeTemplateContext(
   context: TemplateContext
@@ -658,10 +679,13 @@ export function sanitizeTemplateContext(
 }
 
 /**
- * Recursively sanitize object properties
+ * Recursively sanitize all properties of an object.
  *
- * @param obj - Object to sanitize
- * @returns Result with sanitized object or error
+ * Handles nested objects and arrays. Sanitizes strings, preserves
+ * numbers/booleans, replaces other types with empty strings.
+ *
+ * @param obj - Object to sanitize (handles null, arrays, and objects)
+ * @returns Result with sanitized object or error if sanitization fails
  */
 export function sanitizeObject(obj: any): Result<any, CoreError> {
   try {
