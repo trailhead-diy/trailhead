@@ -61,9 +61,8 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
+    "@trailhead/cli": "workspace:*",
     "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/sort": "workspace:*",
     "file-type": "^21.0.0",
     "mime-types": "^3.0.1",
     "papaparse": "^5.4.1",

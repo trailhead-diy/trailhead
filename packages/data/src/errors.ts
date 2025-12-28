@@ -13,7 +13,7 @@ import {
   mapValidationError as coreMapValidationError,
   type CoreError,
 } from '@trailhead/core'
-import type { FileSystemError } from '@trailhead/fs'
+import type { FileSystemError } from '@trailhead/cli/fs'
 
 // ========================================
 // Standardized Error Factory

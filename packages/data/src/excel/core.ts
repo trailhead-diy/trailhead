@@ -1,5 +1,5 @@
 import { ok, err } from '@trailhead/core'
-import { readFile as fsReadFile, writeFile as fsWriteFile } from '@trailhead/fs'
+import { readFile as fsReadFile, writeFile as fsWriteFile } from '@trailhead/cli/fs'
 import * as XLSX from 'xlsx'
 import type { ExcelProcessingOptions, DataResult, ExcelFormatInfo } from '../types.js'
 import {

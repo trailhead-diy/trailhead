@@ -1,4 +1,4 @@
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { createHash } from 'crypto'
 import Handlebars from 'handlebars'
 import { ok, err, type Result, type CoreError } from '@trailhead/core'

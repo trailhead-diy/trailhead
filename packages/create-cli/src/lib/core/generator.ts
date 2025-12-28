@@ -1,6 +1,6 @@
 import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
 import { resolve, dirname } from 'path'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { colors, createSpinner } from '@trailhead/cli/utils'
 import { debugTemplateContext, debugError, debugStats } from '../cli/logger.js'
 import {

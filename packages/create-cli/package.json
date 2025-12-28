@@ -42,9 +42,8 @@
   "dependencies": {
     "@trailhead/cli": "workspace:*",
     "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/sort": "workspace:*",
     "consola": "^3.4.2",
+    "es-toolkit": "^1.31.0",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",

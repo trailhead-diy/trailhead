@@ -1,7 +1,11 @@
 import { ok, err, createCoreError, type Result } from '@trailhead/core'
-import { sortBy, sortStrings } from '@trailhead/sort'
+import { sortBy } from 'es-toolkit'
 import type { ProjectConfig } from '../config/types.js'
 import type { TemplateFile } from './types.js'
+
+/** Sort strings alphabetically with optional order */
+const sortStrings = (arr: string[], order: 'asc' | 'desc' = 'asc'): string[] =>
+  order === 'desc' ? [...arr].sort().reverse() : [...arr].sort()
 
 export interface FeatureModule {
   name: string
@@ -54,7 +58,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
 
   config: {
     name: 'config',
-    description: 'Configuration management using @trailhead/fs and Zod',
+    description: 'Configuration management using @trailhead/cli/fs and Zod',
     dependencies: ['core'],
     conflicts: [],
     files: [
@@ -89,7 +93,7 @@ export const FEATURE_MODULES: Record<string, FeatureModule> = {
         executable: false,
       },
     ],
-    packageDependencies: ['@trailhead/fs', 'zod'],
+    packageDependencies: ['zod'],
     scripts: {},
   },
 
