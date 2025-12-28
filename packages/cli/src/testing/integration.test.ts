@@ -6,7 +6,7 @@
 import { describe, test, expect } from 'vitest'
 import { ok, err } from '@trailhead/core'
 import { setupResultMatchers, createTestError } from '@trailhead/core/testing'
-import { createMockFileSystem } from '@trailhead/fs/testing'
+import { createMockFileSystem } from '../fs/testing/index.js'
 
 // Setup cross-package matchers
 setupResultMatchers()

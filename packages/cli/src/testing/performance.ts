@@ -2,7 +2,7 @@
  * Performance monitoring utilities for CLI testing
  */
 
-import { topN, bottomN, sortBy, orderBy } from '@trailhead/sort'
+import { sortBy, orderBy } from 'es-toolkit'
 
 export interface PerformanceMetrics {
   executionTime: number
@@ -249,7 +249,7 @@ export function createCLIPerformanceMonitor(): PerformanceMonitorState {
  * ```
  */
 export function getSlowestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
-  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+  return orderBy(state.reports, [(report) => report.metrics.executionTime], ['desc']).slice(0, n)
 }
 
 /**
@@ -265,7 +265,7 @@ export function getSlowestReports(state: PerformanceMonitorState, n: number): Pe
  * ```
  */
 export function getFastestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
-  return bottomN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+  return sortBy(state.reports, [(report) => report.metrics.executionTime]).slice(0, n)
 }
 
 /**
@@ -284,7 +284,10 @@ export function getHighestMemoryReports(
   state: PerformanceMonitorState,
   n: number
 ): PerformanceReport[] {
-  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.memoryUsage.heapUsed)
+  return orderBy(state.reports, [(report) => report.metrics.memoryUsage.heapUsed], ['desc']).slice(
+    0,
+    n
+  )
 }
 
 /**

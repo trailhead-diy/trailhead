@@ -10,7 +10,7 @@ import {
   createErrResult,
   createTestError,
 } from '@trailhead/core/testing'
-import { createMockFileSystem } from '@trailhead/fs/testing'
+import { createMockFileSystem } from '../fs/testing/index.js'
 
 beforeAll(() => {
   setupResultMatchers()
@@ -64,7 +64,7 @@ describe('Core Domain-Driven Testing Integration', () => {
   test('should verify /testing exports are accessible', async () => {
     // Test that we can import from the /testing subpath
     const { createOkResult: coreOk } = await import('@trailhead/core/testing')
-    const { createMockFileSystem: fsCreate } = await import('@trailhead/fs/testing')
+    const { createMockFileSystem: fsCreate } = await import('@trailhead/cli/fs/testing')
 
     expect(typeof coreOk).toBe('function')
     expect(typeof fsCreate).toBe('function')

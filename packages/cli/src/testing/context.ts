@@ -1,8 +1,6 @@
 import type { CommandContext } from '../command/index.js'
-// @ts-expect-error - Domain package types will be available after build
-import type { FileSystem } from '@trailhead/fs'
 import type { Logger } from '../utils/logger.js'
-import { createMockFileSystem } from '@trailhead/fs/testing'
+import { createMockFileSystem } from '../fs/testing/index.js'
 
 /**
  * Create a no-op logger for testing
@@ -31,7 +29,7 @@ export interface TestContextOptions {
   /** Project root directory path (default: '/test/project') */
   projectRoot?: string
   /** Custom filesystem implementation (default: mock filesystem) */
-  filesystem?: FileSystem
+  filesystem?: any
   /** Custom logger implementation (default: no-op logger) */
   logger?: Logger
   /** Whether verbose mode is enabled */
