@@ -282,11 +282,6 @@ const error: CoreError = {
 
 0.1.0
 
-#### Extended by
-
-- [`FileSystemError`](@trailhead.fs.md#filesystemerror)
-- [`ValidationError`](@trailhead.validation.md#validationerror)
-
 #### Properties
 
 ##### cause?
