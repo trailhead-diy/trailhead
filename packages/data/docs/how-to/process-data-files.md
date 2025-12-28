@@ -226,47 +226,46 @@ constconvertDirectory = async (dirPath: string, targetFormat: 'json' | 'csv' | '
 
 ## Validate Data
 
-### Schema Validation
+### Schema Validation with Zod
 
 ```typescript
 import { data } from '@trailhead/data'
-import { validate } from '@trailhead/validation'
+import { z } from 'zod'
 
-constvalidateDataFile = async (filePath: string) => {
+const rowSchema = z.object({
+  email: z.string().email(),
+  age: z.number().min(0).max(120),
+  name: z.string().min(1).max(100),
+})
+
+const validateDataFile = async (filePath: string) => {
   // Parse data
   const parseResult = await data.parseAuto(filePath)
   if (!parseResult.success) {
     return parseResult
   }
 
-  // Define validation schema
-  const rowValidator = validate.object({
-    email: validate.email,
-    age: validate.numberRange(0, 120),
-    name: validate.stringLength(1, 100),
-  })
-
   // Validate each row
   const validRows = []
   const invalidRows = []
 
   for (const [index, row] of parseResult.value.entries()) {
-    const validation = rowValidator(row)
+    const validation = rowSchema.safeParse(row)
     if (validation.success) {
-      validRows.push(row)
+      validRows.push(validation.data)
     } else {
       invalidRows.push({
         row: index + 1,
         data: row,
-        error: validation.error.message,
+        errors: validation.error.errors,
       })
     }
   }
 
   if (invalidRows.length > 0) {
     console.warn(`Found ${invalidRows.length} invalid rows`)
-    invalidRows.forEach(({ row, error }) => {
-      console.warn(`Row ${row}: ${error}`)
+    invalidRows.forEach(({ row, errors }) => {
+      console.warn(`Row ${row}: ${errors.map((e) => e.message).join(', ')}`)
     })
   }
 

@@ -694,27 +694,20 @@ async const convertDataFiles = async (inputDir: string, outputDir: string) => {
 
 ```typescript
 import { fs } from '@trailhead/fs'
-import { validate } from '@trailhead/validation'
+import { z } from 'zod'
 
-interface UserConfig {
-  name: string
-  email: string
-  preferences: {
-    theme: 'light' | 'dark'
-    notifications: boolean
-  }
-}
-
-const configValidator = validate.object({
-  name: validate.stringLength(1, 100),
-  email: validate.email,
-  preferences: validate.object({
-    theme: validate.anyOf([validate.required('light'), validate.required('dark')]),
-    notifications: validate.required,
+const configSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
+  preferences: z.object({
+    theme: z.enum(['light', 'dark']),
+    notifications: z.boolean(),
   }),
 })
 
-async const loadUserConfig = async (configPath: string) => {
+type UserConfig = z.infer<typeof configSchema>
+
+const loadUserConfig = async (configPath: string) => {
   // Read config file
   const readResult = await fs.readJson(configPath)
   if (!readResult.success) {
@@ -722,12 +715,12 @@ async const loadUserConfig = async (configPath: string) => {
   }
 
   // Validate config structure
-  const validationResult = configValidator(readResult.value)
+  const validationResult = configSchema.safeParse(readResult.value)
   if (!validationResult.success) {
     return err(new Error(`Invalid config: ${validationResult.error.message}`))
   }
 
-  const config: UserConfig = validationResult.value
+  const config = validationResult.data
   console.log(`Loaded config for ${config.name}`)
 
   return ok(config)

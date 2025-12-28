@@ -259,23 +259,18 @@ async const processDataFile = async (inputPath: string, outputPath: string) => {
 
 ```typescript
 import { fs } from '@trailhead/fs'
-import { validate } from '@trailhead/validation'
+import { z } from 'zod'
 
-interface AppConfig {
-  port: number
-  host: string
-  apiKey: string
-  features: string[]
-}
-
-const configSchema = validate.object({
-  port: validate.numberRange(1, 65535),
-  host: validate.required,
-  apiKey: validate.stringLength(10),
-  features: validate.array(validate.required),
+const configSchema = z.object({
+  port: z.number().min(1).max(65535),
+  host: z.string().min(1),
+  apiKey: z.string().min(10),
+  features: z.array(z.string()),
 })
 
-async const loadValidatedConfig = async (configPath: string): Promise<Result<AppConfig>> => {
+type AppConfig = z.infer<typeof configSchema>
+
+const loadValidatedConfig = async (configPath: string): Promise<Result<AppConfig>> => {
   // Read config file
   const readResult = await fs.readJson(configPath)
   if (!readResult.success) {
@@ -283,12 +278,12 @@ async const loadValidatedConfig = async (configPath: string): Promise<Result<App
   }
 
   // Validate configuration
-  const validationResult = configSchema(readResult.value)
+  const validationResult = configSchema.safeParse(readResult.value)
   if (!validationResult.success) {
     return err(new Error(`Invalid config: ${validationResult.error.message}`))
   }
 
-  return ok(validationResult.value)
+  return ok(validationResult.data)
 }
 ```
 

@@ -76,7 +76,6 @@ const command = createCommand({
 | CLI creation           | `@trailhead/cli`         | `import { createCLI } from "@trailhead/cli"`                            |
 | Commands               | `@trailhead/cli/command` | `import { createCommand } from "@trailhead/cli/command"`                |
 | File operations        | `@trailhead/fs`          | `import { createFileSystem } from "@trailhead/fs"`                      |
-| Configuration          | `@trailhead/config`      | `import { defineConfig } from "@trailhead/config"`                      |
 | User prompts           | `@trailhead/cli/prompts` | `import { input, select } from "@trailhead/cli/prompts"`                |
 | Testing utilities      | `@trailhead/cli/testing` | `import { createTestContext } from "@trailhead/cli/testing"`            |
 | Styling & spinners     | `@trailhead/cli/utils`   | `import { consola, colors, createSpinner } from "@trailhead/cli/utils"` |

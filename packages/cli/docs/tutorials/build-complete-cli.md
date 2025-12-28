@@ -204,7 +204,6 @@ Create `src/config/schema.ts`:
 
 ```typescript
 import { z } from 'zod'
-import { defineConfig } from '@trailhead/config'
 import type { Config } from '../lib/types'
 
 const configSchema = z.object({
@@ -213,9 +212,9 @@ const configSchema = z.object({
   showCompleted: z.boolean().default(true),
 })
 
-export const config = defineConfig<Config>(configSchema, {
-  fileName: '.tasklyrc.json',
-})
+export type AppConfig = z.infer<typeof configSchema>
+
+export const loadConfig = (data: unknown): AppConfig => configSchema.parse(data)
 ```
 
 ## Create Commands

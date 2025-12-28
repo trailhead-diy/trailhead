@@ -93,16 +93,6 @@ export const createVitestConfig = (options: VitestConfigOptions = {}) => {
         '@trailhead/core/functional': resolve(packagesDir, 'core', 'src', 'functional', 'index.ts'),
         '@trailhead/core/testing': resolve(packagesDir, 'core', 'src', 'testing', 'index.ts'),
         '@trailhead/core': resolve(packagesDir, 'core', 'src', 'index.ts'),
-        '@trailhead/validation/testing': resolve(
-          packagesDir,
-          'validation',
-          'src',
-          'testing',
-          'index.ts'
-        ),
-        '@trailhead/validation': resolve(packagesDir, 'validation', 'src', 'index.ts'),
-        '@trailhead/config/testing': resolve(packagesDir, 'config', 'src', 'testing', 'index.ts'),
-        '@trailhead/config': resolve(packagesDir, 'config', 'src', 'index.ts'),
         '@trailhead/fs/testing': resolve(packagesDir, 'fs', 'src', 'testing', 'index.ts'),
         '@trailhead/fs/utils': resolve(packagesDir, 'fs', 'src', 'utils', 'index.ts'),
         '@trailhead/fs': resolve(packagesDir, 'fs', 'src', 'index.ts'),

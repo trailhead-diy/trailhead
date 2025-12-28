@@ -34,7 +34,6 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 → **Start here:** [Package Ecosystem](#package-ecosystem)
 → **Data processing:** [@trailhead/data](./packages/data/README.md)
 → **File operations:** [@trailhead/fs](./packages/fs/README.md)
-→ **Validation:** [@trailhead/validation](./packages/validation/README.md)
 
 ### 📊 I want to scaffold new projects
 
@@ -101,8 +100,6 @@ pnpm dev
 | **[@trailhead/core](./packages/core)**             | Foundation        | None                                                  | Result types, functional utilities |
 | **[@trailhead/fs](./packages/fs)**                 | File System       | `@trailhead/core`, `@trailhead/sort`                  | File operations, path utilities    |
 | **[@trailhead/data](./packages/data)**             | Data Processing   | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort` | CSV/JSON/Excel processing          |
-| **[@trailhead/validation](./packages/validation)** | Validation        | `@trailhead/core`                                     | Data validation, schema checking   |
-| **[@trailhead/config](./packages/config)**         | Configuration     | `@trailhead/core`, `@trailhead/validation`            | Type-safe configuration            |
 | **[@trailhead/sort](./packages/sort)**             | Sorting           | None                                                  | Fast, type-safe sorting utilities  |
 
 ### 🎯 When to Use Each Package
@@ -113,7 +110,6 @@ pnpm dev
 // Use @trailhead/cli for the framework
 import { createCommand } from '@trailhead/cli/command'
 // + @trailhead/fs for file operations
-// + @trailhead/validation for user input validation
 // + @trailhead/data for processing data files
 ```
 
@@ -123,7 +119,6 @@ import { createCommand } from '@trailhead/cli/command'
 // Use @trailhead/data for format handling
 import { data } from '@trailhead/data'
 // + @trailhead/fs for file operations
-// + @trailhead/validation for data validation
 ```
 
 #### Need File Operations?
@@ -131,14 +126,6 @@ import { data } from '@trailhead/data'
 ```typescript
 // Use @trailhead/fs for filesystem operations
 import { fs } from '@trailhead/fs'
-// + @trailhead/core for Result types
-```
-
-#### Validating User Input?
-
-```typescript
-// Use @trailhead/validation for validation
-import { validate } from '@trailhead/validation'
 // + @trailhead/core for Result types
 ```
 
@@ -150,7 +137,6 @@ import { validate } from '@trailhead/validation'
 import { createCommand } from '@trailhead/cli/command'
 import { data } from '@trailhead/data'
 import { fs } from '@trailhead/fs'
-import { validate } from '@trailhead/validation'
 
 const processCommand = createCommand({
   name: 'process',
@@ -163,47 +149,8 @@ const processCommand = createCommand({
     const parseResult = await data.parseAuto(inputFile)
     if (parseResult.isErr()) return parseResult
 
-    // 3. Validate data structure
-    const validResult = validate.array(mySchema)(parseResult.value.data)
-    if (validResult.isErr()) return validResult
-
-    // 4. Write processed data
-    return data.writeAuto(outputFile, validResult.value)
-  },
-})
-```
-
-#### Configuration Management Workflow
-
-```typescript
-import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@trailhead/fs'
-import { validate, createSchemaValidator } from '@trailhead/validation'
-import { z } from 'zod'
-
-// Define config schema
-const configSchema = z.object({
-  apiUrl: z.string().url(),
-  timeout: z.number().min(1000).max(30000),
-  features: z.array(z.string()),
-})
-
-const validateConfig = createSchemaValidator(configSchema)
-
-const deployCommand = createCommand({
-  name: 'deploy',
-  action: async ({ env }) => {
-    // 1. Load environment-specific config
-    const configPath = `./config/${env}.json`
-    const configResult = await fs.readJson(configPath)
-    if (configResult.isErr()) return configResult
-
-    // 2. Validate configuration
-    const validConfig = validateConfig(configResult.value)
-    if (validConfig.isErr()) return validConfig
-
-    // 3. Deploy with validated config
-    return deployWithConfig(validConfig.value)
+    // 3. Write processed data
+    return data.writeAuto(outputFile, parseResult.value.data)
   },
 })
 ```
@@ -278,8 +225,6 @@ trailhead/
 │   ├── core/                          # @trailhead/core - Foundation (Result types)
 │   ├── fs/                            # @trailhead/fs - File system operations
 │   ├── data/                          # @trailhead/data - Data processing
-│   ├── validation/                    # @trailhead/validation - Data validation
-│   ├── config/                        # @trailhead/config - Configuration management
 │   └── sort/                          # @trailhead/sort - Sorting utilities
 ├── tooling/                           # Shared development tools
 │   ├── typescript-config/             # @repo/typescript-config - TypeScript configs
@@ -429,7 +374,6 @@ pnpm dev
 | **Create CLI**      | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Create CLI API](./docs/@trailhead.create-cli.md) |
 | **Data Processing** | [Process Data Files](./packages/data/docs/how-to/process-data-files.md)     | [Format Detection](./packages/data/docs/explanation/format-detection.md)     | [Data API](./docs/@trailhead.data.md)   |
 | **File Operations** | [File Operations](./packages/fs/docs/how-to/file-operations.md)             | [Result Patterns](./packages/fs/docs/explanation/result-patterns.md)         | [FS API](./docs/@trailhead.fs.md)       |
-| **Validation**      | [Validate Data](./packages/validation/docs/how-to/validate-data.md)         | [Composition Patterns](./packages/validation/docs/explanation/composition-patterns.md) | [Validation API](./docs/@trailhead.validation.md) |
 
 ### 🧭 Find What You Need
 
@@ -445,7 +389,6 @@ pnpm dev
 - [Test CLI Applications](./packages/cli/docs/how-to/test-cli-applications.md)
 - [Add File Operations](./packages/cli/docs/how-to/add-file-operations.md)
 - [Process Data Files](./packages/data/docs/how-to/process-data-files.md)
-- [Validate Data](./packages/validation/docs/how-to/validate-data.md)
 
 **Reference (API Docs)** - Complete API documentation
 
@@ -453,8 +396,6 @@ pnpm dev
 - [Core API](./docs/@trailhead.core.md)
 - [File System API](./docs/@trailhead.fs.md)
 - [Data API](./docs/@trailhead.data.md)
-- [Validation API](./docs/@trailhead.validation.md)
-- [Config API](./docs/@trailhead.config.md)
 - [Sort API](./docs/@trailhead.sort.md)
 
 **Understanding (Explanations)** - Concepts and design decisions
