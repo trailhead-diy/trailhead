@@ -160,7 +160,7 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    return await writeFile()(stringifyResult.value, filePath)
+    return await writeFile()(filePath, stringifyResult.value)
   }
 
   const validate = (data: string): DataResult<boolean> => {

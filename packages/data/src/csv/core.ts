@@ -192,7 +192,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    const writeResult = await writeFile()(stringifyResult.value, filePath)
+    const writeResult = await writeFile()(filePath, stringifyResult.value)
     if (writeResult.isErr()) {
       return err(mapFileSystemError(writeResult.error, 'writeFile'))
     }
