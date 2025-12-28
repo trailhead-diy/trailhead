@@ -2,7 +2,7 @@
  * Foundation package for the Trailhead System providing Result-based error handling.
  *
  * This package exports functional programming utilities centered around the Result type pattern,
- * enabling explicit error handling without exceptions. Built on top of neverthrow and fp-ts.
+ * enabling explicit error handling without exceptions. Built on top of neverthrow.
  *
  * @example
  * ```typescript
@@ -43,9 +43,3 @@ export {
   fromThrowable as fromThrowableAsync,
   fromThrowableAsync as fromThrowableAsyncFunc,
 } from './functional/async.js'
-
-/** Validation utilities - Zod integration with Result types */
-export * from './validation.js'
-
-// Color utilities moved to individual packages that need them
-// Core is now pure and browser-compatible
