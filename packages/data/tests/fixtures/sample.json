@@ -1,0 +1,22 @@
+{
+  "name": "Test Config",
+  "version": "1.0.0",
+  "settings": {
+    "debug": true,
+    "timeout": 5000,
+    "retries": 3
+  },
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "roles": ["admin", "user"]
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "roles": ["user"]
+    }
+  ],
+  "features": ["auth", "cache", "logging"]
+}
