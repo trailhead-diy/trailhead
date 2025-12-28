@@ -1,0 +1,152 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-28T00:00:00.000Z",
+  "gitSha": "e806c1d964fb1a015c8226fa251e48baff5ce5a5",
+  "package": {
+    "name": "create-cli",
+    "path": "packages/create-cli"
+  },
+  "stats": {
+    "totalExports": 68,
+    "documented": 68,
+    "partial": 0,
+    "undocumented": 0,
+    "coveragePercent": 100
+  },
+  "files": [
+    {
+      "path": "src/index.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/commands/generate.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/types.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/cli/index.ts",
+      "exports": 5,
+      "documented": 5,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/cli/logger.ts",
+      "exports": 5,
+      "documented": 5,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/config/index.ts",
+      "exports": 12,
+      "documented": 12,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/config/types.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/config/validation.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/config/schema.ts",
+      "exports": 13,
+      "documented": 13,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/core/index.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/core/types.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/core/errors.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/core/transforms.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/core/generator.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/index.ts",
+      "exports": 23,
+      "documented": 23,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/types.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/config.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/context.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/loader.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/utils.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/compiler.ts",
+      "exports": 14,
+      "documented": 14,
+      "status": "complete"
+    },
+    {
+      "path": "src/lib/templates/modules.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    }
+  ],
+  "status": "documented",
+  "notes": "All public exports documented with JSDoc. Added module-level documentation to all files. Documented functions include @param, @returns, and contextual remarks where appropriate. Fixed duplicate interface definitions in modules.ts."
+}

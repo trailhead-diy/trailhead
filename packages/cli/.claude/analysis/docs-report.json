@@ -1,0 +1,254 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-28T14:30:00.000Z",
+  "gitSha": "e806c1d964fb1a015c8226fa251e48baff5ce5a5",
+  "package": {
+    "name": "cli",
+    "path": "packages/cli"
+  },
+  "stats": {
+    "totalExports": 156,
+    "documented": 156,
+    "partial": 0,
+    "undocumented": 0,
+    "coveragePercent": 100
+  },
+  "files": [
+    {
+      "path": "src/index.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/cli.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/index.ts",
+      "exports": 15,
+      "documented": 15,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/base.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/builders.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/types.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/validation.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/patterns.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/performance.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/command/git-hooks.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/index.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/core.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/types.ts",
+      "exports": 5,
+      "documented": 5,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/errors.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/utils/index.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/utils/path-utils.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/utils/sorting.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/testing/index.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/testing/mock-fs.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/fs/testing/fixtures.ts",
+      "exports": 10,
+      "documented": 10,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/index.ts",
+      "exports": 22,
+      "documented": 22,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/runner.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/assertions.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/context.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/interactive.ts",
+      "exports": 12,
+      "documented": 12,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/performance.ts",
+      "exports": 15,
+      "documented": 15,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/cli-testing.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/index.ts",
+      "exports": 18,
+      "documented": 18,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/chalk.ts",
+      "exports": 16,
+      "documented": 16,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/logger.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/spinner.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/options.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/package-manager.ts",
+      "exports": 12,
+      "documented": 12,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/stats.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/prompts/index.ts",
+      "exports": 18,
+      "documented": 18,
+      "status": "complete"
+    },
+    {
+      "path": "src/progress/index.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/progress/types.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/progress/tracker.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/progress/enhanced-tracker.ts",
+      "exports": 5,
+      "documented": 5,
+      "status": "complete"
+    }
+  ],
+  "status": "documented",
+  "notes": "All public exports in packages/cli/src now have JSDoc documentation. Added documentation to: chalk.ts (color functions), interactive.ts (test runner interfaces and functions), performance.ts (performance monitoring), cli-testing.ts (CLI test utilities), context.ts (test context), and logger.ts. Existing well-documented files were reviewed and found to have complete coverage."
+}

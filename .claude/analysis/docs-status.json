@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-28T14:45:00.000Z",
+  "gitSha": "e806c1d964fb1a015c8226fa251e48baff5ce5a5",
+  "packages": [
+    {
+      "name": "cli",
+      "path": "packages/cli",
+      "totalExports": 156,
+      "documented": 156,
+      "coveragePercent": 100,
+      "status": "documented"
+    },
+    {
+      "name": "core",
+      "path": "packages/core",
+      "totalExports": 67,
+      "documented": 67,
+      "coveragePercent": 100,
+      "status": "documented"
+    },
+    {
+      "name": "create-cli",
+      "path": "packages/create-cli",
+      "totalExports": 68,
+      "documented": 68,
+      "coveragePercent": 100,
+      "status": "documented"
+    },
+    {
+      "name": "data",
+      "path": "packages/data",
+      "totalExports": 89,
+      "documented": 89,
+      "coveragePercent": 100,
+      "status": "documented"
+    }
+  ],
+  "summary": {
+    "totalPackages": 4,
+    "fullyDocumented": 4,
+    "partiallyDocumented": 0,
+    "undocumented": 0,
+    "totalExports": 380,
+    "totalDocumented": 380,
+    "overallCoveragePercent": 100
+  }
+}
