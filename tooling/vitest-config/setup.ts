@@ -54,7 +54,7 @@ export function setupTempDirCleanup() {
     // Clean up temporary directories
     for (const dir of tempDirs) {
       try {
-        const { cleanup } = require('@trailhead/fs/testing')
+        const { cleanup } = require('@trailhead/cli/fs/testing')
         await cleanup(dir)
       } catch {
         // Silently fail if fs testing is not available

@@ -66,15 +66,18 @@ importers:
       '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@trailhead/fs':
-        specifier: workspace:*
-        version: link:../fs
-      '@trailhead/sort':
-        specifier: workspace:*
-        version: link:../sort
       commander:
         specifier: ^14.0.2
         version: 14.0.2
+      es-toolkit:
+        specifier: ^1.31.0
+        version: 1.41.0
+      fs-extra:
+        specifier: ^11.3.2
+        version: 11.3.2
+      glob:
+        specifier: ^11.0.0
+        version: 11.0.3
       listr2:
         specifier: ^9.0.5
         version: 9.0.5
@@ -91,6 +94,9 @@ importers:
       '@repo/vitest-config':
         specifier: workspace:*
         version: link:../../tooling/vitest-config
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
@@ -112,9 +118,6 @@ importers:
 
   packages/core:
     dependencies:
-      fp-ts:
-        specifier: ^2.16.11
-        version: 2.16.11
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
@@ -146,9 +149,6 @@ importers:
       vitest:
         specifier: ^4.0.7
         version: 4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1)
-      zod:
-        specifier: ^3.24.0
-        version: 3.25.76
 
   packages/create-cli:
     dependencies:
@@ -158,15 +158,12 @@ importers:
       '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@trailhead/fs':
-        specifier: workspace:*
-        version: link:../fs
-      '@trailhead/sort':
-        specifier: workspace:*
-        version: link:../sort
       consola:
         specifier: ^3.4.2
         version: 3.4.2
+      es-toolkit:
+        specifier: ^1.31.0
+        version: 1.41.0
       execa:
         specifier: ^9.6.0
         version: 9.6.0
@@ -213,15 +210,12 @@ importers:
 
   packages/data:
     dependencies:
+      '@trailhead/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@trailhead/core':
         specifier: workspace:*
         version: link:../core
-      '@trailhead/fs':
-        specifier: workspace:*
-        version: link:../fs
-      '@trailhead/sort':
-        specifier: workspace:*
-        version: link:../sort
       file-type:
         specifier: ^21.0.0
         version: 21.0.0
@@ -253,89 +247,6 @@ importers:
       '@types/papaparse':
         specifier: ^5.5.0
         version: 5.5.0
-      '@vitest/coverage-v8':
-        specifier: ^4.0.7
-        version: 4.0.7(vitest@4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1))
-      oxlint:
-        specifier: ^1.25.0
-        version: 1.25.0
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^4.0.7
-        version: 4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1)
-
-  packages/fs:
-    dependencies:
-      '@trailhead/core':
-        specifier: workspace:*
-        version: link:../core
-      '@trailhead/sort':
-        specifier: workspace:*
-        version: link:../sort
-      fs-extra:
-        specifier: ^11.3.2
-        version: 11.3.2
-      glob:
-        specifier: ^11.0.0
-        version: 11.0.3
-    devDependencies:
-      '@repo/tsup-config':
-        specifier: workspace:*
-        version: link:../../tooling/tsup-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      '@types/fs-extra':
-        specifier: ^11.0.4
-        version: 11.0.4
-      '@types/node':
-        specifier: ^24.10.0
-        version: 24.10.0
-      '@vitest/coverage-v8':
-        specifier: ^4.0.7
-        version: 4.0.7(vitest@4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1))
-      oxlint:
-        specifier: ^1.25.0
-        version: 1.25.0
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vitest:
-        specifier: ^4.0.7
-        version: 4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1)
-
-  packages/sort:
-    dependencies:
-      es-toolkit:
-        specifier: ^1.41.0
-        version: 1.41.0
-    devDependencies:
-      '@repo/prettier-config':
-        specifier: workspace:*
-        version: link:../../tooling/prettier-config
-      '@repo/tsup-config':
-        specifier: workspace:*
-        version: link:../../tooling/tsup-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../tooling/typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../../tooling/vitest-config
-      '@types/node':
-        specifier: ^24.10.0
-        version: 24.10.0
       '@vitest/coverage-v8':
         specifier: ^4.0.7
         version: 4.0.7(vitest@4.0.7(@types/debug@4.1.12)(@types/node@24.10.0)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.1))
@@ -1698,9 +1609,6 @@ packages:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
 
-  fp-ts@2.16.11:
-    resolution: {integrity: sha512-LaI+KaX2NFkfn1ZGHoKCmcfv7yrZsC3b8NtWsTVQeHkq4F27vI5igUuO53sxqDEa2gNQMHFPmpojDw/1zmUK7w==}
-
   fs-extra@11.3.2:
     resolution: {integrity: sha512-Xr9F6z6up6Ws+NjzMCZc6WXg2YFRlrLP9NQDO3VQrWrfiojdhS56TzueT88ze0uBdCTwEIhQ3ptnmKeWGFAe0A==}
     engines: {node: '>=14.14'}
@@ -2763,6 +2671,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -4043,8 +3952,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
-
-  fp-ts@2.16.11: {}
 
   fs-extra@11.3.2:
     dependencies:
