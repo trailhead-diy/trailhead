@@ -3,9 +3,9 @@
 import { createCLI } from '@trailhead/cli'
 import { createDefaultLogger } from '@trailhead/cli/utils'
 {{#if features.config}}
-import { helloCommand } from './commands/hello.js'
-import { configCommand } from './commands/config.js'
-import { loadConfig, getDefaultConfig, setAppContext } from './lib/config.js'
+import { helloCommand } from './commands/hello.ts'
+import { configCommand } from './commands/config.ts'
+import { loadConfig, getDefaultConfig, setAppContext } from './lib/config.ts'
 {{/if}}
 
 /**

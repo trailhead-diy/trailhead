@@ -1,7 +1,7 @@
 import { createCommand } from '@trailhead/cli/command'
 import { ok, err, createCoreError } from '@trailhead/core'
 import { consola } from 'consola'
-import { validateJsonFile, validateFileExists } from '../lib/validators.js'
+import { validateJsonFile, validateFileExists } from '../lib/validators.ts'
 import { resolve } from 'path'
 
 export const validateCommand = createCommand({
@@ -81,7 +81,7 @@ function validateJson(filepath: string) {
 function validateConfig(filepath: string) {
   // Import config schema if available
   try {
-    const { configSchema } = require('../lib/config-schema.js')
+    const { configSchema } = require('../lib/config-schema.ts')
     const result = validateJsonFile(filepath, configSchema)
     
     if (result.isErr()) {
