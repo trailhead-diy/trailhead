@@ -184,8 +184,9 @@ describe('Command Builders', () => {
 
   describe('createFileProcessingCommand', () => {
     const createMockContext = (args: string[] = [], fileExists = true): CommandContext => ({
+      projectRoot: '/test/project',
       args,
-      options: {},
+      verbose: false,
       fs: {
         readFile: vi.fn().mockResolvedValue(ok('file content')),
         writeFile: vi.fn().mockResolvedValue(ok(undefined)),
@@ -252,7 +253,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext([]) // No args
-      const result = await command.action({}, context)
+      const result = await command.execute({}, context)
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
@@ -271,7 +272,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext(['nonexistent.txt'], false) // File doesn't exist
-      const result = await command.action({}, context)
+      const result = await command.execute({}, context)
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
@@ -290,7 +291,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext(['input.txt'], true)
-      const result = await command.action({}, context)
+      const result = await command.execute({}, context)
 
       expect(result.isOk()).toBe(true)
       expect(actionMock).toHaveBeenCalledTimes(1)
@@ -312,7 +313,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext(['input.txt'], true)
-      const result = await command.action({ output: 'output.txt' }, context)
+      const result = await command.execute({ output: 'output.txt' }, context)
 
       expect(result.isOk()).toBe(true)
       const [_options, _ctx, processingCtx] = actionMock.mock.calls[0]
@@ -329,7 +330,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext([]) // No input file
-      const result = await command.action({}, context)
+      const result = await command.execute({}, context)
 
       expect(result.isOk()).toBe(true)
       expect(actionMock).toHaveBeenCalled()
@@ -362,7 +363,7 @@ describe('Command Builders', () => {
       })
 
       const context = createMockContext(['input.txt'], true)
-      const result = await command.action({}, context)
+      const result = await command.execute({}, context)
 
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
