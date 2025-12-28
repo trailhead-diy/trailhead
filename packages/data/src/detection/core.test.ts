@@ -146,16 +146,72 @@ describe('Detection Core Operations', () => {
       }
     })
 
-    it('should handle non-existent files gracefully', async () => {
-      const result = await detectionOps.detectBatch(['/non/existent/file.jpg'])
+    it('should detect multiple files with extension fallback', async () => {
+      // When files don't exist, detectBatch falls back to extension-based detection
+      const result = await detectionOps.detectBatch([
+        '/path/to/image.jpg',
+        '/path/to/document.pdf',
+        '/path/to/data.json',
+      ])
 
-      // Non-existent files may succeed with fallback detection from extension
-      // or fail - either way, the function should not throw
+      // Extension-based detection should succeed
+      expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        // With fallback, might detect based on extension alone
-        expect(Array.isArray(result.value)).toBe(true)
-      } else {
+        expect(result.value).toHaveLength(3)
+
+        // Verify each detection result
+        const jpgResult = result.value.find((r) => r.filePath.endsWith('.jpg'))
+        expect(jpgResult).toBeDefined()
+        expect(jpgResult?.detection.format.ext).toBe('jpg')
+
+        const pdfResult = result.value.find((r) => r.filePath.endsWith('.pdf'))
+        expect(pdfResult).toBeDefined()
+        expect(pdfResult?.detection.format.ext).toBe('pdf')
+
+        const jsonResult = result.value.find((r) => r.filePath.endsWith('.json'))
+        expect(jsonResult).toBeDefined()
+        expect(jsonResult?.detection.format.ext).toBe('json')
+      }
+    })
+
+    it('should handle files with unknown extensions', async () => {
+      const result = await detectionOps.detectBatch(['/path/to/file.xyz'])
+
+      // Unknown extension should fail detection
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.type).toBe('detection')
+        expect(result.error.message).toContain('Unknown')
+      }
+    })
+
+    it('should return results in order', async () => {
+      const files = ['/a.png', '/b.jpg', '/c.gif']
+      const result = await detectionOps.detectBatch(files)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value[0].filePath).toBe('/a.png')
+        expect(result.value[1].filePath).toBe('/b.jpg')
+        expect(result.value[2].filePath).toBe('/c.gif')
+      }
+    })
+  })
+
+  describe('detectFromFile', () => {
+    it('should return error for non-existent file', async () => {
+      const result = await detectionOps.detectFromFile('/non/existent/file.jpg')
+
+      // File doesn't exist, should fall back to extension or error
+      // Depending on implementation, either:
+      // - Returns error because file not found
+      // - Falls back to extension-based detection
+      if (result.isErr()) {
+        expect(result.error.type).toBe('detection')
         expect(result.error.message).toBeDefined()
+      } else {
+        // Fallback to extension worked
+        expect(result.value.source).toBe('extension')
       }
     })
   })

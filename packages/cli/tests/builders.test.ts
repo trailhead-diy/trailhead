@@ -1,5 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { defineOptions, commonOptions } from '../src/command/builders.js'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { defineOptions, commonOptions, createFileProcessingCommand } from '../src/command/builders.js'
+import { ok, err, createCoreError } from '@trailhead/core'
+import type { CommandContext } from '../src/command/types.js'
 
 describe('Command Builders', () => {
   describe('commonOptions', () => {
@@ -177,6 +179,195 @@ describe('Command Builders', () => {
       expect(options).toHaveLength(2)
       expect(options[0].name).toBe('preset')
       expect(options[1].name).toBe('verbose')
+    })
+  })
+
+  describe('createFileProcessingCommand', () => {
+    const createMockContext = (args: string[] = [], fileExists = true): CommandContext => ({
+      args,
+      options: {},
+      fs: {
+        readFile: vi.fn().mockResolvedValue(ok('file content')),
+        writeFile: vi.fn().mockResolvedValue(ok(undefined)),
+        exists: vi.fn().mockResolvedValue(ok(fileExists)),
+      },
+      logger: {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+      },
+    })
+
+    it('should create command with specified name and description', () => {
+      const command = createFileProcessingCommand({
+        name: 'process',
+        description: 'Process a file',
+        inputFile: { required: true },
+        action: async () => ok(undefined),
+      })
+
+      expect(command.name).toBe('process')
+      expect(command.description).toBe('Process a file')
+    })
+
+    it('should include common options when specified', () => {
+      const command = createFileProcessingCommand({
+        name: 'convert',
+        description: 'Convert file',
+        inputFile: { required: true },
+        commonOptions: ['output', 'verbose', 'dryRun'],
+        action: async () => ok(undefined),
+      })
+
+      expect(command.options).toHaveLength(3)
+      const optionNames = command.options?.map((o) => o.name) ?? []
+      expect(optionNames).toContain('output')
+      expect(optionNames).toContain('verbose')
+      expect(optionNames).toContain('dryRun')
+    })
+
+    it('should include custom options', () => {
+      const command = createFileProcessingCommand({
+        name: 'transform',
+        description: 'Transform file',
+        inputFile: { required: true },
+        customOptions: [
+          { name: 'encoding', flags: '--encoding <enc>', description: 'File encoding', type: 'string' as const },
+        ],
+        action: async () => ok(undefined),
+      })
+
+      expect(command.options).toHaveLength(1)
+      expect(command.options?.[0].name).toBe('encoding')
+    })
+
+    it('should return error when required input file is missing', async () => {
+      const actionMock = vi.fn().mockResolvedValue(ok(undefined))
+      const command = createFileProcessingCommand({
+        name: 'process',
+        description: 'Process file',
+        inputFile: { required: true },
+        action: actionMock,
+      })
+
+      const context = createMockContext([]) // No args
+      const result = await command.action({}, context)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('input file is required')
+      }
+      expect(actionMock).not.toHaveBeenCalled()
+    })
+
+    it('should return error when input file does not exist', async () => {
+      const actionMock = vi.fn().mockResolvedValue(ok(undefined))
+      const command = createFileProcessingCommand({
+        name: 'process',
+        description: 'Process file',
+        inputFile: { required: true },
+        action: actionMock,
+      })
+
+      const context = createMockContext(['nonexistent.txt'], false) // File doesn't exist
+      const result = await command.action({}, context)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('file not found')
+      }
+      expect(actionMock).not.toHaveBeenCalled()
+    })
+
+    it('should call action with processing context when file exists', async () => {
+      const actionMock = vi.fn().mockResolvedValue(ok(undefined))
+      const command = createFileProcessingCommand({
+        name: 'process',
+        description: 'Process file',
+        inputFile: { required: true },
+        action: actionMock,
+      })
+
+      const context = createMockContext(['input.txt'], true)
+      const result = await command.action({}, context)
+
+      expect(result.isOk()).toBe(true)
+      expect(actionMock).toHaveBeenCalledTimes(1)
+
+      // Verify processing context
+      const [options, ctx, processingCtx] = actionMock.mock.calls[0]
+      expect(processingCtx.inputFile).toBe('input.txt')
+      expect(processingCtx.fs).toBeDefined()
+    })
+
+    it('should pass output option to processing context', async () => {
+      const actionMock = vi.fn().mockResolvedValue(ok(undefined))
+      const command = createFileProcessingCommand({
+        name: 'process',
+        description: 'Process file',
+        inputFile: { required: true },
+        commonOptions: ['output'],
+        action: actionMock,
+      })
+
+      const context = createMockContext(['input.txt'], true)
+      const result = await command.action({ output: 'output.txt' }, context)
+
+      expect(result.isOk()).toBe(true)
+      const [_options, _ctx, processingCtx] = actionMock.mock.calls[0]
+      expect(processingCtx.outputPath).toBe('output.txt')
+    })
+
+    it('should allow optional input file', async () => {
+      const actionMock = vi.fn().mockResolvedValue(ok(undefined))
+      const command = createFileProcessingCommand({
+        name: 'generate',
+        description: 'Generate output',
+        inputFile: { required: false },
+        action: actionMock,
+      })
+
+      const context = createMockContext([]) // No input file
+      const result = await command.action({}, context)
+
+      expect(result.isOk()).toBe(true)
+      expect(actionMock).toHaveBeenCalled()
+
+      const [_options, _ctx, processingCtx] = actionMock.mock.calls[0]
+      expect(processingCtx.inputFile).toBe('')
+    })
+
+    it('should use custom input file description', () => {
+      const command = createFileProcessingCommand({
+        name: 'analyze',
+        description: 'Analyze file',
+        inputFile: {
+          required: true,
+          description: 'Source code file to analyze',
+        },
+        action: async () => ok(undefined),
+      })
+
+      expect(command.arguments).toBe('Source code file to analyze')
+    })
+
+    it('should handle action returning error', async () => {
+      const command = createFileProcessingCommand({
+        name: 'fail',
+        description: 'Failing command',
+        inputFile: { required: true },
+        action: async () =>
+          err(createCoreError('ACTION_FAILED', 'CLI_ERROR', 'Something went wrong', { recoverable: true })),
+      })
+
+      const context = createMockContext(['input.txt'], true)
+      const result = await command.action({}, context)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toBe('Something went wrong')
+      }
     })
   })
 })
