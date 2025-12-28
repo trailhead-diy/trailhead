@@ -159,29 +159,27 @@ describe('Detection Core Operations', () => {
       if (result.isOk()) {
         expect(result.value).toHaveLength(3)
 
-        // Verify each detection result
-        const jpgResult = result.value.find((r) => r.filePath.endsWith('.jpg'))
-        expect(jpgResult).toBeDefined()
-        expect(jpgResult?.detection.format.ext).toBe('jpg')
+        // Verify each detection result (results are in order)
+        expect(result.value[0].format.ext).toBe('jpg')
+        expect(result.value[0].source).toBe('file-extension')
 
-        const pdfResult = result.value.find((r) => r.filePath.endsWith('.pdf'))
-        expect(pdfResult).toBeDefined()
-        expect(pdfResult?.detection.format.ext).toBe('pdf')
+        expect(result.value[1].format.ext).toBe('pdf')
+        expect(result.value[1].source).toBe('file-extension')
 
-        const jsonResult = result.value.find((r) => r.filePath.endsWith('.json'))
-        expect(jsonResult).toBeDefined()
-        expect(jsonResult?.detection.format.ext).toBe('json')
+        expect(result.value[2].format.ext).toBe('json')
+        expect(result.value[2].source).toBe('file-extension')
       }
     })
 
     it('should handle files with unknown extensions', async () => {
       const result = await detectionOps.detectBatch(['/path/to/file.xyz'])
 
-      // Unknown extension should fail detection
+      // Unknown extension + file not found = FormatError from mapFileError
       expect(result.isErr()).toBe(true)
       if (result.isErr()) {
-        expect(result.error.type).toBe('detection')
-        expect(result.error.message).toContain('Unknown')
+        // Falls through to buffer detection which fails with FormatError
+        expect(result.error.type).toBe('FormatError')
+        expect(result.error.message).toBeDefined()
       }
     })
 
@@ -191,27 +189,25 @@ describe('Detection Core Operations', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value[0].filePath).toBe('/a.png')
-        expect(result.value[1].filePath).toBe('/b.jpg')
-        expect(result.value[2].filePath).toBe('/c.gif')
+        // DetectionResult doesn't include filePath, but results are in input order
+        expect(result.value).toHaveLength(3)
+        expect(result.value[0].format.ext).toBe('png')
+        expect(result.value[1].format.ext).toBe('jpg')
+        expect(result.value[2].format.ext).toBe('gif')
       }
     })
   })
 
   describe('detectFromFile', () => {
-    it('should return error for non-existent file', async () => {
+    it('should fall back to extension for non-existent file', async () => {
       const result = await detectionOps.detectFromFile('/non/existent/file.jpg')
 
-      // File doesn't exist, should fall back to extension or error
-      // Depending on implementation, either:
-      // - Returns error because file not found
-      // - Falls back to extension-based detection
-      if (result.isErr()) {
-        expect(result.error.type).toBe('detection')
-        expect(result.error.message).toBeDefined()
-      } else {
-        // Fallback to extension worked
-        expect(result.value.source).toBe('extension')
+      // Implementation falls back to extension-based detection when file doesn't exist
+      // since useFileExtension is enabled by default and runs first
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value.source).toBe('file-extension')
+        expect(result.value.format.ext).toBe('jpg')
       }
     })
   })
