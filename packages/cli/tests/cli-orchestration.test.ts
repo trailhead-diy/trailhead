@@ -29,18 +29,15 @@ describe('CLI Orchestration', () => {
   })
 
   it('should provide consistent context across commands', async () => {
-    const contextSnapshots: any[] = []
-
     const command1 = createCommand({
       name: 'context-test-1',
       description: 'First context test',
-      action: async (options, context) => {
-        contextSnapshots.push({
-          projectRoot: context.projectRoot,
-          hasLogger: !!context.logger,
-          hasFs: !!context.fs,
-          verbose: context.verbose,
-        })
+      action: async (_options, context) => {
+        // Verify context structure
+        expect(context.projectRoot).toBe(process.cwd())
+        expect(context.logger).toBeDefined()
+        expect(context.fs).toBeDefined()
+        expect(typeof context.verbose).toBe('boolean')
         return ok(undefined)
       },
     })
@@ -48,25 +45,28 @@ describe('CLI Orchestration', () => {
     const command2 = createCommand({
       name: 'context-test-2',
       description: 'Second context test',
-      action: async (options, context) => {
-        contextSnapshots.push({
-          projectRoot: context.projectRoot,
-          hasLogger: !!context.logger,
-          hasFs: !!context.fs,
-          verbose: context.verbose,
-        })
+      action: async (_options, context) => {
+        expect(context.projectRoot).toBe(process.cwd())
+        expect(context.logger).toBeDefined()
+        expect(context.fs).toBeDefined()
         return ok(undefined)
       },
     })
 
-    const _cli = createCLI({
+    const cli = createCLI({
       name: 'context-cli',
       version: '1.0.0',
       description: 'CLI for testing context consistency',
       commands: [command1, command2],
     })
 
-    // Context snapshots will be verified when commands are executed
+    // Verify CLI has commands registered
+    expect(cli).toBeDefined()
+    expect(typeof cli.run).toBe('function')
+
+    // Verify command structure
+    expect(command1.name).toBe('context-test-1')
+    expect(command2.name).toBe('context-test-2')
   })
 
   it('should handle CLI with complex command configurations', () => {

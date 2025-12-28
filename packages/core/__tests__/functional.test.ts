@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { ok, err, ResultAsync } from 'neverthrow'
 import { tap, composeResult, composeResultAsync } from '../src/functional/composition.js'
 
@@ -55,6 +55,38 @@ describe('Foundation Functional Utilities', () => {
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
         expect(result.value).toBe(12) // (5 + 1) * 2 = 12
+      }
+    })
+
+    it('should short-circuit on first error in composeResultAsync', async () => {
+      const failAsync = (_x: number) =>
+        ResultAsync.fromPromise(Promise.reject(new Error('First failed')), () => 'error from first')
+      const shouldNotRun = vi.fn().mockReturnValue(ResultAsync.fromSafePromise(Promise.resolve(99)))
+
+      const composed = composeResultAsync(shouldNotRun, failAsync)
+      const result = await composed(5)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error).toBe('error from first')
+      }
+      expect(shouldNotRun).not.toHaveBeenCalled()
+    })
+
+    it('should short-circuit when second function fails in composeResultAsync', async () => {
+      const successAsync = (x: number) => ResultAsync.fromSafePromise(Promise.resolve(x + 1))
+      const failAsync = (_x: number) =>
+        ResultAsync.fromPromise(
+          Promise.reject(new Error('Second failed')),
+          () => 'error from second'
+        )
+
+      const composed = composeResultAsync(failAsync, successAsync)
+      const result = await composed(5)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error).toBe('error from second')
       }
     })
   })

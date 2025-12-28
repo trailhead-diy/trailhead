@@ -44,8 +44,12 @@ describe('Detection Core Operations', () => {
       const unknownBuffer = Buffer.from('unknown file content')
       const result = await detectionOps.detectFromBuffer(unknownBuffer)
 
-      // Should either detect something or fail gracefully
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // Unknown formats should return an error with appropriate message
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toBeDefined()
+        expect(result.error.type).toBeDefined()
+      }
     })
   })
 
@@ -103,8 +107,14 @@ describe('Detection Core Operations', () => {
     it('should handle MIME type with parameters', () => {
       const result = detectionOps.detectFromMime('text/html; charset=utf-8')
 
-      // Should either succeed or fail gracefully
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // MIME with parameters may not be recognized - depends on implementation
+      // The function should return a Result (either Ok or Err) without throwing
+      if (result.isOk()) {
+        expect(result.value.mime).toBeDefined()
+        expect(result.value.ext).toBeDefined()
+      } else {
+        expect(result.error.message).toBeDefined()
+      }
     })
 
     it('should handle unknown MIME type', () => {
@@ -139,8 +149,14 @@ describe('Detection Core Operations', () => {
     it('should handle non-existent files gracefully', async () => {
       const result = await detectionOps.detectBatch(['/non/existent/file.jpg'])
 
-      // Should either fail or succeed with fallback enabled
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // Non-existent files may succeed with fallback detection from extension
+      // or fail - either way, the function should not throw
+      if (result.isOk()) {
+        // With fallback, might detect based on extension alone
+        expect(Array.isArray(result.value)).toBe(true)
+      } else {
+        expect(result.error.message).toBeDefined()
+      }
     })
   })
 })
