@@ -229,7 +229,8 @@ describe('Excel Integration Tests', () => {
       const workbookResult = await excelOps.createWorkbook(worksheets)
 
       if (workbookResult.isOk()) {
-        const result = excelOps.parseWorksheet(workbookResult.value, 'Sheet2')
+        // Use hasHeader: false since test data is raw arrays (no header row)
+        const result = excelOps.parseWorksheet(workbookResult.value, 'Sheet2', { hasHeader: false })
         expect(result.isOk()).toBe(true)
 
         if (result.isOk()) {
@@ -263,7 +264,8 @@ describe('Excel Integration Tests', () => {
       const workbookResult = await excelOps.createWorkbook(worksheets)
 
       if (workbookResult.isOk()) {
-        const result = excelOps.parseWorksheetByIndex(workbookResult.value, 1)
+        // Use hasHeader: false since test data is raw arrays (no header row)
+        const result = excelOps.parseWorksheetByIndex(workbookResult.value, 1, { hasHeader: false })
         expect(result.isOk()).toBe(true)
 
         if (result.isOk()) {
