@@ -231,6 +231,60 @@ describe('Unified Data Operations Integration', () => {
     })
   })
 
+  describe('Excel round-trip', () => {
+    it('should auto-detect and parse Excel file', async () => {
+      const result = await dataOps.parseAuto(join(fixturesPath, 'sample.xlsx'))
+
+      if (result.isErr()) {
+        console.error('Excel parse error:', JSON.stringify(result.error, null, 2))
+      }
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        // Excel parseFile returns array directly or ParsedData structure
+        const value = result.value
+        const data = Array.isArray(value) ? value : value.data
+        expect(Array.isArray(data)).toBe(true)
+        expect(data.length).toBeGreaterThan(0)
+
+        // Verify first row structure from BasicData sheet
+        const first = data[0] as Record<string, unknown>
+        expect(first).toHaveProperty('id')
+        expect(first).toHaveProperty('name')
+        expect(first).toHaveProperty('email')
+      }
+    })
+
+    it('should round-trip Excel data correctly', async () => {
+      const originalData = [
+        { id: 1, product: 'Widget', price: 9.99 },
+        { id: 2, product: 'Gadget', price: 19.99 },
+      ]
+      const filePath = join(tempDir, 'roundtrip.xlsx')
+
+      // Write
+      const writeResult = await dataOps.writeAuto(filePath, originalData)
+      expect(writeResult.isOk()).toBe(true)
+
+      // Read back
+      const readResult = await dataOps.parseAuto(filePath)
+      expect(readResult.isOk()).toBe(true)
+
+      if (readResult.isOk()) {
+        // Excel parseFile returns array directly or ParsedData structure
+        const result = readResult.value
+        const data = Array.isArray(result) ? result : result.data
+        expect(Array.isArray(data)).toBe(true)
+        // Should have header + 2 data rows = 3, or just 2 data rows
+        expect(data.length).toBeGreaterThanOrEqual(2)
+
+        // Verify data contains our values (Excel may use different key names)
+        const allValues = data.flatMap((row: Record<string, unknown>) => Object.values(row))
+        expect(allValues).toContain('Widget')
+        expect(allValues).toContain('Gadget')
+      }
+    })
+  })
+
   describe('detectFormat', () => {
     it('should detect CSV format from file', async () => {
       const result = await dataOps.detectFormat(join(fixturesPath, 'sample.csv'))
@@ -247,6 +301,16 @@ describe('Unified Data Operations Integration', () => {
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
         expect(result.value).toContain('json')
+      }
+    })
+
+    it('should detect Excel format from file', async () => {
+      const result = await dataOps.detectFormat(join(fixturesPath, 'sample.xlsx'))
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        // detectFormat returns MIME type, xlsx files have this MIME type
+        expect(result.value).toContain('spreadsheetml')
       }
     })
   })
