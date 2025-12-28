@@ -54,12 +54,12 @@
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.10.0",
-    "@vitest/coverage-v8": "^4.0.7",
-    "oxlint": "^1.25.0",
-    "tsup": "^8.5.0",
-    "tsx": "^4.20.6",
+    "@vitest/coverage-v8": "^4.0.16",
+    "oxlint": "^1.35.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.7"
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=20.0.0",
