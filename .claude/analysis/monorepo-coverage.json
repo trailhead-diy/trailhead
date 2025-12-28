@@ -1,21 +1,21 @@
 {
   "version": "2.0",
-  "timestamp": "2025-12-29T00:30:00.000Z",
-  "gitSha": "6973bb229c1ea3117e32be88a3ed9e2fd07c6755",
+  "timestamp": "2025-12-28T23:45:00.000Z",
+  "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
   "packages": [
     {
       "name": "cli",
       "path": "packages/cli",
       "status": "analyzed",
-      "coveragePercent": 95,
-      "gapCount": 8,
-      "lastAnalyzed": "2025-12-28T23:59:00.000Z",
+      "coveragePercent": 98,
+      "gapCount": 5,
+      "lastAnalyzed": "2025-12-28T19:50:00.000Z",
       "staleSince": null,
       "changedFilesSince": 0,
       "topGaps": [
         { "behavior": "createCLI.run.fullFlow", "risk": "high", "status": "partial" },
         { "behavior": "gitHooks.installGitHooks.realFs", "risk": "medium", "status": "partial" },
-        { "behavior": "performance.processOptionWithCache", "risk": "medium", "status": "missing" }
+        { "behavior": "patterns.executeWithConfiguration", "risk": "low", "status": "missing" }
       ]
     },
     {
@@ -40,106 +40,96 @@
       "name": "create-cli",
       "path": "packages/create-cli",
       "status": "analyzed",
-      "coveragePercent": 91,
-      "gapCount": 12,
-      "lastAnalyzed": "2025-12-28T21:30:00.000Z",
+      "coveragePercent": 96,
+      "gapCount": 7,
+      "lastAnalyzed": "2025-12-28T22:15:00.000Z",
       "staleSince": null,
       "changedFilesSince": 0,
       "topGaps": [
-        { "behavior": "compiler.getCachedTemplate", "risk": "medium", "status": "partial" },
-        { "behavior": "loader.getTemplateFiles", "risk": "medium", "status": "partial" },
-        { "behavior": "loader.resolveTemplatePaths", "risk": "medium", "status": "partial" }
+        { "behavior": "generateCommand", "risk": "high", "status": "partial" },
+        { "behavior": "context.createTemplateContext", "risk": "medium", "status": "partial" },
+        { "behavior": "context.sanitizePackageName", "risk": "low", "status": "missing" }
       ]
     },
     {
       "name": "data",
       "path": "packages/data",
       "status": "analyzed",
-      "coveragePercent": 94,
-      "gapCount": 10,
-      "lastAnalyzed": "2025-12-28T21:30:00.000Z",
+      "coveragePercent": 97,
+      "gapCount": 5,
+      "lastAnalyzed": "2025-12-28T23:00:00.000Z",
       "staleSince": null,
       "changedFilesSince": 0,
       "topGaps": [
-        { "behavior": "UnifiedDataOperations.parseAuto", "risk": "critical", "status": "partial" },
-        { "behavior": "UnifiedDataOperations.writeAuto", "risk": "high", "status": "partial" },
-        { "behavior": "DetectionOperations.detectFromFile", "risk": "high", "status": "partial" }
+        {
+          "behavior": "DetectionOperations.detectFromFile.binaryContent",
+          "risk": "medium",
+          "status": "partial"
+        },
+        {
+          "behavior": "MimeOperations.parseMimeType.multipleParams",
+          "risk": "low",
+          "status": "partial"
+        },
+        { "behavior": "testing.dataGenerators", "risk": "low", "status": "missing" }
       ]
-    },
+    }
+  ],
+  "tooling": [
     {
       "name": "prettier-config",
       "path": "tooling/prettier-config",
       "status": "not-applicable",
-      "coveragePercent": null,
-      "gapCount": 0,
-      "lastAnalyzed": null,
-      "staleSince": null,
-      "changedFilesSince": 0,
-      "topGaps": []
+      "reason": "Config-only package (index.js exports config object, no logic to test)"
     },
     {
       "name": "tsup-config",
       "path": "tooling/tsup-config",
       "status": "not-applicable",
-      "coveragePercent": null,
-      "gapCount": 0,
-      "lastAnalyzed": null,
-      "staleSince": null,
-      "changedFilesSince": 0,
-      "topGaps": []
+      "reason": "Config-only package (re-exports shared config, no logic to test)"
     },
     {
       "name": "typescript-config",
       "path": "tooling/typescript-config",
       "status": "not-applicable",
-      "coveragePercent": null,
-      "gapCount": 0,
-      "lastAnalyzed": null,
-      "staleSince": null,
-      "changedFilesSince": 0,
-      "topGaps": []
+      "reason": "Config-only package (JSON config files, no logic to test)"
     },
     {
       "name": "vitest-config",
       "path": "tooling/vitest-config",
       "status": "not-applicable",
-      "coveragePercent": null,
-      "gapCount": 0,
-      "lastAnalyzed": null,
-      "staleSince": null,
-      "changedFilesSince": 0,
-      "topGaps": []
+      "reason": "Config-only package (shared test setup, no logic to test)"
     }
   ],
   "apps": [],
   "crossPackageRisks": [
     {
+      "consumer": "create-cli",
+      "dependency": "cli",
+      "riskyBehaviors": ["cli.createCLI.run.fullFlow has partial coverage"],
+      "risk": "medium"
+    },
+    {
+      "consumer": "create-cli",
+      "dependency": "core",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
+      "consumer": "data",
+      "dependency": "cli",
+      "riskyBehaviors": ["cli.createCLI.run.fullFlow has partial coverage"],
+      "risk": "medium"
+    },
+    {
+      "consumer": "data",
+      "dependency": "core",
+      "riskyBehaviors": [],
+      "risk": "low"
+    },
+    {
       "consumer": "cli",
       "dependency": "core",
-      "riskyBehaviors": [],
-      "risk": "low"
-    },
-    {
-      "consumer": "create-cli",
-      "dependency": "core",
-      "riskyBehaviors": [],
-      "risk": "low"
-    },
-    {
-      "consumer": "create-cli",
-      "dependency": "cli",
-      "riskyBehaviors": [],
-      "risk": "low"
-    },
-    {
-      "consumer": "data",
-      "dependency": "core",
-      "riskyBehaviors": [],
-      "risk": "low"
-    },
-    {
-      "consumer": "data",
-      "dependency": "cli",
       "riskyBehaviors": [],
       "risk": "low"
     }
@@ -150,40 +140,11 @@
     "stale": 0,
     "neverAnalyzed": 0,
     "notApplicable": 4,
-    "averageCoverage": 95
+    "averageCoverage": 97.75
   },
   "topGapsAcrossMonorepo": [
-    {
-      "package": "data",
-      "behavior": "UnifiedDataOperations.parseAuto",
-      "risk": "critical",
-      "status": "partial"
-    },
-    {
-      "package": "data",
-      "behavior": "UnifiedDataOperations.writeAuto",
-      "risk": "high",
-      "status": "partial"
-    },
-    {
-      "package": "data",
-      "behavior": "DetectionOperations.detectFromFile",
-      "risk": "high",
-      "status": "partial"
-    },
     { "package": "cli", "behavior": "createCLI.run.fullFlow", "risk": "high", "status": "partial" },
-    {
-      "package": "data",
-      "behavior": "DetectionOperations.detectBatch",
-      "risk": "medium",
-      "status": "partial"
-    },
-    {
-      "package": "data",
-      "behavior": "ExcelOperations.parseFile.realFixture",
-      "risk": "medium",
-      "status": "partial"
-    },
+    { "package": "create-cli", "behavior": "generateCommand", "risk": "high", "status": "partial" },
     {
       "package": "cli",
       "behavior": "gitHooks.installGitHooks.realFs",
@@ -191,22 +152,41 @@
       "status": "partial"
     },
     {
-      "package": "cli",
-      "behavior": "performance.processOptionWithCache",
+      "package": "create-cli",
+      "behavior": "context.createTemplateContext",
       "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "data",
+      "behavior": "DetectionOperations.detectFromFile.binaryContent",
+      "risk": "medium",
+      "status": "partial"
+    },
+    {
+      "package": "cli",
+      "behavior": "patterns.executeWithConfiguration",
+      "risk": "low",
       "status": "missing"
     },
     {
       "package": "create-cli",
-      "behavior": "compiler.getCachedTemplate",
-      "risk": "medium",
-      "status": "partial"
+      "behavior": "context.sanitizePackageName",
+      "risk": "low",
+      "status": "missing"
     },
     {
       "package": "create-cli",
-      "behavior": "loader.getTemplateFiles",
-      "risk": "medium",
-      "status": "partial"
+      "behavior": "modules.getRecommendedModules",
+      "risk": "low",
+      "status": "missing"
+    },
+    { "package": "data", "behavior": "testing.dataGenerators", "risk": "low", "status": "missing" },
+    {
+      "package": "data",
+      "behavior": "testing.transformHelpers",
+      "risk": "low",
+      "status": "missing"
     }
   ],
   "history": [
@@ -227,6 +207,12 @@
       "gitSha": "6973bb229c1ea3117e32be88a3ed9e2fd07c6755",
       "averageCoverage": 95,
       "totalGaps": 32
+    },
+    {
+      "timestamp": "2025-12-28T23:45:00.000Z",
+      "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
+      "averageCoverage": 97.75,
+      "totalGaps": 19
     }
   ]
 }

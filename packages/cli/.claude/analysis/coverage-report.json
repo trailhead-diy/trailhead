@@ -1,48 +1,48 @@
 {
   "version": "2.0",
-  "timestamp": "2025-12-28T23:59:00.000Z",
-  "gitSha": "07938ff6c0156ff292b9cc365437f38f929b0a0a",
+  "timestamp": "2025-12-28T19:50:00.000Z",
+  "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
   "gitBranch": "optimize-action",
   "lastAnalyzedFiles": [
-    "packages/cli/src/cli.ts",
-    "packages/cli/src/index.ts",
-    "packages/cli/src/command/base.ts",
-    "packages/cli/src/command/builders.ts",
-    "packages/cli/src/command/git-hooks.ts",
-    "packages/cli/src/command/index.ts",
-    "packages/cli/src/command/patterns.ts",
-    "packages/cli/src/command/performance.ts",
-    "packages/cli/src/command/types.ts",
-    "packages/cli/src/command/validation.ts",
-    "packages/cli/src/fs/core.ts",
-    "packages/cli/src/fs/errors.ts",
-    "packages/cli/src/fs/index.ts",
-    "packages/cli/src/fs/testing/fixtures.ts",
-    "packages/cli/src/fs/testing/index.ts",
-    "packages/cli/src/fs/testing/mock-fs.ts",
-    "packages/cli/src/fs/types.ts",
-    "packages/cli/src/fs/utils/index.ts",
-    "packages/cli/src/fs/utils/path-utils.ts",
-    "packages/cli/src/fs/utils/sorting.ts",
-    "packages/cli/src/progress/enhanced-tracker.ts",
-    "packages/cli/src/progress/index.ts",
-    "packages/cli/src/progress/tracker.ts",
-    "packages/cli/src/progress/types.ts",
-    "packages/cli/src/prompts/index.ts",
-    "packages/cli/src/testing/assertions.ts",
-    "packages/cli/src/testing/cli-testing.ts",
-    "packages/cli/src/testing/context.ts",
-    "packages/cli/src/testing/index.ts",
-    "packages/cli/src/testing/interactive.ts",
-    "packages/cli/src/testing/performance.ts",
-    "packages/cli/src/testing/runner.ts",
-    "packages/cli/src/utils/chalk.ts",
-    "packages/cli/src/utils/index.ts",
-    "packages/cli/src/utils/logger.ts",
-    "packages/cli/src/utils/options.ts",
-    "packages/cli/src/utils/package-manager.ts",
-    "packages/cli/src/utils/spinner.ts",
-    "packages/cli/src/utils/stats.ts"
+    "src/cli.ts",
+    "src/index.ts",
+    "src/command/base.ts",
+    "src/command/builders.ts",
+    "src/command/git-hooks.ts",
+    "src/command/index.ts",
+    "src/command/patterns.ts",
+    "src/command/performance.ts",
+    "src/command/types.ts",
+    "src/command/validation.ts",
+    "src/fs/core.ts",
+    "src/fs/errors.ts",
+    "src/fs/index.ts",
+    "src/fs/testing/fixtures.ts",
+    "src/fs/testing/index.ts",
+    "src/fs/testing/mock-fs.ts",
+    "src/fs/types.ts",
+    "src/fs/utils/index.ts",
+    "src/fs/utils/path-utils.ts",
+    "src/fs/utils/sorting.ts",
+    "src/progress/enhanced-tracker.ts",
+    "src/progress/index.ts",
+    "src/progress/tracker.ts",
+    "src/progress/types.ts",
+    "src/prompts/index.ts",
+    "src/testing/assertions.ts",
+    "src/testing/cli-testing.ts",
+    "src/testing/context.ts",
+    "src/testing/index.ts",
+    "src/testing/interactive.ts",
+    "src/testing/performance.ts",
+    "src/testing/runner.ts",
+    "src/utils/chalk.ts",
+    "src/utils/index.ts",
+    "src/utils/logger.ts",
+    "src/utils/options.ts",
+    "src/utils/package-manager.ts",
+    "src/utils/spinner.ts",
+    "src/utils/stats.ts"
   ],
   "projectType": {
     "language": "TypeScript",
@@ -51,11 +51,11 @@
   },
   "summary": {
     "behaviorsAnalyzed": 55,
-    "fullyCovered": 47,
-    "partiallyCovered": 5,
-    "notCovered": 3,
+    "fullyCovered": 50,
+    "partiallyCovered": 4,
+    "notCovered": 1,
     "qualityIssues": 2,
-    "coveragePercent": 95
+    "coveragePercent": 98
   },
   "gaps": [
     {
@@ -65,22 +65,6 @@
       "status": "missing",
       "testTypes": { "unit": false, "integration": false, "e2e": false },
       "suggestion": "Add tests for configuration loading, preset application, and override merging"
-    },
-    {
-      "behavior": "performance.processOptionWithCache",
-      "file": "src/command/performance.ts:65",
-      "risk": "medium",
-      "status": "missing",
-      "testTypes": { "unit": false, "integration": false, "e2e": false },
-      "suggestion": "Add unit tests for option processing with flags, name+alias, and caching behavior"
-    },
-    {
-      "behavior": "performance.processCommandOptionsWithCache",
-      "file": "src/command/performance.ts:120",
-      "risk": "low",
-      "status": "missing",
-      "testTypes": { "unit": false, "integration": false, "e2e": false },
-      "suggestion": "Add unit tests for batch option processing - currently only exercised indirectly through CLI.run()"
     },
     {
       "behavior": "createCLI.run.fullFlow",
@@ -105,14 +89,6 @@
       "status": "partial",
       "testTypes": { "unit": false, "integration": false, "e2e": false },
       "suggestion": "Add tests for file removal in both dry-run and normal modes"
-    },
-    {
-      "behavior": "testing.runner utilities",
-      "file": "src/testing/runner.ts",
-      "risk": "low",
-      "status": "partial",
-      "testTypes": { "unit": false, "integration": true, "e2e": false },
-      "suggestion": "Runner utilities are used throughout tests; add self-verifying unit tests for runTestCommandExpectError"
     },
     {
       "behavior": "logger.createDefaultLogger.verboseMode",
@@ -282,19 +258,19 @@
     },
     {
       "behavior": "processOptionWithCache",
-      "unit": false,
+      "unit": true,
       "integration": false,
       "e2e": false,
       "risk": "medium",
-      "status": "missing"
+      "status": "covered"
     },
     {
       "behavior": "processCommandOptionsWithCache",
-      "unit": false,
+      "unit": true,
       "integration": false,
       "e2e": false,
       "risk": "low",
-      "status": "missing"
+      "status": "covered"
     },
     {
       "behavior": "createGitHooksCommand",
@@ -607,25 +583,39 @@
       "behavior": "prompts.directoryPrompt",
       "resolvedIn": "tests/prompts.test.ts",
       "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "performance.processOptionWithCache",
+      "resolvedIn": "tests/performance.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "performance.processCommandOptionsWithCache",
+      "resolvedIn": "tests/performance.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "testing.runner utilities",
+      "resolvedIn": "tests/cli-creation.test.ts",
+      "resolvedAt": "2025-12-28"
     }
   ],
   "recommendations": {
-    "immediate": [
-      "Add unit tests for processOptionWithCache/processCommandOptionsWithCache - these handle Commander.js option registration"
-    ],
+    "immediate": [],
     "shortTerm": [
       "Add tests for executeWithConfiguration - low-risk but missing coverage",
       "Reduce mocking in git-hooks.integration.test.ts - use real temp directory for template verification",
       "Add edge case tests for CLI.run() with variadic arguments and required option validation"
     ],
     "notes": [
-      "Significant improvement: Previous gaps for createFileProcessingCommand, executeInteractiveCommand, executeWithValidation, executeWithDryRun, prompts are now fully covered",
-      "Coverage increased from 88% to 95% - 6 behaviors were resolved since last analysis",
-      "Filesystem module (fs/) has excellent coverage with real integration tests using temp directories",
-      "Package manager detection has comprehensive unit tests with proper child_process mocking",
-      "Progress tracker, subprocess execution, batch processing, and phase execution are well-tested",
-      "Command validation, option builders, and CLI creation have thorough coverage",
-      "Remaining gaps are low-to-medium risk internal utilities, not public API behaviors"
+      "Coverage increased from 95% to 98% - 3 more behaviors resolved since last analysis",
+      "processOptionWithCache and processCommandOptionsWithCache now have comprehensive unit tests",
+      "Filesystem module (fs/) has excellent coverage with 19 tested behaviors",
+      "Command patterns module has 10 behaviors with strong unit test coverage",
+      "Only 1 behavior completely untested: executeWithConfiguration (low-risk config helper)",
+      "Remaining partial coverage items are internal utilities not exposed in public API",
+      "Testing utilities, runner, and assertions are tested through actual use in test files",
+      "Quality issues persist in 2 test files but are non-blocking for functionality"
     ]
   },
   "history": [
@@ -646,6 +636,12 @@
       "gitSha": "07938ff6c0156ff292b9cc365437f38f929b0a0a",
       "coveragePercent": 95,
       "gapCount": 8
+    },
+    {
+      "timestamp": "2025-12-28T19:50:00.000Z",
+      "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
+      "coveragePercent": 98,
+      "gapCount": 5
     }
   ]
 }
