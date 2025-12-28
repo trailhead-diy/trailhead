@@ -132,7 +132,9 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value).toEqual(jsonData)
+        // JSON results are wrapped in ParsedData structure for consistent API
+        expect(result.value.data).toEqual(jsonData)
+        expect(result.value.metadata.format).toBe('json')
       }
 
       expect(mockDetection.detectFromFile).toHaveBeenCalledWith('/path/to/data.json')
@@ -270,7 +272,9 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value).toEqual(expectedData)
+        // JSON results are wrapped in ParsedData structure for consistent API
+        expect(result.value.data).toEqual(expectedData)
+        expect(result.value.metadata.format).toBe('json')
       }
 
       expect(mockJSON.parseString).toHaveBeenCalledWith(jsonContent)
@@ -358,7 +362,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
       const result = await operations.writeAuto('/path/to/output.json', data)
 
       expect(result.isOk()).toBe(true)
-      expect(mockJSON.writeFile).toHaveBeenCalledWith('/path/to/output.json', data)
+      expect(mockJSON.writeFile).toHaveBeenCalledWith(data, '/path/to/output.json')
     })
 
     it('should write CSV files correctly', async () => {
@@ -412,7 +416,7 @@ describe('Unified Data Operations - Auto-Detection Workflows', () => {
       const result = await operations.writeAuto('/path/to/output', data)
 
       expect(result.isOk()).toBe(true)
-      expect(mockJSON.writeFile).toHaveBeenCalledWith('/path/to/output.json', data)
+      expect(mockJSON.writeFile).toHaveBeenCalledWith(data, '/path/to/output.json')
     })
 
     it('should validate data type for CSV output', async () => {
