@@ -10,5 +10,3 @@
 - [@trailhead/core](@trailhead.core.md)
 - [@trailhead/create-cli](@trailhead.create-cli.md)
 - [@trailhead/data](@trailhead.data.md)
-- [@trailhead/fs](@trailhead.fs.md)
-- [@trailhead/sort](@trailhead.sort.md)

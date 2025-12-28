@@ -33,7 +33,7 @@ Trailhead provides modern, type-safe foundations for building robust command-lin
 
 → **Start here:** [Package Ecosystem](#package-ecosystem)
 → **Data processing:** [@trailhead/data](./packages/data/README.md)
-→ **File operations:** [@trailhead/fs](./packages/fs/README.md)
+→ **File operations:** [@trailhead/cli/fs](./packages/cli/README.md#filesystem-operations)
 
 ### 📊 I want to scaffold new projects
 
@@ -93,14 +93,12 @@ pnpm dev
 
 ### 🔗 Package Relationship Matrix
 
-| Package                                            | Purpose           | Dependencies                                          | Best For                           |
-| -------------------------------------------------- | ----------------- | ----------------------------------------------------- | ---------------------------------- |
-| **[@trailhead/cli](./packages/cli)**               | CLI Framework     | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort` | Building command-line applications |
-| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                                      | Scaffolding CLI projects           |
-| **[@trailhead/core](./packages/core)**             | Foundation        | None                                                  | Result types, functional utilities |
-| **[@trailhead/fs](./packages/fs)**                 | File System       | `@trailhead/core`, `@trailhead/sort`                  | File operations, path utilities    |
-| **[@trailhead/data](./packages/data)**             | Data Processing   | `@trailhead/core`, `@trailhead/fs`, `@trailhead/sort` | CSV/JSON/Excel processing          |
-| **[@trailhead/sort](./packages/sort)**             | Sorting           | None                                                  | Fast, type-safe sorting utilities  |
+| Package                                            | Purpose           | Dependencies                         | Best For                           |
+| -------------------------------------------------- | ----------------- | ------------------------------------ | ---------------------------------- |
+| **[@trailhead/cli](./packages/cli)**               | CLI Framework     | `@trailhead/core`                    | Building command-line applications |
+| **[@trailhead/create-cli](./packages/create-cli)** | Project Generator | `@trailhead/cli`                     | Scaffolding CLI projects           |
+| **[@trailhead/core](./packages/core)**             | Foundation        | None                                 | Result types, functional utilities |
+| **[@trailhead/data](./packages/data)**             | Data Processing   | `@trailhead/core`, `@trailhead/cli`  | CSV/JSON/Excel processing          |
 
 ### 🎯 When to Use Each Package
 
@@ -109,7 +107,7 @@ pnpm dev
 ```typescript
 // Use @trailhead/cli for the framework
 import { createCommand } from '@trailhead/cli/command'
-// + @trailhead/fs for file operations
+// + @trailhead/cli/fs for file operations
 // + @trailhead/data for processing data files
 ```
 
@@ -118,14 +116,14 @@ import { createCommand } from '@trailhead/cli/command'
 ```typescript
 // Use @trailhead/data for format handling
 import { data } from '@trailhead/data'
-// + @trailhead/fs for file operations
+// + @trailhead/cli/fs for file operations
 ```
 
 #### Need File Operations?
 
 ```typescript
-// Use @trailhead/fs for filesystem operations
-import { fs } from '@trailhead/fs'
+// Use @trailhead/cli/fs for filesystem operations
+import { fs } from '@trailhead/cli/fs'
 // + @trailhead/core for Result types
 ```
 
@@ -136,7 +134,7 @@ import { fs } from '@trailhead/fs'
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
 import { data } from '@trailhead/data'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 
 const processCommand = createCommand({
   name: 'process',
@@ -159,7 +157,7 @@ const processCommand = createCommand({
 
 ```typescript
 import { data } from '@trailhead/data'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { createCommand } from '@trailhead/cli/command'
 
 const convertCommand = createCommand({
@@ -207,25 +205,15 @@ const convertCommand = createCommand({
 - **Monorepo support** - Optimized for both standalone and monorepo development
 - **Interactive setup** - Guided configuration with sensible defaults
 
-#### ⚡ [@trailhead/sort](./packages/sort) - Type-Safe Sorting Utilities
-
-- **High performance** - Powered by es-toolkit for optimal speed
-- **Type safety** - Full TypeScript support with comprehensive types
-- **Zero dependencies** - Minimal footprint with single dependency
-- **Functional API** - Pure functions for predictable sorting
-- **Flexible sorting** - Support for complex sorting scenarios
-
 ## Monorepo Architecture
 
 ```text
 trailhead/
 ├── packages/                           # Public packages
-│   ├── cli/                           # @trailhead/cli - CLI framework
+│   ├── cli/                           # @trailhead/cli - CLI framework (includes fs)
 │   ├── create-cli/                    # @trailhead/create-cli - Project generator
 │   ├── core/                          # @trailhead/core - Foundation (Result types)
-│   ├── fs/                            # @trailhead/fs - File system operations
-│   ├── data/                          # @trailhead/data - Data processing
-│   └── sort/                          # @trailhead/sort - Sorting utilities
+│   └── data/                          # @trailhead/data - Data processing
 ├── tooling/                           # Shared development tools
 │   ├── typescript-config/             # @repo/typescript-config - TypeScript configs
 │   ├── prettier-config/               # @repo/prettier-config - Code formatting
