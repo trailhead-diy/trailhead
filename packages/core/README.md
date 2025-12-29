@@ -44,9 +44,7 @@ if (result.isOk()) {
 ## Documentation
 
 - **[API Documentation](../../docs/@trailhead.core.md)** - Complete API reference
-- **[Result Types Pattern](../../docs/explanation/result-types-pattern.md)** - Understanding Result types
-- **[Functional Architecture](../../docs/explanation/functional-architecture.md)** - Functional programming patterns
 
 ## License
 
-MIT © [Esteban URL](https://github.com/esteban-url)
+MIT © [esteban-url](https://github.com/esteban-url)

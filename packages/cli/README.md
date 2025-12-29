@@ -326,9 +326,7 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { fs } from '@trailhead/fs'
-
-// Use @trailhead/fs package for file operations
+import { fs } from '@trailhead/cli/fs'
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -415,4 +413,4 @@ test('processes configuration file', async () => {
 
 ## License
 
-MIT © [Esteban URL](https://github.com/esteban-url)
+MIT © [esteban-url](https://github.com/esteban-url)

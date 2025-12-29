@@ -228,7 +228,7 @@ const convertCommand = createCommand({
 ### With File System Operations
 
 ```typescript
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { data } from '@trailhead/data'
 
 async const processDataDirectory = async (dirPath: string) => {
@@ -253,10 +253,6 @@ async const processDataDirectory = async (dirPath: string) => {
   return ok(results)
 }
 ```
-
-## Contributing
-
-See the [Contributing Guide](../how-to/contributing.md)for development setup and guidelines.
 
 ## License
 

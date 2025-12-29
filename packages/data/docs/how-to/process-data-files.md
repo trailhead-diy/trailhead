@@ -9,7 +9,6 @@ prerequisites:
 related:
   - /docs/reference/api/data.md
   - /docs/how-to/apply-functional-patterns
-  - /packages/fs/docs/how-to/file-operations
 ---
 
 # Process Data Files
@@ -184,7 +183,7 @@ constconvertFile = async (inputPath: string, outputPath: string) => {
 ### Batch Conversion
 
 ```typescript
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { createConversionOperations } from '@trailhead/data'
 import { path } from 'node:path'
 
@@ -399,7 +398,7 @@ constprocessDataEfficiently = async (filePath: string) => {
 ### Handle Missing Files
 
 ```typescript
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 
 constprocessWithFallback = async (primaryPath: string, fallbackPath: string) => {
   // Try primary file first
@@ -633,5 +632,4 @@ constprocessWithConfig = async (config: ProcessingConfig) => {
 ## Next Steps
 
 - Review [Data API Documentation](/docs/@trailhead.data.md) for detailed function documentation
-- Learn about [Format Detection](../../explanation/format-detection.md)system
-- Explore [File System Operations](../../../fs/how-to/file-operations.md)for file handling
+- Learn about [Format Detection](../../explanation/format-detection.md) system

@@ -65,4 +65,4 @@ const helloCommand = createCommand({
 
 ## License
 
-MIT © [Esteban URL](https://github.com/esteban-url)
+MIT © [esteban-url](https://github.com/esteban-url)

@@ -61,7 +61,7 @@ async const readConfig = async (path: string): Promise<Result<Config>> => {
 
 ```typescript
 import { createFileSystemError } from '@trailhead/core'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 
 async const loadData = async (filePath: string): Promise<Result<string>> => {
   const exists = await fs.exists(filePath)

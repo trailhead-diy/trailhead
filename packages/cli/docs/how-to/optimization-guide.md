@@ -1,7 +1,7 @@
 ---
 type: how-to
 title: 'How to Optimize CLI Performance'
-description: 'Optimize your @trailhead/trailhead-cli applications for better performance, smaller bundle size, and improved user experience'
+description: 'Optimize your @trailhead/cli applications for better performance, smaller bundle size, and improved user experience'
 prerequisites:
   - 'Working CLI application'
   - 'Basic performance profiling knowledge'
@@ -13,13 +13,13 @@ related:
 
 # How to Optimize CLI Performance
 
-This guide shows you how to optimize your @trailhead/trailhead-cli applications across multiple dimensions: bundle size, runtime performance, and user experience.
+This guide shows you how to optimize your @trailhead/cli applications across multiple dimensions: bundle size, runtime performance, and user experience.
 
 ## Prerequisites
 
 Before optimizing your CLI, ensure you have:
 
-- A working @trailhead/trailhead-cli application
+- A working @trailhead/cli application
 - Access to bundler analysis tools (esbuild, webpack-bundle-analyzer)
 - Basic understanding of JavaScript performance
 - Profiling tools installed (Node.js --prof, clinic.js)
@@ -32,11 +32,11 @@ Start with import optimization as it provides the biggest wins:
 
 ```typescript
 // ❌ Imports entire package (large bundle)
-import { createCLI, Ok, Err, createCommand } from '@trailhead/trailhead-cli'
+import { createCLI, Ok, Err, createCommand } from '@trailhead/cli'
 
 // ✅ Import only what you need (minimal bundle)
-import { createCLI, Ok, Err } from '@trailhead/trailhead-cli'
-import { createCommand } from '@trailhead/trailhead-cli/command'
+import { createCLI, Ok, Err } from '@trailhead/cli'
+import { createCommand } from '@trailhead/cli/command'
 ```
 
 **Bundle size comparison:**
@@ -57,7 +57,7 @@ Load expensive modules only when needed:
 
 ```typescript
 // ❌ Always loads inquirer (heavy)
-import { multiselect } from '@trailhead/trailhead-cli/prompts'
+import { multiselect } from '@trailhead/cli/prompts'
 
 const command: Command = {
   execute: async (options, context) => {
@@ -74,7 +74,7 @@ const command: Command = {
 const command: Command = {
   execute: async (options, context) => {
     if (options.interactive) {
-      const { multiselect } = await import('@trailhead/trailhead-cli/prompts')
+      const { multiselect } = await import('@trailhead/cli/prompts')
       const choices = await multiselect({
         /* config */
       })
@@ -88,7 +88,7 @@ const command: Command = {
 
 ```typescript
 // ❌ Loads filesystem even for help commands
-import type { FileSystem } from '@trailhead/trailhead-cli/filesystem'
+import type { FileSystem } from '@trailhead/cli/filesystem'
 
 // ✅ Use context.fs (provided by framework)
 const command: Command = {
@@ -361,7 +361,7 @@ test('processes files', async () => {
 })
 
 // ✅ Fast tests with memory filesystem
-import { mockFileSystem, createTestContext } from '@trailhead/trailhead-cli/testing'
+import { mockFileSystem, createTestContext } from '@trailhead/cli/testing'
 
 test('processes files', async () => {
   const fs = mockFileSystem({
@@ -442,7 +442,7 @@ const command: Command = {
 #### Performance Monitoring
 
 ```typescript
-import { createStats } from '@trailhead/trailhead-cli/utils'
+import { createStats } from '@trailhead/cli/utils'
 
 const command: Command = {
   execute: async (options, context) => {
@@ -589,12 +589,12 @@ const processFiles = async (files: string[], context: CommandContext) => {
 
 ```typescript
 // ❌ Large bundle
-import * as cli from '@trailhead/trailhead-cli'
+import * as cli from '@trailhead/cli'
 import { inquirer } from 'inquirer' // Full inquirer package
 
 // ✅ Optimized imports
-import { createCLI, Ok, Err } from '@trailhead/trailhead-cli'
-import { prompt } from '@trailhead/trailhead-cli/prompts' // Re-exported optimized version
+import { createCLI, Ok, Err } from '@trailhead/cli'
+import { prompt } from '@trailhead/cli/prompts' // Re-exported optimized version
 ```
 
 ### Common Performance Pitfalls
@@ -652,7 +652,7 @@ Here's a fully optimized CLI application:
 
 ```typescript
 // cli.ts - Optimized entry point
-import { createCLI } from '@trailhead/trailhead-cli'
+import { createCLI } from '@trailhead/cli'
 
 // Lazy load commands to reduce startup time
 const cli = createCLI({
@@ -680,15 +680,15 @@ const cli = createCLI({
 export default cli
 
 // commands/process.ts - Optimized command implementation
-import { Ok, Err } from '@trailhead/trailhead-cli'
-import type { CommandContext } from '@trailhead/trailhead-cli/command'
+import { Ok, Err } from '@trailhead/cli'
+import type { CommandContext } from '@trailhead/cli/command'
 import pLimit from 'p-limit'
 
 export async function processCommand(options: any, context: CommandContext) {
   // Optional performance monitoring
   let stats: any = null
   if (options.profile) {
-    const { createStats } = await import('@trailhead/trailhead-cli/utils')
+    const { createStats } = await import('@trailhead/cli/utils')
     stats = createStats()
     stats.startTimer('total')
   }
@@ -697,7 +697,7 @@ export async function processCommand(options: any, context: CommandContext) {
   const limit = pLimit(options.parallel)
 
   // Lazy load filesystem when needed
-  const { createFileSystem } = await import('@trailhead/trailhead-cli/filesystem')
+  const { createFileSystem } = await import('@trailhead/cli/filesystem')
   const fs = createFileSystem()
 
   // Get file list
@@ -709,7 +709,7 @@ export async function processCommand(options: any, context: CommandContext) {
   const files = filesResult.value.filter((f) => f.endsWith('.txt'))
 
   // Process with progress indication
-  const { createSpinner } = await import('@trailhead/trailhead-cli/utils')
+  const { createSpinner } = await import('@trailhead/cli/utils')
   const spinner = createSpinner(`Processing ${files.length} files...`)
 
   try {
@@ -787,7 +787,7 @@ Expected results:
 
 ### Bundle Size
 
-- [ ] Using subpath imports (`@trailhead/trailhead-cli/module`)
+- [ ] Using subpath imports (`@trailhead/cli/module`)
 - [ ] No wildcard imports (`import *`)
 - [ ] External dependencies are truly external
 - [ ] Analyzed bundle with tools

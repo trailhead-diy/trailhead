@@ -63,7 +63,7 @@ pnpm add @trailhead/cli --workspace
 - The main export (`@trailhead/cli`) contains only `createCLI` and basic Result types (`ok`, `err`)
 - All other functionality must be imported from specific subpaths
 - Extended Result utilities should be imported from `@trailhead/core`
-- File operations should use `@trailhead/fs` directly
+- File operations use `@trailhead/cli/fs`
 - This keeps your bundle size minimal
 
 See the [Import Patterns Guide](../how-to/import-patterns.md) for complete details.
@@ -134,7 +134,7 @@ node dist/index.js greet --name World
 
 ### Result Types
 
-@trailhead/trailhead-cli uses Result types for explicit error handling:
+@trailhead/cli uses Result types for explicit error handling:
 
 ```typescript
 import { ok, err } from '@trailhead/cli'
@@ -159,8 +159,7 @@ const myAction = async (options: any, context: CommandContext) => {
   context.logger.success('Done!')
   context.logger.error('Failed!')
 
-  // File system access via fs package
-  // Note: Use @trailhead/fs package for file operations
+  // File system access via @trailhead/cli/fs
   const result = await context.fs.readFile('config.json')
 
   // Project root directory
@@ -194,7 +193,7 @@ Here's a minimal but complete CLI application:
 #!/usr/bin/env node
 import { ok, err, createCLI } from '@trailhead/cli'
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import { prompt } from '@trailhead/cli/prompts'
 
 const mainCommand = createCommand({

@@ -198,8 +198,8 @@ The architecture is like a **well-organized toolbox** where:
 When building a CLI that processes files, you only import what you need:
 
 ```typescript
-import { createCommand } from '@trailhead/trailhead-cli/command'
-import { readFile, writeFile } from '@trailhead/trailhead-cli/filesystem'
+import { createCommand } from '@trailhead/cli/command'
+import { readFile, writeFile } from '@trailhead/cli/filesystem'
 
 // Only file and command modules are bundled
 ```
@@ -223,36 +223,36 @@ The Result type system enables clean error propagation without losing context or
 ## Module Dependency Graph
 
 ```
-@trailhead/trailhead-cli (main)
+@trailhead/cli (main)
 ├── Only exports: Ok, Err, isOk, isErr, createCLI
 └── No dependencies on other modules
 
-@trailhead/trailhead-cli/core
+@trailhead/cli/core
 ├── Exports: Error handling, validation, logging
 └── No dependencies on other modules
 
-@trailhead/trailhead-cli/command
+@trailhead/cli/command
 ├── Exports: Command creation and execution
 └── Depends on: Result types from main
 
-@trailhead/trailhead-cli/filesystem
+@trailhead/cli/filesystem
 ├── Exports: File operations
 └── Depends on: Result types from main
 
-@trailhead/trailhead-cli/config
+@trailhead/cli/config
 ├── Exports: Configuration management
 ├── Depends on: Result types from main
 └── Re-exports: zod
 
-@trailhead/trailhead-cli/prompts
+@trailhead/cli/prompts
 ├── Exports: User interaction
 └── Re-exports: @inquirer/prompts
 
-@trailhead/trailhead-cli/testing
+@trailhead/cli/testing
 ├── Exports: Test utilities
 └── Can mock any module
 
-@trailhead/trailhead-cli/utils
+@trailhead/cli/utils
 ├── Exports: Styling, spinners, stats
 └── Standalone utilities
 ```

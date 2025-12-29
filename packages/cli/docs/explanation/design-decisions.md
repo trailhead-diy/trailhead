@@ -54,7 +54,7 @@ class Command extends BaseCommand {
 
 ### Why This Framework Takes a Different Approach
 
-@trailhead/trailhead-cli addresses these fundamental issues through systematic design choices:
+@trailhead/cli addresses these fundamental issues through systematic design choices:
 
 ```typescript
 // ✅ Functional approach
@@ -105,8 +105,8 @@ The framework organizes functionality into independent modules that can be impor
 
 ```typescript
 // Import only what you need
-import { readFile } from '@trailhead/trailhead-cli/filesystem'
-import { createCommand } from '@trailhead/trailhead-cli/command'
+import { readFile } from '@trailhead/cli/filesystem'
+import { createCommand } from '@trailhead/cli/command'
 // Only these modules affect your bundle size
 ```
 
@@ -200,8 +200,8 @@ This enables:
 
 ```typescript
 // Granular imports
-import { readFile } from '@trailhead/trailhead-cli/filesystem'
-import { createCommand } from '@trailhead/trailhead-cli/command'
+import { readFile } from '@trailhead/cli/filesystem'
+import { createCommand } from '@trailhead/cli/command'
 // Only these specific modules are bundled
 ```
 
@@ -333,8 +333,8 @@ When building a CLI that processes files, the design decisions work together:
 
 ```typescript
 // Only import what you need
-import { readFile } from '@trailhead/trailhead-cli/filesystem'
-import { createCommand } from '@trailhead/trailhead-cli/command'
+import { readFile } from '@trailhead/cli/filesystem'
+import { createCommand } from '@trailhead/cli/command'
 
 const processCommand: Command = {
   name: 'process',

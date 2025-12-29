@@ -8,7 +8,6 @@ prerequisites:
   - 'Basic file system knowledge'
 related:
   - /packages/cli/docs/tutorials/getting-started.md
-  - /packages/cli/docs/reference/command.md
   - /packages/cli/docs/how-to/test-cli-applications.md
 ---
 
@@ -101,7 +100,7 @@ Create `src/lib/storage.ts`:
 
 ```typescript
 import { ok, err, Result } from '@trailhead/core'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import type { Task, TaskStore } from './types'
 
 export class TaskStorage {

@@ -89,4 +89,4 @@ await converter.convert(source, target, { from: 'csv', to: 'json' })
 
 ## License
 
-MIT © [Esteban URL](https://github.com/esteban-url)
+MIT © [esteban-url](https://github.com/esteban-url)

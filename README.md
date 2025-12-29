@@ -236,7 +236,7 @@ trailhead/
 - **🎯 Explicit Error Handling**: Uses Result types instead of exceptions
 - **🧪 Testing First**: Built-in mocking and assertion utilities
 - **⚡ Performance**: Command caching and optimized execution patterns
-- **🎨 Beautiful Output**: Chalk styling, progress bars, and spinners
+- **🎨 Beautiful Output**: Modern prompts, progress bars, and spinners
 - **🔧 Modular**: Tree-shakeable subpath exports
 
 ### Create CLI Highlights
@@ -361,7 +361,7 @@ pnpm dev
 | **CLI Framework**   | [Getting Started](./packages/cli/docs/tutorials/getting-started.md)         | [Build Complete CLI](./packages/cli/docs/tutorials/build-complete-cli.md)    | [CLI API](./docs/@trailhead.cli.md)     |
 | **Create CLI**      | [Generate Project](./packages/create-cli/docs/tutorials/getting-started.md) | [Custom Templates](./packages/create-cli/docs/how-to/customize-templates.md) | [Create CLI API](./docs/@trailhead.create-cli.md) |
 | **Data Processing** | [Process Data Files](./packages/data/docs/how-to/process-data-files.md)     | [Format Detection](./packages/data/docs/explanation/format-detection.md)     | [Data API](./docs/@trailhead.data.md)   |
-| **File Operations** | [File Operations](./packages/fs/docs/how-to/file-operations.md)             | [Result Patterns](./packages/fs/docs/explanation/result-patterns.md)         | [FS API](./docs/@trailhead.fs.md)       |
+| **Core Utilities**  | [Result Types](./packages/core/README.md)                                   | [Error Handling](./packages/cli/docs/how-to/handle-errors-in-cli.md)         | [Core API](./docs/@trailhead.core.md)   |
 
 ### 🧭 Find What You Need
 
@@ -382,15 +382,13 @@ pnpm dev
 
 - [CLI API](./docs/@trailhead.cli.md)
 - [Core API](./docs/@trailhead.core.md)
-- [File System API](./docs/@trailhead.fs.md)
 - [Data API](./docs/@trailhead.data.md)
-- [Sort API](./docs/@trailhead.sort.md)
+- [Create CLI API](./docs/@trailhead.create-cli.md)
 
 **Understanding (Explanations)** - Concepts and design decisions
 
 - [Architecture Overview](./packages/cli/docs/explanation/architecture.md)
 - [Design Decisions](./packages/cli/docs/explanation/design-decisions.md)
-- [Result Patterns](./packages/fs/docs/explanation/result-patterns.md)
 - [Format Detection](./packages/data/docs/explanation/format-detection.md)
 - [Template System](./packages/create-cli/docs/explanation/templates.md)
 
