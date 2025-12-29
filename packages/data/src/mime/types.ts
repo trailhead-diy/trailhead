@@ -1,9 +1,27 @@
+/**
+ * @module mime/types
+ * @description Type definitions and constants for MIME type operations
+ *
+ * Provides MIME type database types, common MIME type constants,
+ * and category mappings for file type classification.
+ */
+
 import type { MimeConfig, MimeOperations, FormatResult, FileCategory } from '../formats-types.js'
 
 // ========================================
 // MIME Configuration Defaults
 // ========================================
 
+/**
+ * Default configuration for MIME type operations
+ *
+ * @property {number} timeout - Operation timeout (5s)
+ * @property {number} maxSize - Max file size for MIME detection (1MB)
+ * @property {boolean} strictMode - Strict validation mode (false)
+ * @property {boolean} enableExtensionFallback - Fall back to extension (true)
+ * @property {string} charset - Default character set (utf-8)
+ * @property {string} defaultMimeType - Fallback MIME type (application/octet-stream)
+ */
 export const defaultMimeConfig: Required<MimeConfig> = {
   timeout: 5000,
   maxSize: 1024 * 1024, // 1MB
@@ -17,6 +35,17 @@ export const defaultMimeConfig: Required<MimeConfig> = {
 // MIME Type Database Types
 // ========================================
 
+/**
+ * Entry in the MIME type database with metadata
+ *
+ * @property {string} type - Primary type (e.g., 'application')
+ * @property {string} subtype - Subtype (e.g., 'json')
+ * @property {readonly string[]} extensions - Associated file extensions
+ * @property {boolean} compressible - Whether content is compressible
+ * @property {string} [charset] - Default character set
+ * @property {FileCategory} category - File category classification
+ * @property {string} description - Human-readable description
+ */
 export interface MimeTypeEntry {
   readonly type: string
   readonly subtype: string
@@ -27,6 +56,13 @@ export interface MimeTypeEntry {
   readonly description: string
 }
 
+/**
+ * Complete MIME type database with lookup maps
+ *
+ * @property {ReadonlyMap<string, MimeTypeEntry>} types - MIME type to entry map
+ * @property {ReadonlyMap<string, readonly string[]>} extensions - Extension to MIME types map
+ * @property {ReadonlyMap<FileCategory, readonly string[]>} categories - Category to MIME types map
+ */
 export interface MimeDatabase {
   readonly types: ReadonlyMap<string, MimeTypeEntry>
   readonly extensions: ReadonlyMap<string, readonly string[]>
@@ -37,22 +73,32 @@ export interface MimeDatabase {
 // MIME Function Types
 // ========================================
 
+/** Factory function type for creating MIME operations */
 export type CreateMimeOperations = (config?: MimeConfig) => MimeOperations
 
+/** Function type for parsing MIME type strings into components */
 export type MimeTypeParser = (mimeType: string) => FormatResult<{
   type: string
   subtype: string
   parameters: Record<string, string>
 }>
 
+/** Function type for resolving extensions to MIME types */
 export type ExtensionResolver = (extension: string) => FormatResult<readonly string[]>
 
+/** Function type for checking MIME type category membership */
 export type CategoryChecker = (mimeType: string, category: FileCategory) => FormatResult<boolean>
 
 // ========================================
 // Common MIME Type Constants
 // ========================================
 
+/**
+ * Common MIME type string constants organized by category
+ *
+ * Provides type-safe constants for frequently used MIME types to avoid
+ * string literals and typos in application code.
+ */
 export const COMMON_MIME_TYPES = {
   // Images
   JPEG: 'image/jpeg',
@@ -110,6 +156,11 @@ export const COMMON_MIME_TYPES = {
   MULTIPART: 'multipart/form-data',
 } as const
 
+/**
+ * Mapping of file categories to their associated MIME types
+ *
+ * Used for category-based filtering and classification of MIME types.
+ */
 export const MIME_TYPE_CATEGORIES: Record<FileCategory, readonly string[]> = {
   image: [
     'image/jpeg',

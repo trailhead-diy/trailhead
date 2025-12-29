@@ -37,12 +37,18 @@ import { ok, err, type Result, type CoreError } from '@trailhead/core'
 // Data Types and Interfaces
 // ========================================
 
+/** Supported data format types for testing */
 export type DataFormat = 'json' | 'csv' | 'xml' | 'yaml' | 'toml' | 'ini' | 'excel' | 'parquet'
 
+/** Generic data record type for testing */
 export interface DataRecord {
   [key: string]: any
 }
 
+/**
+ * Parsed data set with records and metadata
+ * @template T - Record type (defaults to DataRecord)
+ */
 export interface DataSet<T = DataRecord> {
   readonly format: DataFormat
   readonly records: T[]
@@ -54,6 +60,7 @@ export interface DataSet<T = DataRecord> {
   }
 }
 
+/** Configuration for data transformation operations */
 export interface DataTransformation {
   readonly sourceFormat: DataFormat
   readonly targetFormat: DataFormat
@@ -61,6 +68,7 @@ export interface DataTransformation {
   readonly options: Record<string, any>
 }
 
+/** Rule for transforming data records */
 export interface TransformationRule {
   readonly type: 'rename' | 'transform' | 'filter' | 'aggregate' | 'join'
   readonly source: string
@@ -69,6 +77,12 @@ export interface TransformationRule {
   readonly transformer?: (value: any, record: DataRecord) => any
 }
 
+/**
+ * Mock data processor interface for testing data operations
+ *
+ * Provides methods to detect formats, parse data, transform records,
+ * convert formats, and validate against schemas.
+ */
 export interface MockDataProcessor {
   readonly supportedFormats: DataFormat[]
   detectFormat(data: string | Buffer): Result<DataFormat, CoreError>
@@ -99,7 +113,24 @@ export interface MockDataProcessor {
 // ========================================
 
 /**
- * Creates a mock data processor for testing
+ * Creates a mock data processor for testing data operations
+ *
+ * Provides a configurable processor for testing data parsing, transformation,
+ * format conversion, and validation workflows. Supports mocking format data
+ * and transformation results for predictable test behavior.
+ *
+ * @returns MockDataProcessor instance with all data processing methods
+ *
+ * @example
+ * ```typescript
+ * const processor = createMockDataProcessor();
+ * processor.mockFormat('csv', 'id,name\n1,Alice\n2,Bob');
+ *
+ * const result = processor.parseData(data, 'csv');
+ * if (result.isOk()) {
+ *   console.log(result.value.records.length); // 2
+ * }
+ * ```
  */
 export function createMockDataProcessor(): MockDataProcessor {
   const formatMocks = new Map<DataFormat, string | DataRecord[]>()
@@ -683,7 +714,12 @@ export const dataFixtures = {
 // ========================================
 
 /**
- * Asserts that data parsing succeeded with expected record count
+ * Asserts that data parsing succeeded with expected format and record count
+ *
+ * @param result - Result from parseData operation
+ * @param expectedFormat - Expected data format
+ * @param expectedRecordCount - Optional expected number of records
+ * @throws Error if result is error, format mismatch, or record count mismatch
  */
 export function assertDataParsing<T>(
   result: Result<DataSet<T>, CoreError>,
@@ -707,7 +743,12 @@ export function assertDataParsing<T>(
 }
 
 /**
- * Asserts that data transformation succeeded
+ * Asserts that data transformation succeeded with expected format and count
+ *
+ * @param result - Result from transform operation
+ * @param expectedFormat - Expected target format
+ * @param expectedRecordCount - Optional expected number of records after transformation
+ * @throws Error if result is error, format mismatch, or record count mismatch
  */
 export function assertDataTransformation<T>(
   result: Result<DataSet<T>, CoreError>,
@@ -734,6 +775,11 @@ export function assertDataTransformation<T>(
 
 /**
  * Asserts that format conversion produced expected output
+ *
+ * @param result - Result from convertFormat operation
+ * @param expectedFormat - Target format for logging purposes
+ * @param shouldContain - Optional strings that should appear in output
+ * @throws Error if result is error or content doesn't contain expected strings
  */
 export function assertFormatConversion(
   result: Result<string | Buffer, CoreError>,
@@ -757,6 +803,9 @@ export function assertFormatConversion(
 
 /**
  * Asserts that data validation succeeded
+ *
+ * @param result - Result from validateData operation
+ * @throws Error if result is error
  */
 export function assertDataValidation<T>(result: Result<DataSet<T>, CoreError>): void {
   if (result.isErr()) {
@@ -765,7 +814,11 @@ export function assertDataValidation<T>(result: Result<DataSet<T>, CoreError>): 
 }
 
 /**
- * Asserts that data validation failed with expected error
+ * Asserts that data validation failed with expected error code
+ *
+ * @param result - Result from validateData operation
+ * @param expectedErrorCode - Optional expected error code
+ * @throws Error if result is success or error code mismatch
  */
 export function assertValidationFailure<T>(
   result: Result<DataSet<T>, CoreError>,
@@ -783,7 +836,11 @@ export function assertValidationFailure<T>(
 }
 
 /**
- * Asserts that specific data fields exist in records
+ * Asserts that specific fields exist in data records
+ *
+ * @param dataset - DataSet to check
+ * @param expectedFields - Array of field names that should exist
+ * @throws Error if dataset is empty or fields are missing
  */
 export function assertDataFields<T>(dataset: DataSet<T>, expectedFields: string[]): void {
   if (dataset.records.length === 0) {
@@ -804,6 +861,13 @@ export function assertDataFields<T>(dataset: DataSet<T>, expectedFields: string[
 
 /**
  * Tests data conversion between formats
+ *
+ * Parses source data and converts to target format, returning the converted output.
+ *
+ * @param sourceData - Raw data string to convert
+ * @param sourceFormat - Format of source data
+ * @param targetFormat - Desired output format
+ * @returns Result containing converted data or error
  */
 export async function testDataConversion(
   sourceData: string,
@@ -822,6 +886,13 @@ export async function testDataConversion(
 
 /**
  * Tests data transformation with rules
+ *
+ * Parses source data and applies transformation rules to produce transformed dataset.
+ *
+ * @param sourceData - Raw data string to transform
+ * @param sourceFormat - Format of source data
+ * @param transformation - Transformation configuration with rules
+ * @returns Result containing transformed dataset or error
  */
 export async function testDataTransformationFlow<T = DataRecord>(
   sourceData: string,
@@ -839,7 +910,16 @@ export async function testDataTransformationFlow<T = DataRecord>(
 }
 
 /**
- * Creates a data processing test scenario
+ * Creates a complete data processing test scenario
+ *
+ * Sets up a mock processor with optional sample data and transformation mocks,
+ * returning testing helpers for parsing, conversion, and validation.
+ *
+ * @param options - Scenario configuration
+ * @param options.formats - Supported formats
+ * @param options.sampleData - Sample data by format
+ * @param options.transformations - Transformation mocks
+ * @returns Test scenario with processor and helper methods
  */
 export function createDataTestScenario(
   options: {

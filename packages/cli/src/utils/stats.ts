@@ -1,4 +1,4 @@
-import { topN, bottomN, sortBy, orderBy } from '@trailhead/sort'
+import { sortBy, orderBy } from 'es-toolkit'
 
 /**
  * Statistics tracking interface for CLI operations
@@ -177,7 +177,7 @@ export function getTopOperations(
     count,
   }))
 
-  return topN(n, operations, (item: { type: string; count: number }) => item.count)
+  return orderBy(operations, [(item) => item.count], ['desc']).slice(0, n)
 }
 
 /**
@@ -207,7 +207,7 @@ export function getBottomOperations(
     count,
   }))
 
-  return bottomN(n, operations, (item: { type: string; count: number }) => item.count)
+  return sortBy(operations, [(item) => item.count]).slice(0, n)
 }
 
 /**

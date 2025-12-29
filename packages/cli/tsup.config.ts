@@ -11,6 +11,9 @@ export default defineConfig(
       'testing/index': 'src/testing/index.ts',
       'utils/index': 'src/utils/index.ts',
       'progress/index': 'src/progress/index.ts',
+      'fs/index': 'src/fs/index.ts',
+      'fs/testing/index': 'src/fs/testing/index.ts',
+      'fs/utils/index': 'src/fs/utils/index.ts',
     },
     // Generate TypeScript declarations
     dts: true,

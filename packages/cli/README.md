@@ -245,17 +245,32 @@ for (let i = 0; i < 100; i++) {
 Utilities for styling, package detection, and more
 
 ```typescript
-import { chalk, createSpinner, detectPackageManager, createLogger } from '@trailhead/cli/utils'
+import {
+  consola,
+  colors,
+  createSpinner,
+  detectPackageManager,
+  createDefaultLogger,
+} from '@trailhead/cli/utils'
 
-// Rich terminal output
-console.log(chalk.success('✓ Build completed'))
-console.log(chalk.error('✗ Deploy failed'))
+// Rich terminal output with consola
+consola.success('✓ Build completed')
+consola.error('✗ Deploy failed')
+
+// Or use color utilities
+console.log(colors.green('✓ Build completed'))
+console.log(colors.red('✗ Deploy failed'))
 
 // Spinners for long operations
 const spinner = createSpinner('Deploying...')
 spinner.start()
 await deploy()
 spinner.stop('Deployed successfully')
+
+// Structured logging
+const logger = createDefaultLogger(true) // verbose mode
+logger.info('Starting build...')
+logger.success('Build completed')
 ```
 
 ## Advanced Features
@@ -311,9 +326,7 @@ const setupCommand = createInteractiveCommand({
 ### File System Operations
 
 ```typescript
-import { fs } from '@trailhead/fs'
-
-// Use @trailhead/fs package for file operations
+import { fs } from '@trailhead/cli/fs'
 
 // All operations return Results
 const readResult = await fs.readFile('config.json')
@@ -400,4 +413,4 @@ test('processes configuration file', async () => {
 
 ## License
 
-MIT © [Esteban URL](https://github.com/esteban-url)
+MIT © [esteban-url](https://github.com/esteban-url)

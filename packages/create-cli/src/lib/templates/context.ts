@@ -1,8 +1,20 @@
+/**
+ * Template context creation utilities.
+ *
+ * @module templates/context
+ */
+
 import type { ProjectConfig } from '../config/types.js'
 import type { TemplateContext } from './types.js'
 
 /**
- * Create template context for Handlebars processing
+ * Create a complete template context for Handlebars processing.
+ *
+ * Transforms a ProjectConfig into the full set of variables needed by templates,
+ * including computed values (e.g., packageName, currentYear) and feature flags.
+ *
+ * @param config - Project configuration from user input
+ * @returns Complete TemplateContext with all variables for Handlebars templates
  */
 export function createTemplateContext(config: ProjectConfig): TemplateContext {
   const isMonorepo = false // No monorepo templates in simplified CLI generator

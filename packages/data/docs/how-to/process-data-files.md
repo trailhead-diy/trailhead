@@ -9,7 +9,6 @@ prerequisites:
 related:
   - /docs/reference/api/data.md
   - /docs/how-to/apply-functional-patterns
-  - /packages/fs/docs/how-to/file-operations
 ---
 
 # Process Data Files
@@ -21,9 +20,9 @@ This guide shows you how to process data files across different formats using au
 ### Parse Any Supported Format
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
-async const parseDataFile = async (filePath: string) => {
+constparseDataFile = async (filePath: string) => {
   const result = await data.parseAuto(filePath)
   if (!result.success) {
     console.error('Parse failed:', result.error.message)
@@ -38,9 +37,9 @@ async const parseDataFile = async (filePath: string) => {
 ### Parse from String Content
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
-async const parseFromContent = async (content: string, fileName?: string) => {
+constparseFromContent = async (content: string, fileName?: string) => {
   const result = await data.parseAutoFromContent(content, fileName)
   if (!result.success) {
     console.error('Parse failed:', result.error.message)
@@ -60,7 +59,7 @@ const result = await parseFromContent(csvContent, 'data.csv')
 ### CSV Processing
 
 ```typescript
-import { createCSVOperations } from '@repo/data'
+import { createCSVOperations } from '@trailhead/data'
 
 const csv = createCSVOperations({
   delimiter: ',',
@@ -68,7 +67,7 @@ const csv = createCSVOperations({
   encoding: 'utf8',
 })
 
-async const processCSV = async (filePath: string) => {
+constprocessCSV = async (filePath: string) => {
   // Parse CSV file
   const parseResult = await csv.parseFile(filePath)
   if (!parseResult.success) {
@@ -91,14 +90,14 @@ async const processCSV = async (filePath: string) => {
 ### JSON Processing
 
 ```typescript
-import { createJSONOperations } from '@repo/data'
+import { createJSONOperations } from '@trailhead/data'
 
 const json = createJSONOperations({
   spaces: 2,
   encoding: 'utf8',
 })
 
-async const processJSON = async (filePath: string) => {
+constprocessJSON = async (filePath: string) => {
   // Parse JSON file
   const parseResult = await json.parseFile(filePath)
   if (!parseResult.success) {
@@ -121,14 +120,14 @@ async const processJSON = async (filePath: string) => {
 ### Excel Processing
 
 ```typescript
-import { createExcelOperations } from '@repo/data'
+import { createExcelOperations } from '@trailhead/data'
 
 const excel = createExcelOperations({
   sheetName: 'Sheet1',
   hasHeaders: true,
 })
 
-async const processExcel = async (filePath: string) => {
+constprocessExcel = async (filePath: string) => {
   // Parse Excel file
   const parseResult = await excel.parseFile(filePath)
   if (!parseResult.success) {
@@ -160,11 +159,11 @@ async const processExcel = async (filePath: string) => {
 ### Basic Format Conversion
 
 ```typescript
-import { createConversionOperations } from '@repo/data'
+import { createConversionOperations } from '@trailhead/data'
 
 const converter = createConversionOperations()
 
-async const convertFile = async (inputPath: string, outputPath: string) => {
+constconvertFile = async (inputPath: string, outputPath: string) => {
   const result = await converter.convertFile(inputPath, outputPath, {
     from: 'csv',
     to: 'json',
@@ -184,13 +183,13 @@ async const convertFile = async (inputPath: string, outputPath: string) => {
 ### Batch Conversion
 
 ```typescript
-import { fs } from '@repo/fs'
-import { createConversionOperations } from '@repo/data'
+import { fs } from '@trailhead/cli/fs'
+import { createConversionOperations } from '@trailhead/data'
 import { path } from 'node:path'
 
 const converter = createConversionOperations()
 
-async const convertDirectory = async (dirPath: string, targetFormat: 'json' | 'csv' | 'xlsx') => {
+constconvertDirectory = async (dirPath: string, targetFormat: 'json' | 'csv' | 'xlsx') => {
   const filesResult = await fs.readDir(dirPath)
   if (!filesResult.success) {
     return filesResult
@@ -226,47 +225,46 @@ async const convertDirectory = async (dirPath: string, targetFormat: 'json' | 'c
 
 ## Validate Data
 
-### Schema Validation
+### Schema Validation with Zod
 
 ```typescript
-import { data } from '@repo/data'
-import { validate } from '@repo/validation'
+import { data } from '@trailhead/data'
+import { z } from 'zod'
 
-async const validateDataFile = async (filePath: string) => {
+const rowSchema = z.object({
+  email: z.string().email(),
+  age: z.number().min(0).max(120),
+  name: z.string().min(1).max(100),
+})
+
+const validateDataFile = async (filePath: string) => {
   // Parse data
   const parseResult = await data.parseAuto(filePath)
   if (!parseResult.success) {
     return parseResult
   }
 
-  // Define validation schema
-  const rowValidator = validate.object({
-    email: validate.email,
-    age: validate.numberRange(0, 120),
-    name: validate.stringLength(1, 100),
-  })
-
   // Validate each row
   const validRows = []
   const invalidRows = []
 
   for (const [index, row] of parseResult.value.entries()) {
-    const validation = rowValidator(row)
+    const validation = rowSchema.safeParse(row)
     if (validation.success) {
-      validRows.push(row)
+      validRows.push(validation.data)
     } else {
       invalidRows.push({
         row: index + 1,
         data: row,
-        error: validation.error.message,
+        errors: validation.error.errors,
       })
     }
   }
 
   if (invalidRows.length > 0) {
     console.warn(`Found ${invalidRows.length} invalid rows`)
-    invalidRows.forEach(({ row, error }) => {
-      console.warn(`Row ${row}: ${error}`)
+    invalidRows.forEach(({ row, errors }) => {
+      console.warn(`Row ${row}: ${errors.map((e) => e.message).join(', ')}`)
     })
   }
 
@@ -277,11 +275,11 @@ async const validateDataFile = async (filePath: string) => {
 ### Data Type Detection
 
 ```typescript
-import { createDetectionOperations } from '@repo/data'
+import { createDetectionOperations } from '@trailhead/data'
 
 const detector = createDetectionOperations()
 
-async const analyzeDataStructure = async (filePath: string) => {
+constanalyzeDataStructure = async (filePath: string) => {
   const parseResult = await data.parseAuto(filePath)
   if (!parseResult.success) {
     return parseResult
@@ -315,10 +313,10 @@ async const analyzeDataStructure = async (filePath: string) => {
 ### Stream Processing
 
 ```typescript
-import { createCSVOperations } from '@repo/data'
+import { createCSVOperations } from '@trailhead/data'
 import { createWriteStream } from 'node:fs'
 
-async const processLargeCSV = async (inputPath: string, outputPath: string) => {
+constprocessLargeCSV = async (inputPath: string, outputPath: string) => {
   const csv = createCSVOperations()
 
   // For large files, process in chunks
@@ -361,7 +359,7 @@ async const processLargeCSV = async (inputPath: string, outputPath: string) => {
 ### Memory-Efficient Processing
 
 ```typescript
-async const processDataEfficiently = async (filePath: string) => {
+constprocessDataEfficiently = async (filePath: string) => {
   const parseResult = await data.parseAuto(filePath)
   if (!parseResult.success) {
     return parseResult
@@ -400,9 +398,9 @@ async const processDataEfficiently = async (filePath: string) => {
 ### Handle Missing Files
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/cli/fs'
 
-async const processWithFallback = async (primaryPath: string, fallbackPath: string) => {
+constprocessWithFallback = async (primaryPath: string, fallbackPath: string) => {
   // Try primary file first
   let result = await data.parseAuto(primaryPath)
 
@@ -427,7 +425,7 @@ async const processWithFallback = async (primaryPath: string, fallbackPath: stri
 ### Partial Processing
 
 ```typescript
-async const processWithPartialSuccess = async (filePaths: string[]) => {
+constprocessWithPartialSuccess = async (filePaths: string[]) => {
   const results = []
   const errors = []
 
@@ -469,7 +467,7 @@ async const processWithPartialSuccess = async (filePaths: string[]) => {
 ```typescript
 const parseCache = new Map<string, any>()
 
-async const cachedParse = async (filePath: string) => {
+constcachedParse = async (filePath: string) => {
   if (parseCache.has(filePath)) {
     console.log('Using cached result')
     return ok(parseCache.get(filePath))
@@ -487,7 +485,7 @@ async const cachedParse = async (filePath: string) => {
 ### Parallel Processing
 
 ```typescript
-async const processFilesInParallel = async (filePaths: string[]) => {
+constprocessFilesInParallel = async (filePaths: string[]) => {
   const promises = filePaths.map(async (filePath) => {
     const result = await data.parseAuto(filePath)
     return { filePath, result }
@@ -586,7 +584,7 @@ interface ProcessingConfig {
   }
 }
 
-async const processWithConfig = async (config: ProcessingConfig) => {
+constprocessWithConfig = async (config: ProcessingConfig) => {
   // Parse input
   const parseResult = await data.parseAuto(config.input)
   if (!parseResult.success) {
@@ -634,5 +632,4 @@ async const processWithConfig = async (config: ProcessingConfig) => {
 ## Next Steps
 
 - Review [Data API Documentation](/docs/@trailhead.data.md) for detailed function documentation
-- Learn about [Format Detection](../../explanation/format-detection.md)system
-- Explore [File System Operations](../../../fs/how-to/file-operations.md)for file handling
+- Learn about [Format Detection](../../explanation/format-detection.md) system

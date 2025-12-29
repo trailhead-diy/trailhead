@@ -7,20 +7,18 @@ prerequisites:
   - Understanding of Result types
   - Basic CLI structure created
 related:
-  - /packages/fs/docs/reference/api
-  - /packages/cli/docs/reference/command
   - /packages/cli/docs/tutorials/getting-started
 ---
 
 # How to Add File Operations to Your CLI
 
-This guide shows you how to add file system operations to your CLI application using the @repo/fs package.
+This guide shows you how to add file system operations to your CLI application using the `@trailhead/cli/fs` module.
 
 ## Prerequisites
 
 - A working CLI application structure
 - Understanding of Result types for error handling
-- The @repo/fs package installed
+- The @trailhead/cli package installed
 
 ## Adding File Reading
 
@@ -29,7 +27,7 @@ To read files in your CLI commands:
 ```typescript
 import { ok, err } from '@trailhead/cli'
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/cli/fs'
 
 const readCommand = createCommand({
   name: 'read',
@@ -63,7 +61,7 @@ For more complex file processing:
 ```typescript
 import { ok, err } from '@trailhead/cli'
 import { createCommand } from '@trailhead/cli/command'
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/cli/fs'
 
 const processCommand = createCommand({
   name: 'process',
@@ -100,7 +98,7 @@ const processCommand = createCommand({
 To process multiple files:
 
 ```typescript
-import { fs } from '@repo/fs'
+import { fs } from '@trailhead/cli/fs'
 import { combineWithAllErrors } from '@trailhead/core'
 
 async const processMultipleFiles = async (patterns: string[]) => {
@@ -176,6 +174,5 @@ const readJson = async (path: string) => {
 
 ## See Also
 
-- [File System API Reference](/docs/@trailhead.fs.md)
-- [CLI API Reference](/docs/@trailhead.cli.md)
-- [Error Handling Patterns](../../how-to/handle-errors-in-cli)
+- [CLI API Reference](../../../../docs/@trailhead.cli.md)
+- [Error Handling Patterns](./handle-errors-in-cli.md)

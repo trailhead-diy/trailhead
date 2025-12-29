@@ -1,8 +1,25 @@
 import type { CommandContext } from '../command/index.js'
-// @ts-expect-error - Domain package types will be available after build
-import type { FileSystem } from '@trailhead/fs'
 import type { Logger } from '../utils/logger.js'
-import { createMockFileSystem } from '@trailhead/fs/testing'
+import { createMockFileSystem } from '../fs/testing/index.js'
+
+/**
+ * Create a no-op logger for testing.
+ *
+ * Returns a logger that silently discards all messages.
+ * Useful for tests that need to suppress console output.
+ *
+ * @returns Logger instance that discards all output
+ */
+export function createNoopLogger(): Logger {
+  return {
+    info: () => {},
+    success: () => {},
+    warning: () => {},
+    error: () => {},
+    debug: () => {},
+    step: () => {},
+  }
+}
 
 /**
  * Options for creating test command contexts
@@ -14,7 +31,7 @@ export interface TestContextOptions {
   /** Project root directory path (default: '/test/project') */
   projectRoot?: string
   /** Custom filesystem implementation (default: mock filesystem) */
-  filesystem?: FileSystem
+  filesystem?: any
   /** Custom logger implementation (default: no-op logger) */
   logger?: Logger
   /** Whether verbose mode is enabled */
@@ -45,9 +62,7 @@ export interface TestContextOptions {
 export function createTestContext(options: TestContextOptions = {}): CommandContext {
   return {
     projectRoot: options.projectRoot ?? '/test/project',
-    logger:
-      options.logger ??
-      ({ info: () => {}, error: () => {}, debug: () => {}, warn: () => {} } as any),
+    logger: options.logger ?? createNoopLogger(),
     verbose: options.verbose ?? false,
     fs: options.filesystem ?? createMockFileSystem(),
     args: options.args ?? [],

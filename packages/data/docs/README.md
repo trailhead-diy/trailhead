@@ -1,14 +1,13 @@
 ---
 type: explanation
-title: '@repo/data Documentation Hub'
+title: '@trailhead/data Documentation Hub'
 description: 'Functional data processing with format detection and Result-based error handling'
 related:
   - /packages/data/docs/how-to/process-data-files.md
-  - /docs/reference/api/data.md
   - /packages/data/docs/explanation/format-detection.md
 ---
 
-# @repo/data Documentation
+# @trailhead/data Documentation
 
 Functional data processing library with automatic format detection and Result-based error handling.
 
@@ -40,7 +39,7 @@ Complete API documentation is available in the shared documentation:
 ### 1. Automatic Format Detection
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 // Automatically detects CSV, JSON, or Excel format
 const result = await data.parseAuto('./data.csv')
@@ -52,7 +51,7 @@ if (result.success) {
 ### 2. Format-Specific Operations
 
 ```typescript
-import { createCSVOperations, createJSONOperations } from '@repo/data'
+import { createCSVOperations, createJSONOperations } from '@trailhead/data'
 
 const csv = createCSVOperations()
 const json = createJSONOperations()
@@ -67,7 +66,7 @@ const jsonResult = await json.parseFile('./config.json')
 ### 3. Data Conversion
 
 ```typescript
-import { createConversionOperations } from '@repo/data'
+import { createConversionOperations } from '@trailhead/data'
 
 const converter = createConversionOperations()
 
@@ -96,7 +95,7 @@ const processedData = transformData(result.value)
 ### Basic Data Processing
 
 ```typescript
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 async const processDataFile = async (filePath: string) => {
   // Auto-detect and parse any supported format
@@ -125,7 +124,7 @@ async const processDataFile = async (filePath: string) => {
 ### Format Detection
 
 ```typescript
-import { createDetectionOperations } from '@repo/data'
+import { createDetectionOperations } from '@trailhead/data'
 
 const detector = createDetectionOperations()
 
@@ -198,7 +197,7 @@ The library provides specific error types for different scenarios:
 
 ```typescript
 import { createCommand } from '@trailhead/cli/command'
-import { data } from '@repo/data'
+import { data } from '@trailhead/data'
 
 const convertCommand = createCommand({
   name: 'convert',
@@ -229,8 +228,8 @@ const convertCommand = createCommand({
 ### With File System Operations
 
 ```typescript
-import { fs } from '@repo/fs'
-import { data } from '@repo/data'
+import { fs } from '@trailhead/cli/fs'
+import { data } from '@trailhead/data'
 
 async const processDataDirectory = async (dirPath: string) => {
   const filesResult = await fs.readDir(dirPath)
@@ -254,10 +253,6 @@ async const processDataDirectory = async (dirPath: string) => {
   return ok(results)
 }
 ```
-
-## Contributing
-
-See the [Contributing Guide](../how-to/contributing.md)for development setup and guidelines.
 
 ## License
 

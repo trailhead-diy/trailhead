@@ -3,31 +3,6 @@
  * @description Functional composition utilities for Result types and general function composition
  */
 
-/**
- * Core composition and pipeline functions from fp-ts.
- *
- * @example
- * ```typescript
- * import { pipe, flow } from '@trailhead/core'
- *
- * // Using pipe for data transformation
- * const result = pipe(
- *   5,
- *   x => x * 2,
- *   x => x + 1,
- *   x => `Result: ${x}`
- * ) // 'Result: 11'
- *
- * // Using flow for function composition
- * const addThenDouble = flow(
- *   (x: number) => x + 1,
- *   x => x * 2
- * )
- * addThenDouble(5) // 12
- * ```
- */
-export { pipe, flow, identity, constant } from 'fp-ts/lib/function.js'
-
 import { type Result, ResultAsync, err } from 'neverthrow'
 
 /**

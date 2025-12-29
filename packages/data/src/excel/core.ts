@@ -1,5 +1,5 @@
 import { ok, err } from '@trailhead/core'
-import { readFile as fsReadFile, writeFile as fsWriteFile } from '@trailhead/fs'
+import * as fs from 'fs/promises'
 import * as XLSX from 'xlsx'
 import type { ExcelProcessingOptions, DataResult, ExcelFormatInfo } from '../types.js'
 import {
@@ -86,7 +86,8 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       }
 
       const jsonOptions: any = {
-        header: mergedOptions.hasHeader ? 1 : undefined,
+        // header: 1 = array of arrays, undefined = use first row as object keys
+        header: mergedOptions.hasHeader ? undefined : 1,
         defval: mergedOptions.defval,
         raw: !mergedOptions.dynamicTyping,
         range: mergedOptions.range,
@@ -113,15 +114,13 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
     filePath: string,
     options: ExcelProcessingOptions = {}
   ): Promise<DataResult<any[]>> => {
-    const fileOps = fsReadFile()
-    const fileResult = await fileOps(filePath)
-    if (fileResult.isErr()) {
-      return err(fileResult.error)
+    try {
+      // Read as Buffer directly to preserve binary data
+      const buffer = await fs.readFile(filePath)
+      return parseBuffer(buffer, options)
+    } catch (error) {
+      return err(mapLibraryError('SheetJS', 'parseFile', error))
     }
-
-    // Convert string to Buffer for Excel processing
-    const buffer = Buffer.from(fileResult.value, 'binary')
-    return parseBuffer(buffer, options)
   }
 
   const parseWorksheet = (
@@ -188,8 +187,13 @@ export const createExcelOperations: CreateExcelOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    const writeOps = fsWriteFile()
-    return await writeOps(filePath, stringifyResult.value.toString('binary'))
+    try {
+      // Write Buffer directly to preserve binary data
+      await fs.writeFile(filePath, stringifyResult.value)
+      return ok(undefined)
+    } catch (error) {
+      return err(mapLibraryError('SheetJS', 'writeFile', error))
+    }
   }
 
   const validate = (buffer: Buffer): DataResult<boolean> => {

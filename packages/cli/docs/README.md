@@ -92,34 +92,21 @@ const greetCommand = createCommand({
 })
 ```
 
-### 3. Type-Safe Configuration
+### 3. Type-Safe Configuration with Zod
 
 ```typescript
-import { defineConfig } from '@trailhead/config'
 import { z } from 'zod'
 
-const schema = z.object({
+const configSchema = z.object({
   api: z.object({
     url: z.string().url(),
     key: z.string(),
   }),
 })
 
-const config = defineConfig(schema)
-```
+type Config = z.infer<typeof configSchema>
 
-### 4. Composable Validation
-
-```typescript
-import { createValidationPipeline, createRule } from '@trailhead/validation'
-
-const pipeline = createValidationPipeline([
-  createRule('length', (value: string) => value.length >= 3 || 'Must be at least 3 characters'),
-  createRule(
-    'format',
-    (value: string) => /^[a-z]+$/.test(value) || 'Must contain only lowercase letters'
-  ),
-])
+const loadConfig = (data: unknown): Config => configSchema.parse(data)
 ```
 
 ## Quick Examples

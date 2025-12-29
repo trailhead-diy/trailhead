@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/cli",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
@@ -33,6 +33,18 @@
     "./progress": {
       "types": "./dist/progress/index.d.ts",
       "default": "./dist/progress/index.js"
+    },
+    "./fs": {
+      "types": "./dist/fs/index.d.ts",
+      "default": "./dist/fs/index.js"
+    },
+    "./fs/testing": {
+      "types": "./dist/fs/testing/index.d.ts",
+      "default": "./dist/fs/testing/index.js"
+    },
+    "./fs/utils": {
+      "types": "./dist/fs/utils/index.d.ts",
+      "default": "./dist/fs/utils/index.js"
     }
   },
   "scripts": {
@@ -54,27 +66,26 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
-    "@inquirer/prompts": "^7.9.0",
+    "@clack/prompts": "^0.10.0",
     "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/sort": "workspace:*",
-    "@types/cli-progress": "^3.11.6",
-    "cli-progress": "^3.12.0",
     "commander": "^14.0.2",
-    "consola": "^3.4.2",
+    "es-toolkit": "^1.31.0",
+    "fs-extra": "^11.3.2",
+    "glob": "^11.0.0",
     "listr2": "^9.0.5",
-    "yocto-spinner": "^1.0.0"
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^24.10.0",
-    "@vitest/coverage-v8": "^4.0.7",
-    "oxlint": "^1.25.0",
-    "tsup": "^8.5.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "oxlint": "^1.35.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.7"
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=20.0.0",

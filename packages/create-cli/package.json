@@ -42,26 +42,24 @@
   "dependencies": {
     "@trailhead/cli": "workspace:*",
     "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/sort": "workspace:*",
-    "@trailhead/validation": "workspace:*",
     "consola": "^3.4.2",
+    "es-toolkit": "^1.31.0",
     "execa": "^9.6.0",
     "fast-glob": "^3.3.3",
     "handlebars": "^4.7.8",
-    "zod": "^4.1.12"
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@repo/tsup-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^24.10.0",
-    "@vitest/coverage-v8": "^4.0.7",
-    "oxlint": "^1.25.0",
-    "tsup": "^8.5.0",
-    "tsx": "^4.20.6",
+    "@vitest/coverage-v8": "^4.0.16",
+    "oxlint": "^1.35.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.7"
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=20.0.0",

@@ -36,15 +36,11 @@
 {{#if IS_MONOREPO}}
     "@trailhead/cli": "workspace:*",
     "@trailhead/core": "workspace:*"{{#if features.config}},
-    "@trailhead/config": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/validation": "workspace:*"{{/if}}
+    "zod": "^3.24.0"{{/if}}
 {{else}}
-    "@trailhead/cli": "^1.0.0",
+    "@trailhead/cli": "^2.0.0",
     "@trailhead/core": "^1.0.0"{{#if features.config}},
-    "@trailhead/config": "^1.0.0",
-    "@trailhead/fs": "^1.0.0",
-    "@trailhead/validation": "^1.0.0"{{/if}}
+    "zod": "^3.24.0"{{/if}}
 {{/if}}
   },
   "devDependencies": {

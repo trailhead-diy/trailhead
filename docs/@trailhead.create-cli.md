@@ -483,7 +483,7 @@ Source path relative to templates directory
 
 ### TemplateInfo
 
-Information about an available template
+Metadata about an available project template.
 
 #### Properties
 

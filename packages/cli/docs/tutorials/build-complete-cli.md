@@ -8,7 +8,6 @@ prerequisites:
   - 'Basic file system knowledge'
 related:
   - /packages/cli/docs/tutorials/getting-started.md
-  - /packages/cli/docs/reference/command.md
   - /packages/cli/docs/how-to/test-cli-applications.md
 ---
 
@@ -101,7 +100,7 @@ Create `src/lib/storage.ts`:
 
 ```typescript
 import { ok, err, Result } from '@trailhead/core'
-import { fs } from '@trailhead/fs'
+import { fs } from '@trailhead/cli/fs'
 import type { Task, TaskStore } from './types'
 
 export class TaskStorage {
@@ -204,7 +203,6 @@ Create `src/config/schema.ts`:
 
 ```typescript
 import { z } from 'zod'
-import { defineConfig } from '@trailhead/config'
 import type { Config } from '../lib/types'
 
 const configSchema = z.object({
@@ -213,9 +211,9 @@ const configSchema = z.object({
   showCompleted: z.boolean().default(true),
 })
 
-export const config = defineConfig<Config>(configSchema, {
-  fileName: '.tasklyrc.json',
-})
+export type AppConfig = z.infer<typeof configSchema>
+
+export const loadConfig = (data: unknown): AppConfig => configSchema.parse(data)
 ```
 
 ## Create Commands
@@ -320,7 +318,7 @@ import { createCommand } from '@trailhead/cli/command'
 import { displaySummary } from '@trailhead/cli/command'
 import { TaskStorage } from '../lib/storage'
 import { config } from '../config/schema'
-import chalk from 'chalk'
+import { colors } from '@trailhead/cli/utils'
 
 export const listCommand = createCommand({
   name: 'list',
@@ -373,23 +371,23 @@ export const listCommand = createCommand({
 
     // Display pending tasks
     if (pending.length > 0) {
-      context.logger.info(chalk.bold('\n📋 Pending Tasks:\n'))
+      context.logger.info(colors.bold('\n📋 Pending Tasks:\n'))
       pending.forEach((task) => {
-        const tags = task.tags?.length ? chalk.dim(` [${task.tags.join(', ')}]`) : ''
-        context.logger.info(`  ${chalk.yellow('○')} [${task.id}] ${task.title}${tags}`)
+        const tags = task.tags?.length ? colors.dim(` [${task.tags.join(', ')}]`) : ''
+        context.logger.info(`  ${colors.yellow('○')} [${task.id}] ${task.title}${tags}`)
         if (task.description) {
-          context.logger.info(`    ${chalk.dim(task.description)}`)
+          context.logger.info(`    ${colors.dim(task.description)}`)
         }
       })
     }
 
     // Display completed tasks
     if (completed.length > 0 && (options.all || cfg.showCompleted)) {
-      context.logger.info(chalk.bold('\n✅ Completed Tasks:\n'))
+      context.logger.info(colors.bold('\n✅ Completed Tasks:\n'))
       completed.forEach((task) => {
-        const tags = task.tags?.length ? chalk.dim(` [${task.tags.join(', ')}]`) : ''
+        const tags = task.tags?.length ? colors.dim(` [${task.tags.join(', ')}]`) : ''
         context.logger.info(
-          `  ${chalk.green('✓')} [${task.id}] ${chalk.strikethrough(task.title)}${tags}`
+          `  ${colors.green('✓')} [${task.id}] ${colors.strikethrough(task.title)}${tags}`
         )
       })
     }

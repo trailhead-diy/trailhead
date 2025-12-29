@@ -1,8 +1,8 @@
 import { createCommand } from '@trailhead/cli/command'
 import { ok, err, createCoreError, type Result, type CoreError } from '@trailhead/core'
-import { confirm, select, input } from '@trailhead/cli/prompts'
-import { loadConfig, saveConfig } from '../lib/config.js'
-import type { Config } from '../lib/config-schema.js'
+import { confirm, select, text } from '@trailhead/cli/prompts'
+import { loadConfig, saveConfig } from '../lib/config.ts'
+import type { Config } from '../lib/config-schema.ts'
 
 /**
  * Configuration management command
@@ -45,17 +45,17 @@ export const configCommand = createCommand({
     }
 
     // Prompt for each configuration value
-    const name = await input({
+    const name = await text({
       message: 'Name:',
-      default: config.name,
-      validate: (value: string) => value.length > 0 || 'Name is required',
+      initialValue: config.name,
+      validate: (value) => (value && value.length > 0 ? undefined : 'Name is required'),
     })
 
-    const version = await input({
+    const version = await text({
       message: 'Version:',
-      default: config.version,
-      validate: (value: string) =>
-        /^\d+\.\d+\.\d+/.test(value) || 'Version must be in semver format (e.g., 1.0.0)',
+      initialValue: config.version,
+      validate: (value) =>
+        value && /^\d+\.\d+\.\d+/.test(value) ? undefined : 'Version must be in semver format (e.g., 1.0.0)',
     })
 
     const environment = await select({

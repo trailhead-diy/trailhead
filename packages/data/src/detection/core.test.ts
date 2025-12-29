@@ -44,8 +44,12 @@ describe('Detection Core Operations', () => {
       const unknownBuffer = Buffer.from('unknown file content')
       const result = await detectionOps.detectFromBuffer(unknownBuffer)
 
-      // Should either detect something or fail gracefully
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // Unknown formats should return an error with appropriate message
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toBeDefined()
+        expect(result.error.type).toBeDefined()
+      }
     })
   })
 
@@ -103,8 +107,14 @@ describe('Detection Core Operations', () => {
     it('should handle MIME type with parameters', () => {
       const result = detectionOps.detectFromMime('text/html; charset=utf-8')
 
-      // Should either succeed or fail gracefully
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // MIME with parameters may not be recognized - depends on implementation
+      // The function should return a Result (either Ok or Err) without throwing
+      if (result.isOk()) {
+        expect(result.value.mime).toBeDefined()
+        expect(result.value.ext).toBeDefined()
+      } else {
+        expect(result.error.message).toBeDefined()
+      }
     })
 
     it('should handle unknown MIME type', () => {
@@ -136,11 +146,69 @@ describe('Detection Core Operations', () => {
       }
     })
 
-    it('should handle non-existent files gracefully', async () => {
-      const result = await detectionOps.detectBatch(['/non/existent/file.jpg'])
+    it('should detect multiple files with extension fallback', async () => {
+      // When files don't exist, detectBatch falls back to extension-based detection
+      const result = await detectionOps.detectBatch([
+        '/path/to/image.jpg',
+        '/path/to/document.pdf',
+        '/path/to/data.json',
+      ])
 
-      // Should either fail or succeed with fallback enabled
-      expect(result.isOk() || result.isErr()).toBe(true)
+      // Extension-based detection should succeed
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toHaveLength(3)
+
+        // Verify each detection result (results are in order)
+        expect(result.value[0].format.ext).toBe('jpg')
+        expect(result.value[0].source).toBe('file-extension')
+
+        expect(result.value[1].format.ext).toBe('pdf')
+        expect(result.value[1].source).toBe('file-extension')
+
+        expect(result.value[2].format.ext).toBe('json')
+        expect(result.value[2].source).toBe('file-extension')
+      }
+    })
+
+    it('should handle files with unknown extensions', async () => {
+      const result = await detectionOps.detectBatch(['/path/to/file.xyz'])
+
+      // Unknown extension + file not found = FormatError from mapFileError
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        // Falls through to buffer detection which fails with FormatError
+        expect(result.error.type).toBe('FormatError')
+        expect(result.error.message).toBeDefined()
+      }
+    })
+
+    it('should return results in order', async () => {
+      const files = ['/a.png', '/b.jpg', '/c.gif']
+      const result = await detectionOps.detectBatch(files)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        // DetectionResult doesn't include filePath, but results are in input order
+        expect(result.value).toHaveLength(3)
+        expect(result.value[0].format.ext).toBe('png')
+        expect(result.value[1].format.ext).toBe('jpg')
+        expect(result.value[2].format.ext).toBe('gif')
+      }
+    })
+  })
+
+  describe('detectFromFile', () => {
+    it('should fall back to extension for non-existent file', async () => {
+      const result = await detectionOps.detectFromFile('/non/existent/file.jpg')
+
+      // Implementation falls back to extension-based detection when file doesn't exist
+      // since useFileExtension is enabled by default and runs first
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value.source).toBe('file-extension')
+        expect(result.value.format.ext).toBe('jpg')
+      }
     })
   })
 })

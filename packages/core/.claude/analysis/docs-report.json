@@ -1,0 +1,86 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-28T00:00:00.000Z",
+  "gitSha": "e806c1d964fb1a015c8226fa251e48baff5ce5a5",
+  "package": {
+    "name": "core",
+    "path": "packages/core"
+  },
+  "stats": {
+    "totalExports": 67,
+    "documented": 67,
+    "partial": 0,
+    "undocumented": 0,
+    "coveragePercent": 100
+  },
+  "files": [
+    {
+      "path": "src/index.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/errors/types.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/errors/factory.ts",
+      "exports": 13,
+      "documented": 13,
+      "status": "complete"
+    },
+    {
+      "path": "src/errors/utils.ts",
+      "exports": 15,
+      "documented": 15,
+      "status": "complete"
+    },
+    {
+      "path": "src/functional/async.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/functional/composition.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/utils/index.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/async-helpers.ts",
+      "exports": 14,
+      "documented": 14,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/error-factories.ts",
+      "exports": 18,
+      "documented": 18,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/result-helpers.ts",
+      "exports": 14,
+      "documented": 14,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/vitest-matchers.ts",
+      "exports": 12,
+      "documented": 12,
+      "status": "complete"
+    }
+  ],
+  "status": "documented",
+  "notes": "Added JSDoc documentation to 24 previously undocumented exports: utils/index.ts (1 constant), testing/async-helpers.ts (11 functions), testing/error-factories.ts (10 functions), testing/vitest-matchers.ts (2 matchers). All existing documentation was already comprehensive with @param, @returns, @template, and @example tags."
+}

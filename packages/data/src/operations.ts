@@ -321,8 +321,21 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         switch (format) {
           case 'csv':
             return await csvOps.parseFile(filePath)
-          case 'json':
-            return await jsonOps.parseFile(filePath)
+          case 'json': {
+            const jsonResult = await jsonOps.parseFile(filePath)
+            if (jsonResult.isErr()) return jsonResult
+            // Wrap JSON result in ParsedData structure for consistent API
+            const jsonData = jsonResult.value
+            return ok({
+              data: jsonData,
+              metadata: {
+                totalRows: Array.isArray(jsonData) ? jsonData.length : 1,
+                format: 'json',
+                hasHeaders: false,
+              },
+              errors: [],
+            })
+          }
           case 'excel':
             return await excelOps.parseFile(filePath)
           default:
@@ -365,8 +378,21 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
         switch (format) {
           case 'csv':
             return csvOps.parseString(content)
-          case 'json':
-            return jsonOps.parseString(content)
+          case 'json': {
+            const jsonResult = jsonOps.parseString(content)
+            if (jsonResult.isErr()) return jsonResult
+            // Wrap JSON result in ParsedData structure for consistent API
+            const jsonData = jsonResult.value
+            return ok({
+              data: jsonData,
+              metadata: {
+                totalRows: Array.isArray(jsonData) ? jsonData.length : 1,
+                format: 'json',
+                hasHeaders: false,
+              },
+              errors: [],
+            })
+          }
           case 'excel':
             // Excel needs buffer, try to convert if possible
             return err(
@@ -414,7 +440,7 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
 
         switch (ext) {
           case 'json':
-            return await jsonOps.writeFile(filePath, data)
+            return await jsonOps.writeFile(data, filePath)
           case 'csv':
             // Ensure data is an array for CSV
             if (!Array.isArray(data)) {
@@ -451,7 +477,7 @@ export function createUnifiedDataOperations(config: UnifiedDataConfig = {}): Uni
           default:
             // Default to JSON if no extension
             const jsonPath = filePath.endsWith('.json') ? filePath : `${filePath}.json`
-            return await jsonOps.writeFile(jsonPath, data)
+            return await jsonOps.writeFile(data, jsonPath)
         }
       } catch (error) {
         return err(

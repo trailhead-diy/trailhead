@@ -8,8 +8,6 @@ prerequisites:
   - 'Familiarity with data transformation concepts'
 related:
   - /packages/cli/docs/tutorials/getting-started.md
-  - /packages/cli/docs/reference/command.md
-  - /packages/cli/docs/reference/flow-control.md
 ---
 
 # From Spreadsheet Hell to Something You Can Actually Use
@@ -57,7 +55,7 @@ Let's start with a proper project structure. No dumping everything in one file l
 ```bash
 mkdir csv-processor && cd csv-processor
 npm init -y
-npm install @trailhead/cli @repo/fs @repo/data papaparse yaml
+npm install @trailhead/cli @trailhead/data papaparse yaml
 npm install -D @types/node @types/papaparse tsx typescript
 ```
 
@@ -304,7 +302,7 @@ Create `src/commands/transform.ts`:
 ```typescript
 import { ok, err } from '@trailhead/cli';
 import { createCommand, type CommandContext } from '@trailhead/cli/command';
-import { fs } from '@repo/fs';
+import { fs } from '@trailhead/cli/fs';
 import { prompt, select } from '@trailhead/cli/prompts';
 // Note: Using simpler approach without workflow tasks
 import { parseCSV, transformFields, cleanData, writeOutput } from '../lib/csv-parser.js';

@@ -1,5 +1,5 @@
 import { ok, err } from '@trailhead/core'
-import { readFile, writeFile } from '@trailhead/fs'
+import { readFile, writeFile } from '@trailhead/cli/fs'
 import * as Papa from 'papaparse'
 import type {
   CSVProcessingOptions,
@@ -192,7 +192,7 @@ export const createCSVOperations: CreateCSVOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    const writeResult = await writeFile()(stringifyResult.value, filePath)
+    const writeResult = await writeFile()(filePath, stringifyResult.value)
     if (writeResult.isErr()) {
       return err(mapFileSystemError(writeResult.error, 'writeFile'))
     }

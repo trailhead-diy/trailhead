@@ -5,7 +5,6 @@
  * For general testing utilities, see the respective domain packages:
  * - @trailhead/core/testing - Result matchers, error testing
  * - @trailhead/fs/testing - Filesystem fixtures, path utilities
- * - @trailhead/validation/testing - Schema testing
  *
  * @example
  * ```typescript
@@ -89,7 +88,7 @@ export type {
 // ========================================
 // CLI Context and Mocking
 // ========================================
-export { createTestContext, createTestContextWithFiles } from './context.js'
+export { createTestContext, createTestContextWithFiles, createNoopLogger } from './context.js'
 
 export type { TestContextOptions } from './context.js'
 

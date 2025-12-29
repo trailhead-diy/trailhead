@@ -1,6 +1,6 @@
 # Enhanced Testing Utilities
 
-Comprehensive testing framework with 50% boilerplate reduction for @trailhead/trailhead-cli.
+Comprehensive testing framework with 50% boilerplate reduction for @trailhead/cli.
 
 ## Overview
 
@@ -42,7 +42,7 @@ import {
   expectFailure,
   expectErrorCode,
   expectErrorMessage,
-} from '@trailhead/trailhead-cli/testing'
+} from '@trailhead/cli/testing'
 
 // Extract value from successful Result
 const value = expectSuccess(result)
@@ -63,7 +63,7 @@ const error = expectErrorMessage(result, /File .+ not found/)
 Enable fluent assertions with custom matchers:
 
 ```typescript
-import { setupResultMatchers } from '@trailhead/trailhead-cli/testing'
+import { setupResultMatchers } from '@trailhead/cli/testing'
 
 // In test setup
 setupResultMatchers()
@@ -84,7 +84,7 @@ expect(result).toHaveLength(3) // For array values
 Eliminates repetitive Result testing patterns:
 
 ```typescript
-import { createResultTestSuite } from '@trailhead/trailhead-cli/testing'
+import { createResultTestSuite } from '@trailhead/cli/testing'
 
 createResultTestSuite('File Operations', [
   {
@@ -107,7 +107,7 @@ createResultTestSuite('File Operations', [
 Standardizes filesystem testing with automatic setup/teardown:
 
 ```typescript
-import { createFileSystemTestSuite } from '@trailhead/trailhead-cli/testing'
+import { createFileSystemTestSuite } from '@trailhead/cli/testing'
 
 createFileSystemTestSuite('Memory FileSystem', () => createMemoryFileSystem(), [
   {
@@ -129,7 +129,7 @@ createFileSystemTestSuite('Memory FileSystem', () => createMemoryFileSystem(), [
 Validates error templates with comprehensive property checking:
 
 ```typescript
-import { createErrorTemplateTestSuite } from '@trailhead/trailhead-cli/testing'
+import { createErrorTemplateTestSuite } from '@trailhead/cli/testing'
 
 createErrorTemplateTestSuite('fileNotFound', errorTemplates.fileNotFound, [
   {
@@ -152,7 +152,7 @@ createErrorTemplateTestSuite('fileNotFound', errorTemplates.fileNotFound, [
 Capture and test CLI output with built-in snapshot support:
 
 ```typescript
-import { createCLITestRunner, expectCLISnapshot } from '@trailhead/trailhead-cli/testing'
+import { createCLITestRunner, expectCLISnapshot } from '@trailhead/cli/testing'
 
 const runner = createCLITestRunner({
   stripAnsi: true, // Remove color codes
@@ -172,7 +172,7 @@ expectCLISnapshot(result, 'successful-operation')
 Test complete CLI workflows with multiple steps:
 
 ```typescript
-import { createWorkflowTest } from '@trailhead/trailhead-cli/testing'
+import { createWorkflowTest } from '@trailhead/cli/testing'
 
 createWorkflowTest('Data Processing Workflow', [
   {
@@ -202,7 +202,7 @@ createWorkflowTest('Data Processing Workflow', [
 Comprehensive command testing with multiple scenarios:
 
 ```typescript
-import { createCommandTestSuite } from '@trailhead/trailhead-cli/testing'
+import { createCommandTestSuite } from '@trailhead/cli/testing'
 
 createCommandTestSuite('convert', convertCommand, [
   {
@@ -225,7 +225,7 @@ createCommandTestSuite('convert', convertCommand, [
 ### Basic Fixture Management
 
 ```typescript
-import { fixtures, testData, createFixtureManager } from '@trailhead/trailhead-cli/testing'
+import { fixtures, testData, createFixtureManager } from '@trailhead/cli/testing'
 
 // CSV fixtures
 const csvFixtures = fixtures.csv({
@@ -247,7 +247,7 @@ const packageFixtures = fixtures.packageJson({
 ### Advanced Fixture Building
 
 ```typescript
-import { FixtureBuilder } from '@trailhead/trailhead-cli/testing'
+import { FixtureBuilder } from '@trailhead/cli/testing'
 
 const fixtures = new FixtureBuilder()
   .addFile('readme.txt', 'Project README')
@@ -271,7 +271,7 @@ const fixtures = new FixtureBuilder()
 ### Test Suite with Fixtures
 
 ```typescript
-import { createTestSuite } from '@trailhead/trailhead-cli/testing'
+import { createTestSuite } from '@trailhead/cli/testing'
 
 const testSuite = createTestSuite({
   filesystem: 'memory',
@@ -295,7 +295,7 @@ testSuite('CSV Processing', ({ fs, fixtures }) => {
 ### Performance Monitoring
 
 ```typescript
-import { testUtils, profileTest } from '@trailhead/trailhead-cli/testing'
+import { testUtils, profileTest } from '@trailhead/cli/testing'
 
 // Measure operation performance
 await testUtils.performance.measure('file-processing', async () => {
@@ -315,7 +315,7 @@ console.log(`Average: ${stats.avg}ms, P95: ${stats.p95}ms`)
 ### Test Debugging
 
 ```typescript
-import { testUtils } from '@trailhead/trailhead-cli/testing'
+import { testUtils } from '@trailhead/cli/testing'
 
 // Enable debugging
 testUtils.debugger.enable()
@@ -337,7 +337,7 @@ testUtils.debugger.printReport()
 ### State Inspection
 
 ```typescript
-import { testUtils } from '@trailhead/trailhead-cli/testing';
+import { testUtils } from '@trailhead/cli/testing';
 
 // Capture state snapshots
 testUtils.inspector.capture('initial', { count: 0, items: [] });
@@ -421,7 +421,7 @@ createResultTestSuite('File Operations', [
 
 ```typescript
 // test-setup.ts
-import { setupResultMatchers, testUtils } from '@trailhead/trailhead-cli/testing'
+import { setupResultMatchers, testUtils } from '@trailhead/cli/testing'
 
 // Enable custom matchers
 setupResultMatchers()
@@ -535,7 +535,7 @@ The enhanced testing utilities are already included in the `/testing` module exp
 ### Step 2: Update Test Setup
 
 ```typescript
-import { setupResultMatchers } from '@trailhead/trailhead-cli/testing'
+import { setupResultMatchers } from '@trailhead/cli/testing'
 setupResultMatchers()
 ```
 

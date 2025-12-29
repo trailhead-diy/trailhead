@@ -2,7 +2,9 @@ import { spawn, ChildProcess } from 'child_process'
 import { EventEmitter } from 'events'
 
 /**
- * Interactive CLI test runner for testing prompt-based commands
+ * Configuration for interactive CLI test runner.
+ *
+ * Defines command execution parameters for testing prompt-based CLI commands.
  */
 export interface InteractiveTestConfig {
   command: string
@@ -12,21 +14,40 @@ export interface InteractiveTestConfig {
   env?: Record<string, string>
 }
 
+/**
+ * Defines an expected prompt and its automated response.
+ *
+ * Used to simulate user input in interactive CLI tests.
+ */
 export interface PromptResponse {
+  /** Prompt text or pattern to match */
   prompt: string | RegExp
+  /** Text to send as response when prompt is matched */
   response: string
+  /** Delay in ms before sending response (default: 100) */
   delay?: number
 }
 
+/**
+ * Result of an interactive test execution.
+ *
+ * Contains captured output and exit status.
+ */
 export interface InteractiveTestResult {
+  /** Process exit code (null if killed) */
   exitCode: number | null
+  /** Captured standard output */
   stdout: string
+  /** Captured standard error */
   stderr: string
+  /** Total execution time in milliseconds */
   duration: number
 }
 
 /**
- * Interactive test runner state
+ * Internal state for interactive test runner.
+ *
+ * Tracks configuration, responses, and execution state.
  */
 export interface InteractiveTestRunnerState {
   readonly config: InteractiveTestConfig
@@ -40,7 +61,12 @@ export interface InteractiveTestRunnerState {
 }
 
 /**
- * Create interactive test runner state
+ * Create interactive test runner state.
+ *
+ * Initializes a new test runner with configuration but no responses.
+ *
+ * @param config - Test runner configuration
+ * @returns Initial test runner state
  */
 export function createInteractiveTestRunner(
   config: InteractiveTestConfig
@@ -58,7 +84,15 @@ export function createInteractiveTestRunner(
 }
 
 /**
- * Add expected prompt and response pairs
+ * Add an expected prompt and response pair.
+ *
+ * Returns new state with the response added to the queue.
+ *
+ * @param state - Current test runner state
+ * @param prompt - Text or pattern to match in output
+ * @param response - Response to send when matched
+ * @param delay - Delay in ms before sending response (default: 100)
+ * @returns New state with response added
  */
 export function addResponse(
   state: InteractiveTestRunnerState,
@@ -73,7 +107,13 @@ export function addResponse(
 }
 
 /**
- * Add multiple responses at once
+ * Add multiple prompt/response pairs at once.
+ *
+ * Convenience function for setting up multiple expected prompts.
+ *
+ * @param state - Current test runner state
+ * @param responses - Array of prompt/response pairs
+ * @returns New state with all responses added
  */
 export function addResponses(
   state: InteractiveTestRunnerState,
@@ -90,7 +130,14 @@ export function addResponses(
 }
 
 /**
- * Run the interactive test
+ * Execute the interactive test and collect results.
+ *
+ * Spawns the configured command, monitors output for prompts,
+ * and sends responses automatically. Returns when process exits.
+ *
+ * @param state - Test runner state with configured responses
+ * @returns Test result with captured output and exit code
+ * @throws {Error} If process creation fails or timeout is exceeded
  */
 export async function runInteractiveTestRunner(
   state: InteractiveTestRunnerState
@@ -178,7 +225,10 @@ export async function runInteractiveTestRunner(
 }
 
 /**
- * Send input to the process
+ * Send input to the running process with newline.
+ *
+ * @param state - Test runner state with active process
+ * @param input - Text to send (newline appended automatically)
  */
 export function sendInput(state: InteractiveTestRunnerState, input: string): void {
   if (state.child?.stdin) {
@@ -187,7 +237,12 @@ export function sendInput(state: InteractiveTestRunnerState, input: string): voi
 }
 
 /**
- * Send raw input without newline
+ * Send raw input without newline.
+ *
+ * Use for special key sequences or partial input.
+ *
+ * @param state - Test runner state with active process
+ * @param input - Raw text to send (no newline added)
  */
 export function sendRaw(state: InteractiveTestRunnerState, input: string): void {
   if (state.child?.stdin) {
@@ -205,7 +260,11 @@ function cleanup(child: ChildProcess): void {
 }
 
 /**
- * Force kill the process
+ * Force kill the running process.
+ *
+ * Sends SIGTERM to terminate the process immediately.
+ *
+ * @param state - Test runner state with active process
  */
 export function killProcess(state: InteractiveTestRunnerState): void {
   if (state.child) {
@@ -214,7 +273,14 @@ export function killProcess(state: InteractiveTestRunnerState): void {
 }
 
 /**
- * Helper function to create and run an interactive test
+ * Create and run an interactive test in one call.
+ *
+ * Convenience function combining createInteractiveTestRunner,
+ * addResponses, and runInteractiveTestRunner.
+ *
+ * @param config - Test runner configuration
+ * @param responses - Array of prompt/response pairs
+ * @returns Test result with captured output and exit code
  */
 export async function runInteractiveTest(
   config: InteractiveTestConfig,
@@ -230,7 +296,23 @@ export async function runInteractiveTest(
 }
 
 /**
- * Create a test helper for common interactive patterns
+ * Create a reusable test helper for interactive CLI commands.
+ *
+ * Provides convenience methods for common testing patterns like
+ * text responses, regex matching, and default selections.
+ *
+ * @param baseCommand - Base command/script to test
+ * @param baseCwd - Optional working directory for tests
+ * @returns Helper object with test methods
+ *
+ * @example
+ * ```typescript
+ * const helper = createInteractiveTestHelper('./my-cli.ts');
+ * const result = await helper.testWithResponses(
+ *   ['init'],
+ *   [{ prompt: 'Project name?', response: 'my-app' }]
+ * );
+ * ```
  */
 export function createInteractiveTestHelper(baseCommand: string, baseCwd?: string) {
   return {

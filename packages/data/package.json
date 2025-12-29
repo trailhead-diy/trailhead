@@ -61,9 +61,8 @@
     "prepublishOnly": "echo \"Publishing without rebuild\""
   },
   "dependencies": {
+    "@trailhead/cli": "workspace:*",
     "@trailhead/core": "workspace:*",
-    "@trailhead/fs": "workspace:*",
-    "@trailhead/sort": "workspace:*",
     "file-type": "^21.0.0",
     "mime-types": "^3.0.1",
     "papaparse": "^5.4.1",
@@ -75,12 +74,12 @@
     "@repo/vitest-config": "workspace:*",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^24.10.0",
-    "@types/papaparse": "^5.5.0",
-    "@vitest/coverage-v8": "^4.0.7",
-    "oxlint": "^1.25.0",
-    "tsup": "^8.5.0",
+    "@types/papaparse": "^5.5.2",
+    "@vitest/coverage-v8": "^4.0.16",
+    "oxlint": "^1.35.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.7"
+    "vitest": "^4.0.16"
   },
   "engines": {
     "node": ">=20.0.0",

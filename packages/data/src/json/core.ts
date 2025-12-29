@@ -1,9 +1,40 @@
 import { ok, err } from '@trailhead/core'
-import { readFile, writeFile } from '@trailhead/fs'
-import { sortStrings, sortArray, sortMultiple } from '@trailhead/sort'
+import { readFile, writeFile } from '@trailhead/cli/fs'
 import type { JSONProcessingOptions, DataResult } from '../types.js'
 import { defaultJSONConfig, type CreateJSONOperations, type JSONFormatOptions } from './types.js'
 import { createJSONError, createParsingError, mapLibraryError } from '../errors.js'
+
+// ========================================
+// Inline Sorting Utilities
+// ========================================
+
+type Order = 'asc' | 'desc'
+
+/** Sort strings alphabetically with optional order */
+const sortStrings = (arr: string[], order: Order = 'asc'): string[] =>
+  order === 'desc' ? [...arr].sort().reverse() : [...arr].sort()
+
+/** Sort array of primitives with optional order */
+const sortArray = <T extends string | number>(arr: T[], order: Order = 'asc'): T[] =>
+  order === 'desc'
+    ? [...arr].sort((a, b) => (a > b ? -1 : a < b ? 1 : 0))
+    : [...arr].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+
+/** Sort array by multiple criteria */
+const sortMultiple = <T>(
+  arr: T[],
+  criteria: Array<{ accessor: (item: T) => any; order: Order }>
+): T[] => {
+  return [...arr].sort((a, b) => {
+    for (const { accessor, order } of criteria) {
+      const aVal = accessor(a)
+      const bVal = accessor(b)
+      if (aVal < bVal) return order === 'asc' ? -1 : 1
+      if (aVal > bVal) return order === 'asc' ? 1 : -1
+    }
+    return 0
+  })
+}
 
 // ========================================
 // JSON Core Operations
@@ -129,7 +160,7 @@ export const createJSONOperations: CreateJSONOperations = (config = {}) => {
       return err(stringifyResult.error)
     }
 
-    return await writeFile()(stringifyResult.value, filePath)
+    return await writeFile()(filePath, stringifyResult.value)
   }
 
   const validate = (data: string): DataResult<boolean> => {

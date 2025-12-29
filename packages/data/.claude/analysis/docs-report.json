@@ -1,0 +1,200 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-28T12:00:00Z",
+  "gitSha": "e806c1d964fb1a015c8226fa251e48baff5ce5a5",
+  "package": {
+    "name": "data",
+    "path": "packages/data"
+  },
+  "stats": {
+    "totalExports": 89,
+    "documented": 89,
+    "partial": 0,
+    "undocumented": 0,
+    "coveragePercent": 100
+  },
+  "files": [
+    {
+      "path": "src/index.ts",
+      "exports": 5,
+      "documented": 5,
+      "status": "complete"
+    },
+    {
+      "path": "src/types.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/errors.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/operations.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/formats-types.ts",
+      "exports": 22,
+      "documented": 22,
+      "status": "complete"
+    },
+    {
+      "path": "src/formats-errors.ts",
+      "exports": 9,
+      "documented": 9,
+      "status": "complete"
+    },
+    {
+      "path": "src/csv/index.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/csv/types.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/csv/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/json/index.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/json/types.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/json/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/excel/index.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/excel/types.ts",
+      "exports": 3,
+      "documented": 3,
+      "status": "complete"
+    },
+    {
+      "path": "src/excel/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/detection/index.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/detection/types.ts",
+      "exports": 6,
+      "documented": 6,
+      "status": "complete"
+    },
+    {
+      "path": "src/detection/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/detection/database.ts",
+      "exports": 4,
+      "documented": 4,
+      "status": "complete"
+    },
+    {
+      "path": "src/mime/index.ts",
+      "exports": 8,
+      "documented": 8,
+      "status": "complete"
+    },
+    {
+      "path": "src/mime/types.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/mime/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/conversion/index.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/conversion/types.ts",
+      "exports": 7,
+      "documented": 7,
+      "status": "complete"
+    },
+    {
+      "path": "src/conversion/core.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/formats/index.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/index.ts",
+      "exports": 25,
+      "documented": 25,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/data-generators.ts",
+      "exports": 1,
+      "documented": 1,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/transform-helpers.ts",
+      "exports": 2,
+      "documented": 2,
+      "status": "complete"
+    },
+    {
+      "path": "src/testing/format-testing.ts",
+      "exports": 10,
+      "documented": 10,
+      "status": "complete"
+    }
+  ],
+  "status": "documented",
+  "notes": "Added comprehensive JSDoc documentation to all public exports. Documentation includes module-level descriptions, function/type descriptions, @param annotations with constraints, @returns descriptions, and @example code blocks for complex factory functions. All interfaces, types, constants, and functions now have proper JSDoc comments."
+}

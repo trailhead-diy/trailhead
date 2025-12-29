@@ -1,7 +1,18 @@
+/**
+ * Error handling utilities for create-cli package.
+ *
+ * Provides standardized error codes, factory functions for consistent error
+ * creation, and user-facing error suggestions.
+ *
+ * @module core/errors
+ */
+
 import { createCoreError, type CoreError } from '@trailhead/core'
 
 /**
- * Standardized error codes for create-cli package
+ * Standardized error codes for create-cli package.
+ *
+ * Grouped by category: template errors, argument parsing, and generator errors.
  */
 export const ERROR_CODES = {
   // Template-related errors
@@ -27,15 +38,16 @@ export const ERROR_CODES = {
   GENERATE_COMMAND_ERROR: 'GENERATE_COMMAND_ERROR',
 } as const
 
+/** Union type of all error codes in ERROR_CODES */
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]
 
-/**
- * Common error domain for create-cli package
- */
+/** Common error domain identifier for create-cli package errors */
 export const ERROR_DOMAIN = 'CLI_ERROR' as const
 
 /**
- * Base error context interface
+ * Base context interface for error factory functions.
+ *
+ * All error factories accept this context to provide consistent metadata.
  */
 export interface BaseErrorContext {
   readonly component: string
@@ -47,7 +59,12 @@ export interface BaseErrorContext {
 }
 
 /**
- * Create error context helper for TemplateCompiler component
+ * Create a CoreError for template compilation failures.
+ *
+ * @param code - Error code from ERROR_CODES
+ * @param message - Human-readable error message
+ * @param context - Additional error context (operation, cause, etc.)
+ * @returns CoreError with component set to 'TemplateCompiler'
  */
 export function createTemplateCompilerError(
   code: ErrorCode,
@@ -61,7 +78,14 @@ export function createTemplateCompilerError(
 }
 
 /**
- * Create error context helper for ArgsParser component
+ * Create a CoreError for argument parsing failures.
+ *
+ * Sets operation to 'parseArguments' and marks as recoverable by default.
+ *
+ * @param code - Error code from ERROR_CODES
+ * @param message - Human-readable error message
+ * @param context - Additional error context (cause, suggestion, etc.)
+ * @returns CoreError with component set to 'ArgsParser'
  */
 export function createArgsParserError(
   code: ErrorCode,
@@ -77,7 +101,12 @@ export function createArgsParserError(
 }
 
 /**
- * Create error context helper for Generator component
+ * Create a CoreError for project generation failures.
+ *
+ * @param code - Error code from ERROR_CODES
+ * @param message - Human-readable error message
+ * @param context - Additional error context (operation, cause, etc.)
+ * @returns CoreError with component set to 'Generator'
  */
 export function createGeneratorError(
   code: ErrorCode,
@@ -91,7 +120,9 @@ export function createGeneratorError(
 }
 
 /**
- * Common error suggestions for user-facing errors
+ * User-facing error suggestions keyed by error type.
+ *
+ * These messages provide actionable guidance for common errors.
  */
 export const ERROR_SUGGESTIONS = {
   PACKAGE_MANAGER_OPTIONS: 'Use --package-manager npm or --package-manager pnpm',

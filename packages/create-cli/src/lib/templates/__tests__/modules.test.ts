@@ -256,12 +256,11 @@ describe('module sorting utilities', () => {
 
         // Dependencies should be sorted alphabetically
         const deps = template.packageDependencies
-        expect(deps).toEqual(['@trailhead/config', '@trailhead/fs', '@trailhead/trailhead-cli'])
+        expect(deps).toEqual(['@trailhead/trailhead-cli', 'zod'])
 
         // Should contain all expected dependencies
         expect(deps).toContain('@trailhead/trailhead-cli') // from core module
-        expect(deps).toContain('@trailhead/config') // from config module
-        expect(deps).toContain('@trailhead/fs') // from config module
+        expect(deps).toContain('zod') // from config module
       }
     })
   })

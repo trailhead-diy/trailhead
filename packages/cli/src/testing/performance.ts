@@ -1,9 +1,17 @@
 /**
- * Performance monitoring utilities for CLI testing
+ * Performance monitoring utilities for CLI testing.
+ *
+ * Provides tools for tracking execution time, memory usage, and CPU usage
+ * during CLI command testing. Useful for performance regression testing.
+ *
+ * @module cli/testing/performance
  */
 
-import { topN, bottomN, sortBy, orderBy } from '@trailhead/sort'
+import { sortBy, orderBy } from 'es-toolkit'
 
+/**
+ * Captured metrics from a single command execution.
+ */
 export interface PerformanceMetrics {
   executionTime: number
   memoryUsage: {
@@ -18,31 +26,53 @@ export interface PerformanceMetrics {
   }
 }
 
+/**
+ * Complete report for a single command execution.
+ */
 export interface PerformanceReport {
+  /** Descriptive test name */
   testName: string
+  /** Command that was executed */
   command: string
+  /** Captured performance metrics */
   metrics: PerformanceMetrics
+  /** ISO-8601 timestamp of execution */
   timestamp: string
+  /** Execution result status */
   status: 'success' | 'error' | 'timeout'
+  /** Error message if status is 'error' or 'timeout' */
   errorMessage?: string
 }
 
 /**
- * Performance monitor state
+ * Immutable state container for performance reports.
  */
 export interface PerformanceMonitorState {
+  /** Collection of all performance reports */
   readonly reports: PerformanceReport[]
 }
 
 /**
- * Create performance monitor state
+ * Create empty performance monitor state.
+ *
+ * @returns New state with no reports
  */
 export function createPerformanceMonitorState(): PerformanceMonitorState {
   return { reports: [] }
 }
 
 /**
- * Monitor a CLI command execution
+ * Execute and monitor a CLI command's performance.
+ *
+ * Captures execution time, memory usage, and CPU usage while
+ * running the provided executor function. Handles timeouts.
+ *
+ * @param state - Current monitor state
+ * @param testName - Descriptive name for this test
+ * @param command - Command string for the report
+ * @param executor - Async function to execute and monitor
+ * @param timeout - Maximum execution time in ms (default: 30000)
+ * @returns Report and new state with report added
  */
 export async function monitorPerformance(
   state: PerformanceMonitorState,
@@ -105,14 +135,20 @@ export async function monitorPerformance(
 }
 
 /**
- * Get all performance reports
+ * Get all performance reports from state.
+ *
+ * @param state - Monitor state containing reports
+ * @returns Copy of all reports array
  */
 export function getPerformanceReports(state: PerformanceMonitorState): PerformanceReport[] {
   return [...state.reports]
 }
 
 /**
- * Get performance summary statistics
+ * Calculate summary statistics across all reports.
+ *
+ * @param state - Monitor state containing reports
+ * @returns Summary with counts, averages, and extremes, or null if no reports
  */
 export function getPerformanceSummary(state: PerformanceMonitorState) {
   if (state.reports.length === 0) {
@@ -141,7 +177,12 @@ export function getPerformanceSummary(state: PerformanceMonitorState) {
 }
 
 /**
- * Export reports to JSON
+ * Export reports to formatted JSON string.
+ *
+ * Includes summary statistics and all individual reports.
+ *
+ * @param state - Monitor state to export
+ * @returns Pretty-printed JSON string
  */
 export function exportPerformanceReportsToJson(state: PerformanceMonitorState): string {
   return JSON.stringify(
@@ -156,14 +197,23 @@ export function exportPerformanceReportsToJson(state: PerformanceMonitorState): 
 }
 
 /**
- * Clear all reports
+ * Clear all reports and return fresh state.
+ *
+ * @param _state - Current state (ignored, returns empty state)
+ * @returns New empty monitor state
  */
 export function clearPerformanceReports(_state: PerformanceMonitorState): PerformanceMonitorState {
   return { reports: [] }
 }
 
 /**
- * Check if any performance thresholds are exceeded
+ * Check if performance thresholds are exceeded.
+ *
+ * Validates execution time, memory usage, and failure rate against limits.
+ *
+ * @param state - Monitor state to check
+ * @param thresholds - Maximum allowed values for each metric
+ * @returns Object with pass/fail status and list of violations
  */
 export function checkPerformanceThresholds(
   state: PerformanceMonitorState,
@@ -208,7 +258,17 @@ export function checkPerformanceThresholds(
 }
 
 /**
- * Higher-order function for automatic performance monitoring
+ * Wrap a function with automatic performance monitoring.
+ *
+ * Creates a new function that records performance metrics on each call.
+ * Note: State updates require external handling due to functional approach.
+ *
+ * @template T - Function type
+ * @param state - Monitor state for recording
+ * @param testName - Name for performance reports
+ * @param command - Command string for reports
+ * @param testFn - Function to wrap
+ * @returns Wrapped function that returns performance report
  */
 export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<any>>(
   state: PerformanceMonitorState,
@@ -227,7 +287,11 @@ export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<
 }
 
 /**
- * Helper to create a performance monitor for CLI testing
+ * Convenience factory for creating a CLI performance monitor.
+ *
+ * Alias for createPerformanceMonitorState with clearer intent.
+ *
+ * @returns New empty performance monitor state
  */
 export function createCLIPerformanceMonitor(): PerformanceMonitorState {
   return createPerformanceMonitorState()
@@ -249,7 +313,7 @@ export function createCLIPerformanceMonitor(): PerformanceMonitorState {
  * ```
  */
 export function getSlowestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
-  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+  return orderBy(state.reports, [(report) => report.metrics.executionTime], ['desc']).slice(0, n)
 }
 
 /**
@@ -265,7 +329,7 @@ export function getSlowestReports(state: PerformanceMonitorState, n: number): Pe
  * ```
  */
 export function getFastestReports(state: PerformanceMonitorState, n: number): PerformanceReport[] {
-  return bottomN(n, state.reports, (report: PerformanceReport) => report.metrics.executionTime)
+  return sortBy(state.reports, [(report) => report.metrics.executionTime]).slice(0, n)
 }
 
 /**
@@ -284,7 +348,10 @@ export function getHighestMemoryReports(
   state: PerformanceMonitorState,
   n: number
 ): PerformanceReport[] {
-  return topN(n, state.reports, (report: PerformanceReport) => report.metrics.memoryUsage.heapUsed)
+  return orderBy(state.reports, [(report) => report.metrics.memoryUsage.heapUsed], ['desc']).slice(
+    0,
+    n
+  )
 }
 
 /**

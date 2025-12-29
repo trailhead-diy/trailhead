@@ -1,9 +1,13 @@
 /**
- * Template utilities for getting available templates and template information
+ * Template discovery and information utilities.
+ *
+ * Provides functions to query available templates and their metadata.
+ *
+ * @module templates/utils
  */
 
 /**
- * Information about an available template
+ * Metadata about an available project template.
  */
 export interface TemplateInfo {
   /** Template identifier/name */
@@ -18,9 +22,7 @@ export interface TemplateInfo {
   builtin: boolean
 }
 
-/**
- * Available built-in templates with their metadata
- */
+/** Built-in templates registry with their metadata */
 const BUILTIN_TEMPLATES: TemplateInfo[] = [
   {
     name: 'basic',

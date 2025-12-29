@@ -1,0 +1,798 @@
+{
+  "version": "2.0",
+  "timestamp": "2025-12-28T23:00:00.000Z",
+  "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
+  "gitBranch": "optimize-action",
+  "lastAnalyzedFiles": [
+    "packages/data/src/conversion/core.ts",
+    "packages/data/src/conversion/index.ts",
+    "packages/data/src/conversion/types.ts",
+    "packages/data/src/csv/core.ts",
+    "packages/data/src/csv/index.ts",
+    "packages/data/src/csv/types.ts",
+    "packages/data/src/detection/core.ts",
+    "packages/data/src/detection/database.ts",
+    "packages/data/src/detection/index.ts",
+    "packages/data/src/detection/types.ts",
+    "packages/data/src/errors.ts",
+    "packages/data/src/excel/core.ts",
+    "packages/data/src/excel/index.ts",
+    "packages/data/src/excel/types.ts",
+    "packages/data/src/formats/index.ts",
+    "packages/data/src/formats-errors.ts",
+    "packages/data/src/formats-types.ts",
+    "packages/data/src/index.ts",
+    "packages/data/src/json/core.ts",
+    "packages/data/src/json/index.ts",
+    "packages/data/src/json/types.ts",
+    "packages/data/src/mime/core.ts",
+    "packages/data/src/mime/index.ts",
+    "packages/data/src/mime/types.ts",
+    "packages/data/src/operations.ts",
+    "packages/data/src/testing/data-generators.ts",
+    "packages/data/src/testing/format-testing.ts",
+    "packages/data/src/testing/index.ts",
+    "packages/data/src/testing/transform-helpers.ts",
+    "packages/data/src/types.ts"
+  ],
+  "projectType": {
+    "language": "TypeScript",
+    "framework": "Node.js library",
+    "testFramework": "Vitest"
+  },
+  "summary": {
+    "behaviorsAnalyzed": 72,
+    "fullyCovered": 65,
+    "partiallyCovered": 5,
+    "notCovered": 2,
+    "qualityIssues": 0,
+    "coveragePercent": 97
+  },
+  "gaps": [
+    {
+      "behavior": "DetectionOperations.detectFromFile.binaryContent",
+      "file": "src/detection/core.ts:60",
+      "risk": "medium",
+      "status": "partial",
+      "testTypes": { "unit": true, "integration": true, "e2e": false },
+      "suggestion": "Extension-based detection tests exist in detection.integration.test.ts - content-based detection (magic numbers) tested via PNG/JPEG fixtures"
+    },
+    {
+      "behavior": "DetectionOperations.detectBatch.mixedFiles",
+      "file": "src/detection/core.ts:153",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": { "unit": true, "integration": true, "e2e": false },
+      "suggestion": "Batch detection tested in detection.integration.test.ts:77-125 - covers success and mixed success/failure cases"
+    },
+    {
+      "behavior": "MimeOperations.parseMimeType.multipleParams",
+      "file": "src/mime/core.ts:103",
+      "risk": "low",
+      "status": "partial",
+      "testTypes": { "unit": true, "integration": false, "e2e": false },
+      "suggestion": "Test covers 'text/html; charset=utf-8' but complex params like 'multipart/form-data; boundary=---' untested"
+    },
+    {
+      "behavior": "testing.dataGenerators",
+      "file": "src/testing/data-generators.ts",
+      "risk": "low",
+      "status": "missing",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Simple utility functions - low priority, implicitly tested via usage in other tests"
+    },
+    {
+      "behavior": "testing.transformHelpers",
+      "file": "src/testing/transform-helpers.ts",
+      "risk": "low",
+      "status": "missing",
+      "testTypes": { "unit": false, "integration": false, "e2e": false },
+      "suggestion": "Testing utilities have no direct tests - low priority as they're simple helper functions"
+    }
+  ],
+  "qualityIssues": [],
+  "coverageMatrix": [
+    {
+      "behavior": "CSVOperations.parseString",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.parseFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.stringify",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.writeFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.validate",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.detectFormat",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.parseToObjects",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.parseToArrays",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.fromObjects",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "CSVOperations.fromArrays",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.parseString",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.parseFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.stringify",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.writeFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.validate",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.minify",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.format",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.allowTrailingCommas",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "JSONOperations.allowComments",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "sortJSONArray",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "sortJSONArray.multiField",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "sortJSONArray.accessorFunction",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "sortJSONArray.nullHandling",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "extractUniqueSorted",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "extractUniqueSorted.accessorRecovery",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseBuffer",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.stringify",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.writeFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.validate",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.detectFormat",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.getWorksheetNames",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.createWorkbook",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheet",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheetByIndex",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseToObjects",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.parseToArrays",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.fromObjects",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ExcelOperations.fromArrays",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "DetectionOperations.detectFromBuffer",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "DetectionOperations.detectFromFile",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "DetectionOperations.detectFromExtension",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "DetectionOperations.detectFromMime",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "DetectionOperations.detectBatch",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "MimeOperations.getMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "MimeOperations.getExtensions",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MimeOperations.isMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MimeOperations.normalizeMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "MimeOperations.parseMimeType",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ConversionOperations.checkConversion",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ConversionOperations.getSupportedFormats",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "ConversionOperations.getConversionChain",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "ConversionOperations.estimateConversionQuality",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAuto",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "critical",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAutoFromContent",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.writeAuto",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "high",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.convertFormat",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.detectFormat",
+      "unit": true,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "UnifiedDataOperations.detectFormatFromContent",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "testing.createMockFormatDetector",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "testing.testFormatConversion",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "testing.validateFormat",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "testing.formatFixtures",
+      "unit": true,
+      "integration": false,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.createCSVError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.createJSONError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.createExcelError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.createParsingError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.createValidationError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.mapLibraryError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "errors.mapFileSystemError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "medium",
+      "status": "covered"
+    },
+    {
+      "behavior": "formats-errors.createFormatError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "formats-errors.createDetectionError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    },
+    {
+      "behavior": "formats-errors.createMimeError",
+      "unit": false,
+      "integration": true,
+      "e2e": false,
+      "risk": "low",
+      "status": "covered"
+    }
+  ],
+  "resolved": [
+    {
+      "behavior": "CSVOperations.parseFile",
+      "resolvedIn": "tests/csv.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "CSVOperations.writeFile",
+      "resolvedIn": "tests/csv.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "JSONOperations.parseFile",
+      "resolvedIn": "tests/json.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "JSONOperations.writeFile",
+      "resolvedIn": "tests/json.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheet",
+      "resolvedIn": "tests/excel.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "ExcelOperations.parseWorksheetByIndex",
+      "resolvedIn": "tests/excel.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAuto.csv",
+      "resolvedIn": "tests/operations.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAuto.json",
+      "resolvedIn": "tests/operations.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.parseAuto.xlsx",
+      "resolvedIn": "tests/operations.integration.test.ts:236",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.writeAuto.json",
+      "resolvedIn": "tests/operations.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.writeAuto.csv",
+      "resolvedIn": "tests/operations.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "UnifiedDataOperations.writeAuto.xlsx",
+      "resolvedIn": "tests/operations.integration.test.ts:257",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "ExcelOperations.parseFile.realFixture",
+      "resolvedIn": "tests/fixtures/sample.xlsx + tests/operations.integration.test.ts",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "detection.detectFromFile.binary",
+      "resolvedIn": "tests/detection.integration.test.ts:11-30",
+      "resolvedAt": "2025-12-28"
+    },
+    {
+      "behavior": "detection.detectBatch.realFiles",
+      "resolvedIn": "tests/detection.integration.test.ts:77-125",
+      "resolvedAt": "2025-12-28"
+    }
+  ],
+  "recommendations": {
+    "immediate": [],
+    "shortTerm": [
+      "Consider adding tests for complex MIME type parameters (e.g., multipart/form-data with boundary)"
+    ],
+    "notes": [
+      "Coverage improved from 94% to 97% with sample.xlsx fixture addition and Excel integration tests",
+      "All critical behaviors now have both unit and integration tests",
+      "Excel binary file handling fixed (af1ee28) and covered by tests",
+      "Detection tests cover PNG/JPEG magic numbers and extension-based fallback",
+      "Fixture files complete: sample.csv, sample.json, sample.xlsx, sample.png, sample.jpg",
+      "Testing utilities (data-generators.ts, transform-helpers.ts) are simple helpers tested implicitly",
+      "Error factory functions are tested via parser integrations - all error paths exercised"
+    ]
+  },
+  "history": [
+    {
+      "timestamp": "2025-12-28T18:45:00.000Z",
+      "gitSha": "28774fb55ceb2e7f969bbd8f9c056b219c2c80db",
+      "coveragePercent": 88,
+      "gapCount": 16
+    },
+    {
+      "timestamp": "2025-12-28T20:15:00.000Z",
+      "gitSha": "ec27e62d8eff1f3bafe7113a6dbade7fcbb89a3f",
+      "coveragePercent": 93,
+      "gapCount": 10
+    },
+    {
+      "timestamp": "2025-12-28T21:30:00.000Z",
+      "gitSha": "6973bb229c1ea3117e32be88a3ed9e2fd07c6755",
+      "coveragePercent": 94,
+      "gapCount": 10
+    },
+    {
+      "timestamp": "2025-12-28T23:00:00.000Z",
+      "gitSha": "f92172c692a50a887f05fb2368ae7656ab19abde",
+      "coveragePercent": 97,
+      "gapCount": 5
+    }
+  ]
+}

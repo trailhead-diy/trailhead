@@ -1,19 +1,56 @@
 /**
- * Console utilities using consola
- * Provides structured logging with colors and formatting
+ * Console color utilities using picocolors.
+ *
+ * Provides lightweight, fast terminal color support with automatic
+ * color detection for CI/TTY environments.
+ *
+ * @module cli/utils/chalk
  */
-import { consola } from 'consola'
+import pc from 'picocolors'
 
-// Export consola instance and common logging methods
-export { consola }
+/**
+ * Full picocolors API for advanced color manipulation.
+ *
+ * Use this when you need access to all color functions or chaining.
+ */
+export { pc as colors }
 
-// Structured logging methods (recommended approach)
-export const logSuccess = (message: string, ...args: unknown[]) => consola.success(message, ...args)
-export const logError = (message: string, ...args: unknown[]) => consola.error(message, ...args)
-export const logWarning = (message: string, ...args: unknown[]) => consola.warn(message, ...args)
-export const logInfo = (message: string, ...args: unknown[]) => consola.info(message, ...args)
-export const log = (message: string, ...args: unknown[]) => consola.log(message, ...args)
-
-// For cases where raw colors are still needed, export them directly
-// But prefer using consola methods above
-export { colors } from 'consola/utils'
+/**
+ * Individual color functions for convenient terminal styling.
+ *
+ * @example
+ * ```typescript
+ * console.log(red('Error:'), 'Something went wrong');
+ * console.log(bold(green('Success!')));
+ * ```
+ */
+export const {
+  /** Apply red foreground color */
+  red,
+  /** Apply green foreground color */
+  green,
+  /** Apply yellow foreground color */
+  yellow,
+  /** Apply blue foreground color */
+  blue,
+  /** Apply cyan foreground color */
+  cyan,
+  /** Apply magenta foreground color */
+  magenta,
+  /** Apply white foreground color */
+  white,
+  /** Apply gray foreground color */
+  gray,
+  /** Apply bold text styling */
+  bold,
+  /** Apply dim/faint text styling */
+  dim,
+  /** Apply underline text styling */
+  underline,
+  /** Apply italic text styling */
+  italic,
+  /** Apply strikethrough text styling */
+  strikethrough,
+  /** Reset all styling */
+  reset,
+} = pc

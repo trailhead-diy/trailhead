@@ -40,6 +40,8 @@ const result = await csvOps.parseFile('data.csv')
 
 ### ConversionConfig
 
+Configuration for format conversion operations
+
 #### Extends
 
 - [`FormatConfig`](#formatconfig)
@@ -50,6 +52,8 @@ const result = await csvOps.parseFile('data.csv')
 
 > `readonly` `optional` **enableExtensionFallback**: `boolean`
 
+Fall back to extension-based detection
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`enableExtensionFallback`](#enableextensionfallback-2)
@@ -57,6 +61,8 @@ const result = await csvOps.parseFile('data.csv')
 ##### maxSize?
 
 > `readonly` `optional` **maxSize**: `number`
+
+Maximum file size in bytes
 
 ###### Inherited from
 
@@ -66,13 +72,19 @@ const result = await csvOps.parseFile('data.csv')
 
 > `readonly` `optional` **preserveMetadata**: `boolean`
 
+Preserve metadata during conversion
+
 ##### quality?
 
 > `readonly` `optional` **quality**: `number`
 
+Conversion quality (0-100 for lossy formats)
+
 ##### strictMode?
 
 > `readonly` `optional` **strictMode**: `boolean`
+
+Enable strict validation mode
 
 ###### Inherited from
 
@@ -82,6 +94,8 @@ const result = await csvOps.parseFile('data.csv')
 
 > `readonly` `optional` **timeout**: `number`
 
+Operation timeout in milliseconds
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`timeout`](#timeout-5)
@@ -90,31 +104,46 @@ const result = await csvOps.parseFile('data.csv')
 
 ### ConversionInfo
 
+Information about format conversion capability
+
 #### Properties
 
 ##### fromFormat
 
 > `readonly` **fromFormat**: `string`
 
+Source format identifier
+
 ##### options?
 
 > `readonly` `optional` **options**: `ConversionOptions`
+
+Available conversion options
 
 ##### quality
 
 > `readonly` **quality**: `ConversionQuality`
 
+Expected quality level
+
 ##### supported
 
 > `readonly` **supported**: `boolean`
+
+Whether conversion is supported
 
 ##### toFormat
 
 > `readonly` **toFormat**: `string`
 
+Target format identifier
+
 ---
 
 ### ConversionOperations
+
+Interface for format conversion operations
+Provides methods to check conversion support and build conversion chains
 
 #### Properties
 
@@ -775,6 +804,8 @@ Operation timeout in milliseconds
 
 ### DetectionConfig
 
+Configuration for format detection operations
+
 #### Extends
 
 - [`FormatConfig`](#formatconfig)
@@ -785,9 +816,13 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **bufferSize**: `number`
 
+Buffer size for reading file headers (default: 4096)
+
 ##### enableExtensionFallback?
 
 > `readonly` `optional` **enableExtensionFallback**: `boolean`
+
+Fall back to extension-based detection
 
 ###### Inherited from
 
@@ -797,6 +832,8 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **maxSize**: `number`
 
+Maximum file size in bytes
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`maxSize`](#maxsize-5)
@@ -804,6 +841,8 @@ Operation timeout in milliseconds
 ##### strictMode?
 
 > `readonly` `optional` **strictMode**: `boolean`
+
+Enable strict validation mode
 
 ###### Inherited from
 
@@ -813,6 +852,8 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **timeout**: `number`
 
+Operation timeout in milliseconds
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`timeout`](#timeout-5)
@@ -821,13 +862,20 @@ Operation timeout in milliseconds
 
 > `readonly` `optional` **useFileExtension**: `boolean`
 
+Enable extension-based detection
+
 ##### useMagicNumbers?
 
 > `readonly` `optional` **useMagicNumbers**: `boolean`
 
+Enable magic number signature detection
+
 ---
 
 ### DetectionOperations
+
+Interface for format detection operations
+Provides methods to detect file formats from various sources
 
 #### Properties
 
@@ -883,19 +931,27 @@ Operation timeout in milliseconds
 
 ### DetectionResult
 
+Result of a format detection operation
+
 #### Properties
 
 ##### format
 
 > `readonly` **format**: `FileFormatInfo`
 
+Detected format information
+
 ##### reliability
 
 > `readonly` **reliability**: `DetectionReliability`
 
+Reliability level of detection
+
 ##### source
 
 > `readonly` **source**: `DetectionSource`
+
+Method used for detection
 
 ---
 
@@ -1629,6 +1685,8 @@ Skip empty lines
 
 ### FormatConfig
 
+Base configuration for format operations
+
 #### Extended by
 
 - [`DetectionConfig`](#detectionconfig)
@@ -1641,17 +1699,25 @@ Skip empty lines
 
 > `readonly` `optional` **enableExtensionFallback**: `boolean`
 
+Fall back to extension-based detection
+
 ##### maxSize?
 
 > `readonly` `optional` **maxSize**: `number`
+
+Maximum file size in bytes
 
 ##### strictMode?
 
 > `readonly` `optional` **strictMode**: `boolean`
 
+Enable strict validation mode
+
 ##### timeout?
 
 > `readonly` `optional` **timeout**: `number`
+
+Operation timeout in milliseconds
 
 ---
 
@@ -2082,6 +2148,8 @@ Skip empty lines
 
 ### MimeConfig
 
+Configuration for MIME type operations
+
 #### Extends
 
 - [`FormatConfig`](#formatconfig)
@@ -2092,13 +2160,19 @@ Skip empty lines
 
 > `readonly` `optional` **charset**: `string`
 
+Default character set (e.g., 'utf-8')
+
 ##### defaultMimeType?
 
 > `readonly` `optional` **defaultMimeType**: `string`
 
+Fallback MIME type for unknown formats
+
 ##### enableExtensionFallback?
 
 > `readonly` `optional` **enableExtensionFallback**: `boolean`
+
+Fall back to extension-based detection
 
 ###### Inherited from
 
@@ -2108,6 +2182,8 @@ Skip empty lines
 
 > `readonly` `optional` **maxSize**: `number`
 
+Maximum file size in bytes
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`maxSize`](#maxsize-5)
@@ -2115,6 +2191,8 @@ Skip empty lines
 ##### strictMode?
 
 > `readonly` `optional` **strictMode**: `boolean`
+
+Enable strict validation mode
 
 ###### Inherited from
 
@@ -2124,6 +2202,8 @@ Skip empty lines
 
 > `readonly` `optional` **timeout**: `number`
 
+Operation timeout in milliseconds
+
 ###### Inherited from
 
 [`FormatConfig`](#formatconfig).[`timeout`](#timeout-5)
@@ -2131,6 +2211,9 @@ Skip empty lines
 ---
 
 ### MimeOperations
+
+Interface for MIME type operations
+Provides methods to work with MIME types and file extensions
 
 #### Properties
 
@@ -2178,35 +2261,51 @@ Skip empty lines
 
 ### MimeTypeInfo
 
+Parsed MIME type information
+
 #### Properties
 
 ##### category
 
 > `readonly` **category**: `FileCategory`
 
+File category classification
+
 ##### charset?
 
 > `readonly` `optional` **charset**: `string`
+
+Character set if applicable
 
 ##### compressible
 
 > `readonly` **compressible**: `boolean`
 
+Whether content is compressible
+
 ##### extensions
 
 > `readonly` **extensions**: readonly `string`[]
+
+Associated file extensions
 
 ##### full
 
 > `readonly` **full**: `string`
 
+Full MIME type string
+
 ##### subtype
 
 > `readonly` **subtype**: `string`
 
+Subtype (e.g., 'json', 'png')
+
 ##### type
 
 > `readonly` **type**: `string`
+
+Primary type (e.g., 'application', 'image')
 
 ---
 
@@ -2587,6 +2686,8 @@ Success or error result
 
 > **CreateConversionOperations** = (`config?`) => [`ConversionOperations`](#conversionoperations)
 
+Factory function type for creating conversion operations
+
 #### Parameters
 
 ##### config?
@@ -2618,6 +2719,8 @@ Success or error result
 ### CreateDetectionOperations()
 
 > **CreateDetectionOperations** = (`config?`) => [`DetectionOperations`](#detectionoperations)
+
+Factory function type for creating detection operations
 
 #### Parameters
 
@@ -2666,6 +2769,8 @@ Success or error result
 ### CreateMimeOperations()
 
 > **CreateMimeOperations** = (`config?`) => [`MimeOperations`](#mimeoperations)
+
+Factory function type for creating MIME operations
 
 #### Parameters
 
@@ -2975,11 +3080,15 @@ Success value type
 
 > **FormatResult**\<`T`\> = `Result`\<`T`, [`CoreError`](@trailhead.cli.md#coreerror)\>
 
+Standard Result type for format operations
+
 #### Type Parameters
 
 ##### T
 
 `T`
+
+Success value type
 
 ---
 
@@ -3325,7 +3434,10 @@ Async write result or error
 
 > `const` **COMMON_MIME_TYPES**: `object`
 
-Format detection, MIME type handling, and conversion operations
+Common MIME type string constants organized by category
+
+Provides type-safe constants for frequently used MIME types to avoid
+string literals and typos in application code.
 
 #### Type Declaration
 
@@ -3493,23 +3605,16 @@ Format detection, MIME type handling, and conversion operations
 
 > `readonly` **ZIP**: `"application/zip"` = `'application/zip'`
 
-#### See
-
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
-
 ---
 
 ### CONVERSION_CATEGORIES
 
 > `const` **CONVERSION_CATEGORIES**: `object`
 
-Format detection, MIME type handling, and conversion operations
+Format categories with supported formats for each category
+
+Used to determine conversion compatibility and available formats
+within each category (image, video, audio, document, etc.).
 
 #### Type Declaration
 
@@ -3552,16 +3657,6 @@ Format detection, MIME type handling, and conversion operations
 ##### VIDEO
 
 > `readonly` **VIDEO**: readonly \[`"mp4"`, `"avi"`, `"mov"`, `"wmv"`, `"flv"`, `"webm"`, `"mkv"`\]
-
-#### See
-
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
 
 ---
 
@@ -3699,17 +3794,37 @@ const jsonOps = createJSONOperations({
 
 > `const` **createMimeOperations**: [`CreateMimeOperations`](#createmimeoperations)
 
-Format detection, MIME type handling, and conversion operations
+Creates MIME type operations for working with MIME types and file extensions
 
-#### See
+Provides a complete interface for MIME type detection, extension resolution,
+category checking, normalization, and parsing. Uses the mime-types library
+for extension-based detection.
 
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+#### Param
+
+Optional MIME configuration overrides
+
+#### Returns
+
+MimeOperations interface with all MIME type methods
+
+#### Example
+
+```typescript
+const mimeOps = createMimeOperations({ strictMode: true })
+
+// Get MIME type from file path
+const result = mimeOps.getMimeType('document.pdf')
+if (result.isOk()) {
+  console.log(result.value.full) // 'application/pdf'
+}
+
+// Get extensions for MIME type
+const exts = mimeOps.getExtensions('image/jpeg')
+if (exts.isOk()) {
+  console.log(exts.value) // ['jpeg', 'jpg']
+}
+```
 
 ---
 
@@ -3767,17 +3882,9 @@ Default configuration for JSON operations
 
 > `const` **MIME_TYPE_CATEGORIES**: `Record`\<`FileCategory`, readonly `string`[]\>
 
-Format detection, MIME type handling, and conversion operations
+Mapping of file categories to their associated MIME types
 
-#### See
-
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+Used for category-based filtering and classification of MIME types.
 
 ---
 
@@ -3785,17 +3892,10 @@ Format detection, MIME type handling, and conversion operations
 
 > `const` **QUALITY_DEFINITIONS**: `Record`\<`ConversionQuality`, \{ `dataLoss`: `boolean`; `description`: `string`; `fidelity`: `number`; \}\>
 
-Format detection, MIME type handling, and conversion operations
+Quality level definitions with fidelity and data loss information
 
-#### See
-
-- [createDetectionOperations](#createdetectionoperations-1) - Creates format detection operations
-- [createMimeOperations](#createmimeoperations-1) - Creates MIME type operations
-- [createConversionOperations](#createconversionoperations-1) - Creates format conversion operations
-- [COMMON_MIME_TYPES](#common_mime_types) - Common MIME type mappings
-- [MIME_TYPE_CATEGORIES](#mime_type_categories) - MIME type categorization
-- [CONVERSION_CATEGORIES](#conversion_categories) - Supported conversion categories
-- [QUALITY_DEFINITIONS](#quality_definitions) - Conversion quality level definitions
+Provides metadata about each conversion quality level to help
+users understand the implications of format conversions.
 
 ## Functions
 

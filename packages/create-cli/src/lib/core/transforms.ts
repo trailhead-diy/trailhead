@@ -1,12 +1,25 @@
 /**
  * Transform helpers for post-processing generated files
+ *
+ * @module core/transforms
  */
 import { format } from 'prettier'
 import { extname } from 'node:path'
 
 /**
- * Format generated code using Prettier
- * This is applied after template compilation to ensure proper formatting
+ * Format generated code using Prettier based on file extension.
+ *
+ * Detects the appropriate Prettier parser from the file extension and applies
+ * consistent formatting. Falls back to returning original content for unknown
+ * file types or on formatting errors.
+ *
+ * @param content - Raw content string to format
+ * @param filePath - File path used to determine parser (e.g., .ts, .json, .md)
+ * @returns Formatted content string, or original content if formatting fails
+ *
+ * @remarks
+ * Supported extensions: .ts, .tsx, .js, .jsx, .mjs, .cjs, .json, .md, .yml, .yaml
+ * On error, logs a warning and returns original content (non-throwing).
  */
 export async function formatGeneratedCode(content: string, filePath: string): Promise<string> {
   try {
