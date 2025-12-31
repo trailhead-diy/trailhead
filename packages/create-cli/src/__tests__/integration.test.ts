@@ -71,6 +71,14 @@ function useLocalTarballs(projectPath: string, tarballs: PackedPackages): void {
   pkg.dependencies['@trailhead/cli'] = `file:${tarballs.cli}`
   pkg.dependencies['@trailhead/core'] = `file:${tarballs.core}`
 
+  // Add pnpm overrides to force using local tarballs for transitive dependencies
+  pkg.pnpm = {
+    overrides: {
+      '@trailhead/cli': `file:${tarballs.cli}`,
+      '@trailhead/core': `file:${tarballs.core}`,
+    },
+  }
+
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
 }
 
