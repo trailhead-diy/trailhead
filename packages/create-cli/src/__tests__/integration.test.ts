@@ -22,6 +22,19 @@ interface PackedPackages {
 }
 
 /**
+ * Verify tarball contains dist folder (package was built).
+ */
+function verifyTarballHasDist(tarballPath: string, packageName: string): void {
+  const contents = execSync(`tar -tzf "${tarballPath}"`, { encoding: 'utf-8' })
+  if (!contents.includes('package/dist/')) {
+    throw new Error(
+      `Tarball ${packageName} missing dist/ folder. Was the package built?\n` +
+        `Contents: ${contents.slice(0, 500)}`
+    )
+  }
+}
+
+/**
  * Pack local @trailhead packages into tarballs for E2E testing.
  * This allows testing generated projects without publishing to npm.
  */
@@ -35,6 +48,7 @@ function packLocalPackages(destDir: string): PackedPackages {
   })
   // pnpm pack outputs full path on last line
   const coreTarball = coreOutput.trim().split('\n').pop()!.trim()
+  verifyTarballHasDist(coreTarball, '@trailhead/core')
 
   // Pack @trailhead/cli
   const cliOutput = execSync('pnpm pack --pack-destination ' + destDir, {
@@ -42,6 +56,7 @@ function packLocalPackages(destDir: string): PackedPackages {
     encoding: 'utf-8',
   })
   const cliTarball = cliOutput.trim().split('\n').pop()!.trim()
+  verifyTarballHasDist(cliTarball, '@trailhead/cli')
 
   return { cli: cliTarball, core: coreTarball }
 }
@@ -160,13 +175,18 @@ describe('End-to-End Project Generation', () => {
 
   it('should install dependencies successfully', () => {
     // This test validates the tarball approach works for local package installation
-    expect(() => {
+    try {
       execSync('pnpm install', {
         cwd: projectPath,
         stdio: 'pipe',
         timeout: 60000,
       })
-    }).not.toThrow()
+    } catch (error) {
+      const execError = error as { stderr?: Buffer; stdout?: Buffer }
+      const stderr = execError.stderr?.toString() ?? ''
+      const stdout = execError.stdout?.toString() ?? ''
+      throw new Error(`pnpm install failed:\nstderr: ${stderr}\nstdout: ${stdout}`)
+    }
 
     expect(existsSync(join(projectPath, 'node_modules'))).toBe(true)
   }, 90000) // 90 second timeout for npm install
