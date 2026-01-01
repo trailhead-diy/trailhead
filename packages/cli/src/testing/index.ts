@@ -28,3 +28,6 @@
 
 export { createMockContext, createMockLogger, createMockFileSystem } from './context.js'
 export type { MockLogger } from './context.js'
+
+// Backward compatibility assertions (deprecated)
+export { expectSuccess, expectError, expectFailure } from './assertions.js'
