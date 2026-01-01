@@ -1,46 +1,42 @@
-/**
- * Foundation CLI orchestrator for the Trailhead System providing a complete CLI framework.
- *
- * This package provides a modern foundation for CLI applications using functional programming patterns,
- * explicit error handling with Result types, and comprehensive command management. Built on top of
- * Commander.js with enhanced type safety and validation.
- *
- * @example
- * ```typescript
- * import { createCLI, createCommand } from '@trailhead/cli'
- *
- * const testCommand = createCommand({
- *   name: 'test',
- *   description: 'Run tests',
- *   action: async (options, context) => {
- *     context.logger.info('Running tests...');
- *     return ok(undefined);
- *   }
- * });
- *
- * const cli = createCLI({
- *   name: 'my-cli',
- *   version: '1.0.0',
- *   description: 'My CLI application',
- *   commands: [testCommand]
- * });
- *
- * await cli.run();
- * ```
- *
- * @packageDocumentation
- * @module @trailhead/cli
- * @since 0.1.0
- */
+// Core citty-based CLI creation
+export { defineCommand, runMain } from './command/index.js'
 
-// Core Result types from foundation package
-export { ok, err } from '@trailhead/core'
+// Types
+export type {
+  CommandContext,
+  CommandAction,
+  TrailheadCommandDef,
+  CommandPhase,
+  InteractiveOptions,
+  CommandDef,
+  ParsedArgs,
+  ArgsDef,
+} from './command/index.js'
+
+// Command patterns and utilities
+export {
+  executeInteractive,
+  executeWithValidation,
+  executeFileSystemOperations,
+  executeSubprocess,
+  executeBatch,
+  executeWithConfiguration,
+  executeWithPhases,
+  executeWithDryRun,
+  displaySummary,
+  commonOptions,
+} from './command/index.js'
+
+export type {
+  InteractiveCommandOptions,
+  FileSystemOperation,
+  SubprocessConfig,
+  ConfigurationOptions,
+} from './command/index.js'
+
+// Git hooks (note: requires migration to citty - currently deprecated)
+// export { createGitHooksCommand } from './command/index.js'
+
+// Re-export core Result types for convenience
 export type { Result, CoreError } from '@trailhead/core'
-
-// Primary CLI creation API - the core of this package
-export { createCLI } from './cli.js'
-export type { CLI, CLIConfig } from './cli.js'
-
-// Command creation API - for building individual commands
-export { createCommand } from './command/index.js'
-export type { Command, CommandContext, CommandOption } from './command/index.js'
+export { ok, err, createCoreError } from '@trailhead/core'

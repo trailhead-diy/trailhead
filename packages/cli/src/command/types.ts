@@ -1,5 +1,6 @@
 import type { Result, CoreError } from '@trailhead/core'
 import type { Logger } from '../utils/logger.js'
+import type { CommandDef, ParsedArgs } from 'citty'
 
 // Simple FileSystem interface for CLI context
 interface FileSystem {
@@ -24,67 +25,32 @@ export interface CommandContext {
   readonly verbose: boolean
   /** Filesystem abstraction for file operations */
   readonly fs: FileSystem
-  /** Positional arguments passed to the command */
-  readonly args: string[]
+  /** Parsed command arguments from citty */
+  readonly args: ParsedArgs
 }
 
 /**
- * Configuration for a command option/flag
- *
- * Defines the structure for command-line options that can be passed to commands.
- * Supports both Commander.js style flags and programmatic name/alias definitions.
+ * Command action function that uses Result types
+ * Receives parsed args and context, returns Result<void, CoreError>
  */
-export interface CommandOption {
-  /** Option name for programmatic access (extracted from flags if not provided) */
-  name?: string
-  /** Single character alias for the option (e.g., 'v' for verbose) */
-  alias?: string
-  /** Commander.js style flags string (e.g., '-v, --verbose' or '--output <dir>') */
-  flags?: string
-  /** Description shown in help text */
-  description: string
-  /** Expected value type for the option */
-  type?: 'string' | 'boolean' | 'number'
-  /** Whether the option is required */
-  required?: boolean
-  /** Default value when option is not provided */
-  default?: any
+export type CommandAction = (
+  args: ParsedArgs,
+  context: CommandContext
+) => Promise<Result<void, CoreError>>
+
+/**
+ * Extended command definition that includes trailhead context
+ * Wraps citty's CommandDef with our CommandAction pattern
+ */
+export interface TrailheadCommandDef extends Omit<CommandDef, 'run'> {
+  /** Command action using trailhead Result types */
+  run: CommandAction
 }
 
 /**
- * Configuration for a command argument
+ * Re-export citty types for convenience
  */
-export interface CommandArgument {
-  /** Argument name used for help text and validation */
-  name: string
-  /** Description shown in help text */
-  description: string
-  /** Whether this argument accepts multiple values */
-  variadic?: boolean
-  /** Whether this argument is required */
-  required?: boolean
-}
-
-/**
- * Command interface object for CLI registration
- *
- * Represents a complete command that can be registered with a CLI instance.
- * Created by the createCommand() function and consumed by createCLI().
- *
- * @template T - Type of options object passed to the execute function
- */
-export interface Command<T = any> {
-  /** Command name used for CLI invocation */
-  name: string
-  /** Description shown in help text */
-  description: string
-  /** Commander.js style arguments specification (e.g., '<input> [output]') */
-  arguments?: string | CommandArgument[]
-  /** Array of command options/flags */
-  options?: CommandOption[]
-  /** Function that implements the command logic */
-  execute: (options: T, context: CommandContext) => Promise<Result<void, CoreError>>
-}
+export type { CommandDef, ParsedArgs, CommandContext as CittyContext, ArgsDef } from 'citty'
 
 /**
  * Phase definition for multi-phase command execution

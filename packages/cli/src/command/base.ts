@@ -1,134 +1,101 @@
-import { Command } from 'commander'
-import type { Result, CoreError } from '@trailhead/core'
-import type { CommandContext, CommandOption } from './types.js'
-import { validateCommandConfigWithCache } from './validation.js'
+import type { TrailheadCommandDef, CommandAction } from './types.js'
+import { defineCommand as cittyDefineCommand } from 'citty'
+import { createDefaultLogger } from '../utils/logger.js'
+import { fs } from '../fs/index.js'
+import type { CommandContext } from './types.js'
 
 /**
- * Base command options available to all commands
- */
-export interface CommandOptions {
-  /** Enable verbose logging output */
-  readonly verbose?: boolean
-  /** Preview mode - show what would be done without executing */
-  readonly dryRun?: boolean
-}
-
-/**
- * Configuration for creating a CLI command
- * @template T - Command options type extending CommandOptions
- */
-export interface CommandConfig<T extends CommandOptions> {
-  /** Command name (used for CLI invocation) */
-  readonly name: string
-  /** Command description for help text */
-  readonly description: string
-  /** Command arguments specification (e.g., '<input> [output]') */
-  readonly arguments?: string
-  /** Available command options/flags */
-  readonly options?: CommandOption[]
-  /** Usage examples for help text */
-  readonly examples?: string[]
-  /** Main command implementation */
-  readonly action: CommandAction<T>
-  /** Optional validation for command options */
-  readonly validation?: CommandValidator<T>
-}
-
-/**
- * Command action function type
- * @template T - Command options type
- */
-export type CommandAction<T extends CommandOptions> = (
-  options: T,
-  context: CommandContext
-) => Promise<Result<void, CoreError>>
-
-/**
- * Command validation function type
- * @template T - Command options type
- */
-export type CommandValidator<T extends CommandOptions> = (options: T) => Result<T, CoreError>
-
-/**
- * Create a command object for use with createCLI
+ * Define a command with trailhead context and Result types
  *
- * Creates a command interface object that can be registered with a CLI instance.
- * The command configuration is validated at creation time to ensure proper structure.
+ * Wraps citty's defineCommand to inject CommandContext and handle Result types.
+ * Commands receive parsed args and context, return Result<void, CoreError>.
  *
- * @template T - Command options type extending CommandOptions
- * @param config - Command configuration object
- * @param config.name - Command name used for CLI invocation (e.g., 'build', 'test')
- * @param config.description - Description shown in help text
- * @param config.arguments - Optional arguments specification (e.g., '<input> [output]')
- * @param config.options - Array of command options/flags
- * @param config.examples - Array of usage examples for help text
- * @param config.action - Async function that implements the command logic
- * @param config.validation - Optional validation function for command options
- * @returns Command interface object ready for CLI registration
- * @throws {Error} When command configuration is invalid
+ * @param config - Command configuration with meta, args, and run function
+ * @returns Citty command definition ready for runMain
  *
  * @example
- * Basic command without options:
  * ```typescript
- * const testCommand = createCommand({
- *   name: 'test',
- *   description: 'Run tests',
- *   action: async (options, context) => {
- *     context.logger.info('Running tests...');
- *     return { success: true, value: undefined };
- *   }
- * });
- * ```
+ * import { defineCommand } from '@trailhead/cli/command'
+ * import { ok, err } from '@trailhead/core'
  *
- * @example
- * Command with options and arguments:
- * ```typescript
- * interface BuildOptions extends CommandOptions {
- *   output?: string;
- *   watch?: boolean;
- * }
- *
- * const buildCommand = createCommand<BuildOptions>({
- *   name: 'build',
- *   description: 'Build the project',
- *   arguments: '[source-dir]',
- *   options: [
- *     {
- *       flags: '-o, --output <dir>',
- *       description: 'Output directory',
- *       type: 'string'
+ * export const greetCommand = defineCommand({
+ *   meta: {
+ *     name: 'greet',
+ *     description: 'Greet someone'
+ *   },
+ *   args: {
+ *     name: {
+ *       type: 'positional',
+ *       required: true,
+ *       description: 'Name to greet'
  *     },
- *     {
- *       flags: '--watch',
- *       description: 'Watch for changes',
- *       type: 'boolean'
+ *     loud: {
+ *       type: 'boolean',
+ *       description: 'Use loud greeting',
+ *       alias: 'l'
  *     }
- *   ],
- *   examples: [
- *     'build src',
- *     'build --output dist --watch'
- *   ],
- *   action: async (options, context) => {
- *     // Implementation
- *     return { success: true, value: undefined };
+ *   },
+ *   run: async (args, context) => {
+ *     const greeting = args.loud
+ *       ? `HELLO ${args.name}!`.toUpperCase()
+ *       : `Hello ${args.name}!`
+ *
+ *     context.logger.info(greeting)
+ *     return ok(undefined)
  *   }
- * });
+ * })
  * ```
  */
-export function createCommand<T extends CommandOptions>(
-  config: CommandConfig<T>
-): import('./types.js').Command<T> {
-  // Validate configuration
-  const validationResult = validateCommandConfigWithCache(config)
-  if (validationResult.isErr()) {
-    throw new Error(`Invalid command configuration: ${validationResult.error.message}`)
-  }
+export function defineCommand(config: TrailheadCommandDef) {
+  const action: CommandAction = config.run
 
-  return {
-    name: config.name,
-    description: config.description,
-    arguments: config.arguments,
-    options: config.options,
-    execute: config.action,
-  }
+  return cittyDefineCommand({
+    ...config,
+    run: async ({ args, rawArgs }) => {
+      // Create command context
+      const verbose = Boolean(args.verbose || args.v)
+      const logger = createDefaultLogger(verbose)
+
+      const context: CommandContext = {
+        projectRoot: process.cwd(),
+        logger,
+        verbose,
+        fs: fs as any,
+        args,
+      }
+
+      // Execute command action with Result type handling
+      const result = await action(args, context)
+
+      if (result.isErr()) {
+        const error = result.error
+        context.logger.error(error.message)
+        if (error.suggestion) {
+          context.logger.info(`💡 ${error.suggestion}`)
+        }
+        process.exit(1)
+      }
+
+      // Success - citty will handle normal exit
+      return
+    },
+  })
 }
+
+/**
+ * Re-export citty's runMain for convenience
+ *
+ * @example
+ * ```typescript
+ * import { defineCommand, runMain } from '@trailhead/cli/command'
+ *
+ * const cli = defineCommand({
+ *   meta: { name: 'my-cli', version: '1.0.0' },
+ *   args: {},
+ *   run: async (args, context) => ok(undefined)
+ * })
+ *
+ * runMain(cli)
+ * ```
+ */
+export { runMain } from 'citty'

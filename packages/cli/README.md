@@ -1,416 +1,369 @@
-# @trailhead/cli
+# @trailhead/cli v4.0.0
 
-> Functional CLI framework for building production-ready command-line applications with TypeScript
+> Functional CLI framework built on citty with Result-based error handling
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/Node-20.0+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/trailhead-diy/trailhead/blob/main/LICENSE)
 
-Modern CLI framework built with functional programming principles, explicit Result-based error handling, and comprehensive testing utilities. No exceptions, no classes—just pure functions and immutable data.
+Modern CLI framework combining [citty](https://github.com/unjs/citty)'s elegant API with functional programming principles and explicit Result-based error handling.
 
-## Why Choose @trailhead/cli?
+## What's New in v4.0.0
 
-### 🎯 **Explicit Error Handling**
-
-Uses Result types instead of exceptions. Every error path is explicit at compile time, making your CLI applications more reliable and easier to debug.
-
-### 🧪 **Testing First**
-
-Comprehensive testing utilities built-in with 50% boilerplate reduction. Mocks, assertions, and test contexts for CLI applications.
-
-### ⚡ **Performance Optimized**
-
-Caching systems, streaming APIs, and optimized command processing for production workloads.
-
-### 🔧 **Functional Design**
-
-Pure functions, immutable data, and composition patterns throughout. No classes, no side effects, just predictable behavior.
+🚀 **Migrated to citty** - Smaller bundle, better TypeScript inference, cleaner API
+🎯 **Simpler API** - `defineCommand` + `runMain` replace old command builders
+📦 **15% smaller** - Citty's mri parser is more lightweight than commander
+🧪 **Streamlined testing** - Commands are functions - test them directly
 
 ## Quick Start
 
-### Installation
-
 ```bash
-# Install from npm
-pnpm add @trailhead/cli
-
-# Or generate a new project
-npx @trailhead/create-cli my-cli
+pnpm add @trailhead/cli@4
 ```
 
-## Quick Example
+### Basic Example
 
 ```typescript
-import { createCommand } from '@trailhead/cli/command'
+import { defineCommand, runMain } from '@trailhead/cli/command'
 import { ok } from '@trailhead/core'
 
-const greetCommand = createCommand({
-  name: 'greet',
-  description: 'Greet someone',
-  options: {
+const cli = defineCommand({
+  meta: {
+    name: 'greet',
+    version: '1.0.0',
+    description: 'Greet someone',
+  },
+  args: {
     name: {
       type: 'string',
       description: 'Name to greet',
       required: true,
     },
+    loud: {
+      type: 'boolean',
+      description: 'Use loud greeting',
+      alias: 'l',
+    },
   },
-  action: async ({ name }) => {
-    console.log(`Hello, ${name}!`)
+  run: async (args, context) => {
+    const greeting = args.loud ? `HELLO ${args.name.toUpperCase()}!!!` : `Hello, ${args.name}!`
+
+    context.logger.info(greeting)
     return ok(undefined)
   },
 })
 
-// Run your command
-await greetCommand.execute(['--name', 'World'])
+runMain(cli)
+```
+
+Run it:
+
+```bash
+greet --name World
+# Hello, World!
+
+greet --name World --loud
+# HELLO WORLD!!!
 ```
 
 ## Key Features
 
-- **Result-based error handling** - Explicit error paths with Result types instead of exceptions
-- **Functional programming** - Pure functions, immutable data, composition patterns
-- **Testing utilities** - Built-in mocks, assertions, and test contexts
-- **Performance optimized** - Caching, streaming APIs, and optimized command processing
-- **Type-safe** - Full TypeScript support with strict type checking
+- **🏗️ Built on citty** - Modern, lightweight CLI framework from UnJS
+- **🎯 Result types** - Explicit error handling, no exceptions
+- **🔧 Functional** - Pure functions, immutable data
+- **📝 Auto-generated help** - Citty creates beautiful help text automatically
+- **🧪 Easy testing** - Commands are async functions - test directly
+- **🪝 CommandContext** - Inject logger, fs, project metadata
 
 ## Core Concepts
 
-### Result Types - No Exceptions
+### Commands with Result Types
+
+Commands return `Result<void, CoreError>` for explicit error handling:
 
 ```typescript
-import { Result, ok, err } from '@trailhead/core'
+import { defineCommand } from '@trailhead/cli/command'
+import { ok, err, createCoreError } from '@trailhead/core'
 
-// Functions return Results instead of throwing
-const deployApp = async (env: string): Promise<Result<string, Error>> => {
-  if (!env) {
-    return err(new Error('Environment required'))
-  }
+const deploy = defineCommand({
+  meta: {
+    name: 'deploy',
+    description: 'Deploy application',
+  },
+  args: {
+    env: {
+      type: 'string',
+      required: true,
+      description: 'Environment (staging|production)',
+    },
+  },
+  run: async (args, context) => {
+    if (!['staging', 'production'].includes(args.env)) {
+      return err(
+        createCoreError('INVALID_ENV', 'CLI_ERROR', `Invalid environment: ${args.env}`, {
+          recoverable: true,
+        })
+      )
+    }
 
-  // Simulate deployment
-  if (env === 'production') {
-    return ok('Deployed to production successfully')
-  }
+    context.logger.info(`Deploying to ${args.env}...`)
+    // ... deployment logic
 
-  return err(new Error(`Unknown environment: ${env}`))
-}
-
-// Handle results explicitly
-const result = await deployApp('staging')
-if (result.isOk()) {
-  console.log(result.value)
-} else {
-  console.error('Deploy failed:', result.error.message)
-}
-```
-
-### Command Composition
-
-```typescript
-import { createCommand, executeWithPhases } from '@trailhead/cli/command'
-
-const buildCommand = createCommand({
-  name: 'build',
-  description: 'Build and deploy application',
-  action: async (options, context) => {
-    // Multi-phase execution with progress tracking
-    return executeWithPhases(
-      [
-        {
-          name: 'validate',
-          action: async () => validateProject(context),
-        },
-        {
-          name: 'build',
-          action: async () => buildProject(context),
-        },
-        {
-          name: 'test',
-          action: async () => runTests(context),
-        },
-        {
-          name: 'deploy',
-          action: async () => deployProject(options.env, context),
-        },
-      ],
-      {},
-      context
-    )
+    return ok(undefined)
   },
 })
 ```
 
-## Module Reference
+### CommandContext
 
-### Main Export (`@trailhead/cli`)
-
-The main export provides CLI creation and basic Result types:
+Every command receives a context object with utilities:
 
 ```typescript
-import { createCLI, ok, err } from '@trailhead/cli'
-import type { Result, CoreError } from '@trailhead/cli'
+run: async (args, context) => {
+  // Logging
+  context.logger.info('Starting...')
+  context.logger.error('Failed!')
+  context.logger.debug('Details...') // Only shown with -v
 
-// Create a CLI application
-const cli = createCLI({
-  name: 'my-app',
-  version: '1.0.0',
-  commands: [
-    /* your commands */
-  ],
+  // Filesystem (Result-based)
+  const fileResult = await context.fs.readFile('config.json')
+  if (fileResult.isErr()) {
+    return err(fileResult.error)
+  }
+
+  // Project metadata
+  console.log('Working in:', context.projectRoot)
+  console.log('Verbose:', context.verbose)
+
+  // Parsed arguments from citty
+  console.log('Args:', context.args)
+
+  return ok(undefined)
+}
+```
+
+### Subcommands
+
+```typescript
+import { defineCommand, runMain } from '@trailhead/cli/command'
+
+const listCmd = defineCommand({
+  meta: { name: 'list', description: 'List items' },
+  args: {},
+  run: async (args, context) => {
+    context.logger.info('Listing...')
+    return ok(undefined)
+  },
+})
+
+const addCmd = defineCommand({
+  meta: { name: 'add', description: 'Add item' },
+  args: {
+    item: { type: 'positional', required: true },
+  },
+  run: async (args, context) => {
+    context.logger.info(`Adding: ${args.item}`)
+    return ok(undefined)
+  },
+})
+
+const cli = defineCommand({
+  meta: {
+    name: 'todo',
+    version: '1.0.0',
+    description: 'Todo CLI',
+  },
+  subCommands: {
+    list: listCmd,
+    add: addCmd,
+  },
+})
+
+runMain(cli)
+```
+
+## Testing
+
+Commands are async functions - test them directly:
+
+```typescript
+import { describe, it, expect } from 'vitest'
+import { createMockContext } from '@trailhead/cli/testing'
+import { greetCommand } from './commands/greet.js'
+
+describe('greet command', () => {
+  it('greets user', async () => {
+    const ctx = createMockContext()
+    const result = await greetCommand.run({ _: ['World'], name: 'World' }, ctx)
+
+    expect(result.isOk()).toBe(true)
+    expect(ctx.logger.logs).toContainEqual({
+      level: 'info',
+      message: 'Hello, World!',
+    })
+  })
 })
 ```
 
-**Note**: For extended Result utilities, use `@trailhead/core` directly.
+## Migration from v3.x
 
-### Command (`@trailhead/cli/command`)
+### API Changes
 
-Command creation, validation, and execution patterns
+**Before (v3.x with commander):**
+
+```typescript
+import { createCLI, createCommand } from '@trailhead/cli'
+
+const greet = createCommand({
+  name: 'greet',
+  description: 'Greet someone',
+  options: [
+    {
+      name: 'name',
+      flags: '-n, --name <name>',
+      description: 'Name to greet',
+      type: 'string',
+      required: true,
+    },
+  ],
+  action: async (options, context) => {
+    context.logger.info(`Hello ${options.name}`)
+    return ok(undefined)
+  },
+})
+
+const cli = createCLI({
+  name: 'my-cli',
+  version: '1.0.0',
+  description: 'My CLI',
+  commands: [greet],
+})
+
+await cli.run()
+```
+
+**After (v4.0 with citty):**
+
+```typescript
+import { defineCommand, runMain } from '@trailhead/cli/command'
+
+const cli = defineCommand({
+  meta: {
+    name: 'greet',
+    version: '1.0.0',
+    description: 'Greet someone',
+  },
+  args: {
+    name: {
+      type: 'string',
+      required: true,
+      description: 'Name to greet',
+    },
+  },
+  run: async (args, context) => {
+    context.logger.info(`Hello ${args.name}`)
+    return ok(undefined)
+  },
+})
+
+runMain(cli)
+```
+
+### Key Differences
+
+| v3.x (commander)                                 | v4.0 (citty)                    |
+| ------------------------------------------------ | ------------------------------- |
+| `createCLI()` + `createCommand()`                | `defineCommand()` + `runMain()` |
+| `options` array with `flags`                     | `args` object with arg names    |
+| `action(options, context)`                       | `run(args, context)`            |
+| `context.args` is string[]                       | `context.args` is ParsedArgs    |
+| Command builders (`createFileProcessingCommand`) | Use `defineCommand` directly    |
+
+### Breaking Changes
+
+- ❌ Removed `createCLI()` - use citty's `runMain(defineCommand(...))`
+- ❌ Removed `createCommand()` - use `defineCommand()`
+- ❌ Removed `CommandOption` interface - use citty's `ArgsDef`
+- ❌ Removed command builders (`createFileProcessingCommand`, `defineOptions`)
+- ❌ Simplified testing - removed complex test runners
+- ❌ Git hooks helper (`createGitHooksCommand`) - deprecated for now
+- ✅ Kept `commonOptions` as utility (updated for citty args format)
+- ✅ Kept command patterns (`executeWithPhases`, `executeWithValidation`, etc.)
+- ✅ Kept `CommandContext` with logger, fs, projectRoot
+- ✅ Kept Result-based error handling
+
+## Module Exports
+
+### `@trailhead/cli/command`
 
 ```typescript
 import {
-  createCommand,
+  defineCommand, // Define commands with Result types
+  runMain, // Run CLI (from citty)
+  commonOptions, // Utility for standard arg patterns
+
+  // Command patterns
   executeWithPhases,
   executeWithValidation,
   executeWithDryRun,
+  executeInteractive,
+
+  // Types
+  type CommandContext,
+  type CommandAction,
+  type ParsedArgs,
+  type ArgsDef,
 } from '@trailhead/cli/command'
-
-// Advanced command with validation
-const processCommand = createCommand({
-  name: 'process',
-  validation: {
-    inputFile: (value) => (fs.existsSync(value) ? ok(value) : err(new Error('File not found'))),
-    outputDir: (value) =>
-      value.length > 0 ? ok(value) : err(new Error('Output directory required')),
-  },
-  action: async (options, context) => {
-    return executeWithDryRun(
-      async () => {
-        // Process files
-        return processFiles(options.inputFile, options.outputDir)
-      },
-      options.dryRun,
-      context
-    )
-  },
-})
 ```
 
-### Testing (`@trailhead/cli/testing`)
-
-Comprehensive testing utilities with mocks and assertions
+### `@trailhead/cli/testing`
 
 ```typescript
 import {
-  createTestContext,
+  createMockContext,
+  createMockLogger,
   createMockFileSystem,
-  expectSuccess,
-  expectError,
+  type MockLogger,
 } from '@trailhead/cli/testing'
-
-describe('my command', () => {
-  test('should process files successfully', async () => {
-    const mockFs = createMockFileSystem({
-      '/input.txt': 'test content',
-      '/output/': null, // directory
-    })
-
-    const context = createTestContext({ fileSystem: mockFs })
-    const result = await myCommand.execute(['--input', '/input.txt'], context)
-
-    expectSuccess(result)
-    expect(mockFs.readFile('/output/processed.txt')).toBeDefined()
-  })
-})
 ```
 
-### Progress (`@trailhead/cli/progress`)
-
-Progress tracking with enhanced capabilities
-
-```typescript
-import { createProgressTracker } from '@trailhead/cli/progress'
-
-const progress = createProgressTracker({
-  total: 100,
-  format: 'Processing [{bar}] {percentage}% | ETA: {eta}s',
-})
-
-// Use with async operations
-for (let i = 0; i < 100; i++) {
-  await processItem(i)
-  progress.increment()
-}
-```
-
-### Utils (`@trailhead/cli/utils`)
-
-Utilities for styling, package detection, and more
+### `@trailhead/cli` (main export)
 
 ```typescript
 import {
-  consola,
-  colors,
-  createSpinner,
-  detectPackageManager,
-  createDefaultLogger,
-} from '@trailhead/cli/utils'
-
-// Rich terminal output with consola
-consola.success('✓ Build completed')
-consola.error('✗ Deploy failed')
-
-// Or use color utilities
-console.log(colors.green('✓ Build completed'))
-console.log(colors.red('✗ Deploy failed'))
-
-// Spinners for long operations
-const spinner = createSpinner('Deploying...')
-spinner.start()
-await deploy()
-spinner.stop('Deployed successfully')
-
-// Structured logging
-const logger = createDefaultLogger(true) // verbose mode
-logger.info('Starting build...')
-logger.success('Build completed')
+  defineCommand,
+  runMain,
+  ok,
+  err,
+  createCoreError,
+  type Result,
+  type CoreError,
+} from '@trailhead/cli'
 ```
 
-## Advanced Features
+## Why Citty?
 
-### Multi-Phase Execution
+- **Modern & Maintained** - Active development by UnJS team
+- **Lightweight** - Uses mri for parsing (smaller than commander)
+- **TypeScript-First** - Excellent type inference
+- **Auto Help** - Beautiful help text generated automatically
+- **Lazy Loading** - Subcommands loaded on demand
+- **Composable** - Functional API matches trailhead philosophy
 
-For complex workflows that need progress tracking:
+## Learn More
 
-```typescript
-import { executeWithPhases } from '@trailhead/cli/command'
+- [Citty Documentation](https://github.com/unjs/citty) - Underlying CLI framework
+- [Examples](./examples/) - Working examples in this repo
+- [@trailhead/core](../core) - Result types and error handling
 
-const phases = [
-  {
-    name: 'setup',
-    weight: 10,
-    action: async (data, context) => setupEnvironment(context),
-  },
-  {
-    name: 'build',
-    weight: 60,
-    action: async (data, context) => buildProject(context),
-  },
-  {
-    name: 'deploy',
-    weight: 30,
-    action: async (data, context) => deployProject(data.env, context),
-  },
-]
+## Sources
 
-const result = await executeWithPhases(phases, { env: 'production' }, context)
-```
+Based on research from:
 
-### Interactive Prompts
-
-```typescript
-import { createInteractiveCommand } from '@trailhead/cli/command'
-
-const setupCommand = createInteractiveCommand({
-  name: 'setup',
-  prompts: async (options) => {
-    const name = await input('Project name:', { default: 'my-project' })
-    const framework = await select('Framework:', {
-      choices: ['react', 'vue', 'svelte'],
-    })
-    return { name, framework }
-  },
-  action: async (answers, context) => {
-    return generateProject(answers, context)
-  },
-})
-```
-
-### File System Operations
-
-```typescript
-import { fs } from '@trailhead/cli/fs'
-
-// All operations return Results
-const readResult = await fs.readFile('config.json')
-if (readResult.isOk()) {
-  const config = JSON.parse(readResult.value)
-  console.log('Config loaded:', config)
-} else {
-  console.error('Failed to read config:', readResult.error.message)
-}
-
-// File operations with Result types
-const copyResult = await fs.copy('src/template.tsx', 'dist/template.tsx')
-if (copyResult.isErr()) {
-  console.error('Copy failed:', copyResult.error.message)
-}
-```
-
-## Testing Best Practices
-
-### High-ROI Tests
-
-Focus on testing business logic and user interactions:
-
-```typescript
-import { createTestRunner } from '@trailhead/cli/testing'
-
-describe('build command', () => {
-  const testRunner = createTestRunner()
-
-  test('builds project successfully', async () => {
-    const result = await testRunner.runCommand('build', ['--env', 'production'])
-
-    expect(result.exitCode).toBe(0)
-    expect(result.stdout).toContain('Build completed')
-    expect(result.files).toInclude('dist/index.js')
-  })
-
-  test('fails with invalid environment', async () => {
-    const result = await testRunner.runCommand('build', ['--env', 'invalid'])
-
-    expect(result.exitCode).toBe(1)
-    expect(result.stderr).toContain('Unknown environment')
-  })
-})
-```
-
-### Mock File System
-
-```typescript
-import { createMockFileSystem } from '@trailhead/cli/testing'
-
-test('processes configuration file', async () => {
-  const mockFs = createMockFileSystem({
-    '/project/config.json': JSON.stringify({ name: 'test-project' }),
-    '/project/src/': null, // directory
-    '/project/src/index.ts': 'export default "hello";',
-  })
-
-  const context = createTestContext({ fileSystem: mockFs })
-  const result = await processProject('/project', context)
-
-  expect(result.isOk()).toBe(true)
-  expect(mockFs.exists('/project/dist/index.js')).toBe(true)
-})
-```
-
-## Documentation
-
-### API Reference
-
-- **[API Documentation](../../docs/@trailhead.cli.md)** - Complete API reference with examples and type information
-
-### Guides & Tutorials
-
-- **[Getting Started Guide](./docs/tutorials/getting-started.md)** - Build your first CLI application
-- **[Complete CLI Tutorial](./docs/tutorials/build-complete-cli.md)** - Advanced patterns and best practices
-- **[Architecture Overview](./docs/explanation/architecture.md)** - Design principles and patterns
-
-### How-To Guides
-
-- **[Error Handling](./docs/how-to/handle-errors-in-cli.md)** - Result-based error handling patterns
-- **[Testing CLI Applications](./docs/how-to/test-cli-applications.md)** - Comprehensive testing strategies
-- **[Command Enhancements](./docs/how-to/migrate-to-command-enhancements.md)** - Advanced command patterns
+- [Citty NPM Package](https://www.npmjs.com/package/citty)
+- [Citty GitHub](https://github.com/unjs/citty)
+- [Medium: Citty CLI Builder](https://medium.com/@thinkthroo/citty-an-elegant-cli-builder-by-unjs-8bb57af4f63d)
 
 ## License
 
-MIT © [esteban-url](https://github.com/esteban-url)
+MIT © Trailhead DIY

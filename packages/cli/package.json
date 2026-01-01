@@ -1,6 +1,6 @@
 {
   "name": "@trailhead/cli",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "type": "module",
   "private": false,
   "description": "Focused CLI framework orchestrator for building production-ready command-line applications with TypeScript and Result types",
@@ -68,7 +68,7 @@
   "dependencies": {
     "@clack/prompts": "^0.10.0",
     "@trailhead/core": "workspace:*",
-    "commander": "^14.0.2",
+    "citty": "^0.1.6",
     "es-toolkit": "^1.31.0",
     "fs-extra": "^11.3.2",
     "glob": "^11.0.0",
