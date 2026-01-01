@@ -24,7 +24,7 @@ export default defineConfig(
     // External dependencies specific to CLI
     external: [
       'chalk',
-      'commander',
+      'citty',
       'cosmiconfig',
       'glob',
       'zod',
