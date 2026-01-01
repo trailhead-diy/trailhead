@@ -573,7 +573,7 @@ export async function executeWithDryRun<T extends { dryRun?: boolean }, R>(
   }
 
   // Handle confirmation for destructive operations
-  if (confirmationPrompt && !context.args.includes('--force')) {
+  if (confirmationPrompt && !context.args.force) {
     const { confirm } = await import('@inquirer/prompts')
 
     try {

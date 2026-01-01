@@ -1,23 +1,23 @@
+// Core citty integration with trailhead patterns
+export { defineCommand, runMain } from './base.js'
+
+// Types
 export type {
-  Command,
   CommandContext,
-  CommandOption,
-  CommandArgument,
+  CommandAction,
+  TrailheadCommandDef,
   CommandPhase,
   InteractiveOptions,
+  // Re-export citty types for convenience
+  CommandDef,
+  ParsedArgs,
+  ArgsDef,
 } from './types.js'
 
-export { createCommand } from './base.js'
-export { createGitHooksCommand } from './git-hooks.js'
+// Git hooks command (deprecated in v4.0.0 - needs migration to citty)
+// export { createGitHooksCommand } from './git-hooks.js'
 
-export {
-  validateCommandOption,
-  validateCommandConfig,
-  validateCommandConfigWithCache,
-} from './validation.js'
-
-export { processOptionWithCache, processCommandOptionsWithCache } from './performance.js'
-
+// Command patterns for advanced workflows
 export {
   executeInteractiveCommand as executeInteractive,
   executeWithValidation,
@@ -25,16 +25,13 @@ export {
   executeSubprocess,
   executeBatch,
   executeWithConfiguration,
-  // Command patterns for advanced workflows
   executeWithPhases, // Multi-step transformation workflows
   executeWithDryRun, // Safe preview of file operations
   displaySummary, // Formatted configuration/result display
 } from './patterns.js'
 
-// Command Enhancement Suite - GitHub issue #112
-export { createFileProcessingCommand, commonOptions, defineOptions } from './builders.js'
-
-export type { CommandOptions, CommandConfig, CommandAction, CommandValidator } from './base.js'
+// Common options utilities
+export { commonOptions } from './builders.js'
 
 export type {
   InteractiveCommandOptions,
@@ -42,10 +39,3 @@ export type {
   SubprocessConfig,
   ConfigurationOptions,
 } from './patterns.js'
-
-export type {
-  FileProcessingOptions,
-  FileProcessingContext,
-  FileProcessingConfig,
-  OptionsBuilder,
-} from './builders.js'

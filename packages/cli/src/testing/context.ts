@@ -1,101 +1,104 @@
-import type { CommandContext } from '../command/index.js'
-import type { Logger } from '../utils/logger.js'
-import { createMockFileSystem } from '../fs/testing/index.js'
+import type { CommandContext, ParsedArgs } from '../command/types.js'
+import { ok, err, createCoreError } from '@trailhead/core'
+import type { Result, CoreError } from '@trailhead/core'
 
 /**
- * Create a no-op logger for testing.
- *
- * Returns a logger that silently discards all messages.
- * Useful for tests that need to suppress console output.
- *
- * @returns Logger instance that discards all output
+ * Mock logger for testing
  */
-export function createNoopLogger(): Logger {
+export interface MockLogger {
+  info: (message: string) => void
+  warning: (message: string) => void
+  error: (message: string) => void
+  debug: (message: string) => void
+  success: (message: string) => void
+  step: (message: string) => void
+  logs: Array<{ level: string; message: string }>
+}
+
+/**
+ * Create a mock logger that captures log calls
+ */
+export function createMockLogger(): MockLogger {
+  const logs: Array<{ level: string; message: string }> = []
+
   return {
-    info: () => {},
-    success: () => {},
-    warning: () => {},
-    error: () => {},
-    debug: () => {},
-    step: () => {},
+    info: (message: string) => logs.push({ level: 'info', message }),
+    warning: (message: string) => logs.push({ level: 'warning', message }),
+    error: (message: string) => logs.push({ level: 'error', message }),
+    debug: (message: string) => logs.push({ level: 'debug', message }),
+    success: (message: string) => logs.push({ level: 'success', message }),
+    step: (message: string) => logs.push({ level: 'step', message }),
+    logs,
   }
 }
 
 /**
- * Options for creating test command contexts
- *
- * Allows customization of all context properties for testing
- * different scenarios and command behaviors.
+ * Create a mock filesystem for testing
  */
-export interface TestContextOptions {
-  /** Project root directory path (default: '/test/project') */
-  projectRoot?: string
-  /** Custom filesystem implementation (default: mock filesystem) */
-  filesystem?: any
-  /** Custom logger implementation (default: no-op logger) */
-  logger?: Logger
-  /** Whether verbose mode is enabled */
-  verbose?: boolean
-  /** Command line arguments array */
-  args?: string[]
-}
+export function createMockFileSystem() {
+  const files = new Map<string, string>()
 
-/**
- * Create a test context for command testing
- *
- * Creates a command context suitable for testing with sensible defaults.
- * Uses mock filesystem and no-op logger by default to isolate tests.
- *
- * @param options - Context configuration options
- * @returns Command context for testing
- *
- * @example
- * ```typescript
- * const context = createTestContext({
- *   verbose: true,
- *   args: ['input.json', '--format', 'yaml']
- * });
- *
- * const result = await command.execute(options, context);
- * ```
- */
-export function createTestContext(options: TestContextOptions = {}): CommandContext {
   return {
-    projectRoot: options.projectRoot ?? '/test/project',
-    logger: options.logger ?? createNoopLogger(),
-    verbose: options.verbose ?? false,
-    fs: options.filesystem ?? createMockFileSystem(),
-    args: options.args ?? [],
+    readFile: async (path: string): Promise<Result<string, CoreError>> => {
+      const content = files.get(path)
+      if (content === undefined) {
+        return err(
+          createCoreError('FILE_NOT_FOUND', 'FS_ERROR', `File not found: ${path}`, {
+            recoverable: false,
+          })
+        )
+      }
+      return ok(content)
+    },
+
+    writeFile: async (path: string, content: string): Promise<Result<void, CoreError>> => {
+      files.set(path, content)
+      return ok(undefined)
+    },
+
+    exists: async (path: string): Promise<Result<boolean, CoreError>> => {
+      return ok(files.has(path))
+    },
+
+    // Test helper: add file to mock fs
+    __setFile: (path: string, content: string) => {
+      files.set(path, content)
+    },
+
+    // Test helper: get all files
+    __getAllFiles: () => new Map(files),
   }
 }
 
 /**
- * Create a test context with pre-populated files
+ * Create a mock CommandContext for testing
  *
- * Convenience function that creates a test context with a mock
- * filesystem containing the specified files. Useful for testing
- * commands that read input files.
- *
- * @param files - Map of file paths to contents
- * @param options - Additional context options
- * @returns Command context with mock filesystem
+ * @param overrides - Partial context to override defaults
+ * @returns Mock CommandContext for testing
  *
  * @example
  * ```typescript
- * const context = createTestContextWithFiles({
- *   'config.json': JSON.stringify({ name: 'test' }),
- *   'src/index.ts': 'export const value = 42;'
- * });
+ * const context = createMockContext({
+ *   args: { _: ['file.txt'], input: 'file.txt' },
+ *   verbose: true
+ * })
  *
- * const result = await processCommand.execute({ input: 'config.json' }, context);
+ * const result = await myCommand.run(context.args, context)
  * ```
  */
-export function createTestContextWithFiles(
-  files: Record<string, string>,
-  options: TestContextOptions = {}
-): CommandContext {
-  return createTestContext({
-    ...options,
-    filesystem: createMockFileSystem(files),
-  })
+export function createMockContext(
+  overrides: Partial<CommandContext> = {}
+): CommandContext & { logger: MockLogger } {
+  const logger = createMockLogger()
+  const fs = createMockFileSystem()
+
+  const defaultArgs: ParsedArgs = { _: [] }
+
+  return {
+    projectRoot: overrides.projectRoot || process.cwd(),
+    logger: (overrides.logger as MockLogger) || logger,
+    verbose: overrides.verbose ?? false,
+    fs: (overrides.fs as any) || fs,
+    args: overrides.args || defaultArgs,
+  }
 }

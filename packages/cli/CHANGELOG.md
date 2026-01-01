@@ -1,5 +1,59 @@
 # @trailhead/cli
 
+## 4.0.0 - 2025-12-31
+
+### 🚀 Major Changes - Migration to Citty
+
+Complete rewrite from Commander.js to [Citty](https://github.com/unjs/citty).
+
+**Why**: Better TypeScript support, 15% smaller bundle, cleaner functional API.
+
+### Breaking Changes
+
+#### API
+
+- ❌ Removed `createCLI()` → Use `defineCommand()` + `runMain()`
+- ❌ Removed `createCommand()` → Use `defineCommand()`
+- ❌ Removed command builders (`createFileProcessingCommand`, `defineOptions`)
+- ❌ Removed complex test utilities → Test run() functions directly
+- ❌ Deprecated git hooks (`createGitHooksCommand`) - will return in minor release
+- ✅ Kept `CommandContext`, Result types, command patterns
+
+#### Signatures
+
+- `action(options, context)` → `run(args, context)`
+- `options` array → `args` object
+- `context.args: string[]` → `context.args: ParsedArgs`
+
+#### Migration Example
+
+```typescript
+// Before (v3.x)
+const cmd = createCommand({
+  name: 'greet',
+  options: [{ flags: '-n, --name <name>', required: true }],
+  action: async (options, ctx) => { ... }
+})
+
+// After (v4.0)
+const cmd = defineCommand({
+  meta: { name: 'greet' },
+  args: { name: { type: 'string', required: true } },
+  run: async (args, ctx) => { ... }
+})
+```
+
+### Dependencies
+
+- Added: `citty@^0.1.6`
+- Removed: `commander@^14.0.2`
+
+### Notes
+
+- See [README](./README.md) for complete migration guide
+- @trailhead/create-cli templates will be updated separately
+- Related: Closes #210
+
 ## 3.0.0
 
 ### Major Changes
